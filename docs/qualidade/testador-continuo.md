@@ -252,6 +252,44 @@ Também é necessário garantir:
   precise iniciar junto com o sistema;
 - isolamento de rede e armazenamento conforme o perfil do caso.
 
+## Implementação disponível
+
+O supervisor de console está disponível em `tools/tst7_continuous_runner.py`.
+Em Linux, a entrada `tools/tst7-continuous` encaminha os argumentos para o
+mesmo executor Python. Os modos têm limites explícitos:
+
+```text
+python3 tools/tst7_continuous_runner.py start --mode quick --max-cycles 2 --interval 0
+python3 tools/tst7_continuous_runner.py start --mode full --max-cycles 2 --interval 60
+python3 tools/tst7_continuous_runner.py start --mode soak --max-cycles 2 --interval 0
+python3 tools/tst7_continuous_runner.py start --mode full --forever --interval 60
+```
+
+Para usar a entrada Linux como executável, conceda permissão uma vez:
+
+```text
+chmod +x tools/tst7-continuous
+./tools/tst7-continuous start --mode full --max-cycles 2 --interval 0
+```
+
+`soak` executa somente os casos de estresse TST6 declarados no catálogo,
+enquanto `full` executa a matriz automatizada. `full` e `soak` exigem o gate
+estrito de cobertura; enquanto houver superfícies de software `PENDING`, o
+resultado será `FAIL` identificável no relatório, sem iniciar uma matriz QEMU
+incompleta.
+
+A execução permanente exige `--forever`. Para parar entre ciclos, use `Ctrl+C`
+ou crie o arquivo definido por `--stop-file`; a parada durante um ciclo ainda
+aguarda o watchdog do processo atual. Cada sessão fica em
+`.tst7-results/continuous/<session-id>/`, e os diretórios TST7 individuais não
+são sobrescritos.
+
+O teste finito do supervisor é:
+
+```text
+make test-tst7-continuous-host
+```
+
 ## Primeiro MVP
 
 O primeiro executor pode ser um programa Python empacotado como executável no
@@ -279,5 +317,6 @@ terá timeout máximo e o supervisor deverá ser interrompido de forma segura.
 - comparação histórica de duração, warnings e frequência de falhas;
 - seleção de uma suíte específica para reproduzir uma assinatura de falha.
 
-Esta documentação descreve a proposta. A implementação do supervisor contínuo
-será uma etapa posterior à infraestrutura TST7 já existente.
+Esta documentação descreve o contrato operacional e a implementação atual do
+supervisor. A conclusão da cobertura integral continua condicionada ao gate
+`make catalog-test-strict` e à evidência real de cada lote de subsistemas.

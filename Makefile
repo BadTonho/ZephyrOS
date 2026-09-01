@@ -1436,16 +1436,21 @@ q3check:
 	python tools\q3check.py
 	python tools\vendor_terminus.py --check
 
-catalog-test: tools\test_catalog.py tests\catalog.json docs\qualidade\catalogo-testes.md
-	python tools\test_catalog.py validate --catalog tests\catalog.json
+catalog-test: tools\test_catalog.py tests\unit\test_catalog.py tests\coverage\registry.json tests\catalog.json docs\qualidade\catalogo-testes.md
+	python -m unittest tests.unit.test_catalog
+	python tools\test_catalog.py validate --catalog tests\catalog.json --coverage-registry tests\coverage\registry.json
 	python tools\test_catalog.py check-rendered --catalog tests\catalog.json --view docs\qualidade\catalogo-testes.md
+
+catalog-test-strict: tools\test_catalog.py tests\coverage\registry.json tests\catalog.json
+	python tools\test_catalog.py validate --strict --catalog tests\catalog.json --coverage-registry tests\coverage\registry.json
 
 test-qemu: tools\qemu_test_runner.py tests\catalog.json
 	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
 	python tools\qemu_test_runner.py run --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
 
-test-qemu-selftest: tools\qemu_test_runner.py
+test-qemu-selftest: tools\qemu_test_runner.py tests\unit\test_qemu_test_runner.py
 	python tools\qemu_test_runner.py --self-test
+	python -m unittest tests.unit.test_qemu_test_runner
 
 test-tst4-qemu: $(OS_IMG) tools\qemu_test_runner.py tests\catalog.json
 	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
@@ -1599,8 +1604,14 @@ test-tst7-host: tools\tst7_regression_runner.py tests\unit\test_tst7_runner.py t
 test-tst7-quick: tools\tst7_regression_runner.py tests\catalog.json tests\regressions\manifest.json
 	python tools\tst7_regression_runner.py quick --make "$(MAKE)" --qemu $(QEMU) --image "$(OS_IMG)" --command-timeout "$(TST7_COMMAND_TIMEOUT)" --suite-timeout "$(TST7_QUICK_TIMEOUT)"
 
-test-tst7-full: tools\tst7_regression_runner.py tests\catalog.json tests\regressions\manifest.json
-	python tools\tst7_regression_runner.py full --make "$(MAKE)" --qemu $(QEMU) --image "$(OS_IMG)" --command-timeout "$(TST7_COMMAND_TIMEOUT)" --suite-timeout "$(TST7_FULL_TIMEOUT)"
+test-tst7-full: tools\tst7_regression_runner.py tools\test_catalog.py tests\coverage\registry.json tests\catalog.json tests\regressions\manifest.json
+	python tools\tst7_regression_runner.py full --strict-coverage --make "$(MAKE)" --qemu $(QEMU) --image "$(OS_IMG)" --command-timeout "$(TST7_COMMAND_TIMEOUT)" --suite-timeout "$(TST7_FULL_TIMEOUT)"
+
+test-tst7-continuous-host: tools\tst7_continuous_runner.py tests\unit\test_tst7_continuous_runner.py
+	python -m unittest tests.unit.test_tst7_continuous_runner
+
+test-tst7-continuous: tools\tst7_continuous_runner.py tools\tst7_regression_runner.py
+	python tools\tst7_continuous_runner.py start --mode full --forever --interval 60 --cycle-timeout "$(TST7_FULL_TIMEOUT)" --make "$(MAKE)" --qemu $(QEMU) --image "$(OS_IMG)" --catalog tests\catalog.json
 
 test-tst2-host: tools\tst2_host_runner.py tests\unit\test_protocol_core.c tests\unit\test_qemu_test_runner.py src\core\test_protocol_core.c src\core\test_protocol_core.h
 	python tools\tst2_host_runner.py --cc "$(HOST_CC)"
@@ -1686,3 +1697,5 @@ clean:
 .PHONY: test-tst5-host test-tst5-qemu-shell test-tst5-qemu-input test-tst5-qemu-apps test-tst5-qemu-processes test-tst5-qemu-storage test-tst5-qemu-network test-tst5-qemu-update-recovery test-tst5-qemu-reboot test-tst5-qemu-poweroff
 .PHONY: test-tst6-host test-tst6-qemu-matrix-baseline test-tst6-qemu-matrix-minimal test-tst6-qemu-matrix-network test-tst6-qemu-matrix-usb-hid test-tst6-qemu-matrix-usb-storage test-tst6-qemu-matrix-audio test-tst6-qemu-matrix-display test-tst6-qemu-matrix-pci test-tst6-qemu-stress-kernel test-tst6-qemu-stress-storage test-tst6-qemu-stress-network test-tst6-qemu-stress-apps test-tst6-qemu-fault-memory test-tst6-qemu-fault-block test-tst6-qemu-fault-block-cache test-tst6-qemu-fault-package test-tst6-qemu-fault-update test-tst6-qemu-fault-network test-tst6-qemu-fault-process test-tst6-qemu-fault-recovery
 .PHONY: test-tst7-host test-tst7-quick test-tst7-full
+.PHONY: test-tst7-continuous-host test-tst7-continuous
+.PHONY: catalog-test-strict

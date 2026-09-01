@@ -34,6 +34,11 @@ QUICK_COMMANDS = (
     ("test-tst6-host", "tst6-host"),
     ("q3check", "q3check"),
 )
+HOST_CASE_TARGETS = {
+    "host:tst2:protocol-core": "test-tst2-host",
+    "host:tst3:string-compress": "test-tst3-host",
+}
+QEMU_FIXTURE_ALLOWLIST = {"readonly", "readonly-update"}
 SCHEMA = "zephyros-tst7-result-v1"
 BASELINE_SCHEMA = "zephyros-tst7-baseline-v1"
 REGRESSION_SCHEMA = "zephyros-tst7-regressions-v1"
@@ -188,12 +193,36 @@ def load_catalog(path: Path) -> dict[str, Any]:
     return catalog
 
 
-def validate_catalog_for_regression(catalog: dict[str, Any]) -> list[str]:
+def validate_catalog_for_regression(catalog: dict[str, Any],
+                                    strict_coverage: bool = False) -> list[str]:
     try:
         from tools import test_catalog
-        errors = test_catalog.validate_catalog(catalog, ROOT, strict=False)
+        errors = test_catalog.validate_catalog(catalog, ROOT,
+                                               strict=strict_coverage)
+        if strict_coverage:
+            registry_path = ROOT / "tests" / "coverage" / "registry.json"
+            if not registry_path.is_file():
+                errors.append(f"registro de cobertura ausente: {registry_path}")
+            else:
+                registry = test_catalog.load_json(registry_path)
+                errors.extend(test_catalog.validate_coverage_registry(
+                    registry, catalog, strict=True))
     except (ImportError, AttributeError, OSError) as error:
         return [f"validador_catalogo_indisponivel:{error}"]
+    for case in catalog.get("cases", []):
+        if not isinstance(case, dict) or case.get("status") != "AUTOMATED":
+            continue
+        case_id = str(case.get("id", "<sem-id>"))
+        executor = case.get("executor")
+        if executor == "host" and case_id not in HOST_CASE_TARGETS:
+            errors.append(f"executor_host_ausente:{case_id}")
+        elif executor not in {"host", "qemu"}:
+            errors.append(f"executor_tst7_ausente:{case_id}:{executor}")
+        if executor == "qemu":
+            parameters = case.get("parameters")
+            fixture = parameters.get("fixture") if isinstance(parameters, dict) else None
+            if fixture is not None and fixture not in QEMU_FIXTURE_ALLOWLIST:
+                errors.append(f"fixture_qemu_ausente:{case_id}:{fixture}")
     return list(errors)
 
 
@@ -202,6 +231,20 @@ def qemu_cases(catalog: dict[str, Any]) -> list[dict[str, Any]]:
         [case for case in catalog["cases"]
          if isinstance(case, dict) and case.get("status") == "AUTOMATED"
          and case.get("executor") == "qemu"],
+        key=lambda case: str(case.get("id", "")),
+    )
+
+
+def soak_cases(catalog: dict[str, Any]) -> list[dict[str, Any]]:
+    return [case for case in qemu_cases(catalog)
+            if str(case.get("id", "")).startswith("qemu:tst6:stress:")]
+
+
+def host_cases(catalog: dict[str, Any]) -> list[dict[str, Any]]:
+    return sorted(
+        [case for case in catalog["cases"]
+         if isinstance(case, dict) and case.get("status") == "AUTOMATED"
+         and case.get("executor") == "host"],
         key=lambda case: str(case.get("id", "")),
     )
 
@@ -384,7 +427,10 @@ def qemu_command(case: dict[str, Any], arguments: argparse.Namespace,
     ]
     parameters = case.get("parameters")
     if isinstance(parameters, dict) and isinstance(parameters.get("fixture"), str):
-        command.extend(["--fixture", parameters["fixture"]])
+        fixture = parameters["fixture"]
+        if fixture not in QEMU_FIXTURE_ALLOWLIST:
+            raise Tst7Error(f"fixture_qemu_invalida:{case_id}:{fixture}")
+        command.extend(["--fixture", fixture])
     if profile == "usb-storage":
         command.extend(["--storage-image", str(arguments.storage_image)])
     timeout = min(
@@ -428,7 +474,7 @@ def compare_contract(current: dict[str, Any], baseline: dict[str, Any]) -> list[
     if not isinstance(current_entries, dict) or not isinstance(baseline_entries, dict):
         return ["contrato_ausente"]
     identifiers = baseline_entries.keys()
-    if current.get("mode") == "quick":
+    if current.get("mode") in {"quick", "soak"}:
         identifiers = (identifier for identifier in current_entries
                        if identifier in baseline_entries)
     for identifier in identifiers:
@@ -443,7 +489,7 @@ def compare_contract(current: dict[str, Any], baseline: dict[str, Any]) -> list[
             errors.append(f"pass_para_falha:{identifier}:{actual_status}")
         elif expected_status != actual_status:
             errors.append(f"status_alterado:{identifier}:{expected_status}->{actual_status}")
-    if current.get("mode") != "quick":
+    if current.get("mode") not in {"quick", "soak"}:
         for identifier in current_entries:
             if identifier not in baseline_entries:
                 errors.append(f"caso_novo_sem_baseline:{identifier}")
@@ -680,14 +726,20 @@ def execute_make(report: dict[str, Any], run_dir: Path, arguments: argparse.Name
 def execute_qemu_case(report: dict[str, Any], run_dir: Path,
                       arguments: argparse.Namespace, case: dict[str, Any],
                       index: int, started: float) -> bool:
-    command, artifact_dir, timeout = qemu_command(case, arguments, run_dir, index)
+    label = f"qemu:{case['id']}"
+    try:
+        command, artifact_dir, timeout = qemu_command(
+            case, arguments, run_dir, index)
+    except Tst7Error as error:
+        add_internal_step(report, label, "FAIL", error.cause)
+        persist_report(run_dir, report)
+        return True
     remaining = suite_remaining(started, arguments.suite_timeout)
     if remaining <= 0:
         add_internal_step(report, f"qemu:{case['id']}-suite-timeout", "TIMEOUT",
                           "suite_timeout")
         persist_report(run_dir, report)
         return False
-    label = f"qemu:{case['id']}"
     step = run_command(command, label, min(timeout, remaining))
     result_path = artifact_dir / "result.json"
     qemu_result: dict[str, Any] = {}
@@ -733,6 +785,74 @@ def execute_qemu_case(report: dict[str, Any], run_dir: Path,
     return True
 
 
+def execute_host_case(report: dict[str, Any], run_dir: Path,
+                      arguments: argparse.Namespace, case: dict[str, Any],
+                      started: float) -> bool:
+    case_id = str(case["id"])
+    target = HOST_CASE_TARGETS.get(case_id)
+    remaining = suite_remaining(started, arguments.suite_timeout)
+    if remaining <= 0:
+        add_internal_step(report, f"host:{case_id}-suite-timeout", "TIMEOUT",
+                          "suite_timeout")
+        persist_report(run_dir, report)
+        return False
+    label = f"host:{case_id}"
+    if target is None:
+        step = {
+            "label": label,
+            "command": [],
+            "status": "FAIL",
+            "returncode": None,
+            "duration_seconds": 0,
+            "timeout_seconds": 0,
+            "stdout": "",
+            "stderr": "",
+            "attempts": 1,
+            "cause": f"executor_host_ausente:{case_id}",
+        }
+    else:
+        step = run_command(
+            [arguments.make, target], label,
+            min(float(case.get("timeout_seconds", arguments.command_timeout)),
+                arguments.command_timeout, remaining),
+        )
+    artifact_dir = run_dir / "host" / slug(case_id)
+    artifact_dir.mkdir(parents=True, exist_ok=True)
+    (artifact_dir / "stdout.log").write_text(
+        str(step.get("stdout", "")), encoding="utf-8")
+    (artifact_dir / "stderr.log").write_text(
+        str(step.get("stderr", "")), encoding="utf-8")
+    write_json(artifact_dir / "manifest.json", {
+        "case_id": case_id,
+        "executor": "host",
+        "command": step.get("command", []),
+        "timeout_seconds": step.get("timeout_seconds"),
+    })
+    case_result = {
+        "id": case_id,
+        "status": step.get("status"),
+        "returncode": step.get("returncode"),
+        "duration_seconds": step.get("duration_seconds"),
+        "seed": None,
+        "iterations": 1,
+        "termination": "timeout" if step.get("status") == "TIMEOUT" else "completed",
+        "cause": step.get("cause"),
+        "last_state": "terminal" if step.get("status") in
+        {"PASS", "FAIL", "BLOCKED"} else "timeout",
+        "events": [],
+        "artifact_dir": artifact_dir.relative_to(run_dir).as_posix(),
+        "command": step.get("command", []),
+        "attempts": 1,
+    }
+    report["steps"].append(step)
+    report["cases"].append(case_result)
+    append_output(run_dir, step)
+    persist_report(run_dir, report)
+    print(f"TST7 {label}: {case_result['status']} artifacts="
+          f"{case_result['artifact_dir']}")
+    return True
+
+
 def run_execution(arguments: argparse.Namespace, mode: str) -> int:
     if arguments.suite_timeout <= 0 or arguments.suite_timeout > MAX_SUITE_TIMEOUT:
         print("TST7: BLOCKED suite_timeout_invalido", file=sys.stderr)
@@ -762,7 +882,8 @@ def run_execution(arguments: argparse.Namespace, mode: str) -> int:
     (run_dir / "qemu").mkdir()
     (run_dir / "stdout.log").touch()
     (run_dir / "stderr.log").touch()
-    catalog_errors = validate_catalog_for_regression(catalog)
+    catalog_errors = validate_catalog_for_regression(
+        catalog, strict_coverage=arguments.strict_coverage)
     catalog_errors.extend(
         validate_regression_manifest(REGRESSION_MANIFEST_PATH, catalog))
     coverage = catalog_coverage(catalog, catalog_hash)
@@ -778,29 +899,48 @@ def run_execution(arguments: argparse.Namespace, mode: str) -> int:
         "git_revision": report["git_revision"],
         "environment": report["environment"],
         "quick_commands": [target for target, _ in QUICK_COMMANDS],
+        "automated_case_count": len(qemu_cases(catalog)) + len(host_cases(catalog)),
         "qemu_case_count": len(qemu_cases(catalog)),
+        "host_case_count": len(host_cases(catalog)),
+        "strict_coverage": arguments.strict_coverage,
         "limits": report["limits"],
     })
     started = time.monotonic()
     if catalog_errors:
-        add_internal_step(report, "regression-manifest", "FAIL",
+        add_internal_step(report, "catalog-coverage", "FAIL",
                           catalog_errors[0])
         persist_report(run_dir, report)
-    if mode == "full":
+        if arguments.strict_coverage:
+            return finalize_execution(report, run_dir, started)
+    if mode in {"full", "soak"}:
         if not execute_make(report, run_dir, arguments, "clean", "clean", started):
             return finalize_execution(report, run_dir, started)
         if not execute_make(report, run_dir, arguments, None, "build", started):
             return finalize_execution(report, run_dir, started)
-    for target, label in QUICK_COMMANDS:
+    quick_targets = QUICK_COMMANDS
+    if mode == "soak":
+        soak_target_names = {"test-qemu-selftest", "test-tst6-host", "q3check"}
+        quick_targets = tuple((target, label) for target, label in QUICK_COMMANDS
+                              if target in soak_target_names)
+    elif mode == "full":
+        host_targets = set(HOST_CASE_TARGETS.values())
+        quick_targets = tuple((target, label) for target, label in QUICK_COMMANDS
+                              if target not in host_targets)
+    for target, label in quick_targets:
         if not execute_make(report, run_dir, arguments, target, label, started):
             return finalize_execution(report, run_dir, started)
-    if mode == "full":
+    if mode in {"full", "soak"}:
+        selected_host_cases = host_cases(catalog)
+        if mode == "full":
+            for case in selected_host_cases:
+                if not execute_host_case(report, run_dir, arguments, case, started):
+                    break
         if not execute_make(report, run_dir, arguments, "catalog-test", "catalog-test", started):
             return finalize_execution(report, run_dir, started)
         if any(case.get("qemu_profile") == "usb-storage" for case in qemu_cases(catalog)):
             if not execute_make(report, run_dir, arguments, "storage-fixtures", "storage-fixtures", started):
                 return finalize_execution(report, run_dir, started)
-        selected_qemu_cases = qemu_cases(catalog)
+        selected_qemu_cases = qemu_cases(catalog) if mode == "full" else soak_cases(catalog)
         for index, case in enumerate(selected_qemu_cases, start=1):
             if not execute_qemu_case(report, run_dir, arguments, case, index, started):
                 break
@@ -909,7 +1049,7 @@ def approve_run(run_id: str) -> int:
 def parser() -> argparse.ArgumentParser:
     command_parser = argparse.ArgumentParser(description=__doc__)
     subparsers = command_parser.add_subparsers(dest="command", required=True)
-    for name in ("quick", "full"):
+    for name in ("quick", "full", "soak"):
         subparser = subparsers.add_parser(name)
         subparser.add_argument("--run-id")
         subparser.add_argument("--make", default=os.environ.get("MAKE", "make"))
@@ -924,6 +1064,7 @@ def parser() -> argparse.ArgumentParser:
         subparser.add_argument("--boot-timeout", type=float, default=60)
         subparser.add_argument("--case-timeout", type=float, default=120)
         subparser.add_argument("--heartbeat-timeout", type=float, default=60)
+        subparser.add_argument("--strict-coverage", action="store_true")
     approve_parser = subparsers.add_parser("approve")
     approve_parser.add_argument("--run-id", required=True)
     return command_parser

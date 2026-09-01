@@ -101,6 +101,7 @@ QEMU_PROFILE_ARGS = {
     "display": ["-vga", "cirrus"],
     "pci": ["-device", "virtio-rng-pci,id=tst6rng"],
 }
+QEMU_FIXTURE_NAMES = {"readonly", "readonly-update"}
 TST6_MAX_ITERATIONS = 1000
 TST6_MAX_DURATION_SECONDS = 600.0
 TST6_DEFAULT_ITERATIONS = 100
@@ -194,6 +195,11 @@ def token_valid(value: str) -> bool:
 def validate_qemu_profile(name: str) -> None:
     if name not in QEMU_PROFILE_NAMES:
         raise RunnerError(f"perfil_qemu_invalido:{name}", "catalog_error", True)
+
+
+def validate_fixture(name: str | None) -> None:
+    if name is not None and name not in QEMU_FIXTURE_NAMES:
+        raise RunnerError(f"fixture_invalida:{name}", "catalog_error", True)
 
 
 def qemu_profile_capabilities(name: str) -> list[str]:
@@ -1067,6 +1073,7 @@ def validate_arguments(arguments: argparse.Namespace) -> None:
         raise RunnerError("timeout_excede_teto", "catalog_error", True)
     if arguments.seed is not None and not 0 <= arguments.seed <= 0xFFFFFFFF:
         raise RunnerError("seed_invalida", "catalog_error", True)
+    validate_fixture(arguments.fixture)
     if arguments.command != "stress":
         return
     iterations = getattr(arguments, "iterations", None)

@@ -737,6 +737,36 @@ O documento operacional do supervisor está em
 permanente depois que os critérios acima forem comprovados; antes disso, ele
 serve para encontrar as lacunas restantes sem mascará-las.
 
+## Estado da implementação do fechamento
+
+Em 2026-09-01 12:39 (America/Sao_Paulo), foi implementada a primeira parte
+executável do fechamento: o registro declarativo
+`tests/coverage/registry.json`, sincronização bidirecional do catálogo, o gate
+`make catalog-test-strict`, os casos host-only `host:tst2:protocol-core` e
+`host:tst3:string-compress`, e a integração desses casos ao `full` da TST7.
+O renderer do catálogo também passou a aceitar casos host sem `guest_case`.
+
+As evidências desta rodada foram:
+
+- `make test-tst2-host`: PASS;
+- `make test-tst3-host`: PASS;
+- `make test-qemu-selftest`: PASS, self-test e 12 testes unitários;
+- `make q3check`: PASS;
+- `make catalog-test`: PASS, 6.808 superfícies e 38 casos;
+- `make test-tst7-host`: PASS, 19 testes;
+- `make test-tst7-continuous-host`: PASS, 7 testes.
+- `make clean && make`: PASS, imagem `build/zephyros.img` gerada em
+  2026-09-01 13:04 (America/Sao_Paulo); o build ainda reporta warnings
+  preexistentes do código freestanding, sem erro de compilação ou linkedição.
+
+O catálogo passou de 17 para 179 superfícies `COVERED` porque somente
+superfícies vinculadas a testes host reais ou aos `surface_ids` já declarados
+por harnesses QEMU foram promovidas. Restam 6.629 superfícies `PENDING`; por
+isso `make catalog-test-strict` falha corretamente e a TST7 ainda não está
+concluída para a meta integral. O supervisor contínuo já possui entrada Linux,
+modos `quick`, `full` e `soak`, limites e parada graciosa, mas seu uso
+permanente deve aguardar o gate estrito.
+
 ## Fora do escopo
 
 - vincular o testador à versão 1.0.0 ou a uma release específica;

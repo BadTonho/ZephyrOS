@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **6808**
-- Casos de teste: **36**
+- Casos de teste: **38**
 - Superfícies aposentadas: **18**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 17 |
+| `COVERED` | 179 |
 | `MANUAL` | 0 |
-| `PENDING` | 6791 |
+| `PENDING` | 6629 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 36 |
+| `AUTOMATED` | 38 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -283,7 +283,7 @@
 | `api:src/include/core/app_package.h:app_package_rollback_confirmed` | `src/include/core/app_package.h` | `app_package_rollback_confirmed` | `core` | `PENDING` | 0 |
 | `api:src/include/core/app_package.h:app_package_run_diagnostics` | `src/include/core/app_package.h` | `app_package_run_diagnostics` | `core` | `PENDING` | 0 |
 | `api:src/include/core/app_package.h:app_package_run_installed` | `src/include/core/app_package.h` | `app_package_run_installed` | `core` | `PENDING` | 0 |
-| `api:src/include/core/app_package.h:app_package_test_fail_after` | `src/include/core/app_package.h` | `app_package_test_fail_after` | `core` | `PENDING` | 0 |
+| `api:src/include/core/app_package.h:app_package_test_fail_after` | `src/include/core/app_package.h` | `app_package_test_fail_after` | `core` | `COVERED` | 35 |
 | `api:src/include/core/app_package.h:app_package_verify_file` | `src/include/core/app_package.h` | `app_package_verify_file` | `core` | `PENDING` | 0 |
 | `api:src/include/core/app_remote.h:app_remote_apply_cached` | `src/include/core/app_remote.h` | `app_remote_apply_cached` | `core` | `PENDING` | 0 |
 | `api:src/include/core/app_remote.h:app_remote_build_plan` | `src/include/core/app_remote.h` | `app_remote_build_plan` | `core` | `PENDING` | 0 |
@@ -311,27 +311,27 @@
 | `api:src/include/core/arp.h:arp_maintain` | `src/include/core/arp.h` | `arp_maintain` | `core` | `PENDING` | 0 |
 | `api:src/include/core/arp.h:arp_resolve` | `src/include/core/arp.h` | `arp_resolve` | `core` | `PENDING` | 0 |
 | `api:src/include/core/arp.h:arp_unconfigure` | `src/include/core/arp.h` | `arp_unconfigure` | `core` | `PENDING` | 0 |
-| `api:src/include/core/arp.h:arp_validate_state` | `src/include/core/arp.h` | `arp_validate_state` | `core` | `PENDING` | 0 |
+| `api:src/include/core/arp.h:arp_validate_state` | `src/include/core/arp.h` | `arp_validate_state` | `core` | `COVERED` | 35 |
 | `api:src/include/core/clock.h:clock_get_monotonic_ticks` | `src/include/core/clock.h` | `clock_get_monotonic_ticks` | `core` | `PENDING` | 0 |
 | `api:src/include/core/clock.h:clock_get_status` | `src/include/core/clock.h` | `clock_get_status` | `core` | `PENDING` | 0 |
 | `api:src/include/core/clock.h:clock_get_utc` | `src/include/core/clock.h` | `clock_get_utc` | `core` | `PENDING` | 0 |
 | `api:src/include/core/clock.h:clock_init` | `src/include/core/clock.h` | `clock_init` | `core` | `PENDING` | 0 |
-| `api:src/include/core/clock.h:clock_self_test` | `src/include/core/clock.h` | `clock_self_test` | `core` | `PENDING` | 0 |
-| `api:src/include/core/clock.h:clock_validate_state` | `src/include/core/clock.h` | `clock_validate_state` | `core` | `PENDING` | 0 |
+| `api:src/include/core/clock.h:clock_self_test` | `src/include/core/clock.h` | `clock_self_test` | `core` | `COVERED` | 35 |
+| `api:src/include/core/clock.h:clock_validate_state` | `src/include/core/clock.h` | `clock_validate_state` | `core` | `COVERED` | 35 |
 | `api:src/include/core/crypto.h:crypto_ed25519_verify_final` | `src/include/core/crypto.h` | `crypto_ed25519_verify_final` | `core` | `PENDING` | 0 |
 | `api:src/include/core/crypto.h:crypto_ed25519_verify_init` | `src/include/core/crypto.h` | `crypto_ed25519_verify_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/crypto.h:crypto_ed25519_verify_update` | `src/include/core/crypto.h` | `crypto_ed25519_verify_update` | `core` | `PENDING` | 0 |
 | `api:src/include/core/crypto.h:crypto_equal` | `src/include/core/crypto.h` | `crypto_equal` | `core` | `PENDING` | 0 |
-| `api:src/include/core/crypto.h:crypto_self_test` | `src/include/core/crypto.h` | `crypto_self_test` | `core` | `PENDING` | 0 |
+| `api:src/include/core/crypto.h:crypto_self_test` | `src/include/core/crypto.h` | `crypto_self_test` | `core` | `COVERED` | 35 |
 | `api:src/include/core/crypto.h:crypto_sha256` | `src/include/core/crypto.h` | `crypto_sha256` | `core` | `PENDING` | 0 |
 | `api:src/include/core/crypto.h:crypto_sha256_final` | `src/include/core/crypto.h` | `crypto_sha256_final` | `core` | `PENDING` | 0 |
 | `api:src/include/core/crypto.h:crypto_sha256_init` | `src/include/core/crypto.h` | `crypto_sha256_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/crypto.h:crypto_sha256_update` | `src/include/core/crypto.h` | `crypto_sha256_update` | `core` | `PENDING` | 0 |
 | `api:src/include/core/crypto.h:crypto_sha512_digest` | `src/include/core/crypto.h` | `crypto_sha512_digest` | `core` | `PENDING` | 0 |
-| `api:src/include/core/device_manager.h:device_manager_find` | `src/include/core/device_manager.h` | `device_manager_find` | `core` | `PENDING` | 0 |
-| `api:src/include/core/device_manager.h:device_manager_format_text` | `src/include/core/device_manager.h` | `device_manager_format_text` | `core` | `PENDING` | 0 |
-| `api:src/include/core/device_manager.h:device_manager_get_count` | `src/include/core/device_manager.h` | `device_manager_get_count` | `core` | `PENDING` | 0 |
-| `api:src/include/core/device_manager.h:device_manager_get_info` | `src/include/core/device_manager.h` | `device_manager_get_info` | `core` | `PENDING` | 0 |
+| `api:src/include/core/device_manager.h:device_manager_find` | `src/include/core/device_manager.h` | `device_manager_find` | `core` | `COVERED` | 35 |
+| `api:src/include/core/device_manager.h:device_manager_format_text` | `src/include/core/device_manager.h` | `device_manager_format_text` | `core` | `COVERED` | 35 |
+| `api:src/include/core/device_manager.h:device_manager_get_count` | `src/include/core/device_manager.h` | `device_manager_get_count` | `core` | `COVERED` | 35 |
+| `api:src/include/core/device_manager.h:device_manager_get_info` | `src/include/core/device_manager.h` | `device_manager_get_info` | `core` | `COVERED` | 35 |
 | `api:src/include/core/device_manager.h:device_manager_init` | `src/include/core/device_manager.h` | `device_manager_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/device_manager.h:device_manager_refresh` | `src/include/core/device_manager.h` | `device_manager_refresh` | `core` | `PENDING` | 0 |
 | `api:src/include/core/dhcp.h:dhcp_acquire` | `src/include/core/dhcp.h` | `dhcp_acquire` | `core` | `PENDING` | 0 |
@@ -343,7 +343,7 @@
 | `api:src/include/core/dhcp.h:dhcp_renew` | `src/include/core/dhcp.h` | `dhcp_renew` | `core` | `PENDING` | 0 |
 | `api:src/include/core/dhcp.h:dhcp_reset` | `src/include/core/dhcp.h` | `dhcp_reset` | `core` | `PENDING` | 0 |
 | `api:src/include/core/dhcp.h:dhcp_take_event` | `src/include/core/dhcp.h` | `dhcp_take_event` | `core` | `PENDING` | 0 |
-| `api:src/include/core/dhcp.h:dhcp_validate_state` | `src/include/core/dhcp.h` | `dhcp_validate_state` | `core` | `PENDING` | 0 |
+| `api:src/include/core/dhcp.h:dhcp_validate_state` | `src/include/core/dhcp.h` | `dhcp_validate_state` | `core` | `COVERED` | 35 |
 | `api:src/include/core/dns.h:dns_clear` | `src/include/core/dns.h` | `dns_clear` | `core` | `PENDING` | 0 |
 | `api:src/include/core/dns.h:dns_configure` | `src/include/core/dns.h` | `dns_configure` | `core` | `PENDING` | 0 |
 | `api:src/include/core/dns.h:dns_get_cache_entry` | `src/include/core/dns.h` | `dns_get_cache_entry` | `core` | `PENDING` | 0 |
@@ -353,7 +353,7 @@
 | `api:src/include/core/dns.h:dns_reset` | `src/include/core/dns.h` | `dns_reset` | `core` | `PENDING` | 0 |
 | `api:src/include/core/dns.h:dns_resolve` | `src/include/core/dns.h` | `dns_resolve` | `core` | `PENDING` | 0 |
 | `api:src/include/core/dns.h:dns_unconfigure` | `src/include/core/dns.h` | `dns_unconfigure` | `core` | `PENDING` | 0 |
-| `api:src/include/core/dns.h:dns_validate_state` | `src/include/core/dns.h` | `dns_validate_state` | `core` | `PENDING` | 0 |
+| `api:src/include/core/dns.h:dns_validate_state` | `src/include/core/dns.h` | `dns_validate_state` | `core` | `COVERED` | 35 |
 | `api:src/include/core/ethernet.h:ethernet_attach_interface` | `src/include/core/ethernet.h` | `ethernet_attach_interface` | `core` | `PENDING` | 0 |
 | `api:src/include/core/ethernet.h:ethernet_get_interface_status` | `src/include/core/ethernet.h` | `ethernet_get_interface_status` | `core` | `PENDING` | 0 |
 | `api:src/include/core/ethernet.h:ethernet_get_status` | `src/include/core/ethernet.h` | `ethernet_get_status` | `core` | `PENDING` | 0 |
@@ -363,7 +363,7 @@
 | `api:src/include/core/ethernet.h:ethernet_register_handler` | `src/include/core/ethernet.h` | `ethernet_register_handler` | `core` | `PENDING` | 0 |
 | `api:src/include/core/ethernet.h:ethernet_send` | `src/include/core/ethernet.h` | `ethernet_send` | `core` | `PENDING` | 0 |
 | `api:src/include/core/ethernet.h:ethernet_set_quiescing` | `src/include/core/ethernet.h` | `ethernet_set_quiescing` | `core` | `PENDING` | 0 |
-| `api:src/include/core/ethernet.h:ethernet_validate_state` | `src/include/core/ethernet.h` | `ethernet_validate_state` | `core` | `PENDING` | 0 |
+| `api:src/include/core/ethernet.h:ethernet_validate_state` | `src/include/core/ethernet.h` | `ethernet_validate_state` | `core` | `COVERED` | 35 |
 | `api:src/include/core/http.h:http_get_body` | `src/include/core/http.h` | `http_get_body` | `core` | `PENDING` | 0 |
 | `api:src/include/core/http.h:http_get_start` | `src/include/core/http.h` | `http_get_start` | `core` | `PENDING` | 0 |
 | `api:src/include/core/http.h:http_get_start_ex` | `src/include/core/http.h` | `http_get_start_ex` | `core` | `PENDING` | 0 |
@@ -373,21 +373,21 @@
 | `api:src/include/core/http.h:http_init` | `src/include/core/http.h` | `http_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/http.h:http_maintain` | `src/include/core/http.h` | `http_maintain` | `core` | `PENDING` | 0 |
 | `api:src/include/core/http.h:http_reset` | `src/include/core/http.h` | `http_reset` | `core` | `PENDING` | 0 |
-| `api:src/include/core/http.h:http_validate_state` | `src/include/core/http.h` | `http_validate_state` | `core` | `PENDING` | 0 |
+| `api:src/include/core/http.h:http_validate_state` | `src/include/core/http.h` | `http_validate_state` | `core` | `COVERED` | 35 |
 | `api:src/include/core/icmp.h:icmp_get_status` | `src/include/core/icmp.h` | `icmp_get_status` | `core` | `PENDING` | 0 |
 | `api:src/include/core/icmp.h:icmp_init` | `src/include/core/icmp.h` | `icmp_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/icmp.h:icmp_maintain` | `src/include/core/icmp.h` | `icmp_maintain` | `core` | `PENDING` | 0 |
 | `api:src/include/core/icmp.h:icmp_ping_start` | `src/include/core/icmp.h` | `icmp_ping_start` | `core` | `PENDING` | 0 |
 | `api:src/include/core/icmp.h:icmp_reset` | `src/include/core/icmp.h` | `icmp_reset` | `core` | `PENDING` | 0 |
-| `api:src/include/core/icmp.h:icmp_validate_state` | `src/include/core/icmp.h` | `icmp_validate_state` | `core` | `PENDING` | 0 |
+| `api:src/include/core/icmp.h:icmp_validate_state` | `src/include/core/icmp.h` | `icmp_validate_state` | `core` | `COVERED` | 35 |
 | `api:src/include/core/input.h:input_dispatch` | `src/include/core/input.h` | `input_dispatch` | `core` | `PENDING` | 0 |
 | `api:src/include/core/input.h:input_get_metrics` | `src/include/core/input.h` | `input_get_metrics` | `core` | `PENDING` | 0 |
 | `api:src/include/core/input.h:input_init` | `src/include/core/input.h` | `input_init` | `core` | `PENDING` | 0 |
-| `api:src/include/core/input.h:input_publish_key` | `src/include/core/input.h` | `input_publish_key` | `core` | `PENDING` | 0 |
+| `api:src/include/core/input.h:input_publish_key` | `src/include/core/input.h` | `input_publish_key` | `core` | `COVERED` | 35 |
 | `api:src/include/core/input.h:input_publish_pointer` | `src/include/core/input.h` | `input_publish_pointer` | `core` | `PENDING` | 0 |
 | `api:src/include/core/input.h:input_register_key_sink` | `src/include/core/input.h` | `input_register_key_sink` | `core` | `PENDING` | 0 |
 | `api:src/include/core/input.h:input_register_pointer_sink` | `src/include/core/input.h` | `input_register_pointer_sink` | `core` | `PENDING` | 0 |
-| `api:src/include/core/input.h:input_validate_state` | `src/include/core/input.h` | `input_validate_state` | `core` | `PENDING` | 0 |
+| `api:src/include/core/input.h:input_validate_state` | `src/include/core/input.h` | `input_validate_state` | `core` | `COVERED` | 35 |
 | `api:src/include/core/ipv4.h:ipv4_address_is_unicast` | `src/include/core/ipv4.h` | `ipv4_address_is_unicast` | `core` | `PENDING` | 0 |
 | `api:src/include/core/ipv4.h:ipv4_configure` | `src/include/core/ipv4.h` | `ipv4_configure` | `core` | `PENDING` | 0 |
 | `api:src/include/core/ipv4.h:ipv4_get_status` | `src/include/core/ipv4.h` | `ipv4_get_status` | `core` | `PENDING` | 0 |
@@ -397,16 +397,16 @@
 | `api:src/include/core/ipv4.h:ipv4_send` | `src/include/core/ipv4.h` | `ipv4_send` | `core` | `PENDING` | 0 |
 | `api:src/include/core/ipv4.h:ipv4_send_limited_broadcast` | `src/include/core/ipv4.h` | `ipv4_send_limited_broadcast` | `core` | `PENDING` | 0 |
 | `api:src/include/core/ipv4.h:ipv4_unconfigure` | `src/include/core/ipv4.h` | `ipv4_unconfigure` | `core` | `PENDING` | 0 |
-| `api:src/include/core/ipv4.h:ipv4_validate_state` | `src/include/core/ipv4.h` | `ipv4_validate_state` | `core` | `PENDING` | 0 |
+| `api:src/include/core/ipv4.h:ipv4_validate_state` | `src/include/core/ipv4.h` | `ipv4_validate_state` | `core` | `COVERED` | 35 |
 | `api:src/include/core/irq_deferred.h:irq_deferred_cancel` | `src/include/core/irq_deferred.h` | `irq_deferred_cancel` | `core` | `PENDING` | 0 |
 | `api:src/include/core/irq_deferred.h:irq_deferred_dispatch` | `src/include/core/irq_deferred.h` | `irq_deferred_dispatch` | `core` | `PENDING` | 0 |
 | `api:src/include/core/irq_deferred.h:irq_deferred_get_irq_status` | `src/include/core/irq_deferred.h` | `irq_deferred_get_irq_status` | `core` | `PENDING` | 0 |
 | `api:src/include/core/irq_deferred.h:irq_deferred_get_status` | `src/include/core/irq_deferred.h` | `irq_deferred_get_status` | `core` | `PENDING` | 0 |
 | `api:src/include/core/irq_deferred.h:irq_deferred_init` | `src/include/core/irq_deferred.h` | `irq_deferred_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/irq_deferred.h:irq_deferred_schedule` | `src/include/core/irq_deferred.h` | `irq_deferred_schedule` | `core` | `PENDING` | 0 |
-| `api:src/include/core/irq_deferred.h:irq_deferred_self_test` | `src/include/core/irq_deferred.h` | `irq_deferred_self_test` | `core` | `PENDING` | 0 |
+| `api:src/include/core/irq_deferred.h:irq_deferred_self_test` | `src/include/core/irq_deferred.h` | `irq_deferred_self_test` | `core` | `COVERED` | 35 |
 | `api:src/include/core/irq_deferred.h:irq_deferred_set_notifier` | `src/include/core/irq_deferred.h` | `irq_deferred_set_notifier` | `core` | `PENDING` | 0 |
-| `api:src/include/core/irq_deferred.h:irq_deferred_validate_state` | `src/include/core/irq_deferred.h` | `irq_deferred_validate_state` | `core` | `PENDING` | 0 |
+| `api:src/include/core/irq_deferred.h:irq_deferred_validate_state` | `src/include/core/irq_deferred.h` | `irq_deferred_validate_state` | `core` | `COVERED` | 35 |
 | `api:src/include/core/irq_deferred.h:irq_deferred_work_init` | `src/include/core/irq_deferred.h` | `irq_deferred_work_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/keyboard.h:keyboard_controller_reset` | `src/include/core/keyboard.h` | `keyboard_controller_reset` | `core` | `PENDING` | 0 |
 | `api:src/include/core/keyboard.h:keyboard_controller_reset_available` | `src/include/core/keyboard.h` | `keyboard_controller_reset_available` | `core` | `PENDING` | 0 |
@@ -427,18 +427,18 @@
 | `api:src/include/core/log.h:log_init` | `src/include/core/log.h` | `log_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/log.h:log_print` | `src/include/core/log.h` | `log_print` | `core` | `PENDING` | 0 |
 | `api:src/include/core/log.h:log_print_code` | `src/include/core/log.h` | `log_print_code` | `core` | `PENDING` | 0 |
-| `api:src/include/core/log.h:log_self_test` | `src/include/core/log.h` | `log_self_test` | `core` | `PENDING` | 0 |
+| `api:src/include/core/log.h:log_self_test` | `src/include/core/log.h` | `log_self_test` | `core` | `COVERED` | 35 |
 | `api:src/include/core/log.h:log_set_buffer_level` | `src/include/core/log.h` | `log_set_buffer_level` | `core` | `PENDING` | 0 |
 | `api:src/include/core/log.h:log_set_console_level` | `src/include/core/log.h` | `log_set_console_level` | `core` | `PENDING` | 0 |
 | `api:src/include/core/log.h:log_set_level` | `src/include/core/log.h` | `log_set_level` | `core` | `PENDING` | 0 |
 | `api:src/include/core/log.h:log_to_buffer` | `src/include/core/log.h` | `log_to_buffer` | `core` | `PENDING` | 0 |
 | `api:src/include/core/memory.h:kfree` | `src/include/core/memory.h` | `kfree` | `core` | `PENDING` | 0 |
-| `api:src/include/core/memory.h:memory_get_detailed_stats` | `src/include/core/memory.h` | `memory_get_detailed_stats` | `core` | `COVERED` | 1 |
+| `api:src/include/core/memory.h:memory_get_detailed_stats` | `src/include/core/memory.h` | `memory_get_detailed_stats` | `core` | `COVERED` | 35 |
 | `api:src/include/core/memory.h:memory_get_free` | `src/include/core/memory.h` | `memory_get_free` | `core` | `PENDING` | 0 |
-| `api:src/include/core/memory.h:memory_get_free_pages` | `src/include/core/memory.h` | `memory_get_free_pages` | `core` | `COVERED` | 1 |
-| `api:src/include/core/memory.h:memory_get_heap_stats` | `src/include/core/memory.h` | `memory_get_heap_stats` | `core` | `COVERED` | 1 |
+| `api:src/include/core/memory.h:memory_get_free_pages` | `src/include/core/memory.h` | `memory_get_free_pages` | `core` | `COVERED` | 35 |
+| `api:src/include/core/memory.h:memory_get_heap_stats` | `src/include/core/memory.h` | `memory_get_heap_stats` | `core` | `COVERED` | 35 |
 | `api:src/include/core/memory.h:memory_get_mmap_entries` | `src/include/core/memory.h` | `memory_get_mmap_entries` | `core` | `PENDING` | 0 |
-| `api:src/include/core/memory.h:memory_get_pmm_stats` | `src/include/core/memory.h` | `memory_get_pmm_stats` | `core` | `COVERED` | 1 |
+| `api:src/include/core/memory.h:memory_get_pmm_stats` | `src/include/core/memory.h` | `memory_get_pmm_stats` | `core` | `COVERED` | 35 |
 | `api:src/include/core/memory.h:memory_get_total` | `src/include/core/memory.h` | `memory_get_total` | `core` | `PENDING` | 0 |
 | `api:src/include/core/memory.h:memory_get_total_pages` | `src/include/core/memory.h` | `memory_get_total_pages` | `core` | `PENDING` | 0 |
 | `api:src/include/core/memory.h:memory_get_used` | `src/include/core/memory.h` | `memory_get_used` | `core` | `PENDING` | 0 |
@@ -447,7 +447,7 @@
 | `api:src/include/core/memory.h:pmm_free_pages` | `src/include/core/memory.h` | `pmm_free_pages` | `core` | `PENDING` | 0 |
 | `api:src/include/core/net_buffer.h:net_buffer_begin` | `src/include/core/net_buffer.h` | `net_buffer_begin` | `core` | `PENDING` | 0 |
 | `api:src/include/core/net_buffer.h:net_buffer_complete` | `src/include/core/net_buffer.h` | `net_buffer_complete` | `core` | `PENDING` | 0 |
-| `api:src/include/core/net_buffer.h:net_buffer_get_stats` | `src/include/core/net_buffer.h` | `net_buffer_get_stats` | `core` | `PENDING` | 0 |
+| `api:src/include/core/net_buffer.h:net_buffer_get_stats` | `src/include/core/net_buffer.h` | `net_buffer_get_stats` | `core` | `COVERED` | 35 |
 | `api:src/include/core/net_buffer.h:net_buffer_init` | `src/include/core/net_buffer.h` | `net_buffer_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/net_buffer.h:net_buffer_note_clone` | `src/include/core/net_buffer.h` | `net_buffer_note_clone` | `core` | `PENDING` | 0 |
 | `api:src/include/core/net_buffer.h:net_buffer_note_copy` | `src/include/core/net_buffer.h` | `net_buffer_note_copy` | `core` | `PENDING` | 0 |
@@ -455,25 +455,25 @@
 | `api:src/include/core/net_buffer.h:net_buffer_release` | `src/include/core/net_buffer.h` | `net_buffer_release` | `core` | `PENDING` | 0 |
 | `api:src/include/core/net_buffer.h:net_buffer_restore_stats` | `src/include/core/net_buffer.h` | `net_buffer_restore_stats` | `core` | `PENDING` | 0 |
 | `api:src/include/core/net_buffer.h:net_buffer_retain` | `src/include/core/net_buffer.h` | `net_buffer_retain` | `core` | `PENDING` | 0 |
-| `api:src/include/core/net_buffer.h:net_buffer_self_test` | `src/include/core/net_buffer.h` | `net_buffer_self_test` | `core` | `PENDING` | 0 |
+| `api:src/include/core/net_buffer.h:net_buffer_self_test` | `src/include/core/net_buffer.h` | `net_buffer_self_test` | `core` | `COVERED` | 35 |
 | `api:src/include/core/net_buffer.h:net_buffer_set_layout` | `src/include/core/net_buffer.h` | `net_buffer_set_layout` | `core` | `PENDING` | 0 |
 | `api:src/include/core/net_buffer.h:net_buffer_set_length` | `src/include/core/net_buffer.h` | `net_buffer_set_length` | `core` | `PENDING` | 0 |
 | `api:src/include/core/net_buffer.h:net_buffer_transition` | `src/include/core/net_buffer.h` | `net_buffer_transition` | `core` | `PENDING` | 0 |
-| `api:src/include/core/net_buffer.h:net_buffer_validate_state` | `src/include/core/net_buffer.h` | `net_buffer_validate_state` | `core` | `PENDING` | 0 |
+| `api:src/include/core/net_buffer.h:net_buffer_validate_state` | `src/include/core/net_buffer.h` | `net_buffer_validate_state` | `core` | `COVERED` | 35 |
 | `api:src/include/core/net_socket.h:net_socket_abort` | `src/include/core/net_socket.h` | `net_socket_abort` | `core` | `PENDING` | 0 |
 | `api:src/include/core/net_socket.h:net_socket_close` | `src/include/core/net_socket.h` | `net_socket_close` | `core` | `PENDING` | 0 |
 | `api:src/include/core/net_socket.h:net_socket_connect` | `src/include/core/net_socket.h` | `net_socket_connect` | `core` | `PENDING` | 0 |
 | `api:src/include/core/net_socket.h:net_socket_get_handle_info` | `src/include/core/net_socket.h` | `net_socket_get_handle_info` | `core` | `PENDING` | 0 |
 | `api:src/include/core/net_socket.h:net_socket_get_info` | `src/include/core/net_socket.h` | `net_socket_get_info` | `core` | `PENDING` | 0 |
-| `api:src/include/core/net_socket.h:net_socket_get_status` | `src/include/core/net_socket.h` | `net_socket_get_status` | `core` | `PENDING` | 0 |
+| `api:src/include/core/net_socket.h:net_socket_get_status` | `src/include/core/net_socket.h` | `net_socket_get_status` | `core` | `COVERED` | 35 |
 | `api:src/include/core/net_socket.h:net_socket_init` | `src/include/core/net_socket.h` | `net_socket_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/net_socket.h:net_socket_maintain` | `src/include/core/net_socket.h` | `net_socket_maintain` | `core` | `PENDING` | 0 |
 | `api:src/include/core/net_socket.h:net_socket_open` | `src/include/core/net_socket.h` | `net_socket_open` | `core` | `PENDING` | 0 |
 | `api:src/include/core/net_socket.h:net_socket_receive` | `src/include/core/net_socket.h` | `net_socket_receive` | `core` | `PENDING` | 0 |
 | `api:src/include/core/net_socket.h:net_socket_reset` | `src/include/core/net_socket.h` | `net_socket_reset` | `core` | `PENDING` | 0 |
-| `api:src/include/core/net_socket.h:net_socket_self_test` | `src/include/core/net_socket.h` | `net_socket_self_test` | `core` | `PENDING` | 0 |
+| `api:src/include/core/net_socket.h:net_socket_self_test` | `src/include/core/net_socket.h` | `net_socket_self_test` | `core` | `COVERED` | 35 |
 | `api:src/include/core/net_socket.h:net_socket_send` | `src/include/core/net_socket.h` | `net_socket_send` | `core` | `PENDING` | 0 |
-| `api:src/include/core/net_socket.h:net_socket_validate_state` | `src/include/core/net_socket.h` | `net_socket_validate_state` | `core` | `PENDING` | 0 |
+| `api:src/include/core/net_socket.h:net_socket_validate_state` | `src/include/core/net_socket.h` | `net_socket_validate_state` | `core` | `COVERED` | 35 |
 | `api:src/include/core/net_socket.h:net_socket_wait` | `src/include/core/net_socket.h` | `net_socket_wait` | `core` | `PENDING` | 0 |
 | `api:src/include/core/network_manager.h:network_manager_acquire_dhcp` | `src/include/core/network_manager.h` | `network_manager_acquire_dhcp` | `core` | `PENDING` | 0 |
 | `api:src/include/core/network_manager.h:network_manager_configure_arp` | `src/include/core/network_manager.h` | `network_manager_configure_arp` | `core` | `PENDING` | 0 |
@@ -496,10 +496,10 @@
 | `api:src/include/core/panic.h:panic` | `src/include/core/panic.h` | `panic` | `core` | `PENDING` | 0 |
 | `api:src/include/core/panic.h:panic_halt` | `src/include/core/panic.h` | `panic_halt` | `core` | `PENDING` | 0 |
 | `api:src/include/core/panic.h:panic_memory` | `src/include/core/panic.h` | `panic_memory` | `core` | `PENDING` | 0 |
-| `api:src/include/core/power.h:power_get_status` | `src/include/core/power.h` | `power_get_status` | `core` | `PENDING` | 0 |
+| `api:src/include/core/power.h:power_get_status` | `src/include/core/power.h` | `power_get_status` | `core` | `COVERED` | 35 |
 | `api:src/include/core/power.h:power_init` | `src/include/core/power.h` | `power_init` | `core` | `PENDING` | 0 |
-| `api:src/include/core/power.h:power_reboot` | `src/include/core/power.h` | `power_reboot` | `core` | `PENDING` | 0 |
-| `api:src/include/core/power.h:power_shutdown` | `src/include/core/power.h` | `power_shutdown` | `core` | `PENDING` | 0 |
+| `api:src/include/core/power.h:power_reboot` | `src/include/core/power.h` | `power_reboot` | `core` | `COVERED` | 35 |
+| `api:src/include/core/power.h:power_shutdown` | `src/include/core/power.h` | `power_shutdown` | `core` | `COVERED` | 35 |
 | `api:src/include/core/power.h:power_shutdown_prepare` | `src/include/core/power.h` | `power_shutdown_prepare` | `core` | `PENDING` | 0 |
 | `api:src/include/core/power.h:power_shutdown_request` | `src/include/core/power.h` | `power_shutdown_request` | `core` | `PENDING` | 0 |
 | `api:src/include/core/power.h:system_reboot` | `src/include/core/power.h` | `system_reboot` | `core` | `PENDING` | 0 |
@@ -509,7 +509,7 @@
 | `api:src/include/core/power_notifier.h:power_notifier_notify` | `src/include/core/power_notifier.h` | `power_notifier_notify` | `core` | `PENDING` | 0 |
 | `api:src/include/core/power_notifier.h:power_notifier_quiesce` | `src/include/core/power_notifier.h` | `power_notifier_quiesce` | `core` | `PENDING` | 0 |
 | `api:src/include/core/power_notifier.h:power_notifier_register` | `src/include/core/power_notifier.h` | `power_notifier_register` | `core` | `PENDING` | 0 |
-| `api:src/include/core/power_notifier.h:power_notifier_validate_state` | `src/include/core/power_notifier.h` | `power_notifier_validate_state` | `core` | `PENDING` | 0 |
+| `api:src/include/core/power_notifier.h:power_notifier_validate_state` | `src/include/core/power_notifier.h` | `power_notifier_validate_state` | `core` | `COVERED` | 35 |
 | `api:src/include/core/recovery.h:recovery_get_count` | `src/include/core/recovery.h` | `recovery_get_count` | `core` | `PENDING` | 0 |
 | `api:src/include/core/recovery.h:recovery_init` | `src/include/core/recovery.h` | `recovery_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/recovery.h:recovery_is_available` | `src/include/core/recovery.h` | `recovery_is_available` | `core` | `PENDING` | 0 |
@@ -521,50 +521,50 @@
 | `api:src/include/core/route.h:route_clear` | `src/include/core/route.h` | `route_clear` | `core` | `PENDING` | 0 |
 | `api:src/include/core/route.h:route_delete` | `src/include/core/route.h` | `route_delete` | `core` | `PENDING` | 0 |
 | `api:src/include/core/route.h:route_get_entry` | `src/include/core/route.h` | `route_get_entry` | `core` | `PENDING` | 0 |
-| `api:src/include/core/route.h:route_get_status` | `src/include/core/route.h` | `route_get_status` | `core` | `PENDING` | 0 |
+| `api:src/include/core/route.h:route_get_status` | `src/include/core/route.h` | `route_get_status` | `core` | `COVERED` | 35 |
 | `api:src/include/core/route.h:route_init` | `src/include/core/route.h` | `route_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/route.h:route_lookup` | `src/include/core/route.h` | `route_lookup` | `core` | `PENDING` | 0 |
 | `api:src/include/core/route.h:route_reset` | `src/include/core/route.h` | `route_reset` | `core` | `PENDING` | 0 |
-| `api:src/include/core/route.h:route_self_test` | `src/include/core/route.h` | `route_self_test` | `core` | `PENDING` | 0 |
+| `api:src/include/core/route.h:route_self_test` | `src/include/core/route.h` | `route_self_test` | `core` | `COVERED` | 35 |
 | `api:src/include/core/route.h:route_set_base` | `src/include/core/route.h` | `route_set_base` | `core` | `PENDING` | 0 |
 | `api:src/include/core/route.h:route_set_default` | `src/include/core/route.h` | `route_set_default` | `core` | `PENDING` | 0 |
-| `api:src/include/core/route.h:route_validate_state` | `src/include/core/route.h` | `route_validate_state` | `core` | `PENDING` | 0 |
+| `api:src/include/core/route.h:route_validate_state` | `src/include/core/route.h` | `route_validate_state` | `core` | `COVERED` | 35 |
 | `api:src/include/core/sk_buff.h:free_skb` | `src/include/core/sk_buff.h` | `free_skb` | `core` | `PENDING` | 0 |
 | `api:src/include/core/sk_buff.h:skb_complete` | `src/include/core/sk_buff.h` | `skb_complete` | `core` | `PENDING` | 0 |
-| `api:src/include/core/sk_buff.h:skb_get_stats` | `src/include/core/sk_buff.h` | `skb_get_stats` | `core` | `PENDING` | 0 |
+| `api:src/include/core/sk_buff.h:skb_get_stats` | `src/include/core/sk_buff.h` | `skb_get_stats` | `core` | `COVERED` | 35 |
 | `api:src/include/core/sk_buff.h:skb_init` | `src/include/core/sk_buff.h` | `skb_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/sk_buff.h:skb_release` | `src/include/core/sk_buff.h` | `skb_release` | `core` | `PENDING` | 0 |
 | `api:src/include/core/sk_buff.h:skb_retain` | `src/include/core/sk_buff.h` | `skb_retain` | `core` | `PENDING` | 0 |
-| `api:src/include/core/sk_buff.h:skb_self_test` | `src/include/core/sk_buff.h` | `skb_self_test` | `core` | `PENDING` | 0 |
+| `api:src/include/core/sk_buff.h:skb_self_test` | `src/include/core/sk_buff.h` | `skb_self_test` | `core` | `COVERED` | 35 |
 | `api:src/include/core/sk_buff.h:skb_transition` | `src/include/core/sk_buff.h` | `skb_transition` | `core` | `PENDING` | 0 |
-| `api:src/include/core/sk_buff.h:skb_validate_state` | `src/include/core/sk_buff.h` | `skb_validate_state` | `core` | `PENDING` | 0 |
+| `api:src/include/core/sk_buff.h:skb_validate_state` | `src/include/core/sk_buff.h` | `skb_validate_state` | `core` | `COVERED` | 35 |
 | `api:src/include/core/socket.h:socket_accept` | `src/include/core/socket.h` | `socket_accept` | `core` | `PENDING` | 0 |
 | `api:src/include/core/socket.h:socket_bind` | `src/include/core/socket.h` | `socket_bind` | `core` | `PENDING` | 0 |
 | `api:src/include/core/socket.h:socket_close` | `src/include/core/socket.h` | `socket_close` | `core` | `PENDING` | 0 |
 | `api:src/include/core/socket.h:socket_connect` | `src/include/core/socket.h` | `socket_connect` | `core` | `PENDING` | 0 |
 | `api:src/include/core/socket.h:socket_create` | `src/include/core/socket.h` | `socket_create` | `core` | `PENDING` | 0 |
 | `api:src/include/core/socket.h:socket_get_info` | `src/include/core/socket.h` | `socket_get_info` | `core` | `PENDING` | 0 |
-| `api:src/include/core/socket.h:socket_get_status` | `src/include/core/socket.h` | `socket_get_status` | `core` | `PENDING` | 0 |
+| `api:src/include/core/socket.h:socket_get_status` | `src/include/core/socket.h` | `socket_get_status` | `core` | `COVERED` | 35 |
 | `api:src/include/core/socket.h:socket_init` | `src/include/core/socket.h` | `socket_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/socket.h:socket_listen` | `src/include/core/socket.h` | `socket_listen` | `core` | `PENDING` | 0 |
 | `api:src/include/core/socket.h:socket_recv` | `src/include/core/socket.h` | `socket_recv` | `core` | `PENDING` | 0 |
-| `api:src/include/core/socket.h:socket_self_test` | `src/include/core/socket.h` | `socket_self_test` | `core` | `PENDING` | 0 |
+| `api:src/include/core/socket.h:socket_self_test` | `src/include/core/socket.h` | `socket_self_test` | `core` | `COVERED` | 35 |
 | `api:src/include/core/socket.h:socket_send` | `src/include/core/socket.h` | `socket_send` | `core` | `PENDING` | 0 |
 | `api:src/include/core/socket.h:socket_set_nonblocking` | `src/include/core/socket.h` | `socket_set_nonblocking` | `core` | `PENDING` | 0 |
-| `api:src/include/core/socket.h:socket_validate_state` | `src/include/core/socket.h` | `socket_validate_state` | `core` | `PENDING` | 0 |
+| `api:src/include/core/socket.h:socket_validate_state` | `src/include/core/socket.h` | `socket_validate_state` | `core` | `COVERED` | 35 |
 | `api:src/include/core/spinlock.h:spinlock_acquire` | `src/include/core/spinlock.h` | `spinlock_acquire` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_init` | `src/include/core/spinlock.h` | `spinlock_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_release` | `src/include/core/spinlock.h` | `spinlock_release` | `core` | `PENDING` | 0 |
-| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `PENDING` | 0 |
-| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `PENDING` | 0 |
-| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `PENDING` | 0 |
-| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `PENDING` | 0 |
+| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 1 |
+| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 1 |
+| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 1 |
+| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 1 |
 | `api:src/include/core/syscall.h:syscall_enable_user_mode` | `src/include/core/syscall.h` | `syscall_enable_user_mode` | `core` | `PENDING` | 0 |
 | `api:src/include/core/syscall.h:syscall_handler` | `src/include/core/syscall.h` | `syscall_handler` | `core` | `PENDING` | 0 |
 | `api:src/include/core/syscall.h:syscall_init` | `src/include/core/syscall.h` | `syscall_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/syscall.h:syscall_invoke_kernel` | `src/include/core/syscall.h` | `syscall_invoke_kernel` | `core` | `PENDING` | 0 |
 | `api:src/include/core/syscall.h:syscall_is_ready` | `src/include/core/syscall.h` | `syscall_is_ready` | `core` | `PENDING` | 0 |
-| `api:src/include/core/syscall.h:syscall_user_mode_is_enabled` | `src/include/core/syscall.h` | `syscall_user_mode_is_enabled` | `core` | `PENDING` | 0 |
+| `api:src/include/core/syscall.h:syscall_user_mode_is_enabled` | `src/include/core/syscall.h` | `syscall_user_mode_is_enabled` | `core` | `COVERED` | 35 |
 | `api:src/include/core/tcp.h:tcp_abort` | `src/include/core/tcp.h` | `tcp_abort` | `core` | `PENDING` | 0 |
 | `api:src/include/core/tcp.h:tcp_close` | `src/include/core/tcp.h` | `tcp_close` | `core` | `PENDING` | 0 |
 | `api:src/include/core/tcp.h:tcp_connect` | `src/include/core/tcp.h` | `tcp_connect` | `core` | `PENDING` | 0 |
@@ -575,12 +575,12 @@
 | `api:src/include/core/tcp.h:tcp_reset` | `src/include/core/tcp.h` | `tcp_reset` | `core` | `PENDING` | 0 |
 | `api:src/include/core/tcp.h:tcp_send` | `src/include/core/tcp.h` | `tcp_send` | `core` | `PENDING` | 0 |
 | `api:src/include/core/tcp.h:tcp_set_receive_window` | `src/include/core/tcp.h` | `tcp_set_receive_window` | `core` | `PENDING` | 0 |
-| `api:src/include/core/tcp.h:tcp_validate_state` | `src/include/core/tcp.h` | `tcp_validate_state` | `core` | `PENDING` | 0 |
+| `api:src/include/core/tcp.h:tcp_validate_state` | `src/include/core/tcp.h` | `tcp_validate_state` | `core` | `COVERED` | 35 |
 | `api:src/include/core/test_protocol.h:test_protocol_init` | `src/include/core/test_protocol.h` | `test_protocol_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/test_protocol.h:test_protocol_is_active` | `src/include/core/test_protocol.h` | `test_protocol_is_active` | `core` | `PENDING` | 0 |
 | `api:src/include/core/test_protocol.h:test_protocol_panic` | `src/include/core/test_protocol.h` | `test_protocol_panic` | `core` | `PENDING` | 0 |
 | `api:src/include/core/test_protocol.h:test_protocol_poll` | `src/include/core/test_protocol.h` | `test_protocol_poll` | `core` | `PENDING` | 0 |
-| `api:src/include/core/test_protocol.h:test_protocol_set_boot_ready` | `src/include/core/test_protocol.h` | `test_protocol_set_boot_ready` | `core` | `PENDING` | 0 |
+| `api:src/include/core/test_protocol.h:test_protocol_set_boot_ready` | `src/include/core/test_protocol.h` | `test_protocol_set_boot_ready` | `core` | `COVERED` | 35 |
 | `api:src/include/core/test_protocol.h:test_protocol_timeout` | `src/include/core/test_protocol.h` | `test_protocol_timeout` | `core` | `PENDING` | 0 |
 | `api:src/include/core/timer.h:timer_cancel` | `src/include/core/timer.h` | `timer_cancel` | `core` | `PENDING` | 0 |
 | `api:src/include/core/timer.h:timer_copy_active` | `src/include/core/timer.h` | `timer_copy_active` | `core` | `PENDING` | 0 |
@@ -595,18 +595,18 @@
 | `api:src/include/core/timer.h:timer_init` | `src/include/core/timer.h` | `timer_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/timer.h:timer_owner_create` | `src/include/core/timer.h` | `timer_owner_create` | `core` | `PENDING` | 0 |
 | `api:src/include/core/timer.h:timer_owner_destroy` | `src/include/core/timer.h` | `timer_owner_destroy` | `core` | `PENDING` | 0 |
-| `api:src/include/core/timer.h:timer_self_test` | `src/include/core/timer.h` | `timer_self_test` | `core` | `PENDING` | 0 |
+| `api:src/include/core/timer.h:timer_self_test` | `src/include/core/timer.h` | `timer_self_test` | `core` | `COVERED` | 35 |
 | `api:src/include/core/timer.h:timer_set_pending_notifier` | `src/include/core/timer.h` | `timer_set_pending_notifier` | `core` | `PENDING` | 0 |
 | `api:src/include/core/timer.h:timer_start_once` | `src/include/core/timer.h` | `timer_start_once` | `core` | `PENDING` | 0 |
 | `api:src/include/core/timer.h:timer_start_periodic` | `src/include/core/timer.h` | `timer_start_periodic` | `core` | `PENDING` | 0 |
-| `api:src/include/core/timer.h:timer_validate_state` | `src/include/core/timer.h` | `timer_validate_state` | `core` | `PENDING` | 0 |
+| `api:src/include/core/timer.h:timer_validate_state` | `src/include/core/timer.h` | `timer_validate_state` | `core` | `COVERED` | 35 |
 | `api:src/include/core/tls.h:tls_capability_available` | `src/include/core/tls.h` | `tls_capability_available` | `core` | `PENDING` | 0 |
 | `api:src/include/core/tls.h:tls_get_policy` | `src/include/core/tls.h` | `tls_get_policy` | `core` | `PENDING` | 0 |
 | `api:src/include/core/tls.h:tls_get_status` | `src/include/core/tls.h` | `tls_get_status` | `core` | `PENDING` | 0 |
 | `api:src/include/core/tls.h:tls_init` | `src/include/core/tls.h` | `tls_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/tls.h:tls_policy_validate` | `src/include/core/tls.h` | `tls_policy_validate` | `core` | `PENDING` | 0 |
-| `api:src/include/core/tls.h:tls_self_test` | `src/include/core/tls.h` | `tls_self_test` | `core` | `PENDING` | 0 |
-| `api:src/include/core/tls.h:tls_validate_state` | `src/include/core/tls.h` | `tls_validate_state` | `core` | `PENDING` | 0 |
+| `api:src/include/core/tls.h:tls_self_test` | `src/include/core/tls.h` | `tls_self_test` | `core` | `COVERED` | 35 |
+| `api:src/include/core/tls.h:tls_validate_state` | `src/include/core/tls.h` | `tls_validate_state` | `core` | `COVERED` | 35 |
 | `api:src/include/core/tls_client.h:tls_client_close` | `src/include/core/tls_client.h` | `tls_client_close` | `core` | `PENDING` | 0 |
 | `api:src/include/core/tls_client.h:tls_client_get_status` | `src/include/core/tls_client.h` | `tls_client_get_status` | `core` | `PENDING` | 0 |
 | `api:src/include/core/tls_client.h:tls_client_init` | `src/include/core/tls_client.h` | `tls_client_init` | `core` | `PENDING` | 0 |
@@ -614,14 +614,14 @@
 | `api:src/include/core/tls_client.h:tls_client_receive` | `src/include/core/tls_client.h` | `tls_client_receive` | `core` | `PENDING` | 0 |
 | `api:src/include/core/tls_client.h:tls_client_send` | `src/include/core/tls_client.h` | `tls_client_send` | `core` | `PENDING` | 0 |
 | `api:src/include/core/tls_client.h:tls_client_start` | `src/include/core/tls_client.h` | `tls_client_start` | `core` | `PENDING` | 0 |
-| `api:src/include/core/tls_client.h:tls_client_validate_state` | `src/include/core/tls_client.h` | `tls_client_validate_state` | `core` | `PENDING` | 0 |
+| `api:src/include/core/tls_client.h:tls_client_validate_state` | `src/include/core/tls_client.h` | `tls_client_validate_state` | `core` | `COVERED` | 35 |
 | `api:src/include/core/udp.h:udp_bind` | `src/include/core/udp.h` | `udp_bind` | `core` | `PENDING` | 0 |
 | `api:src/include/core/udp.h:udp_get_status` | `src/include/core/udp.h` | `udp_get_status` | `core` | `PENDING` | 0 |
 | `api:src/include/core/udp.h:udp_init` | `src/include/core/udp.h` | `udp_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/udp.h:udp_send` | `src/include/core/udp.h` | `udp_send` | `core` | `PENDING` | 0 |
 | `api:src/include/core/udp.h:udp_send_limited_broadcast` | `src/include/core/udp.h` | `udp_send_limited_broadcast` | `core` | `PENDING` | 0 |
 | `api:src/include/core/udp.h:udp_unbind` | `src/include/core/udp.h` | `udp_unbind` | `core` | `PENDING` | 0 |
-| `api:src/include/core/udp.h:udp_validate_state` | `src/include/core/udp.h` | `udp_validate_state` | `core` | `PENDING` | 0 |
+| `api:src/include/core/udp.h:udp_validate_state` | `src/include/core/udp.h` | `udp_validate_state` | `core` | `COVERED` | 35 |
 | `api:src/include/core/update.h:update_apply_file` | `src/include/core/update.h` | `update_apply_file` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update.h:update_get_capabilities` | `src/include/core/update.h` | `update_get_capabilities` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update.h:update_get_history_count` | `src/include/core/update.h` | `update_get_history_count` | `core` | `PENDING` | 0 |
@@ -673,7 +673,7 @@
 | `api:src/include/core/update_runtime.h:update_runtime_is_ready` | `src/include/core/update_runtime.h` | `update_runtime_is_ready` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_runtime.h:update_runtime_parse_manifest` | `src/include/core/update_runtime.h` | `update_runtime_parse_manifest` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_runtime.h:update_runtime_rollback` | `src/include/core/update_runtime.h` | `update_runtime_rollback` | `core` | `PENDING` | 0 |
-| `api:src/include/core/update_runtime.h:update_runtime_test_fail_after` | `src/include/core/update_runtime.h` | `update_runtime_test_fail_after` | `core` | `PENDING` | 0 |
+| `api:src/include/core/update_runtime.h:update_runtime_test_fail_after` | `src/include/core/update_runtime.h` | `update_runtime_test_fail_after` | `core` | `COVERED` | 35 |
 | `api:src/include/core/update_runtime.h:update_runtime_verify_file` | `src/include/core/update_runtime.h` | `update_runtime_verify_file` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_runtime.h:update_runtime_verify_file_for_manifest` | `src/include/core/update_runtime.h` | `update_runtime_verify_file_for_manifest` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_system.h:update_system_check_tag` | `src/include/core/update_system.h` | `update_system_check_tag` | `core` | `PENDING` | 0 |
@@ -704,7 +704,7 @@
 | `api:src/include/core/usb_manager.h:usb_manager_init` | `src/include/core/usb_manager.h` | `usb_manager_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/usb_manager.h:usb_manager_poll` | `src/include/core/usb_manager.h` | `usb_manager_poll` | `core` | `PENDING` | 0 |
 | `api:src/include/core/usb_manager.h:usb_manager_refresh` | `src/include/core/usb_manager.h` | `usb_manager_refresh` | `core` | `PENDING` | 0 |
-| `api:src/include/core/usb_manager.h:usb_manager_validate_state` | `src/include/core/usb_manager.h` | `usb_manager_validate_state` | `core` | `PENDING` | 0 |
+| `api:src/include/core/usb_manager.h:usb_manager_validate_state` | `src/include/core/usb_manager.h` | `usb_manager_validate_state` | `core` | `COVERED` | 35 |
 | `api:src/include/core/usb_transport.h:usb_transport_bulk_transfer` | `src/include/core/usb_transport.h` | `usb_transport_bulk_transfer` | `core` | `PENDING` | 0 |
 | `api:src/include/core/usb_transport.h:usb_transport_control_request` | `src/include/core/usb_transport.h` | `usb_transport_control_request` | `core` | `PENDING` | 0 |
 | `api:src/include/core/usb_transport.h:usb_transport_interrupt_cancel` | `src/include/core/usb_transport.h` | `usb_transport_interrupt_cancel` | `core` | `PENDING` | 0 |
@@ -734,7 +734,7 @@
 | `api:src/include/core/video.h:video_terminal_begin` | `src/include/core/video.h` | `video_terminal_begin` | `core` | `PENDING` | 0 |
 | `api:src/include/core/video.h:video_terminal_clear` | `src/include/core/video.h` | `video_terminal_clear` | `core` | `PENDING` | 0 |
 | `api:src/include/core/video.h:video_terminal_draw` | `src/include/core/video.h` | `video_terminal_draw` | `core` | `PENDING` | 0 |
-| `api:src/include/core/video.h:video_terminal_is_active` | `src/include/core/video.h` | `video_terminal_is_active` | `core` | `PENDING` | 0 |
+| `api:src/include/core/video.h:video_terminal_is_active` | `src/include/core/video.h` | `video_terminal_is_active` | `core` | `COVERED` | 35 |
 | `api:src/include/core/video.h:video_terminal_is_hosted` | `src/include/core/video.h` | `video_terminal_is_hosted` | `core` | `PENDING` | 0 |
 | `api:src/include/core/video.h:video_terminal_is_scrolled` | `src/include/core/video.h` | `video_terminal_is_scrolled` | `core` | `PENDING` | 0 |
 | `api:src/include/core/video.h:video_terminal_present_hosted_dirty` | `src/include/core/video.h` | `video_terminal_present_hosted_dirty` | `core` | `PENDING` | 0 |
@@ -765,8 +765,8 @@
 | `api:src/include/core/wait.h:wait_queue_entry_init` | `src/include/core/wait.h` | `wait_queue_entry_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/wait.h:wait_queue_remove` | `src/include/core/wait.h` | `wait_queue_remove` | `core` | `PENDING` | 0 |
 | `api:src/include/core/wait.h:wait_queue_wake_target` | `src/include/core/wait.h` | `wait_queue_wake_target` | `core` | `PENDING` | 0 |
-| `api:src/include/core/wait.h:wait_self_test` | `src/include/core/wait.h` | `wait_self_test` | `core` | `PENDING` | 0 |
-| `api:src/include/core/wait.h:wait_validate_state` | `src/include/core/wait.h` | `wait_validate_state` | `core` | `PENDING` | 0 |
+| `api:src/include/core/wait.h:wait_self_test` | `src/include/core/wait.h` | `wait_self_test` | `core` | `COVERED` | 35 |
+| `api:src/include/core/wait.h:wait_validate_state` | `src/include/core/wait.h` | `wait_validate_state` | `core` | `COVERED` | 35 |
 | `api:src/include/core/wait.h:wake_up` | `src/include/core/wait.h` | `wake_up` | `core` | `PENDING` | 0 |
 | `api:src/include/core/wait.h:wake_up_all` | `src/include/core/wait.h` | `wake_up_all` | `core` | `PENDING` | 0 |
 | `api:src/include/core/wifi_manager.h:wifi_manager_connect_open` | `src/include/core/wifi_manager.h` | `wifi_manager_connect_open` | `core` | `PENDING` | 0 |
@@ -777,7 +777,7 @@
 | `api:src/include/core/wifi_manager.h:wifi_manager_init` | `src/include/core/wifi_manager.h` | `wifi_manager_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/wifi_manager.h:wifi_manager_refresh` | `src/include/core/wifi_manager.h` | `wifi_manager_refresh` | `core` | `PENDING` | 0 |
 | `api:src/include/core/wifi_manager.h:wifi_manager_scan` | `src/include/core/wifi_manager.h` | `wifi_manager_scan` | `core` | `PENDING` | 0 |
-| `api:src/include/core/wifi_manager.h:wifi_manager_validate_state` | `src/include/core/wifi_manager.h` | `wifi_manager_validate_state` | `core` | `PENDING` | 0 |
+| `api:src/include/core/wifi_manager.h:wifi_manager_validate_state` | `src/include/core/wifi_manager.h` | `wifi_manager_validate_state` | `core` | `COVERED` | 35 |
 | `api:src/include/core/workqueue.h:cancel_work` | `src/include/core/workqueue.h` | `cancel_work` | `core` | `PENDING` | 0 |
 | `api:src/include/core/workqueue.h:schedule_delayed_work` | `src/include/core/workqueue.h` | `schedule_delayed_work` | `core` | `PENDING` | 0 |
 | `api:src/include/core/workqueue.h:schedule_work` | `src/include/core/workqueue.h` | `schedule_work` | `core` | `PENDING` | 0 |
@@ -792,9 +792,9 @@
 | `api:src/include/core/workqueue.h:workqueue_power_quiesce_until` | `src/include/core/workqueue.h` | `workqueue_power_quiesce_until` | `core` | `PENDING` | 0 |
 | `api:src/include/core/workqueue.h:workqueue_power_set_quiescing` | `src/include/core/workqueue.h` | `workqueue_power_set_quiescing` | `core` | `PENDING` | 0 |
 | `api:src/include/core/workqueue.h:workqueue_probe_worker` | `src/include/core/workqueue.h` | `workqueue_probe_worker` | `core` | `PENDING` | 0 |
-| `api:src/include/core/workqueue.h:workqueue_self_test` | `src/include/core/workqueue.h` | `workqueue_self_test` | `core` | `PENDING` | 0 |
+| `api:src/include/core/workqueue.h:workqueue_self_test` | `src/include/core/workqueue.h` | `workqueue_self_test` | `core` | `COVERED` | 35 |
 | `api:src/include/core/workqueue.h:workqueue_set_fallback` | `src/include/core/workqueue.h` | `workqueue_set_fallback` | `core` | `PENDING` | 0 |
-| `api:src/include/core/workqueue.h:workqueue_validate_state` | `src/include/core/workqueue.h` | `workqueue_validate_state` | `core` | `PENDING` | 0 |
+| `api:src/include/core/workqueue.h:workqueue_validate_state` | `src/include/core/workqueue.h` | `workqueue_validate_state` | `core` | `COVERED` | 35 |
 | `api:src/include/core/workqueue.h:workqueue_worker_main` | `src/include/core/workqueue.h` | `workqueue_worker_main` | `core` | `PENDING` | 0 |
 | `api:src/include/drivers/ac97.h:ac97_handler` | `src/include/drivers/ac97.h` | `ac97_handler` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/ac97.h:ac97_init` | `src/include/drivers/ac97.h` | `ac97_init` | `drivers` | `PENDING` | 0 |
@@ -806,8 +806,8 @@
 | `api:src/include/drivers/acpi.h:acpi_get_madt_entry_at` | `src/include/drivers/acpi.h` | `acpi_get_madt_entry_at` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/acpi.h:acpi_get_madt_entry_count` | `src/include/drivers/acpi.h` | `acpi_get_madt_entry_count` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/acpi.h:acpi_get_madt_info` | `src/include/drivers/acpi.h` | `acpi_get_madt_info` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/acpi.h:acpi_get_power_info` | `src/include/drivers/acpi.h` | `acpi_get_power_info` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/acpi.h:acpi_get_status` | `src/include/drivers/acpi.h` | `acpi_get_status` | `drivers` | `PENDING` | 0 |
+| `api:src/include/drivers/acpi.h:acpi_get_power_info` | `src/include/drivers/acpi.h` | `acpi_get_power_info` | `drivers` | `COVERED` | 35 |
+| `api:src/include/drivers/acpi.h:acpi_get_status` | `src/include/drivers/acpi.h` | `acpi_get_status` | `drivers` | `COVERED` | 35 |
 | `api:src/include/drivers/acpi.h:acpi_get_table_at` | `src/include/drivers/acpi.h` | `acpi_get_table_at` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/acpi.h:acpi_get_table_count` | `src/include/drivers/acpi.h` | `acpi_get_table_count` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/acpi.h:acpi_init` | `src/include/drivers/acpi.h` | `acpi_init` | `drivers` | `PENDING` | 0 |
@@ -853,7 +853,7 @@
 | `api:src/include/drivers/idt.h:idt_register_shared_irq_handler` | `src/include/drivers/idt.h` | `idt_register_shared_irq_handler` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/idt.h:idt_set_gate` | `src/include/drivers/idt.h` | `idt_set_gate` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/idt.h:idt_unmask_irq` | `src/include/drivers/idt.h` | `idt_unmask_irq` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/idt.h:idt_validate_irq_state` | `src/include/drivers/idt.h` | `idt_validate_irq_state` | `drivers` | `PENDING` | 0 |
+| `api:src/include/drivers/idt.h:idt_validate_irq_state` | `src/include/drivers/idt.h` | `idt_validate_irq_state` | `drivers` | `COVERED` | 35 |
 | `api:src/include/drivers/mouse.h:mouse_get_buttons` | `src/include/drivers/mouse.h` | `mouse_get_buttons` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/mouse.h:mouse_get_config` | `src/include/drivers/mouse.h` | `mouse_get_config` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/mouse.h:mouse_get_status` | `src/include/drivers/mouse.h` | `mouse_get_status` | `drivers` | `PENDING` | 0 |
@@ -876,14 +876,14 @@
 | `api:src/include/drivers/pci.h:pci_read` | `src/include/drivers/pci.h` | `pci_read` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/pci.h:pci_write` | `src/include/drivers/pci.h` | `pci_write` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/rng.h:rng_get_bytes` | `src/include/drivers/rng.h` | `rng_get_bytes` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/rng.h:rng_get_status` | `src/include/drivers/rng.h` | `rng_get_status` | `drivers` | `PENDING` | 0 |
+| `api:src/include/drivers/rng.h:rng_get_status` | `src/include/drivers/rng.h` | `rng_get_status` | `drivers` | `COVERED` | 35 |
 | `api:src/include/drivers/rng.h:rng_init` | `src/include/drivers/rng.h` | `rng_init` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/rng.h:rng_validate_state` | `src/include/drivers/rng.h` | `rng_validate_state` | `drivers` | `PENDING` | 0 |
+| `api:src/include/drivers/rng.h:rng_validate_state` | `src/include/drivers/rng.h` | `rng_validate_state` | `drivers` | `COVERED` | 35 |
 | `api:src/include/drivers/rtc.h:rtc_get_status` | `src/include/drivers/rtc.h` | `rtc_get_status` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/rtc.h:rtc_init` | `src/include/drivers/rtc.h` | `rtc_init` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/rtc.h:rtc_read_utc` | `src/include/drivers/rtc.h` | `rtc_read_utc` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/rtc.h:rtc_self_test` | `src/include/drivers/rtc.h` | `rtc_self_test` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/rtc.h:rtc_validate_state` | `src/include/drivers/rtc.h` | `rtc_validate_state` | `drivers` | `PENDING` | 0 |
+| `api:src/include/drivers/rtc.h:rtc_self_test` | `src/include/drivers/rtc.h` | `rtc_self_test` | `drivers` | `COVERED` | 35 |
+| `api:src/include/drivers/rtc.h:rtc_validate_state` | `src/include/drivers/rtc.h` | `rtc_validate_state` | `drivers` | `COVERED` | 35 |
 | `api:src/include/drivers/rtl8139.h:rtl8139_handler` | `src/include/drivers/rtl8139.h` | `rtl8139_handler` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/rtl8139.h:rtl8139_init` | `src/include/drivers/rtl8139.h` | `rtl8139_init` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/rtl8811cu.h:rtl8811cu_connect_open` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_connect_open` | `drivers` | `PENDING` | 0 |
@@ -967,30 +967,30 @@
 | `api:src/include/fs/block.h:block_find` | `src/include/fs/block.h` | `block_find` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/block.h:block_get_at` | `src/include/fs/block.h` | `block_get_at` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/block.h:block_get_count` | `src/include/fs/block.h` | `block_get_count` | `fs` | `PENDING` | 0 |
-| `api:src/include/fs/block.h:block_get_stats` | `src/include/fs/block.h` | `block_get_stats` | `fs` | `PENDING` | 0 |
+| `api:src/include/fs/block.h:block_get_stats` | `src/include/fs/block.h` | `block_get_stats` | `fs` | `COVERED` | 35 |
 | `api:src/include/fs/block.h:block_init` | `src/include/fs/block.h` | `block_init` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/block.h:block_read` | `src/include/fs/block.h` | `block_read` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/block.h:block_register` | `src/include/fs/block.h` | `block_register` | `fs` | `PENDING` | 0 |
-| `api:src/include/fs/block.h:block_self_test` | `src/include/fs/block.h` | `block_self_test` | `fs` | `PENDING` | 0 |
+| `api:src/include/fs/block.h:block_self_test` | `src/include/fs/block.h` | `block_self_test` | `fs` | `COVERED` | 35 |
 | `api:src/include/fs/block.h:block_submit` | `src/include/fs/block.h` | `block_submit` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/block.h:block_submit_physical_sync` | `src/include/fs/block.h` | `block_submit_physical_sync` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/block.h:block_submit_sync` | `src/include/fs/block.h` | `block_submit_sync` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/block.h:block_unregister` | `src/include/fs/block.h` | `block_unregister` | `fs` | `PENDING` | 0 |
-| `api:src/include/fs/block.h:block_validate_state` | `src/include/fs/block.h` | `block_validate_state` | `fs` | `PENDING` | 0 |
+| `api:src/include/fs/block.h:block_validate_state` | `src/include/fs/block.h` | `block_validate_state` | `fs` | `COVERED` | 35 |
 | `api:src/include/fs/block.h:block_write` | `src/include/fs/block.h` | `block_write` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/block_cache.h:block_cache_clear` | `src/include/fs/block_cache.h` | `block_cache_clear` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/block_cache.h:block_cache_get_durability_status` | `src/include/fs/block_cache.h` | `block_cache_get_durability_status` | `fs` | `PENDING` | 0 |
-| `api:src/include/fs/block_cache.h:block_cache_get_stats` | `src/include/fs/block_cache.h` | `block_cache_get_stats` | `fs` | `PENDING` | 0 |
+| `api:src/include/fs/block_cache.h:block_cache_get_stats` | `src/include/fs/block_cache.h` | `block_cache_get_stats` | `fs` | `COVERED` | 35 |
 | `api:src/include/fs/block_cache.h:block_cache_init` | `src/include/fs/block_cache.h` | `block_cache_init` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/block_cache.h:block_cache_invalidate_device` | `src/include/fs/block_cache.h` | `block_cache_invalidate_device` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/block_cache.h:block_cache_invalidate_range` | `src/include/fs/block_cache.h` | `block_cache_invalidate_range` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/block_cache.h:block_cache_read` | `src/include/fs/block_cache.h` | `block_cache_read` | `fs` | `PENDING` | 0 |
-| `api:src/include/fs/block_cache.h:block_cache_self_test` | `src/include/fs/block_cache.h` | `block_cache_self_test` | `fs` | `PENDING` | 0 |
+| `api:src/include/fs/block_cache.h:block_cache_self_test` | `src/include/fs/block_cache.h` | `block_cache_self_test` | `fs` | `COVERED` | 35 |
 | `api:src/include/fs/block_cache.h:block_cache_sync_all` | `src/include/fs/block_cache.h` | `block_cache_sync_all` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/block_cache.h:block_cache_sync_all_until` | `src/include/fs/block_cache.h` | `block_cache_sync_all_until` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/block_cache.h:block_cache_sync_device` | `src/include/fs/block_cache.h` | `block_cache_sync_device` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/block_cache.h:block_cache_sync_device_until` | `src/include/fs/block_cache.h` | `block_cache_sync_device_until` | `fs` | `PENDING` | 0 |
-| `api:src/include/fs/block_cache.h:block_cache_validate_state` | `src/include/fs/block_cache.h` | `block_cache_validate_state` | `fs` | `PENDING` | 0 |
+| `api:src/include/fs/block_cache.h:block_cache_validate_state` | `src/include/fs/block_cache.h` | `block_cache_validate_state` | `fs` | `COVERED` | 35 |
 | `api:src/include/fs/block_cache.h:block_cache_write` | `src/include/fs/block_cache.h` | `block_cache_write` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/block_cache.h:block_cache_writeback_step` | `src/include/fs/block_cache.h` | `block_cache_writeback_step` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/bmp.h:bmp_draw` | `src/include/fs/bmp.h` | `bmp_draw` | `fs` | `PENDING` | 0 |
@@ -1007,7 +1007,7 @@
 | `api:src/include/fs/devfs.h:devfs_list` | `src/include/fs/devfs.h` | `devfs_list` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/devfs.h:devfs_lookup` | `src/include/fs/devfs.h` | `devfs_lookup` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/devfs.h:devfs_open_file` | `src/include/fs/devfs.h` | `devfs_open_file` | `fs` | `PENDING` | 0 |
-| `api:src/include/fs/devfs.h:devfs_self_test` | `src/include/fs/devfs.h` | `devfs_self_test` | `fs` | `PENDING` | 0 |
+| `api:src/include/fs/devfs.h:devfs_self_test` | `src/include/fs/devfs.h` | `devfs_self_test` | `fs` | `COVERED` | 35 |
 | `api:src/include/fs/devfs.h:devfs_validate_state` | `src/include/fs/devfs.h` | `devfs_validate_state` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/fat12.h:fat12_atomic_delete_file_in_dir` | `src/include/fs/fat12.h` | `fat12_atomic_delete_file_in_dir` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/fat12.h:fat12_atomic_delete_root` | `src/include/fs/fat12.h` | `fat12_atomic_delete_root` | `fs` | `PENDING` | 0 |
@@ -1053,13 +1053,13 @@
 | `api:src/include/fs/fat32.h:fat32_write_file` | `src/include/fs/fat32.h` | `fat32_write_file` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/fat32.h:fat32_write_file_in_dir` | `src/include/fs/fat32.h` | `fat32_write_file_in_dir` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/file_index.h:file_index_cancel` | `src/include/fs/file_index.h` | `file_index_cancel` | `fs` | `PENDING` | 0 |
-| `api:src/include/fs/file_index.h:file_index_get_status` | `src/include/fs/file_index.h` | `file_index_get_status` | `fs` | `PENDING` | 0 |
+| `api:src/include/fs/file_index.h:file_index_get_status` | `src/include/fs/file_index.h` | `file_index_get_status` | `fs` | `COVERED` | 35 |
 | `api:src/include/fs/file_index.h:file_index_init` | `src/include/fs/file_index.h` | `file_index_init` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/file_index.h:file_index_poll` | `src/include/fs/file_index.h` | `file_index_poll` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/file_index.h:file_index_rebuild` | `src/include/fs/file_index.h` | `file_index_rebuild` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/file_index.h:file_index_search` | `src/include/fs/file_index.h` | `file_index_search` | `fs` | `PENDING` | 0 |
-| `api:src/include/fs/file_index.h:file_index_self_test` | `src/include/fs/file_index.h` | `file_index_self_test` | `fs` | `PENDING` | 0 |
-| `api:src/include/fs/file_index.h:file_index_validate_state` | `src/include/fs/file_index.h` | `file_index_validate_state` | `fs` | `PENDING` | 0 |
+| `api:src/include/fs/file_index.h:file_index_self_test` | `src/include/fs/file_index.h` | `file_index_self_test` | `fs` | `COVERED` | 35 |
+| `api:src/include/fs/file_index.h:file_index_validate_state` | `src/include/fs/file_index.h` | `file_index_validate_state` | `fs` | `COVERED` | 35 |
 | `api:src/include/fs/fs.h:fs_atomic_delete_file_in_dir` | `src/include/fs/fs.h` | `fs_atomic_delete_file_in_dir` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/fs.h:fs_atomic_delete_root` | `src/include/fs/fs.h` | `fs_atomic_delete_root` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/fs.h:fs_atomic_write_file_in_dir` | `src/include/fs/fs.h` | `fs_atomic_write_file_in_dir` | `fs` | `PENDING` | 0 |
@@ -1100,7 +1100,7 @@
 | `api:src/include/fs/procfs.h:procfs_lookup` | `src/include/fs/procfs.h` | `procfs_lookup` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/procfs.h:procfs_open_file` | `src/include/fs/procfs.h` | `procfs_open_file` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/procfs.h:procfs_reset_controls` | `src/include/fs/procfs.h` | `procfs_reset_controls` | `fs` | `PENDING` | 0 |
-| `api:src/include/fs/procfs.h:procfs_self_test` | `src/include/fs/procfs.h` | `procfs_self_test` | `fs` | `PENDING` | 0 |
+| `api:src/include/fs/procfs.h:procfs_self_test` | `src/include/fs/procfs.h` | `procfs_self_test` | `fs` | `COVERED` | 35 |
 | `api:src/include/fs/procfs.h:procfs_validate_state` | `src/include/fs/procfs.h` | `procfs_validate_state` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/storage.h:storage_atomic_write_file` | `src/include/fs/storage.h` | `storage_atomic_write_file` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/storage.h:storage_check` | `src/include/fs/storage.h` | `storage_check` | `fs` | `PENDING` | 0 |
@@ -1118,7 +1118,7 @@
 | `api:src/include/fs/storage.h:storage_get_free_space` | `src/include/fs/storage.h` | `storage_get_free_space` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/storage.h:storage_get_mounted_at` | `src/include/fs/storage.h` | `storage_get_mounted_at` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/storage.h:storage_get_path_info` | `src/include/fs/storage.h` | `storage_get_path_info` | `fs` | `PENDING` | 0 |
-| `api:src/include/fs/storage.h:storage_get_status` | `src/include/fs/storage.h` | `storage_get_status` | `fs` | `PENDING` | 0 |
+| `api:src/include/fs/storage.h:storage_get_status` | `src/include/fs/storage.h` | `storage_get_status` | `fs` | `COVERED` | 35 |
 | `api:src/include/fs/storage.h:storage_get_volume_at` | `src/include/fs/storage.h` | `storage_get_volume_at` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/storage.h:storage_init` | `src/include/fs/storage.h` | `storage_init` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/storage.h:storage_list_dir` | `src/include/fs/storage.h` | `storage_list_dir` | `fs` | `PENDING` | 0 |
@@ -1154,7 +1154,7 @@
 | `api:src/include/fs/sysfs.h:sysfs_list_path` | `src/include/fs/sysfs.h` | `sysfs_list_path` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/sysfs.h:sysfs_lookup` | `src/include/fs/sysfs.h` | `sysfs_lookup` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/sysfs.h:sysfs_open_file` | `src/include/fs/sysfs.h` | `sysfs_open_file` | `fs` | `PENDING` | 0 |
-| `api:src/include/fs/sysfs.h:sysfs_self_test` | `src/include/fs/sysfs.h` | `sysfs_self_test` | `fs` | `PENDING` | 0 |
+| `api:src/include/fs/sysfs.h:sysfs_self_test` | `src/include/fs/sysfs.h` | `sysfs_self_test` | `fs` | `COVERED` | 35 |
 | `api:src/include/fs/sysfs.h:sysfs_validate_state` | `src/include/fs/sysfs.h` | `sysfs_validate_state` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/vfs.h:vfs_chdir` | `src/include/fs/vfs.h` | `vfs_chdir` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/vfs.h:vfs_close` | `src/include/fs/vfs.h` | `vfs_close` | `fs` | `PENDING` | 0 |
@@ -1165,11 +1165,11 @@
 | `api:src/include/fs/vfs.h:vfs_fd_table_init` | `src/include/fs/vfs.h` | `vfs_fd_table_init` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/vfs.h:vfs_fd_table_release` | `src/include/fs/vfs.h` | `vfs_fd_table_release` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/vfs.h:vfs_fsync` | `src/include/fs/vfs.h` | `vfs_fsync` | `fs` | `PENDING` | 0 |
-| `api:src/include/fs/vfs.h:vfs_get_status` | `src/include/fs/vfs.h` | `vfs_get_status` | `fs` | `PENDING` | 0 |
+| `api:src/include/fs/vfs.h:vfs_get_status` | `src/include/fs/vfs.h` | `vfs_get_status` | `fs` | `COVERED` | 35 |
 | `api:src/include/fs/vfs.h:vfs_getcwd` | `src/include/fs/vfs.h` | `vfs_getcwd` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/vfs.h:vfs_init` | `src/include/fs/vfs.h` | `vfs_init` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/vfs.h:vfs_ioctl` | `src/include/fs/vfs.h` | `vfs_ioctl` | `fs` | `PENDING` | 0 |
-| `api:src/include/fs/vfs.h:vfs_is_ready` | `src/include/fs/vfs.h` | `vfs_is_ready` | `fs` | `PENDING` | 0 |
+| `api:src/include/fs/vfs.h:vfs_is_ready` | `src/include/fs/vfs.h` | `vfs_is_ready` | `fs` | `COVERED` | 35 |
 | `api:src/include/fs/vfs.h:vfs_list_dir` | `src/include/fs/vfs.h` | `vfs_list_dir` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/vfs.h:vfs_lookup` | `src/include/fs/vfs.h` | `vfs_lookup` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/vfs.h:vfs_lseek` | `src/include/fs/vfs.h` | `vfs_lseek` | `fs` | `PENDING` | 0 |
@@ -1184,7 +1184,7 @@
 | `api:src/include/fs/vfs.h:vfs_read` | `src/include/fs/vfs.h` | `vfs_read` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/vfs.h:vfs_refresh_mounts` | `src/include/fs/vfs.h` | `vfs_refresh_mounts` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/vfs.h:vfs_select` | `src/include/fs/vfs.h` | `vfs_select` | `fs` | `PENDING` | 0 |
-| `api:src/include/fs/vfs.h:vfs_self_test` | `src/include/fs/vfs.h` | `vfs_self_test` | `fs` | `PENDING` | 0 |
+| `api:src/include/fs/vfs.h:vfs_self_test` | `src/include/fs/vfs.h` | `vfs_self_test` | `fs` | `COVERED` | 35 |
 | `api:src/include/fs/vfs.h:vfs_sync` | `src/include/fs/vfs.h` | `vfs_sync` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/vfs.h:vfs_unmount_volume` | `src/include/fs/vfs.h` | `vfs_unmount_volume` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/vfs.h:vfs_validate_state` | `src/include/fs/vfs.h` | `vfs_validate_state` | `fs` | `PENDING` | 0 |
@@ -1206,14 +1206,14 @@
 | `api:src/include/fs/wav.h:wav_init` | `src/include/fs/wav.h` | `wav_init` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/wav.h:wav_load` | `src/include/fs/wav.h` | `wav_load` | `fs` | `PENDING` | 0 |
 | `api:src/include/fs/wav.h:wav_play` | `src/include/fs/wav.h` | `wav_play` | `fs` | `PENDING` | 0 |
-| `api:src/include/memory/compress.h:compress_data` | `src/include/memory/compress.h` | `compress_data` | `memory` | `PENDING` | 0 |
-| `api:src/include/memory/compress.h:compress_disable` | `src/include/memory/compress.h` | `compress_disable` | `memory` | `PENDING` | 0 |
-| `api:src/include/memory/compress.h:compress_enable` | `src/include/memory/compress.h` | `compress_enable` | `memory` | `PENDING` | 0 |
-| `api:src/include/memory/compress.h:compress_get_max_size` | `src/include/memory/compress.h` | `compress_get_max_size` | `memory` | `PENDING` | 0 |
-| `api:src/include/memory/compress.h:compress_init` | `src/include/memory/compress.h` | `compress_init` | `memory` | `PENDING` | 0 |
-| `api:src/include/memory/compress.h:compress_is_enabled` | `src/include/memory/compress.h` | `compress_is_enabled` | `memory` | `PENDING` | 0 |
-| `api:src/include/memory/compress.h:compress_print_stats` | `src/include/memory/compress.h` | `compress_print_stats` | `memory` | `PENDING` | 0 |
-| `api:src/include/memory/compress.h:decompress_data` | `src/include/memory/compress.h` | `decompress_data` | `memory` | `PENDING` | 0 |
+| `api:src/include/memory/compress.h:compress_data` | `src/include/memory/compress.h` | `compress_data` | `memory` | `COVERED` | 1 |
+| `api:src/include/memory/compress.h:compress_disable` | `src/include/memory/compress.h` | `compress_disable` | `memory` | `COVERED` | 1 |
+| `api:src/include/memory/compress.h:compress_enable` | `src/include/memory/compress.h` | `compress_enable` | `memory` | `COVERED` | 1 |
+| `api:src/include/memory/compress.h:compress_get_max_size` | `src/include/memory/compress.h` | `compress_get_max_size` | `memory` | `COVERED` | 1 |
+| `api:src/include/memory/compress.h:compress_init` | `src/include/memory/compress.h` | `compress_init` | `memory` | `COVERED` | 1 |
+| `api:src/include/memory/compress.h:compress_is_enabled` | `src/include/memory/compress.h` | `compress_is_enabled` | `memory` | `COVERED` | 1 |
+| `api:src/include/memory/compress.h:compress_print_stats` | `src/include/memory/compress.h` | `compress_print_stats` | `memory` | `COVERED` | 1 |
+| `api:src/include/memory/compress.h:decompress_data` | `src/include/memory/compress.h` | `decompress_data` | `memory` | `COVERED` | 1 |
 | `api:src/include/memory/paging.h:paging_copy_from_user` | `src/include/memory/paging.h` | `paging_copy_from_user` | `memory` | `PENDING` | 0 |
 | `api:src/include/memory/paging.h:paging_copy_to_user` | `src/include/memory/paging.h` | `paging_copy_to_user` | `memory` | `PENDING` | 0 |
 | `api:src/include/memory/paging.h:paging_free_directory` | `src/include/memory/paging.h` | `paging_free_directory` | `memory` | `PENDING` | 0 |
@@ -1222,7 +1222,7 @@
 | `api:src/include/memory/paging.h:paging_get_user_page_count` | `src/include/memory/paging.h` | `paging_get_user_page_count` | `memory` | `PENDING` | 0 |
 | `api:src/include/memory/paging.h:paging_get_user_stats` | `src/include/memory/paging.h` | `paging_get_user_stats` | `memory` | `PENDING` | 0 |
 | `api:src/include/memory/paging.h:paging_init` | `src/include/memory/paging.h` | `paging_init` | `memory` | `PENDING` | 0 |
-| `api:src/include/memory/paging.h:paging_is_ready` | `src/include/memory/paging.h` | `paging_is_ready` | `memory` | `COVERED` | 1 |
+| `api:src/include/memory/paging.h:paging_is_ready` | `src/include/memory/paging.h` | `paging_is_ready` | `memory` | `COVERED` | 35 |
 | `api:src/include/memory/paging.h:paging_map_page` | `src/include/memory/paging.h` | `paging_map_page` | `memory` | `PENDING` | 0 |
 | `api:src/include/memory/paging.h:paging_map_page_in_directory` | `src/include/memory/paging.h` | `paging_map_page_in_directory` | `memory` | `PENDING` | 0 |
 | `api:src/include/memory/paging.h:paging_switch_directory` | `src/include/memory/paging.h` | `paging_switch_directory` | `memory` | `PENDING` | 0 |
@@ -1233,37 +1233,37 @@
 | `api:src/include/memory/slab.h:kmem_cache_get_count` | `src/include/memory/slab.h` | `kmem_cache_get_count` | `memory` | `PENDING` | 0 |
 | `api:src/include/memory/slab.h:kmem_cache_get_info` | `src/include/memory/slab.h` | `kmem_cache_get_info` | `memory` | `PENDING` | 0 |
 | `api:src/include/memory/slab.h:kmem_cache_get_info_at` | `src/include/memory/slab.h` | `kmem_cache_get_info_at` | `memory` | `PENDING` | 0 |
-| `api:src/include/memory/slab.h:kmem_cache_get_stats` | `src/include/memory/slab.h` | `kmem_cache_get_stats` | `memory` | `COVERED` | 1 |
+| `api:src/include/memory/slab.h:kmem_cache_get_stats` | `src/include/memory/slab.h` | `kmem_cache_get_stats` | `memory` | `COVERED` | 35 |
 | `api:src/include/memory/slab.h:kmem_cache_init` | `src/include/memory/slab.h` | `kmem_cache_init` | `memory` | `PENDING` | 0 |
 | `api:src/include/memory/slab.h:kmem_cache_owns` | `src/include/memory/slab.h` | `kmem_cache_owns` | `memory` | `PENDING` | 0 |
-| `api:src/include/memory/slab.h:kmem_cache_self_test` | `src/include/memory/slab.h` | `kmem_cache_self_test` | `memory` | `COVERED` | 1 |
-| `api:src/include/memory/slab.h:kmem_cache_validate` | `src/include/memory/slab.h` | `kmem_cache_validate` | `memory` | `COVERED` | 1 |
+| `api:src/include/memory/slab.h:kmem_cache_self_test` | `src/include/memory/slab.h` | `kmem_cache_self_test` | `memory` | `COVERED` | 35 |
+| `api:src/include/memory/slab.h:kmem_cache_validate` | `src/include/memory/slab.h` | `kmem_cache_validate` | `memory` | `COVERED` | 35 |
 | `api:src/include/memory/vma.h:process_vma_copy` | `src/include/memory/vma.h` | `process_vma_copy` | `memory` | `PENDING` | 0 |
 | `api:src/include/memory/vma.h:process_vma_ensure_page` | `src/include/memory/vma.h` | `process_vma_ensure_page` | `memory` | `PENDING` | 0 |
-| `api:src/include/memory/vma.h:process_vma_get_page_fault_stats` | `src/include/memory/vma.h` | `process_vma_get_page_fault_stats` | `memory` | `PENDING` | 0 |
+| `api:src/include/memory/vma.h:process_vma_get_page_fault_stats` | `src/include/memory/vma.h` | `process_vma_get_page_fault_stats` | `memory` | `COVERED` | 35 |
 | `api:src/include/memory/vma.h:process_vma_handle_page_fault` | `src/include/memory/vma.h` | `process_vma_handle_page_fault` | `memory` | `PENDING` | 0 |
 | `api:src/include/memory/vma.h:process_vma_mmap` | `src/include/memory/vma.h` | `process_vma_mmap` | `memory` | `PENDING` | 0 |
 | `api:src/include/memory/vma.h:process_vma_munmap` | `src/include/memory/vma.h` | `process_vma_munmap` | `memory` | `PENDING` | 0 |
 | `api:src/include/memory/vma.h:process_vma_register_image` | `src/include/memory/vma.h` | `process_vma_register_image` | `memory` | `PENDING` | 0 |
 | `api:src/include/memory/vma.h:process_vma_release` | `src/include/memory/vma.h` | `process_vma_release` | `memory` | `PENDING` | 0 |
-| `api:src/include/process/process.h:ipc_current_has_pending` | `src/include/process/process.h` | `ipc_current_has_pending` | `process` | `PENDING` | 0 |
-| `api:src/include/process/process.h:ipc_get_pending_count` | `src/include/process/process.h` | `ipc_get_pending_count` | `process` | `PENDING` | 0 |
+| `api:src/include/process/process.h:ipc_current_has_pending` | `src/include/process/process.h` | `ipc_current_has_pending` | `process` | `COVERED` | 35 |
+| `api:src/include/process/process.h:ipc_get_pending_count` | `src/include/process/process.h` | `ipc_get_pending_count` | `process` | `COVERED` | 35 |
 | `api:src/include/process/process.h:ipc_get_stats` | `src/include/process/process.h` | `ipc_get_stats` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:ipc_init` | `src/include/process/process.h` | `ipc_init` | `process` | `PENDING` | 0 |
-| `api:src/include/process/process.h:ipc_is_ready` | `src/include/process/process.h` | `ipc_is_ready` | `process` | `PENDING` | 0 |
-| `api:src/include/process/process.h:ipc_receive` | `src/include/process/process.h` | `ipc_receive` | `process` | `PENDING` | 0 |
-| `api:src/include/process/process.h:ipc_send` | `src/include/process/process.h` | `ipc_send` | `process` | `PENDING` | 0 |
+| `api:src/include/process/process.h:ipc_is_ready` | `src/include/process/process.h` | `ipc_is_ready` | `process` | `COVERED` | 35 |
+| `api:src/include/process/process.h:ipc_receive` | `src/include/process/process.h` | `ipc_receive` | `process` | `COVERED` | 35 |
+| `api:src/include/process/process.h:ipc_send` | `src/include/process/process.h` | `ipc_send` | `process` | `COVERED` | 35 |
 | `api:src/include/process/process.h:ipc_wait` | `src/include/process/process.h` | `ipc_wait` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:process_apply_pending_cancel` | `src/include/process/process.h` | `process_apply_pending_cancel` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:process_block` | `src/include/process/process.h` | `process_block` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:process_bootstrap_idle` | `src/include/process/process.h` | `process_bootstrap_idle` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:process_cancel_focused_user` | `src/include/process/process.h` | `process_cancel_focused_user` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:process_cancel_user` | `src/include/process/process.h` | `process_cancel_user` | `process` | `PENDING` | 0 |
-| `api:src/include/process/process.h:process_cancel_user_test` | `src/include/process/process.h` | `process_cancel_user_test` | `process` | `PENDING` | 0 |
+| `api:src/include/process/process.h:process_cancel_user_test` | `src/include/process/process.h` | `process_cancel_user_test` | `process` | `COVERED` | 35 |
 | `api:src/include/process/process.h:process_cancel_wait` | `src/include/process/process.h` | `process_cancel_wait` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:process_context_switch` | `src/include/process/process.h` | `process_context_switch` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:process_copy_waiters` | `src/include/process/process.h` | `process_copy_waiters` | `process` | `PENDING` | 0 |
-| `api:src/include/process/process.h:process_create_user_image` | `src/include/process/process.h` | `process_create_user_image` | `process` | `PENDING` | 0 |
+| `api:src/include/process/process.h:process_create_user_image` | `src/include/process/process.h` | `process_create_user_image` | `process` | `COVERED` | 35 |
 | `api:src/include/process/process.h:process_create_user_image_suspended` | `src/include/process/process.h` | `process_create_user_image_suspended` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:process_create_user_image_suspended_with_launch` | `src/include/process/process.h` | `process_create_user_image_suspended_with_launch` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:process_create_user_test` | `src/include/process/process.h` | `process_create_user_test` | `process` | `PENDING` | 0 |
@@ -1275,8 +1275,8 @@
 | `api:src/include/process/process.h:process_get_event_generation` | `src/include/process/process.h` | `process_get_event_generation` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:process_get_focus` | `src/include/process/process.h` | `process_get_focus` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:process_get_last_user_fault` | `src/include/process/process.h` | `process_get_last_user_fault` | `process` | `PENDING` | 0 |
-| `api:src/include/process/process.h:process_get_state_count` | `src/include/process/process.h` | `process_get_state_count` | `process` | `PENDING` | 0 |
-| `api:src/include/process/process.h:process_get_user_count` | `src/include/process/process.h` | `process_get_user_count` | `process` | `PENDING` | 0 |
+| `api:src/include/process/process.h:process_get_state_count` | `src/include/process/process.h` | `process_get_state_count` | `process` | `COVERED` | 35 |
+| `api:src/include/process/process.h:process_get_user_count` | `src/include/process/process.h` | `process_get_user_count` | `process` | `COVERED` | 35 |
 | `api:src/include/process/process.h:process_get_user_fault_count` | `src/include/process/process.h` | `process_get_user_fault_count` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:process_handle_user_exception` | `src/include/process/process.h` | `process_handle_user_exception` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:process_init` | `src/include/process/process.h` | `process_init` | `process` | `PENDING` | 0 |
@@ -1284,32 +1284,32 @@
 | `api:src/include/process/process.h:process_power_set_quiescing` | `src/include/process/process.h` | `process_power_set_quiescing` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:process_power_shutdown_users` | `src/include/process/process.h` | `process_power_shutdown_users` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:process_prepare_user_termination` | `src/include/process/process.h` | `process_prepare_user_termination` | `process` | `PENDING` | 0 |
-| `api:src/include/process/process.h:process_reap_finished_user` | `src/include/process/process.h` | `process_reap_finished_user` | `process` | `PENDING` | 0 |
+| `api:src/include/process/process.h:process_reap_finished_user` | `src/include/process/process.h` | `process_reap_finished_user` | `process` | `COVERED` | 35 |
 | `api:src/include/process/process.h:process_restore_focus` | `src/include/process/process.h` | `process_restore_focus` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:process_set_focus` | `src/include/process/process.h` | `process_set_focus` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:process_set_focus_fallback` | `src/include/process/process.h` | `process_set_focus_fallback` | `process` | `PENDING` | 0 |
-| `api:src/include/process/process.h:process_snapshot_copy` | `src/include/process/process.h` | `process_snapshot_copy` | `process` | `PENDING` | 0 |
+| `api:src/include/process/process.h:process_snapshot_copy` | `src/include/process/process.h` | `process_snapshot_copy` | `process` | `COVERED` | 35 |
 | `api:src/include/process/process.h:process_snapshot_copy_vmas` | `src/include/process/process.h` | `process_snapshot_copy_vmas` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:process_snapshot_list` | `src/include/process/process.h` | `process_snapshot_list` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:process_stack_check_current` | `src/include/process/process.h` | `process_stack_check_current` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:process_stack_get_info` | `src/include/process/process.h` | `process_stack_get_info` | `process` | `PENDING` | 0 |
-| `api:src/include/process/process.h:process_stack_self_test` | `src/include/process/process.h` | `process_stack_self_test` | `process` | `PENDING` | 0 |
-| `api:src/include/process/process.h:process_stack_validate_all` | `src/include/process/process.h` | `process_stack_validate_all` | `process` | `PENDING` | 0 |
+| `api:src/include/process/process.h:process_stack_self_test` | `src/include/process/process.h` | `process_stack_self_test` | `process` | `COVERED` | 35 |
+| `api:src/include/process/process.h:process_stack_validate_all` | `src/include/process/process.h` | `process_stack_validate_all` | `process` | `COVERED` | 35 |
 | `api:src/include/process/process.h:process_start_scheduler` | `src/include/process/process.h` | `process_start_scheduler` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:process_start_user` | `src/include/process/process.h` | `process_start_user` | `process` | `PENDING` | 0 |
-| `api:src/include/process/process.h:process_take_user_test_result` | `src/include/process/process.h` | `process_take_user_test_result` | `process` | `PENDING` | 0 |
+| `api:src/include/process/process.h:process_take_user_test_result` | `src/include/process/process.h` | `process_take_user_test_result` | `process` | `COVERED` | 35 |
 | `api:src/include/process/process.h:process_terminate_user_signal` | `src/include/process/process.h` | `process_terminate_user_signal` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:process_unblock` | `src/include/process/process.h` | `process_unblock` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:process_user_enter` | `src/include/process/process.h` | `process_user_enter` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:process_user_termination_enter` | `src/include/process/process.h` | `process_user_termination_enter` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:process_wait` | `src/include/process/process.h` | `process_wait` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:process_wake_channel` | `src/include/process/process.h` | `process_wake_channel` | `process` | `PENDING` | 0 |
-| `api:src/include/process/process.h:process_yield` | `src/include/process/process.h` | `process_yield` | `process` | `PENDING` | 0 |
+| `api:src/include/process/process.h:process_yield` | `src/include/process/process.h` | `process_yield` | `process` | `COVERED` | 35 |
 | `api:src/include/process/process.h:scheduler_get_stats` | `src/include/process/process.h` | `scheduler_get_stats` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:scheduler_init` | `src/include/process/process.h` | `scheduler_init` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:scheduler_preempt_user` | `src/include/process/process.h` | `scheduler_preempt_user` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:scheduler_tick` | `src/include/process/process.h` | `scheduler_tick` | `process` | `PENDING` | 0 |
-| `api:src/include/process/process.h:scheduler_validate_invariants` | `src/include/process/process.h` | `scheduler_validate_invariants` | `process` | `PENDING` | 0 |
+| `api:src/include/process/process.h:scheduler_validate_invariants` | `src/include/process/process.h` | `scheduler_validate_invariants` | `process` | `COVERED` | 35 |
 | `api:src/include/process/signal.h:process_signal_action` | `src/include/process/signal.h` | `process_signal_action` | `process` | `PENDING` | 0 |
 | `api:src/include/process/signal.h:process_signal_copy_info` | `src/include/process/signal.h` | `process_signal_copy_info` | `process` | `PENDING` | 0 |
 | `api:src/include/process/signal.h:process_signal_get_stats` | `src/include/process/signal.h` | `process_signal_get_stats` | `process` | `PENDING` | 0 |
@@ -1322,20 +1322,20 @@
 | `api:src/include/process/signal.h:process_signal_raise` | `src/include/process/signal.h` | `process_signal_raise` | `process` | `PENDING` | 0 |
 | `api:src/include/process/signal.h:process_signal_record_user_fault` | `src/include/process/signal.h` | `process_signal_record_user_fault` | `process` | `PENDING` | 0 |
 | `api:src/include/process/signal.h:process_signal_return` | `src/include/process/signal.h` | `process_signal_return` | `process` | `PENDING` | 0 |
-| `api:src/include/process/signal.h:process_signal_self_test` | `src/include/process/signal.h` | `process_signal_self_test` | `process` | `PENDING` | 0 |
+| `api:src/include/process/signal.h:process_signal_self_test` | `src/include/process/signal.h` | `process_signal_self_test` | `process` | `COVERED` | 35 |
 | `api:src/include/process/signal.h:process_signal_send` | `src/include/process/signal.h` | `process_signal_send` | `process` | `PENDING` | 0 |
-| `api:src/include/process/signal.h:process_signal_validate_state` | `src/include/process/signal.h` | `process_signal_validate_state` | `process` | `PENDING` | 0 |
+| `api:src/include/process/signal.h:process_signal_validate_state` | `src/include/process/signal.h` | `process_signal_validate_state` | `process` | `COVERED` | 35 |
 | `api:src/include/process/thread.h:thread_block` | `src/include/process/thread.h` | `thread_block` | `process` | `PENDING` | 0 |
 | `api:src/include/process/thread.h:thread_block_indefinite` | `src/include/process/thread.h` | `thread_block_indefinite` | `process` | `PENDING` | 0 |
 | `api:src/include/process/thread.h:thread_cancel_wait` | `src/include/process/thread.h` | `thread_cancel_wait` | `process` | `PENDING` | 0 |
 | `api:src/include/process/thread.h:thread_context_switch` | `src/include/process/thread.h` | `thread_context_switch` | `process` | `PENDING` | 0 |
 | `api:src/include/process/thread.h:thread_copy_waiters` | `src/include/process/thread.h` | `thread_copy_waiters` | `process` | `PENDING` | 0 |
 | `api:src/include/process/thread.h:thread_destroy` | `src/include/process/thread.h` | `thread_destroy` | `process` | `PENDING` | 0 |
-| `api:src/include/process/thread.h:thread_get_count` | `src/include/process/thread.h` | `thread_get_count` | `process` | `PENDING` | 0 |
+| `api:src/include/process/thread.h:thread_get_count` | `src/include/process/thread.h` | `thread_get_count` | `process` | `COVERED` | 35 |
 | `api:src/include/process/thread.h:thread_get_count_by_owner` | `src/include/process/thread.h` | `thread_get_count_by_owner` | `process` | `PENDING` | 0 |
 | `api:src/include/process/thread.h:thread_init` | `src/include/process/thread.h` | `thread_init` | `process` | `PENDING` | 0 |
-| `api:src/include/process/thread.h:thread_is_ready` | `src/include/process/thread.h` | `thread_is_ready` | `process` | `PENDING` | 0 |
-| `api:src/include/process/thread.h:thread_run_self_test` | `src/include/process/thread.h` | `thread_run_self_test` | `process` | `PENDING` | 0 |
+| `api:src/include/process/thread.h:thread_is_ready` | `src/include/process/thread.h` | `thread_is_ready` | `process` | `COVERED` | 35 |
+| `api:src/include/process/thread.h:thread_run_self_test` | `src/include/process/thread.h` | `thread_run_self_test` | `process` | `COVERED` | 35 |
 | `api:src/include/process/thread.h:thread_scheduler_tick` | `src/include/process/thread.h` | `thread_scheduler_tick` | `process` | `PENDING` | 0 |
 | `api:src/include/process/thread.h:thread_unblock` | `src/include/process/thread.h` | `thread_unblock` | `process` | `PENDING` | 0 |
 | `api:src/include/process/thread.h:thread_wait` | `src/include/process/thread.h` | `thread_wait` | `process` | `PENDING` | 0 |
@@ -2495,7 +2495,7 @@
 | `c:src/core/kernel_tests.c:kernel_tests_phase_result` | `src/core/kernel_tests.c` | `kernel_tests_phase_result` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests.c:kernel_tests_progress` | `src/core/kernel_tests.c` | `kernel_tests_progress` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests.c:kernel_tests_report_phase` | `src/core/kernel_tests.c` | `kernel_tests_report_phase` | `core` | `PENDING` | 0 |
-| `c:src/core/kernel_tests.c:kernel_tests_run_memory_slab` | `src/core/kernel_tests.c` | `kernel_tests_run_memory_slab` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests.c:kernel_tests_run_memory_slab` | `src/core/kernel_tests.c` | `kernel_tests_run_memory_slab` | `core` | `COVERED` | 35 |
 | `c:src/core/kernel_tests.c:kernel_tests_run_memory_slab_with_runtime` | `src/core/kernel_tests.c` | `kernel_tests_run_memory_slab_with_runtime` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests.c:kernel_tests_same_memory_state` | `src/core/kernel_tests.c` | `kernel_tests_same_memory_state` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_contains` | `src/core/kernel_tests_blackbox.c` | `blackbox_contains` | `core` | `PENDING` | 0 |
@@ -2504,21 +2504,21 @@
 | `c:src/core/kernel_tests_blackbox.c:blackbox_report` | `src/core/kernel_tests_blackbox.c` | `blackbox_report` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_snapshot` | `src/core/kernel_tests_blackbox.c` | `blackbox_snapshot` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_wait_for_marker` | `src/core/kernel_tests_blackbox.c` | `blackbox_wait_for_marker` | `core` | `PENDING` | 0 |
-| `c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox` | `src/core/kernel_tests_blackbox.c` | `kernel_tests_run_tst5_blackbox` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox` | `src/core/kernel_tests_blackbox.c` | `kernel_tests_run_tst5_blackbox` | `core` | `COVERED` | 35 |
 | `c:src/core/kernel_tests_execution.c:execution_check_ipc` | `src/core/kernel_tests_execution.c` | `execution_check_ipc` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_execution.c:execution_check_processes` | `src/core/kernel_tests_execution.c` | `execution_check_processes` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_execution.c:execution_check_signal` | `src/core/kernel_tests_execution.c` | `execution_check_signal` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_execution.c:execution_check_threads` | `src/core/kernel_tests_execution.c` | `execution_check_threads` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_execution.c:execution_check_wait` | `src/core/kernel_tests_execution.c` | `execution_check_wait` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_execution.c:execution_check_workqueue` | `src/core/kernel_tests_execution.c` | `execution_check_workqueue` | `core` | `PENDING` | 0 |
-| `c:src/core/kernel_tests_execution.c:kernel_tests_run_execution` | `src/core/kernel_tests_execution.c` | `kernel_tests_run_execution` | `core` | `PENDING` | 0 |
-| `c:src/core/kernel_tests_network.c:kernel_tests_run_network` | `src/core/kernel_tests_network.c` | `kernel_tests_run_network` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_execution.c:kernel_tests_run_execution` | `src/core/kernel_tests_execution.c` | `kernel_tests_run_execution` | `core` | `COVERED` | 35 |
+| `c:src/core/kernel_tests_network.c:kernel_tests_run_network` | `src/core/kernel_tests_network.c` | `kernel_tests_run_network` | `core` | `COVERED` | 35 |
 | `c:src/core/kernel_tests_network.c:network_check_net_socket` | `src/core/kernel_tests_network.c` | `network_check_net_socket` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_network.c:network_check_route` | `src/core/kernel_tests_network.c` | `network_check_route` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_network.c:network_check_socket` | `src/core/kernel_tests_network.c` | `network_check_socket` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_network.c:network_check_tls` | `src/core/kernel_tests_network.c` | `network_check_tls` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_network.c:network_check_validators` | `src/core/kernel_tests_network.c` | `network_check_validators` | `core` | `PENDING` | 0 |
-| `c:src/core/kernel_tests_paging.c:kernel_tests_run_paging_vma` | `src/core/kernel_tests_paging.c` | `kernel_tests_run_paging_vma` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_paging.c:kernel_tests_run_paging_vma` | `src/core/kernel_tests_paging.c` | `kernel_tests_run_paging_vma` | `core` | `COVERED` | 35 |
 | `c:src/core/kernel_tests_paging.c:paging_build_fixture` | `src/core/kernel_tests_paging.c` | `paging_build_fixture` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_paging.c:paging_emit_compare_eax` | `src/core/kernel_tests_paging.c` | `paging_emit_compare_eax` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_paging.c:paging_emit_exit` | `src/core/kernel_tests_paging.c` | `paging_emit_exit` | `core` | `PENDING` | 0 |
@@ -2530,7 +2530,7 @@
 | `c:src/core/kernel_tests_paging.c:paging_emit_syscall` | `src/core/kernel_tests_paging.c` | `paging_emit_syscall` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_paging.c:paging_validate_fixture_baseline` | `src/core/kernel_tests_paging.c` | `paging_validate_fixture_baseline` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_paging.c:paging_wait_fixture` | `src/core/kernel_tests_paging.c` | `paging_wait_fixture` | `core` | `PENDING` | 0 |
-| `c:src/core/kernel_tests_platform.c:kernel_tests_run_platform` | `src/core/kernel_tests_platform.c` | `kernel_tests_run_platform` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_platform.c:kernel_tests_run_platform` | `src/core/kernel_tests_platform.c` | `kernel_tests_run_platform` | `core` | `COVERED` | 35 |
 | `c:src/core/kernel_tests_platform.c:platform_check_acpi_power` | `src/core/kernel_tests_platform.c` | `platform_check_acpi_power` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_platform.c:platform_check_clock` | `src/core/kernel_tests_platform.c` | `platform_check_clock` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_platform.c:platform_check_devices` | `src/core/kernel_tests_platform.c` | `platform_check_devices` | `core` | `PENDING` | 0 |
@@ -2539,7 +2539,7 @@
 | `c:src/core/kernel_tests_platform.c:platform_check_optional_devices` | `src/core/kernel_tests_platform.c` | `platform_check_optional_devices` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_platform.c:platform_check_rtc` | `src/core/kernel_tests_platform.c` | `platform_check_rtc` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_platform.c:platform_check_timer` | `src/core/kernel_tests_platform.c` | `platform_check_timer` | `core` | `PENDING` | 0 |
-| `c:src/core/kernel_tests_storage.c:kernel_tests_run_storage_vfs` | `src/core/kernel_tests_storage.c` | `kernel_tests_run_storage_vfs` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_storage.c:kernel_tests_run_storage_vfs` | `src/core/kernel_tests_storage.c` | `kernel_tests_run_storage_vfs` | `core` | `COVERED` | 35 |
 | `c:src/core/kernel_tests_storage.c:storage_check_devfs` | `src/core/kernel_tests_storage.c` | `storage_check_devfs` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_storage.c:storage_check_equal` | `src/core/kernel_tests_storage.c` | `storage_check_equal` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_storage.c:storage_check_heap` | `src/core/kernel_tests_storage.c` | `storage_check_heap` | `core` | `PENDING` | 0 |
@@ -2548,7 +2548,7 @@
 | `c:src/core/kernel_tests_storage.c:storage_check_sysfs` | `src/core/kernel_tests_storage.c` | `storage_check_sysfs` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_storage.c:storage_check_sysfs_flag` | `src/core/kernel_tests_storage.c` | `storage_check_sysfs_flag` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_storage.c:storage_check_vfs` | `src/core/kernel_tests_storage.c` | `storage_check_vfs` | `core` | `PENDING` | 0 |
-| `c:src/core/kernel_tests_tst6.c:kernel_tests_run_tst6` | `src/core/kernel_tests_tst6.c` | `kernel_tests_run_tst6` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_tst6.c:kernel_tests_run_tst6` | `src/core/kernel_tests_tst6.c` | `kernel_tests_run_tst6` | `core` | `COVERED` | 35 |
 | `c:src/core/kernel_tests_tst6.c:tst6_check_ready` | `src/core/kernel_tests_tst6.c` | `tst6_check_ready` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_tst6.c:tst6_equals` | `src/core/kernel_tests_tst6.c` | `tst6_equals` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_tst6.c:tst6_length` | `src/core/kernel_tests_tst6.c` | `tst6_length` | `core` | `PENDING` | 0 |
@@ -2882,10 +2882,10 @@
 | `c:src/core/socket.c:socket_wait_local` | `src/core/socket.c` | `socket_wait_local` | `core` | `PENDING` | 0 |
 | `c:src/core/socket.c:socket_wait_owner` | `src/core/socket.c` | `socket_wait_owner` | `core` | `PENDING` | 0 |
 | `c:src/core/socket.c:socket_wake` | `src/core/socket.c` | `socket_wake` | `core` | `PENDING` | 0 |
-| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `PENDING` | 0 |
-| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `PENDING` | 0 |
-| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `PENDING` | 0 |
-| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `PENDING` | 0 |
+| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 1 |
+| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 1 |
+| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 1 |
+| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 1 |
 | `c:src/core/syscall.c:syscall_copy_user_string` | `src/core/syscall.c` | `syscall_copy_user_string` | `core` | `PENDING` | 0 |
 | `c:src/core/syscall.c:syscall_dispatch` | `src/core/syscall.c` | `syscall_dispatch` | `core` | `PENDING` | 0 |
 | `c:src/core/syscall.c:syscall_dispatch_user` | `src/core/syscall.c` | `syscall_dispatch_user` | `core` | `PENDING` | 0 |
@@ -2986,35 +2986,35 @@
 | `c:src/core/test_protocol.c:test_protocol_poll` | `src/core/test_protocol.c` | `test_protocol_poll` | `core` | `PENDING` | 0 |
 | `c:src/core/test_protocol.c:test_protocol_set_boot_ready` | `src/core/test_protocol.c` | `test_protocol_set_boot_ready` | `core` | `PENDING` | 0 |
 | `c:src/core/test_protocol.c:test_protocol_timeout` | `src/core/test_protocol.c` | `test_protocol_timeout` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol_core.c:core_append_hex` | `src/core/test_protocol_core.c` | `core_append_hex` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol_core.c:core_append_text` | `src/core/test_protocol_core.c` | `core_append_text` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol_core.c:core_append_uint` | `src/core/test_protocol_core.c` | `core_append_uint` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol_core.c:core_copy` | `src/core/test_protocol_core.c` | `core_copy` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol_core.c:core_copy_reason` | `src/core/test_protocol_core.c` | `core_copy_reason` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol_core.c:core_crc32` | `src/core/test_protocol_core.c` | `core_crc32` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol_core.c:core_emit_case` | `src/core/test_protocol_core.c` | `core_emit_case` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol_core.c:core_emit_event` | `src/core/test_protocol_core.c` | `core_emit_event` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol_core.c:core_emit_simple` | `src/core/test_protocol_core.c` | `core_emit_simple` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol_core.c:core_field` | `src/core/test_protocol_core.c` | `core_field` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol_core.c:core_fields_valid` | `src/core/test_protocol_core.c` | `core_fields_valid` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol_core.c:core_frame_crc_valid` | `src/core/test_protocol_core.c` | `core_frame_crc_valid` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol_core.c:core_handle_frame` | `src/core/test_protocol_core.c` | `core_handle_frame` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol_core.c:core_length` | `src/core/test_protocol_core.c` | `core_length` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol_core.c:core_parse_hex` | `src/core/test_protocol_core.c` | `core_parse_hex` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol_core.c:core_parse_uint` | `src/core/test_protocol_core.c` | `core_parse_uint` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol_core.c:core_prefix_valid` | `src/core/test_protocol_core.c` | `core_prefix_valid` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol_core.c:core_token_equals` | `src/core/test_protocol_core.c` | `core_token_equals` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol_core.c:core_token_valid` | `src/core/test_protocol_core.c` | `core_token_valid` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol_core.c:core_zero` | `src/core/test_protocol_core.c` | `core_zero` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol_core.c:test_protocol_core_emit` | `src/core/test_protocol_core.c` | `test_protocol_core_emit` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol_core.c:test_protocol_core_feed_byte` | `src/core/test_protocol_core.c` | `test_protocol_core_feed_byte` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol_core.c:test_protocol_core_format_event` | `src/core/test_protocol_core.c` | `test_protocol_core_format_event` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol_core.c:test_protocol_core_init` | `src/core/test_protocol_core.c` | `test_protocol_core_init` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol_core.c:test_protocol_core_is_active` | `src/core/test_protocol_core.c` | `test_protocol_core_is_active` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol_core.c:test_protocol_core_poll` | `src/core/test_protocol_core.c` | `test_protocol_core_poll` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol_core.c:test_protocol_core_set_boot_ready` | `src/core/test_protocol_core.c` | `test_protocol_core_set_boot_ready` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol_core.c:test_protocol_core_set_case_reason` | `src/core/test_protocol_core.c` | `test_protocol_core_set_case_reason` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol_core.c:test_protocol_core_set_ticks` | `src/core/test_protocol_core.c` | `test_protocol_core_set_ticks` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:core_append_hex` | `src/core/test_protocol_core.c` | `core_append_hex` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol_core.c:core_append_text` | `src/core/test_protocol_core.c` | `core_append_text` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol_core.c:core_append_uint` | `src/core/test_protocol_core.c` | `core_append_uint` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol_core.c:core_copy` | `src/core/test_protocol_core.c` | `core_copy` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol_core.c:core_copy_reason` | `src/core/test_protocol_core.c` | `core_copy_reason` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol_core.c:core_crc32` | `src/core/test_protocol_core.c` | `core_crc32` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol_core.c:core_emit_case` | `src/core/test_protocol_core.c` | `core_emit_case` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol_core.c:core_emit_event` | `src/core/test_protocol_core.c` | `core_emit_event` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol_core.c:core_emit_simple` | `src/core/test_protocol_core.c` | `core_emit_simple` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol_core.c:core_field` | `src/core/test_protocol_core.c` | `core_field` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol_core.c:core_fields_valid` | `src/core/test_protocol_core.c` | `core_fields_valid` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol_core.c:core_frame_crc_valid` | `src/core/test_protocol_core.c` | `core_frame_crc_valid` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol_core.c:core_handle_frame` | `src/core/test_protocol_core.c` | `core_handle_frame` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol_core.c:core_length` | `src/core/test_protocol_core.c` | `core_length` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol_core.c:core_parse_hex` | `src/core/test_protocol_core.c` | `core_parse_hex` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol_core.c:core_parse_uint` | `src/core/test_protocol_core.c` | `core_parse_uint` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol_core.c:core_prefix_valid` | `src/core/test_protocol_core.c` | `core_prefix_valid` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol_core.c:core_token_equals` | `src/core/test_protocol_core.c` | `core_token_equals` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol_core.c:core_token_valid` | `src/core/test_protocol_core.c` | `core_token_valid` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol_core.c:core_zero` | `src/core/test_protocol_core.c` | `core_zero` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol_core.c:test_protocol_core_emit` | `src/core/test_protocol_core.c` | `test_protocol_core_emit` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol_core.c:test_protocol_core_feed_byte` | `src/core/test_protocol_core.c` | `test_protocol_core_feed_byte` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol_core.c:test_protocol_core_format_event` | `src/core/test_protocol_core.c` | `test_protocol_core_format_event` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol_core.c:test_protocol_core_init` | `src/core/test_protocol_core.c` | `test_protocol_core_init` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol_core.c:test_protocol_core_is_active` | `src/core/test_protocol_core.c` | `test_protocol_core_is_active` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol_core.c:test_protocol_core_poll` | `src/core/test_protocol_core.c` | `test_protocol_core_poll` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol_core.c:test_protocol_core_set_boot_ready` | `src/core/test_protocol_core.c` | `test_protocol_core_set_boot_ready` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol_core.c:test_protocol_core_set_case_reason` | `src/core/test_protocol_core.c` | `test_protocol_core_set_case_reason` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol_core.c:test_protocol_core_set_ticks` | `src/core/test_protocol_core.c` | `test_protocol_core_set_ticks` | `core` | `COVERED` | 1 |
 | `c:src/core/tls.c:tls_capability_available` | `src/core/tls.c` | `tls_capability_available` | `core` | `PENDING` | 0 |
 | `c:src/core/tls.c:tls_get_policy` | `src/core/tls.c` | `tls_get_policy` | `core` | `PENDING` | 0 |
 | `c:src/core/tls.c:tls_get_status` | `src/core/tls.c` | `tls_get_status` | `core` | `PENDING` | 0 |
@@ -4394,7 +4394,7 @@
 | `c:src/drivers/video.c:video_terminal_set_hosted` | `src/drivers/video.c` | `video_terminal_set_hosted` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/video.c:video_terminal_suspend` | `src/drivers/video.c` | `video_terminal_suspend` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/video.c:video_terminal_take_hosted_dirty` | `src/drivers/video.c` | `video_terminal_take_hosted_dirty` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/video.c:video_test_copy_terminal` | `src/drivers/video.c` | `video_test_copy_terminal` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/video.c:video_test_copy_terminal` | `src/drivers/video.c` | `video_test_copy_terminal` | `drivers` | `COVERED` | 35 |
 | `c:src/filemanager/filemanager.c:fm_block_read_only_mutation` | `src/filemanager/filemanager.c` | `fm_block_read_only_mutation` | `filemanager` | `PENDING` | 0 |
 | `c:src/filemanager/filemanager.c:fm_boot_directory_exists` | `src/filemanager/filemanager.c` | `fm_boot_directory_exists` | `filemanager` | `PENDING` | 0 |
 | `c:src/filemanager/filemanager.c:fm_build_display_path` | `src/filemanager/filemanager.c` | `fm_build_display_path` | `filemanager` | `PENDING` | 0 |
@@ -5250,14 +5250,14 @@
 | `c:src/kernel/panic.c:panic_memory` | `src/kernel/panic.c` | `panic_memory` | `kernel` | `PENDING` | 0 |
 | `c:src/kernel/panic.c:panic_print_metric` | `src/kernel/panic.c` | `panic_print_metric` | `kernel` | `PENDING` | 0 |
 | `c:src/kernel/panic.c:panic_print_number` | `src/kernel/panic.c` | `panic_print_number` | `kernel` | `PENDING` | 0 |
-| `c:src/memory/compress.c:compress_data` | `src/memory/compress.c` | `compress_data` | `memory` | `PENDING` | 0 |
-| `c:src/memory/compress.c:compress_disable` | `src/memory/compress.c` | `compress_disable` | `memory` | `PENDING` | 0 |
-| `c:src/memory/compress.c:compress_enable` | `src/memory/compress.c` | `compress_enable` | `memory` | `PENDING` | 0 |
-| `c:src/memory/compress.c:compress_get_max_size` | `src/memory/compress.c` | `compress_get_max_size` | `memory` | `PENDING` | 0 |
-| `c:src/memory/compress.c:compress_init` | `src/memory/compress.c` | `compress_init` | `memory` | `PENDING` | 0 |
-| `c:src/memory/compress.c:compress_is_enabled` | `src/memory/compress.c` | `compress_is_enabled` | `memory` | `PENDING` | 0 |
-| `c:src/memory/compress.c:compress_print_stats` | `src/memory/compress.c` | `compress_print_stats` | `memory` | `PENDING` | 0 |
-| `c:src/memory/compress.c:decompress_data` | `src/memory/compress.c` | `decompress_data` | `memory` | `PENDING` | 0 |
+| `c:src/memory/compress.c:compress_data` | `src/memory/compress.c` | `compress_data` | `memory` | `COVERED` | 1 |
+| `c:src/memory/compress.c:compress_disable` | `src/memory/compress.c` | `compress_disable` | `memory` | `COVERED` | 1 |
+| `c:src/memory/compress.c:compress_enable` | `src/memory/compress.c` | `compress_enable` | `memory` | `COVERED` | 1 |
+| `c:src/memory/compress.c:compress_get_max_size` | `src/memory/compress.c` | `compress_get_max_size` | `memory` | `COVERED` | 1 |
+| `c:src/memory/compress.c:compress_init` | `src/memory/compress.c` | `compress_init` | `memory` | `COVERED` | 1 |
+| `c:src/memory/compress.c:compress_is_enabled` | `src/memory/compress.c` | `compress_is_enabled` | `memory` | `COVERED` | 1 |
+| `c:src/memory/compress.c:compress_print_stats` | `src/memory/compress.c` | `compress_print_stats` | `memory` | `COVERED` | 1 |
+| `c:src/memory/compress.c:decompress_data` | `src/memory/compress.c` | `decompress_data` | `memory` | `COVERED` | 1 |
 | `c:src/memory/memory.c:align_up` | `src/memory/memory.c` | `align_up` | `memory` | `PENDING` | 0 |
 | `c:src/memory/memory.c:heap_align_size` | `src/memory/memory.c` | `heap_align_size` | `memory` | `PENDING` | 0 |
 | `c:src/memory/memory.c:heap_block_is_consistent` | `src/memory/memory.c` | `heap_block_is_consistent` | `memory` | `PENDING` | 0 |
@@ -5269,12 +5269,12 @@
 | `c:src/memory/memory.c:heap_range_contains` | `src/memory/memory.c` | `heap_range_contains` | `memory` | `PENDING` | 0 |
 | `c:src/memory/memory.c:kfree` | `src/memory/memory.c` | `kfree` | `memory` | `PENDING` | 0 |
 | `c:src/memory/memory.c:memory_find_total` | `src/memory/memory.c` | `memory_find_total` | `memory` | `PENDING` | 0 |
-| `c:src/memory/memory.c:memory_get_detailed_stats` | `src/memory/memory.c` | `memory_get_detailed_stats` | `memory` | `COVERED` | 1 |
+| `c:src/memory/memory.c:memory_get_detailed_stats` | `src/memory/memory.c` | `memory_get_detailed_stats` | `memory` | `COVERED` | 35 |
 | `c:src/memory/memory.c:memory_get_free` | `src/memory/memory.c` | `memory_get_free` | `memory` | `PENDING` | 0 |
-| `c:src/memory/memory.c:memory_get_free_pages` | `src/memory/memory.c` | `memory_get_free_pages` | `memory` | `COVERED` | 1 |
-| `c:src/memory/memory.c:memory_get_heap_stats` | `src/memory/memory.c` | `memory_get_heap_stats` | `memory` | `COVERED` | 1 |
+| `c:src/memory/memory.c:memory_get_free_pages` | `src/memory/memory.c` | `memory_get_free_pages` | `memory` | `COVERED` | 35 |
+| `c:src/memory/memory.c:memory_get_heap_stats` | `src/memory/memory.c` | `memory_get_heap_stats` | `memory` | `COVERED` | 35 |
 | `c:src/memory/memory.c:memory_get_mmap_entries` | `src/memory/memory.c` | `memory_get_mmap_entries` | `memory` | `PENDING` | 0 |
-| `c:src/memory/memory.c:memory_get_pmm_stats` | `src/memory/memory.c` | `memory_get_pmm_stats` | `memory` | `COVERED` | 1 |
+| `c:src/memory/memory.c:memory_get_pmm_stats` | `src/memory/memory.c` | `memory_get_pmm_stats` | `memory` | `COVERED` | 35 |
 | `c:src/memory/memory.c:memory_get_total` | `src/memory/memory.c` | `memory_get_total` | `memory` | `PENDING` | 0 |
 | `c:src/memory/memory.c:memory_get_total_pages` | `src/memory/memory.c` | `memory_get_total_pages` | `memory` | `PENDING` | 0 |
 | `c:src/memory/memory.c:memory_get_used` | `src/memory/memory.c` | `memory_get_used` | `memory` | `PENDING` | 0 |
@@ -5308,7 +5308,7 @@
 | `c:src/memory/paging.c:paging_get_user_stats` | `src/memory/paging.c` | `paging_get_user_stats` | `memory` | `PENDING` | 0 |
 | `c:src/memory/paging.c:paging_init` | `src/memory/paging.c` | `paging_init` | `memory` | `PENDING` | 0 |
 | `c:src/memory/paging.c:paging_invalidate` | `src/memory/paging.c` | `paging_invalidate` | `memory` | `PENDING` | 0 |
-| `c:src/memory/paging.c:paging_is_ready` | `src/memory/paging.c` | `paging_is_ready` | `memory` | `COVERED` | 1 |
+| `c:src/memory/paging.c:paging_is_ready` | `src/memory/paging.c` | `paging_is_ready` | `memory` | `COVERED` | 35 |
 | `c:src/memory/paging.c:paging_is_registered_user_directory` | `src/memory/paging.c` | `paging_is_registered_user_directory` | `memory` | `PENDING` | 0 |
 | `c:src/memory/paging.c:paging_map_framebuffer` | `src/memory/paging.c` | `paging_map_framebuffer` | `memory` | `PENDING` | 0 |
 | `c:src/memory/paging.c:paging_map_identity_range_fast` | `src/memory/paging.c` | `paging_map_identity_range_fast` | `memory` | `PENDING` | 0 |
@@ -5326,11 +5326,11 @@
 | `c:src/memory/slab.c:kmem_cache_get_count` | `src/memory/slab.c` | `kmem_cache_get_count` | `memory` | `PENDING` | 0 |
 | `c:src/memory/slab.c:kmem_cache_get_info` | `src/memory/slab.c` | `kmem_cache_get_info` | `memory` | `PENDING` | 0 |
 | `c:src/memory/slab.c:kmem_cache_get_info_at` | `src/memory/slab.c` | `kmem_cache_get_info_at` | `memory` | `PENDING` | 0 |
-| `c:src/memory/slab.c:kmem_cache_get_stats` | `src/memory/slab.c` | `kmem_cache_get_stats` | `memory` | `COVERED` | 1 |
+| `c:src/memory/slab.c:kmem_cache_get_stats` | `src/memory/slab.c` | `kmem_cache_get_stats` | `memory` | `COVERED` | 35 |
 | `c:src/memory/slab.c:kmem_cache_init` | `src/memory/slab.c` | `kmem_cache_init` | `memory` | `PENDING` | 0 |
 | `c:src/memory/slab.c:kmem_cache_owns` | `src/memory/slab.c` | `kmem_cache_owns` | `memory` | `PENDING` | 0 |
-| `c:src/memory/slab.c:kmem_cache_self_test` | `src/memory/slab.c` | `kmem_cache_self_test` | `memory` | `COVERED` | 1 |
-| `c:src/memory/slab.c:kmem_cache_validate` | `src/memory/slab.c` | `kmem_cache_validate` | `memory` | `COVERED` | 1 |
+| `c:src/memory/slab.c:kmem_cache_self_test` | `src/memory/slab.c` | `kmem_cache_self_test` | `memory` | `COVERED` | 35 |
+| `c:src/memory/slab.c:kmem_cache_validate` | `src/memory/slab.c` | `kmem_cache_validate` | `memory` | `COVERED` | 35 |
 | `c:src/memory/slab.c:slab_align_up` | `src/memory/slab.c` | `slab_align_up` | `memory` | `PENDING` | 0 |
 | `c:src/memory/slab.c:slab_bit_is_set` | `src/memory/slab.c` | `slab_bit_is_set` | `memory` | `PENDING` | 0 |
 | `c:src/memory/slab.c:slab_cache_registered` | `src/memory/slab.c` | `slab_cache_registered` | `memory` | `PENDING` | 0 |
@@ -6894,6 +6894,8 @@
 
 | ID | Executor | Perfil | Caso guest | Status | Timeout | Heartbeat | Isolamento | Proprietario | Camada | Pre-condicoes | Acao | Resultado esperado | Erros | Efeitos | Limpeza |
 |---|---|---|---|---|---:|---:|---|---|---|---|---|---|---|---|---|
+| `host:tst2:protocol-core` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo disponivel | compilar e executar o fake transport do nucleo do protocolo | handshake, sequencia, CRC, entradas invalidas e eventos terminam sem bloqueio | compilador ausente, warning, falha de assercao ou timeout | somente buffers estaticos e transporte falso do teste | processo host encerrado e artefatos preservados pelo runner |
+| `host:tst3:string-compress` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo disponivel | compilar e executar buffers estaticos de strings e compressao | casos validos, vazios, limites, truncamento e overflow retornam o contrato esperado | compilador ausente, warning, falha de assercao ou timeout | somente buffers estaticos e stub de video_print | processo host encerrado e artefatos preservados pelo runner |
 | `qemu:tst2:boot-ready` | `qemu` | `smoke` | `qemu:tst2:boot-ready` | `AUTOMATED` | 30 | 5 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e o executavel qemu-system-i386 esta disponivel | iniciar o guest em snapshot, enviar HELLO e executar o caso de boot apos READY | o guest publica READY, HEARTBEAT e PASS para o caso solicitado | PANIC, TIMEOUT, ausencia de heartbeat, erro de protocolo ou encerramento inesperado do QEMU | cria um processo QEMU e artefatos temporarios da execucao | encerrar o QEMU via QMP e preservar o relatorio, serial e logs da execucao |
 | `qemu:tst4:execution` | `qemu` | `smoke` | `qemu:tst4:execution` | `AUTOMATED` | 60 | 10 | `snapshot` | `quality` | `qemu` | processos, threads, IPC, wait e workqueue estao READY | executar um unico autoteste interno apos READY | todos os resultados estruturados passam e nenhum estado residual permanece | falha de resultado, invariante, fila, contador, timeout, protocolo ou QEMU | cria somente objetos temporarios dos self-tests existentes | cada self-test desfaz seus objetos e o harness valida as filas finais |
 | `qemu:tst4:memory-slab` | `qemu` | `smoke` | `qemu:tst4:memory-slab` | `AUTOMATED` | 30 | 5 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e paging, PMM, heap e SLAB estao READY | iniciar o guest em snapshot e enviar um unico RUN apos READY | o guest publica READY, HEARTBEAT, BEGIN e PASS, preservando o estado de memoria | falha de pre-condicao, invariante, contador, pagina, protocolo, heartbeat ou QEMU | cria um processo QEMU e recursos temporarios de memoria do autoteste | encerrar o QEMU via QMP e preservar manifesto, serial, logs e resultado |
@@ -7155,7 +7157,6 @@
 - `api:src/include/core/app_package.h:app_package_rollback_confirmed`
 - `api:src/include/core/app_package.h:app_package_run_diagnostics`
 - `api:src/include/core/app_package.h:app_package_run_installed`
-- `api:src/include/core/app_package.h:app_package_test_fail_after`
 - `api:src/include/core/app_package.h:app_package_verify_file`
 - `api:src/include/core/app_remote.h:app_remote_apply_cached`
 - `api:src/include/core/app_remote.h:app_remote_build_plan`
@@ -7183,27 +7184,19 @@
 - `api:src/include/core/arp.h:arp_maintain`
 - `api:src/include/core/arp.h:arp_resolve`
 - `api:src/include/core/arp.h:arp_unconfigure`
-- `api:src/include/core/arp.h:arp_validate_state`
 - `api:src/include/core/clock.h:clock_get_monotonic_ticks`
 - `api:src/include/core/clock.h:clock_get_status`
 - `api:src/include/core/clock.h:clock_get_utc`
 - `api:src/include/core/clock.h:clock_init`
-- `api:src/include/core/clock.h:clock_self_test`
-- `api:src/include/core/clock.h:clock_validate_state`
 - `api:src/include/core/crypto.h:crypto_ed25519_verify_final`
 - `api:src/include/core/crypto.h:crypto_ed25519_verify_init`
 - `api:src/include/core/crypto.h:crypto_ed25519_verify_update`
 - `api:src/include/core/crypto.h:crypto_equal`
-- `api:src/include/core/crypto.h:crypto_self_test`
 - `api:src/include/core/crypto.h:crypto_sha256`
 - `api:src/include/core/crypto.h:crypto_sha256_final`
 - `api:src/include/core/crypto.h:crypto_sha256_init`
 - `api:src/include/core/crypto.h:crypto_sha256_update`
 - `api:src/include/core/crypto.h:crypto_sha512_digest`
-- `api:src/include/core/device_manager.h:device_manager_find`
-- `api:src/include/core/device_manager.h:device_manager_format_text`
-- `api:src/include/core/device_manager.h:device_manager_get_count`
-- `api:src/include/core/device_manager.h:device_manager_get_info`
 - `api:src/include/core/device_manager.h:device_manager_init`
 - `api:src/include/core/device_manager.h:device_manager_refresh`
 - `api:src/include/core/dhcp.h:dhcp_acquire`
@@ -7215,7 +7208,6 @@
 - `api:src/include/core/dhcp.h:dhcp_renew`
 - `api:src/include/core/dhcp.h:dhcp_reset`
 - `api:src/include/core/dhcp.h:dhcp_take_event`
-- `api:src/include/core/dhcp.h:dhcp_validate_state`
 - `api:src/include/core/dns.h:dns_clear`
 - `api:src/include/core/dns.h:dns_configure`
 - `api:src/include/core/dns.h:dns_get_cache_entry`
@@ -7225,7 +7217,6 @@
 - `api:src/include/core/dns.h:dns_reset`
 - `api:src/include/core/dns.h:dns_resolve`
 - `api:src/include/core/dns.h:dns_unconfigure`
-- `api:src/include/core/dns.h:dns_validate_state`
 - `api:src/include/core/ethernet.h:ethernet_attach_interface`
 - `api:src/include/core/ethernet.h:ethernet_get_interface_status`
 - `api:src/include/core/ethernet.h:ethernet_get_status`
@@ -7235,7 +7226,6 @@
 - `api:src/include/core/ethernet.h:ethernet_register_handler`
 - `api:src/include/core/ethernet.h:ethernet_send`
 - `api:src/include/core/ethernet.h:ethernet_set_quiescing`
-- `api:src/include/core/ethernet.h:ethernet_validate_state`
 - `api:src/include/core/http.h:http_get_body`
 - `api:src/include/core/http.h:http_get_start`
 - `api:src/include/core/http.h:http_get_start_ex`
@@ -7245,21 +7235,17 @@
 - `api:src/include/core/http.h:http_init`
 - `api:src/include/core/http.h:http_maintain`
 - `api:src/include/core/http.h:http_reset`
-- `api:src/include/core/http.h:http_validate_state`
 - `api:src/include/core/icmp.h:icmp_get_status`
 - `api:src/include/core/icmp.h:icmp_init`
 - `api:src/include/core/icmp.h:icmp_maintain`
 - `api:src/include/core/icmp.h:icmp_ping_start`
 - `api:src/include/core/icmp.h:icmp_reset`
-- `api:src/include/core/icmp.h:icmp_validate_state`
 - `api:src/include/core/input.h:input_dispatch`
 - `api:src/include/core/input.h:input_get_metrics`
 - `api:src/include/core/input.h:input_init`
-- `api:src/include/core/input.h:input_publish_key`
 - `api:src/include/core/input.h:input_publish_pointer`
 - `api:src/include/core/input.h:input_register_key_sink`
 - `api:src/include/core/input.h:input_register_pointer_sink`
-- `api:src/include/core/input.h:input_validate_state`
 - `api:src/include/core/ipv4.h:ipv4_address_is_unicast`
 - `api:src/include/core/ipv4.h:ipv4_configure`
 - `api:src/include/core/ipv4.h:ipv4_get_status`
@@ -7269,16 +7255,13 @@
 - `api:src/include/core/ipv4.h:ipv4_send`
 - `api:src/include/core/ipv4.h:ipv4_send_limited_broadcast`
 - `api:src/include/core/ipv4.h:ipv4_unconfigure`
-- `api:src/include/core/ipv4.h:ipv4_validate_state`
 - `api:src/include/core/irq_deferred.h:irq_deferred_cancel`
 - `api:src/include/core/irq_deferred.h:irq_deferred_dispatch`
 - `api:src/include/core/irq_deferred.h:irq_deferred_get_irq_status`
 - `api:src/include/core/irq_deferred.h:irq_deferred_get_status`
 - `api:src/include/core/irq_deferred.h:irq_deferred_init`
 - `api:src/include/core/irq_deferred.h:irq_deferred_schedule`
-- `api:src/include/core/irq_deferred.h:irq_deferred_self_test`
 - `api:src/include/core/irq_deferred.h:irq_deferred_set_notifier`
-- `api:src/include/core/irq_deferred.h:irq_deferred_validate_state`
 - `api:src/include/core/irq_deferred.h:irq_deferred_work_init`
 - `api:src/include/core/keyboard.h:keyboard_controller_reset`
 - `api:src/include/core/keyboard.h:keyboard_controller_reset_available`
@@ -7299,7 +7282,6 @@
 - `api:src/include/core/log.h:log_init`
 - `api:src/include/core/log.h:log_print`
 - `api:src/include/core/log.h:log_print_code`
-- `api:src/include/core/log.h:log_self_test`
 - `api:src/include/core/log.h:log_set_buffer_level`
 - `api:src/include/core/log.h:log_set_console_level`
 - `api:src/include/core/log.h:log_set_level`
@@ -7315,7 +7297,6 @@
 - `api:src/include/core/memory.h:pmm_free_pages`
 - `api:src/include/core/net_buffer.h:net_buffer_begin`
 - `api:src/include/core/net_buffer.h:net_buffer_complete`
-- `api:src/include/core/net_buffer.h:net_buffer_get_stats`
 - `api:src/include/core/net_buffer.h:net_buffer_init`
 - `api:src/include/core/net_buffer.h:net_buffer_note_clone`
 - `api:src/include/core/net_buffer.h:net_buffer_note_copy`
@@ -7323,25 +7304,20 @@
 - `api:src/include/core/net_buffer.h:net_buffer_release`
 - `api:src/include/core/net_buffer.h:net_buffer_restore_stats`
 - `api:src/include/core/net_buffer.h:net_buffer_retain`
-- `api:src/include/core/net_buffer.h:net_buffer_self_test`
 - `api:src/include/core/net_buffer.h:net_buffer_set_layout`
 - `api:src/include/core/net_buffer.h:net_buffer_set_length`
 - `api:src/include/core/net_buffer.h:net_buffer_transition`
-- `api:src/include/core/net_buffer.h:net_buffer_validate_state`
 - `api:src/include/core/net_socket.h:net_socket_abort`
 - `api:src/include/core/net_socket.h:net_socket_close`
 - `api:src/include/core/net_socket.h:net_socket_connect`
 - `api:src/include/core/net_socket.h:net_socket_get_handle_info`
 - `api:src/include/core/net_socket.h:net_socket_get_info`
-- `api:src/include/core/net_socket.h:net_socket_get_status`
 - `api:src/include/core/net_socket.h:net_socket_init`
 - `api:src/include/core/net_socket.h:net_socket_maintain`
 - `api:src/include/core/net_socket.h:net_socket_open`
 - `api:src/include/core/net_socket.h:net_socket_receive`
 - `api:src/include/core/net_socket.h:net_socket_reset`
-- `api:src/include/core/net_socket.h:net_socket_self_test`
 - `api:src/include/core/net_socket.h:net_socket_send`
-- `api:src/include/core/net_socket.h:net_socket_validate_state`
 - `api:src/include/core/net_socket.h:net_socket_wait`
 - `api:src/include/core/network_manager.h:network_manager_acquire_dhcp`
 - `api:src/include/core/network_manager.h:network_manager_configure_arp`
@@ -7364,10 +7340,7 @@
 - `api:src/include/core/panic.h:panic`
 - `api:src/include/core/panic.h:panic_halt`
 - `api:src/include/core/panic.h:panic_memory`
-- `api:src/include/core/power.h:power_get_status`
 - `api:src/include/core/power.h:power_init`
-- `api:src/include/core/power.h:power_reboot`
-- `api:src/include/core/power.h:power_shutdown`
 - `api:src/include/core/power.h:power_shutdown_prepare`
 - `api:src/include/core/power.h:power_shutdown_request`
 - `api:src/include/core/power.h:system_reboot`
@@ -7377,7 +7350,6 @@
 - `api:src/include/core/power_notifier.h:power_notifier_notify`
 - `api:src/include/core/power_notifier.h:power_notifier_quiesce`
 - `api:src/include/core/power_notifier.h:power_notifier_register`
-- `api:src/include/core/power_notifier.h:power_notifier_validate_state`
 - `api:src/include/core/recovery.h:recovery_get_count`
 - `api:src/include/core/recovery.h:recovery_init`
 - `api:src/include/core/recovery.h:recovery_is_available`
@@ -7389,50 +7361,36 @@
 - `api:src/include/core/route.h:route_clear`
 - `api:src/include/core/route.h:route_delete`
 - `api:src/include/core/route.h:route_get_entry`
-- `api:src/include/core/route.h:route_get_status`
 - `api:src/include/core/route.h:route_init`
 - `api:src/include/core/route.h:route_lookup`
 - `api:src/include/core/route.h:route_reset`
-- `api:src/include/core/route.h:route_self_test`
 - `api:src/include/core/route.h:route_set_base`
 - `api:src/include/core/route.h:route_set_default`
-- `api:src/include/core/route.h:route_validate_state`
 - `api:src/include/core/sk_buff.h:free_skb`
 - `api:src/include/core/sk_buff.h:skb_complete`
-- `api:src/include/core/sk_buff.h:skb_get_stats`
 - `api:src/include/core/sk_buff.h:skb_init`
 - `api:src/include/core/sk_buff.h:skb_release`
 - `api:src/include/core/sk_buff.h:skb_retain`
-- `api:src/include/core/sk_buff.h:skb_self_test`
 - `api:src/include/core/sk_buff.h:skb_transition`
-- `api:src/include/core/sk_buff.h:skb_validate_state`
 - `api:src/include/core/socket.h:socket_accept`
 - `api:src/include/core/socket.h:socket_bind`
 - `api:src/include/core/socket.h:socket_close`
 - `api:src/include/core/socket.h:socket_connect`
 - `api:src/include/core/socket.h:socket_create`
 - `api:src/include/core/socket.h:socket_get_info`
-- `api:src/include/core/socket.h:socket_get_status`
 - `api:src/include/core/socket.h:socket_init`
 - `api:src/include/core/socket.h:socket_listen`
 - `api:src/include/core/socket.h:socket_recv`
-- `api:src/include/core/socket.h:socket_self_test`
 - `api:src/include/core/socket.h:socket_send`
 - `api:src/include/core/socket.h:socket_set_nonblocking`
-- `api:src/include/core/socket.h:socket_validate_state`
 - `api:src/include/core/spinlock.h:spinlock_acquire`
 - `api:src/include/core/spinlock.h:spinlock_init`
 - `api:src/include/core/spinlock.h:spinlock_release`
-- `api:src/include/core/string.h:kmemcpy`
-- `api:src/include/core/string.h:kmemset`
-- `api:src/include/core/string.h:kstrcmp`
-- `api:src/include/core/string.h:kstrlen`
 - `api:src/include/core/syscall.h:syscall_enable_user_mode`
 - `api:src/include/core/syscall.h:syscall_handler`
 - `api:src/include/core/syscall.h:syscall_init`
 - `api:src/include/core/syscall.h:syscall_invoke_kernel`
 - `api:src/include/core/syscall.h:syscall_is_ready`
-- `api:src/include/core/syscall.h:syscall_user_mode_is_enabled`
 - `api:src/include/core/tcp.h:tcp_abort`
 - `api:src/include/core/tcp.h:tcp_close`
 - `api:src/include/core/tcp.h:tcp_connect`
@@ -7443,12 +7401,10 @@
 - `api:src/include/core/tcp.h:tcp_reset`
 - `api:src/include/core/tcp.h:tcp_send`
 - `api:src/include/core/tcp.h:tcp_set_receive_window`
-- `api:src/include/core/tcp.h:tcp_validate_state`
 - `api:src/include/core/test_protocol.h:test_protocol_init`
 - `api:src/include/core/test_protocol.h:test_protocol_is_active`
 - `api:src/include/core/test_protocol.h:test_protocol_panic`
 - `api:src/include/core/test_protocol.h:test_protocol_poll`
-- `api:src/include/core/test_protocol.h:test_protocol_set_boot_ready`
 - `api:src/include/core/test_protocol.h:test_protocol_timeout`
 - `api:src/include/core/timer.h:timer_cancel`
 - `api:src/include/core/timer.h:timer_copy_active`
@@ -7463,18 +7419,14 @@
 - `api:src/include/core/timer.h:timer_init`
 - `api:src/include/core/timer.h:timer_owner_create`
 - `api:src/include/core/timer.h:timer_owner_destroy`
-- `api:src/include/core/timer.h:timer_self_test`
 - `api:src/include/core/timer.h:timer_set_pending_notifier`
 - `api:src/include/core/timer.h:timer_start_once`
 - `api:src/include/core/timer.h:timer_start_periodic`
-- `api:src/include/core/timer.h:timer_validate_state`
 - `api:src/include/core/tls.h:tls_capability_available`
 - `api:src/include/core/tls.h:tls_get_policy`
 - `api:src/include/core/tls.h:tls_get_status`
 - `api:src/include/core/tls.h:tls_init`
 - `api:src/include/core/tls.h:tls_policy_validate`
-- `api:src/include/core/tls.h:tls_self_test`
-- `api:src/include/core/tls.h:tls_validate_state`
 - `api:src/include/core/tls_client.h:tls_client_close`
 - `api:src/include/core/tls_client.h:tls_client_get_status`
 - `api:src/include/core/tls_client.h:tls_client_init`
@@ -7482,14 +7434,12 @@
 - `api:src/include/core/tls_client.h:tls_client_receive`
 - `api:src/include/core/tls_client.h:tls_client_send`
 - `api:src/include/core/tls_client.h:tls_client_start`
-- `api:src/include/core/tls_client.h:tls_client_validate_state`
 - `api:src/include/core/udp.h:udp_bind`
 - `api:src/include/core/udp.h:udp_get_status`
 - `api:src/include/core/udp.h:udp_init`
 - `api:src/include/core/udp.h:udp_send`
 - `api:src/include/core/udp.h:udp_send_limited_broadcast`
 - `api:src/include/core/udp.h:udp_unbind`
-- `api:src/include/core/udp.h:udp_validate_state`
 - `api:src/include/core/update.h:update_apply_file`
 - `api:src/include/core/update.h:update_get_capabilities`
 - `api:src/include/core/update.h:update_get_history_count`
@@ -7541,7 +7491,6 @@
 - `api:src/include/core/update_runtime.h:update_runtime_is_ready`
 - `api:src/include/core/update_runtime.h:update_runtime_parse_manifest`
 - `api:src/include/core/update_runtime.h:update_runtime_rollback`
-- `api:src/include/core/update_runtime.h:update_runtime_test_fail_after`
 - `api:src/include/core/update_runtime.h:update_runtime_verify_file`
 - `api:src/include/core/update_runtime.h:update_runtime_verify_file_for_manifest`
 - `api:src/include/core/update_system.h:update_system_check_tag`
@@ -7572,7 +7521,6 @@
 - `api:src/include/core/usb_manager.h:usb_manager_init`
 - `api:src/include/core/usb_manager.h:usb_manager_poll`
 - `api:src/include/core/usb_manager.h:usb_manager_refresh`
-- `api:src/include/core/usb_manager.h:usb_manager_validate_state`
 - `api:src/include/core/usb_transport.h:usb_transport_bulk_transfer`
 - `api:src/include/core/usb_transport.h:usb_transport_control_request`
 - `api:src/include/core/usb_transport.h:usb_transport_interrupt_cancel`
@@ -7602,7 +7550,6 @@
 - `api:src/include/core/video.h:video_terminal_begin`
 - `api:src/include/core/video.h:video_terminal_clear`
 - `api:src/include/core/video.h:video_terminal_draw`
-- `api:src/include/core/video.h:video_terminal_is_active`
 - `api:src/include/core/video.h:video_terminal_is_hosted`
 - `api:src/include/core/video.h:video_terminal_is_scrolled`
 - `api:src/include/core/video.h:video_terminal_present_hosted_dirty`
@@ -7633,8 +7580,6 @@
 - `api:src/include/core/wait.h:wait_queue_entry_init`
 - `api:src/include/core/wait.h:wait_queue_remove`
 - `api:src/include/core/wait.h:wait_queue_wake_target`
-- `api:src/include/core/wait.h:wait_self_test`
-- `api:src/include/core/wait.h:wait_validate_state`
 - `api:src/include/core/wait.h:wake_up`
 - `api:src/include/core/wait.h:wake_up_all`
 - `api:src/include/core/wifi_manager.h:wifi_manager_connect_open`
@@ -7645,7 +7590,6 @@
 - `api:src/include/core/wifi_manager.h:wifi_manager_init`
 - `api:src/include/core/wifi_manager.h:wifi_manager_refresh`
 - `api:src/include/core/wifi_manager.h:wifi_manager_scan`
-- `api:src/include/core/wifi_manager.h:wifi_manager_validate_state`
 - `api:src/include/core/workqueue.h:cancel_work`
 - `api:src/include/core/workqueue.h:schedule_delayed_work`
 - `api:src/include/core/workqueue.h:schedule_work`
@@ -7660,9 +7604,7 @@
 - `api:src/include/core/workqueue.h:workqueue_power_quiesce_until`
 - `api:src/include/core/workqueue.h:workqueue_power_set_quiescing`
 - `api:src/include/core/workqueue.h:workqueue_probe_worker`
-- `api:src/include/core/workqueue.h:workqueue_self_test`
 - `api:src/include/core/workqueue.h:workqueue_set_fallback`
-- `api:src/include/core/workqueue.h:workqueue_validate_state`
 - `api:src/include/core/workqueue.h:workqueue_worker_main`
 - `api:src/include/drivers/ac97.h:ac97_handler`
 - `api:src/include/drivers/ac97.h:ac97_init`
@@ -7674,8 +7616,6 @@
 - `api:src/include/drivers/acpi.h:acpi_get_madt_entry_at`
 - `api:src/include/drivers/acpi.h:acpi_get_madt_entry_count`
 - `api:src/include/drivers/acpi.h:acpi_get_madt_info`
-- `api:src/include/drivers/acpi.h:acpi_get_power_info`
-- `api:src/include/drivers/acpi.h:acpi_get_status`
 - `api:src/include/drivers/acpi.h:acpi_get_table_at`
 - `api:src/include/drivers/acpi.h:acpi_get_table_count`
 - `api:src/include/drivers/acpi.h:acpi_init`
@@ -7721,7 +7661,6 @@
 - `api:src/include/drivers/idt.h:idt_register_shared_irq_handler`
 - `api:src/include/drivers/idt.h:idt_set_gate`
 - `api:src/include/drivers/idt.h:idt_unmask_irq`
-- `api:src/include/drivers/idt.h:idt_validate_irq_state`
 - `api:src/include/drivers/mouse.h:mouse_get_buttons`
 - `api:src/include/drivers/mouse.h:mouse_get_config`
 - `api:src/include/drivers/mouse.h:mouse_get_status`
@@ -7744,14 +7683,10 @@
 - `api:src/include/drivers/pci.h:pci_read`
 - `api:src/include/drivers/pci.h:pci_write`
 - `api:src/include/drivers/rng.h:rng_get_bytes`
-- `api:src/include/drivers/rng.h:rng_get_status`
 - `api:src/include/drivers/rng.h:rng_init`
-- `api:src/include/drivers/rng.h:rng_validate_state`
 - `api:src/include/drivers/rtc.h:rtc_get_status`
 - `api:src/include/drivers/rtc.h:rtc_init`
 - `api:src/include/drivers/rtc.h:rtc_read_utc`
-- `api:src/include/drivers/rtc.h:rtc_self_test`
-- `api:src/include/drivers/rtc.h:rtc_validate_state`
 - `api:src/include/drivers/rtl8139.h:rtl8139_handler`
 - `api:src/include/drivers/rtl8139.h:rtl8139_init`
 - `api:src/include/drivers/rtl8811cu.h:rtl8811cu_connect_open`
@@ -7835,30 +7770,24 @@
 - `api:src/include/fs/block.h:block_find`
 - `api:src/include/fs/block.h:block_get_at`
 - `api:src/include/fs/block.h:block_get_count`
-- `api:src/include/fs/block.h:block_get_stats`
 - `api:src/include/fs/block.h:block_init`
 - `api:src/include/fs/block.h:block_read`
 - `api:src/include/fs/block.h:block_register`
-- `api:src/include/fs/block.h:block_self_test`
 - `api:src/include/fs/block.h:block_submit`
 - `api:src/include/fs/block.h:block_submit_physical_sync`
 - `api:src/include/fs/block.h:block_submit_sync`
 - `api:src/include/fs/block.h:block_unregister`
-- `api:src/include/fs/block.h:block_validate_state`
 - `api:src/include/fs/block.h:block_write`
 - `api:src/include/fs/block_cache.h:block_cache_clear`
 - `api:src/include/fs/block_cache.h:block_cache_get_durability_status`
-- `api:src/include/fs/block_cache.h:block_cache_get_stats`
 - `api:src/include/fs/block_cache.h:block_cache_init`
 - `api:src/include/fs/block_cache.h:block_cache_invalidate_device`
 - `api:src/include/fs/block_cache.h:block_cache_invalidate_range`
 - `api:src/include/fs/block_cache.h:block_cache_read`
-- `api:src/include/fs/block_cache.h:block_cache_self_test`
 - `api:src/include/fs/block_cache.h:block_cache_sync_all`
 - `api:src/include/fs/block_cache.h:block_cache_sync_all_until`
 - `api:src/include/fs/block_cache.h:block_cache_sync_device`
 - `api:src/include/fs/block_cache.h:block_cache_sync_device_until`
-- `api:src/include/fs/block_cache.h:block_cache_validate_state`
 - `api:src/include/fs/block_cache.h:block_cache_write`
 - `api:src/include/fs/block_cache.h:block_cache_writeback_step`
 - `api:src/include/fs/bmp.h:bmp_draw`
@@ -7875,7 +7804,6 @@
 - `api:src/include/fs/devfs.h:devfs_list`
 - `api:src/include/fs/devfs.h:devfs_lookup`
 - `api:src/include/fs/devfs.h:devfs_open_file`
-- `api:src/include/fs/devfs.h:devfs_self_test`
 - `api:src/include/fs/devfs.h:devfs_validate_state`
 - `api:src/include/fs/fat12.h:fat12_atomic_delete_file_in_dir`
 - `api:src/include/fs/fat12.h:fat12_atomic_delete_root`
@@ -7921,13 +7849,10 @@
 - `api:src/include/fs/fat32.h:fat32_write_file`
 - `api:src/include/fs/fat32.h:fat32_write_file_in_dir`
 - `api:src/include/fs/file_index.h:file_index_cancel`
-- `api:src/include/fs/file_index.h:file_index_get_status`
 - `api:src/include/fs/file_index.h:file_index_init`
 - `api:src/include/fs/file_index.h:file_index_poll`
 - `api:src/include/fs/file_index.h:file_index_rebuild`
 - `api:src/include/fs/file_index.h:file_index_search`
-- `api:src/include/fs/file_index.h:file_index_self_test`
-- `api:src/include/fs/file_index.h:file_index_validate_state`
 - `api:src/include/fs/fs.h:fs_atomic_delete_file_in_dir`
 - `api:src/include/fs/fs.h:fs_atomic_delete_root`
 - `api:src/include/fs/fs.h:fs_atomic_write_file_in_dir`
@@ -7968,7 +7893,6 @@
 - `api:src/include/fs/procfs.h:procfs_lookup`
 - `api:src/include/fs/procfs.h:procfs_open_file`
 - `api:src/include/fs/procfs.h:procfs_reset_controls`
-- `api:src/include/fs/procfs.h:procfs_self_test`
 - `api:src/include/fs/procfs.h:procfs_validate_state`
 - `api:src/include/fs/storage.h:storage_atomic_write_file`
 - `api:src/include/fs/storage.h:storage_check`
@@ -7986,7 +7910,6 @@
 - `api:src/include/fs/storage.h:storage_get_free_space`
 - `api:src/include/fs/storage.h:storage_get_mounted_at`
 - `api:src/include/fs/storage.h:storage_get_path_info`
-- `api:src/include/fs/storage.h:storage_get_status`
 - `api:src/include/fs/storage.h:storage_get_volume_at`
 - `api:src/include/fs/storage.h:storage_init`
 - `api:src/include/fs/storage.h:storage_list_dir`
@@ -8022,7 +7945,6 @@
 - `api:src/include/fs/sysfs.h:sysfs_list_path`
 - `api:src/include/fs/sysfs.h:sysfs_lookup`
 - `api:src/include/fs/sysfs.h:sysfs_open_file`
-- `api:src/include/fs/sysfs.h:sysfs_self_test`
 - `api:src/include/fs/sysfs.h:sysfs_validate_state`
 - `api:src/include/fs/vfs.h:vfs_chdir`
 - `api:src/include/fs/vfs.h:vfs_close`
@@ -8033,11 +7955,9 @@
 - `api:src/include/fs/vfs.h:vfs_fd_table_init`
 - `api:src/include/fs/vfs.h:vfs_fd_table_release`
 - `api:src/include/fs/vfs.h:vfs_fsync`
-- `api:src/include/fs/vfs.h:vfs_get_status`
 - `api:src/include/fs/vfs.h:vfs_getcwd`
 - `api:src/include/fs/vfs.h:vfs_init`
 - `api:src/include/fs/vfs.h:vfs_ioctl`
-- `api:src/include/fs/vfs.h:vfs_is_ready`
 - `api:src/include/fs/vfs.h:vfs_list_dir`
 - `api:src/include/fs/vfs.h:vfs_lookup`
 - `api:src/include/fs/vfs.h:vfs_lseek`
@@ -8052,7 +7972,6 @@
 - `api:src/include/fs/vfs.h:vfs_read`
 - `api:src/include/fs/vfs.h:vfs_refresh_mounts`
 - `api:src/include/fs/vfs.h:vfs_select`
-- `api:src/include/fs/vfs.h:vfs_self_test`
 - `api:src/include/fs/vfs.h:vfs_sync`
 - `api:src/include/fs/vfs.h:vfs_unmount_volume`
 - `api:src/include/fs/vfs.h:vfs_validate_state`
@@ -8074,14 +7993,6 @@
 - `api:src/include/fs/wav.h:wav_init`
 - `api:src/include/fs/wav.h:wav_load`
 - `api:src/include/fs/wav.h:wav_play`
-- `api:src/include/memory/compress.h:compress_data`
-- `api:src/include/memory/compress.h:compress_disable`
-- `api:src/include/memory/compress.h:compress_enable`
-- `api:src/include/memory/compress.h:compress_get_max_size`
-- `api:src/include/memory/compress.h:compress_init`
-- `api:src/include/memory/compress.h:compress_is_enabled`
-- `api:src/include/memory/compress.h:compress_print_stats`
-- `api:src/include/memory/compress.h:decompress_data`
 - `api:src/include/memory/paging.h:paging_copy_from_user`
 - `api:src/include/memory/paging.h:paging_copy_to_user`
 - `api:src/include/memory/paging.h:paging_free_directory`
@@ -8104,30 +8015,22 @@
 - `api:src/include/memory/slab.h:kmem_cache_owns`
 - `api:src/include/memory/vma.h:process_vma_copy`
 - `api:src/include/memory/vma.h:process_vma_ensure_page`
-- `api:src/include/memory/vma.h:process_vma_get_page_fault_stats`
 - `api:src/include/memory/vma.h:process_vma_handle_page_fault`
 - `api:src/include/memory/vma.h:process_vma_mmap`
 - `api:src/include/memory/vma.h:process_vma_munmap`
 - `api:src/include/memory/vma.h:process_vma_register_image`
 - `api:src/include/memory/vma.h:process_vma_release`
-- `api:src/include/process/process.h:ipc_current_has_pending`
-- `api:src/include/process/process.h:ipc_get_pending_count`
 - `api:src/include/process/process.h:ipc_get_stats`
 - `api:src/include/process/process.h:ipc_init`
-- `api:src/include/process/process.h:ipc_is_ready`
-- `api:src/include/process/process.h:ipc_receive`
-- `api:src/include/process/process.h:ipc_send`
 - `api:src/include/process/process.h:ipc_wait`
 - `api:src/include/process/process.h:process_apply_pending_cancel`
 - `api:src/include/process/process.h:process_block`
 - `api:src/include/process/process.h:process_bootstrap_idle`
 - `api:src/include/process/process.h:process_cancel_focused_user`
 - `api:src/include/process/process.h:process_cancel_user`
-- `api:src/include/process/process.h:process_cancel_user_test`
 - `api:src/include/process/process.h:process_cancel_wait`
 - `api:src/include/process/process.h:process_context_switch`
 - `api:src/include/process/process.h:process_copy_waiters`
-- `api:src/include/process/process.h:process_create_user_image`
 - `api:src/include/process/process.h:process_create_user_image_suspended`
 - `api:src/include/process/process.h:process_create_user_image_suspended_with_launch`
 - `api:src/include/process/process.h:process_create_user_test`
@@ -8139,8 +8042,6 @@
 - `api:src/include/process/process.h:process_get_event_generation`
 - `api:src/include/process/process.h:process_get_focus`
 - `api:src/include/process/process.h:process_get_last_user_fault`
-- `api:src/include/process/process.h:process_get_state_count`
-- `api:src/include/process/process.h:process_get_user_count`
 - `api:src/include/process/process.h:process_get_user_fault_count`
 - `api:src/include/process/process.h:process_handle_user_exception`
 - `api:src/include/process/process.h:process_init`
@@ -8148,32 +8049,25 @@
 - `api:src/include/process/process.h:process_power_set_quiescing`
 - `api:src/include/process/process.h:process_power_shutdown_users`
 - `api:src/include/process/process.h:process_prepare_user_termination`
-- `api:src/include/process/process.h:process_reap_finished_user`
 - `api:src/include/process/process.h:process_restore_focus`
 - `api:src/include/process/process.h:process_set_focus`
 - `api:src/include/process/process.h:process_set_focus_fallback`
-- `api:src/include/process/process.h:process_snapshot_copy`
 - `api:src/include/process/process.h:process_snapshot_copy_vmas`
 - `api:src/include/process/process.h:process_snapshot_list`
 - `api:src/include/process/process.h:process_stack_check_current`
 - `api:src/include/process/process.h:process_stack_get_info`
-- `api:src/include/process/process.h:process_stack_self_test`
-- `api:src/include/process/process.h:process_stack_validate_all`
 - `api:src/include/process/process.h:process_start_scheduler`
 - `api:src/include/process/process.h:process_start_user`
-- `api:src/include/process/process.h:process_take_user_test_result`
 - `api:src/include/process/process.h:process_terminate_user_signal`
 - `api:src/include/process/process.h:process_unblock`
 - `api:src/include/process/process.h:process_user_enter`
 - `api:src/include/process/process.h:process_user_termination_enter`
 - `api:src/include/process/process.h:process_wait`
 - `api:src/include/process/process.h:process_wake_channel`
-- `api:src/include/process/process.h:process_yield`
 - `api:src/include/process/process.h:scheduler_get_stats`
 - `api:src/include/process/process.h:scheduler_init`
 - `api:src/include/process/process.h:scheduler_preempt_user`
 - `api:src/include/process/process.h:scheduler_tick`
-- `api:src/include/process/process.h:scheduler_validate_invariants`
 - `api:src/include/process/signal.h:process_signal_action`
 - `api:src/include/process/signal.h:process_signal_copy_info`
 - `api:src/include/process/signal.h:process_signal_get_stats`
@@ -8186,20 +8080,15 @@
 - `api:src/include/process/signal.h:process_signal_raise`
 - `api:src/include/process/signal.h:process_signal_record_user_fault`
 - `api:src/include/process/signal.h:process_signal_return`
-- `api:src/include/process/signal.h:process_signal_self_test`
 - `api:src/include/process/signal.h:process_signal_send`
-- `api:src/include/process/signal.h:process_signal_validate_state`
 - `api:src/include/process/thread.h:thread_block`
 - `api:src/include/process/thread.h:thread_block_indefinite`
 - `api:src/include/process/thread.h:thread_cancel_wait`
 - `api:src/include/process/thread.h:thread_context_switch`
 - `api:src/include/process/thread.h:thread_copy_waiters`
 - `api:src/include/process/thread.h:thread_destroy`
-- `api:src/include/process/thread.h:thread_get_count`
 - `api:src/include/process/thread.h:thread_get_count_by_owner`
 - `api:src/include/process/thread.h:thread_init`
-- `api:src/include/process/thread.h:thread_is_ready`
-- `api:src/include/process/thread.h:thread_run_self_test`
 - `api:src/include/process/thread.h:thread_scheduler_tick`
 - `api:src/include/process/thread.h:thread_unblock`
 - `api:src/include/process/thread.h:thread_wait`
@@ -9357,21 +9246,17 @@
 - `c:src/core/kernel_tests_blackbox.c:blackbox_report`
 - `c:src/core/kernel_tests_blackbox.c:blackbox_snapshot`
 - `c:src/core/kernel_tests_blackbox.c:blackbox_wait_for_marker`
-- `c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox`
 - `c:src/core/kernel_tests_execution.c:execution_check_ipc`
 - `c:src/core/kernel_tests_execution.c:execution_check_processes`
 - `c:src/core/kernel_tests_execution.c:execution_check_signal`
 - `c:src/core/kernel_tests_execution.c:execution_check_threads`
 - `c:src/core/kernel_tests_execution.c:execution_check_wait`
 - `c:src/core/kernel_tests_execution.c:execution_check_workqueue`
-- `c:src/core/kernel_tests_execution.c:kernel_tests_run_execution`
-- `c:src/core/kernel_tests_network.c:kernel_tests_run_network`
 - `c:src/core/kernel_tests_network.c:network_check_net_socket`
 - `c:src/core/kernel_tests_network.c:network_check_route`
 - `c:src/core/kernel_tests_network.c:network_check_socket`
 - `c:src/core/kernel_tests_network.c:network_check_tls`
 - `c:src/core/kernel_tests_network.c:network_check_validators`
-- `c:src/core/kernel_tests_paging.c:kernel_tests_run_paging_vma`
 - `c:src/core/kernel_tests_paging.c:paging_build_fixture`
 - `c:src/core/kernel_tests_paging.c:paging_emit_compare_eax`
 - `c:src/core/kernel_tests_paging.c:paging_emit_exit`
@@ -9383,7 +9268,6 @@
 - `c:src/core/kernel_tests_paging.c:paging_emit_syscall`
 - `c:src/core/kernel_tests_paging.c:paging_validate_fixture_baseline`
 - `c:src/core/kernel_tests_paging.c:paging_wait_fixture`
-- `c:src/core/kernel_tests_platform.c:kernel_tests_run_platform`
 - `c:src/core/kernel_tests_platform.c:platform_check_acpi_power`
 - `c:src/core/kernel_tests_platform.c:platform_check_clock`
 - `c:src/core/kernel_tests_platform.c:platform_check_devices`
@@ -9392,7 +9276,6 @@
 - `c:src/core/kernel_tests_platform.c:platform_check_optional_devices`
 - `c:src/core/kernel_tests_platform.c:platform_check_rtc`
 - `c:src/core/kernel_tests_platform.c:platform_check_timer`
-- `c:src/core/kernel_tests_storage.c:kernel_tests_run_storage_vfs`
 - `c:src/core/kernel_tests_storage.c:storage_check_devfs`
 - `c:src/core/kernel_tests_storage.c:storage_check_equal`
 - `c:src/core/kernel_tests_storage.c:storage_check_heap`
@@ -9401,7 +9284,6 @@
 - `c:src/core/kernel_tests_storage.c:storage_check_sysfs`
 - `c:src/core/kernel_tests_storage.c:storage_check_sysfs_flag`
 - `c:src/core/kernel_tests_storage.c:storage_check_vfs`
-- `c:src/core/kernel_tests_tst6.c:kernel_tests_run_tst6`
 - `c:src/core/kernel_tests_tst6.c:tst6_check_ready`
 - `c:src/core/kernel_tests_tst6.c:tst6_equals`
 - `c:src/core/kernel_tests_tst6.c:tst6_length`
@@ -9735,10 +9617,6 @@
 - `c:src/core/socket.c:socket_wait_local`
 - `c:src/core/socket.c:socket_wait_owner`
 - `c:src/core/socket.c:socket_wake`
-- `c:src/core/string.c:kmemcpy`
-- `c:src/core/string.c:kmemset`
-- `c:src/core/string.c:kstrcmp`
-- `c:src/core/string.c:kstrlen`
 - `c:src/core/syscall.c:syscall_copy_user_string`
 - `c:src/core/syscall.c:syscall_dispatch`
 - `c:src/core/syscall.c:syscall_dispatch_user`
@@ -9839,35 +9717,6 @@
 - `c:src/core/test_protocol.c:test_protocol_poll`
 - `c:src/core/test_protocol.c:test_protocol_set_boot_ready`
 - `c:src/core/test_protocol.c:test_protocol_timeout`
-- `c:src/core/test_protocol_core.c:core_append_hex`
-- `c:src/core/test_protocol_core.c:core_append_text`
-- `c:src/core/test_protocol_core.c:core_append_uint`
-- `c:src/core/test_protocol_core.c:core_copy`
-- `c:src/core/test_protocol_core.c:core_copy_reason`
-- `c:src/core/test_protocol_core.c:core_crc32`
-- `c:src/core/test_protocol_core.c:core_emit_case`
-- `c:src/core/test_protocol_core.c:core_emit_event`
-- `c:src/core/test_protocol_core.c:core_emit_simple`
-- `c:src/core/test_protocol_core.c:core_field`
-- `c:src/core/test_protocol_core.c:core_fields_valid`
-- `c:src/core/test_protocol_core.c:core_frame_crc_valid`
-- `c:src/core/test_protocol_core.c:core_handle_frame`
-- `c:src/core/test_protocol_core.c:core_length`
-- `c:src/core/test_protocol_core.c:core_parse_hex`
-- `c:src/core/test_protocol_core.c:core_parse_uint`
-- `c:src/core/test_protocol_core.c:core_prefix_valid`
-- `c:src/core/test_protocol_core.c:core_token_equals`
-- `c:src/core/test_protocol_core.c:core_token_valid`
-- `c:src/core/test_protocol_core.c:core_zero`
-- `c:src/core/test_protocol_core.c:test_protocol_core_emit`
-- `c:src/core/test_protocol_core.c:test_protocol_core_feed_byte`
-- `c:src/core/test_protocol_core.c:test_protocol_core_format_event`
-- `c:src/core/test_protocol_core.c:test_protocol_core_init`
-- `c:src/core/test_protocol_core.c:test_protocol_core_is_active`
-- `c:src/core/test_protocol_core.c:test_protocol_core_poll`
-- `c:src/core/test_protocol_core.c:test_protocol_core_set_boot_ready`
-- `c:src/core/test_protocol_core.c:test_protocol_core_set_case_reason`
-- `c:src/core/test_protocol_core.c:test_protocol_core_set_ticks`
 - `c:src/core/tls.c:tls_capability_available`
 - `c:src/core/tls.c:tls_get_policy`
 - `c:src/core/tls.c:tls_get_status`
@@ -11247,7 +11096,6 @@
 - `c:src/drivers/video.c:video_terminal_set_hosted`
 - `c:src/drivers/video.c:video_terminal_suspend`
 - `c:src/drivers/video.c:video_terminal_take_hosted_dirty`
-- `c:src/drivers/video.c:video_test_copy_terminal`
 - `c:src/filemanager/filemanager.c:fm_block_read_only_mutation`
 - `c:src/filemanager/filemanager.c:fm_boot_directory_exists`
 - `c:src/filemanager/filemanager.c:fm_build_display_path`
@@ -12103,14 +11951,6 @@
 - `c:src/kernel/panic.c:panic_memory`
 - `c:src/kernel/panic.c:panic_print_metric`
 - `c:src/kernel/panic.c:panic_print_number`
-- `c:src/memory/compress.c:compress_data`
-- `c:src/memory/compress.c:compress_disable`
-- `c:src/memory/compress.c:compress_enable`
-- `c:src/memory/compress.c:compress_get_max_size`
-- `c:src/memory/compress.c:compress_init`
-- `c:src/memory/compress.c:compress_is_enabled`
-- `c:src/memory/compress.c:compress_print_stats`
-- `c:src/memory/compress.c:decompress_data`
 - `c:src/memory/memory.c:align_up`
 - `c:src/memory/memory.c:heap_align_size`
 - `c:src/memory/memory.c:heap_block_is_consistent`

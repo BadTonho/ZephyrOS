@@ -112,6 +112,43 @@ class Tst7ComparisonTests(unittest.TestCase):
 
 
 class Tst7RunnerContractTests(unittest.TestCase):
+    def test_host_case_allowlist_is_explicit(self):
+        catalog = {"cases": [
+            {"id": "host:tst2:protocol-core", "status": "AUTOMATED",
+             "executor": "host"},
+            {"id": "host:unknown", "status": "AUTOMATED",
+             "executor": "host"},
+        ]}
+        self.assertEqual(
+            [item["id"] for item in runner.host_cases(catalog)],
+            ["host:tst2:protocol-core", "host:unknown"])
+        self.assertEqual(
+            runner.HOST_CASE_TARGETS["host:tst3:string-compress"],
+            "test-tst3-host")
+
+    def test_strict_coverage_option_is_parseable(self):
+        arguments = runner.parser().parse_args([
+            "full", "--strict-coverage"])
+        self.assertTrue(arguments.strict_coverage)
+
+    def test_unmapped_automated_host_case_is_reported(self):
+        catalog = {"cases": [{"id": "host:unknown", "status": "AUTOMATED",
+                               "executor": "host"}]}
+        with patch("tools.test_catalog.validate_catalog", return_value=[]):
+            errors = runner.validate_catalog_for_regression(catalog)
+        self.assertIn("executor_host_ausente:host:unknown", errors)
+
+    def test_unapproved_qemu_fixture_is_reported(self):
+        catalog = {"cases": [{
+            "id": "qemu:test",
+            "status": "AUTOMATED",
+            "executor": "qemu",
+            "parameters": {"fixture": "arbitrary"},
+        }]}
+        with patch("tools.test_catalog.validate_catalog", return_value=[]):
+            errors = runner.validate_catalog_for_regression(catalog)
+        self.assertIn("fixture_qemu_ausente:qemu:test:arbitrary", errors)
+
     def test_exit_code_two_is_fail_without_explicit_blocked_output(self):
         self.assertEqual(runner.result_status(2), "FAIL")
         self.assertEqual(runner.result_status(2, blocked=True), "BLOCKED")
