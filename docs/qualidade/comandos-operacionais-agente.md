@@ -647,9 +647,10 @@ Os resultados ficam em `.tst7-results/<run-id>/`, que não é apagado por
 `qemu/`. O diretório é ignorado pelo Git e deve ser publicado pelo CI como
 artefato.
 
-O primeiro `full` pode terminar como `BLOCKED` somente por
-`baseline_ausente`; isso não cria baseline automaticamente. Depois de revisar
-os artefatos, aprove explicitamente a execução:
+Um `full` com `--strict-coverage` também reprova enquanto houver superfícies
+de software `PENDING`; isso não cria baseline automaticamente. Quando o
+catálogo estrito estiver completo e o relatório não tiver falhas ou bloqueios,
+revise os artefatos e aprove explicitamente a execução:
 
 ```text
 python tools/tst7_regression_runner.py approve --run-id <id>
@@ -674,6 +675,26 @@ O runner continua após uma falha para coletar a matriz, mas cada caso QEMU é
 executado uma única vez. Ausência de QEMU, imagem, fixture, baseline ou outra
 dependência obrigatória é `BLOCKED`; falha do guest, timeout ou regressão é
 `FAIL`. O hardware físico permanece fora da matriz e `BLOCKED`.
+
+## Supervisor continuo TST7
+
+O supervisor implementado em `tools/tst7_continuous_runner.py` possui os
+modos `quick`, `full` e `soak`. O modo `soak` executa somente os quatro casos
+de estresse TST6; `full` exige `--strict-coverage` e, portanto, permanece
+reprovado enquanto houver superficie de software `PENDING`.
+
+```text
+python tools/tst7_continuous_runner.py start --mode quick --max-cycles 2 --interval 0
+python tools/tst7_continuous_runner.py start --mode full --max-cycles 2 --interval 60
+python tools/tst7_continuous_runner.py start --mode soak --max-cycles 2 --interval 0
+python tools/tst7_continuous_runner.py start --mode full --forever --interval 60
+```
+
+`Ctrl+C` ou o arquivo definido por `--stop-file` solicita parada graciosa.
+Cada ciclo preserva artefatos em `.tst7-results/continuous/` sem sobrescrever
+execucoes anteriores. A entrada Linux equivalente e
+`tools/tst7-continuous`; use `chmod +x tools/tst7-continuous` antes da primeira
+execucao.
 
 ## Comandos no Shell
 

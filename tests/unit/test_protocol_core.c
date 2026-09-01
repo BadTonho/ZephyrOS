@@ -11,6 +11,8 @@ typedef struct {
     uint32_t event_count;
     uint32_t run_count;
     int run_result;
+    int set_reason_during_run;
+    test_protocol_core_t* core;
     char last_case[TEST_PROTOCOL_CASE_CAPACITY];
     uint32_t last_iteration;
     uint32_t last_seed;
@@ -52,6 +54,10 @@ static int fake_run_case(void* context, const char* case_id,
     fake->last_case[case_length] = '\0';
     fake->last_iteration = iteration;
     fake->last_seed = seed;
+    if (fake->set_reason_during_run && fake->core &&
+        test_protocol_core_set_case_reason(fake->core, "fixture_failure") != OK) {
+        return ERR_STATE;
+    }
     return fake->run_result;
 }
 
@@ -97,7 +103,9 @@ static int prepare_core(test_protocol_core_t* core, fake_context_t* fake) {
     callbacks.emit = fake_emit;
     callbacks.run_case = fake_run_case;
     callbacks.context = fake;
-    return test_protocol_core_init(core, &callbacks);
+    if (test_protocol_core_init(core, &callbacks) != OK) return ERR_STATE;
+    fake->core = core;
+    return OK;
 }
 
 static int expect_event(const fake_context_t* fake, uint32_t index,
@@ -224,6 +232,55 @@ static int test_event_format(void) {
     return test_protocol_core_format_event(&event, output, 16U) == 0U;
 }
 
+static int test_public_api_contract(void) {
+    test_protocol_core_t core;
+    test_protocol_core_t uninitialized;
+    fake_context_t fake;
+    char frame[TEST_OUTPUT_CAPACITY];
+    uint32_t length;
+
+    memset(&uninitialized, 0, sizeof(uninitialized));
+    if (test_protocol_core_is_active(&uninitialized) != 0U ||
+        test_protocol_core_set_ticks(&uninitialized, 1U) != ERR_STATE ||
+        test_protocol_core_set_boot_ready(&uninitialized) != ERR_STATE) {
+        return 0;
+    }
+    if (prepare_core(&core, &fake) != OK ||
+        test_protocol_core_is_active(&core) != 0U ||
+        test_protocol_core_emit(&core, TEST_PROTOCOL_EVENT_PASS, 0) !=
+        ERR_UNAVAILABLE || test_protocol_core_set_ticks(&core, 4U) != OK ||
+        test_protocol_core_set_case_reason(&core, "fixture_failure") != OK ||
+        test_protocol_core_set_case_reason(&core, "not valid") != OK) {
+        return 0;
+    }
+    length = make_frame(frame, sizeof(frame), "cmd=HELLO run=hosttest seq=1");
+    if (!length || feed_frame(&core, frame, length) != OK ||
+        test_protocol_core_is_active(&core) == 0U ||
+        test_protocol_core_set_boot_ready(&core) != OK ||
+        test_protocol_core_poll(&core, 4U) != OK) {
+        return 0;
+    }
+    clear_events(&fake);
+    if (test_protocol_core_emit(&core, TEST_PROTOCOL_EVENT_BLOCKED,
+                                "ERR_CANCELLED") != OK ||
+        !expect_event(&fake, 0U, TEST_PROTOCOL_EVENT_BLOCKED,
+                      "ERR_CANCELLED")) {
+        return 0;
+    }
+    clear_events(&fake);
+    fake.run_result = ERR_INVALID;
+    fake.set_reason_during_run = 1;
+    length = make_frame(frame, sizeof(frame),
+                        "cmd=RUN case=qemu:tst2:boot-ready iteration=1 seed=4 seq=2");
+    if (!length || feed_frame(&core, frame, length) != ERR_INVALID ||
+        fake.event_count != 2U ||
+        !expect_event(&fake, 1U, TEST_PROTOCOL_EVENT_FAIL,
+                      "fixture_failure")) {
+        return 0;
+    }
+    return 1;
+}
+
 static int run_tests(void) {
     int passed = 1;
 
@@ -237,6 +294,8 @@ static int run_tests(void) {
     printf("protocol_invalid_input %s\n", passed ? "OK" : "ERRO");
     passed = test_event_format() && passed;
     printf("protocol_event_format %s\n", passed ? "OK" : "ERRO");
+    passed = test_public_api_contract() && passed;
+    printf("protocol_public_api %s\n", passed ? "OK" : "ERRO");
     return passed;
 }
 

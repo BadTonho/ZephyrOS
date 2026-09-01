@@ -50,6 +50,13 @@ class CatalogAndStatusTests(unittest.TestCase):
         with self.assertRaises(runner.RunnerError):
             runner.validate_case_for_runner(case)
 
+    def test_fixture_allowlist(self):
+        runner.validate_fixture(None)
+        runner.validate_fixture("readonly")
+        runner.validate_fixture("readonly-update")
+        with self.assertRaisesRegex(runner.RunnerError, "fixture_invalida"):
+            runner.validate_fixture("arbitrary")
+
     def test_status_classification(self):
         self.assertEqual(
             runner.result_status([{"status": "PASS"}], None),

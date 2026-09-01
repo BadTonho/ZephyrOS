@@ -3688,3 +3688,57 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `.tst7-results/tst7-20260901T141558Z-3500/`, tambem retornou `PASS` com os
   sete gates e a comparacao contra o baseline.
   Nao ha processo QEMU residual.
+
+- Fechamento de cobertura e supervisor TST7 iniciado em 2026-09-01 12:39
+  (America/Sao_Paulo). O teste host-only do protocolo foi ampliado para
+  exercitar diretamente todas as APIs publicas do nucleo, incluindo estados
+  nao inicializado, ticks, motivo de falha e emissao de eventos. `make
+  test-tst2-host` passou; `make test-tst3-host` passou depois de concluir os
+  testes de strings, compressao, packager e updater.
+
+  O validador passou a exigir vinculos bidirecionais, `coverage_mode`, casos
+  automatizados e registro declarativo. O catalogo foi sincronizado sem
+  inferir cobertura por arquivo: passou a registrar 179 superficies `COVERED`,
+  6.629 `PENDING` e 38 casos. `make catalog-test`, `make test-qemu-selftest`,
+  `make q3check`, `make test-tst7-host` e
+  `make test-tst7-continuous-host` passaram.
+
+  `make catalog-test-strict` foi executado e falhou pelos `PENDING` reais,
+  preservando a pendencia em vez de mascarar a lacuna. O TST7 agora aceita o
+  modo `soak`, limitado aos quatro casos de estresse TST6; `full` e `soak`
+  podem exigir o gate estrito. O supervisor possui ciclos finitos, modo
+  permanente explicito, watchdog, parada por Ctrl+C/arquivo e entrada Linux
+  `tools/tst7-continuous`.
+
+- Fechamento da validacao da infraestrutura de cobertura executado em:
+  2026-09-01 12:52 (America/Sao_Paulo). O validador passou a verificar cada
+  vinculo explicito de uma entrada do registro, inclusive quando ha varias
+  superficies, e rejeita um registro invalido antes de alterar o catalogo.
+  A suite conjunta passou com 32 testes Python; `make catalog-test` confirmou
+  6.808 superficies e 38 casos; `make q3check` passou; e os alvos host TST7
+  passaram com 17 e 7 testes.
+
+  O `make test-tst7-quick` de 2026-09-01 12:41 terminou como `BLOCKED` somente
+  porque `test-tst3-sanitize` nao conseguiu executar o Clang configurado
+  (`permission denied`), preservando o run
+  `.tst7-results/tst7-20260901T154116Z-25344/`. O supervisor foi exercitado
+  em dois ciclos `full` finitos; ambos terminaram `FAIL` no gate estrito pela
+  primeira superficie `PENDING`, preservando os dois runs e agrupando a falha
+  em `.tst7-results/continuous/session-20260901T154338Z-16108/`. A cobertura
+  permanece em 179 `COVERED` e 6.629 `PENDING`; a TST7 integral continua
+  pendente ate os harnesses reais dos lotes restantes serem implementados.
+
+- Revalidacao final dos runners executada em: 2026-09-01 13:01
+  (America/Sao_Paulo). `make test-qemu-selftest` passou com o self-test e 12
+  testes unitarios; `make test-tst7-host` passou com 19 testes;
+  `make test-tst7-continuous-host` passou com 7 testes; `make q3check` e
+  `make catalog-test` passaram. A allowlist de fixtures foi aplicada tanto no
+  runner QEMU quanto no TST7, e casos host automatizados sem alvo agora sao
+  reportados como inconsistencias, nunca ignorados.
+
+- Build limpo revalidado em 2026-09-01 13:04 (America/Sao_Paulo): `make clean`
+  e `make` terminaram com sucesso, gerando `build/zephyros.img` de 256 MiB.
+  O compilador emitiu warnings preexistentes do código freestanding, mas não
+  houve erro de compilação ou linkedição. O gate estrito continua reprovando
+  os 6.629 vínculos de cobertura ainda `PENDING`; essa evidência não altera
+  artificialmente o status do catálogo.
