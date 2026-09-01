@@ -12,10 +12,18 @@ existente.
 
 O catálogo canônico, o sincronizador e a visão Markdown foram criados e
 validados pelo alvo host-only `make catalog-test`. A TST5 e a camada QEMU da
-TST6 foram implementadas e validadas; TST7 foi implementada e permanece
-pendente da validacao completa contra baseline aprovado para regressao
-continua. Hardware físico permanece `BLOCKED` enquanto não houver equipamento
-e evidência correspondente.
+TST6 foram implementadas e validadas. A TST7 foi implementada, teve o baseline
+aprovado explicitamente e passou por uma execução `full` posterior contra
+esse baseline. Hardware físico permanece `BLOCKED` enquanto não houver
+equipamento e evidência correspondente.
+
+A infraestrutura TST1–TST7 está concluída para a matriz automatizada existente,
+mas o programa de cobertura integral ainda não está concluído. O catálogo
+mantém 36 casos `AUTOMATED` e superfícies de API e comportamento em
+`PENDING`. O próximo objetivo deste roadmap é eliminar esse `PENDING` de
+todas as superfícies de software testáveis, vinculando cada uma a um caso
+executável e a evidência reproduzível. Isso não significa declarar hardware
+físico validado sem equipamento.
 
 ## Objetivo
 
@@ -639,6 +647,95 @@ artificial.
 
 Com esses criterios atendidos, a TST7 esta concluida para a matriz automatizada.
 Hardware fisico continua `BLOCKED` e nao entra na matriz QEMU.
+
+## Plano de fechamento da cobertura integral
+
+### Meta: 100% das superfícies de software testáveis
+
+“100% testável” significa que nenhuma superfície de software permanece sem
+um caminho de validação definido. Cada entrada do catálogo deverá estar
+vinculada a pelo menos um caso executável, com resultado, timeout, artefato e
+condição de limpeza verificáveis. Um caso pode cobrir várias funções quando o
+fluxo realmente as exercitar, mas o vínculo com cada superfície deverá ser
+explícito no catálogo.
+
+A meta não será medida apenas por cobertura de linhas. Para cada superfície
+aplicável, o catálogo deverá identificar:
+
+- caminho de sucesso;
+- entradas inválidas e limites relevantes;
+- códigos de erro e estados indisponíveis;
+- ownership, limpeza e ausência de recursos residuais;
+- concorrência, cancelamento ou timeout quando fizerem parte do contrato;
+- observação do resultado pelo host, pelo harness interno ou pelo fluxo
+  black-box.
+
+Uma superfície só poderá sair de `PENDING` quando houver execução real e
+evidência preservada. `BLOCKED` será reservado para dependência externa
+comprovadamente ausente, como hardware físico; não será usado para esconder
+um teste ainda não implementado.
+
+### Etapas de implementação
+
+- [ ] Auditar as superfícies `PENDING` por subsistema, removendo referências
+  obsoletas e agrupando APIs que possam compartilhar um fixture determinístico.
+- [ ] Criar uma matriz de cobertura que associe cada superfície a um executor:
+  host-only, harness interno do kernel, QEMU black-box ou perfil de hardware.
+- [ ] Completar os testes host-only para lógica pura, estruturas de dados,
+  parsing, serialização, limites, overflow, corrupção e códigos de erro.
+- [ ] Expandir os harnesses internos do kernel para memória, paging, processos,
+  threads, scheduler, IPC, wait queues, workqueues, VFS, storage, rede e
+  plataforma, incluindo limpeza e invariantes de cada fixture.
+- [ ] Expandir os casos black-box para Shell, entrada, aplicações, processos,
+  VFS, atualização, recuperação, reboot e poweroff, mantendo scripts de
+  entrada allowlisted e observação estruturada.
+- [ ] Criar perfis QEMU e fixtures negativos para capacidades ausentes,
+  dispositivos degradados, falhas controladas, cancelamento e recuperação.
+- [ ] Adicionar ao catálogo somente APIs realmente exercitadas e regenerar a
+  visão Markdown após cada lote de cobertura.
+- [ ] Integrar todos os casos automatizados ao `full` da TST7, mantendo o
+  `quick` curto e sem retries ocultos.
+- [ ] Executar o supervisor contínuo somente depois que a matriz de cobertura
+  atingir o critério de saída definido abaixo.
+
+### Ordem recomendada por domínio
+
+```text
+catálogo e contratos
+    -> core e lógica host-only
+    -> memória e kernel determinístico
+    -> processos, threads e IPC
+    -> storage, VFS e atualizações
+    -> rede e protocolos offline
+    -> drivers e plataforma em perfis QEMU
+    -> Shell, aplicações e fluxos black-box
+    -> integração completa no TST7
+```
+
+Cada lote deve preservar a separação entre teste de unidade, integração,
+black-box e hardware. O mesmo caso não deve ser contado como cobertura de uma
+API que ele não chama apenas porque pertence ao mesmo módulo.
+
+### Critérios de saída da cobertura integral
+
+- [ ] Nenhuma superfície de software elegível permanece `PENDING` no catálogo.
+- [ ] Cada superfície está vinculada a um caso `AUTOMATED` ou a um caso
+  `BLOCKED` com capacidade ausente, evidência e próximo critério reproduzível.
+- [ ] Cada subsistema possui testes de sucesso, erro, limite e limpeza quando
+  esses comportamentos fazem parte do contrato.
+- [ ] O `full` da TST7 executa todos os casos automatizados em processos
+  separados, com timeout, seed e artefatos próprios.
+- [ ] O supervisor contínuo consegue repetir ciclos sem apagar falhas,
+  atualizar baseline automaticamente ou permitir processos QEMU residuais.
+- [ ] A execução final contra baseline aprovado passa sem `FAIL`, `TIMEOUT`,
+  warning novo ou perda de cobertura.
+- [ ] Hardware físico continua explicitamente separado como `BLOCKED` até
+  existir equipamento e evidência real.
+
+O documento operacional do supervisor está em
+`docs/qualidade/testador-continuo.md`. Ele só deve ser usado em execução
+permanente depois que os critérios acima forem comprovados; antes disso, ele
+serve para encontrar as lacunas restantes sem mascará-las.
 
 ## Fora do escopo
 
