@@ -609,15 +609,18 @@ Os resultados persistentes ficam em `.tst7-results/<run-id>/`, fora de `build/`,
 para sobreviver a `make clean`. Cada execucao registra manifesto, resultado,
 cobertura, resumo, stdout/stderr e indice SHA-256 dos artefatos. Os artefatos
 dos casos QEMU sao escritos dentro da execucao TST7 antes de qualquer limpeza.
-O baseline versionado em `tests/baselines/tst7-approved.json` ainda nao foi
-criado: ele somente podera ser produzido por aprovacao explicita de um
-`full` aprovado.
+O baseline versionado em `tests/baselines/tst7-approved.json` foi criado por
+aprovacao explicita do `full` `tst7-20260901T124115Z-19420`. A execucao final
+`tst7-20260901T135144Z-12828` passou contra esse baseline com as suites host,
+build limpo, catalogo, fixtures e os 36 casos QEMU aprovados.
 
 O comparador cobre mudancas de status, timeout, fase, evento, warnings
 normalizados, cobertura aprovada e duracao. A duracao so e comparada quando o
 ambiente e identico e so reprova quando o aumento e simultaneamente maior que
-20% e 5 segundos. Superficies `PENDING`, hardware fisico e limitacoes de
-fixture permanecem explicitos; nao sao convertidos em cobertura artificial.
+20% e 5 segundos; etapas de preparacao do host, como `build`, nao sao casos e
+nao entram nessa comparacao. Superficies `PENDING`, hardware fisico e
+limitacoes de fixture permanecem explicitos; nao sao convertidos em cobertura
+artificial.
 
 ### TST7 — Checklist de saida
 
@@ -629,14 +632,13 @@ fixture permanecem explicitos; nao sao convertidos em cobertura artificial.
   incluindo mutacoes sinteticas nos testes unitarios.
 - [x] Manifesto versionado de regressao permanente com caso, condicao
   observavel e origem validados contra o catalogo.
-- [ ] `make test-tst7-host`, `make test-tst7-quick`, `make test-tst7-full` e
+- [x] `make test-tst7-host`, `make test-tst7-quick`, `make test-tst7-full` e
   uma aprovacao real de baseline executados com evidencia.
-- [ ] Uma segunda execucao `full` passou contra o baseline aprovado sem
+- [x] Uma segunda execucao `full` passou contra o baseline aprovado sem
   regressao.
 
-Enquanto os dois ultimos itens nao tiverem evidencia real, a TST7 permanece
-implementada e pendente de validacao. Hardware fisico continua `BLOCKED` e
-nao entra na matriz QEMU.
+Com esses criterios atendidos, a TST7 esta concluida para a matriz automatizada.
+Hardware fisico continua `BLOCKED` e nao entra na matriz QEMU.
 
 ## Fora do escopo
 
