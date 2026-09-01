@@ -3603,6 +3603,17 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   pendente da primeira execucao `full` totalmente aprovada e da segunda
   comparacao contra esse baseline.
 
+- TST7: `make test-tst7-full` executado integralmente em 2026-08-31 22:48
+  (America/Sao_Paulo), no run
+  `.tst7-results/tst7-20260901T012735Z-27740/`. A execução concluiu limpeza,
+  build, todas as etapas rápidas, `catalog-test`, `storage-fixtures` e os
+  36/36 casos QEMU individualmente, sem retry. Todos os 36 casos QEMU ficaram
+  `PASS`, incluindo os quatro estresses TST6 e as falhas controladas; não houve
+  caso `FAIL` ou `TIMEOUT`. O único bloqueio foi `test-tst3-sanitize`, com
+  `permission denied` no Clang configurado, portanto o resultado global ficou
+  `BLOCKED`. Foram preservados 306 arquivos de artefato e não há processo QEMU
+  residual. O baseline continua ausente e não foi aprovado automaticamente.
+
 - TST7: rodada `quick` pós-correção executada em 2026-09-01 00:33 UTC
   (2026-08-31 21:33 America/Sao_Paulo), no run
   `.tst7-results/tst7-20260901T003336Z-11788/`. Os sete passos terminaram sem
