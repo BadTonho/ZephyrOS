@@ -3614,6 +3614,17 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `BLOCKED`. Foram preservados 306 arquivos de artefato e não há processo QEMU
   residual. O baseline continua ausente e não foi aprovado automaticamente.
 
+- TST7: registro da nova execução completa após liberar o Clang em
+  2026-08-31 23:23 (America/Sao_Paulo), no run
+  `.tst7-results/tst7-20260901T020106Z-23812/`. O `test-tst3-sanitize` passou
+  e todas as etapas de build, host e catálogo passaram. Os 36 casos QEMU foram
+  executados sem retry: 34 `PASS` e dois `FAIL` por watchdog do guest,
+  `qemu:tst6:matrix:usb-storage` (`BEGIN -> HEARTBEAT`, estado `RUNNING`) e
+  `qemu:tst6:stress:network` (iterações 0 e 1 passaram; a iteração 2 ficou sem
+  heartbeat suficiente). Foram preservados 306 artefatos e não há processo
+  QEMU residual. O baseline continua ausente; a aprovação permanece bloqueada
+  pelas falhas reais dos dois casos.
+
 - TST7: rodada `quick` pós-correção executada em 2026-09-01 00:33 UTC
   (2026-08-31 21:33 America/Sao_Paulo), no run
   `.tst7-results/tst7-20260901T003336Z-11788/`. Os sete passos terminaram sem
