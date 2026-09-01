@@ -3549,3 +3549,64 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   Package/update validaram os contratos de failpoint e indisponibilidade da
   imagem FAT32; uma mutacao transacional real permanece dependente de fixture
   FAT12 mutavel. Hardware fisico continua `BLOCKED` por ausencia de equipamento.
+
+- TST7: implementacao inicial concluida em 2026-08-31 20:31 (America/Sao_Paulo).
+  Foi criado `tools/tst7_regression_runner.py` com os modos `quick`, `full` e
+  `approve --run-id`, o comparador de status/contrato, timeout, warnings,
+  cobertura e duracao, alem do armazenamento duravel em `.tst7-results/`.
+  Tambem foram adicionados `tests/unit/test_tst7_runner.py`, o manifesto
+  versionado `tests/regressions/manifest.json`, os alvos Makefile TST7 e a
+  documentacao operacional. A validacao unitária inicial passou com 10 testes
+  e o catalogo passou com 6.808 superficies e 36 casos.
+
+  A TST7 ainda nao foi marcada como concluida: falta executar os alvos
+  `test-tst7-host`, `test-tst7-quick` e `test-tst7-full`, revisar e aprovar o
+  primeiro baseline e repetir o `full` contra ele. Nenhum baseline foi criado
+  automaticamente.
+
+- TST7: validacao inicial executada em 2026-08-31 20:34 (America/Sao_Paulo).
+  `make test-tst7-host` passou com 11 testes; `make test-tst7-quick` executou
+  todos os sete passos, com seis `PASS` e `test-tst3-sanitize` em `BLOCKED`
+  porque o Clang configurado retornou `permission denied`. O primeiro `full`
+  preservou 36/36 casos QEMU, com 31 `PASS` e failures de perfil/heartbeat;
+  nenhum baseline foi criado.
+
+- TST7: segunda validacao `full` concluida em 2026-08-31 21:23
+  (America/Sao_Paulo), no run
+  `.tst7-results/tst7-20260901T000021Z-21692/`. A execucao fez limpeza,
+  build, gates host-only, catalogo e todos os 36 casos QEMU sem retry; foram
+  31 `PASS` e 5 `FAIL` (`tst4:network` da configuracao anterior e quatro
+  watchdogs TST6), alem do bloqueio ambiental do sanitizador. A aprovacao
+  explicita foi rejeitada para esse relatorio, como exigido, e
+  `tests/baselines/tst7-approved.json` continua ausente.
+
+  A politica final de rede foi verificada isoladamente: `tst5:apps` passou com
+  `-nic none` e `tst4:network` passou com E1000 user-mode restrita. Tambem
+  passaram novamente `make test-qemu-selftest`, `make q3check`,
+  `make catalog-test` e toda a suite Python com 63 testes. Nao houve processo
+  QEMU residual. A TST7 permanece implementada, mas nao concluida: ainda falta
+  um `full` sem falhas/bloqueios, a aprovacao real do baseline e uma segunda
+  execucao `full` aprovada.
+
+- TST7: revisão final da infraestrutura executada em 2026-08-31 21:32
+  (America/Sao_Paulo). Corrigido o fechamento do relatorio para usar somente
+  estado pertencente ao proprio relatorio e endurecida a classificacao: codigo
+  de saida 2 e `FAIL` por padrao, tornando-se `BLOCKED` somente quando a saida
+  declara explicitamente o bloqueio; um caso QEMU sem `result.json` agora e
+  `BLOCKED`. `make test-tst7-host` passou com 13 testes, a suite Python completa
+  passou com 64 testes, `make q3check` passou e `make catalog-test` confirmou
+  6.808 superficies e 36 casos. Nao ha processo QEMU residual.
+
+  Nenhum baseline foi criado: os dois `full` anteriores executaram 36/36 casos,
+  mas o mais recente terminou com 31 `PASS` e 5 `FAIL`, e o sanitizador Clang
+  continua `BLOCKED` por `permission denied`. A TST7 permanece implementada e
+  pendente da primeira execucao `full` totalmente aprovada e da segunda
+  comparacao contra esse baseline.
+
+- TST7: rodada `quick` pós-correção executada em 2026-09-01 00:33 UTC
+  (2026-08-31 21:33 America/Sao_Paulo), no run
+  `.tst7-results/tst7-20260901T003336Z-11788/`. Os sete passos terminaram sem
+  loop: seis `PASS` e `test-tst3-sanitize` `BLOCKED` por `permission denied`
+  no Clang configurado. O runner encerrou com `status=BLOCKED` e preservou
+  `manifest.json`, `result.json`, `coverage.json`, `summary.md`, logs e
+  `artifact-index.json`.

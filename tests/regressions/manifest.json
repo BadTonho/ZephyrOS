@@ -1,0 +1,24 @@
+{
+  "schema": "zephyros-tst7-regressions-v1",
+  "version": 1,
+  "entries": [
+    {
+      "id": "tst2-handshake-sequence",
+      "case_id": "qemu:tst2:boot-ready",
+      "condition": "READY, HEARTBEAT e PASS usam sequencia crescente e run valido",
+      "origin": "docs/qualidade/registro-validacoes.md:TST2 handshake"
+    },
+    {
+      "id": "tst5-input-recovery",
+      "case_id": "qemu:tst5:input",
+      "condition": "entrada QMP permitida deixa o prompt recuperado sem fila residual",
+      "origin": "docs/qualidade/registro-validacoes.md:TST5 input"
+    },
+    {
+      "id": "tst6-fault-recovery",
+      "case_id": "qemu:tst6:fault:recovery",
+      "condition": "failpoint one-shot retorna erro esperado e a operacao posterior passa",
+      "origin": "docs/qualidade/registro-validacoes.md:TST6 recovery"
+    }
+  ]
+}

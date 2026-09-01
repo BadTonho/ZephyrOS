@@ -1,0 +1,155 @@
+import json
+import tempfile
+import unittest
+from pathlib import Path
+from unittest.mock import patch
+
+from tools import tst7_regression_runner as runner
+
+
+def report(status="PASS", duration=10.0, warnings=None, covered=True):
+    surface_statuses = {"c:src/core/test.c:check": "COVERED" if covered else "PENDING"}
+    return {
+        "schema": runner.SCHEMA,
+        "mode": "full",
+        "execution_status": status,
+        "status": status,
+        "environment": {"os": "test", "python": "3", "make": "make", "qemu": "qemu"},
+        "warnings": warnings or {},
+        "coverage": {
+            "surface_statuses": surface_statuses,
+            "covered_surface_ids": [
+                "c:src/core/test.c:check"] if covered else [],
+                "automated_case_ids": ["qemu:tst7:test"],
+        },
+        "contract": {"entries": {
+            "qemu:qemu:tst7:test": {
+                "status": "PASS" if status == "PASS" else status,
+                "termination": "completed",
+                "phase": "PASS",
+                "first_error": None,
+                "events": ["READY", "HEARTBEAT", "BEGIN", "PASS"],
+                "duration_seconds": duration,
+            },
+        }},
+    }
+
+
+class Tst7ComparisonTests(unittest.TestCase):
+    def test_missing_baseline_is_blocked(self):
+        result = runner.compare_runs(report(), None)
+        self.assertEqual(result["status"], "BLOCKED")
+        self.assertEqual(result["cause"], "baseline_ausente")
+
+    def test_pass_to_fail_has_priority_over_blocked(self):
+        current = report("FAIL")
+        result = runner.compare_runs(current, report())
+        self.assertEqual(result["status"], "FAIL")
+        self.assertTrue(any("pass_para_falha" in item
+                            for item in result["reasons"]))
+
+    def test_timeout_is_a_real_failure(self):
+        current = report("TIMEOUT")
+        result = runner.compare_runs(current, report())
+        self.assertEqual(result["status"], "FAIL")
+
+    def test_pass_to_blocked_stays_blocked(self):
+        current = report("BLOCKED")
+        result = runner.compare_runs(current, report())
+        self.assertEqual(result["status"], "BLOCKED")
+
+    def test_duration_requires_both_thresholds(self):
+        current = report(duration=14.0)
+        baseline = report(duration=10.0)
+        self.assertEqual(runner.compare_runs(current, baseline)["status"], "PASS")
+        current = report(duration=18.1)
+        result = runner.compare_runs(current, baseline)
+        self.assertEqual(result["status"], "FAIL")
+        self.assertEqual(result["duration"]["status"], "REGRESSION")
+
+    def test_new_warning_is_detected(self):
+        current = report(warnings={"qemu:test:warning nova": 1})
+        result = runner.compare_runs(current, report())
+        self.assertEqual(result["status"], "FAIL")
+        self.assertEqual(result["warnings"]["status"], "FAIL")
+
+    def test_coverage_loss_is_detected(self):
+        result = runner.compare_runs(report(covered=False), report())
+        self.assertEqual(result["status"], "FAIL")
+        self.assertTrue(any("cobertura_perdida" in item
+                            for item in result["reasons"]))
+
+    def test_environment_difference_does_not_fail_duration(self):
+        current = report(duration=100.0)
+        baseline = report(duration=10.0)
+        current["environment"]["qemu"] = "other"
+        result = runner.compare_runs(current, baseline)
+        self.assertEqual(result["status"], "PASS")
+        self.assertEqual(result["duration"]["status"], "NOT_COMPARABLE:environment")
+
+
+class Tst7RunnerContractTests(unittest.TestCase):
+    def test_exit_code_two_is_fail_without_explicit_blocked_output(self):
+        self.assertEqual(runner.result_status(2), "FAIL")
+        self.assertEqual(runner.result_status(2, blocked=True), "BLOCKED")
+
+    def test_qemu_network_policy_isolated_by_capability(self):
+        self.assertEqual(runner.qemu_network({"id": "qemu:tst5:apps"}), "none")
+        self.assertEqual(runner.qemu_network({"id": "qemu:tst4:network"}),
+                         "user,model=e1000,restrict=on")
+        self.assertEqual(runner.qemu_network({"id": "qemu:tst6:matrix:network",
+                                              "qemu_profile": "network"}),
+                         "user,model=e1000,restrict=on")
+
+    def test_seed_is_reproducible(self):
+        self.assertEqual(runner.stable_seed("qemu:tst6:stress:kernel"),
+                         runner.stable_seed("qemu:tst6:stress:kernel"))
+        self.assertNotEqual(runner.stable_seed("qemu:tst6:stress:kernel"),
+                            runner.stable_seed("qemu:tst6:stress:apps"))
+
+    def test_regression_manifest_requires_case_condition_and_origin(self):
+        catalog = {"cases": [{"id": "qemu:tst7:test", "status": "AUTOMATED",
+                               "executor": "qemu"}]}
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "manifest.json"
+            path.write_text(json.dumps({
+                "schema": runner.REGRESSION_SCHEMA,
+                "entries": [{"id": "r1", "case_id": "qemu:tst7:test",
+                              "condition": "PASS event", "origin": "test"}],
+            }), encoding="utf-8")
+            self.assertEqual(runner.validate_regression_manifest(path, catalog), [])
+            path.write_text(json.dumps({
+                "schema": runner.REGRESSION_SCHEMA,
+                "entries": [{"id": "r1", "case_id": "missing",
+                              "condition": "", "origin": ""}],
+            }), encoding="utf-8")
+            self.assertGreaterEqual(
+                len(runner.validate_regression_manifest(path, catalog)), 3)
+
+    def test_explicit_approval_writes_versioned_baseline(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            run_dir = root / "tst7-run"
+            run_dir.mkdir()
+            value = report()
+            value.update({
+                "run_id": "tst7-run",
+                "execution_status": "PASS",
+                "cases": [{"id": "qemu:tst7:test", "status": "PASS"}],
+                "steps": [{"label": "build", "status": "PASS"}],
+                "catalog_errors": [],
+                "limitations": [],
+            })
+            (run_dir / "result.json").write_text(
+                json.dumps(value), encoding="utf-8")
+            baseline = root / "baseline.json"
+            with patch.object(runner, "RESULTS_ROOT", root), \
+                    patch.object(runner, "BASELINE_PATH", baseline):
+                self.assertEqual(runner.approve_run("tst7-run"), 0)
+            saved = json.loads(baseline.read_text(encoding="utf-8"))
+            self.assertEqual(saved["schema"], runner.BASELINE_SCHEMA)
+            self.assertEqual(saved["approved_run_id"], "tst7-run")
+
+
+if __name__ == "__main__":
+    unittest.main()

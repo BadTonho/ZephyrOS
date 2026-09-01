@@ -12,7 +12,8 @@ existente.
 
 O catálogo canônico, o sincronizador e a visão Markdown foram criados e
 validados pelo alvo host-only `make catalog-test`. A TST5 e a camada QEMU da
-TST6 foram implementadas e validadas; TST7 continua planejada para regressao
+TST6 foram implementadas e validadas; TST7 foi implementada e permanece
+pendente da validacao completa contra baseline aprovado para regressao
 continua. Hardware físico permanece `BLOCKED` enquanto não houver equipamento
 e evidência correspondente.
 
@@ -585,6 +586,47 @@ segundos e a repetição passou. O diagnóstico original foi preservado.
 - [x] Todos os 20 casos QEMU produziram `READY -> HEARTBEAT -> BEGIN -> PASS`.
 - [x] Hardware físico permanece explicitamente `BLOCKED`; não foi simulado
   como validado.
+
+## Implementacao atual da TST7
+
+A infraestrutura da regressao continua foi implementada em host, sem criar
+casos QEMU novos. O runner `tools/tst7_regression_runner.py` possui os modos
+`quick`, `full` e `approve --run-id`, executa cada comando e caso QEMU em
+processo separado, usa seed deterministico, timeout por processo e teto de
+suite, e nunca repete automaticamente uma execucao.
+
+Os resultados persistentes ficam em `.tst7-results/<run-id>/`, fora de `build/`,
+para sobreviver a `make clean`. Cada execucao registra manifesto, resultado,
+cobertura, resumo, stdout/stderr e indice SHA-256 dos artefatos. Os artefatos
+dos casos QEMU sao escritos dentro da execucao TST7 antes de qualquer limpeza.
+O baseline versionado em `tests/baselines/tst7-approved.json` ainda nao foi
+criado: ele somente podera ser produzido por aprovacao explicita de um
+`full` aprovado.
+
+O comparador cobre mudancas de status, timeout, fase, evento, warnings
+normalizados, cobertura aprovada e duracao. A duracao so e comparada quando o
+ambiente e identico e so reprova quando o aumento e simultaneamente maior que
+20% e 5 segundos. Superficies `PENDING`, hardware fisico e limitacoes de
+fixture permanecem explicitos; nao sao convertidos em cobertura artificial.
+
+### TST7 — Checklist de saida
+
+- [x] Runner host-only independente de provedor de CI com modos `quick`,
+  `full` e aprovacao atomica de baseline.
+- [x] Execucao sem retry automatico, com timeout por subprocesso e teto de
+  suite; a matriz continua apos falhas para coletar diagnosticos.
+- [x] Comparador de contratos, status, timeout, warnings, duracao e cobertura,
+  incluindo mutacoes sinteticas nos testes unitarios.
+- [x] Manifesto versionado de regressao permanente com caso, condicao
+  observavel e origem validados contra o catalogo.
+- [ ] `make test-tst7-host`, `make test-tst7-quick`, `make test-tst7-full` e
+  uma aprovacao real de baseline executados com evidencia.
+- [ ] Uma segunda execucao `full` passou contra o baseline aprovado sem
+  regressao.
+
+Enquanto os dois ultimos itens nao tiverem evidencia real, a TST7 permanece
+implementada e pendente de validacao. Hardware fisico continua `BLOCKED` e
+nao entra na matriz QEMU.
 
 ## Fora do escopo
 
