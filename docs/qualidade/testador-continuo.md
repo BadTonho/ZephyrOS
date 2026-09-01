@@ -192,6 +192,66 @@ Se uma dependência obrigatória estiver ausente, o resultado deve ser
 compilador host, ignorar o runtime sanitizador ou iniciar ciclos QEMU sem a
 imagem construída.
 
+## Requisitos para o host Linux
+
+Linux é o host recomendado para o supervisor contínuo. Em uma distribuição
+Debian ou Ubuntu, instalar os equivalentes dos seguintes pacotes:
+
+- `git`;
+- `python3`, `python3-pip` e `python3-venv`;
+- GNU Make;
+- GCC nativo e ferramentas de desenvolvimento;
+- Clang/LLVM com os runtimes ASan/UBSan;
+- NASM;
+- QEMU com `qemu-system-i386`;
+- ferramentas auxiliares de binutils;
+- o cross-compiler freestanding `i686-elf-gcc` e `i686-elf-ld`.
+
+Os nomes exatos podem variar entre distribuições. O pacote `i686-elf-*` não
+deve ser confundido com o GCC nativo: ele precisa gerar o kernel freestanding
+para i386 e pode exigir instalação por pacote externo ou compilação separada.
+
+Depois de instalar o Python, criar um ambiente virtual para as ferramentas do
+projeto e instalar a dependência do updater:
+
+```text
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install -r tools/requirements-updater.txt
+```
+
+O `Makefile` atual foi preparado para o ambiente Windows e declara
+`SHELL = cmd.exe`, além de usar caminhos com barra invertida em várias regras.
+Para executar diretamente no Linux, será necessário fazer uma adaptação de
+portabilidade no Makefile e nas regras auxiliares, preservando os mesmos
+alvos, imagens, toolchains e contratos. Essa adaptação não deve criar uma
+segunda lógica de teste nem alterar o kernel.
+
+Após a adaptação, a configuração Linux deve apontar para executáveis no
+`PATH` ou para caminhos locais no `Makefile.local`, por exemplo:
+
+```text
+HOST_CC=gcc
+HOST_SANITIZE_CC=clang
+GCC=i686-elf-gcc
+LD=i686-elf-ld
+NASM=nasm
+QEMU=qemu-system-i386
+```
+
+O host Linux não precisa de conexão externa, KVM ou hardware físico para a
+matriz QEMU. O QEMU pode executar com emulação normal; aceleração e recursos
+adicionais são opcionais e não devem mudar o resultado esperado do teste.
+Também é necessário garantir:
+
+- permissões para iniciar e encerrar processos QEMU;
+- escrita em `build/` e `.tst7-results/`;
+- espaço em disco para logs e snapshots temporários;
+- suspensão e hibernação desativadas durante o soak;
+- um serviço ou mecanismo de inicialização automática, caso o supervisor
+  precise iniciar junto com o sistema;
+- isolamento de rede e armazenamento conforme o perfil do caso.
+
 ## Primeiro MVP
 
 O primeiro executor pode ser um programa Python empacotado como executável no
