@@ -30,6 +30,7 @@ lembrar.md
 # Artefatos de build adicionais
 *.iso
 *.map
+.tst7-results/
 
 # Cache de ferramentas Python
 __pycache__/

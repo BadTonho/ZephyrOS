@@ -626,6 +626,49 @@ screenshots disponiveis e `result.json`, incluindo perfil, capacidades,
 seed, fase, primeiro erro e iteracao. Hardware fisico nao e validado por
 esses alvos e permanece `BLOCKED` ate existir equipamento e evidencia real.
 
+## TST7: regressao continua
+
+O runner TST7 e independente do provedor de CI. O modo `quick` executa as
+suítes host-only e os gates de qualidade previstos para alterações comuns. O
+modo `full` faz `make clean`, recompila, executa a suíte rápida, valida o
+catálogo e executa os 36 casos QEMU automatizados, cada um em processo
+separado, com seed determinístico, timeout declarado e uma única tentativa.
+
+```text
+make test-tst7-host
+make test-tst7-quick
+make test-tst7-full
+```
+
+Os resultados ficam em `.tst7-results/<run-id>/`, que não é apagado por
+`make clean`. Cada diretório contém `manifest.json`, `result.json`,
+`coverage.json`, `summary.md`, `stdout.log`, `stderr.log` e
+`artifact-index.json`; os artefatos individuais dos casos QEMU ficam em
+`qemu/`. O diretório é ignorado pelo Git e deve ser publicado pelo CI como
+artefato.
+
+O primeiro `full` pode terminar como `BLOCKED` somente por
+`baseline_ausente`; isso não cria baseline automaticamente. Depois de revisar
+os artefatos, aprove explicitamente a execução:
+
+```text
+python tools/tst7_regression_runner.py approve --run-id <id>
+```
+
+A aprovação exige `full` sem falha, timeout, bloqueio, caso não aprovado ou
+erro de catálogo e grava `tests/baselines/tst7-approved.json` atomicamente.
+Uma nova execução completa compara contratos, sequência de eventos, fase,
+warnings normalizados, cobertura aprovada e duração. Um warning novo, perda de
+cobertura ou regressão de duração maior que 20% e 5 segundos reprova. Diferença
+de ambiente torna apenas a duração `NOT_COMPARABLE`; contratos continuam
+comparáveis. Superfícies novas `PENDING` são reportadas sem mascarar seu
+estado.
+
+O runner continua após uma falha para coletar a matriz, mas cada caso QEMU é
+executado uma única vez. Ausência de QEMU, imagem, fixture, baseline ou outra
+dependência obrigatória é `BLOCKED`; falha do guest, timeout ou regressão é
+`FAIL`. O hardware físico permanece fora da matriz e `BLOCKED`.
+
 ## Comandos no Shell
 
 Para orientar comandos do sistema, consultar primeiro `comandos.md` e os
