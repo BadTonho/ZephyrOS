@@ -53,29 +53,49 @@ static workqueue_test_context_t workqueue_test_contexts[WORKQUEUE_CAPACITY];
 static workqueue_test_context_t workqueue_test_extra_context;
 static uint32_t workqueue_test_order[WORKQUEUE_CAPACITY];
 static uint32_t workqueue_test_order_count;
+#if defined(ZEPHYROS_HOST_TEST)
+static uint8_t workqueue_host_interrupts_enabled = 1U;
+#endif
 
 static int workqueue_internal_result(int result) {
     return result;
 }
 
 static uint32_t workqueue_irq_save(void) {
+#if defined(ZEPHYROS_HOST_TEST)
+    uint32_t flags = workqueue_host_interrupts_enabled ?
+                     WORKQUEUE_EFLAGS_INTERRUPT : 0U;
+
+    workqueue_host_interrupts_enabled = 0U;
+    return flags;
+#else
     uint32_t flags;
 
     asm volatile("pushf\n\tpop %0\n\tcli" : "=r"(flags) : : "memory");
     return flags;
+#endif
 }
 
 static void workqueue_irq_restore(uint32_t flags) {
+#if defined(ZEPHYROS_HOST_TEST)
+    workqueue_host_interrupts_enabled =
+        (flags & WORKQUEUE_EFLAGS_INTERRUPT) ? 1U : 0U;
+#else
     if (flags & WORKQUEUE_EFLAGS_INTERRUPT) {
         asm volatile("sti" : : : "memory");
     }
+#endif
 }
 
 static uint8_t workqueue_interrupts_enabled(void) {
+#if defined(ZEPHYROS_HOST_TEST)
+    return workqueue_host_interrupts_enabled;
+#else
     uint32_t flags;
 
     asm volatile("pushf\n\tpop %0" : "=r"(flags));
     return (uint8_t)((flags & WORKQUEUE_EFLAGS_INTERRUPT) != 0U);
+#endif
 }
 
 static int workqueue_deadline_reached(uint32_t now, uint32_t deadline) {

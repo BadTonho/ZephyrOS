@@ -14,7 +14,11 @@ static inline void spinlock_init(spinlock_t* sl) {
 static inline void spinlock_acquire(spinlock_t* sl) {
     while (__sync_lock_test_and_set(&sl->lock, 1)) {
         // Spin
+#if defined(ZEPHYROS_HOST_TEST)
+        __asm__ volatile("pause");
+#else
         asm volatile("pause");
+#endif
     }
 }
 

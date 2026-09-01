@@ -7,9 +7,13 @@ SHELL = cmd.exe
 # Sem esse arquivo, as ferramentas sao procuradas no PATH do sistema.
 -include Makefile.local
 
+BUILD_DIR ?= build
+MAKE_TOOL ?= make
+
 NASM ?= nasm
 GCC ?= i686-elf-gcc
 LD ?= i686-elf-ld
+NM ?= i686-elf-nm
 HOST_CC ?= cc
 HOST_SANITIZE_CC ?= clang
 QEMU ?= qemu-system-i386
@@ -32,6 +36,8 @@ TST6_QEMU_NETWORK ?= user,model=e1000,restrict=on
 TST7_COMMAND_TIMEOUT ?= 300
 TST7_QUICK_TIMEOUT ?= 1800
 TST7_FULL_TIMEOUT ?= 7200
+COVERAGE_BUILD_DIR ?= build-coverage
+COVERAGE_CFLAGS ?= -g -DZEPHYROS_TEST_COVERAGE -finstrument-functions
 QEMU_BOOT_DISK_ARGS ?= -drive file=$(OS_IMG),format=raw,if=none,id=bootdisk -device ide-hd,drive=bootdisk,bus=ide.0,unit=0,bootindex=1
 QEMU_STAGE2_LBA_DISK_ARGS ?= -drive file=$(OS_IMG),format=raw,if=none,id=stage2lbadisk -device ide-hd,drive=stage2lbadisk,bootindex=1
 QEMU_STAGE2_CHS_DISK_ARGS ?= -drive file=$(STAGE2_CHS_IMG),format=raw,if=floppy,index=0 -drive file=$(OS_IMG),format=raw,if=none,id=stage2chssystem -device ide-hd,drive=stage2chssystem,cyls=80,heads=2,secs=18 -boot order=a
@@ -43,107 +49,111 @@ QEMU_USB_WIFI_EHCI_ARGS ?= -machine q35 -device ich9-usb-ehci1,id=ehci
 QEMU_USB_WIFI_ARGS ?= -device usb-host,vendorid=0x0BDA,productid=0xC811,bus=ehci.0
 
 # Flags
-CFLAGS = -m32 -O2 -fno-strict-aliasing -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -Wall -Wextra -I src/include -I src/include/core -I src/include/drivers -I src/include/fs -I src/include/memory -I src/include/process -I src/include/apps -I src/include/ui
+CFLAGS_EXTRA ?=
+CFLAGS = -m32 -O2 -fno-strict-aliasing -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -Wall -Wextra -I src/include -I src/include/core -I src/include/drivers -I src/include/fs -I src/include/memory -I src/include/process -I src/include/apps -I src/include/ui $(CFLAGS_EXTRA)
 LDFLAGS = -m elf_i386 -T src/linker.ld
 NASMFLAGS = -f bin
 
 # Arquivos - Boot
 BOOT_SRC = src/boot/boot.asm
-BOOT_BIN = build/boot.bin
+BOOT_BIN = $(BUILD_DIR)/boot.bin
 STAGE2_SRC = src/boot/stage2.asm
-STAGE2_BIN = build/stage2.bin
+STAGE2_BIN = $(BUILD_DIR)/stage2.bin
 SYSTEM_BOOT_SRC = src/boot/system_boot.asm
-SYSTEM_BOOT_BIN = build/system_boot.bin
-SYSTEM_BOOT_HANDOFF_INVALID_BIN = build/system_boot_handoff_invalid.bin
-SYSTEM_BOOT_RETURN_BIN = build/system_boot_return.bin
+SYSTEM_BOOT_BIN = $(BUILD_DIR)/system_boot.bin
+SYSTEM_BOOT_HANDOFF_INVALID_BIN = $(BUILD_DIR)/system_boot_handoff_invalid.bin
+SYSTEM_BOOT_RETURN_BIN = $(BUILD_DIR)/system_boot_return.bin
 SYSTEM_STAGE2_SRC = src/boot/system_stage2.asm
-SYSTEM_STAGE2_BIN = build/system_stage2.bin
+SYSTEM_STAGE2_BIN = $(BUILD_DIR)/system_stage2.bin
 RECOVERY_LOADER_C = src/boot/recovery_loader.c
-RECOVERY_LOADER_OBJ = build/recovery_loader.o
+RECOVERY_LOADER_OBJ = $(BUILD_DIR)/recovery_loader.o
 RECOVERY_MENU_C = src/boot/recovery_menu.c
 RECOVERY_MENU_HEADER = src/boot/recovery_menu.h
 RECOVERY_CHAIN_HEADER = src/boot/recovery_chain.h
-RECOVERY_MENU_OBJ = build/recovery_menu.o
+RECOVERY_MENU_OBJ = $(BUILD_DIR)/recovery_menu.o
 RECOVERY_RUNTIME_C = src/boot/recovery_runtime.c
-RECOVERY_RUNTIME_OBJ = build/recovery_runtime.o
+RECOVERY_RUNTIME_OBJ = $(BUILD_DIR)/recovery_runtime.o
 RECOVERY_ENTRY_ASM = src/boot/recovery_entry.asm
-RECOVERY_ENTRY_OBJ = build/recovery_entry.o
+RECOVERY_ENTRY_OBJ = $(BUILD_DIR)/recovery_entry.o
 RECOVERY_LOADER_LD = src/boot/recovery_loader.ld
-RECOVERY_LOADER_BIN = build/recovery_loader.bin
-RECOVERY_LOADER_PADDED_BIN = build/recovery_loader_padded.bin
+RECOVERY_LOADER_BIN = $(BUILD_DIR)/recovery_loader.bin
+RECOVERY_LOADER_PADDED_BIN = $(BUILD_DIR)/recovery_loader_padded.bin
 RECOVERY_LOADER_PAD_TOOL = tools/pad_boot_payload.py
 RECOVERY_IMAGE_COMPOSE_TOOL = tools/compose_recovery_image.py
 RECOVERY_LAYOUT_TOOL = tools/recovery_layout.py
-RECOVERY_LAYOUT_HEADER = build/recovery_layout.h
-RECOVERY_STAGE2_VGA_BIN = build/stage2-recovery-menu-vga.bin
-RECOVERY_MENU_VGA_IMAGE = build/recovery-menu-vga.img
+RECOVERY_LAYOUT_HEADER = $(BUILD_DIR)/recovery_layout.h
+RECOVERY_STAGE2_VGA_BIN = $(BUILD_DIR)/stage2-recovery-menu-vga.bin
+RECOVERY_MENU_VGA_IMAGE = $(BUILD_DIR)/recovery-menu-vga.img
 RECOVERY_STAGE2_PATCH_TOOL = tools/patch_stage2_image.py
 
 # Arquivos - Kernel
 ENTRY_SRC = src/kernel/entry.asm
-ENTRY_OBJ = build/entry.o
+ENTRY_OBJ = $(BUILD_DIR)/entry.o
 
 KERNEL_C = src/kernel/kernel.c
-KERNEL_OBJ = build/kernel.o
+KERNEL_OBJ = $(BUILD_DIR)/kernel.o
 
 PANIC_C = src/kernel/panic.c
-PANIC_OBJ = build/panic.o
+PANIC_OBJ = $(BUILD_DIR)/panic.o
 
 LOG_C = src/core/log.c
-LOG_OBJ = build/log.o
+LOG_OBJ = $(BUILD_DIR)/log.o
 
 TEST_PROTOCOL_C = src/core/test_protocol.c
-TEST_PROTOCOL_OBJ = build/test_protocol.o
+TEST_PROTOCOL_OBJ = $(BUILD_DIR)/test_protocol.o
 TEST_PROTOCOL_CORE_C = src/core/test_protocol_core.c
-TEST_PROTOCOL_CORE_OBJ = build/test_protocol_core.o
+TEST_PROTOCOL_CORE_OBJ = $(BUILD_DIR)/test_protocol_core.o
+
+TEST_COVERAGE_C = src/core/test_coverage.c
+TEST_COVERAGE_OBJ = $(BUILD_DIR)/test_coverage.o
 
 KERNEL_TESTS_C = src/core/kernel_tests.c
-KERNEL_TESTS_OBJ = build/kernel_tests.o
+KERNEL_TESTS_OBJ = $(BUILD_DIR)/kernel_tests.o
 
 KERNEL_TESTS_PAGING_C = src/core/kernel_tests_paging.c
-KERNEL_TESTS_PAGING_OBJ = build/kernel_tests_paging.o
+KERNEL_TESTS_PAGING_OBJ = $(BUILD_DIR)/kernel_tests_paging.o
 
 KERNEL_TESTS_EXECUTION_C = src/core/kernel_tests_execution.c
-KERNEL_TESTS_EXECUTION_OBJ = build/kernel_tests_execution.o
+KERNEL_TESTS_EXECUTION_OBJ = $(BUILD_DIR)/kernel_tests_execution.o
 
 KERNEL_TESTS_STORAGE_C = src/core/kernel_tests_storage.c
-KERNEL_TESTS_STORAGE_OBJ = build/kernel_tests_storage.o
+KERNEL_TESTS_STORAGE_OBJ = $(BUILD_DIR)/kernel_tests_storage.o
 
 KERNEL_TESTS_NETWORK_C = src/core/kernel_tests_network.c
-KERNEL_TESTS_NETWORK_OBJ = build/kernel_tests_network.o
+KERNEL_TESTS_NETWORK_OBJ = $(BUILD_DIR)/kernel_tests_network.o
 
 KERNEL_TESTS_PLATFORM_C = src/core/kernel_tests_platform.c
-KERNEL_TESTS_PLATFORM_OBJ = build/kernel_tests_platform.o
+KERNEL_TESTS_PLATFORM_OBJ = $(BUILD_DIR)/kernel_tests_platform.o
 
 KERNEL_TESTS_BLACKBOX_C = src/core/kernel_tests_blackbox.c
-KERNEL_TESTS_BLACKBOX_OBJ = build/kernel_tests_blackbox.o
+KERNEL_TESTS_BLACKBOX_OBJ = $(BUILD_DIR)/kernel_tests_blackbox.o
 
 KERNEL_TESTS_TST6_C = src/core/kernel_tests_tst6.c
-KERNEL_TESTS_TST6_OBJ = build/kernel_tests_tst6.o
+KERNEL_TESTS_TST6_OBJ = $(BUILD_DIR)/kernel_tests_tst6.o
 
 INPUT_C = src/core/input.c
-INPUT_OBJ = build/input.o
+INPUT_OBJ = $(BUILD_DIR)/input.o
 
 IRQ_DEFERRED_C = src/core/irq_deferred.c
-IRQ_DEFERRED_OBJ = build/irq_deferred.o
+IRQ_DEFERRED_OBJ = $(BUILD_DIR)/irq_deferred.o
 
 WAIT_C = src/core/wait.c
-WAIT_OBJ = build/wait.o
+WAIT_OBJ = $(BUILD_DIR)/wait.o
 
 WORKQUEUE_C = src/core/workqueue.c
-WORKQUEUE_OBJ = build/workqueue.o
+WORKQUEUE_OBJ = $(BUILD_DIR)/workqueue.o
 
 CLOCK_C = src/core/clock.c
-CLOCK_OBJ = build/clock.o
+CLOCK_OBJ = $(BUILD_DIR)/clock.o
 
 TLS_C = src/core/tls.c
-TLS_OBJ = build/tls.o
+TLS_OBJ = $(BUILD_DIR)/tls.o
 
 TLS_CLIENT_C = src/core/tls_client.c
-TLS_CLIENT_OBJ = build/tls_client.o
+TLS_CLIENT_OBJ = $(BUILD_DIR)/tls_client.o
 
 BEARSSL_COMPAT_C = src/core/bearssl_compat.c
-BEARSSL_COMPAT_OBJ = build/bearssl_compat.o
+BEARSSL_COMPAT_OBJ = $(BUILD_DIR)/bearssl_compat.o
 
 BEARSSL_SRC = $(wildcard vendor/bearssl/src/*.c) \
               $(wildcard vendor/bearssl/src/aead/*.c) \
@@ -166,422 +176,427 @@ BEARSSL_EXCLUDED_SRC = vendor/bearssl/src/ssl/ssl_client_full.c \
                        vendor/bearssl/src/ssl/ssl_server_full_rsa.c \
                        $(wildcard vendor/bearssl/src/symcipher/des_*.c)
 BEARSSL_SRC := $(filter-out $(BEARSSL_EXCLUDED_SRC),$(BEARSSL_SRC))
-BEARSSL_OBJ = $(patsubst vendor/bearssl/src/%.c,build/bearssl/%.o,$(BEARSSL_SRC))
+BEARSSL_OBJ = $(patsubst vendor/bearssl/src/%.c,$(BUILD_DIR)/bearssl/%.o,$(BEARSSL_SRC))
 BEARSSL_CFLAGS = $(CFLAGS) -I vendor/bearssl/inc -I vendor/bearssl/src -include vendor/bearssl/inc/string.h
 
 RECOVERY_C = src/core/recovery.c
-RECOVERY_OBJ = build/recovery.o
+RECOVERY_OBJ = $(BUILD_DIR)/recovery.o
 
 CRYPTO_C = src/core/crypto.c
-CRYPTO_OBJ = build/crypto.o
+CRYPTO_OBJ = $(BUILD_DIR)/crypto.o
 
 CRYPTO_ED25519_C = src/core/crypto_ed25519.c
-CRYPTO_ED25519_OBJ = build/crypto_ed25519.o
+CRYPTO_ED25519_OBJ = $(BUILD_DIR)/crypto_ed25519.o
+
+RECOVERY_CFLAGS = $(CFLAGS) -fno-instrument-functions
+RECOVERY_CRYPTO_OBJ = $(BUILD_DIR)/recovery_crypto.o
+RECOVERY_CRYPTO_ED25519_OBJ = $(BUILD_DIR)/recovery_crypto_ed25519.o
 
 UPDATE_C = src/core/update.c
-UPDATE_OBJ = build/update.o
+UPDATE_OBJ = $(BUILD_DIR)/update.o
 
 UPDATE_SYSTEM_C = src/core/update_system.c
-UPDATE_SYSTEM_OBJ = build/update_system.o
+UPDATE_SYSTEM_OBJ = $(BUILD_DIR)/update_system.o
 
 UPDATE_SYSTEM_SLOTS_C = src/core/update_system_slots.c
-UPDATE_SYSTEM_SLOTS_OBJ = build/update_system_slots.o
+UPDATE_SYSTEM_SLOTS_OBJ = $(BUILD_DIR)/update_system_slots.o
 
 UPDATE_REMOTE_SYSTEM_C = src/core/update_remote_system.c
-UPDATE_REMOTE_SYSTEM_OBJ = build/update_remote_system.o
+UPDATE_REMOTE_SYSTEM_OBJ = $(BUILD_DIR)/update_remote_system.o
 
 UPDATE_REMOTE_C = src/core/update_remote.c
-UPDATE_REMOTE_OBJ = build/update_remote.o
+UPDATE_REMOTE_OBJ = $(BUILD_DIR)/update_remote.o
 
 UPDATE_REMOTE_RELEASE_C = src/core/update_remote_release.c
-UPDATE_REMOTE_RELEASE_OBJ = build/update_remote_release.o
+UPDATE_REMOTE_RELEASE_OBJ = $(BUILD_DIR)/update_remote_release.o
 
 UPDATE_REMOTE_GITHUB_C = src/core/update_remote_github.c
-UPDATE_REMOTE_GITHUB_OBJ = build/update_remote_github.o
+UPDATE_REMOTE_GITHUB_OBJ = $(BUILD_DIR)/update_remote_github.o
 
 UPDATE_RUNTIME_C = src/core/update_runtime.c
-UPDATE_RUNTIME_OBJ = build/update_runtime.o
+UPDATE_RUNTIME_OBJ = $(BUILD_DIR)/update_runtime.o
 
 UPDATE_REMOTE_RUNTIME_C = src/core/update_remote_runtime.c
-UPDATE_REMOTE_RUNTIME_OBJ = build/update_remote_runtime.o
+UPDATE_REMOTE_RUNTIME_OBJ = $(BUILD_DIR)/update_remote_runtime.o
 
 DEVICE_MANAGER_C = src/core/device_manager.c
-DEVICE_MANAGER_OBJ = build/device_manager.o
+DEVICE_MANAGER_OBJ = $(BUILD_DIR)/device_manager.o
 
 USB_MANAGER_C = src/core/usb_manager.c
-USB_MANAGER_OBJ = build/usb_manager.o
+USB_MANAGER_OBJ = $(BUILD_DIR)/usb_manager.o
 
 UHCI_C = src/drivers/uhci.c
-UHCI_OBJ = build/uhci.o
+UHCI_OBJ = $(BUILD_DIR)/uhci.o
 
 EHCI_C = src/drivers/ehci.c
-EHCI_OBJ = build/ehci.o
+EHCI_OBJ = $(BUILD_DIR)/ehci.o
 
 USB_TRANSPORT_C = src/core/usb_transport.c
-USB_TRANSPORT_OBJ = build/usb_transport.o
+USB_TRANSPORT_OBJ = $(BUILD_DIR)/usb_transport.o
 
 USB_MSC_C = src/drivers/usb_msc.c
-USB_MSC_OBJ = build/usb_msc.o
+USB_MSC_OBJ = $(BUILD_DIR)/usb_msc.o
 
 USB_HID_C = src/drivers/usb_hid.c
-USB_HID_OBJ = build/usb_hid.o
+USB_HID_OBJ = $(BUILD_DIR)/usb_hid.o
 
 RTL8811CU_C = src/drivers/rtl8811cu.c
-RTL8811CU_OBJ = build/rtl8811cu.o
+RTL8811CU_OBJ = $(BUILD_DIR)/rtl8811cu.o
 
 NETWORK_MANAGER_C = src/core/network_manager.c
-NETWORK_MANAGER_OBJ = build/network_manager.o
+NETWORK_MANAGER_OBJ = $(BUILD_DIR)/network_manager.o
 
 WIFI_MANAGER_C = src/core/wifi_manager.c
-WIFI_MANAGER_OBJ = build/wifi_manager.o
+WIFI_MANAGER_OBJ = $(BUILD_DIR)/wifi_manager.o
 
 ETHERNET_C = src/core/ethernet.c
-ETHERNET_OBJ = build/ethernet.o
+ETHERNET_OBJ = $(BUILD_DIR)/ethernet.o
 
 NET_BUFFER_C = src/core/net_buffer.c
-NET_BUFFER_OBJ = build/net_buffer.o
+NET_BUFFER_OBJ = $(BUILD_DIR)/net_buffer.o
 
 SK_BUFF_C = src/core/sk_buff.c
-SK_BUFF_OBJ = build/sk_buff.o
+SK_BUFF_OBJ = $(BUILD_DIR)/sk_buff.o
 
 SOCKET_C = src/core/socket.c
-SOCKET_OBJ = build/socket.o
+SOCKET_OBJ = $(BUILD_DIR)/socket.o
 
 ARP_C = src/core/arp.c
-ARP_OBJ = build/arp.o
+ARP_OBJ = $(BUILD_DIR)/arp.o
 
 IPV4_C = src/core/ipv4.c
-IPV4_OBJ = build/ipv4.o
+IPV4_OBJ = $(BUILD_DIR)/ipv4.o
 
 ROUTE_C = src/core/route.c
-ROUTE_OBJ = build/route.o
+ROUTE_OBJ = $(BUILD_DIR)/route.o
 
 ICMP_C = src/core/icmp.c
-ICMP_OBJ = build/icmp.o
+ICMP_OBJ = $(BUILD_DIR)/icmp.o
 
 UDP_C = src/core/udp.c
-UDP_OBJ = build/udp.o
+UDP_OBJ = $(BUILD_DIR)/udp.o
 
 DHCP_C = src/core/dhcp.c
-DHCP_OBJ = build/dhcp.o
+DHCP_OBJ = $(BUILD_DIR)/dhcp.o
 
 DNS_C = src/core/dns.c
-DNS_OBJ = build/dns.o
+DNS_OBJ = $(BUILD_DIR)/dns.o
 
 TCP_C = src/core/tcp.c
-TCP_OBJ = build/tcp.o
+TCP_OBJ = $(BUILD_DIR)/tcp.o
 
 NET_SOCKET_C = src/core/net_socket.c
-NET_SOCKET_OBJ = build/net_socket.o
+NET_SOCKET_OBJ = $(BUILD_DIR)/net_socket.o
 
 HTTP_C = src/core/http.c
-HTTP_OBJ = build/http.o
+HTTP_OBJ = $(BUILD_DIR)/http.o
 
 POWER_C = src/core/power.c
-POWER_OBJ = build/power.o
+POWER_OBJ = $(BUILD_DIR)/power.o
 
 POWER_NOTIFIER_C = src/core/power_notifier.c
-POWER_NOTIFIER_OBJ = build/power_notifier.o
+POWER_NOTIFIER_OBJ = $(BUILD_DIR)/power_notifier.o
 
 STRING_C = src/core/string.c
-STRING_OBJ = build/string.o
+STRING_OBJ = $(BUILD_DIR)/string.o
 
 APP_API_C = src/core/app_api.c
-APP_API_OBJ = build/app_api.o
+APP_API_OBJ = $(BUILD_DIR)/app_api.o
 
 APP_FILES_C = src/core/app_files.c
-APP_FILES_OBJ = build/app_files.o
+APP_FILES_OBJ = $(BUILD_DIR)/app_files.o
 
 APP_LOADER_C = src/core/app_loader.c
-APP_LOADER_OBJ = build/app_loader.o
+APP_LOADER_OBJ = $(BUILD_DIR)/app_loader.o
 
 APP_BUILTIN_C = src/core/app_builtin.c
-APP_BUILTIN_OBJ = build/app_builtin.o
+APP_BUILTIN_OBJ = $(BUILD_DIR)/app_builtin.o
 
 APP_PACKAGE_C = src/core/app_package.c
-APP_PACKAGE_OBJ = build/app_package.o
+APP_PACKAGE_OBJ = $(BUILD_DIR)/app_package.o
 
 APP_REMOTE_C = src/core/app_remote.c
-APP_REMOTE_OBJ = build/app_remote.o
+APP_REMOTE_OBJ = $(BUILD_DIR)/app_remote.o
 
 APP_CATALOG_C = src/core/app_catalog.c
-APP_CATALOG_OBJ = build/app_catalog.o
+APP_CATALOG_OBJ = $(BUILD_DIR)/app_catalog.o
 
 SYSCALL_C = src/core/syscall.c
-SYSCALL_OBJ = build/syscall.o
+SYSCALL_OBJ = $(BUILD_DIR)/syscall.o
 
 SWITCH_ASM = src/kernel/switch.asm
-SWITCH_OBJ = build/switch.o
+SWITCH_OBJ = $(BUILD_DIR)/switch.o
 
 # Arquivos - Drivers
 VIDEO_C = src/drivers/video.c
-VIDEO_OBJ = build/video.o
+VIDEO_OBJ = $(BUILD_DIR)/video.o
 
 VESA_C = src/drivers/vesa.c
-VESA_OBJ = build/vesa.o
+VESA_OBJ = $(BUILD_DIR)/vesa.o
 
 FONT_C = src/drivers/font.c
-FONT_OBJ = build/font.o
+FONT_OBJ = $(BUILD_DIR)/font.o
 
 IDT_C = src/drivers/idt.c
-IDT_OBJ = build/idt.o
+IDT_OBJ = $(BUILD_DIR)/idt.o
 
 SERIAL_C = src/drivers/serial.c
-SERIAL_OBJ = build/serial.o
+SERIAL_OBJ = $(BUILD_DIR)/serial.o
 
 ISR_ASM = src/drivers/isr.asm
-ISR_OBJ = build/isr.o
+ISR_OBJ = $(BUILD_DIR)/isr.o
 
 IRQ_ASM = src/drivers/irq.asm
-IRQ_OBJ = build/irq.o
+IRQ_OBJ = $(BUILD_DIR)/irq.o
 
 KEYBOARD_C = src/drivers/keyboard.c
-KEYBOARD_OBJ = build/keyboard.o
+KEYBOARD_OBJ = $(BUILD_DIR)/keyboard.o
 
 MOUSE_C = src/drivers/mouse.c
-MOUSE_OBJ = build/mouse.o
+MOUSE_OBJ = $(BUILD_DIR)/mouse.o
 
 TIMER_C = src/drivers/timer.c
-TIMER_OBJ = build/timer.o
+TIMER_OBJ = $(BUILD_DIR)/timer.o
 
 RTC_C = src/drivers/rtc.c
-RTC_OBJ = build/rtc.o
+RTC_OBJ = $(BUILD_DIR)/rtc.o
 
 RNG_C = src/drivers/rng.c
-RNG_OBJ = build/rng.o
+RNG_OBJ = $(BUILD_DIR)/rng.o
 
 TSS_C = src/drivers/tss.c
-TSS_OBJ = build/tss.o
+TSS_OBJ = $(BUILD_DIR)/tss.o
 
 ATA_C = src/drivers/ata.c
-ATA_OBJ = build/ata.o
+ATA_OBJ = $(BUILD_DIR)/ata.o
 
 SPEAKER_C = src/drivers/speaker.c
-SPEAKER_OBJ = build/speaker.o
+SPEAKER_OBJ = $(BUILD_DIR)/speaker.o
 
 PCI_C = src/drivers/pci.c
-PCI_OBJ = build/pci.o
+PCI_OBJ = $(BUILD_DIR)/pci.o
 
 E1000_C = src/drivers/e1000.c
-E1000_OBJ = build/e1000.o
+E1000_OBJ = $(BUILD_DIR)/e1000.o
 
 RTL8139_C = src/drivers/rtl8139.c
-RTL8139_OBJ = build/rtl8139.o
+RTL8139_OBJ = $(BUILD_DIR)/rtl8139.o
 
 AC97_C = src/drivers/ac97.c
-AC97_OBJ = build/ac97.o
+AC97_OBJ = $(BUILD_DIR)/ac97.o
 
 ACPI_C = src/drivers/acpi.c
-ACPI_OBJ = build/acpi.o
+ACPI_OBJ = $(BUILD_DIR)/acpi.o
 
 # Arquivos - Memoria
 MEMORY_C = src/memory/memory.c
-MEMORY_OBJ = build/memory.o
+MEMORY_OBJ = $(BUILD_DIR)/memory.o
 
 SLAB_C = src/memory/slab.c
-SLAB_OBJ = build/slab.o
+SLAB_OBJ = $(BUILD_DIR)/slab.o
 
 PAGING_C = src/memory/paging.c
-PAGING_OBJ = build/paging.o
+PAGING_OBJ = $(BUILD_DIR)/paging.o
 
 VMA_C = src/memory/vma.c
-VMA_OBJ = build/vma.o
+VMA_OBJ = $(BUILD_DIR)/vma.o
 
 COMPRESS_C = src/memory/compress.c
-COMPRESS_OBJ = build/compress.o
+COMPRESS_OBJ = $(BUILD_DIR)/compress.o
 
 # Arquivos - Sistema de Arquivos
 FAT12_C = src/fs/fat12.c
-FAT12_OBJ = build/fat12.o
+FAT12_OBJ = $(BUILD_DIR)/fat12.o
 
 FAT32_C = src/fs/fat32.c
-FAT32_OBJ = build/fat32.o
+FAT32_OBJ = $(BUILD_DIR)/fat32.o
 
 FS_C = src/fs/fs.c
-FS_OBJ = build/fs.o
+FS_OBJ = $(BUILD_DIR)/fs.o
 
 VFS_C = src/fs/vfs.c
-VFS_OBJ = build/vfs.o
+VFS_OBJ = $(BUILD_DIR)/vfs.o
 
 VFS_PATH_C = src/fs/vfs_path.c
-VFS_PATH_OBJ = build/vfs_path.o
+VFS_PATH_OBJ = $(BUILD_DIR)/vfs_path.o
 
 DEVFS_C = src/fs/devfs.c
-DEVFS_OBJ = build/devfs.o
+DEVFS_OBJ = $(BUILD_DIR)/devfs.o
 
 PROCFS_C = src/fs/procfs.c
-PROCFS_OBJ = build/procfs.o
+PROCFS_OBJ = $(BUILD_DIR)/procfs.o
 
 SYSFS_C = src/fs/sysfs.c
-SYSFS_OBJ = build/sysfs.o
+SYSFS_OBJ = $(BUILD_DIR)/sysfs.o
 
 BLOCK_C = src/fs/block.c
-BLOCK_OBJ = build/block.o
+BLOCK_OBJ = $(BUILD_DIR)/block.o
 
 BLOCK_CACHE_C = src/fs/block_cache.c
-BLOCK_CACHE_OBJ = build/block_cache.o
+BLOCK_CACHE_OBJ = $(BUILD_DIR)/block_cache.o
 
 STORAGE_C = src/fs/storage.c
-STORAGE_OBJ = build/storage.o
+STORAGE_OBJ = $(BUILD_DIR)/storage.o
 
 FILE_INDEX_C = src/fs/file_index.c
-FILE_INDEX_OBJ = build/file_index.o
+FILE_INDEX_OBJ = $(BUILD_DIR)/file_index.o
 
 WAV_C = src/fs/wav.c
-WAV_OBJ = build/wav.o
+WAV_OBJ = $(BUILD_DIR)/wav.o
 
 BMP_C = src/fs/bmp.c
-BMP_OBJ = build/bmp.o
+BMP_OBJ = $(BUILD_DIR)/bmp.o
 
 # Arquivos - Processos
 PROCESS_C = src/process/process.c
-PROCESS_OBJ = build/process.o
+PROCESS_OBJ = $(BUILD_DIR)/process.o
 SIGNAL_C = src/process/signal.c
-SIGNAL_OBJ = build/signal.o
+SIGNAL_OBJ = $(BUILD_DIR)/signal.o
 IPC_C = src/process/ipc.c
-IPC_OBJ = build/ipc.o
+IPC_OBJ = $(BUILD_DIR)/ipc.o
 
 
 # Arquivos - Threads
 THREAD_C = src/thread/thread.c
-THREAD_OBJ = build/thread.o
+THREAD_OBJ = $(BUILD_DIR)/thread.o
 
 # Arquivos - Shell
 SHELL_C = src/shell/shell.c
-SHELL_OBJ = build/shell.o
+SHELL_OBJ = $(BUILD_DIR)/shell.o
 
 SHELL_INPUT_C = src/shell/shell_input.c
-SHELL_INPUT_OBJ = build/shell_input.o
+SHELL_INPUT_OBJ = $(BUILD_DIR)/shell_input.o
 
 SHELL_DISPATCH_C = src/shell/shell_dispatch.c
-SHELL_DISPATCH_OBJ = build/shell_dispatch.o
+SHELL_DISPATCH_OBJ = $(BUILD_DIR)/shell_dispatch.o
 
 SHELL_COMMAND_UTILS_C = src/shell/shell_command_utils.c
-SHELL_COMMAND_UTILS_OBJ = build/shell_command_utils.o
+SHELL_COMMAND_UTILS_OBJ = $(BUILD_DIR)/shell_command_utils.o
 
 SHELL_PIPELINE_C = src/shell/shell_pipeline.c
-SHELL_PIPELINE_OBJ = build/shell_pipeline.o
+SHELL_PIPELINE_OBJ = $(BUILD_DIR)/shell_pipeline.o
 
 SHELL_COMMANDS_VFS_C = src/shell/shell_commands_vfs.c
-SHELL_COMMANDS_VFS_OBJ = build/shell_commands_vfs.o
+SHELL_COMMANDS_VFS_OBJ = $(BUILD_DIR)/shell_commands_vfs.o
 
 SHELL_COMMANDS_CORE_C = src/shell/shell_commands_core.c
-SHELL_COMMANDS_CORE_OBJ = build/shell_commands_core.o
+SHELL_COMMANDS_CORE_OBJ = $(BUILD_DIR)/shell_commands_core.o
 
 SHELL_COMMANDS_STORAGE_C = src/shell/shell_commands_storage.c
-SHELL_COMMANDS_STORAGE_OBJ = build/shell_commands_storage.o
+SHELL_COMMANDS_STORAGE_OBJ = $(BUILD_DIR)/shell_commands_storage.o
 
 SHELL_COMMANDS_DIAGNOSTICS_C = src/shell/shell_commands_diagnostics.c
-SHELL_COMMANDS_DIAGNOSTICS_OBJ = build/shell_commands_diagnostics.o
+SHELL_COMMANDS_DIAGNOSTICS_OBJ = $(BUILD_DIR)/shell_commands_diagnostics.o
 
 SHELL_COMMANDS_NETWORK_C = src/shell/shell_commands_network.c
-SHELL_COMMANDS_NETWORK_OBJ = build/shell_commands_network.o
+SHELL_COMMANDS_NETWORK_OBJ = $(BUILD_DIR)/shell_commands_network.o
 
 SHELL_COMMANDS_WIFI_C = src/shell/shell_commands_wifi.c
-SHELL_COMMANDS_WIFI_OBJ = build/shell_commands_wifi.o
+SHELL_COMMANDS_WIFI_OBJ = $(BUILD_DIR)/shell_commands_wifi.o
 
 SHELL_CHECKS_C = src/shell/shell_checks.c
-SHELL_CHECKS_OBJ = build/shell_checks.o
+SHELL_CHECKS_OBJ = $(BUILD_DIR)/shell_checks.o
 
 SHELL_COMMANDS_PACKAGES_C = src/shell/shell_commands_packages.c
-SHELL_COMMANDS_PACKAGES_OBJ = build/shell_commands_packages.o
+SHELL_COMMANDS_PACKAGES_OBJ = $(BUILD_DIR)/shell_commands_packages.o
 
 SHELL_COMMANDS_APPS_C = src/shell/shell_commands_apps.c
-SHELL_COMMANDS_APPS_OBJ = build/shell_commands_apps.o
+SHELL_COMMANDS_APPS_OBJ = $(BUILD_DIR)/shell_commands_apps.o
 
 SHELL_HOSTED_C = src/shell/shell_hosted.c
-SHELL_HOSTED_OBJ = build/shell_hosted.o
+SHELL_HOSTED_OBJ = $(BUILD_DIR)/shell_hosted.o
 
 SHELL_JOB_C = src/shell/shell_job.c
-SHELL_JOB_OBJ = build/shell_job.o
+SHELL_JOB_OBJ = $(BUILD_DIR)/shell_job.o
 
 TASKMGR_C = src/shell/taskmanager.c
-TASKMGR_OBJ = build/taskmanager.o
+TASKMGR_OBJ = $(BUILD_DIR)/taskmanager.o
 
 SHELL_INTROSPECTION_C = src/shell/shell_introspection.c
-SHELL_INTROSPECTION_OBJ = build/shell_introspection.o
+SHELL_INTROSPECTION_OBJ = $(BUILD_DIR)/shell_introspection.o
 
 MEDIAPLAYER_C = src/shell/mediaplayer.c
-MEDIAPLAYER_OBJ = build/mediaplayer.o
+MEDIAPLAYER_OBJ = $(BUILD_DIR)/mediaplayer.o
 
 EDITOR_C = src/shell/editor.c
-EDITOR_OBJ = build/editor.o
+EDITOR_OBJ = $(BUILD_DIR)/editor.o
 
 GUITEST_C = src/shell/guitest_app.c
-GUITEST_OBJ = build/guitest_app.o
+GUITEST_OBJ = $(BUILD_DIR)/guitest_app.o
 
 
 # Arquivos - File Manager
 FILEMANAGER_C = src/filemanager/filemanager.c
-FILEMANAGER_OBJ = build/filemanager.o
+FILEMANAGER_OBJ = $(BUILD_DIR)/filemanager.o
 
 # Arquivos - Taskbar
 TASKBAR_C = src/taskbar/taskbar.c
-TASKBAR_OBJ = build/taskbar.o
+TASKBAR_OBJ = $(BUILD_DIR)/taskbar.o
 
 # Arquivos - Desktop
 DESKTOP_C = src/desktop/desktop.c
-DESKTOP_OBJ = build/desktop.o
+DESKTOP_OBJ = $(BUILD_DIR)/desktop.o
 
 # Arquivos - Settings
 SETTINGS_C = src/settings/settings.c
-SETTINGS_OBJ = build/settings.o
+SETTINGS_OBJ = $(BUILD_DIR)/settings.o
 
 # Arquivos - System Updater
 UPDATER_C = src/updater/updater.c
-UPDATER_OBJ = build/updater.o
+UPDATER_OBJ = $(BUILD_DIR)/updater.o
 
 # Arquivos - App Store
 APPSTORE_C = src/appstore/appstore.c
-APPSTORE_OBJ = build/appstore.o
+APPSTORE_OBJ = $(BUILD_DIR)/appstore.o
 
 # Arquivos - Window Manager
 WM_C = src/wm/wm.c
-WM_OBJ = build/wm.o
+WM_OBJ = $(BUILD_DIR)/wm.o
 
 # Arquivos - Icons
 ICONS_C = src/icons/icons.c
-ICONS_OBJ = build/icons.o
+ICONS_OBJ = $(BUILD_DIR)/icons.o
 
 # Arquivos - GUI Gráfica
 GUI_C = src/gui/gui.c
-GUI_OBJ = build/gui.o
+GUI_OBJ = $(BUILD_DIR)/gui.o
 
 # Arquivos - Display Layout
 DISPLAY_C = src/gui/display.c
-DISPLAY_OBJ = build/display.o
+DISPLAY_OBJ = $(BUILD_DIR)/display.o
 
 
 # Output
-KERNEL_BIN = build/kernel.bin
-OS_IMG = build/zephyros.img
-STAGE2_CHS_IMG = build/zephyros-stage2-chs.img
+KERNEL_BIN = $(BUILD_DIR)/kernel.bin
+KERNEL_ELF = $(BUILD_DIR)/kernel.elf
+OS_IMG = $(BUILD_DIR)/zephyros.img
+STAGE2_CHS_IMG = $(BUILD_DIR)/zephyros-stage2-chs.img
 STORAGE_FIXTURES_TOOL = tools\storage_fixtures.py
-STORAGE_FIXTURES_STAMP = build\storage-fixtures.stamp
-STORAGE_VALID_IMG = build\storage-valid.img
-STORAGE_CORRUPT_IMG = build\storage-corrupt.img
-STORAGE_UNKNOWN_IMG = build\storage-unknown.img
-STORAGE_NO_SPACE_IMG = build\storage-fat32-no-space.img
-STORAGE_FAT_DIVERGENT_IMG = build\storage-fat32-fat-divergent.img
-STORAGE_CHAIN_CORRUPT_IMG = build\storage-fat32-chain-corrupt.img
-STORAGE_LFN_INVALID_IMG = build\storage-fat32-lfn-invalid.img
-SYSTEM_FIXTURES_DIR = build\system-fixtures
-SYSTEM_FIXTURE_IMAGES_DIR = build\system-fixture-images
+STORAGE_FIXTURES_STAMP = $(BUILD_DIR)\storage-fixtures.stamp
+STORAGE_VALID_IMG = $(BUILD_DIR)\storage-valid.img
+STORAGE_CORRUPT_IMG = $(BUILD_DIR)\storage-corrupt.img
+STORAGE_UNKNOWN_IMG = $(BUILD_DIR)\storage-unknown.img
+STORAGE_NO_SPACE_IMG = $(BUILD_DIR)\storage-fat32-no-space.img
+STORAGE_FAT_DIVERGENT_IMG = $(BUILD_DIR)\storage-fat32-fat-divergent.img
+STORAGE_CHAIN_CORRUPT_IMG = $(BUILD_DIR)\storage-fat32-chain-corrupt.img
+STORAGE_LFN_INVALID_IMG = $(BUILD_DIR)\storage-fat32-lfn-invalid.img
+SYSTEM_FIXTURES_DIR = $(BUILD_DIR)\system-fixtures
+SYSTEM_FIXTURE_IMAGES_DIR = $(BUILD_DIR)\system-fixture-images
 SYSTEM_FIXTURES_MANIFEST = docs\fixtures\updates\system\system.json
 SYSTEM_FIXTURES_PUBLIC = config\update-release-public.json
-SYSTEM_SLOTS_FIXTURES_DIR = build\system-slots-fixtures
+SYSTEM_SLOTS_FIXTURES_DIR = $(BUILD_DIR)\system-slots-fixtures
 SYSTEM_SLOTS_BASELINE_DIR = $(SYSTEM_SLOTS_FIXTURES_DIR)\baseline
 SYSTEM_SLOTS_BASELINE_MANIFEST = docs\fixtures\updates\system\baseline.json
 SYSTEM_SLOTS_FIXTURE_IMAGE = $(SYSTEM_SLOTS_FIXTURES_DIR)\SLOTS.img
-SYSTEM_SLOTS_MATRIX_DIR = build\system-slots-matrix
+SYSTEM_SLOTS_MATRIX_DIR = $(BUILD_DIR)\system-slots-matrix
 SYSTEM_SLOTS_MATRIX_IMAGE ?=
 SYSTEM_UPDATE_MATRIX_IMAGE = $(SYSTEM_SLOTS_MATRIX_DIR)\SYSTEM_UPDATE_GUIDED.img
-EP94B_FIXTURES_DIR = build\ep94b-fixtures
+EP94B_FIXTURES_DIR = $(BUILD_DIR)\ep94b-fixtures
 EP94B_ABI1_DIR = $(EP94B_FIXTURES_DIR)\abi1
 EP94B_ABI2_DIR = $(EP94B_FIXTURES_DIR)\abi2
-EP94B_MATRIX_DIR = build\ep94b-matrix
+EP94B_MATRIX_DIR = $(BUILD_DIR)\ep94b-matrix
 EP94B_MATRIX_IMAGE = $(EP94B_MATRIX_DIR)\EP94B_GUIDED.img
-EP94C_MATRIX_DIR = build\ep94c-matrix
+EP94C_MATRIX_DIR = $(BUILD_DIR)\ep94c-matrix
 EP94C_MATRIX_IMAGE = $(EP94C_MATRIX_DIR)\EP94C_GUIDED.img
 EP94C_FIXTURES_DIR = $(EP94C_MATRIX_DIR)\preflight-fixtures
 # Defina somente em Makefile.local; a chave privada nunca entra no repositorio.
@@ -628,7 +643,7 @@ STORE_AS5_FIXTURES_DIR = docs\fixtures\apps\store-as5
 STORE_AS5_PUBLIC = config\app-store-test-public.json
 
 # Todas as variáveis de objetos
-OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(TEST_PROTOCOL_CORE_OBJ) $(TEST_PROTOCOL_OBJ) $(KERNEL_TESTS_OBJ) $(KERNEL_TESTS_PAGING_OBJ) $(KERNEL_TESTS_EXECUTION_OBJ) $(KERNEL_TESTS_STORAGE_OBJ) $(KERNEL_TESTS_NETWORK_OBJ) $(KERNEL_TESTS_PLATFORM_OBJ) $(KERNEL_TESTS_BLACKBOX_OBJ) $(KERNEL_TESTS_TST6_OBJ) $(INPUT_OBJ) $(IRQ_DEFERRED_OBJ) $(WAIT_OBJ) $(WORKQUEUE_OBJ) $(RECOVERY_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) $(BEARSSL_COMPAT_OBJ) $(BEARSSL_OBJ) $(UPDATE_OBJ) $(UPDATE_SYSTEM_OBJ) $(UPDATE_SYSTEM_SLOTS_OBJ) $(UPDATE_REMOTE_SYSTEM_OBJ) $(UPDATE_REMOTE_OBJ) $(UPDATE_REMOTE_RELEASE_OBJ) $(UPDATE_REMOTE_GITHUB_OBJ) $(UPDATE_RUNTIME_OBJ) $(UPDATE_REMOTE_RUNTIME_OBJ) $(STRING_OBJ) $(APP_API_OBJ) $(SYSCALL_OBJ) $(SWITCH_OBJ) \
+OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(TEST_PROTOCOL_CORE_OBJ) $(TEST_PROTOCOL_OBJ) $(TEST_COVERAGE_OBJ) $(KERNEL_TESTS_OBJ) $(KERNEL_TESTS_PAGING_OBJ) $(KERNEL_TESTS_EXECUTION_OBJ) $(KERNEL_TESTS_STORAGE_OBJ) $(KERNEL_TESTS_NETWORK_OBJ) $(KERNEL_TESTS_PLATFORM_OBJ) $(KERNEL_TESTS_BLACKBOX_OBJ) $(KERNEL_TESTS_TST6_OBJ) $(INPUT_OBJ) $(IRQ_DEFERRED_OBJ) $(WAIT_OBJ) $(WORKQUEUE_OBJ) $(RECOVERY_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) $(BEARSSL_COMPAT_OBJ) $(BEARSSL_OBJ) $(UPDATE_OBJ) $(UPDATE_SYSTEM_OBJ) $(UPDATE_SYSTEM_SLOTS_OBJ) $(UPDATE_REMOTE_SYSTEM_OBJ) $(UPDATE_REMOTE_OBJ) $(UPDATE_REMOTE_RELEASE_OBJ) $(UPDATE_REMOTE_GITHUB_OBJ) $(UPDATE_RUNTIME_OBJ) $(UPDATE_REMOTE_RUNTIME_OBJ) $(STRING_OBJ) $(APP_API_OBJ) $(SYSCALL_OBJ) $(SWITCH_OBJ) \
        $(VIDEO_OBJ) $(VESA_OBJ) $(FONT_OBJ) $(IDT_OBJ) $(SERIAL_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
        $(MOUSE_OBJ) $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(UHCI_OBJ) $(EHCI_OBJ) $(USB_TRANSPORT_OBJ) $(USB_MSC_OBJ) $(USB_HID_OBJ) $(RTL8811CU_OBJ) $(E1000_OBJ) $(RTL8139_OBJ) $(AC97_OBJ) $(ACPI_OBJ) $(RNG_OBJ) \
        $(MEMORY_OBJ) $(PAGING_OBJ) $(VMA_OBJ) $(COMPRESS_OBJ) \
@@ -640,646 +655,669 @@ OBJS += $(POWER_NOTIFIER_OBJ)
 # Targets
 all: $(OS_IMG)
 
+coverage-image:
+	python tools\build_coverage_image.py --make "$(MAKE_TOOL)" --build-dir "$(COVERAGE_BUILD_DIR)" --cflags "$(COVERAGE_CFLAGS)"
+
+coverage-map: coverage-image tools\coverage_collector.py
+	python tools\coverage_collector.py symbols --image $(COVERAGE_BUILD_DIR)\kernel.elf --output $(COVERAGE_BUILD_DIR)\coverage-symbols.json --nm "$(NM)" --addr2line "addr2line" --compiler "$(GCC)"
+
+kernel-elf: $(KERNEL_ELF)
+
 $(BOOT_BIN): $(BOOT_SRC) $(STAGE2_BIN)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	for /f %%S in ('powershell -NoProfile -Command "$$size = (Get-Item '$(STAGE2_BIN)').Length; [math]::Ceiling($$size / 512)"') do $(NASM) $(NASMFLAGS) -dSTAGE2_SECTORS=%%S $< -o $@
 
 $(STAGE2_BIN): $(STAGE2_SRC) $(RECOVERY_LOADER_PADDED_BIN) $(KERNEL_BIN)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	for /f %%S in ('powershell -NoProfile -Command "$$size = (Get-Item '$(KERNEL_BIN)').Length; [math]::Ceiling($$size / 512)"') do for /f %%K in ('powershell -NoProfile -Command "(Get-Item '$(KERNEL_BIN)').Length"') do for /f %%R in ('powershell -NoProfile -Command "(Get-Item '$(RECOVERY_LOADER_PADDED_BIN)').Length / 512"') do $(NASM) $(NASMFLAGS) -dKERNEL_SECTORS=%%S -dKERNEL_BYTES=%%K -dRECOVERY_LOADER_SECTORS=%%R -dLEGACY_KERNEL_LBA=$(LEGACY_KERNEL_LBA) -dRECOVERY_LOADER_LBA=$(RECOVERY_LOADER_LBA) -dFAT32_START_LBA=$(FAT32_START_LBA) $< -o $@
 
 $(SYSTEM_BOOT_BIN): $(SYSTEM_BOOT_SRC)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(NASM) $(NASMFLAGS) $< -o $@
 
 $(SYSTEM_BOOT_HANDOFF_INVALID_BIN): $(SYSTEM_BOOT_SRC)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(NASM) $(NASMFLAGS) -dSYSTEM_BOOT_CORRUPT_HANDOFF=1 $< -o $@
 
 $(SYSTEM_BOOT_RETURN_BIN): $(SYSTEM_BOOT_SRC)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(NASM) $(NASMFLAGS) -dSYSTEM_BOOT_FORCE_RETURN=1 $< -o $@
 
 $(SYSTEM_STAGE2_BIN): $(SYSTEM_STAGE2_SRC)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(NASM) $(NASMFLAGS) $< -o $@
 
 $(RECOVERY_STAGE2_VGA_BIN): $(STAGE2_SRC) $(RECOVERY_LOADER_PADDED_BIN) $(KERNEL_BIN)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	for /f %%S in ('powershell -NoProfile -Command "$$size = (Get-Item '$(KERNEL_BIN)').Length; [math]::Ceiling($$size / 512)"') do for /f %%K in ('powershell -NoProfile -Command "(Get-Item '$(KERNEL_BIN)').Length"') do for /f %%R in ('powershell -NoProfile -Command "(Get-Item '$(RECOVERY_LOADER_PADDED_BIN)').Length / 512"') do $(NASM) $(NASMFLAGS) -dKERNEL_SECTORS=%%S -dKERNEL_BYTES=%%K -dRECOVERY_LOADER_SECTORS=%%R -dLEGACY_KERNEL_LBA=$(LEGACY_KERNEL_LBA) -dRECOVERY_LOADER_LBA=$(RECOVERY_LOADER_LBA) -dFAT32_START_LBA=$(FAT32_START_LBA) -dRECOVERY_FORCE_VGA_TEXT=1 $< -o $@
 
 $(RECOVERY_ENTRY_OBJ): $(RECOVERY_ENTRY_ASM)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(NASM) -f elf32 $< -o $@
 
 $(RECOVERY_LAYOUT_HEADER): $(KERNEL_BIN) $(RECOVERY_LAYOUT_TOOL)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	python $(RECOVERY_LAYOUT_TOOL) --kernel $(KERNEL_BIN) --output $@
 
 $(RECOVERY_LOADER_OBJ): $(RECOVERY_LOADER_C) $(RECOVERY_MENU_HEADER) $(RECOVERY_CHAIN_HEADER) $(RECOVERY_LAYOUT_HEADER) src/include/core/crypto.h src/include/core/update_system.h src/include/core/update_system_slots.h src/include/core/update_trust.h
-	@if not exist build mkdir build
-	$(GCC) $(CFLAGS) -I build -c $< -o $@
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
+	$(GCC) $(RECOVERY_CFLAGS) -I $(BUILD_DIR) -c $< -o $@
 
 $(RECOVERY_MENU_OBJ): $(RECOVERY_MENU_C) $(RECOVERY_MENU_HEADER)
-	@if not exist build mkdir build
-	$(GCC) $(CFLAGS) -c $< -o $@
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
+	$(GCC) $(RECOVERY_CFLAGS) -c $< -o $@
 
 $(RECOVERY_RUNTIME_OBJ): $(RECOVERY_RUNTIME_C)
-	@if not exist build mkdir build
-	$(GCC) $(CFLAGS) -c $< -o $@
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
+	$(GCC) $(RECOVERY_CFLAGS) -c $< -o $@
 
-$(RECOVERY_LOADER_BIN): $(RECOVERY_ENTRY_OBJ) $(RECOVERY_LOADER_OBJ) $(RECOVERY_MENU_OBJ) $(RECOVERY_RUNTIME_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) $(RECOVERY_LOADER_LD)
-	$(LD) -m elf_i386 -T $(RECOVERY_LOADER_LD) $(RECOVERY_ENTRY_OBJ) $(RECOVERY_LOADER_OBJ) $(RECOVERY_MENU_OBJ) $(RECOVERY_RUNTIME_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) -o $@
+$(RECOVERY_LOADER_BIN): $(RECOVERY_ENTRY_OBJ) $(RECOVERY_LOADER_OBJ) $(RECOVERY_MENU_OBJ) $(RECOVERY_RUNTIME_OBJ) $(RECOVERY_CRYPTO_OBJ) $(RECOVERY_CRYPTO_ED25519_OBJ) $(RECOVERY_LOADER_LD)
+	$(LD) -m elf_i386 -T $(RECOVERY_LOADER_LD) $(RECOVERY_ENTRY_OBJ) $(RECOVERY_LOADER_OBJ) $(RECOVERY_MENU_OBJ) $(RECOVERY_RUNTIME_OBJ) $(RECOVERY_CRYPTO_OBJ) $(RECOVERY_CRYPTO_ED25519_OBJ) -o $@
 
 $(RECOVERY_LOADER_PADDED_BIN): $(RECOVERY_LOADER_BIN) $(RECOVERY_LOADER_PAD_TOOL)
 	python $(RECOVERY_LOADER_PAD_TOOL) --input $(RECOVERY_LOADER_BIN) --output $@
 
 $(ENTRY_OBJ): $(ENTRY_SRC)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(NASM) -f elf32 $< -o $@
 
 $(KERNEL_OBJ): $(KERNEL_C) src/include/apps/shell_job.h src/include/core/keyboard.h src/include/core/power.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/workqueue.h src/include/core/ethernet.h src/include/core/clock.h src/include/core/tls.h src/include/core/update_system.h src/include/core/update_system_slots.h src/include/core/update_remote_system.h src/include/core/test_protocol.h src/include/drivers/serial.h src/include/drivers/rtc.h src/include/process/process.h src/include/process/thread.h src/include/memory/slab.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(PANIC_OBJ): $(PANIC_C) src/include/core/test_protocol.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(LOG_OBJ): $(LOG_C) src/include/drivers/serial.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(TEST_PROTOCOL_CORE_OBJ): $(TEST_PROTOCOL_CORE_C) src/core/test_protocol_core.h src/include/core/test_protocol.h src/include/core/errors.h src/include/types.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(TEST_PROTOCOL_OBJ): $(TEST_PROTOCOL_C) src/core/test_protocol_core.h src/core/kernel_tests.h src/include/core/test_protocol.h src/include/core/errors.h src/include/core/log.h src/include/core/timer.h src/include/drivers/serial.h
-	@if not exist build mkdir build
+$(TEST_PROTOCOL_OBJ): $(TEST_PROTOCOL_C) src/core/test_protocol_core.h src/core/kernel_tests.h src/core/test_coverage.h src/include/core/test_protocol.h src/include/core/errors.h src/include/core/log.h src/include/core/timer.h src/include/drivers/serial.h
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(TEST_COVERAGE_OBJ): $(TEST_COVERAGE_C) src/core/test_coverage.h src/include/drivers/serial.h
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 
 $(KERNEL_TESTS_OBJ): $(KERNEL_TESTS_C) src/core/kernel_tests.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h src/include/memory/paging.h src/include/memory/slab.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(KERNEL_TESTS_PAGING_OBJ): $(KERNEL_TESTS_PAGING_C) src/core/kernel_tests.h src/include/core/app_api.h src/include/core/log.h src/include/core/memory.h src/include/core/string.h src/include/core/syscall.h src/include/core/timer.h src/include/memory/paging.h src/include/memory/vma.h src/include/process/process.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(KERNEL_TESTS_EXECUTION_OBJ): $(KERNEL_TESTS_EXECUTION_C) src/core/kernel_tests.h src/include/core/log.h src/include/core/wait.h src/include/core/workqueue.h src/include/process/process.h src/include/process/signal.h src/include/process/thread.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(KERNEL_TESTS_STORAGE_OBJ): $(KERNEL_TESTS_STORAGE_C) src/core/kernel_tests.h src/include/core/log.h src/include/fs/block.h src/include/fs/block_cache.h src/include/fs/devfs.h src/include/fs/file_index.h src/include/fs/procfs.h src/include/fs/storage.h src/include/fs/sysfs.h src/include/fs/vfs.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(KERNEL_TESTS_NETWORK_OBJ): $(KERNEL_TESTS_NETWORK_C) src/core/kernel_tests.h src/include/core/arp.h src/include/core/crypto.h src/include/core/dhcp.h src/include/core/dns.h src/include/core/ethernet.h src/include/core/http.h src/include/core/icmp.h src/include/core/ipv4.h src/include/core/log.h src/include/core/net_buffer.h src/include/core/net_socket.h src/include/core/route.h src/include/core/sk_buff.h src/include/core/socket.h src/include/core/tcp.h src/include/core/tls.h src/include/core/tls_client.h src/include/core/udp.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(KERNEL_TESTS_PLATFORM_OBJ): $(KERNEL_TESTS_PLATFORM_C) src/core/kernel_tests.h src/include/core/clock.h src/include/core/device_manager.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/log.h src/include/core/power.h src/include/core/power_notifier.h src/include/core/timer.h src/include/core/usb_manager.h src/include/core/wifi_manager.h src/include/drivers/acpi.h src/include/drivers/idt.h src/include/drivers/rng.h src/include/drivers/rtc.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(KERNEL_TESTS_BLACKBOX_OBJ): $(KERNEL_TESTS_BLACKBOX_C) src/core/kernel_tests.h src/core/video_test.h src/include/core/errors.h src/include/core/log.h src/include/core/timer.h src/include/process/process.h src/include/core/video.h src/include/ui/desktop.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(KERNEL_TESTS_TST6_OBJ): $(KERNEL_TESTS_TST6_C) src/core/kernel_tests.h src/include/core/app_package.h src/include/core/errors.h src/include/core/log.h src/include/core/update_runtime.h src/include/memory/paging.h src/include/process/process.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(INPUT_OBJ): $(INPUT_C) src/include/core/input.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(IRQ_DEFERRED_OBJ): $(IRQ_DEFERRED_C) src/include/core/irq_deferred.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(WAIT_OBJ): $(WAIT_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(WORKQUEUE_OBJ): $(WORKQUEUE_C) src/include/core/workqueue.h src/include/core/wait.h src/include/core/timer.h src/include/process/process.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(CLOCK_OBJ): $(CLOCK_C) src/include/core/clock.h src/include/drivers/rtc.h src/include/core/timer.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(TLS_OBJ): $(TLS_C) src/include/core/tls.h src/include/core/clock.h src/include/core/tls_client.h src/include/drivers/rng.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(TLS_CLIENT_OBJ): $(TLS_CLIENT_C) src/include/core/tls_client.h src/include/core/tls.h src/include/core/clock.h src/include/core/net_socket.h src/include/core/string.h src/include/drivers/rng.h vendor/bearssl/inc/bearssl.h vendor/bearssl/inc/string.h vendor/bearssl/inc/stddef.h vendor/bearssl/inc/stdint.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(BEARSSL_CFLAGS) -c $< -o $@
 
 $(BEARSSL_COMPAT_OBJ): $(BEARSSL_COMPAT_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(BEARSSL_OBJ): build/bearssl/%.o: vendor/bearssl/src/%.c vendor/bearssl/inc/string.h vendor/bearssl/inc/stddef.h vendor/bearssl/inc/stdint.h
-	@if not exist build mkdir build
+$(BEARSSL_OBJ): $(BUILD_DIR)/bearssl/%.o: vendor/bearssl/src/%.c vendor/bearssl/inc/string.h vendor/bearssl/inc/stddef.h vendor/bearssl/inc/stdint.h
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	@if not exist "$(@D)" mkdir "$(@D)"
 	$(GCC) $(BEARSSL_CFLAGS) -c $< -o $@
 
 $(RECOVERY_OBJ): $(RECOVERY_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(CRYPTO_OBJ): $(CRYPTO_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(CRYPTO_ED25519_OBJ): $(CRYPTO_ED25519_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
+$(RECOVERY_CRYPTO_OBJ): $(CRYPTO_C)
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
+	$(GCC) $(RECOVERY_CFLAGS) -c $< -o $@
+
+$(RECOVERY_CRYPTO_ED25519_OBJ): $(CRYPTO_ED25519_C)
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
+	$(GCC) $(RECOVERY_CFLAGS) -c $< -o $@
+
 $(UPDATE_OBJ): $(UPDATE_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(UPDATE_SYSTEM_OBJ): $(UPDATE_SYSTEM_C) src/include/core/update_system.h src/include/core/update_trust.h src/include/core/update.h src/include/core/update_remote_github.h src/include/core/update_remote_config.h src/include/core/http.h src/include/fs/fs.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(UPDATE_SYSTEM_SLOTS_OBJ): $(UPDATE_SYSTEM_SLOTS_C) src/include/core/update_system_slots.h src/include/core/update_system.h src/include/core/update.h src/include/fs/fs.h src/include/fs/storage.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(UPDATE_REMOTE_SYSTEM_OBJ): $(UPDATE_REMOTE_SYSTEM_C) src/include/core/update_remote_system.h src/include/core/update_system.h src/include/core/update_remote.h src/include/fs/fs.h src/include/fs/storage.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(UPDATE_REMOTE_OBJ): $(UPDATE_REMOTE_C) src/include/core/update_remote.h src/include/core/update_remote_config.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(UPDATE_REMOTE_RELEASE_OBJ): $(UPDATE_REMOTE_RELEASE_C) src/include/core/update_remote.h src/include/core/update_remote_config.h src/include/core/update_remote_github.h src/include/core/http.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(UPDATE_REMOTE_GITHUB_OBJ): $(UPDATE_REMOTE_GITHUB_C) src/include/core/update_remote_github.h src/include/core/update_remote.h src/include/core/update_system.h src/include/core/update_remote_config.h src/include/core/http.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(UPDATE_RUNTIME_OBJ): $(UPDATE_RUNTIME_C) src/include/core/update_runtime.h src/include/core/update_remote_runtime.h src/include/core/update_trust.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(UPDATE_REMOTE_RUNTIME_OBJ): $(UPDATE_REMOTE_RUNTIME_C) src/include/core/update_remote_runtime.h src/include/core/update_runtime.h src/include/core/update_remote_github.h src/include/core/update_remote_config.h src/include/core/http.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(APP_REMOTE_OBJ): $(APP_REMOTE_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(DEVICE_MANAGER_OBJ): $(DEVICE_MANAGER_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(USB_MANAGER_OBJ): $(USB_MANAGER_C) src/include/drivers/usb_hid.h src/include/drivers/ehci.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(UHCI_OBJ): $(UHCI_C) src/include/drivers/uhci.h src/include/core/irq_deferred.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(EHCI_OBJ): $(EHCI_C) src/include/drivers/ehci.h src/include/core/usb_manager.h src/include/core/irq_deferred.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(USB_TRANSPORT_OBJ): $(USB_TRANSPORT_C) src/include/core/usb_transport.h src/include/drivers/uhci.h src/include/drivers/ehci.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(USB_MSC_OBJ): $(USB_MSC_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(USB_HID_OBJ): $(USB_HID_C) src/include/drivers/usb_hid.h src/include/core/input.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(RTL8811CU_OBJ): $(RTL8811CU_C) src/include/drivers/rtl8811cu.h src/include/core/usb_manager.h src/include/core/usb_transport.h src/include/core/ethernet.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/include/fs/fs.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(NETWORK_MANAGER_OBJ): $(NETWORK_MANAGER_C) src/include/core/network_manager.h src/include/core/ethernet.h src/include/core/usb_manager.h src/include/drivers/rtl8811cu.h src/include/core/socket.h src/include/core/route.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(WIFI_MANAGER_OBJ): $(WIFI_MANAGER_C) src/include/core/wifi_manager.h src/include/core/usb_manager.h src/include/drivers/pci.h src/include/drivers/rtl8811cu.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(ETHERNET_OBJ): $(ETHERNET_C) src/include/core/ethernet.h src/include/core/net_buffer.h src/include/core/sk_buff.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(NET_BUFFER_OBJ): $(NET_BUFFER_C) src/include/core/net_buffer.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/include/core/spinlock.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SK_BUFF_OBJ): $(SK_BUFF_C) src/include/core/sk_buff.h src/include/core/net_buffer.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/include/core/spinlock.h src/include/memory/slab.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SOCKET_OBJ): $(SOCKET_C) src/include/core/socket.h src/include/core/poll.h src/include/core/net_socket.h src/include/core/net_buffer.h src/include/core/sk_buff.h src/include/core/errors.h src/include/core/ipv4.h src/include/core/log.h src/include/core/spinlock.h src/include/core/string.h src/include/core/wait.h src/include/fs/vfs.h src/include/fs/vfs_internal.h src/include/process/process.h src/include/memory/slab.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(ARP_OBJ): $(ARP_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(IPV4_OBJ): $(IPV4_C) src/include/core/route.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(ROUTE_OBJ): $(ROUTE_C) src/include/core/route.h src/include/core/ipv4.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(ICMP_OBJ): $(ICMP_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(UDP_OBJ): $(UDP_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(DHCP_OBJ): $(DHCP_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(DNS_OBJ): $(DNS_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(TCP_OBJ): $(TCP_C) src/include/core/tcp.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(NET_SOCKET_OBJ): $(NET_SOCKET_C) src/include/core/net_buffer.h src/include/fs/vfs.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(HTTP_OBJ): $(HTTP_C) src/include/core/http.h src/include/core/tls_client.h src/include/core/tls.h src/include/process/process.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(POWER_OBJ): $(POWER_C) src/include/core/power.h src/include/core/power_notifier.h src/include/core/errors.h src/include/core/keyboard.h src/include/core/log.h src/include/core/network_manager.h src/include/core/string.h src/include/core/timer.h src/include/core/video.h src/include/core/workqueue.h src/include/drivers/ac97.h src/include/drivers/acpi.h src/include/drivers/idt.h src/include/drivers/speaker.h src/include/fs/storage.h src/include/fs/vfs.h src/include/process/process.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(POWER_NOTIFIER_OBJ): $(POWER_NOTIFIER_C) src/include/core/power_notifier.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/include/core/timer.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(STRING_OBJ): $(STRING_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(APP_API_OBJ): $(APP_API_C) src/include/core/app_api.h src/include/core/app_files.h src/include/core/poll.h src/include/memory/vma.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(APP_FILES_OBJ): $(APP_FILES_C) src/include/core/app_files.h src/include/core/app_api.h src/include/core/poll.h src/include/fs/vfs.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(APP_LOADER_OBJ): $(APP_LOADER_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(APP_BUILTIN_OBJ): $(APP_BUILTIN_C) src/include/core/syscall.h src/include/core/app_api.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(APP_PACKAGE_OBJ): $(APP_PACKAGE_C) src/include/core/app_package.h src/include/core/app_loader.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(APP_CATALOG_OBJ): $(APP_CATALOG_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SYSCALL_OBJ): $(SYSCALL_C) src/include/core/syscall.h src/include/core/app_api.h src/include/core/app_files.h src/include/core/poll.h src/include/memory/paging.h src/include/memory/vma.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SWITCH_OBJ): $(SWITCH_ASM)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(NASM) -f elf32 $< -o $@
 
 $(VIDEO_OBJ): $(VIDEO_C) src/include/core/video.h src/include/drivers/vesa.h src/include/core/errors.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(VESA_OBJ): $(VESA_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(FONT_OBJ): $(FONT_C) src/drivers/font_data.inc src/include/drivers/font.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(IDT_OBJ): $(IDT_C) src/include/drivers/idt.h src/include/core/test_protocol.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SERIAL_OBJ): $(SERIAL_C) src/include/drivers/serial.h src/include/core/errors.h src/include/core/log.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(ISR_OBJ): $(ISR_ASM)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(NASM) -f elf32 $< -o $@
 
 $(IRQ_OBJ): $(IRQ_ASM)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(NASM) -f elf32 $< -o $@
 
 $(KEYBOARD_OBJ): $(KEYBOARD_C) src/include/core/keyboard.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/errors.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(MOUSE_OBJ): $(MOUSE_C) src/include/core/input.h src/include/core/irq_deferred.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(TIMER_OBJ): $(TIMER_C) src/include/core/timer.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(RTC_OBJ): $(RTC_C) src/include/drivers/rtc.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(RNG_OBJ): $(RNG_C) src/include/drivers/rng.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(TSS_OBJ): $(TSS_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(ATA_OBJ): $(ATA_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SPEAKER_OBJ): $(SPEAKER_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(PCI_OBJ): $(PCI_C) src/include/process/process.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(E1000_OBJ): $(E1000_C) src/include/core/ethernet.h src/include/core/irq_deferred.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(RTL8139_OBJ): $(RTL8139_C) src/include/core/ethernet.h src/include/core/irq_deferred.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(AC97_OBJ): $(AC97_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(ACPI_OBJ): $(ACPI_C) src/include/drivers/acpi.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(MEMORY_OBJ): $(MEMORY_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SLAB_OBJ): $(SLAB_C) src/include/memory/slab.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h src/include/core/spinlock.h src/include/core/string.h src/include/memory/paging.h src/core/kernel_tests.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(PAGING_OBJ): $(PAGING_C) src/include/memory/paging.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(VMA_OBJ): $(VMA_C) src/include/memory/vma.h src/include/process/process.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(COMPRESS_OBJ): $(COMPRESS_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(FAT12_OBJ): $(FAT12_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(FAT32_OBJ): $(FAT32_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(FS_OBJ): $(FS_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(VFS_OBJ): $(VFS_C) src/include/fs/vfs.h src/include/core/poll.h src/include/fs/vfs_internal.h src/include/fs/devfs.h src/include/fs/procfs.h src/include/fs/sysfs.h src/include/fs/storage.h src/include/process/process.h src/include/process/thread.h src/include/core/app_api.h src/include/core/wait.h src/include/memory/slab.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(VFS_PATH_OBJ): $(VFS_PATH_C) src/include/fs/vfs.h src/include/fs/vfs_internal.h src/include/fs/devfs.h src/include/fs/procfs.h src/include/fs/sysfs.h src/include/fs/storage.h src/include/process/process.h src/include/core/timer.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(DEVFS_OBJ): $(DEVFS_C) src/include/fs/devfs.h src/include/fs/vfs.h src/include/fs/block.h src/include/core/app_api.h src/include/drivers/speaker.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(PROCFS_OBJ): $(PROCFS_C) src/include/fs/procfs.h src/include/fs/vfs.h src/include/fs/vfs_internal.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h src/include/core/spinlock.h src/include/core/string.h src/include/core/timer.h src/include/core/version.h src/include/fs/block_cache.h src/include/memory/slab.h src/include/memory/paging.h src/include/memory/vma.h src/include/process/process.h src/include/process/thread.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SYSFS_OBJ): $(SYSFS_C) src/include/fs/sysfs.h src/include/fs/procfs.h src/include/fs/vfs.h src/include/fs/vfs_internal.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h src/include/core/poll.h src/include/core/power.h src/include/core/spinlock.h src/include/core/string.h src/include/drivers/pci.h src/include/core/network_manager.h src/include/core/ethernet.h src/include/fs/block.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(BLOCK_OBJ): $(BLOCK_C) src/include/fs/block.h src/include/fs/block_cache.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(BLOCK_CACHE_OBJ): $(BLOCK_CACHE_C) src/include/fs/block_cache.h src/include/fs/block.h src/include/core/errors.h src/include/core/log.h src/include/core/spinlock.h src/include/core/string.h src/include/core/timer.h src/include/core/wait.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(STORAGE_OBJ): $(STORAGE_C) src/include/fs/storage.h src/include/fs/block_cache.h src/include/core/wait.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(FILE_INDEX_OBJ): $(FILE_INDEX_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(WAV_OBJ): $(WAV_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(BMP_OBJ): $(BMP_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(PROCESS_OBJ): $(PROCESS_C) src/include/process/process.h src/include/process/thread.h src/include/memory/slab.h src/include/memory/vma.h src/include/memory/paging.h src/include/core/app_api.h src/include/core/timer.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SIGNAL_OBJ): $(SIGNAL_C) src/include/process/signal.h src/include/process/process.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(IPC_OBJ): $(IPC_C) src/include/process/process.h src/include/core/poll.h src/include/fs/vfs.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(THREAD_OBJ): $(THREAD_C) src/include/process/thread.h src/include/process/process.h src/include/memory/slab.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SHELL_OBJ): $(SHELL_C) src/include/apps/shell_input.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_job.h src/include/apps/shell_runtime.h src/include/core/keyboard.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SHELL_INPUT_OBJ): $(SHELL_INPUT_C) src/include/apps/shell_input.h src/include/apps/shell.h src/include/core/keyboard.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SHELL_DISPATCH_OBJ): $(SHELL_DISPATCH_C) src/include/apps/shell_dispatch.h src/include/apps/shell_job.h src/include/apps/shell_pipeline.h src/include/core/log.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SHELL_COMMAND_UTILS_OBJ): $(SHELL_COMMAND_UTILS_C) src/include/apps/shell_command_utils.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SHELL_PIPELINE_OBJ): $(SHELL_PIPELINE_C) src/include/apps/shell_pipeline.h src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/core/app_api.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h src/include/core/string.h src/include/core/video.h src/include/core/wait.h src/include/fs/vfs.h src/include/process/thread.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SHELL_COMMANDS_VFS_OBJ): $(SHELL_COMMANDS_VFS_C) src/include/apps/shell_command_utils.h src/include/apps/shell_pipeline.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/include/core/video.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SHELL_COMMANDS_CORE_OBJ): $(SHELL_COMMANDS_CORE_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_pipeline.h src/include/apps/shell_runtime.h src/include/core/power.h src/include/process/process.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SHELL_COMMANDS_STORAGE_OBJ): $(SHELL_COMMANDS_STORAGE_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_job.h src/include/apps/shell_runtime.h src/include/fs/block_cache.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SHELL_COMMANDS_DIAGNOSTICS_OBJ): $(SHELL_COMMANDS_DIAGNOSTICS_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_introspection.h src/include/apps/shell_runtime.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/workqueue.h src/include/core/clock.h src/include/core/tls.h src/include/core/wifi_manager.h src/include/core/log.h src/include/core/power.h src/include/fs/vfs.h src/include/fs/procfs.h src/include/drivers/idt.h src/include/drivers/acpi.h src/include/drivers/rtc.h src/include/drivers/usb_hid.h src/include/process/process.h src/include/memory/slab.h src/include/memory/vma.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SHELL_COMMANDS_NETWORK_OBJ): $(SHELL_COMMANDS_NETWORK_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_job.h src/include/apps/shell_runtime.h src/include/core/poll.h src/include/core/route.h src/include/core/wait.h src/include/fs/vfs.h src/include/process/process.h src/include/process/thread.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SHELL_COMMANDS_WIFI_OBJ): $(SHELL_COMMANDS_WIFI_C) src/include/apps/shell_command_utils.h src/include/core/wifi_manager.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SHELL_CHECKS_OBJ): $(SHELL_CHECKS_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_job.h src/include/apps/shell_runtime.h src/include/core/keyboard.h src/include/core/power.h src/include/core/power_notifier.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/workqueue.h src/include/core/clock.h src/include/core/tls.h src/include/core/wifi_manager.h src/include/drivers/idt.h src/include/drivers/acpi.h src/include/drivers/rtc.h src/include/drivers/usb_hid.h src/include/process/process.h src/include/memory/vma.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SHELL_COMMANDS_PACKAGES_OBJ): $(SHELL_COMMANDS_PACKAGES_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_job.h src/include/apps/shell_runtime.h src/include/core/update_system.h src/include/core/update_system_slots.h src/include/core/update_remote_system.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SHELL_COMMANDS_APPS_OBJ): $(SHELL_COMMANDS_APPS_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_runtime.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SHELL_HOSTED_OBJ): $(SHELL_HOSTED_C) src/include/apps/shell.h src/include/apps/shell_input.h src/include/apps/shell_runtime.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SHELL_JOB_OBJ): $(SHELL_JOB_C) src/include/apps/shell_job.h src/include/apps/shell.h src/include/apps/shell_command_utils.h src/include/apps/shell_runtime.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(TASKMGR_OBJ): $(TASKMGR_C) src/include/apps/shell_introspection.h src/include/core/power.h src/include/fs/vfs.h src/include/process/process.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SHELL_INTROSPECTION_OBJ): $(SHELL_INTROSPECTION_C) src/include/apps/shell_introspection.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/include/fs/vfs.h
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(MEDIAPLAYER_OBJ): $(MEDIAPLAYER_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(EDITOR_OBJ): $(EDITOR_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(GUITEST_OBJ): $(GUITEST_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 
 $(FILEMANAGER_OBJ): $(FILEMANAGER_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(TASKBAR_OBJ): $(TASKBAR_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(DESKTOP_OBJ): $(DESKTOP_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(SETTINGS_OBJ): $(SETTINGS_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(UPDATER_OBJ): $(UPDATER_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(APPSTORE_OBJ): $(APPSTORE_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(WM_OBJ): $(WM_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(ICONS_OBJ): $(ICONS_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(GUI_OBJ): $(GUI_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(DISPLAY_OBJ): $(DISPLAY_C)
-	@if not exist build mkdir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 
 $(KERNEL_BIN): $(OBJS) src/linker.ld
 	$(LD) $(LDFLAGS) $(OBJS) -o $@
+
+$(KERNEL_ELF): $(OBJS) src/linker.ld
+	$(LD) -m elf_i386 --oformat elf32-i386 -T src/linker.ld $(OBJS) -o $@
 
 $(OS_IMG): $(BOOT_BIN) $(STAGE2_BIN) $(RECOVERY_LOADER_PADDED_BIN) $(KERNEL_BIN) tools\packager.py $(RECOVERY_IMAGE_COMPOSE_TOOL) \
           assets\icons\SHELL.BMP assets\icons\EXPLORER.BMP assets\icons\TASKMGR.BMP \
@@ -1415,8 +1453,8 @@ run-usb-wifi: $(OS_IMG)
 	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_BOOT_DISK_ARGS) $(QEMU_NET_ARGS) $(QEMU_USB_WIFI_EHCI_ARGS) $(QEMU_USB_WIFI_ARGS)
 
 $(STORAGE_FIXTURES_STAMP): $(STORAGE_FIXTURES_TOOL)
-	@if not exist build mkdir build
-	python $(STORAGE_FIXTURES_TOOL) generate --output-dir build
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
+	python $(STORAGE_FIXTURES_TOOL) generate --output-dir $(BUILD_DIR)
 
 storage-fixtures: $(STORAGE_FIXTURES_STAMP)
 
@@ -1424,7 +1462,7 @@ storage-fixtures-test:
 	python $(STORAGE_FIXTURES_TOOL) selftest
 
 storage-fixtures-verify: $(STORAGE_FIXTURES_STAMP)
-	python $(STORAGE_FIXTURES_TOOL) verify --output-dir build
+	python $(STORAGE_FIXTURES_TOOL) verify --output-dir $(BUILD_DIR)
 
 run-storage: $(OS_IMG) $(STORAGE_FIXTURES_STAMP)
 	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_BOOT_DISK_ARGS) -drive format=raw,file=$(STORAGE_VALID_IMG),if=ide,index=1 -drive format=raw,file=$(STORAGE_CORRUPT_IMG),if=ide,index=2 -drive format=raw,file=$(STORAGE_UNKNOWN_IMG),if=ide,index=3 $(QEMU_NET_ARGS)
@@ -1613,6 +1651,54 @@ test-tst7-continuous-host: tools\tst7_continuous_runner.py tests\unit\test_tst7_
 test-tst7-continuous: tools\tst7_continuous_runner.py tools\tst7_regression_runner.py
 	python tools\tst7_continuous_runner.py start --mode full --forever --interval 60 --cycle-timeout "$(TST7_FULL_TIMEOUT)" --make "$(MAKE)" --qemu $(QEMU) --image "$(OS_IMG)" --catalog tests\catalog.json
 
+test-core-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_core_contracts.c tests\unit\test_core_host_runner.py tests\catalog.json
+	python tools\core_host_runner.py --cc "$(HOST_CC)"
+
+test-network-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_network_host.c tests\catalog.json
+	python tools\core_host_runner.py --case host:core:net-buffer --cc "$(HOST_CC)"
+
+test-network-manager-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_network_manager_host.c tests\catalog.json src\core\network_manager.c src\core\recovery.c
+	python tools\core_host_runner.py --case host:core:network-manager --cc "$(HOST_CC)"
+
+test-route-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_route_host.c tests\catalog.json
+	python tools\core_host_runner.py --case host:network:route --cc "$(HOST_CC)"
+
+test-ipv4-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_ipv4_host.c tests\catalog.json
+	python tools\core_host_runner.py --case host:network:ipv4 --cc "$(HOST_CC)"
+
+test-crypto-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_crypto_host.c tests\catalog.json
+	python tools\core_host_runner.py --case host:core:crypto --cc "$(HOST_CC)"
+
+test-scheduling-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_core_scheduling_host.c tests\catalog.json
+	python tools\core_host_runner.py --case host:core:scheduling --cc "$(HOST_CC)"
+
+test-package-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_package_host.c tests\catalog.json src\core\app_package.c
+	python tools\core_host_runner.py --case host:core:app-package --cc "$(HOST_CC)"
+
+test-state-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_core_state_host.c tests\catalog.json src\core\recovery.c src\core\power_notifier.c
+	python tools\core_host_runner.py --case host:core:state --cc "$(HOST_CC)"
+
+test-device-manager-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_device_manager_host.c tests\catalog.json src\core\device_manager.c src\core\recovery.c
+	python tools\core_host_runner.py --case host:core:device-manager --cc "$(HOST_CC)"
+
+test-app-api-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_app_api_host.c tests\catalog.json src\core\app_api.c
+	python tools\core_host_runner.py --case host:core:app-api --cc "$(HOST_CC)"
+
+test-app-catalog-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_app_catalog_host.c tests\catalog.json src\core\app_catalog.c
+	python tools\core_host_runner.py --case host:core:app-catalog --cc "$(HOST_CC)"
+
+test-input-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_input_host.c tests\catalog.json src\core\input.c
+	python tools\core_host_runner.py --case host:core:input --cc "$(HOST_CC)"
+
+test-power-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_power_host.c tests\catalog.json src\core\power.c src\core\power_notifier.c
+	python tools\core_host_runner.py --case host:core:power --cc "$(HOST_CC)"
+
+test-vfs-path-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_vfs_path_host.c tests\catalog.json src\fs\vfs_path.c src\include\fs\vfs_internal.h
+	python tools\core_host_runner.py --case host:storage:vfs-path --cc "$(HOST_CC)"
+
+test-file-index-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_file_index_host.c tests\catalog.json src\fs\file_index.c src\include\fs\file_index.h
+	python tools\core_host_runner.py --case host:storage:file-index --cc "$(HOST_CC)"
+
 test-tst2-host: tools\tst2_host_runner.py tests\unit\test_protocol_core.c tests\unit\test_qemu_test_runner.py src\core\test_protocol_core.c src\core\test_protocol_core.h
 	python tools\tst2_host_runner.py --cc "$(HOST_CC)"
 
@@ -1632,7 +1718,7 @@ update-test:
 	python tools\updater.py selftest
 
 package-demo: $(OS_IMG)
-	python tools\packager.py demo --output build\DEMO.zephyrosapp --image $(OS_IMG)
+	python tools\packager.py demo --output $(BUILD_DIR)\DEMO.zephyrosapp --image $(OS_IMG)
 
 store-test:
 	python tools\packager.py selftest
@@ -1690,12 +1776,14 @@ store-as5-serve: store-as5-test
 	python tools\packager.py serve-store-as5 --fixtures-dir $(STORE_AS5_FIXTURES_DIR) --profile update --port 8000
 
 clean:
-	rmdir /s /q build
+	rmdir /s /q $(BUILD_DIR)
 
-.PHONY: all run run-stage2-lba run-stage2-chs run-usb run-usb-msc run-usb-hid run-usb-wifi run-system-fixture run-system-slots-fixture run-system-slots-matrix run-system-update-matrix ep94b-fixtures ep94b-matrix run-ep94b-matrix ep94c-matrix run-ep94c-matrix run-recovery-menu-vga run-storage storage-fixtures storage-fixtures-test storage-fixtures-verify system-fixtures system-slots-fixtures system-slots-matrix debug q3check catalog-test test-qemu test-qemu-selftest test-tst2-host test-tst3-host test-tst3-sanitize test-tst4-qemu q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean
+.PHONY: all coverage-image coverage-map run run-stage2-lba run-stage2-chs run-usb run-usb-msc run-usb-hid run-usb-wifi run-system-fixture run-system-slots-fixture run-system-slots-matrix run-system-update-matrix ep94b-fixtures ep94b-matrix run-ep94b-matrix ep94c-matrix run-ep94c-matrix run-recovery-menu-vga run-storage storage-fixtures storage-fixtures-test storage-fixtures-verify system-fixtures system-slots-fixtures system-slots-matrix debug q3check catalog-test test-qemu test-qemu-selftest test-core-host test-tst2-host test-tst3-host test-tst3-sanitize test-tst4-qemu q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean
+.PHONY: kernel-elf
 .PHONY: test-tst4-qemu-paging-vma test-tst4-qemu-execution test-tst4-qemu-storage-vfs test-tst4-qemu-network test-tst4-qemu-platform
 .PHONY: test-tst5-host test-tst5-qemu-shell test-tst5-qemu-input test-tst5-qemu-apps test-tst5-qemu-processes test-tst5-qemu-storage test-tst5-qemu-network test-tst5-qemu-update-recovery test-tst5-qemu-reboot test-tst5-qemu-poweroff
 .PHONY: test-tst6-host test-tst6-qemu-matrix-baseline test-tst6-qemu-matrix-minimal test-tst6-qemu-matrix-network test-tst6-qemu-matrix-usb-hid test-tst6-qemu-matrix-usb-storage test-tst6-qemu-matrix-audio test-tst6-qemu-matrix-display test-tst6-qemu-matrix-pci test-tst6-qemu-stress-kernel test-tst6-qemu-stress-storage test-tst6-qemu-stress-network test-tst6-qemu-stress-apps test-tst6-qemu-fault-memory test-tst6-qemu-fault-block test-tst6-qemu-fault-block-cache test-tst6-qemu-fault-package test-tst6-qemu-fault-update test-tst6-qemu-fault-network test-tst6-qemu-fault-process test-tst6-qemu-fault-recovery
 .PHONY: test-tst7-host test-tst7-quick test-tst7-full
 .PHONY: test-tst7-continuous-host test-tst7-continuous
+.PHONY: test-network-host test-network-manager-host test-route-host test-ipv4-host test-crypto-host test-scheduling-host test-package-host test-state-host test-device-manager-host test-app-api-host test-app-catalog-host test-input-host test-power-host test-vfs-path-host test-file-index-host
 .PHONY: catalog-test-strict

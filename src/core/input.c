@@ -20,14 +20,22 @@ typedef struct {
 static input_service_t input_service;
 
 static uint32_t input_irq_save(void) {
+#if defined(ZEPHYROS_HOST_TEST)
+    return 0U;
+#else
     uint32_t flags;
 
     asm volatile("pushf\n\tpop %0\n\tcli" : "=r"(flags) : : "memory");
     return flags;
+#endif
 }
 
 static void input_irq_restore(uint32_t flags) {
+#if defined(ZEPHYROS_HOST_TEST)
+    (void)flags;
+#else
     if (flags & (1U << 9U)) asm volatile("sti" : : : "memory");
+#endif
 }
 
 static uint32_t input_next(uint32_t value, uint32_t capacity) {

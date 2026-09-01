@@ -3742,3 +3742,83 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   houve erro de compilação ou linkedição. O gate estrito continua reprovando
   os 6.629 vínculos de cobertura ainda `PENDING`; essa evidência não altera
   artificialmente o status do catálogo.
+
+- Bateria Core/contratos ampliada em 2026-09-01: `make test-crypto-host` e
+  `make test-scheduling-host` passaram com `HOST_CC` configurado. Crypto
+  exercitou SHA-256, SHA-512, Ed25519 válido pelo autoteste, assinatura
+  corrompida, entradas nulas e comparação constante. Scheduling exercitou
+  filas de espera, disponibilidade, wake FIFO/all, limites, workqueue,
+  coalescência, rerun, cancelamento, fallback e IRQ deferred, incluindo
+  invariantes e limpeza.
+
+  Os relatórios instrumentados `build/test-results/crypto-host/coverage.json`
+  e `build/test-results/scheduling-host/coverage.json` terminaram `PASS`,
+  sem endereços desconhecidos ou ambíguos. O catálogo foi sincronizado a
+  partir desses relatórios: 6.820 superfícies, 2.006 `COVERED`, 4.814
+  `PENDING` e 44 casos. `make catalog-test` permaneceu válido; o gate estrito
+  continua pendente pelas superfícies reais ainda não exercitadas.
+
+- Incremento Core/pacotes em 2026-09-01: `make test-package-host` passou com
+  `HOST_CC` configurado. O caso exercitou comparação de versões, estados
+  indisponíveis, histórico, failpoints e nomes canônicos sem escrita em disco.
+  A compilação revelou e corrigiu três acessos a membros `packed` que geravam
+  `-Waddress-of-packed-member` sob `-Werror`; o layout persistido foi mantido.
+  O relatório instrumentado `build/test-results/package-host/coverage.json`
+  terminou `PASS`, sem endereços desconhecidos ou ambíguos. Após a
+  sincronização: 6.820 superfícies, 2.013 `COVERED`, 4.807 `PENDING` e 45
+  casos; `make catalog-test` permaneceu válido e o gate estrito segue pendente.
+
+- Incremento Core/estado em 2026-09-01: `make test-state-host` passou com
+  `HOST_CC` configurado. O caso exercitou recovery antes/depois da
+  inicialização, estados `READY`, `DEGRADED` e `DISABLED`, IDs inválidos,
+  cadeia de notificadores na ordem esperada, duplicata, capacidade,
+  participante opcional indisponível, falha obrigatória e timeout.
+  O relatório instrumentado `build/test-results/state-host/coverage.json`
+  terminou `PASS`, sem endereços desconhecidos ou ambíguos. Após a
+  sincronização: 6.820 superfícies, 2.046 `COVERED`, 4.774 `PENDING` e 46
+  casos. `make catalog-test`, `q3check` e o build limpo permaneceram válidos;
+  `catalog-test-strict` continua pendente pelas superfícies sem executor real.
+- Incremento Core/App Store em 2026-09-01: `make test-app-catalog-host` passou
+  com `HOST_CC` configurado. O caso exercitou fontes validas e invalidas,
+  aliases, dependencias instaladas e ausentes, planos de instalacao e
+  atualizacao, downgrade, ciclo, erros de leitura e limite de fontes. O
+  relatorio instrumentado `build/test-results/app-catalog-host/coverage.json`
+  terminou `PASS` e foi usado para sincronizar o catalogo sem associacao por
+  arquivo. O estado desta rodada e 6.820 superficies, 2.199 `COVERED`, 4.621
+  `PENDING` e 49 casos; o gate estrito continua falhando pelas superficies
+  ainda sem executor real.
+
+- Incremento de contrato do registro em 2026-09-01: quando um caso possui
+  varios relatorios dinamicos, o validador passou a unir somente as superficies
+  observadas por cada relatorio, mantendo a correspondencia bidirecional e
+  rejeitando selecoes ausentes, desconhecidas ou ambiguas. A cobertura do
+  catalogo foi sincronizada novamente e `make catalog-test` permaneceu valido.
+- Incremento Core/entrada em 2026-09-01: `make test-input-host` passou com
+  `HOST_CC` configurado. O caso exercitou registro idempotente de sinks,
+  filas de teclado e ponteiro, coalescencia e saturacao de deltas, overflow,
+  despacho alternado, erro de consumidor e invariantes. O relatorio
+  instrumentado `build/test-results/input-host/coverage.json` terminou `PASS`
+  e foi sincronizado no catalogo. O estado desta rodada e 6.820 superficies,
+  2.208 `COVERED`, 4.612 `PENDING` e 50 casos; o gate estrito continua
+  pendente pelas superficies sem executor real.
+- Incremento Core/energia em 2026-09-01: `make test-power-host` passou com
+  `HOST_CC` configurado. O caso exercitou inicializacao ACPI disponivel e
+  indisponivel, cadeia de notificadores, quiescencia, falhas de sync e S5,
+  limpeza apos falha, encerramento simulado e estados publicados. O relatorio
+  instrumentado `build/test-results/power-host/coverage.json` terminou `PASS`;
+  os caminhos de reset, triple fault e halt terminal permanecem reservados a
+  QEMU controlado. A sincronizacao deixou 6.820 superficies, 2.240
+  `COVERED`, 4.580 `PENDING` e 51 casos.
+- Incremento Core/rede em 2026-09-01: `make test-network-manager-host` passou
+  com `HOST_CC` configurado. O caso exercitou inventario PCI simulado,
+  identificacao de driver ausente, estado offline, recusas canonicas sem
+  interface ativa, formatacao, nomes e limpeza. O relatorio instrumentado
+  `build/test-results/network-manager-host/coverage.json` terminou `PASS` e
+  foi sincronizado no catalogo. A rodada ficou em 6.820 superficies, 2.304
+  `COVERED`, 4.516 `PENDING` e 52 casos; o gate estrito continua reprovando
+  pelas superficies que ainda nao possuem executor real.
+- Incremento Core/relogio em 2026-09-01: `make test-core-host` foi reforcado
+  com RTC falso disponivel, conversao UTC do epoch, divisao de ticks e
+  validacao monotona. O relatorio dinamico atualizado cobriu tambem os seis
+  contratos publicos e as rotinas privadas antes pendentes. A sincronizacao
+  ficou em 6.820 superficies, 2.312 `COVERED`, 4.508 `PENDING` e 52 casos.

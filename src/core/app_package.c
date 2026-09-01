@@ -36,6 +36,11 @@
 #define APP_PACKAGE_JOURNAL_COMMITTED 3U
 #define APP_PACKAGE_BACKUP_APP_SIZE APP_IMAGE_MAX_FILE_SIZE
 #define APP_PACKAGE_BACKUP_META_SIZE APP_PACKAGE_MAX_MANIFEST_SIZE
+#define APP_PACKAGE_HISTORY_ENTRIES_OFFSET \
+    ((uint32_t)__builtin_offsetof(app_package_history_store_t, entries))
+#define APP_PACKAGE_JOURNAL_PLAN_ENTRIES_OFFSET \
+    ((uint32_t)__builtin_offsetof(app_package_journal_t, plan) + \
+     (uint32_t)__builtin_offsetof(app_package_plan_t, entries))
 
 static int app_package_ready = 0;
 static int app_package_mutation_active = 0;
@@ -2309,21 +2314,25 @@ static void app_package_history_append(app_package_history_operation_t operation
                                        app_package_action_reason_t reason,
                                        const char* id, const char* from_version,
                                        const char* to_version, uint32_t count) {
-    app_package_history_entry_t* entry;
+    app_package_history_entry_t entry;
+    uint8_t* history_bytes;
 
     if (!app_package_history_available) return;
-    entry = &app_package_history.entries[app_package_history.next_index];
-    kmemset(entry, 0, sizeof(*entry));
-    entry->sequence = app_package_history.sequence + 1U;
-    entry->operation = operation;
-    entry->outcome = outcome;
-    entry->reason = reason;
-    entry->plan_entry_count = count;
-    app_package_copy_string(entry->id, sizeof(entry->id), id);
-    app_package_copy_string(entry->from_version, sizeof(entry->from_version),
+    kmemset(&entry, 0, sizeof(entry));
+    entry.sequence = app_package_history.sequence + 1U;
+    entry.operation = operation;
+    entry.outcome = outcome;
+    entry.reason = reason;
+    entry.plan_entry_count = count;
+    app_package_copy_string(entry.id, sizeof(entry.id), id);
+    app_package_copy_string(entry.from_version, sizeof(entry.from_version),
                             from_version);
-    app_package_copy_string(entry->to_version, sizeof(entry->to_version),
+    app_package_copy_string(entry.to_version, sizeof(entry.to_version),
                             to_version);
+    history_bytes = (uint8_t*)&app_package_history;
+    kmemcpy(history_bytes + APP_PACKAGE_HISTORY_ENTRIES_OFFSET +
+                app_package_history.next_index * sizeof(entry),
+            &entry, sizeof(entry));
     app_package_history.next_index =
         (app_package_history.next_index + 1U) % APP_PACKAGE_HISTORY_MAX_ENTRIES;
     if (app_package_history.count < APP_PACKAGE_HISTORY_MAX_ENTRIES) {
@@ -2368,6 +2377,7 @@ static int app_package_restore_backup(const app_package_journal_t* journal) {
 }
 
 static int app_package_recover_pending_journal(void) {
+    const uint8_t* journal_bytes = (const uint8_t*)&app_package_journal;
     int result = app_package_restore_backup(&app_package_journal);
 
     if (result != OK) {
@@ -2376,10 +2386,11 @@ static int app_package_recover_pending_journal(void) {
     }
     for (uint32_t index = 0; index < app_package_journal.plan.entry_count;
          index++) {
-        const app_package_plan_entry_t* item =
-            &app_package_journal.plan.entries[index];
-        if (item->action == APP_PACKAGE_PLAN_ACTION_INSTALL) {
-            app_package_cleanup_partial(item->id);
+        app_package_plan_entry_t item;
+        kmemcpy(&item, journal_bytes + APP_PACKAGE_JOURNAL_PLAN_ENTRIES_OFFSET +
+                    index * sizeof(item), sizeof(item));
+        if (item.action == APP_PACKAGE_PLAN_ACTION_INSTALL) {
+            app_package_cleanup_partial(item.id);
         }
     }
     app_package_cleanup_stage_files(app_package_journal.slot,
@@ -2402,7 +2413,8 @@ static int app_package_recover_pending_journal(void) {
 }
 
 static int app_package_finalize_committed_journal(void) {
-    const app_package_plan_entry_t* target;
+    app_package_plan_entry_t target;
+    const uint8_t* journal_bytes = (const uint8_t*)&app_package_journal;
     int result = OK;
 
     if (app_package_journal.plan.entry_count == 0U ||
@@ -2411,11 +2423,12 @@ static int app_package_finalize_committed_journal(void) {
         LOG_ERROR("PKG", "Journal AS4 concluido sem plano valido");
         return ERR_INVALID;
     }
-    target = &app_package_journal.plan.entries[
-        app_package_journal.plan.target_index];
+    kmemcpy(&target, journal_bytes + APP_PACKAGE_JOURNAL_PLAN_ENTRIES_OFFSET +
+                app_package_journal.plan.target_index * sizeof(target),
+            sizeof(target));
     if (app_package_journal.operation == APP_PACKAGE_HISTORY_OPERATION_UPDATE) {
         result = app_package_state_store_rollback(
-            target->id, app_package_journal.backup_version,
+            target.id, app_package_journal.backup_version,
             app_package_journal.backup_slot);
         if (result == OK) result = app_package_write_state();
         if (result != OK) {
@@ -2431,7 +2444,7 @@ static int app_package_finalize_committed_journal(void) {
         }
     } else if (app_package_journal.operation ==
                APP_PACKAGE_HISTORY_OPERATION_ROLLBACK) {
-        app_package_state_remove_rollback(target->id);
+        app_package_state_remove_rollback(target.id);
         result = app_package_write_state();
         if (result != OK) {
             LOG_ERROR("PKG", "Nao foi possivel consumir rollback AS4");

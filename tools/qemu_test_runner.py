@@ -19,8 +19,11 @@ from json import JSONDecodeError
 from pathlib import Path
 from typing import Any
 
-
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from tools import coverage_collector
 DEFAULT_IMAGE = Path("build/zephyros.img")
 DEFAULT_CATALOG = Path("tests/catalog.json")
 DEFAULT_RESULTS = Path("build/test-results")
@@ -891,6 +894,31 @@ def write_json(path: Path, value: dict[str, Any]) -> None:
     path.write_text(json_document(value), encoding="utf-8")
 
 
+def collect_coverage_artifact(artifact_dir: Path,
+                              arguments: argparse.Namespace) -> dict[str, Any] | None:
+    symbols_value = getattr(arguments, "coverage_symbols", None)
+    if not symbols_value:
+        return None
+    coverage_path = artifact_dir / "coverage.json"
+    try:
+        symbols = coverage_collector.load_symbols(
+            resolve_path(symbols_value, Path("build-coverage/coverage-symbols.json")))
+        catalog = load_catalog(resolve_path(arguments.catalog, DEFAULT_CATALOG))
+        serial = (artifact_dir / "serial.log").read_text(
+            encoding="utf-8", errors="replace")
+        coverage = coverage_collector.collect_report(serial, symbols, catalog)
+    except (coverage_collector.CoverageError, OSError, RunnerError) as error:
+        coverage = {
+            "schema": coverage_collector.SCHEMA,
+            "status": "FAIL",
+            "errors": [f"coleta:{error}"],
+            "cases": [],
+            "covered_surface_ids": [],
+        }
+    write_json(coverage_path, coverage)
+    return coverage
+
+
 def json_document(value: dict[str, Any]) -> str:
     return json.dumps(value, ensure_ascii=False, indent=2) + "\n"
 
@@ -1171,6 +1199,7 @@ def run_execution(arguments: argparse.Namespace) -> int:
             "seed": seed,
             "command": session.command(),
             "snapshot": bool(arguments.snapshot),
+            "coverage_symbols": getattr(arguments, "coverage_symbols", None),
             "cases": [{
                 "id": str(case["id"]),
                 "guest_case": str(case["guest_case"]),
@@ -1312,6 +1341,18 @@ def run_execution(arguments: argparse.Namespace) -> int:
                     "screenshot-*.ppm")],
             },
         }
+        coverage = collect_coverage_artifact(artifact_dir, arguments)
+        if coverage is not None:
+            report["coverage"] = {
+                "status": coverage["status"],
+                "errors": coverage["errors"],
+                "covered_surface_ids": coverage["covered_surface_ids"],
+                "artifact": "coverage.json",
+            }
+            report["artifacts"]["coverage"] = "coverage.json"
+            if report["status"] == "PASS" and coverage["status"] != "PASS":
+                report["status"] = "FAIL"
+                report["cause"] = "coverage_incomplete"
         write_json(artifact_dir / "result.json", report)
     print(f"QEMU test: {status} termination={termination} run={run_id}")
     print(f"Artefatos: {artifact_dir}")
@@ -1402,6 +1443,7 @@ def parser() -> argparse.ArgumentParser:
         subparser.add_argument("--suite-timeout", type=float, default=SUITE_TIMEOUT_DEFAULT)
         subparser.add_argument("--heartbeat-timeout", type=float, default=PROTOCOL_HEARTBEAT_DEFAULT)
         subparser.add_argument("--seed", type=int)
+        subparser.add_argument("--coverage-symbols")
         if name == "stress":
             subparser.add_argument("--case")
             subparser.add_argument("--iterations", type=int)

@@ -159,6 +159,13 @@ contador de limpezas. `log_self_test()` usa um ring privado de quatro entradas
 para validar ordem, wrap, agrupamento, truncamento, código opcional, limpeza,
 serialização e filtragem sem alterar o histórico real.
 
+## Spinlocks
+
+`spinlock_t` usa operacoes atomicas para adquirir e liberar o lock e a
+instrucao `pause` durante a espera ativa. O build host-only define
+`ZEPHYROS_HOST_TEST` e usa a sintaxe de assembly compativel com o compilador C
+estrito; o caminho freestanding do kernel permanece inalterado.
+
 ## Panic Handler (`panic.c`)
 
 Quando algo crítico falha, o kernel chama `panic()`:

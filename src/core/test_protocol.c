@@ -4,6 +4,7 @@
 #include "core/timer.h"
 #include "drivers/serial.h"
 #include "kernel_tests.h"
+#include "test_coverage.h"
 #include "test_protocol_core.h"
 
 #define TEST_PROTOCOL_RX_BUDGET 32U
@@ -129,9 +130,9 @@ static int protocol_emit_event(const test_protocol_event_t* event,
     return OK;
 }
 
-static int protocol_run_case(void* context, const char* case_id,
-                             uint32_t case_length, uint32_t iteration,
-                             uint32_t seed) {
+static int protocol_dispatch_case(void* context, const char* case_id,
+                                  uint32_t case_length, uint32_t iteration,
+                                  uint32_t seed) {
     static const char boot_case[] = "qemu:tst2:boot-ready";
     static const char memory_slab_case[] = "qemu:tst4:memory-slab";
     static const char paging_vma_case[] = "qemu:tst4:paging-vma";
@@ -193,6 +194,22 @@ static int protocol_run_case(void* context, const char* case_id,
         return kernel_tests_run_tst6(&runtime, case_id, case_length);
     }
     return ERR_NOT_FOUND;
+}
+
+static int protocol_run_case(void* context, const char* case_id,
+                             uint32_t case_length, uint32_t iteration,
+                             uint32_t seed) {
+    int result;
+
+#if defined(ZEPHYROS_TEST_COVERAGE)
+    test_coverage_begin_case(case_id, case_length);
+#endif
+    result = protocol_dispatch_case(context, case_id, case_length,
+                                    iteration, seed);
+#if defined(ZEPHYROS_TEST_COVERAGE)
+    test_coverage_end_case(result);
+#endif
+    return result;
 }
 
 static void protocol_receive(void) {

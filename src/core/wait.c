@@ -33,25 +33,45 @@ static uint32_t wait_test_wake_order[4];
 static uint32_t wait_test_wake_count;
 static wait_queue_head_t
     wait_test_capacity_queues[WAIT_QUEUE_REGISTRY_CAPACITY];
+#if defined(ZEPHYROS_HOST_TEST)
+static uint8_t wait_host_interrupts_enabled = 1U;
+#endif
 
 static uint32_t wait_irq_save(void) {
+#if defined(ZEPHYROS_HOST_TEST)
+    uint32_t flags = wait_host_interrupts_enabled ?
+                     WAIT_EFLAGS_INTERRUPT_ENABLE : 0U;
+
+    wait_host_interrupts_enabled = 0U;
+    return flags;
+#else
     uint32_t flags;
 
     asm volatile("pushf\n\tpop %0\n\tcli" : "=r"(flags) : : "memory");
     return flags;
+#endif
 }
 
 static void wait_irq_restore(uint32_t flags) {
+#if defined(ZEPHYROS_HOST_TEST)
+    wait_host_interrupts_enabled =
+        (flags & WAIT_EFLAGS_INTERRUPT_ENABLE) ? 1U : 0U;
+#else
     if (flags & WAIT_EFLAGS_INTERRUPT_ENABLE) {
         asm volatile("sti" : : : "memory");
     }
+#endif
 }
 
 static uint8_t wait_interrupts_enabled(void) {
+#if defined(ZEPHYROS_HOST_TEST)
+    return wait_host_interrupts_enabled;
+#else
     uint32_t flags;
 
     asm volatile("pushf\n\tpop %0" : "=r"(flags));
     return (flags & WAIT_EFLAGS_INTERRUPT_ENABLE) ? 1U : 0U;
+#endif
 }
 
 static uint32_t wait_name_length(const char* text, uint32_t capacity) {
