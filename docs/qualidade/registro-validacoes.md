@@ -3632,3 +3632,12 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   no Clang configurado. O runner encerrou com `status=BLOCKED` e preservou
   `manifest.json`, `result.json`, `coverage.json`, `summary.md`, logs e
   `artifact-index.json`.
+
+- Politica de manutencao continua do testador adicionada ao `AGENTS.md` em
+  2026-08-31 23:31 (America/Sao_Paulo). A Regra #22 exige identificar e manter
+  atualizada a camada de teste afetada por mudancas de comportamento,
+  contrato, estado, erro, API, driver, Shell ou ferramenta; exige registrar
+  cobertura ausente como `PENDING`/`BLOCKED`; preserva falhas reais; e mantem
+  timeouts, limites e aprovacao explicita do baseline TST7. Refatoracoes sem
+  mudanca de comportamento continuam obrigadas a executar os testes existentes,
+  mas nao a criar alteracoes artificiais no testador.

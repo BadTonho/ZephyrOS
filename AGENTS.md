@@ -30,6 +30,28 @@ deste arquivo.
 
 ---
 
+## Regra #22: Manutenção contínua do testador
+
+Toda alteração que mude comportamento, contrato, estado, erro, API, driver,
+Shell ou ferramenta DEVE identificar a camada de teste afetada e manter a
+validação correspondente atualizada. A regra não exige alterar o testador em
+refatorações que comprovadamente não mudem comportamento, mas exige executar
+os testes existentes nesses casos.
+
+- [ ] Adicionar ou atualizar o teste determinístico, host-only, QEMU ou
+      black-box adequado antes de considerar a funcionalidade concluída.
+- [ ] Atualizar o catálogo, o manifesto, os comandos operacionais e o roadmap
+      quando a superfície observável, o contrato ou a cobertura forem afetados.
+- [ ] Quando ainda não houver executor ou fixture viável, registrar a
+      superfície como `PENDING` ou `BLOCKED`, informar o motivo, a evidência
+      faltante e o próximo critério reproduzível de validação.
+- [ ] Não enfraquecer, remover ou ocultar um teste, falha, warning ou caso para
+      obter `PASS`; falhas reais devem permanecer `FAIL`.
+- [ ] Manter timeouts, limites e ausência de retry infinito nos casos QEMU;
+      baseline TST7 somente pode ser alterado por aprovação explícita.
+
+---
+
 ## Build e validação
 
 Os comandos abaixo são referências para execução pelo usuário. Eles são
@@ -668,6 +690,8 @@ Antes de entregar uma alteração ou preparar um commit:
 15. [ ] Se houver commit, o diff staged e o `git diff --cached --check` foram revisados conforme a Regra #16?
 16. [ ] Se houver commit, não existem segredos, dados pessoais, caminhos locais, backups ou artefatos indevidos nos arquivos envolvidos?
 17. [ ] A etapa concluída foi registrada em `docs/qualidade/registro-validacoes.md` com horário conforme a Regra #18?
+18. [ ] A camada de teste afetada foi identificada e atualizada, ou a ausência
+    de cobertura foi registrada como `PENDING`/`BLOCKED` conforme a Regra #22?
 
 ---
 
