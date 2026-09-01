@@ -43,6 +43,33 @@ Cada ciclo terá um identificador próprio, seed reproduzível e um limite claro
 de duração. O modo contínuo pode repetir ciclos, mas nunca repete
 automaticamente o mesmo caso dentro do ciclo após uma falha.
 
+## Forma de uso
+
+O supervisor será distribuído como um executável para o computador dedicado.
+Quando o usuário abrir o executável, ele deverá:
+
+1. verificar as dependências, a imagem e o espaço disponível;
+2. iniciar o primeiro ciclo configurado;
+3. continuar iniciando novos ciclos após cada encerramento normal;
+4. permanecer ativo até o usuário solicitar a parada.
+
+A execução poderá ser interrompida por um botão ou comando de parada, e também
+por `Ctrl+C` quando o executável estiver em um terminal. A parada deve ser
+graciosa: o supervisor não inicia um novo caso, aguarda o caso atual atingir
+seu limite seguro ou encerra o processo QEMU, preserva os artefatos e grava o
+resultado final como interrompido pelo usuário.
+
+O executável exibirá pelo menos o ciclo atual, o caso em execução, o status,
+o tempo decorrido, o último erro e o diretório dos artefatos. A interface pode
+ser inicialmente um console; uma janela gráfica ou um ícone na bandeja pode
+ser adicionada depois sem mudar o executor dos testes.
+
+O modo ininterrupto se aplica ao supervisor. Cada caso QEMU continuará tendo
+timeout próprio, cada ciclo terá limite máximo e nenhum processo filho poderá
+permanecer indefinidamente. Se o supervisor for encerrado de forma inesperada,
+a próxima inicialização deverá detectar execuções incompletas, preservar seus
+logs e iniciar um novo ciclo limpo.
+
 ## Artefatos
 
 Cada execução deve manter um diretório próprio, sem sobrescrever execuções
@@ -167,15 +194,17 @@ imagem construída.
 
 ## Primeiro MVP
 
-O primeiro executor pode ser um programa Python no host que:
+O primeiro executor pode ser um programa Python empacotado como executável no
+host que:
 
-1. inicia `make test-tst7-full`;
-2. cria um diretório de execução único;
-3. coleta o resultado e os artefatos produzidos pela TST7;
-4. atualiza o índice e um arquivo `latest.json`;
-5. registra `PASS`, `FAIL`, `TIMEOUT` ou `BLOCKED`;
-6. espera o intervalo configurado;
-7. inicia o próximo ciclo.
+1. valida as dependências;
+2. inicia `make test-tst7-full`;
+3. cria um diretório de execução único;
+4. coleta o resultado e os artefatos produzidos pela TST7;
+5. atualiza o índice e um arquivo `latest.json`;
+6. registra `PASS`, `FAIL`, `TIMEOUT` ou `BLOCKED`;
+7. espera o intervalo configurado;
+8. inicia o próximo ciclo.
 
 O MVP deve aceitar um limite de ciclos para validação e exigir uma opção
 explícita para execução permanente. Mesmo no modo permanente, cada subprocesso
