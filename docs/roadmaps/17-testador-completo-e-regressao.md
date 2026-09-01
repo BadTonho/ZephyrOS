@@ -739,8 +739,8 @@ serve para encontrar as lacunas restantes sem mascará-las.
 
 ## Estado da implementação do fechamento
 
-Em 2026-09-01 12:39 (America/Sao_Paulo), foi implementada a primeira parte
-executável do fechamento: o registro declarativo
+Em 2026-09-01, foi implementada a primeira parte executável do fechamento: o
+registro declarativo
 `tests/coverage/registry.json`, sincronização bidirecional do catálogo, o gate
 `make catalog-test-strict`, os casos host-only `host:tst2:protocol-core` e
 `host:tst3:string-compress`, e a integração desses casos ao `full` da TST7.
@@ -759,13 +759,42 @@ As evidências desta rodada foram:
   2026-09-01 13:04 (America/Sao_Paulo); o build ainda reporta warnings
   preexistentes do código freestanding, sem erro de compilação ou linkedição.
 
-O catálogo passou de 17 para 179 superfícies `COVERED` porque somente
-superfícies vinculadas a testes host reais ou aos `surface_ids` já declarados
-por harnesses QEMU foram promovidas. Restam 6.629 superfícies `PENDING`; por
+O catálogo passou de 17 para 2.006 superfícies `COVERED` porque somente
+superfícies vinculadas a testes host reais ou a relatórios QEMU `PASS` foram
+promovidas. A bateria host agora inclui rede IPv4, rotas, criptografia,
+`wait`, `workqueue` e `irq_deferred`; os relatórios dessas suítes não possuem
+endereços desconhecidos ou ambíguos. Restam 4.814 superfícies `PENDING`; por
 isso `make catalog-test-strict` falha corretamente e a TST7 ainda não está
 concluída para a meta integral. O supervisor contínuo já possui entrada Linux,
 modos `quick`, `full` e `soak`, limites e parada graciosa, mas seu uso
 permanente deve aguardar o gate estrito.
+
+Na mesma rodada, o caminho host-only `ZEPHYROS_HOST_TEST` foi adicionado aos
+helpers de interrupção de `wait.c`, `workqueue.c` e `irq_deferred.c`. Ele
+simula o estado de interrupções sem executar `cli/sti` em processo de usuário;
+o caminho freestanding não foi alterado. `make test-scheduling-host` passou
+com instrumentação e a nova entrada `scheduling-host-dynamic` foi sincronizada
+no catálogo somente a partir desse relatório real.
+
+O incremento seguinte adicionou `host:core:app-package` e o alvo
+`make test-package-host`. O teste executa, com `-Werror` e instrumentação,
+comparação de versões, estados sem serviço, histórico indisponível, failpoints
+e nomes canônicos de ações. Também foi corrigido o acesso a membros `packed`
+no caminho de histórico e journal sem alterar o layout persistido. O relatório
+`build/test-results/package-host/coverage.json` passou sem endereços
+desconhecidos ou ambíguos. O estado atual é 6.820 superfícies, 2.013
+`COVERED`, 4.807 `PENDING` e 45 casos; o gate estrito continua reprovando
+corretamente pelas superfícies ainda sem evidência.
+
+O lote Core/estado adicionou o caso host-only `host:core:state` e o alvo
+`make test-state-host`. Recovery e a cadeia de notificadores de energia sao
+exercitados com erros, limites, estados opcionais e timeout em processo
+instrumentado; o relatorio `build/test-results/state-host/coverage.json` foi
+aprovado sem enderecos desconhecidos ou ambiguos. A sincronizacao real
+resultou em 2.046 superficies `COVERED`, 4.774 `PENDING` e 46 casos. O gate
+estrito continua pendente, pois os lotes de memoria/paging, processos,
+storage/VFS, rede restante, drivers/plataforma e Shell/UI ainda precisam de
+executores e evidencia especificos.
 
 ## Fora do escopo
 
@@ -776,3 +805,33 @@ permanente deve aguardar o gate estrito.
 - depender de portas privadas de QEMU, Bochs ou VirtualBox no sistema;
 - executar testes destrutivos reais quando houver backend simulado;
 - mascarar uma limitação de hardware como aprovação da funcionalidade.
+`host:core:app-api` e `host:core:app-catalog`, com os alvos
+`make test-device-manager-host`, `make test-app-api-host` e
+`make test-app-catalog-host`. As tres suites usam `HOST_CC`, `-Werror`,
+`-finstrument-functions` e backends estaticos; os relatorios terminaram
+`PASS` sem enderecos desconhecidos ou ambiguos. O catalogo foi sincronizado
+somente com os enderecos observados e passou a registrar 6.820 superficies,
+2.199 `COVERED`, 4.621 `PENDING` e 49 casos. O validador tambem passou a
+combinar relatorios dinamicos distintos do mesmo caso sem transformar a
+associacao em cobertura por arquivo. `make catalog-test` permanece valido;
+`make catalog-test-strict` continua corretamente pendente pelas superficies
+que ainda nao possuem executor e evidencia real.
+O lote Core/entrada adicionou `host:core:input` e o alvo
+`make test-input-host`, com instrumentacao dinamica e sinks estaticos. O
+teste passou por filas cheias, coalescencia, limites, erro de consumidor e
+validacao do estado publicado. A sincronizacao ficou em 6.820 superficies,
+2.208 `COVERED`, 4.612 `PENDING` e 50 casos. O gate estrito continua
+reprovando somente pelas superficies ainda sem executor e evidencia real;
+nenhuma pendencia foi promovida por associacao generica.
+O lote Core/energia adicionou `host:core:power` e o alvo `make test-power-host`.
+O caso usa ACPI, Storage, VFS, processos, workqueue e rede como dependencias
+estaticas, exercita estados disponiveis e indisponiveis, quiescencia, falhas de
+sync/S5 e limpeza apos falha; reset, triple fault e halt terminal continuam
+reservados a cenarios QEMU controlados. O lote Rede adicionou
+`host:core:network-manager` e `make test-network-manager-host`, cobrindo
+inventario PCI, driver ausente, estado offline, recusas de operacoes sem
+interface ativa, formatacao e nomes canonicos. Ambos passaram com cobertura
+dinamica e foram sincronizados somente a partir dos enderecos observados. O
+catalogo agora registra 6.820 superficies, 2.312 `COVERED`, 4.508 `PENDING` e
+52 casos; `make catalog-test` permanece valido e `catalog-test-strict` continua
+reprovando corretamente pelas superficies ainda sem executor real.

@@ -64,16 +64,24 @@ static int log_level_is_valid(log_level_t level) {
 }
 
 static uint32_t log_suspend_interrupts(void) {
+#if defined(ZEPHYROS_HOST_TEST)
+    return 0U;
+#else
     uint32_t flags;
 
     asm volatile("pushf\n\tpop %0\n\tcli" : "=r"(flags) : : "memory");
     return flags;
+#endif
 }
 
 static void log_restore_interrupts(uint32_t flags) {
+#if defined(ZEPHYROS_HOST_TEST)
+    (void)flags;
+#else
     if (flags & LOG_EFLAGS_INTERRUPT_ENABLE) {
         asm volatile("sti" : : : "memory");
     }
+#endif
 }
 
 static void log_ring_initialize(log_ring_state_t* state,

@@ -24,8 +24,10 @@ CASE_STATUSES = {"PENDING", "AUTOMATED", "MANUAL", "BLOCKED"}
 CASE_EXECUTORS = {"host", "kernel", "qemu"}
 CASE_ISOLATIONS = {"snapshot", "fixture"}
 COVERAGE_MODES = {"direct", "integration"}
+COVERAGE_MODE_PRIORITY = {"integration": 0, "direct": 1}
 REGISTRY_SURFACE_SELECTORS = {
     "case_surface_ids", "case_surface_ids_with_implementations",
+    "coverage_report",
 }
 BLOCKED_COVERAGE_TAG = "physical-hardware"
 BLOCKED_FIELDS = (
@@ -67,11 +69,70 @@ def has_duplicates(values: list[Any]) -> bool:
 
 def registry_surface_ids(entry: dict[str, Any],
                          cases: dict[str, dict[str, Any]],
-                         surfaces: dict[str, dict[str, Any]] | None = None) -> list[str]:
+                         surfaces: dict[str, dict[str, Any]] | None = None,
+                         root: Path = ROOT) -> list[str]:
     surface_ids = entry.get("surface_ids")
-    if isinstance(surface_ids, list):
+    if (isinstance(surface_ids, list) and surface_ids) or \
+            (isinstance(surface_ids, list) and
+             entry.get("surface_selector") != "coverage_report"):
         return list(surface_ids)
     selector = entry.get("surface_selector")
+    if selector == "coverage_report":
+        report_value = entry.get("coverage_report")
+        if (not isinstance(report_value, str) or not report_value.strip() or
+                not surfaces):
+            return []
+        report_path = Path(report_value)
+        if not report_path.is_absolute():
+            report_path = root / report_path
+        try:
+            report = json.loads(report_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            selected_from_cases: set[str] = set()
+            for case_id in entry.get("case_ids", []):
+                case = cases.get(case_id)
+                if not case or not isinstance(case.get("surface_ids"), list):
+                    continue
+                selected_from_cases.update(
+                    surface_id for surface_id in case["surface_ids"]
+                    if isinstance(surface_id, str))
+            return sorted(selected_from_cases)
+        observed = report.get("covered_surface_ids")
+        if not isinstance(observed, list):
+            return []
+        source_filters = entry.get("coverage_sources", [])
+        if not isinstance(source_filters, list):
+            source_filters = []
+        source_filters = {value for value in source_filters
+                          if isinstance(value, str) and value}
+        selected = []
+        for surface_id in observed:
+            if not isinstance(surface_id, str):
+                continue
+            surface = surfaces.get(surface_id)
+            if not surface or surface.get("kind") != "c_function":
+                continue
+            if source_filters and surface.get("source") not in source_filters:
+                continue
+            selected.append(surface_id)
+        if entry.get("include_public_apis"):
+            implementation_keys = {
+                (surface.get("source"), surface.get("symbol"))
+                for surface_id in selected
+                for surface in [surfaces.get(surface_id)]
+                if surface is not None
+            }
+            for surface in surfaces.values():
+                if surface.get("kind") != "api_function":
+                    continue
+                source = surface.get("source", "")
+                if not source.startswith("src/include/"):
+                    continue
+                implementation_source = source.replace(
+                    "src/include/", "src/", 1).replace(".h", ".c")
+                if (implementation_source, surface.get("symbol")) in implementation_keys:
+                    selected.append(surface["id"])
+        return sorted(set(selected))
     if selector not in REGISTRY_SURFACE_SELECTORS:
         return []
     selected: set[str] = set()
@@ -532,7 +593,8 @@ def load_json(path: Path) -> dict[str, Any]:
 
 def validate_coverage_registry(registry: dict[str, Any],
                                catalog: dict[str, Any],
-                               strict: bool = False) -> list[str]:
+                               strict: bool = False,
+                               root: Path = ROOT) -> list[str]:
     errors: list[str] = []
     if registry.get("schema") != COVERAGE_REGISTRY_SCHEMA:
         return ["schema de registro de cobertura desconhecido"]
@@ -549,6 +611,8 @@ def validate_coverage_registry(registry: dict[str, Any],
     }
     entry_ids: set[str] = set()
     registered_surfaces: set[str] = set()
+    surface_modes: dict[str, set[str]] = {}
+    registry_surfaces_by_case: dict[str, set[str]] = {}
     for entry in entries:
         if not isinstance(entry, dict):
             errors.append("entrada de registro de cobertura invalida")
@@ -569,7 +633,25 @@ def validate_coverage_registry(registry: dict[str, Any],
         if mode not in COVERAGE_MODES:
             errors.append(f"coverage_mode invalido no registro: {entry_id}")
         case_ids = entry.get("case_ids")
-        surface_ids = registry_surface_ids(entry, cases, surfaces)
+        surface_ids = registry_surface_ids(entry, cases, surfaces, root)
+        if strict and entry.get("surface_selector") == "coverage_report":
+            report_value = entry.get("coverage_report")
+            report_path = Path(report_value) if isinstance(report_value, str) else Path()
+            if not report_path.is_absolute():
+                report_path = root / report_path
+            if not report_path.is_file():
+                errors.append(f"relatorio de cobertura ausente: {entry_id}")
+            else:
+                try:
+                    report = json.loads(report_path.read_text(encoding="utf-8"))
+                except (OSError, json.JSONDecodeError):
+                    report = {}
+                    errors.append(f"relatorio de cobertura invalido: {entry_id}")
+                if report.get("status") != "PASS":
+                    errors.append(f"relatorio de cobertura reprovado: {entry_id}")
+                for field in ("unknown_addresses", "ambiguous_addresses"):
+                    if report.get(field):
+                        errors.append(f"relatorio de cobertura incompleto {field}: {entry_id}")
         if not isinstance(case_ids, list) or not case_ids:
             errors.append(f"casos ausentes no registro: {entry_id}")
             case_ids = []
@@ -602,10 +684,10 @@ def validate_coverage_registry(registry: dict[str, Any],
                 errors.append(f"superficie ausente no registro {surface_id}: {entry_id}")
                 continue
             registered_surfaces.add(surface_id)
+            if mode in COVERAGE_MODES:
+                surface_modes.setdefault(surface_id, set()).add(mode)
             if strict and surface.get("status") != "COVERED":
                 errors.append(f"superficie nao coberta no registro {surface_id}: {entry_id}")
-            if strict and surface.get("coverage_mode") != mode:
-                errors.append(f"coverage_mode divergente {surface_id}: {entry_id}")
             surface_case_ids = surface.get("case_ids", [])
             if not isinstance(surface_case_ids, list):
                 surface_case_ids = []
@@ -623,7 +705,12 @@ def validate_coverage_registry(registry: dict[str, Any],
                         continue
                     if surface_id not in case_surface_ids:
                         errors.append(f"registro sem vinculo no caso {case_id}: {surface_id}")
-        if entry.get("surface_selector") in REGISTRY_SURFACE_SELECTORS:
+        for case_id in case_ids:
+            if isinstance(case_id, str):
+                registry_surfaces_by_case.setdefault(case_id, set()).update(
+                    surface_ids)
+        if entry.get("surface_selector") != "coverage_report" and \
+                entry.get("surface_selector") in REGISTRY_SURFACE_SELECTORS:
             for case_id in case_ids:
                 case = cases.get(case_id)
                 if case is None:
@@ -634,7 +721,22 @@ def validate_coverage_registry(registry: dict[str, Any],
                 for surface_id in case_surface_ids:
                     if surface_id not in surface_ids:
                         errors.append(f"selecao nao contem superficie {surface_id}: {entry_id}")
+    for case_id, registry_surfaces in registry_surfaces_by_case.items():
+        case = cases.get(case_id)
+        if case is None:
+            continue
+        case_surface_ids = case.get("surface_ids", [])
+        if not isinstance(case_surface_ids, list):
+            continue
+        for surface_id in case_surface_ids:
+            if isinstance(surface_id, str) and surface_id not in registry_surfaces:
+                errors.append(f"selecao nao contem superficie {surface_id}: {case_id}")
     if strict:
+        for surface_id, modes in sorted(surface_modes.items()):
+            preferred_mode = max(modes, key=COVERAGE_MODE_PRIORITY.get)
+            surface = surfaces.get(surface_id)
+            if surface is not None and surface.get("coverage_mode") != preferred_mode:
+                errors.append(f"coverage_mode divergente {surface_id}: esperado {preferred_mode}")
         covered = {
             item.get("id") for item in catalog.get("surfaces", [])
             if isinstance(item, dict) and item.get("status") == "COVERED"
@@ -751,8 +853,23 @@ def synchronize_coverage_links(catalog: dict[str, Any]) -> None:
             case["surface_ids"] = list(dict.fromkeys(case["surface_ids"]))
 
 
+def reset_coverage_links(catalog: dict[str, Any]) -> None:
+    """Remove links persisted by a previous registry before rebuilding them."""
+    for case in catalog.get("cases", []):
+        if isinstance(case, dict) and isinstance(case.get("surface_ids"), list):
+            case["surface_ids"] = []
+    for surface in catalog.get("surfaces", []):
+        if not isinstance(surface, dict):
+            continue
+        surface["case_ids"] = []
+        if surface.get("status") == "COVERED":
+            surface["status"] = "PENDING"
+            surface.pop("coverage_mode", None)
+
+
 def apply_coverage_registry(catalog: dict[str, Any],
-                            registry: dict[str, Any]) -> None:
+                            registry: dict[str, Any],
+                            root: Path = ROOT) -> None:
     surfaces = {
         item.get("id"): item for item in catalog.get("surfaces", [])
         if isinstance(item, dict) and isinstance(item.get("id"), str)
@@ -766,12 +883,17 @@ def apply_coverage_registry(catalog: dict[str, Any],
             continue
         for surface_id in registry_surface_ids(entry, {
                 item.get("id"): item for item in catalog.get("cases", [])
-                if isinstance(item, dict) and isinstance(item.get("id"), str)}, surfaces):
+                if isinstance(item, dict) and isinstance(item.get("id"), str)},
+                surfaces, root):
             surface = surfaces.get(surface_id)
             if surface is None:
                 continue
             surface["status"] = "COVERED"
-            surface["coverage_mode"] = mode
+            current_mode = surface.get("coverage_mode")
+            if (current_mode not in COVERAGE_MODES or
+                    COVERAGE_MODE_PRIORITY[mode] >
+                    COVERAGE_MODE_PRIORITY[current_mode]):
+                surface["coverage_mode"] = mode
             surface_case_ids = surface.setdefault("case_ids", [])
             if isinstance(surface_case_ids, list):
                 surface_case_ids.extend(case_ids)
@@ -1076,12 +1198,13 @@ def command_sync(args: argparse.Namespace, root: Path) -> int:
                                  DEFAULT_COVERAGE_REGISTRY)
     if registry_path.is_file():
         registry = load_json(registry_path)
-        registry_errors = validate_coverage_registry(registry, result)
+        reset_coverage_links(result)
+        apply_coverage_registry(result, registry, root)
+        registry_errors = validate_coverage_registry(registry, result, root=root)
         if registry_errors:
             for error in registry_errors:
                 print(f"ERRO: {error}", file=sys.stderr)
             return 1
-        apply_coverage_registry(result, registry)
     write_json(path, result)
     print(f"Catalogo sincronizado: {len(result['surfaces'])} superficies")
     return 0
@@ -1096,7 +1219,8 @@ def command_validate(args: argparse.Namespace, root: Path) -> int:
     if registry_path.is_file():
         registry = load_json(registry_path)
         errors.extend(validate_coverage_registry(registry, catalog,
-                                                 strict=args.strict))
+                                                 strict=args.strict,
+                                                 root=root))
     elif args.strict:
         errors.append(f"registro de cobertura ausente: {registry_path}")
     if errors:

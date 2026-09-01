@@ -200,14 +200,22 @@ static int power_register_notifiers(void) {
 }
 
 static uint32_t power_irq_save(void) {
+#if defined(ZEPHYROS_HOST_TEST)
+    return 0U;
+#else
     uint32_t flags;
 
     asm volatile("pushfl\n\tpopl %0\n\tcli" : "=r"(flags) : : "memory");
     return flags;
+#endif
 }
 
 static void power_irq_restore(uint32_t flags) {
+#if !defined(ZEPHYROS_HOST_TEST)
     if (flags & (1U << 9U)) asm volatile("sti" : : : "memory");
+#else
+    (void)flags;
+#endif
 }
 
 static int power_deadline_expired(uint32_t deadline_tick) {
@@ -421,12 +429,16 @@ static void power_terminal_halt(void) __attribute__((noreturn));
 static void power_trigger_triple_fault(void) __attribute__((noreturn));
 
 static void power_trigger_triple_fault(void) {
+#if defined(ZEPHYROS_HOST_TEST)
+    __builtin_trap();
+#else
     idt_ptr_t null_idt;
 
     null_idt.limit = 0U;
     null_idt.base = 0U;
     asm volatile("cli\n\tlidt %0\n\tint3" : : "m"(null_idt) : "memory");
     for (;;) asm volatile("hlt");
+#endif
 }
 
 static int power_reboot_commit(void) {
@@ -465,7 +477,11 @@ static int power_reboot_commit(void) {
 }
 
 static void power_terminal_halt(void) {
+#if defined(ZEPHYROS_HOST_TEST)
+    __builtin_trap();
+#else
     for (;;) asm volatile("cli\n\thlt");
+#endif
 }
 
 int power_init(void) {

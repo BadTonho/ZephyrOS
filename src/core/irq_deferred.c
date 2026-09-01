@@ -22,23 +22,42 @@ typedef struct {
 } irq_deferred_test_callback_t;
 
 static irq_deferred_service_t service;
+#if defined(ZEPHYROS_HOST_TEST)
+static uint8_t irq_deferred_host_interrupts_enabled = 1U;
+#endif
 
 static uint32_t irq_deferred_irq_save(void) {
+#if defined(ZEPHYROS_HOST_TEST)
+    uint32_t flags = irq_deferred_host_interrupts_enabled ?
+                     (1U << 9U) : 0U;
+
+    irq_deferred_host_interrupts_enabled = 0U;
+    return flags;
+#else
     uint32_t flags;
 
     asm volatile("pushf\n\tpop %0\n\tcli" : "=r"(flags) : : "memory");
     return flags;
+#endif
 }
 
 static void irq_deferred_irq_restore(uint32_t flags) {
+#if defined(ZEPHYROS_HOST_TEST)
+    irq_deferred_host_interrupts_enabled = (flags & (1U << 9U)) ? 1U : 0U;
+#else
     if (flags & (1U << 9U)) asm volatile("sti" : : : "memory");
+#endif
 }
 
 static uint8_t irq_deferred_interrupts_enabled(void) {
+#if defined(ZEPHYROS_HOST_TEST)
+    return irq_deferred_host_interrupts_enabled;
+#else
     uint32_t flags;
 
     asm volatile("pushf\n\tpop %0" : "=r"(flags));
     return (uint8_t)((flags & (1U << 9U)) != 0U);
+#endif
 }
 
 static int irq_deferred_owner_valid(const char* owner) {

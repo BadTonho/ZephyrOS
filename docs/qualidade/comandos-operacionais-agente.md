@@ -37,6 +37,71 @@ comando documentado enquanto nao estiver explicitamente configurada no
 
 ## Comandos host verificados
 
+As baterias host-only atuais usam o compilador configurado em `HOST_CC` e
+geram um relatorio de cobertura por caso. Alem dos alvos TST2/TST3, os testes
+diretos de rede e contratos podem ser executados assim:
+
+```text
+make test-network-host
+make test-route-host
+make test-ipv4-host
+make test-crypto-host
+make test-scheduling-host
+make test-package-host
+make test-state-host
+make test-device-manager-host
+make test-app-api-host
+make test-app-catalog-host
+make test-input-host
+make test-power-host
+make test-network-manager-host
+```
+
+O caso de scheduling cobre `wait`, `workqueue` e `irq_deferred` em processo
+host com `ZEPHYROS_HOST_TEST=1`; o caminho freestanding continua sendo usado
+no build do kernel. Cada alvo preserva `manifest.json`, `result.json`,
+`coverage.json`, `coverage-symbols.json`, `stdout.log` e `stderr.log` em
+`build/test-results/<suite>/`.
+
+O caso `test-package-host` cobre contratos puros do servico de pacotes,
+incluindo versoes, motivos canonicos, estados indisponiveis e failpoints sem
+escrever no armazenamento.
+
+O caso `test-state-host` cobre recovery e a cadeia de notificadores de energia
+com callbacks estaticos, incluindo estados opcionais, duplicatas, capacidade,
+falhas canonicas e timeout. Seu relatorio instrumentado fica em
+`build/test-results/state-host/coverage.json`.
+
+Os casos `test-device-manager-host`, `test-app-api-host` e
+`test-app-catalog-host` cobrem, respectivamente, inventario de dispositivos
+com backends simulados, a fachada de aplicativos e o catalogo da App Store.
+Eles exercitam estados indisponiveis, limites, erros canonicos e limpeza em
+processos host instrumentados, sem hardware nem armazenamento real. Os
+relatorios ficam em `build/test-results/device-manager-host/`,
+`build/test-results/app-api-host/` e `build/test-results/app-catalog-host/`.
+
+O caso `test-input-host` valida as filas estaticas de teclado e ponteiro,
+coalescencia, saturacao de deltas, filas cheias, despacho alternado e erro de
+consumidor. O relatorio fica em `build/test-results/input-host/`.
+
+Os casos `test-power-host` e `test-network-manager-host` exercitam, com
+fixtures estaticos, os estados ACPI e a limpeza de energia apos falhas, alem
+do inventario PCI, drivers ausentes, estado offline e recusas de operacoes que
+exigem uma interface ativa. Os relatorios instrumentados ficam em
+`build/test-results/power-host/` e `build/test-results/network-manager-host/`.
+
+Para reconstruir a imagem instrumentada separada e gerar o mapa de simbolos:
+
+```text
+make coverage-image
+make coverage-map
+```
+
+O registro em `tests/coverage/registry.json` somente seleciona enderecos de
+relatorios `PASS` existentes e filtra as fontes declaradas. Um relatorio
+ausente, com endereco desconhecido ou ambiguo bloqueia o gate estrito; nao ha
+inferência de cobertura por arquivo ou modulo.
+
 Para instalar as dependencias Python fixadas pelo atualizador:
 
 ```text
