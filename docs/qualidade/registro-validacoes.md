@@ -3641,3 +3641,28 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   timeouts, limites e aprovacao explicita do baseline TST7. Refatoracoes sem
   mudanca de comportamento continuam obrigadas a executar os testes existentes,
   mas nao a criar alteracoes artificiais no testador.
+
+- TST6: revalidacao final executada em 2026-08-31 23:53
+  (America/Sao_Paulo), depois de `make q3check`, `make clean`, `make` e
+  `make test-qemu-selftest`. `make test-tst6-host` passou com 11 testes e
+  `make catalog-test` confirmou 6.808 superficies e 36 casos. Os 20 alvos
+  QEMU foram executados individualmente, sem retry automatico: os oito casos
+  de matriz, os quatro casos de stress com oito iteracoes e os oito casos de
+  falha/recuperacao. Todos terminaram com `READY -> HEARTBEAT -> BEGIN -> PASS`,
+  `status=PASS` e `last_state=PASS`; nao houve timeout, erro de protocolo ou
+  processo QEMU residual.
+
+  Os artefatos desta rodada ficaram preservados em:
+  `build/test-results/qemu-20260901T024044Z-28268`,
+  `qemu-20260901T024121Z-28096`, `qemu-20260901T024143Z-22384`,
+  `qemu-20260901T024205Z-26916`, `qemu-20260901T024228Z-10512`,
+  `qemu-20260901T024303Z-26276`, `qemu-20260901T024324Z-23992`,
+  `qemu-20260901T024346Z-28648`, `qemu-20260901T024418Z-27312`,
+  `qemu-20260901T024453Z-25644`, `qemu-20260901T024730Z-28616`,
+  `qemu-20260901T024809Z-1984`, `qemu-20260901T024857Z-5828`,
+  `qemu-20260901T024921Z-10792`, `qemu-20260901T024955Z-22132`,
+  `qemu-20260901T025029Z-27304`, `qemu-20260901T025052Z-6140`,
+  `qemu-20260901T025113Z-20660`, `qemu-20260901T025134Z-3964` e
+  `qemu-20260901T025156Z-25816`. A falha intermitente de watchdog registrada
+  na execucao TST7 anterior nao se reproduziu nesta rodada; ela permanece
+  registrada como diagnostico historico e nao foi apagada.

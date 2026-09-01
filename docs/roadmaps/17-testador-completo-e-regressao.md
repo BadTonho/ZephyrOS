@@ -570,6 +570,16 @@ iterações passaram. Na rodada final, `fault:block` também revelou que o alvo
 estava passando 20 segundos explicitamente; o padrão TST6 foi ajustado para 60
 segundos e a repetição passou. O diagnóstico original foi preservado.
 
+Revalidação final executada em 2026-08-31 23:53 (America/Sao_Paulo), após
+`make q3check`, `make clean`, `make` e `make test-qemu-selftest`. Os 20 alvos
+TST6 foram executados individualmente, sem retry: 8 casos de matriz, 4 casos
+de stress com 8 iterações cada e 8 casos de falha/recuperação. Todos
+produziram `READY -> HEARTBEAT -> BEGIN -> PASS`, com `status=PASS` e
+`last_state=PASS`; os artefatos obrigatórios foram preservados e não restou
+processo QEMU. A falha intermitente observada no `full` anterior não se
+reproduziu nesta revalidação. A TST6 atende agora aos critérios de aceite;
+hardware físico continua `BLOCKED` por não fazer parte desta validação.
+
 ### TST6 — Checklist de saída
 
 - [x] Runner host-only com perfis allowlisted, seeds, limites, classificação
