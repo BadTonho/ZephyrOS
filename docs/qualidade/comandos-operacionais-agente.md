@@ -664,6 +664,12 @@ de ambiente torna apenas a duração `NOT_COMPARABLE`; contratos continuam
 comparáveis. Superfícies novas `PENDING` são reportadas sem mascarar seu
 estado.
 
+Depois da aprovação explícita, execute `make test-tst7-full` para validar a
+regressão contra o baseline. A duração das etapas de preparação do host, como
+`build`, não é comparada como duração de caso; os 36 casos QEMU continuam
+comparáveis individualmente. Nunca substitua o baseline manualmente para
+remover uma falha.
+
 O runner continua após uma falha para coletar a matriz, mas cada caso QEMU é
 executado uma única vez. Ausência de QEMU, imagem, fixture, baseline ou outra
 dependência obrigatória é `BLOCKED`; falha do guest, timeout ou regressão é

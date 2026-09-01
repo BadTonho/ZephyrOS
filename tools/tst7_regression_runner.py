@@ -42,6 +42,7 @@ MAX_SUITE_TIMEOUT = 7200.0
 DEFAULT_COMMAND_TIMEOUT = 300.0
 DEFAULT_QUICK_TIMEOUT = 1800.0
 DEFAULT_FULL_TIMEOUT = 7200.0
+QEMU_CASE_SETTLE_SECONDS = 1.0
 MAX_OUTPUT_BYTES = 4 * 1024 * 1024
 VOLATILE_WARNING_PATTERNS = (
     (re.compile(r"tst7-[A-Za-z0-9_.:-]+"), "<run>"),
@@ -464,6 +465,8 @@ def compare_durations(current: dict[str, Any], baseline: dict[str, Any],
         return [], ["NOT_COMPARABLE:environment"]
     errors: list[str] = []
     for identifier, expected in baseline.get("contract", {}).get("entries", {}).items():
+        if not identifier.startswith("qemu:"):
+            continue
         actual = current.get("contract", {}).get("entries", {}).get(identifier)
         if not isinstance(actual, dict) or not isinstance(expected, dict):
             continue
@@ -797,9 +800,12 @@ def run_execution(arguments: argparse.Namespace, mode: str) -> int:
         if any(case.get("qemu_profile") == "usb-storage" for case in qemu_cases(catalog)):
             if not execute_make(report, run_dir, arguments, "storage-fixtures", "storage-fixtures", started):
                 return finalize_execution(report, run_dir, started)
-        for index, case in enumerate(qemu_cases(catalog), start=1):
+        selected_qemu_cases = qemu_cases(catalog)
+        for index, case in enumerate(selected_qemu_cases, start=1):
             if not execute_qemu_case(report, run_dir, arguments, case, index, started):
                 break
+            if index < len(selected_qemu_cases):
+                time.sleep(QEMU_CASE_SETTLE_SECONDS)
     return finalize_execution(report, run_dir, started)
 
 
@@ -873,6 +879,9 @@ def approve_run(run_id: str) -> int:
         reasons.append("etapa_nao_passou")
     if report.get("catalog_errors"):
         reasons.append("catalogo_ou_manifesto_invalido")
+    comparison = report.get("comparison", {})
+    if isinstance(comparison, dict) and comparison.get("status") == "FAIL":
+        reasons.append("comparacao_reprovada")
     if reasons:
         print(f"TST7 approve: FAIL {';'.join(reasons)}", file=sys.stderr)
         return 1

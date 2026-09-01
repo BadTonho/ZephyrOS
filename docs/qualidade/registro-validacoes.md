@@ -3666,3 +3666,25 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   `qemu-20260901T025156Z-25816`. A falha intermitente de watchdog registrada
   na execucao TST7 anterior nao se reproduziu nesta rodada; ela permanece
   registrada como diagnostico historico e nao foi apagada.
+
+- TST7: concluida em 2026-09-01 11:12 (America/Sao_Paulo). `make
+  test-tst7-host` passou com 14 testes, incluindo a deteccao de mutacoes e a
+  regra de que a duracao de etapas de preparacao do host nao e uma regressao de
+  caso. A comparacao foi ajustada para considerar duracao somente de casos
+  QEMU; a aprovacao passou a recusar relatorios com comparacao reprovada. O
+  runner tambem passou a aguardar 1 segundo entre processos QEMU consecutivos,
+  sem retry ou repeticao de caso.
+
+  O primeiro `full` elegivel foi aprovado explicitamente em
+  `2026-09-01T13:01:38Z`, no run
+  `.tst7-results/tst7-20260901T124115Z-19420/`, com todas as etapas e 36/36
+  casos QEMU `PASS`; o manifesto aprovado esta em
+  `tests/baselines/tst7-approved.json`. A validacao final contra esse baseline
+  foi o run `.tst7-results/tst7-20260901T135144Z-12828/`, retornou `PASS` e
+  confirmou `comparison=PASS`, sem regressao de contrato, warnings, cobertura
+  ou duracao. Os seeds foram deterministas, cada caso teve uma tentativa, e
+  os 36 casos produziram os artefatos individuais preservados pelo runner.
+  O `quick` posterior a aprovacao, no run
+  `.tst7-results/tst7-20260901T141558Z-3500/`, tambem retornou `PASS` com os
+  sete gates e a comparacao contra o baseline.
+  Nao ha processo QEMU residual.

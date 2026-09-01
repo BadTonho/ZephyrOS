@@ -87,6 +87,29 @@ class Tst7ComparisonTests(unittest.TestCase):
         self.assertEqual(result["status"], "PASS")
         self.assertEqual(result["duration"]["status"], "NOT_COMPARABLE:environment")
 
+    def test_setup_duration_is_not_a_case_regression(self):
+        current = report(duration=10.0)
+        baseline = report(duration=10.0)
+        current["contract"]["entries"]["host:build"] = {
+            "status": "PASS",
+            "termination": "completed",
+            "phase": "build",
+            "first_error": None,
+            "events": [],
+            "duration_seconds": 134.516,
+        }
+        baseline["contract"]["entries"]["host:build"] = {
+            "status": "PASS",
+            "termination": "completed",
+            "phase": "build",
+            "first_error": None,
+            "events": [],
+            "duration_seconds": 110.375,
+        }
+        result = runner.compare_runs(current, baseline)
+        self.assertEqual(result["status"], "PASS")
+        self.assertEqual(result["duration"]["status"], "PASS")
+
 
 class Tst7RunnerContractTests(unittest.TestCase):
     def test_exit_code_two_is_fail_without_explicit_blocked_output(self):
@@ -149,6 +172,29 @@ class Tst7RunnerContractTests(unittest.TestCase):
             saved = json.loads(baseline.read_text(encoding="utf-8"))
             self.assertEqual(saved["schema"], runner.BASELINE_SCHEMA)
             self.assertEqual(saved["approved_run_id"], "tst7-run")
+
+    def test_explicit_approval_rejects_failed_comparison(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            run_dir = root / "tst7-run"
+            run_dir.mkdir()
+            value = report()
+            value.update({
+                "run_id": "tst7-run",
+                "execution_status": "PASS",
+                "cases": [{"id": "qemu:tst7:test", "status": "PASS"}],
+                "steps": [{"label": "build", "status": "PASS"}],
+                "catalog_errors": [],
+                "limitations": [],
+                "comparison": {"status": "FAIL", "reasons": ["regressao"]},
+            })
+            (run_dir / "result.json").write_text(
+                json.dumps(value), encoding="utf-8")
+            baseline = root / "baseline.json"
+            with patch.object(runner, "RESULTS_ROOT", root), \
+                    patch.object(runner, "BASELINE_PATH", baseline):
+                self.assertEqual(runner.approve_run("tst7-run"), 1)
+            self.assertFalse(baseline.exists())
 
 
 if __name__ == "__main__":
