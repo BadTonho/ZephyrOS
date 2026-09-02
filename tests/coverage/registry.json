@@ -2075,7 +2075,7 @@
         "qemu:tst4:storage-vfs"
       ],
       "surface_selector": "coverage_report",
-      "coverage_report": "build-coverage/test-results/cov-tst4-storage/cov-tst4-storage-1/coverage.json",
+      "coverage_report": "build-coverage/test-results/cov-tst4-storage/cov-tst4-storage-6/coverage.json",
       "coverage_sources": [
         "src/core/kernel_tests_storage.c",
         "src/fs/block.c",
@@ -2092,7 +2092,7 @@
         "src/fs/vfs_path.c"
       ],
       "include_public_apis": true,
-      "evidence": "QEMU TST4 storage-vfs cov-tst4-storage-1 PASS com backends internos e coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
+      "evidence": "QEMU TST4 storage-vfs cov-tst4-storage-6 PASS com backends internos e coverage.json instrumentado, incluindo callbacks VFS de fixture e limites, sem enderecos desconhecidos ou ambiguos"
     },
     {
       "id": "storage-qemu-tst5-dynamic",

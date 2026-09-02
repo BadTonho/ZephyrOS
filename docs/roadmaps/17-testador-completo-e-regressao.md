@@ -1281,3 +1281,17 @@ pendente.
   catalogo registra 7.196 superficies, 3.903 `COVERED`, 3.293 `PENDING` e 85
   casos. O fechamento integral, o gate estrito e a validacao TST7 completa
   continuam pendentes.
+
+- Incremento Storage/VFS concluido em 2026-09-02: a fixture host-only existente
+  passou a exercitar stdin com mensagem de teclado, callbacks nao suportados,
+  poll, pipes sem leitores, pipe cheio, socket sem poll e redirecionamento de
+  escrita com limites, caminhos invalidos e limpeza. O autoteste real
+  `qemu:tst4:storage-vfs` tambem passou a verificar abertura, escrita e poll
+  da fixture e as operacoes invalidas de stdin/stdout. A execucao normal
+  `make test-tst4-qemu-storage-vfs` passou em uma unica iteracao com
+  `READY -> HEARTBEAT -> BEGIN -> PASS`; a imagem instrumentada
+  `cov-tst4-storage-6` tambem passou e resolveu 595 superficies no relatorio
+  dinamico. O catalogo foi sincronizado e validado com 7.196 superficies,
+  3.921 `COVERED`, 3.275 `PENDING` e 85 casos. O fechamento integral continua
+  pendente; `tst3-sanitize` segue `BLOCKED` nesta maquina pela permissao do
+  runtime LLVM.

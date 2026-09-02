@@ -152,6 +152,27 @@ incluindo arquivos regulares, dispositivos, pipes, sockets, poll/select,
 quiescencia e invariantes. Os relatorios ficam em
 `build/test-results/fat32-host/` e `build/test-results/vfs-host/`.
 
+O caso QEMU `qemu:tst4:storage-vfs` complementa essa fixture com o autoteste
+real de storage e VFS, incluindo os callbacks de fixture para abertura,
+leitura, escrita e poll, descritores invalidos e limpeza de tabelas. Execute
+uma unica iteracao depois do build:
+
+```text
+make test-tst4-qemu-storage-vfs
+```
+
+Para atualizar a evidencia dinamica do caso em uma imagem instrumentada,
+preserve a execucao em `build-coverage/test-results/`, gere o mapa com
+`make coverage-map` e colete o relatorio apontando para o catalogo completo:
+
+```text
+python tools/coverage_collector.py collect --serial <execucao>/serial.log --symbols build-coverage/coverage-symbols.json --catalog tests/catalog.json --output <execucao>/coverage.json
+```
+
+O caso normal deve produzir `READY`, `HEARTBEAT`, `BEGIN` e `PASS`; a imagem
+instrumentada pode exigir limites maiores, mas continua sujeita ao teto
+absoluto de 600 segundos e nao deve ser repetida automaticamente.
+
 O caso `test-slab-host` valida o ciclo de vida e os metadados do registrador
 SLAB sem alocar paginas reais: inicializacao idempotente, limites, duplicidade,
 informacoes por indice, estatisticas, ownership nulo e limpeza. O relatorio

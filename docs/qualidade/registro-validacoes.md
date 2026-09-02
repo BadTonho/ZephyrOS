@@ -4301,3 +4301,21 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   enderecos desconhecidos ou ambiguos. O catalogo agora registra 7.196
   superficies, 3.903 `COVERED`, 3.293 `PENDING` e 85 casos; o fechamento
   integral e o gate estrito continuam pendentes.
+
+- Incremento Storage/VFS concluido em 2026-09-02: a fixture host-only de VFS
+  passou a exercitar stdin com mensagem de teclado, callbacks nao suportados,
+  poll, pipes sem leitores, pipe cheio, socket sem poll e redirecionamento de
+  escrita com limites, caminhos invalidos e limpeza. O autoteste real
+  `qemu:tst4:storage-vfs` tambem passou a verificar abertura, escrita e poll
+  da fixture e as operacoes invalidas de stdin/stdout. `make q3check`,
+  `make clean`, `make`, `make test-tst7-quick` (com `tst3-sanitize`
+  `BLOCKED` pela permissao do runtime LLVM), `make test-tst4-qemu-storage-vfs`
+  e `make catalog-test` foram executados; os gates de codigo, build, QEMU e
+  catalogo passaram nos respectivos criterios. A execucao QEMU normal
+  `qemu-20260902T201006Z-27872` produziu `READY`, `HEARTBEAT`, `BEGIN` e
+  `PASS` em uma iteracao. A imagem instrumentada `cov-tst4-storage-6`
+  tambem passou com limites finitos ampliados para a sobrecarga da cobertura;
+  `coverage_collector.py` resolveu 595 superficies sem enderecos desconhecidos
+  ou simbolos ambiguos. O catalogo registra 7.196 superficies, 3.921
+  `COVERED`, 3.275 `PENDING` e 85 casos. O fechamento integral, o gate estrito
+  e o baseline TST7 continuam pendentes.

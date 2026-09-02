@@ -49,6 +49,8 @@ static uint32_t fake_console_writes;
 static uint32_t fake_storage_writes;
 static uint32_t fake_syncs;
 static uint8_t fake_socket_value;
+static ipc_msg_t fake_ipc_message;
+static uint8_t fake_ipc_pending;
 static process_t current_process;
 
 process_t* processes[MAX_PROCESSES];
@@ -330,11 +332,13 @@ process_t* process_get_by_pid(uint32_t pid) {
 
 thread_t* thread_get_current(void) { return 0; }
 
-int ipc_current_has_pending(void) { return 0; }
+int ipc_current_has_pending(void) { return fake_ipc_pending ? 1 : 0; }
 
 int ipc_receive(ipc_msg_t* message) {
-    (void)message;
-    return 0;
+    if (!message || !fake_ipc_pending) return 0;
+    *message = fake_ipc_message;
+    fake_ipc_pending = 0U;
+    return 1;
 }
 
 int ipc_wait(uint32_t timeout_ticks, wait_reason_t* out_reason) {
@@ -744,6 +748,12 @@ static const file_operations_t fake_socket_operations = {
     fake_socket_sync, fake_device_poll
 };
 
+static const file_operations_t fake_socket_default_operations = {
+    fake_socket_open, fake_socket_read, fake_socket_write,
+    fake_socket_close, fake_socket_lseek, fake_device_ioctl,
+    fake_socket_sync, 0
+};
+
 int main(void) {
     static const uint8_t payload[HOST_PAYLOAD_SIZE] = "vfs payload";
     uint8_t buffer[HOST_PAYLOAD_SIZE];
@@ -761,6 +771,7 @@ int main(void) {
     int32_t fd;
     int32_t pipe_fds[2];
     int32_t socket_fd;
+    uint8_t full_pipe_payload[VFS_PIPE_BUFFER_SIZE];
     char cwd[VFS_MAX_PATH];
 
     kmemset(&current_process, 0, sizeof(current_process));
@@ -811,6 +822,18 @@ int main(void) {
     EXPECT(vfs_close(VFS_FD_STDIN) == ERR_UNAVAILABLE);
     EXPECT(vfs_write(VFS_FD_STDOUT, payload, 2U, &bytes) == OK);
     EXPECT(bytes == 2U && fake_console_writes == 2U);
+    fake_ipc_message.type = IPC_MSG_KEYBOARD;
+    fake_ipc_message.data1 = 'K';
+    fake_ipc_message.data2 = 0U;
+    fake_ipc_pending = 1U;
+    EXPECT(vfs_read(VFS_FD_STDIN, buffer, 1U, &bytes) == OK);
+    EXPECT(bytes == 1U && buffer[0] == 'K');
+    EXPECT(vfs_read(VFS_FD_STDIN, buffer, 1U, &bytes) == OK);
+    EXPECT(bytes == 0U);
+    EXPECT(vfs_lseek(VFS_FD_STDOUT, 0, VFS_SEEK_SET, &position) ==
+           ERR_UNAVAILABLE);
+    EXPECT(vfs_ioctl(VFS_FD_STDOUT, 0U, 0) == ERR_UNAVAILABLE);
+    EXPECT(vfs_fsync(VFS_FD_STDIN) == ERR_UNAVAILABLE);
 
     pipe_fds[0] = VFS_FD_INVALID;
     pipe_fds[1] = VFS_FD_INVALID;
@@ -820,12 +843,33 @@ int main(void) {
     EXPECT(bytes == sizeof(payload));
     EXPECT(vfs_poll(&(pollfd_t){pipe_fds[0], POLLIN, 0U}, 1U, 0U, &ready) ==
            OK && ready == 1U);
+    EXPECT(vfs_lseek(pipe_fds[0], 0, VFS_SEEK_SET, &position) ==
+           ERR_UNAVAILABLE);
     EXPECT(vfs_close(pipe_fds[1]) == OK);
     EXPECT(vfs_read(pipe_fds[0], buffer, sizeof(buffer), &bytes) == OK);
     EXPECT(bytes == sizeof(payload));
     EXPECT(memcmp(buffer, payload, sizeof(payload)) == 0);
     EXPECT(vfs_read(pipe_fds[0], buffer, sizeof(buffer), &bytes) == OK &&
            bytes == 0U);
+    EXPECT(vfs_close(pipe_fds[0]) == OK);
+
+    pipe_fds[0] = VFS_FD_INVALID;
+    pipe_fds[1] = VFS_FD_INVALID;
+    EXPECT(vfs_pipe(pipe_fds) == OK);
+    EXPECT(vfs_read(pipe_fds[0], buffer, 1U, &bytes) == ERR_STATE);
+    EXPECT(vfs_close(pipe_fds[0]) == OK);
+    EXPECT(vfs_close(pipe_fds[1]) == OK);
+
+    kmemset(full_pipe_payload, 'F', sizeof(full_pipe_payload));
+    pipe_fds[0] = VFS_FD_INVALID;
+    pipe_fds[1] = VFS_FD_INVALID;
+    EXPECT(vfs_pipe(pipe_fds) == OK);
+    EXPECT(vfs_write(pipe_fds[1], full_pipe_payload,
+                     sizeof(full_pipe_payload), &bytes) == OK);
+    EXPECT(bytes == VFS_PIPE_BUFFER_SIZE);
+    EXPECT(vfs_write(pipe_fds[1], payload, 1U, &bytes) == ERR_STATE);
+    EXPECT(bytes == 0U);
+    EXPECT(vfs_close(pipe_fds[1]) == OK);
     EXPECT(vfs_close(pipe_fds[0]) == OK);
 
     socket_fd = VFS_FD_INVALID;
@@ -840,6 +884,16 @@ int main(void) {
     EXPECT(descriptor_count >= 4U);
     EXPECT(vfs_copy_descriptors(descriptors, 1U, &descriptor_count) ==
            ERR_OVERFLOW);
+    EXPECT(vfs_close(socket_fd) == OK);
+    socket_fd = VFS_FD_INVALID;
+    EXPECT(vfs_open_socket(&fake_socket_value,
+                           &fake_socket_default_operations, VFS_MODE_READ,
+                           "socket-default", &socket_fd) == OK);
+    poll_fds[0].fd = socket_fd;
+    poll_fds[0].events = POLLIN;
+    poll_fds[0].revents = 0U;
+    EXPECT(vfs_poll(poll_fds, 1U, 0U, &ready) == OK);
+    EXPECT(ready == 1U && (poll_fds[0].revents & POLLERR));
     EXPECT(vfs_close(socket_fd) == OK);
 
     read_set.bits = 0U;
@@ -868,6 +922,15 @@ int main(void) {
     EXPECT(vfs_power_set_quiescing(0U) == OK);
     EXPECT(!vfs_power_is_quiescing());
     EXPECT(vfs_lookup(0, &lookup) == ERR_NOT_FOUND);
+    EXPECT(vfs_write_redirect(0, payload, 1U, 0U) == ERR_NULL);
+    EXPECT(vfs_write_redirect("fixture", payload, 1U, 0U) == OK);
+    EXPECT(vfs_write_redirect("fixture", payload, 1U, 1U) == OK);
+    EXPECT(vfs_write_redirect("fixture", payload, 1U, 2U) == ERR_INVALID);
+    EXPECT(vfs_write_redirect("/readonly", payload, 1U, 0U) ==
+           ERR_UNAVAILABLE);
+    EXPECT(vfs_write_redirect("/directory", payload, 1U, 0U) == ERR_INVALID);
+    EXPECT(vfs_write_redirect("fixture", payload, VFS_REDIRECT_MAX_SIZE + 1U,
+                              0U) == ERR_OVERFLOW);
 
     EXPECT(vfs_get_status(&status) == OK);
     EXPECT(status.initialized && status.descriptor_capacity == VFS_MAX_FDS);
