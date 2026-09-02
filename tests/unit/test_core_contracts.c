@@ -172,24 +172,31 @@ static int test_protocol_core_contract(void) {
         test.run_count != 1U || test.event_count != 4U ||
         test.events[2].type != TEST_PROTOCOL_EVENT_BEGIN ||
         test.events[3].type != TEST_PROTOCOL_EVENT_PASS) return 28;
+    length = protocol_make_frame(frame, sizeof(frame),
+                                 "cmd=RUN run=run-core seq=4 case=qemu:tst4:memory-slab iteration=1 seed=43");
+    if (!length) return 29;
+    if (protocol_feed_frame(&core, frame, length) != ERR_INVALID) return 30;
+    if (test.event_count != 6U) return 31;
+    if (test.events[5].type != TEST_PROTOCOL_EVENT_FAIL) return 32;
+    if (strcmp(test.events[5].reason, "ERR_INVALID") != 0) return 34;
     formatted_event = test.events[3];
     if (!test_protocol_core_format_event(&formatted_event, formatted,
                                          sizeof(formatted)) ||
         !strstr(formatted, "event=PASS") || !strstr(formatted, "crc=")) {
-        return 29;
+        return 30;
     }
     length = protocol_make_frame(frame, sizeof(frame),
-                                 "cmd=ABORT run=run-core seq=4");
+                                 "cmd=ABORT run=run-core seq=5");
     if (!length || protocol_feed_frame(&core, frame, length) != OK ||
-        test.event_count != 5U ||
-        test.events[4].type != TEST_PROTOCOL_EVENT_BLOCKED ||
-        strcmp(test.events[4].reason, "ERR_CANCELLED") != 0) return 30;
+        test.event_count != 7U ||
+        test.events[6].type != TEST_PROTOCOL_EVENT_BLOCKED ||
+        strcmp(test.events[6].reason, "ERR_CANCELLED") != 0) return 31;
     frame[10] = frame[10] == 'A' ? 'B' : 'A';
     if (protocol_feed_frame(&core, frame, length) != ERR_INVALID ||
-        test.event_count != 6U ||
-        test.events[5].type != TEST_PROTOCOL_EVENT_BLOCKED) return 31;
+        test.event_count != 8U ||
+        test.events[7].type != TEST_PROTOCOL_EVENT_BLOCKED) return 32;
     if (test_protocol_core_emit(&core, TEST_PROTOCOL_EVENT_NONE, 0) !=
-        ERR_INVALID) return 32;
+        ERR_INVALID) return 33;
     return 0;
 }
 

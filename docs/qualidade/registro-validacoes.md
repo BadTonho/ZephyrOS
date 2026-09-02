@@ -4250,11 +4250,13 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   de declaracoes e definicoes com retorno por ponteiro. A sincronizacao atual
   registra 7.197 superficies, 3.793 `COVERED`, 3.404 `PENDING` e 85 casos.
 
-- Incremento Core/nomes e cobertura dinamica concluido em: 2026-09-02 16:09
+- Incremento Core/nomes e erros concluido em: 2026-09-02 16:09
   (America/Sao_Paulo): `make test-core-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
   terminou `PASS`. A fixture passou a validar explicitamente `clock_source_name`
   para RTC, ausencia e fonte desconhecida, e `log_level_str` para niveis validos
-  e invalidos. O relatorio `build/test-results/core-host/coverage.json` terminou
-  `PASS`, sem enderecos desconhecidos ou ambiguos, e a sincronizacao vinculou as
-  duas superficies por chamada real. O catalogo registra 7.197 superficies,
-  3.883 `COVERED`, 3.314 `PENDING` e 85 casos.
+  e invalidos. Uma execucao `RUN` rejeitada tambem confirmou `core_error_name`
+  pelo evento `FAIL` com `ERR_INVALID`. O relatorio
+  `build/test-results/core-host/coverage.json` terminou `PASS`, sem enderecos
+  desconhecidos ou ambiguos, e a sincronizacao vinculou as tres superficies por
+  chamada real. O catalogo registra 7.197 superficies, 3.884 `COVERED`, 3.313
+  `PENDING` e 85 casos.

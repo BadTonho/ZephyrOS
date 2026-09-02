@@ -1226,13 +1226,15 @@ e a validacao TST7 completa continuam pendentes.
   integral do catalogo, o gate estrito e a validacao TST7 completa continuam
   pendentes.
 
-- Incremento Core/nomes e cobertura dinamica concluido em: 2026-09-02 16:09
+- Incremento Core/nomes e erros concluido em: 2026-09-02 16:09
   (America/Sao_Paulo): o caso existente `host:core:contracts` passou a validar
   explicitamente `clock_source_name` para fontes RTC, ausente e desconhecida.
   A fixture tambem confirmou `log_level_str` para niveis validos e invalidos.
+  No mesmo fluxo, uma execucao `RUN` rejeitada confirmou `core_error_name`
+  atraves do evento `FAIL` com `ERR_INVALID`.
   O relatorio instrumentado `build/test-results/core-host/coverage.json`
   terminou `PASS`, sem enderecos desconhecidos ou ambiguos, e a sincronizacao
-  vinculou as duas superficies por chamada real. O catalogo agora registra
-  7.197 superficies, 3.883 `COVERED`, 3.314 `PENDING` e 85 casos. O fechamento
+  vinculou as tres superficies por chamada real. O catalogo agora registra
+  7.197 superficies, 3.884 `COVERED`, 3.313 `PENDING` e 85 casos. O fechamento
   integral do catalogo, o gate estrito e a validacao TST7 completa continuam
   pendentes.

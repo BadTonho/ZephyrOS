@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 3883 |
+| `COVERED` | 3884 |
 | `MANUAL` | 0 |
-| `PENDING` | 3314 |
+| `PENDING` | 3313 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -3203,7 +3203,7 @@
 | `c:src/core/test_protocol_core.c:core_emit_case` | `src/core/test_protocol_core.c` | `core_emit_case` | `core` | `COVERED` | 2 |
 | `c:src/core/test_protocol_core.c:core_emit_event` | `src/core/test_protocol_core.c` | `core_emit_event` | `core` | `COVERED` | 2 |
 | `c:src/core/test_protocol_core.c:core_emit_simple` | `src/core/test_protocol_core.c` | `core_emit_simple` | `core` | `COVERED` | 2 |
-| `c:src/core/test_protocol_core.c:core_error_name` | `src/core/test_protocol_core.c` | `core_error_name` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:core_error_name` | `src/core/test_protocol_core.c` | `core_error_name` | `core` | `COVERED` | 1 |
 | `c:src/core/test_protocol_core.c:core_event_name` | `src/core/test_protocol_core.c` | `core_event_name` | `core` | `COVERED` | 1 |
 | `c:src/core/test_protocol_core.c:core_field` | `src/core/test_protocol_core.c` | `core_field` | `core` | `COVERED` | 2 |
 | `c:src/core/test_protocol_core.c:core_fields_valid` | `src/core/test_protocol_core.c` | `core_fields_valid` | `core` | `COVERED` | 2 |
@@ -8162,7 +8162,6 @@
 - `c:src/core/test_protocol.c:test_protocol_poll`
 - `c:src/core/test_protocol.c:test_protocol_set_boot_ready`
 - `c:src/core/test_protocol.c:test_protocol_timeout`
-- `c:src/core/test_protocol_core.c:core_error_name`
 - `c:src/core/tls_client.c:tls_client_close`
 - `c:src/core/tls_client.c:tls_client_configure`
 - `c:src/core/tls_client.c:tls_client_divide_u64`

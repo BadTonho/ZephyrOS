@@ -69060,9 +69060,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:contracts"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/test_protocol_core.c:core_event_name",
@@ -149744,6 +149747,7 @@
         "c:src/core/test_protocol_core.c:core_emit_case",
         "c:src/core/test_protocol_core.c:core_emit_event",
         "c:src/core/test_protocol_core.c:core_emit_simple",
+        "c:src/core/test_protocol_core.c:core_error_name",
         "c:src/core/test_protocol_core.c:core_event_name",
         "c:src/core/test_protocol_core.c:core_field",
         "c:src/core/test_protocol_core.c:core_fields_valid",
