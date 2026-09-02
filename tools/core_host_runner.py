@@ -406,6 +406,13 @@ WIFI_MANAGER_SOURCE_FILES = (
     ROOT / "src" / "core" / "wifi_manager.c",
     ROOT / "src" / "core" / "string.c",
 )
+USB_MANAGER_RESULT_DIR = ROOT / "build" / "test-results" / "usb-manager-host"
+USB_MANAGER_BINARY = ROOT / "build" / "tests" / "test_usb_manager_host.exe"
+USB_MANAGER_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_usb_manager_host.c",
+    ROOT / "src" / "core" / "usb_manager.c",
+    ROOT / "src" / "core" / "string.c",
+)
 SHELL_INPUT_RESULT_DIR = ROOT / "build" / "test-results" / "shell-input-host"
 SHELL_INPUT_BINARY = ROOT / "build" / "tests" / "test_shell_input_host.exe"
 SHELL_INPUT_SOURCE_FILES = (
@@ -532,6 +539,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
     if case_id == "host:core:wifi-manager":
         return (WIFI_MANAGER_RESULT_DIR, WIFI_MANAGER_BINARY,
                 WIFI_MANAGER_SOURCE_FILES, "wifi-manager-host")
+    if case_id == "host:core:usb-manager":
+        return (USB_MANAGER_RESULT_DIR, USB_MANAGER_BINARY,
+                USB_MANAGER_SOURCE_FILES, "usb-manager-host")
     if case_id == "host:shell:input":
         return (SHELL_INPUT_RESULT_DIR, SHELL_INPUT_BINARY,
                 SHELL_INPUT_SOURCE_FILES, "shell-input-host")
@@ -707,6 +717,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:shell:dispatch", "host:shell:introspection",
                                  "host:drivers:font", "host:drivers:rtc-status",
                                  "host:core:wifi-manager",
+                                 "host:core:usb-manager",
                                  "host:shell:input", "host:shell:command-utils"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)

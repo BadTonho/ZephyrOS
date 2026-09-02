@@ -4393,3 +4393,20 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   catalogo foi sincronizado e validado com 7.196 superficies, 4.131 `COVERED`,
   3.065 `PENDING` e 88 casos. O fechamento integral, o gate estrito e a
   validacao TST7 completa continuam pendentes.
+
+- Concluida em: 2026-09-02 19:40 (America/Sao_Paulo)
+
+  Incremento Core/usb_manager: `make test-usb-manager-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` terminou `PASS` com fixtures
+  estaticos de PCI, UHCI, EHCI, MSC e HID. A fixture verificou inventario de
+  controladores, portas e dispositivos, IDs, estados e agregacoes, polling,
+  refresh, formatacao, limites, falhas de inicializacao e runtime,
+  indisponibilidade, recovery e limpeza. O relatorio
+  `build/test-results/usb-manager-host/coverage.json` terminou `PASS`,
+  resolveu 41 superficies de `src/core/usb_manager.c` e nao registrou
+  enderecos desconhecidos ou ambiguos. Foram executados tambem `make
+  catalog-test`, `make q3check`, `make clean` e `make`; todos terminaram com
+  sucesso. O catalogo registra 7.196 superficies, 4.164 `COVERED`, 3.032
+  `PENDING` e 89 casos. A execucao `make test-tst7-quick` confirmou o novo
+  caso e os demais host tests; permaneceu `BLOCKED` somente em
+  `test-tst3-sanitize` pela indisponibilidade/permissao do runtime LLVM.

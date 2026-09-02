@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7196**
-- Casos de teste: **88**
+- Casos de teste: **89**
 - Superfícies aposentadas: **22**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4131 |
+| `COVERED` | 4164 |
 | `MANUAL` | 0 |
-| `PENDING` | 3065 |
+| `PENDING` | 3032 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 88 |
+| `AUTOMATED` | 89 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -762,29 +762,29 @@
 | `api:src/include/core/update_system_slots.h:update_system_slots_reboot_preflight` | `src/include/core/update_system_slots.h` | `update_system_slots_reboot_preflight` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_system_slots.h:update_system_slots_stage_file` | `src/include/core/update_system_slots.h` | `update_system_slots_stage_file` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_system_slots.h:update_system_slots_state_name` | `src/include/core/update_system_slots.h` | `update_system_slots_state_name` | `core` | `PENDING` | 0 |
-| `api:src/include/core/usb_manager.h:usb_manager_find` | `src/include/core/usb_manager.h` | `usb_manager_find` | `core` | `COVERED` | 3 |
-| `api:src/include/core/usb_manager.h:usb_manager_find_device` | `src/include/core/usb_manager.h` | `usb_manager_find_device` | `core` | `COVERED` | 3 |
-| `api:src/include/core/usb_manager.h:usb_manager_format_device_text` | `src/include/core/usb_manager.h` | `usb_manager_format_device_text` | `core` | `COVERED` | 3 |
-| `api:src/include/core/usb_manager.h:usb_manager_format_text` | `src/include/core/usb_manager.h` | `usb_manager_format_text` | `core` | `COVERED` | 3 |
-| `api:src/include/core/usb_manager.h:usb_manager_get_count` | `src/include/core/usb_manager.h` | `usb_manager_get_count` | `core` | `COVERED` | 3 |
-| `api:src/include/core/usb_manager.h:usb_manager_get_device` | `src/include/core/usb_manager.h` | `usb_manager_get_device` | `core` | `COVERED` | 3 |
-| `api:src/include/core/usb_manager.h:usb_manager_get_device_count` | `src/include/core/usb_manager.h` | `usb_manager_get_device_count` | `core` | `COVERED` | 3 |
-| `api:src/include/core/usb_manager.h:usb_manager_get_info` | `src/include/core/usb_manager.h` | `usb_manager_get_info` | `core` | `COVERED` | 3 |
-| `api:src/include/core/usb_manager.h:usb_manager_get_port` | `src/include/core/usb_manager.h` | `usb_manager_get_port` | `core` | `COVERED` | 3 |
-| `api:src/include/core/usb_manager.h:usb_manager_get_port_count` | `src/include/core/usb_manager.h` | `usb_manager_get_port_count` | `core` | `COVERED` | 3 |
-| `api:src/include/core/usb_manager.h:usb_manager_get_status` | `src/include/core/usb_manager.h` | `usb_manager_get_status` | `core` | `COVERED` | 3 |
-| `api:src/include/core/usb_manager.h:usb_manager_get_uhci_status` | `src/include/core/usb_manager.h` | `usb_manager_get_uhci_status` | `core` | `COVERED` | 3 |
-| `api:src/include/core/usb_manager.h:usb_manager_init` | `src/include/core/usb_manager.h` | `usb_manager_init` | `core` | `COVERED` | 3 |
-| `api:src/include/core/usb_manager.h:usb_manager_model_name` | `src/include/core/usb_manager.h` | `usb_manager_model_name` | `core` | `COVERED` | 3 |
-| `api:src/include/core/usb_manager.h:usb_manager_poll` | `src/include/core/usb_manager.h` | `usb_manager_poll` | `core` | `COVERED` | 3 |
-| `api:src/include/core/usb_manager.h:usb_manager_port_reason_name` | `src/include/core/usb_manager.h` | `usb_manager_port_reason_name` | `core` | `COVERED` | 3 |
-| `api:src/include/core/usb_manager.h:usb_manager_port_state_name` | `src/include/core/usb_manager.h` | `usb_manager_port_state_name` | `core` | `COVERED` | 3 |
-| `api:src/include/core/usb_manager.h:usb_manager_reason_name` | `src/include/core/usb_manager.h` | `usb_manager_reason_name` | `core` | `COVERED` | 3 |
-| `api:src/include/core/usb_manager.h:usb_manager_refresh` | `src/include/core/usb_manager.h` | `usb_manager_refresh` | `core` | `COVERED` | 3 |
-| `api:src/include/core/usb_manager.h:usb_manager_speed_name` | `src/include/core/usb_manager.h` | `usb_manager_speed_name` | `core` | `COVERED` | 3 |
-| `api:src/include/core/usb_manager.h:usb_manager_state_name` | `src/include/core/usb_manager.h` | `usb_manager_state_name` | `core` | `COVERED` | 3 |
-| `api:src/include/core/usb_manager.h:usb_manager_uhci_state_name` | `src/include/core/usb_manager.h` | `usb_manager_uhci_state_name` | `core` | `COVERED` | 3 |
-| `api:src/include/core/usb_manager.h:usb_manager_validate_state` | `src/include/core/usb_manager.h` | `usb_manager_validate_state` | `core` | `COVERED` | 3 |
+| `api:src/include/core/usb_manager.h:usb_manager_find` | `src/include/core/usb_manager.h` | `usb_manager_find` | `core` | `COVERED` | 4 |
+| `api:src/include/core/usb_manager.h:usb_manager_find_device` | `src/include/core/usb_manager.h` | `usb_manager_find_device` | `core` | `COVERED` | 4 |
+| `api:src/include/core/usb_manager.h:usb_manager_format_device_text` | `src/include/core/usb_manager.h` | `usb_manager_format_device_text` | `core` | `COVERED` | 4 |
+| `api:src/include/core/usb_manager.h:usb_manager_format_text` | `src/include/core/usb_manager.h` | `usb_manager_format_text` | `core` | `COVERED` | 4 |
+| `api:src/include/core/usb_manager.h:usb_manager_get_count` | `src/include/core/usb_manager.h` | `usb_manager_get_count` | `core` | `COVERED` | 4 |
+| `api:src/include/core/usb_manager.h:usb_manager_get_device` | `src/include/core/usb_manager.h` | `usb_manager_get_device` | `core` | `COVERED` | 4 |
+| `api:src/include/core/usb_manager.h:usb_manager_get_device_count` | `src/include/core/usb_manager.h` | `usb_manager_get_device_count` | `core` | `COVERED` | 4 |
+| `api:src/include/core/usb_manager.h:usb_manager_get_info` | `src/include/core/usb_manager.h` | `usb_manager_get_info` | `core` | `COVERED` | 4 |
+| `api:src/include/core/usb_manager.h:usb_manager_get_port` | `src/include/core/usb_manager.h` | `usb_manager_get_port` | `core` | `COVERED` | 4 |
+| `api:src/include/core/usb_manager.h:usb_manager_get_port_count` | `src/include/core/usb_manager.h` | `usb_manager_get_port_count` | `core` | `COVERED` | 4 |
+| `api:src/include/core/usb_manager.h:usb_manager_get_status` | `src/include/core/usb_manager.h` | `usb_manager_get_status` | `core` | `COVERED` | 4 |
+| `api:src/include/core/usb_manager.h:usb_manager_get_uhci_status` | `src/include/core/usb_manager.h` | `usb_manager_get_uhci_status` | `core` | `COVERED` | 4 |
+| `api:src/include/core/usb_manager.h:usb_manager_init` | `src/include/core/usb_manager.h` | `usb_manager_init` | `core` | `COVERED` | 4 |
+| `api:src/include/core/usb_manager.h:usb_manager_model_name` | `src/include/core/usb_manager.h` | `usb_manager_model_name` | `core` | `COVERED` | 4 |
+| `api:src/include/core/usb_manager.h:usb_manager_poll` | `src/include/core/usb_manager.h` | `usb_manager_poll` | `core` | `COVERED` | 4 |
+| `api:src/include/core/usb_manager.h:usb_manager_port_reason_name` | `src/include/core/usb_manager.h` | `usb_manager_port_reason_name` | `core` | `COVERED` | 4 |
+| `api:src/include/core/usb_manager.h:usb_manager_port_state_name` | `src/include/core/usb_manager.h` | `usb_manager_port_state_name` | `core` | `COVERED` | 4 |
+| `api:src/include/core/usb_manager.h:usb_manager_reason_name` | `src/include/core/usb_manager.h` | `usb_manager_reason_name` | `core` | `COVERED` | 4 |
+| `api:src/include/core/usb_manager.h:usb_manager_refresh` | `src/include/core/usb_manager.h` | `usb_manager_refresh` | `core` | `COVERED` | 4 |
+| `api:src/include/core/usb_manager.h:usb_manager_speed_name` | `src/include/core/usb_manager.h` | `usb_manager_speed_name` | `core` | `COVERED` | 4 |
+| `api:src/include/core/usb_manager.h:usb_manager_state_name` | `src/include/core/usb_manager.h` | `usb_manager_state_name` | `core` | `COVERED` | 4 |
+| `api:src/include/core/usb_manager.h:usb_manager_uhci_state_name` | `src/include/core/usb_manager.h` | `usb_manager_uhci_state_name` | `core` | `COVERED` | 4 |
+| `api:src/include/core/usb_manager.h:usb_manager_validate_state` | `src/include/core/usb_manager.h` | `usb_manager_validate_state` | `core` | `COVERED` | 4 |
 | `api:src/include/core/usb_transport.h:usb_transport_bulk_transfer` | `src/include/core/usb_transport.h` | `usb_transport_bulk_transfer` | `core` | `PENDING` | 0 |
 | `api:src/include/core/usb_transport.h:usb_transport_control_request` | `src/include/core/usb_transport.h` | `usb_transport_control_request` | `core` | `PENDING` | 0 |
 | `api:src/include/core/usb_transport.h:usb_transport_interrupt_cancel` | `src/include/core/usb_transport.h` | `usb_transport_interrupt_cancel` | `core` | `PENDING` | 0 |
@@ -3771,46 +3771,46 @@
 | `c:src/core/update_system_slots.c:update_system_slots_reboot_preflight` | `src/core/update_system_slots.c` | `update_system_slots_reboot_preflight` | `core` | `PENDING` | 0 |
 | `c:src/core/update_system_slots.c:update_system_slots_stage_file` | `src/core/update_system_slots.c` | `update_system_slots_stage_file` | `core` | `PENDING` | 0 |
 | `c:src/core/update_system_slots.c:update_system_slots_state_name` | `src/core/update_system_slots.c` | `update_system_slots_state_name` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_append_char` | `src/core/usb_manager.c` | `usb_append_char` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_append_hex` | `src/core/usb_manager.c` | `usb_append_hex` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_append_text` | `src/core/usb_manager.c` | `usb_append_text` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_apply_ehci_runtime_controller` | `src/core/usb_manager.c` | `usb_apply_ehci_runtime_controller` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_apply_runtime_controller` | `src/core/usb_manager.c` | `usb_apply_runtime_controller` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_ascii_upper` | `src/core/usb_manager.c` | `usb_ascii_upper` | `core` | `COVERED` | 1 |
-| `c:src/core/usb_manager.c:usb_build_snapshot` | `src/core/usb_manager.c` | `usb_build_snapshot` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_classify` | `src/core/usb_manager.c` | `usb_classify` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_collect_runtime` | `src/core/usb_manager.c` | `usb_collect_runtime` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_copy_pci` | `src/core/usb_manager.c` | `usb_copy_pci` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_format_controller_id` | `src/core/usb_manager.c` | `usb_format_controller_id` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_id_matches` | `src/core/usb_manager.c` | `usb_id_matches` | `core` | `COVERED` | 1 |
-| `c:src/core/usb_manager.c:usb_manager_find` | `src/core/usb_manager.c` | `usb_manager_find` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_manager_find_device` | `src/core/usb_manager.c` | `usb_manager_find_device` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_manager_format_device_text` | `src/core/usb_manager.c` | `usb_manager_format_device_text` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_manager_format_text` | `src/core/usb_manager.c` | `usb_manager_format_text` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_manager_get_count` | `src/core/usb_manager.c` | `usb_manager_get_count` | `core` | `COVERED` | 2 |
-| `c:src/core/usb_manager.c:usb_manager_get_device` | `src/core/usb_manager.c` | `usb_manager_get_device` | `core` | `COVERED` | 1 |
-| `c:src/core/usb_manager.c:usb_manager_get_device_count` | `src/core/usb_manager.c` | `usb_manager_get_device_count` | `core` | `COVERED` | 5 |
-| `c:src/core/usb_manager.c:usb_manager_get_info` | `src/core/usb_manager.c` | `usb_manager_get_info` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_manager_get_port` | `src/core/usb_manager.c` | `usb_manager_get_port` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_manager_get_port_count` | `src/core/usb_manager.c` | `usb_manager_get_port_count` | `core` | `COVERED` | 2 |
-| `c:src/core/usb_manager.c:usb_manager_get_status` | `src/core/usb_manager.c` | `usb_manager_get_status` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_manager_get_uhci_status` | `src/core/usb_manager.c` | `usb_manager_get_uhci_status` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_manager_init` | `src/core/usb_manager.c` | `usb_manager_init` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_manager_model_name` | `src/core/usb_manager.c` | `usb_manager_model_name` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_manager_poll` | `src/core/usb_manager.c` | `usb_manager_poll` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_manager_port_reason_name` | `src/core/usb_manager.c` | `usb_manager_port_reason_name` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_manager_port_state_name` | `src/core/usb_manager.c` | `usb_manager_port_state_name` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_manager_reason_name` | `src/core/usb_manager.c` | `usb_manager_reason_name` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_manager_refresh` | `src/core/usb_manager.c` | `usb_manager_refresh` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_manager_speed_name` | `src/core/usb_manager.c` | `usb_manager_speed_name` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_manager_state_name` | `src/core/usb_manager.c` | `usb_manager_state_name` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_manager_uhci_state_name` | `src/core/usb_manager.c` | `usb_manager_uhci_state_name` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_manager_validate_state` | `src/core/usb_manager.c` | `usb_manager_validate_state` | `core` | `COVERED` | 3 |
-| `c:src/core/usb_manager.c:usb_set_text` | `src/core/usb_manager.c` | `usb_set_text` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_start_controllers` | `src/core/usb_manager.c` | `usb_start_controllers` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_sync_hid_runtime` | `src/core/usb_manager.c` | `usb_sync_hid_runtime` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_sync_msc_runtime` | `src/core/usb_manager.c` | `usb_sync_msc_runtime` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_manager.c:usb_sync_recovery` | `src/core/usb_manager.c` | `usb_sync_recovery` | `core` | `PENDING` | 0 |
+| `c:src/core/usb_manager.c:usb_append_char` | `src/core/usb_manager.c` | `usb_append_char` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_append_hex` | `src/core/usb_manager.c` | `usb_append_hex` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_append_text` | `src/core/usb_manager.c` | `usb_append_text` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_apply_ehci_runtime_controller` | `src/core/usb_manager.c` | `usb_apply_ehci_runtime_controller` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_apply_runtime_controller` | `src/core/usb_manager.c` | `usb_apply_runtime_controller` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_ascii_upper` | `src/core/usb_manager.c` | `usb_ascii_upper` | `core` | `COVERED` | 2 |
+| `c:src/core/usb_manager.c:usb_build_snapshot` | `src/core/usb_manager.c` | `usb_build_snapshot` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_classify` | `src/core/usb_manager.c` | `usb_classify` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_collect_runtime` | `src/core/usb_manager.c` | `usb_collect_runtime` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_copy_pci` | `src/core/usb_manager.c` | `usb_copy_pci` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_format_controller_id` | `src/core/usb_manager.c` | `usb_format_controller_id` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_id_matches` | `src/core/usb_manager.c` | `usb_id_matches` | `core` | `COVERED` | 2 |
+| `c:src/core/usb_manager.c:usb_manager_find` | `src/core/usb_manager.c` | `usb_manager_find` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_manager_find_device` | `src/core/usb_manager.c` | `usb_manager_find_device` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_manager_format_device_text` | `src/core/usb_manager.c` | `usb_manager_format_device_text` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_manager_format_text` | `src/core/usb_manager.c` | `usb_manager_format_text` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_manager_get_count` | `src/core/usb_manager.c` | `usb_manager_get_count` | `core` | `COVERED` | 3 |
+| `c:src/core/usb_manager.c:usb_manager_get_device` | `src/core/usb_manager.c` | `usb_manager_get_device` | `core` | `COVERED` | 2 |
+| `c:src/core/usb_manager.c:usb_manager_get_device_count` | `src/core/usb_manager.c` | `usb_manager_get_device_count` | `core` | `COVERED` | 6 |
+| `c:src/core/usb_manager.c:usb_manager_get_info` | `src/core/usb_manager.c` | `usb_manager_get_info` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_manager_get_port` | `src/core/usb_manager.c` | `usb_manager_get_port` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_manager_get_port_count` | `src/core/usb_manager.c` | `usb_manager_get_port_count` | `core` | `COVERED` | 3 |
+| `c:src/core/usb_manager.c:usb_manager_get_status` | `src/core/usb_manager.c` | `usb_manager_get_status` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_manager_get_uhci_status` | `src/core/usb_manager.c` | `usb_manager_get_uhci_status` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_manager_init` | `src/core/usb_manager.c` | `usb_manager_init` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_manager_model_name` | `src/core/usb_manager.c` | `usb_manager_model_name` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_manager_poll` | `src/core/usb_manager.c` | `usb_manager_poll` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_manager_port_reason_name` | `src/core/usb_manager.c` | `usb_manager_port_reason_name` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_manager_port_state_name` | `src/core/usb_manager.c` | `usb_manager_port_state_name` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_manager_reason_name` | `src/core/usb_manager.c` | `usb_manager_reason_name` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_manager_refresh` | `src/core/usb_manager.c` | `usb_manager_refresh` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_manager_speed_name` | `src/core/usb_manager.c` | `usb_manager_speed_name` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_manager_state_name` | `src/core/usb_manager.c` | `usb_manager_state_name` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_manager_uhci_state_name` | `src/core/usb_manager.c` | `usb_manager_uhci_state_name` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_manager_validate_state` | `src/core/usb_manager.c` | `usb_manager_validate_state` | `core` | `COVERED` | 4 |
+| `c:src/core/usb_manager.c:usb_set_text` | `src/core/usb_manager.c` | `usb_set_text` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_start_controllers` | `src/core/usb_manager.c` | `usb_start_controllers` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_sync_hid_runtime` | `src/core/usb_manager.c` | `usb_sync_hid_runtime` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_sync_msc_runtime` | `src/core/usb_manager.c` | `usb_sync_msc_runtime` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_manager.c:usb_sync_recovery` | `src/core/usb_manager.c` | `usb_sync_recovery` | `core` | `COVERED` | 1 |
 | `c:src/core/usb_transport.c:usb_transport_bulk_transfer` | `src/core/usb_transport.c` | `usb_transport_bulk_transfer` | `core` | `PENDING` | 0 |
 | `c:src/core/usb_transport.c:usb_transport_control_request` | `src/core/usb_transport.c` | `usb_transport_control_request` | `core` | `PENDING` | 0 |
 | `c:src/core/usb_transport.c:usb_transport_interrupt_cancel` | `src/core/usb_transport.c` | `usb_transport_interrupt_cancel` | `core` | `PENDING` | 0 |
@@ -7370,6 +7370,7 @@
 | `qemu:tst6:stress:kernel` | `qemu` | `tst6` | `qemu:tst6:stress:kernel` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | paging, heap, SLAB, processos e threads estao READY | repetir ciclos deterministas de memoria e execucao sob teto obrigatorio | invariantes estaveis permanecem iguais e a primeira falha interrompe a suite | overflow, vazamento, deadlock, timeout, protocolo ou QEMU | alocacoes e objetos temporarios de cada ciclo em snapshot | devolver paginas, destruir objetos e registrar seed e iteracao |
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
+| `host:core:usb-manager` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inventariar controladores UHCI, EHCI e fora do escopo, sincronizar drivers de classe, consultar portas e dispositivos, executar polling e refresh | estados, identificadores, agregacoes, limites, indisponibilidade e recuperacao preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente fixtures estaticos PCI, UHCI, EHCI, MSC e HID no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -8487,39 +8488,6 @@
 - `c:src/core/update_system_slots.c:update_system_slots_reboot_preflight`
 - `c:src/core/update_system_slots.c:update_system_slots_stage_file`
 - `c:src/core/update_system_slots.c:update_system_slots_state_name`
-- `c:src/core/usb_manager.c:usb_append_char`
-- `c:src/core/usb_manager.c:usb_append_hex`
-- `c:src/core/usb_manager.c:usb_append_text`
-- `c:src/core/usb_manager.c:usb_apply_ehci_runtime_controller`
-- `c:src/core/usb_manager.c:usb_apply_runtime_controller`
-- `c:src/core/usb_manager.c:usb_build_snapshot`
-- `c:src/core/usb_manager.c:usb_classify`
-- `c:src/core/usb_manager.c:usb_collect_runtime`
-- `c:src/core/usb_manager.c:usb_copy_pci`
-- `c:src/core/usb_manager.c:usb_format_controller_id`
-- `c:src/core/usb_manager.c:usb_manager_find`
-- `c:src/core/usb_manager.c:usb_manager_find_device`
-- `c:src/core/usb_manager.c:usb_manager_format_device_text`
-- `c:src/core/usb_manager.c:usb_manager_format_text`
-- `c:src/core/usb_manager.c:usb_manager_get_info`
-- `c:src/core/usb_manager.c:usb_manager_get_port`
-- `c:src/core/usb_manager.c:usb_manager_get_status`
-- `c:src/core/usb_manager.c:usb_manager_get_uhci_status`
-- `c:src/core/usb_manager.c:usb_manager_init`
-- `c:src/core/usb_manager.c:usb_manager_model_name`
-- `c:src/core/usb_manager.c:usb_manager_poll`
-- `c:src/core/usb_manager.c:usb_manager_port_reason_name`
-- `c:src/core/usb_manager.c:usb_manager_port_state_name`
-- `c:src/core/usb_manager.c:usb_manager_reason_name`
-- `c:src/core/usb_manager.c:usb_manager_refresh`
-- `c:src/core/usb_manager.c:usb_manager_speed_name`
-- `c:src/core/usb_manager.c:usb_manager_state_name`
-- `c:src/core/usb_manager.c:usb_manager_uhci_state_name`
-- `c:src/core/usb_manager.c:usb_set_text`
-- `c:src/core/usb_manager.c:usb_start_controllers`
-- `c:src/core/usb_manager.c:usb_sync_hid_runtime`
-- `c:src/core/usb_manager.c:usb_sync_msc_runtime`
-- `c:src/core/usb_manager.c:usb_sync_recovery`
 - `c:src/core/usb_transport.c:usb_transport_bulk_transfer`
 - `c:src/core/usb_transport.c:usb_transport_control_request`
 - `c:src/core/usb_transport.c:usb_transport_interrupt_cancel`
