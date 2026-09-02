@@ -1979,6 +1979,25 @@
       ],
       "include_public_apis": true,
       "evidence": "make test-ethernet-host PASS com interfaces falsas, handlers, polling, frames validos e invalidos, transmissao, quiescencia, sk_buff e limpeza sem hardware real"
+    },
+    {
+      "id": "tcp-host-dynamic",
+      "domain": "network-tcp",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:network:tcp"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/tcp-host/coverage.json",
+      "coverage_sources": [
+        "src/core/tcp.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-tcp-host PASS com IPv4 e timer falsos, handshake, dados, ACK, FIN, RST, retransmissao, timeout, callbacks recusados, limites e limpeza sem rede externa"
     }
   ]
 }

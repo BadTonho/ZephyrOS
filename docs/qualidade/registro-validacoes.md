@@ -4004,3 +4004,13 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   superficies resolvidas, sem enderecos desconhecidos ou ambiguos. A
   sincronizacao atual registra 6.820 superficies, 2.876 `COVERED`, 3.944
   `PENDING` e 68 casos; `make catalog-test` passou.
+
+- Incremento Rede/TCP em 2026-09-02 11:33 (America/Sao_Paulo):
+  `make test-tcp-host` passou com `HOST_CC` configurado e warnings tratados
+  como erro. A fixture usa IPv4 e timer falsos para exercitar handshake,
+  dados, ACK, FIN, RST, retransmissao, timeout, callbacks recusados, janelas,
+  limites, conexoes simultaneas e limpeza, sem rede externa. O relatorio
+  `build/test-results/tcp-host/coverage.json` terminou `PASS`, com 71
+  superficies resolvidas, sem enderecos desconhecidos ou ambiguos. A
+  sincronizacao atual registra 6.820 superficies, 2.920 `COVERED`, 3.900
+  `PENDING` e 69 casos; `make catalog-test` passou.

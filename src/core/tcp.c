@@ -966,7 +966,9 @@ int tcp_set_receive_window(tcp_connection_handle_t handle,
     tcp_connections[index].local_window = receive_window;
     if (tcp_connections[index].state == TCP_STATE_ESTABLISHED &&
         receive_window > previous &&
-        (!previous || receive_window - previous >= TCP_LOCAL_MSS)) {
+        (!previous || (receive_window >= previous &&
+                       (uint32_t)receive_window - (uint32_t)previous >=
+                           TCP_LOCAL_MSS))) {
         return tcp_send_ack((uint32_t)index);
     }
     return OK;
