@@ -3993,3 +3993,14 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   superficies resolvidas, sem enderecos desconhecidos ou ambiguos. A
   sincronizacao atual registra 6.820 superficies, 2.841 `COVERED`, 3.979
   `PENDING` e 67 casos; `make catalog-test` passou.
+
+- Incremento Rede/Ethernet em 2026-09-02 11:24 (America/Sao_Paulo):
+  `make test-ethernet-host` passou com `HOST_CC` configurado e warnings
+  tratados como erro. A fixture usa quatro interfaces, drivers, handlers e
+  frames falsos para exercitar polling, entrega local e broadcast, filtragem,
+  frames invalidos, erros de driver, transmissao, quiescencia, sk_buff,
+  net_buffer e limpeza, sem hardware real. O relatorio
+  `build/test-results/ethernet-host/coverage.json` terminou `PASS`, com 104
+  superficies resolvidas, sem enderecos desconhecidos ou ambiguos. A
+  sincronizacao atual registra 6.820 superficies, 2.876 `COVERED`, 3.944
+  `PENDING` e 68 casos; `make catalog-test` passou.

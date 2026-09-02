@@ -70,6 +70,7 @@ make test-arp-host
 make test-icmp-host
 make test-dns-host
 make test-dhcp-host
+make test-ethernet-host
 ```
 
 O caso de scheduling cobre `wait`, `workqueue` e `irq_deferred` em processo
@@ -164,6 +165,10 @@ relatorio fica em `build/test-results/dns-host/`.
 O caso `test-dhcp-host` usa UDP e timer falsos para exercitar descoberta,
 oferta, lease, renovacao, rebinding, expiracao, NAK, mensagens invalidas e
 falhas de transporte; seu relatorio fica em `build/test-results/dhcp-host/`.
+O caso `test-ethernet-host` usa drivers, interfaces e frames falsos para
+exercitar handlers, polling, filtragem, transmissao, quiescencia, sk_buff,
+net_buffer e limpeza sem hardware real; seu relatorio fica em
+`build/test-results/ethernet-host/`.
 
 Para reconstruir a imagem instrumentada separada e gerar o mapa de simbolos:
 

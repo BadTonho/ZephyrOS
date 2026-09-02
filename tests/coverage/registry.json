@@ -1957,6 +1957,28 @@
       ],
       "include_public_apis": true,
       "evidence": "make test-dhcp-host PASS com descoberta, oferta, lease, renovacao, rebinding, expiracao, mensagens invalidas e falhas de transporte usando UDP e timer falsos"
+    },
+    {
+      "id": "ethernet-host-dynamic",
+      "domain": "network-ethernet",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:network:ethernet"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/ethernet-host/coverage.json",
+      "coverage_sources": [
+        "src/core/ethernet.c",
+        "src/core/sk_buff.c",
+        "src/core/net_buffer.c",
+        "src/memory/slab.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-ethernet-host PASS com interfaces falsas, handlers, polling, frames validos e invalidos, transmissao, quiescencia, sk_buff e limpeza sem hardware real"
     }
   ]
 }
