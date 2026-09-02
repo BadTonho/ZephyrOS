@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **6820**
-- Casos de teste: **66**
+- Casos de teste: **67**
 - Superfícies aposentadas: **20**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 2785 |
+| `COVERED` | 2841 |
 | `MANUAL` | 0 |
-| `PENDING` | 4035 |
+| `PENDING` | 3979 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 66 |
+| `AUTOMATED` | 67 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -334,16 +334,16 @@
 | `api:src/include/core/device_manager.h:device_manager_get_info` | `src/include/core/device_manager.h` | `device_manager_get_info` | `core` | `COVERED` | 3 |
 | `api:src/include/core/device_manager.h:device_manager_init` | `src/include/core/device_manager.h` | `device_manager_init` | `core` | `COVERED` | 1 |
 | `api:src/include/core/device_manager.h:device_manager_refresh` | `src/include/core/device_manager.h` | `device_manager_refresh` | `core` | `COVERED` | 1 |
-| `api:src/include/core/dhcp.h:dhcp_acquire` | `src/include/core/dhcp.h` | `dhcp_acquire` | `core` | `PENDING` | 0 |
-| `api:src/include/core/dhcp.h:dhcp_complete_event` | `src/include/core/dhcp.h` | `dhcp_complete_event` | `core` | `PENDING` | 0 |
-| `api:src/include/core/dhcp.h:dhcp_get_status` | `src/include/core/dhcp.h` | `dhcp_get_status` | `core` | `PENDING` | 0 |
-| `api:src/include/core/dhcp.h:dhcp_init` | `src/include/core/dhcp.h` | `dhcp_init` | `core` | `PENDING` | 0 |
-| `api:src/include/core/dhcp.h:dhcp_maintain` | `src/include/core/dhcp.h` | `dhcp_maintain` | `core` | `PENDING` | 0 |
-| `api:src/include/core/dhcp.h:dhcp_release` | `src/include/core/dhcp.h` | `dhcp_release` | `core` | `PENDING` | 0 |
-| `api:src/include/core/dhcp.h:dhcp_renew` | `src/include/core/dhcp.h` | `dhcp_renew` | `core` | `PENDING` | 0 |
-| `api:src/include/core/dhcp.h:dhcp_reset` | `src/include/core/dhcp.h` | `dhcp_reset` | `core` | `PENDING` | 0 |
-| `api:src/include/core/dhcp.h:dhcp_take_event` | `src/include/core/dhcp.h` | `dhcp_take_event` | `core` | `PENDING` | 0 |
-| `api:src/include/core/dhcp.h:dhcp_validate_state` | `src/include/core/dhcp.h` | `dhcp_validate_state` | `core` | `COVERED` | 2 |
+| `api:src/include/core/dhcp.h:dhcp_acquire` | `src/include/core/dhcp.h` | `dhcp_acquire` | `core` | `COVERED` | 1 |
+| `api:src/include/core/dhcp.h:dhcp_complete_event` | `src/include/core/dhcp.h` | `dhcp_complete_event` | `core` | `COVERED` | 1 |
+| `api:src/include/core/dhcp.h:dhcp_get_status` | `src/include/core/dhcp.h` | `dhcp_get_status` | `core` | `COVERED` | 1 |
+| `api:src/include/core/dhcp.h:dhcp_init` | `src/include/core/dhcp.h` | `dhcp_init` | `core` | `COVERED` | 1 |
+| `api:src/include/core/dhcp.h:dhcp_maintain` | `src/include/core/dhcp.h` | `dhcp_maintain` | `core` | `COVERED` | 1 |
+| `api:src/include/core/dhcp.h:dhcp_release` | `src/include/core/dhcp.h` | `dhcp_release` | `core` | `COVERED` | 1 |
+| `api:src/include/core/dhcp.h:dhcp_renew` | `src/include/core/dhcp.h` | `dhcp_renew` | `core` | `COVERED` | 1 |
+| `api:src/include/core/dhcp.h:dhcp_reset` | `src/include/core/dhcp.h` | `dhcp_reset` | `core` | `COVERED` | 1 |
+| `api:src/include/core/dhcp.h:dhcp_take_event` | `src/include/core/dhcp.h` | `dhcp_take_event` | `core` | `COVERED` | 1 |
+| `api:src/include/core/dhcp.h:dhcp_validate_state` | `src/include/core/dhcp.h` | `dhcp_validate_state` | `core` | `COVERED` | 3 |
 | `api:src/include/core/dns.h:dns_clear` | `src/include/core/dns.h` | `dns_clear` | `core` | `COVERED` | 1 |
 | `api:src/include/core/dns.h:dns_configure` | `src/include/core/dns.h` | `dns_configure` | `core` | `COVERED` | 1 |
 | `api:src/include/core/dns.h:dns_get_cache_entry` | `src/include/core/dns.h` | `dns_get_cache_entry` | `core` | `COVERED` | 1 |
@@ -424,8 +424,8 @@
 | `api:src/include/core/log.h:log_get_console_level` | `src/include/core/log.h` | `log_get_console_level` | `core` | `COVERED` | 1 |
 | `api:src/include/core/log.h:log_get_level` | `src/include/core/log.h` | `log_get_level` | `core` | `COVERED` | 1 |
 | `api:src/include/core/log.h:log_get_stats` | `src/include/core/log.h` | `log_get_stats` | `core` | `COVERED` | 2 |
-| `api:src/include/core/log.h:log_init` | `src/include/core/log.h` | `log_init` | `core` | `COVERED` | 17 |
-| `api:src/include/core/log.h:log_print` | `src/include/core/log.h` | `log_print` | `core` | `COVERED` | 20 |
+| `api:src/include/core/log.h:log_init` | `src/include/core/log.h` | `log_init` | `core` | `COVERED` | 18 |
+| `api:src/include/core/log.h:log_print` | `src/include/core/log.h` | `log_print` | `core` | `COVERED` | 21 |
 | `api:src/include/core/log.h:log_print_code` | `src/include/core/log.h` | `log_print_code` | `core` | `COVERED` | 5 |
 | `api:src/include/core/log.h:log_self_test` | `src/include/core/log.h` | `log_self_test` | `core` | `COVERED` | 3 |
 | `api:src/include/core/log.h:log_set_buffer_level` | `src/include/core/log.h` | `log_set_buffer_level` | `core` | `COVERED` | 1 |
@@ -555,10 +555,10 @@
 | `api:src/include/core/spinlock.h:spinlock_acquire` | `src/include/core/spinlock.h` | `spinlock_acquire` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_init` | `src/include/core/spinlock.h` | `spinlock_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_release` | `src/include/core/spinlock.h` | `spinlock_release` | `core` | `PENDING` | 0 |
-| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 28 |
-| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 28 |
-| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 21 |
-| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 25 |
+| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 29 |
+| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 29 |
+| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 22 |
+| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 26 |
 | `api:src/include/core/syscall.h:syscall_enable_user_mode` | `src/include/core/syscall.h` | `syscall_enable_user_mode` | `core` | `PENDING` | 0 |
 | `api:src/include/core/syscall.h:syscall_handler` | `src/include/core/syscall.h` | `syscall_handler` | `core` | `COVERED` | 1 |
 | `api:src/include/core/syscall.h:syscall_init` | `src/include/core/syscall.h` | `syscall_init` | `core` | `PENDING` | 0 |
@@ -2229,58 +2229,58 @@
 | `c:src/core/device_manager.c:device_manager_refresh` | `src/core/device_manager.c` | `device_manager_refresh` | `core` | `COVERED` | 1 |
 | `c:src/core/device_manager.c:device_set_text` | `src/core/device_manager.c` | `device_set_text` | `core` | `COVERED` | 3 |
 | `c:src/core/device_manager.c:device_status_from_recovery` | `src/core/device_manager.c` | `device_status_from_recovery` | `core` | `COVERED` | 1 |
-| `c:src/core/dhcp.c:dhcp_acquire` | `src/core/dhcp.c` | `dhcp_acquire` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_acquisition_retry_ticks` | `src/core/dhcp.c` | `dhcp_acquisition_retry_ticks` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_adaptive_retry` | `src/core/dhcp.c` | `dhcp_adaptive_retry` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_append_identity` | `src/core/dhcp.c` | `dhcp_append_identity` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_append_option` | `src/core/dhcp.c` | `dhcp_append_option` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_append_u32_option` | `src/core/dhcp.c` | `dhcp_append_u32_option` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_build_base` | `src/core/dhcp.c` | `dhcp_build_base` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_build_discover` | `src/core/dhcp.c` | `dhcp_build_discover` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_build_release` | `src/core/dhcp.c` | `dhcp_build_release` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_build_request` | `src/core/dhcp.c` | `dhcp_build_request` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_clear_session` | `src/core/dhcp.c` | `dhcp_clear_session` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_complete_event` | `src/core/dhcp.c` | `dhcp_complete_event` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_copy_text` | `src/core/dhcp.c` | `dhcp_copy_text` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_elapsed` | `src/core/dhcp.c` | `dhcp_elapsed` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_finish_message` | `src/core/dhcp.c` | `dhcp_finish_message` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_get_status` | `src/core/dhcp.c` | `dhcp_get_status` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_handle_datagram` | `src/core/dhcp.c` | `dhcp_handle_datagram` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_init` | `src/core/dhcp.c` | `dhcp_init` | `core` | `PENDING` | 0 |
+| `c:src/core/dhcp.c:dhcp_acquire` | `src/core/dhcp.c` | `dhcp_acquire` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_acquisition_retry_ticks` | `src/core/dhcp.c` | `dhcp_acquisition_retry_ticks` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_adaptive_retry` | `src/core/dhcp.c` | `dhcp_adaptive_retry` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_append_identity` | `src/core/dhcp.c` | `dhcp_append_identity` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_append_option` | `src/core/dhcp.c` | `dhcp_append_option` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_append_u32_option` | `src/core/dhcp.c` | `dhcp_append_u32_option` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_build_base` | `src/core/dhcp.c` | `dhcp_build_base` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_build_discover` | `src/core/dhcp.c` | `dhcp_build_discover` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_build_release` | `src/core/dhcp.c` | `dhcp_build_release` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_build_request` | `src/core/dhcp.c` | `dhcp_build_request` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_clear_session` | `src/core/dhcp.c` | `dhcp_clear_session` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_complete_event` | `src/core/dhcp.c` | `dhcp_complete_event` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_copy_text` | `src/core/dhcp.c` | `dhcp_copy_text` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_elapsed` | `src/core/dhcp.c` | `dhcp_elapsed` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_finish_message` | `src/core/dhcp.c` | `dhcp_finish_message` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_get_status` | `src/core/dhcp.c` | `dhcp_get_status` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_handle_datagram` | `src/core/dhcp.c` | `dhcp_handle_datagram` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_init` | `src/core/dhcp.c` | `dhcp_init` | `core` | `COVERED` | 1 |
 | `c:src/core/dhcp.c:dhcp_invalid_option_length` | `src/core/dhcp.c` | `dhcp_invalid_option_length` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_lease_from_reply` | `src/core/dhcp.c` | `dhcp_lease_from_reply` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_lease_valid` | `src/core/dhcp.c` | `dhcp_lease_valid` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_mac_equal` | `src/core/dhcp.c` | `dhcp_mac_equal` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_mac_valid` | `src/core/dhcp.c` | `dhcp_mac_valid` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_maintain` | `src/core/dhcp.c` | `dhcp_maintain` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_maintain_acquisition` | `src/core/dhcp.c` | `dhcp_maintain_acquisition` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_maintain_bound` | `src/core/dhcp.c` | `dhcp_maintain_bound` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_maintain_renewal` | `src/core/dhcp.c` | `dhcp_maintain_renewal` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_offer_from_reply` | `src/core/dhcp.c` | `dhcp_offer_from_reply` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_parse_address_list` | `src/core/dhcp.c` | `dhcp_parse_address_list` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_parse_option_value` | `src/core/dhcp.c` | `dhcp_parse_option_value` | `core` | `COVERED` | 2 |
-| `c:src/core/dhcp.c:dhcp_parse_options` | `src/core/dhcp.c` | `dhcp_parse_options` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_parse_options_internal` | `src/core/dhcp.c` | `dhcp_parse_options_internal` | `core` | `COVERED` | 2 |
-| `c:src/core/dhcp.c:dhcp_parse_reply` | `src/core/dhcp.c` | `dhcp_parse_reply` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_queue_apply` | `src/core/dhcp.c` | `dhcp_queue_apply` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_queue_drop` | `src/core/dhcp.c` | `dhcp_queue_drop` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_read_u32` | `src/core/dhcp.c` | `dhcp_read_u32` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_record_attempt` | `src/core/dhcp.c` | `dhcp_record_attempt` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_release` | `src/core/dhcp.c` | `dhcp_release` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_remaining` | `src/core/dhcp.c` | `dhcp_remaining` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_renew` | `src/core/dhcp.c` | `dhcp_renew` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_reset` | `src/core/dhcp.c` | `dhcp_reset` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_seconds_to_ticks` | `src/core/dhcp.c` | `dhcp_seconds_to_ticks` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_send_bound_request` | `src/core/dhcp.c` | `dhcp_send_bound_request` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_send_discover` | `src/core/dhcp.c` | `dhcp_send_discover` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_send_selecting_request` | `src/core/dhcp.c` | `dhcp_send_selecting_request` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_set_default_timers` | `src/core/dhcp.c` | `dhcp_set_default_timers` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_take_event` | `src/core/dhcp.c` | `dhcp_take_event` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_text_is_equal` | `src/core/dhcp.c` | `dhcp_text_is_equal` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_validate_option_vectors` | `src/core/dhcp.c` | `dhcp_validate_option_vectors` | `core` | `COVERED` | 2 |
-| `c:src/core/dhcp.c:dhcp_validate_state` | `src/core/dhcp.c` | `dhcp_validate_state` | `core` | `COVERED` | 2 |
-| `c:src/core/dhcp.c:dhcp_write_u16` | `src/core/dhcp.c` | `dhcp_write_u16` | `core` | `PENDING` | 0 |
-| `c:src/core/dhcp.c:dhcp_write_u32` | `src/core/dhcp.c` | `dhcp_write_u32` | `core` | `PENDING` | 0 |
+| `c:src/core/dhcp.c:dhcp_lease_from_reply` | `src/core/dhcp.c` | `dhcp_lease_from_reply` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_lease_valid` | `src/core/dhcp.c` | `dhcp_lease_valid` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_mac_equal` | `src/core/dhcp.c` | `dhcp_mac_equal` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_mac_valid` | `src/core/dhcp.c` | `dhcp_mac_valid` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_maintain` | `src/core/dhcp.c` | `dhcp_maintain` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_maintain_acquisition` | `src/core/dhcp.c` | `dhcp_maintain_acquisition` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_maintain_bound` | `src/core/dhcp.c` | `dhcp_maintain_bound` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_maintain_renewal` | `src/core/dhcp.c` | `dhcp_maintain_renewal` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_offer_from_reply` | `src/core/dhcp.c` | `dhcp_offer_from_reply` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_parse_address_list` | `src/core/dhcp.c` | `dhcp_parse_address_list` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_parse_option_value` | `src/core/dhcp.c` | `dhcp_parse_option_value` | `core` | `COVERED` | 3 |
+| `c:src/core/dhcp.c:dhcp_parse_options` | `src/core/dhcp.c` | `dhcp_parse_options` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_parse_options_internal` | `src/core/dhcp.c` | `dhcp_parse_options_internal` | `core` | `COVERED` | 3 |
+| `c:src/core/dhcp.c:dhcp_parse_reply` | `src/core/dhcp.c` | `dhcp_parse_reply` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_queue_apply` | `src/core/dhcp.c` | `dhcp_queue_apply` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_queue_drop` | `src/core/dhcp.c` | `dhcp_queue_drop` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_read_u32` | `src/core/dhcp.c` | `dhcp_read_u32` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_record_attempt` | `src/core/dhcp.c` | `dhcp_record_attempt` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_release` | `src/core/dhcp.c` | `dhcp_release` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_remaining` | `src/core/dhcp.c` | `dhcp_remaining` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_renew` | `src/core/dhcp.c` | `dhcp_renew` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_reset` | `src/core/dhcp.c` | `dhcp_reset` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_seconds_to_ticks` | `src/core/dhcp.c` | `dhcp_seconds_to_ticks` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_send_bound_request` | `src/core/dhcp.c` | `dhcp_send_bound_request` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_send_discover` | `src/core/dhcp.c` | `dhcp_send_discover` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_send_selecting_request` | `src/core/dhcp.c` | `dhcp_send_selecting_request` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_set_default_timers` | `src/core/dhcp.c` | `dhcp_set_default_timers` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_take_event` | `src/core/dhcp.c` | `dhcp_take_event` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_text_is_equal` | `src/core/dhcp.c` | `dhcp_text_is_equal` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_validate_option_vectors` | `src/core/dhcp.c` | `dhcp_validate_option_vectors` | `core` | `COVERED` | 3 |
+| `c:src/core/dhcp.c:dhcp_validate_state` | `src/core/dhcp.c` | `dhcp_validate_state` | `core` | `COVERED` | 3 |
+| `c:src/core/dhcp.c:dhcp_write_u16` | `src/core/dhcp.c` | `dhcp_write_u16` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_write_u32` | `src/core/dhcp.c` | `dhcp_write_u32` | `core` | `COVERED` | 1 |
 | `c:src/core/dns.c:dns_ascii_lower` | `src/core/dns.c` | `dns_ascii_lower` | `core` | `COVERED` | 3 |
 | `c:src/core/dns.c:dns_build_query` | `src/core/dns.c` | `dns_build_query` | `core` | `COVERED` | 1 |
 | `c:src/core/dns.c:dns_cache_expired` | `src/core/dns.c` | `dns_cache_expired` | `core` | `COVERED` | 1 |
@@ -2567,36 +2567,36 @@
 | `c:src/core/log.c:log_append_char` | `src/core/log.c` | `log_append_char` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_append_text` | `src/core/log.c` | `log_append_text` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_clear_buffer` | `src/core/log.c` | `log_clear_buffer` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_console_print_number` | `src/core/log.c` | `log_console_print_number` | `core` | `COVERED` | 21 |
+| `c:src/core/log.c:log_console_print_number` | `src/core/log.c` | `log_console_print_number` | `core` | `COVERED` | 22 |
 | `c:src/core/log.c:log_copy_recent` | `src/core/log.c` | `log_copy_recent` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_copy_text` | `src/core/log.c` | `log_copy_text` | `core` | `COVERED` | 21 |
+| `c:src/core/log.c:log_copy_text` | `src/core/log.c` | `log_copy_text` | `core` | `COVERED` | 22 |
 | `c:src/core/log.c:log_get_buffer` | `src/core/log.c` | `log_get_buffer` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_get_buffer_level` | `src/core/log.c` | `log_get_buffer_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_get_console_level` | `src/core/log.c` | `log_get_console_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_get_level` | `src/core/log.c` | `log_get_level` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_get_stats` | `src/core/log.c` | `log_get_stats` | `core` | `COVERED` | 2 |
-| `c:src/core/log.c:log_init` | `src/core/log.c` | `log_init` | `core` | `COVERED` | 17 |
-| `c:src/core/log.c:log_is_power_of_two` | `src/core/log.c` | `log_is_power_of_two` | `core` | `COVERED` | 21 |
-| `c:src/core/log.c:log_level_is_valid` | `src/core/log.c` | `log_level_is_valid` | `core` | `COVERED` | 21 |
+| `c:src/core/log.c:log_init` | `src/core/log.c` | `log_init` | `core` | `COVERED` | 18 |
+| `c:src/core/log.c:log_is_power_of_two` | `src/core/log.c` | `log_is_power_of_two` | `core` | `COVERED` | 22 |
+| `c:src/core/log.c:log_level_is_valid` | `src/core/log.c` | `log_level_is_valid` | `core` | `COVERED` | 22 |
 | `c:src/core/log.c:log_note_dropped_event` | `src/core/log.c` | `log_note_dropped_event` | `core` | `COVERED` | 2 |
-| `c:src/core/log.c:log_print` | `src/core/log.c` | `log_print` | `core` | `COVERED` | 21 |
+| `c:src/core/log.c:log_print` | `src/core/log.c` | `log_print` | `core` | `COVERED` | 22 |
 | `c:src/core/log.c:log_print_code` | `src/core/log.c` | `log_print_code` | `core` | `COVERED` | 5 |
-| `c:src/core/log.c:log_print_colored` | `src/core/log.c` | `log_print_colored` | `core` | `COVERED` | 21 |
-| `c:src/core/log.c:log_records_match` | `src/core/log.c` | `log_records_match` | `core` | `COVERED` | 21 |
-| `c:src/core/log.c:log_restore_interrupts` | `src/core/log.c` | `log_restore_interrupts` | `core` | `COVERED` | 21 |
+| `c:src/core/log.c:log_print_colored` | `src/core/log.c` | `log_print_colored` | `core` | `COVERED` | 22 |
+| `c:src/core/log.c:log_records_match` | `src/core/log.c` | `log_records_match` | `core` | `COVERED` | 22 |
+| `c:src/core/log.c:log_restore_interrupts` | `src/core/log.c` | `log_restore_interrupts` | `core` | `COVERED` | 22 |
 | `c:src/core/log.c:log_ring_clear` | `src/core/log.c` | `log_ring_clear` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_ring_copy_recent` | `src/core/log.c` | `log_ring_copy_recent` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_ring_initialize` | `src/core/log.c` | `log_ring_initialize` | `core` | `COVERED` | 19 |
-| `c:src/core/log.c:log_ring_latest_index` | `src/core/log.c` | `log_ring_latest_index` | `core` | `COVERED` | 21 |
-| `c:src/core/log.c:log_ring_store` | `src/core/log.c` | `log_ring_store` | `core` | `COVERED` | 21 |
+| `c:src/core/log.c:log_ring_initialize` | `src/core/log.c` | `log_ring_initialize` | `core` | `COVERED` | 20 |
+| `c:src/core/log.c:log_ring_latest_index` | `src/core/log.c` | `log_ring_latest_index` | `core` | `COVERED` | 22 |
+| `c:src/core/log.c:log_ring_store` | `src/core/log.c` | `log_ring_store` | `core` | `COVERED` | 22 |
 | `c:src/core/log.c:log_self_test` | `src/core/log.c` | `log_self_test` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_self_test_mark` | `src/core/log.c` | `log_self_test_mark` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_serialize_records` | `src/core/log.c` | `log_serialize_records` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_set_buffer_level` | `src/core/log.c` | `log_set_buffer_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_set_console_level` | `src/core/log.c` | `log_set_console_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_set_level` | `src/core/log.c` | `log_set_level` | `core` | `COVERED` | 2 |
-| `c:src/core/log.c:log_submit` | `src/core/log.c` | `log_submit` | `core` | `COVERED` | 21 |
-| `c:src/core/log.c:log_suspend_interrupts` | `src/core/log.c` | `log_suspend_interrupts` | `core` | `COVERED` | 21 |
+| `c:src/core/log.c:log_submit` | `src/core/log.c` | `log_submit` | `core` | `COVERED` | 22 |
+| `c:src/core/log.c:log_suspend_interrupts` | `src/core/log.c` | `log_suspend_interrupts` | `core` | `COVERED` | 22 |
 | `c:src/core/log.c:log_test_clear_behavior` | `src/core/log.c` | `log_test_clear_behavior` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_test_level_filtering` | `src/core/log.c` | `log_test_level_filtering` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_test_optional_error_code` | `src/core/log.c` | `log_test_optional_error_code` | `core` | `COVERED` | 3 |
@@ -2606,7 +2606,7 @@
 | `c:src/core/log.c:log_test_text_serialization` | `src/core/log.c` | `log_test_text_serialization` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_test_wrap_and_overwrite` | `src/core/log.c` | `log_test_wrap_and_overwrite` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_to_buffer` | `src/core/log.c` | `log_to_buffer` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_write_serial` | `src/core/log.c` | `log_write_serial` | `core` | `COVERED` | 21 |
+| `c:src/core/log.c:log_write_serial` | `src/core/log.c` | `log_write_serial` | `core` | `COVERED` | 22 |
 | `c:src/core/net_buffer.c:net_buffer_alignment_valid` | `src/core/net_buffer.c` | `net_buffer_alignment_valid` | `core` | `COVERED` | 3 |
 | `c:src/core/net_buffer.c:net_buffer_begin` | `src/core/net_buffer.c` | `net_buffer_begin` | `core` | `COVERED` | 3 |
 | `c:src/core/net_buffer.c:net_buffer_check_active_locked` | `src/core/net_buffer.c` | `net_buffer_check_active_locked` | `core` | `COVERED` | 3 |
@@ -2882,10 +2882,10 @@
 | `c:src/core/socket.c:socket_wait_local` | `src/core/socket.c` | `socket_wait_local` | `core` | `PENDING` | 0 |
 | `c:src/core/socket.c:socket_wait_owner` | `src/core/socket.c` | `socket_wait_owner` | `core` | `COVERED` | 2 |
 | `c:src/core/socket.c:socket_wake` | `src/core/socket.c` | `socket_wake` | `core` | `COVERED` | 2 |
-| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 28 |
-| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 28 |
-| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 21 |
-| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 25 |
+| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 29 |
+| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 29 |
+| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 22 |
+| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 26 |
 | `c:src/core/syscall.c:syscall_copy_user_string` | `src/core/syscall.c` | `syscall_copy_user_string` | `core` | `PENDING` | 0 |
 | `c:src/core/syscall.c:syscall_dispatch` | `src/core/syscall.c` | `syscall_dispatch` | `core` | `COVERED` | 1 |
 | `c:src/core/syscall.c:syscall_dispatch_user` | `src/core/syscall.c` | `syscall_dispatch_user` | `core` | `COVERED` | 1 |
@@ -6921,9 +6921,10 @@
 | `host:core:timer` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar timers one-shot e periodicos com IDT, PIC e scheduler simulados | handles, prazos, cancelamento, dispatch, callbacks, notifier e limpeza respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas estaticas do servico de timers no processo host | todos os timers e proprietarios sao destruidos e os artefatos sao preservados |
 | `host:memory:slab-metadata` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar inicializacao, limites, metadados, estatisticas e limpeza do registrador SLAB sem alocar paginas reais | estado publicado, informacoes por indice, duplicidade e limpeza respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas de metadados no processo host; nenhuma pagina real e alocada | cache temporario destruido e manifesto, logs e cobertura preservados |
 | `host:network:arp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar configuracao, resolucao, cache, retries e recepcao ARP com Ethernet simulada | enderecos validos sao resolvidos, pacotes invalidos sao rejeitados e o cache retorna ao estado inicial | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente cache ARP, buffers estaticos e transporte Ethernet falso no processo host | cache desconfigurado e artefatos preservados |
+| `host:network:dhcp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar descoberta, oferta, lease, renovacao, rebinding e expiracao DHCP com UDP e timer simulados | leases validos percorrem eventos canonicos, mensagens invalidas falham e o estado retorna ao baseline | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado DHCP, buffers estaticos e transporte UDP falso no processo host | sessao e eventos DHCP reiniciados e artefatos preservados |
 | `host:network:dns` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar consultas DNS, cache, CNAME, timeout e pacotes invalidos com UDP e timer simulados | nomes validos sao resolvidos, respostas invalidas falham com codigo canonico e o estado retorna ao baseline | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado DNS, buffers estaticos e transporte UDP falso no processo host | cache e consulta DNS reiniciados e artefatos preservados |
 | `host:network:icmp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar checksum, echo, timeout, mudanca de configuracao, fila de reply e pacotes ICMP invalidos com IPv4 e timer simulados | echo valido e reply pendente sao processados, timeout e falhas de transporte retornam erros canonicos e o estado e restaurado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado ICMP, buffers estaticos e transportes IPv4 e timer falsos no processo host | estado ICMP, timer e transporte falso retornam ao estado inicial e os artefatos sao preservados |
-| `host:network:ipv4` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar configuração, envio, broadcast, recepção, checksum e handlers IPv4 | datagramas validos são entregues, entradas inválidas são recusadas e o estado é restaurado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado IPv4, tabela de rotas e buffers falsos de ARP/Ethernet | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:network:ipv4` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar configuraÃ§Ã£o, envio, broadcast, recepÃ§Ã£o, checksum e handlers IPv4 | datagramas validos sÃ£o entregues, entradas invÃ¡lidas sÃ£o recusadas e o estado Ã© restaurado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado IPv4, tabela de rotas e buffers falsos de ARP/Ethernet | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:network:route` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar rotas base, lookup, limites, overflow e restauracao | rotas validas e invalidas respeitam o contrato, sem residuos globais | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabela estatica de rotas no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:network:udp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar envio, reinjecao, checksum, listeners, broadcast e erros UDP com IPv4 simulado | datagramas validos sao entregues, entradas corrompidas sao rejeitadas e endpoints sao liberados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos, endpoints UDP e transporte IPv4 falso no processo host | todos os endpoints sao desvinculados e os artefatos sao preservados |
 | `host:storage:block` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar block_self_test e block_cache_self_test com providers estaticos | filas BIO, limites, cancelamento, failpoints, cache, writeback e sync passam e o inventario retorna ao estado inicial | compilador ausente, warning, cobertura incompleta, failpoint residual, falha de assercao ou timeout | somente estruturas globais do processo host e buffers estaticos de provider | autotestes removem dispositivos temporarios, limpam cache e deixam fila sem pendencias |
@@ -7174,15 +7175,6 @@
 - `api:src/include/core/crypto.h:crypto_ed25519_verify_init`
 - `api:src/include/core/crypto.h:crypto_ed25519_verify_update`
 - `api:src/include/core/crypto.h:crypto_sha512_digest`
-- `api:src/include/core/dhcp.h:dhcp_acquire`
-- `api:src/include/core/dhcp.h:dhcp_complete_event`
-- `api:src/include/core/dhcp.h:dhcp_get_status`
-- `api:src/include/core/dhcp.h:dhcp_init`
-- `api:src/include/core/dhcp.h:dhcp_maintain`
-- `api:src/include/core/dhcp.h:dhcp_release`
-- `api:src/include/core/dhcp.h:dhcp_renew`
-- `api:src/include/core/dhcp.h:dhcp_reset`
-- `api:src/include/core/dhcp.h:dhcp_take_event`
 - `api:src/include/core/ethernet.h:ethernet_attach_interface`
 - `api:src/include/core/ethernet.h:ethernet_get_interface_status`
 - `api:src/include/core/ethernet.h:ethernet_get_status`
@@ -8296,54 +8288,7 @@
 - `c:src/core/bearssl_compat.c:strlen`
 - `c:src/core/crypto_ed25519.c:crypto_eddsa_trim_scalar`
 - `c:src/core/crypto_ed25519.c:fe_cswap`
-- `c:src/core/dhcp.c:dhcp_acquire`
-- `c:src/core/dhcp.c:dhcp_acquisition_retry_ticks`
-- `c:src/core/dhcp.c:dhcp_adaptive_retry`
-- `c:src/core/dhcp.c:dhcp_append_identity`
-- `c:src/core/dhcp.c:dhcp_append_option`
-- `c:src/core/dhcp.c:dhcp_append_u32_option`
-- `c:src/core/dhcp.c:dhcp_build_base`
-- `c:src/core/dhcp.c:dhcp_build_discover`
-- `c:src/core/dhcp.c:dhcp_build_release`
-- `c:src/core/dhcp.c:dhcp_build_request`
-- `c:src/core/dhcp.c:dhcp_clear_session`
-- `c:src/core/dhcp.c:dhcp_complete_event`
-- `c:src/core/dhcp.c:dhcp_copy_text`
-- `c:src/core/dhcp.c:dhcp_elapsed`
-- `c:src/core/dhcp.c:dhcp_finish_message`
-- `c:src/core/dhcp.c:dhcp_get_status`
-- `c:src/core/dhcp.c:dhcp_handle_datagram`
-- `c:src/core/dhcp.c:dhcp_init`
 - `c:src/core/dhcp.c:dhcp_invalid_option_length`
-- `c:src/core/dhcp.c:dhcp_lease_from_reply`
-- `c:src/core/dhcp.c:dhcp_lease_valid`
-- `c:src/core/dhcp.c:dhcp_mac_equal`
-- `c:src/core/dhcp.c:dhcp_mac_valid`
-- `c:src/core/dhcp.c:dhcp_maintain`
-- `c:src/core/dhcp.c:dhcp_maintain_acquisition`
-- `c:src/core/dhcp.c:dhcp_maintain_bound`
-- `c:src/core/dhcp.c:dhcp_maintain_renewal`
-- `c:src/core/dhcp.c:dhcp_offer_from_reply`
-- `c:src/core/dhcp.c:dhcp_parse_address_list`
-- `c:src/core/dhcp.c:dhcp_parse_options`
-- `c:src/core/dhcp.c:dhcp_parse_reply`
-- `c:src/core/dhcp.c:dhcp_queue_apply`
-- `c:src/core/dhcp.c:dhcp_queue_drop`
-- `c:src/core/dhcp.c:dhcp_read_u32`
-- `c:src/core/dhcp.c:dhcp_record_attempt`
-- `c:src/core/dhcp.c:dhcp_release`
-- `c:src/core/dhcp.c:dhcp_remaining`
-- `c:src/core/dhcp.c:dhcp_renew`
-- `c:src/core/dhcp.c:dhcp_reset`
-- `c:src/core/dhcp.c:dhcp_seconds_to_ticks`
-- `c:src/core/dhcp.c:dhcp_send_bound_request`
-- `c:src/core/dhcp.c:dhcp_send_discover`
-- `c:src/core/dhcp.c:dhcp_send_selecting_request`
-- `c:src/core/dhcp.c:dhcp_set_default_timers`
-- `c:src/core/dhcp.c:dhcp_take_event`
-- `c:src/core/dhcp.c:dhcp_text_is_equal`
-- `c:src/core/dhcp.c:dhcp_write_u16`
-- `c:src/core/dhcp.c:dhcp_write_u32`
 - `c:src/core/ethernet.c:ethernet_attach_interface`
 - `c:src/core/ethernet.c:ethernet_build_frame`
 - `c:src/core/ethernet.c:ethernet_classify_destination`

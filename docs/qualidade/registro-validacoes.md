@@ -3983,3 +3983,13 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   superficies resolvidas, sem enderecos desconhecidos ou ambiguos. A
   sincronizacao atual registra 6.820 superficies, 2.785 `COVERED`, 4.035
   `PENDING` e 66 casos.
+
+- Incremento Rede/DHCP em 2026-09-02 11:12 (America/Sao_Paulo):
+  `make test-dhcp-host` passou com `HOST_CC` configurado e warnings tratados
+  como erro. A fixture usa UDP e timer falsos para exercitar descoberta,
+  oferta, lease, renovacao, rebinding, expiracao, NAK, timeout, mensagens
+  invalidas e falhas de transporte, sem conexao externa. O relatorio
+  `build/test-results/dhcp-host/coverage.json` terminou `PASS`, com 70
+  superficies resolvidas, sem enderecos desconhecidos ou ambiguos. A
+  sincronizacao atual registra 6.820 superficies, 2.841 `COVERED`, 3.979
+  `PENDING` e 67 casos; `make catalog-test` passou.
