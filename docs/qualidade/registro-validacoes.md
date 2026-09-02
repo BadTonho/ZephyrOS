@@ -4157,6 +4157,21 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `PENDING` e 80 casos; o fechamento integral do catalogo, o gate estrito e a
   validacao TST7 completa continuam pendentes.
 
+- Incremento Shell/introspeccao concluido em 2026-09-02
+  (America/Sao_Paulo): o novo caso host-only `host:shell:introspection` e o
+  alvo `make test-shell-introspection-host` foram adicionados. A fixture chama
+  o parser hexadecimal real para valores numericos, minusculos, maiusculos e
+  `uint32_t` maximo, alem de prefixos, digitos invalidos, entrada nula e
+  overflow. O relatorio instrumentado
+  `build/test-results/shell-introspection-host/coverage.json` terminou `PASS`
+  e resolveu as superficies `shell_introspection_hex_digit` e
+  `shell_introspection_parse_hex_u32`, sem enderecos desconhecidos ou
+  ambiguos. `make test-shell-introspection-host`, `make catalog-test` e a
+  renderizacao da visao passaram. A sincronizacao atual registra 6.827
+  superficies, 3.088 `COVERED`, 3.739 `PENDING` e 81 casos; o fechamento
+  integral do catalogo, o gate estrito e a validacao TST7 completa continuam
+  pendentes.
+
 - Incremento Processos/IPC concluido em 2026-09-02 13:52
   (America/Sao_Paulo): o caso host-only `host:process:ipc` e o alvo
   `make test-process-ipc-host` foram adicionados. A fixture usa processos,
