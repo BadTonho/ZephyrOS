@@ -1342,6 +1342,17 @@ pendente.
   7.196 superficies, 3.953 `COVERED`, 3.243 `PENDING` e 86 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Core/usb_manager concluido em 2026-09-02: foi criado o caso
+  host-only `host:core:usb-manager` com fixtures estaticos de PCI, UHCI, EHCI,
+  MSC e HID. A fixture exercitou inventario de controladores, estados de
+  portas e dispositivos, identificadores, agregacoes, polling, refresh,
+  formatacao, limites, falhas de driver, indisponibilidade e recuperacao. O
+  relatorio instrumentado resolveu as 41 superficies de
+  `src/core/usb_manager.c`, sem enderecos desconhecidos ou ambiguos. A
+  sincronizacao registra 7.196 superficies, 4.164 `COVERED`, 3.032 `PENDING`
+  e 89 casos; o fechamento integral, o gate estrito e a validacao TST7 completa
+  continuam pendentes.
+
 - Incremento Core/network_manager concluido em 2026-09-02: o caso existente
   `host:core:network-manager` passou a usar NIC PCI e USB simuladas e a
   exercitar configuracao estatica, validacao de parametros e rotas, DHCP,

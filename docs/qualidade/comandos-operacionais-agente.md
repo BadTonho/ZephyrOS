@@ -346,6 +346,16 @@ invalidos, indisponibilidade do backend e recuperacao. O relatorio fica em
 make test-wifi-manager-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-usb-manager-host` exercita o inventario USB com controladores PCI
+UHCI, EHCI e fora do escopo, portas vazias e configuradas, dispositivos MSC e
+HID, sincronizacao de estados, polling, formatacao, limites, falhas de driver,
+indisponibilidade e recuperacao. A fixture usa somente backends estaticos e o
+relatorio fica em `build/test-results/usb-manager-host/`:
+
+```text
+make test-usb-manager-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O caso `test-shell-input-host` exercita a entrada do Shell com terminal,
 historico, navegacao para cima/baixo, edicao, teclas de rolagem, cancelamento,
 bloqueio, modificadores e limite do buffer. A fixture usa apenas video,

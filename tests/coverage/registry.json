@@ -1977,6 +1977,53 @@
       "evidence": "make test-wifi-manager-host PASS com inventario PCI, USB, scan, conexao aberta, estados indisponiveis, erros do driver, metadados invalidos e recuperacao; relatorio instrumentado sem enderecos desconhecidos ou ambiguos"
     },
     {
+      "id": "usb-manager-host-dynamic",
+      "domain": "core-usb-manager",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:usb-manager"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/usb-manager-host/coverage.json",
+      "coverage_sources": [
+        "src/core/usb_manager.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:core:usb-manager",
+        "scenario": "Inventario host-only de controladores, portas e dispositivos USB",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "inventariar controladores UHCI, EHCI e fora do escopo, sincronizar drivers de classe, consultar portas e dispositivos, executar polling e refresh",
+        "expected": "estados, identificadores, agregacoes, limites, indisponibilidade e recuperacao preservam o contrato",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente fixtures estaticos PCI, UHCI, EHCI, MSC e HID no processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "core",
+          "usb",
+          "coverage"
+        ]
+      },
+      "evidence": "make test-usb-manager-host PASS com inventario PCI, runtime UHCI/EHCI, portas, dispositivos, polling, formatos, limites, falhas de driver, indisponibilidade e recuperacao; relatorio instrumentado sem enderecos desconhecidos ou ambiguos"
+    },
+    {
       "id": "shell-introspection-host-dynamic",
       "domain": "shell-introspection",
       "owner": "quality",
