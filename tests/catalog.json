@@ -104366,9 +104366,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/fat32.c:fat32_read_file_at",
@@ -104552,9 +104555,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/fat32.c:fat32_write_file_in_dir",
@@ -153822,6 +153828,7 @@
         "c:src/fs/fat32.c:fat32_name_to_str",
         "c:src/fs/fat32.c:fat32_read_cluster",
         "c:src/fs/fat32.c:fat32_read_entry_range",
+        "c:src/fs/fat32.c:fat32_read_file",
         "c:src/fs/fat32.c:fat32_read_file_at",
         "c:src/fs/fat32.c:fat32_read_file_range_at",
         "c:src/fs/fat32.c:fat32_release",
@@ -153830,6 +153837,7 @@
         "c:src/fs/fat32.c:fat32_str_to_name",
         "c:src/fs/fat32.c:fat32_strncmp",
         "c:src/fs/fat32.c:fat32_write_cluster",
+        "c:src/fs/fat32.c:fat32_write_file",
         "c:src/fs/fat32.c:fat32_write_file_in_dir"
       ],
       "tags": [

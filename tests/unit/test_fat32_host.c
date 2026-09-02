@@ -291,6 +291,10 @@ int main(void) {
     EXPECT(fat32_read_file_at("NEW.TXT", buffer, sizeof(buffer)) == 3);
     EXPECT(memcmp(buffer, payload, sizeof(payload)) == 0);
     EXPECT(fat32_delete_file_in_dir(HOST_ROOT_CLUSTER, "NEW.TXT") == 0);
+    EXPECT(fat32_write_file("PUBLIC  TXT", payload, sizeof(payload)) == 3);
+    EXPECT(fat32_read_file("PUBLIC  TXT", buffer, sizeof(buffer)) == 3);
+    EXPECT(memcmp(buffer, payload, sizeof(payload)) == 0);
+    EXPECT(fat32_delete_file("PUBLIC  TXT") == 0);
     EXPECT(fat32_delete_file("HELLO   TXT") == 0);
     EXPECT(fat32_get_free_clusters() > 4000U);
     EXPECT(fat32_list_dir() >= 2);

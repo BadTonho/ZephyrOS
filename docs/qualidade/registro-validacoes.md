@@ -4270,3 +4270,13 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   instrumentados foram sincronizados sem enderecos desconhecidos ou ambiguos,
   com vinculos C diretos no catalogo. O catalogo registra 7.197 superficies,
   3.890 `COVERED`, 3.307 `PENDING` e 85 casos.
+
+- Incremento Storage/FAT32 concluido em 2026-09-02: o caso existente
+  `host:storage:fat32` passou a executar diretamente `fat32_write_file` e
+  `fat32_read_file` sobre a imagem FAT32 estatica, verificando round-trip,
+  remocao e preservacao da limpeza. `make test-fat32-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` terminou `PASS`; a cobertura
+  instrumentada foi sincronizada sem enderecos desconhecidos ou ambiguos.
+  O catalogo agora registra 7.197 superficies, 3.892 `COVERED`, 3.305
+  `PENDING` e 85 casos. O fechamento integral, o gate estrito e a validacao
+  TST7 completa continuam pendentes.
