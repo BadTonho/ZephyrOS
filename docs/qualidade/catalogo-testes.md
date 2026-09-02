@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 3082 |
+| `COVERED` | 3083 |
 | `MANUAL` | 0 |
-| `PENDING` | 3745 |
+| `PENDING` | 3744 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -2247,7 +2247,7 @@
 | `c:src/core/dhcp.c:dhcp_get_status` | `src/core/dhcp.c` | `dhcp_get_status` | `core` | `COVERED` | 1 |
 | `c:src/core/dhcp.c:dhcp_handle_datagram` | `src/core/dhcp.c` | `dhcp_handle_datagram` | `core` | `COVERED` | 1 |
 | `c:src/core/dhcp.c:dhcp_init` | `src/core/dhcp.c` | `dhcp_init` | `core` | `COVERED` | 1 |
-| `c:src/core/dhcp.c:dhcp_invalid_option_length` | `src/core/dhcp.c` | `dhcp_invalid_option_length` | `core` | `PENDING` | 0 |
+| `c:src/core/dhcp.c:dhcp_invalid_option_length` | `src/core/dhcp.c` | `dhcp_invalid_option_length` | `core` | `COVERED` | 1 |
 | `c:src/core/dhcp.c:dhcp_lease_from_reply` | `src/core/dhcp.c` | `dhcp_lease_from_reply` | `core` | `COVERED` | 1 |
 | `c:src/core/dhcp.c:dhcp_lease_valid` | `src/core/dhcp.c` | `dhcp_lease_valid` | `core` | `COVERED` | 1 |
 | `c:src/core/dhcp.c:dhcp_mac_equal` | `src/core/dhcp.c` | `dhcp_mac_equal` | `core` | `COVERED` | 1 |
@@ -8244,7 +8244,6 @@
 - `c:src/core/bearssl_compat.c:strlen`
 - `c:src/core/crypto_ed25519.c:crypto_eddsa_trim_scalar`
 - `c:src/core/crypto_ed25519.c:fe_cswap`
-- `c:src/core/dhcp.c:dhcp_invalid_option_length`
 - `c:src/core/network_manager.c:network_apply_dhcp_lease`
 - `c:src/core/network_manager.c:network_cancel_dynamic_clients`
 - `c:src/core/network_manager.c:network_copy_usb_interface`
