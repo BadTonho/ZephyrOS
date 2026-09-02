@@ -3712,9 +3712,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_builtin.h:app_builtin_run_devtest",
@@ -3730,9 +3733,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_builtin.h:app_builtin_run_echo",
@@ -3748,9 +3754,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_builtin.h:app_builtin_run_mem",
@@ -3766,9 +3775,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_builtin.h:app_builtin_run_outputtest",
@@ -3784,9 +3796,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_builtin.h:app_builtin_run_pathtest",
@@ -3802,9 +3817,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_builtin.h:app_builtin_run_uptime",
@@ -3820,9 +3838,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_catalog.h:app_catalog_build_install_plan",
@@ -8552,6 +8573,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -8602,6 +8624,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -8652,6 +8675,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -8702,6 +8726,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -8752,6 +8777,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -8802,6 +8828,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -8852,6 +8879,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -8902,6 +8930,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -8952,6 +8981,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -9002,6 +9032,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -9052,6 +9083,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -9102,6 +9134,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -9152,6 +9185,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -9202,6 +9236,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -9252,6 +9287,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -9302,6 +9338,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -12799,6 +12836,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -12857,6 +12895,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -12915,6 +12954,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -12966,6 +13006,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -41740,9 +41781,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_build_devtest",
@@ -41758,9 +41802,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_build_echo",
@@ -41776,9 +41823,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_build_mem",
@@ -41794,9 +41844,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_build_outputtest",
@@ -41812,9 +41865,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_build_pathtest",
@@ -41830,9 +41886,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_build_uptime",
@@ -41848,9 +41907,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_emit_call",
@@ -41866,9 +41928,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_emit_console_and_exit",
@@ -41884,9 +41949,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_emit_console_write",
@@ -41902,9 +41970,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_emit_data",
@@ -41920,9 +41991,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_emit_dev_close",
@@ -41938,9 +42012,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_emit_dev_open",
@@ -41956,9 +42033,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_emit_divide",
@@ -41974,9 +42054,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_emit_exit_code",
@@ -41992,9 +42075,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_emit_exit_from_eax",
@@ -42010,9 +42096,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_emit_exit_on_error",
@@ -42028,9 +42117,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_emit_expect_error",
@@ -42046,9 +42138,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_emit_int80",
@@ -42064,9 +42159,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_emit_literal",
@@ -42082,9 +42180,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_emit_load_eax",
@@ -42100,9 +42201,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_emit_load_ebx",
@@ -42118,9 +42222,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_emit_load_ecx",
@@ -42136,9 +42243,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_emit_memory_output",
@@ -42154,9 +42264,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_emit_mov",
@@ -42172,9 +42285,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_emit_number",
@@ -42190,9 +42306,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_emit_query",
@@ -42208,9 +42327,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_emit_u32_formatter",
@@ -42226,9 +42348,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_emit_uptime_output",
@@ -42244,9 +42369,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_finalize_image",
@@ -42262,9 +42390,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_patch_relative8",
@@ -42280,9 +42411,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_preflight_loader",
@@ -42298,9 +42432,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_prepare_outputtest_chunk",
@@ -42316,9 +42453,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_require_space",
@@ -42334,9 +42474,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_run_argtest",
@@ -42352,9 +42495,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_run_devtest",
@@ -42370,9 +42516,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_run_echo",
@@ -42388,9 +42537,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_run_mem",
@@ -42406,9 +42558,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_run_outputtest",
@@ -42424,9 +42579,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_run_pathtest",
@@ -42442,9 +42600,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_run_uptime",
@@ -42460,9 +42621,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_builtin.c:app_builtin_write_u32",
@@ -42478,9 +42642,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_catalog.c:app_catalog_add_source",
@@ -58727,6 +58894,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-package",
         "host:core:contracts",
@@ -58797,6 +58965,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -58956,6 +59125,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -59000,6 +59170,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-package",
         "host:core:contracts",
@@ -59049,6 +59220,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -59143,6 +59315,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -59221,6 +59394,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -59272,6 +59446,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -59323,6 +59498,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -59418,6 +59594,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -59464,6 +59641,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -59515,6 +59693,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -59701,6 +59880,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -59752,6 +59932,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -60008,6 +60189,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -66465,6 +66647,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -66523,6 +66706,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -66581,6 +66765,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -66632,6 +66817,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:app-api",
+        "host:core:app-builtin",
         "host:core:app-catalog",
         "host:core:app-files",
         "host:core:app-package",
@@ -149594,6 +149780,119 @@
       ]
     },
     {
+      "id": "host:core:app-builtin",
+      "scenario": "Geracao host-only das imagens ZAPP internas",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "compilar e executar os construtores de aplicativos internos com loader falso",
+      "expected": "imagens ZAPP preservam cabecalho, limites, entrada, dados, pre-condicoes e retornos canonicos",
+      "errors": "compilador ausente, warning, imagem invalida, falha de assercao ou timeout",
+      "effects": "somente imagem estatica e estado do loader falso no processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/app_builtin.h:app_builtin_run_argtest",
+        "api:src/include/core/app_builtin.h:app_builtin_run_devtest",
+        "api:src/include/core/app_builtin.h:app_builtin_run_echo",
+        "api:src/include/core/app_builtin.h:app_builtin_run_mem",
+        "api:src/include/core/app_builtin.h:app_builtin_run_outputtest",
+        "api:src/include/core/app_builtin.h:app_builtin_run_pathtest",
+        "api:src/include/core/app_builtin.h:app_builtin_run_uptime",
+        "api:src/include/core/log.h:log_clear_buffer",
+        "api:src/include/core/log.h:log_copy_recent",
+        "api:src/include/core/log.h:log_get_buffer",
+        "api:src/include/core/log.h:log_get_buffer_level",
+        "api:src/include/core/log.h:log_get_console_level",
+        "api:src/include/core/log.h:log_get_level",
+        "api:src/include/core/log.h:log_get_stats",
+        "api:src/include/core/log.h:log_init",
+        "api:src/include/core/log.h:log_level_str",
+        "api:src/include/core/log.h:log_print",
+        "api:src/include/core/log.h:log_print_code",
+        "api:src/include/core/log.h:log_self_test",
+        "api:src/include/core/log.h:log_set_buffer_level",
+        "api:src/include/core/log.h:log_set_console_level",
+        "api:src/include/core/log.h:log_set_level",
+        "api:src/include/core/log.h:log_to_buffer",
+        "api:src/include/core/string.h:kmemcpy",
+        "api:src/include/core/string.h:kmemset",
+        "api:src/include/core/string.h:kstrcmp",
+        "api:src/include/core/string.h:kstrlen",
+        "c:src/core/app_builtin.c:app_builtin_build_argtest",
+        "c:src/core/app_builtin.c:app_builtin_build_devtest",
+        "c:src/core/app_builtin.c:app_builtin_build_echo",
+        "c:src/core/app_builtin.c:app_builtin_build_mem",
+        "c:src/core/app_builtin.c:app_builtin_build_outputtest",
+        "c:src/core/app_builtin.c:app_builtin_build_pathtest",
+        "c:src/core/app_builtin.c:app_builtin_build_uptime",
+        "c:src/core/app_builtin.c:app_builtin_emit_call",
+        "c:src/core/app_builtin.c:app_builtin_emit_console_and_exit",
+        "c:src/core/app_builtin.c:app_builtin_emit_console_write",
+        "c:src/core/app_builtin.c:app_builtin_emit_data",
+        "c:src/core/app_builtin.c:app_builtin_emit_dev_close",
+        "c:src/core/app_builtin.c:app_builtin_emit_dev_open",
+        "c:src/core/app_builtin.c:app_builtin_emit_divide",
+        "c:src/core/app_builtin.c:app_builtin_emit_exit_code",
+        "c:src/core/app_builtin.c:app_builtin_emit_exit_from_eax",
+        "c:src/core/app_builtin.c:app_builtin_emit_exit_on_error",
+        "c:src/core/app_builtin.c:app_builtin_emit_expect_error",
+        "c:src/core/app_builtin.c:app_builtin_emit_int80",
+        "c:src/core/app_builtin.c:app_builtin_emit_literal",
+        "c:src/core/app_builtin.c:app_builtin_emit_load_eax",
+        "c:src/core/app_builtin.c:app_builtin_emit_load_ebx",
+        "c:src/core/app_builtin.c:app_builtin_emit_load_ecx",
+        "c:src/core/app_builtin.c:app_builtin_emit_memory_output",
+        "c:src/core/app_builtin.c:app_builtin_emit_mov",
+        "c:src/core/app_builtin.c:app_builtin_emit_number",
+        "c:src/core/app_builtin.c:app_builtin_emit_query",
+        "c:src/core/app_builtin.c:app_builtin_emit_u32_formatter",
+        "c:src/core/app_builtin.c:app_builtin_emit_uptime_output",
+        "c:src/core/app_builtin.c:app_builtin_finalize_image",
+        "c:src/core/app_builtin.c:app_builtin_patch_relative8",
+        "c:src/core/app_builtin.c:app_builtin_preflight_loader",
+        "c:src/core/app_builtin.c:app_builtin_prepare_outputtest_chunk",
+        "c:src/core/app_builtin.c:app_builtin_require_space",
+        "c:src/core/app_builtin.c:app_builtin_run_argtest",
+        "c:src/core/app_builtin.c:app_builtin_run_devtest",
+        "c:src/core/app_builtin.c:app_builtin_run_echo",
+        "c:src/core/app_builtin.c:app_builtin_run_mem",
+        "c:src/core/app_builtin.c:app_builtin_run_outputtest",
+        "c:src/core/app_builtin.c:app_builtin_run_pathtest",
+        "c:src/core/app_builtin.c:app_builtin_run_uptime",
+        "c:src/core/app_builtin.c:app_builtin_write_u32",
+        "c:src/core/log.c:log_console_print_number",
+        "c:src/core/log.c:log_copy_text",
+        "c:src/core/log.c:log_init",
+        "c:src/core/log.c:log_is_power_of_two",
+        "c:src/core/log.c:log_level_is_valid",
+        "c:src/core/log.c:log_print",
+        "c:src/core/log.c:log_print_colored",
+        "c:src/core/log.c:log_records_match",
+        "c:src/core/log.c:log_restore_interrupts",
+        "c:src/core/log.c:log_ring_initialize",
+        "c:src/core/log.c:log_ring_latest_index",
+        "c:src/core/log.c:log_ring_store",
+        "c:src/core/log.c:log_submit",
+        "c:src/core/log.c:log_suspend_interrupts",
+        "c:src/core/log.c:log_write_serial",
+        "c:src/core/string.c:kmemcpy",
+        "c:src/core/string.c:kmemset",
+        "c:src/core/string.c:kstrcmp",
+        "c:src/core/string.c:kstrlen"
+      ]
+    },
+    {
       "id": "host:core:app-catalog",
       "scenario": "Catalogo host-only da App Store com fixtures estaticas",
       "owner": "quality",
@@ -149709,6 +150008,100 @@
         "core",
         "app-store",
         "negative"
+      ]
+    },
+    {
+      "id": "host:core:app-files",
+      "scenario": "Fachada host-only de arquivos sobre VFS falso",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "compilar e executar a fachada app_files com VFS falso e entradas validas e invalidas",
+      "expected": "operacoes de arquivo preservam pre-condicoes, encaminhamento, retornos e limpeza",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente estado estatico da fachada e do VFS falso no processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/app_files.h:app_files_chdir",
+        "api:src/include/core/app_files.h:app_files_close",
+        "api:src/include/core/app_files.h:app_files_close_owner",
+        "api:src/include/core/app_files.h:app_files_fsync",
+        "api:src/include/core/app_files.h:app_files_getcwd",
+        "api:src/include/core/app_files.h:app_files_init",
+        "api:src/include/core/app_files.h:app_files_ioctl",
+        "api:src/include/core/app_files.h:app_files_is_ready",
+        "api:src/include/core/app_files.h:app_files_lseek",
+        "api:src/include/core/app_files.h:app_files_open",
+        "api:src/include/core/app_files.h:app_files_pipe",
+        "api:src/include/core/app_files.h:app_files_poll",
+        "api:src/include/core/app_files.h:app_files_read",
+        "api:src/include/core/app_files.h:app_files_select",
+        "api:src/include/core/app_files.h:app_files_sync",
+        "api:src/include/core/app_files.h:app_files_write",
+        "api:src/include/core/log.h:log_clear_buffer",
+        "api:src/include/core/log.h:log_copy_recent",
+        "api:src/include/core/log.h:log_get_buffer",
+        "api:src/include/core/log.h:log_get_buffer_level",
+        "api:src/include/core/log.h:log_get_console_level",
+        "api:src/include/core/log.h:log_get_level",
+        "api:src/include/core/log.h:log_get_stats",
+        "api:src/include/core/log.h:log_init",
+        "api:src/include/core/log.h:log_level_str",
+        "api:src/include/core/log.h:log_print",
+        "api:src/include/core/log.h:log_print_code",
+        "api:src/include/core/log.h:log_self_test",
+        "api:src/include/core/log.h:log_set_buffer_level",
+        "api:src/include/core/log.h:log_set_console_level",
+        "api:src/include/core/log.h:log_set_level",
+        "api:src/include/core/log.h:log_to_buffer",
+        "api:src/include/core/string.h:kmemcpy",
+        "api:src/include/core/string.h:kmemset",
+        "api:src/include/core/string.h:kstrcmp",
+        "api:src/include/core/string.h:kstrlen",
+        "c:src/core/app_files.c:app_files_chdir",
+        "c:src/core/app_files.c:app_files_close",
+        "c:src/core/app_files.c:app_files_close_owner",
+        "c:src/core/app_files.c:app_files_fsync",
+        "c:src/core/app_files.c:app_files_getcwd",
+        "c:src/core/app_files.c:app_files_init",
+        "c:src/core/app_files.c:app_files_ioctl",
+        "c:src/core/app_files.c:app_files_is_ready",
+        "c:src/core/app_files.c:app_files_lseek",
+        "c:src/core/app_files.c:app_files_open",
+        "c:src/core/app_files.c:app_files_pipe",
+        "c:src/core/app_files.c:app_files_poll",
+        "c:src/core/app_files.c:app_files_read",
+        "c:src/core/app_files.c:app_files_select",
+        "c:src/core/app_files.c:app_files_sync",
+        "c:src/core/app_files.c:app_files_write",
+        "c:src/core/log.c:log_copy_text",
+        "c:src/core/log.c:log_init",
+        "c:src/core/log.c:log_level_is_valid",
+        "c:src/core/log.c:log_print",
+        "c:src/core/log.c:log_print_colored",
+        "c:src/core/log.c:log_records_match",
+        "c:src/core/log.c:log_restore_interrupts",
+        "c:src/core/log.c:log_ring_initialize",
+        "c:src/core/log.c:log_ring_latest_index",
+        "c:src/core/log.c:log_ring_store",
+        "c:src/core/log.c:log_submit",
+        "c:src/core/log.c:log_suspend_interrupts",
+        "c:src/core/log.c:log_write_serial",
+        "c:src/core/string.c:kmemcpy",
+        "c:src/core/string.c:kmemset",
+        "c:src/core/string.c:kstrcmp",
+        "c:src/core/string.c:kstrlen"
       ]
     },
     {
@@ -164474,100 +164867,6 @@
         "tst6",
         "stress",
         "storage"
-      ]
-    },
-    {
-      "id": "host:core:app-files",
-      "scenario": "Fachada host-only de arquivos sobre VFS falso",
-      "owner": "quality",
-      "layer": "host",
-      "executor": "host",
-      "profile": "host-only",
-      "timeout_seconds": 120,
-      "heartbeat_timeout_seconds": 1,
-      "isolation": "fixture",
-      "parameters": {
-        "compiler": "HOST_CC",
-        "instrumentation": "-finstrument-functions",
-        "warnings": "error"
-      },
-      "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "compilar e executar a fachada app_files com VFS falso e entradas validas e invalidas",
-      "expected": "operacoes de arquivo preservam pre-condicoes, encaminhamento, retornos e limpeza",
-      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
-      "effects": "somente estado estatico da fachada e do VFS falso no processo host",
-      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
-      "status": "AUTOMATED",
-      "surface_ids": [
-        "api:src/include/core/app_files.h:app_files_chdir",
-        "api:src/include/core/app_files.h:app_files_close",
-        "api:src/include/core/app_files.h:app_files_close_owner",
-        "api:src/include/core/app_files.h:app_files_fsync",
-        "api:src/include/core/app_files.h:app_files_getcwd",
-        "api:src/include/core/app_files.h:app_files_init",
-        "api:src/include/core/app_files.h:app_files_ioctl",
-        "api:src/include/core/app_files.h:app_files_is_ready",
-        "api:src/include/core/app_files.h:app_files_lseek",
-        "api:src/include/core/app_files.h:app_files_open",
-        "api:src/include/core/app_files.h:app_files_pipe",
-        "api:src/include/core/app_files.h:app_files_poll",
-        "api:src/include/core/app_files.h:app_files_read",
-        "api:src/include/core/app_files.h:app_files_select",
-        "api:src/include/core/app_files.h:app_files_sync",
-        "api:src/include/core/app_files.h:app_files_write",
-        "api:src/include/core/log.h:log_clear_buffer",
-        "api:src/include/core/log.h:log_copy_recent",
-        "api:src/include/core/log.h:log_get_buffer",
-        "api:src/include/core/log.h:log_get_buffer_level",
-        "api:src/include/core/log.h:log_get_console_level",
-        "api:src/include/core/log.h:log_get_level",
-        "api:src/include/core/log.h:log_get_stats",
-        "api:src/include/core/log.h:log_init",
-        "api:src/include/core/log.h:log_level_str",
-        "api:src/include/core/log.h:log_print",
-        "api:src/include/core/log.h:log_print_code",
-        "api:src/include/core/log.h:log_self_test",
-        "api:src/include/core/log.h:log_set_buffer_level",
-        "api:src/include/core/log.h:log_set_console_level",
-        "api:src/include/core/log.h:log_set_level",
-        "api:src/include/core/log.h:log_to_buffer",
-        "api:src/include/core/string.h:kmemcpy",
-        "api:src/include/core/string.h:kmemset",
-        "api:src/include/core/string.h:kstrcmp",
-        "api:src/include/core/string.h:kstrlen",
-        "c:src/core/app_files.c:app_files_chdir",
-        "c:src/core/app_files.c:app_files_close",
-        "c:src/core/app_files.c:app_files_close_owner",
-        "c:src/core/app_files.c:app_files_fsync",
-        "c:src/core/app_files.c:app_files_getcwd",
-        "c:src/core/app_files.c:app_files_init",
-        "c:src/core/app_files.c:app_files_ioctl",
-        "c:src/core/app_files.c:app_files_is_ready",
-        "c:src/core/app_files.c:app_files_lseek",
-        "c:src/core/app_files.c:app_files_open",
-        "c:src/core/app_files.c:app_files_pipe",
-        "c:src/core/app_files.c:app_files_poll",
-        "c:src/core/app_files.c:app_files_read",
-        "c:src/core/app_files.c:app_files_select",
-        "c:src/core/app_files.c:app_files_sync",
-        "c:src/core/app_files.c:app_files_write",
-        "c:src/core/log.c:log_copy_text",
-        "c:src/core/log.c:log_init",
-        "c:src/core/log.c:log_level_is_valid",
-        "c:src/core/log.c:log_print",
-        "c:src/core/log.c:log_print_colored",
-        "c:src/core/log.c:log_records_match",
-        "c:src/core/log.c:log_restore_interrupts",
-        "c:src/core/log.c:log_ring_initialize",
-        "c:src/core/log.c:log_ring_latest_index",
-        "c:src/core/log.c:log_ring_store",
-        "c:src/core/log.c:log_submit",
-        "c:src/core/log.c:log_suspend_interrupts",
-        "c:src/core/log.c:log_write_serial",
-        "c:src/core/string.c:kmemcpy",
-        "c:src/core/string.c:kmemset",
-        "c:src/core/string.c:kstrcmp",
-        "c:src/core/string.c:kstrlen"
       ]
     }
   ],

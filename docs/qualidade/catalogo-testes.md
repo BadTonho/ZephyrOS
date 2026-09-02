@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7196**
-- Casos de teste: **86**
+- Casos de teste: **87**
 - Superfícies aposentadas: **22**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 3953 |
+| `COVERED` | 4002 |
 | `MANUAL` | 0 |
-| `PENDING` | 3243 |
+| `PENDING` | 3194 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 86 |
+| `AUTOMATED` | 87 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -220,13 +220,13 @@
 | `api:src/include/core/app_api.h:app_api_poll` | `src/include/core/app_api.h` | `app_api_poll` | `core` | `COVERED` | 2 |
 | `api:src/include/core/app_api.h:app_api_select` | `src/include/core/app_api.h` | `app_api_select` | `core` | `COVERED` | 2 |
 | `api:src/include/core/app_api.h:app_api_sync` | `src/include/core/app_api.h` | `app_api_sync` | `core` | `COVERED` | 2 |
-| `api:src/include/core/app_builtin.h:app_builtin_run_argtest` | `src/include/core/app_builtin.h` | `app_builtin_run_argtest` | `core` | `PENDING` | 0 |
-| `api:src/include/core/app_builtin.h:app_builtin_run_devtest` | `src/include/core/app_builtin.h` | `app_builtin_run_devtest` | `core` | `PENDING` | 0 |
-| `api:src/include/core/app_builtin.h:app_builtin_run_echo` | `src/include/core/app_builtin.h` | `app_builtin_run_echo` | `core` | `PENDING` | 0 |
-| `api:src/include/core/app_builtin.h:app_builtin_run_mem` | `src/include/core/app_builtin.h` | `app_builtin_run_mem` | `core` | `PENDING` | 0 |
-| `api:src/include/core/app_builtin.h:app_builtin_run_outputtest` | `src/include/core/app_builtin.h` | `app_builtin_run_outputtest` | `core` | `PENDING` | 0 |
-| `api:src/include/core/app_builtin.h:app_builtin_run_pathtest` | `src/include/core/app_builtin.h` | `app_builtin_run_pathtest` | `core` | `PENDING` | 0 |
-| `api:src/include/core/app_builtin.h:app_builtin_run_uptime` | `src/include/core/app_builtin.h` | `app_builtin_run_uptime` | `core` | `PENDING` | 0 |
+| `api:src/include/core/app_builtin.h:app_builtin_run_argtest` | `src/include/core/app_builtin.h` | `app_builtin_run_argtest` | `core` | `COVERED` | 1 |
+| `api:src/include/core/app_builtin.h:app_builtin_run_devtest` | `src/include/core/app_builtin.h` | `app_builtin_run_devtest` | `core` | `COVERED` | 1 |
+| `api:src/include/core/app_builtin.h:app_builtin_run_echo` | `src/include/core/app_builtin.h` | `app_builtin_run_echo` | `core` | `COVERED` | 1 |
+| `api:src/include/core/app_builtin.h:app_builtin_run_mem` | `src/include/core/app_builtin.h` | `app_builtin_run_mem` | `core` | `COVERED` | 1 |
+| `api:src/include/core/app_builtin.h:app_builtin_run_outputtest` | `src/include/core/app_builtin.h` | `app_builtin_run_outputtest` | `core` | `COVERED` | 1 |
+| `api:src/include/core/app_builtin.h:app_builtin_run_pathtest` | `src/include/core/app_builtin.h` | `app_builtin_run_pathtest` | `core` | `COVERED` | 1 |
+| `api:src/include/core/app_builtin.h:app_builtin_run_uptime` | `src/include/core/app_builtin.h` | `app_builtin_run_uptime` | `core` | `COVERED` | 1 |
 | `api:src/include/core/app_catalog.h:app_catalog_build_install_plan` | `src/include/core/app_catalog.h` | `app_catalog_build_install_plan` | `core` | `COVERED` | 1 |
 | `api:src/include/core/app_catalog.h:app_catalog_build_update_plan` | `src/include/core/app_catalog.h` | `app_catalog_build_update_plan` | `core` | `COVERED` | 1 |
 | `api:src/include/core/app_catalog.h:app_catalog_find_entry` | `src/include/core/app_catalog.h` | `app_catalog_find_entry` | `core` | `COVERED` | 1 |
@@ -441,22 +441,22 @@
 | `api:src/include/core/keyboard.h:keyboard_scancode_to_ascii` | `src/include/core/keyboard.h` | `keyboard_scancode_to_ascii` | `core` | `COVERED` | 3 |
 | `api:src/include/core/keyboard.h:keyboard_scancode_to_ascii_shifted` | `src/include/core/keyboard.h` | `keyboard_scancode_to_ascii_shifted` | `core` | `COVERED` | 3 |
 | `api:src/include/core/keyboard.h:keyboard_set_focus_cancel_filter` | `src/include/core/keyboard.h` | `keyboard_set_focus_cancel_filter` | `core` | `COVERED` | 3 |
-| `api:src/include/core/log.h:log_clear_buffer` | `src/include/core/log.h` | `log_clear_buffer` | `core` | `COVERED` | 30 |
-| `api:src/include/core/log.h:log_copy_recent` | `src/include/core/log.h` | `log_copy_recent` | `core` | `COVERED` | 30 |
-| `api:src/include/core/log.h:log_get_buffer` | `src/include/core/log.h` | `log_get_buffer` | `core` | `COVERED` | 30 |
-| `api:src/include/core/log.h:log_get_buffer_level` | `src/include/core/log.h` | `log_get_buffer_level` | `core` | `COVERED` | 30 |
-| `api:src/include/core/log.h:log_get_console_level` | `src/include/core/log.h` | `log_get_console_level` | `core` | `COVERED` | 30 |
-| `api:src/include/core/log.h:log_get_level` | `src/include/core/log.h` | `log_get_level` | `core` | `COVERED` | 30 |
-| `api:src/include/core/log.h:log_get_stats` | `src/include/core/log.h` | `log_get_stats` | `core` | `COVERED` | 30 |
-| `api:src/include/core/log.h:log_init` | `src/include/core/log.h` | `log_init` | `core` | `COVERED` | 30 |
-| `api:src/include/core/log.h:log_level_str` | `src/include/core/log.h` | `log_level_str` | `core` | `COVERED` | 30 |
-| `api:src/include/core/log.h:log_print` | `src/include/core/log.h` | `log_print` | `core` | `COVERED` | 30 |
-| `api:src/include/core/log.h:log_print_code` | `src/include/core/log.h` | `log_print_code` | `core` | `COVERED` | 30 |
-| `api:src/include/core/log.h:log_self_test` | `src/include/core/log.h` | `log_self_test` | `core` | `COVERED` | 30 |
-| `api:src/include/core/log.h:log_set_buffer_level` | `src/include/core/log.h` | `log_set_buffer_level` | `core` | `COVERED` | 30 |
-| `api:src/include/core/log.h:log_set_console_level` | `src/include/core/log.h` | `log_set_console_level` | `core` | `COVERED` | 30 |
-| `api:src/include/core/log.h:log_set_level` | `src/include/core/log.h` | `log_set_level` | `core` | `COVERED` | 30 |
-| `api:src/include/core/log.h:log_to_buffer` | `src/include/core/log.h` | `log_to_buffer` | `core` | `COVERED` | 30 |
+| `api:src/include/core/log.h:log_clear_buffer` | `src/include/core/log.h` | `log_clear_buffer` | `core` | `COVERED` | 31 |
+| `api:src/include/core/log.h:log_copy_recent` | `src/include/core/log.h` | `log_copy_recent` | `core` | `COVERED` | 31 |
+| `api:src/include/core/log.h:log_get_buffer` | `src/include/core/log.h` | `log_get_buffer` | `core` | `COVERED` | 31 |
+| `api:src/include/core/log.h:log_get_buffer_level` | `src/include/core/log.h` | `log_get_buffer_level` | `core` | `COVERED` | 31 |
+| `api:src/include/core/log.h:log_get_console_level` | `src/include/core/log.h` | `log_get_console_level` | `core` | `COVERED` | 31 |
+| `api:src/include/core/log.h:log_get_level` | `src/include/core/log.h` | `log_get_level` | `core` | `COVERED` | 31 |
+| `api:src/include/core/log.h:log_get_stats` | `src/include/core/log.h` | `log_get_stats` | `core` | `COVERED` | 31 |
+| `api:src/include/core/log.h:log_init` | `src/include/core/log.h` | `log_init` | `core` | `COVERED` | 31 |
+| `api:src/include/core/log.h:log_level_str` | `src/include/core/log.h` | `log_level_str` | `core` | `COVERED` | 31 |
+| `api:src/include/core/log.h:log_print` | `src/include/core/log.h` | `log_print` | `core` | `COVERED` | 31 |
+| `api:src/include/core/log.h:log_print_code` | `src/include/core/log.h` | `log_print_code` | `core` | `COVERED` | 31 |
+| `api:src/include/core/log.h:log_self_test` | `src/include/core/log.h` | `log_self_test` | `core` | `COVERED` | 31 |
+| `api:src/include/core/log.h:log_set_buffer_level` | `src/include/core/log.h` | `log_set_buffer_level` | `core` | `COVERED` | 31 |
+| `api:src/include/core/log.h:log_set_console_level` | `src/include/core/log.h` | `log_set_console_level` | `core` | `COVERED` | 31 |
+| `api:src/include/core/log.h:log_set_level` | `src/include/core/log.h` | `log_set_level` | `core` | `COVERED` | 31 |
+| `api:src/include/core/log.h:log_to_buffer` | `src/include/core/log.h` | `log_to_buffer` | `core` | `COVERED` | 31 |
 | `api:src/include/core/memory.h:kfree` | `src/include/core/memory.h` | `kfree` | `core` | `COVERED` | 6 |
 | `api:src/include/core/memory.h:kmalloc` | `src/include/core/memory.h` | `kmalloc` | `core` | `COVERED` | 6 |
 | `api:src/include/core/memory.h:kmalloc_aligned` | `src/include/core/memory.h` | `kmalloc_aligned` | `core` | `COVERED` | 6 |
@@ -604,10 +604,10 @@
 | `api:src/include/core/spinlock.h:spinlock_acquire` | `src/include/core/spinlock.h` | `spinlock_acquire` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_init` | `src/include/core/spinlock.h` | `spinlock_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_release` | `src/include/core/spinlock.h` | `spinlock_release` | `core` | `PENDING` | 0 |
-| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 38 |
-| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 38 |
-| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 31 |
-| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 34 |
+| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 39 |
+| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 39 |
+| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 32 |
+| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 35 |
 | `api:src/include/core/syscall.h:syscall_enable_user_mode` | `src/include/core/syscall.h` | `syscall_enable_user_mode` | `core` | `COVERED` | 1 |
 | `api:src/include/core/syscall.h:syscall_handler` | `src/include/core/syscall.h` | `syscall_handler` | `core` | `COVERED` | 1 |
 | `api:src/include/core/syscall.h:syscall_init` | `src/include/core/syscall.h` | `syscall_init` | `core` | `COVERED` | 1 |
@@ -1919,48 +1919,48 @@
 | `c:src/core/app_api.c:app_api_sync` | `src/core/app_api.c` | `app_api_sync` | `core` | `COVERED` | 1 |
 | `c:src/core/app_api.c:app_api_validate_message` | `src/core/app_api.c` | `app_api_validate_message` | `core` | `COVERED` | 1 |
 | `c:src/core/app_api.c:app_api_validate_text` | `src/core/app_api.c` | `app_api_validate_text` | `core` | `COVERED` | 1 |
-| `c:src/core/app_builtin.c:app_builtin_build_argtest` | `src/core/app_builtin.c` | `app_builtin_build_argtest` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_build_devtest` | `src/core/app_builtin.c` | `app_builtin_build_devtest` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_build_echo` | `src/core/app_builtin.c` | `app_builtin_build_echo` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_build_mem` | `src/core/app_builtin.c` | `app_builtin_build_mem` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_build_outputtest` | `src/core/app_builtin.c` | `app_builtin_build_outputtest` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_build_pathtest` | `src/core/app_builtin.c` | `app_builtin_build_pathtest` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_build_uptime` | `src/core/app_builtin.c` | `app_builtin_build_uptime` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_emit_call` | `src/core/app_builtin.c` | `app_builtin_emit_call` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_emit_console_and_exit` | `src/core/app_builtin.c` | `app_builtin_emit_console_and_exit` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_emit_console_write` | `src/core/app_builtin.c` | `app_builtin_emit_console_write` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_emit_data` | `src/core/app_builtin.c` | `app_builtin_emit_data` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_emit_dev_close` | `src/core/app_builtin.c` | `app_builtin_emit_dev_close` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_emit_dev_open` | `src/core/app_builtin.c` | `app_builtin_emit_dev_open` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_emit_divide` | `src/core/app_builtin.c` | `app_builtin_emit_divide` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_emit_exit_code` | `src/core/app_builtin.c` | `app_builtin_emit_exit_code` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_emit_exit_from_eax` | `src/core/app_builtin.c` | `app_builtin_emit_exit_from_eax` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_emit_exit_on_error` | `src/core/app_builtin.c` | `app_builtin_emit_exit_on_error` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_emit_expect_error` | `src/core/app_builtin.c` | `app_builtin_emit_expect_error` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_emit_int80` | `src/core/app_builtin.c` | `app_builtin_emit_int80` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_emit_literal` | `src/core/app_builtin.c` | `app_builtin_emit_literal` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_emit_load_eax` | `src/core/app_builtin.c` | `app_builtin_emit_load_eax` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_emit_load_ebx` | `src/core/app_builtin.c` | `app_builtin_emit_load_ebx` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_emit_load_ecx` | `src/core/app_builtin.c` | `app_builtin_emit_load_ecx` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_emit_memory_output` | `src/core/app_builtin.c` | `app_builtin_emit_memory_output` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_emit_mov` | `src/core/app_builtin.c` | `app_builtin_emit_mov` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_emit_number` | `src/core/app_builtin.c` | `app_builtin_emit_number` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_emit_query` | `src/core/app_builtin.c` | `app_builtin_emit_query` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_emit_u32_formatter` | `src/core/app_builtin.c` | `app_builtin_emit_u32_formatter` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_emit_uptime_output` | `src/core/app_builtin.c` | `app_builtin_emit_uptime_output` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_finalize_image` | `src/core/app_builtin.c` | `app_builtin_finalize_image` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_patch_relative8` | `src/core/app_builtin.c` | `app_builtin_patch_relative8` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_preflight_loader` | `src/core/app_builtin.c` | `app_builtin_preflight_loader` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_prepare_outputtest_chunk` | `src/core/app_builtin.c` | `app_builtin_prepare_outputtest_chunk` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_require_space` | `src/core/app_builtin.c` | `app_builtin_require_space` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_run_argtest` | `src/core/app_builtin.c` | `app_builtin_run_argtest` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_run_devtest` | `src/core/app_builtin.c` | `app_builtin_run_devtest` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_run_echo` | `src/core/app_builtin.c` | `app_builtin_run_echo` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_run_mem` | `src/core/app_builtin.c` | `app_builtin_run_mem` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_run_outputtest` | `src/core/app_builtin.c` | `app_builtin_run_outputtest` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_run_pathtest` | `src/core/app_builtin.c` | `app_builtin_run_pathtest` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_run_uptime` | `src/core/app_builtin.c` | `app_builtin_run_uptime` | `core` | `PENDING` | 0 |
-| `c:src/core/app_builtin.c:app_builtin_write_u32` | `src/core/app_builtin.c` | `app_builtin_write_u32` | `core` | `PENDING` | 0 |
+| `c:src/core/app_builtin.c:app_builtin_build_argtest` | `src/core/app_builtin.c` | `app_builtin_build_argtest` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_build_devtest` | `src/core/app_builtin.c` | `app_builtin_build_devtest` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_build_echo` | `src/core/app_builtin.c` | `app_builtin_build_echo` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_build_mem` | `src/core/app_builtin.c` | `app_builtin_build_mem` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_build_outputtest` | `src/core/app_builtin.c` | `app_builtin_build_outputtest` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_build_pathtest` | `src/core/app_builtin.c` | `app_builtin_build_pathtest` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_build_uptime` | `src/core/app_builtin.c` | `app_builtin_build_uptime` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_emit_call` | `src/core/app_builtin.c` | `app_builtin_emit_call` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_emit_console_and_exit` | `src/core/app_builtin.c` | `app_builtin_emit_console_and_exit` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_emit_console_write` | `src/core/app_builtin.c` | `app_builtin_emit_console_write` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_emit_data` | `src/core/app_builtin.c` | `app_builtin_emit_data` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_emit_dev_close` | `src/core/app_builtin.c` | `app_builtin_emit_dev_close` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_emit_dev_open` | `src/core/app_builtin.c` | `app_builtin_emit_dev_open` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_emit_divide` | `src/core/app_builtin.c` | `app_builtin_emit_divide` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_emit_exit_code` | `src/core/app_builtin.c` | `app_builtin_emit_exit_code` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_emit_exit_from_eax` | `src/core/app_builtin.c` | `app_builtin_emit_exit_from_eax` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_emit_exit_on_error` | `src/core/app_builtin.c` | `app_builtin_emit_exit_on_error` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_emit_expect_error` | `src/core/app_builtin.c` | `app_builtin_emit_expect_error` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_emit_int80` | `src/core/app_builtin.c` | `app_builtin_emit_int80` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_emit_literal` | `src/core/app_builtin.c` | `app_builtin_emit_literal` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_emit_load_eax` | `src/core/app_builtin.c` | `app_builtin_emit_load_eax` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_emit_load_ebx` | `src/core/app_builtin.c` | `app_builtin_emit_load_ebx` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_emit_load_ecx` | `src/core/app_builtin.c` | `app_builtin_emit_load_ecx` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_emit_memory_output` | `src/core/app_builtin.c` | `app_builtin_emit_memory_output` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_emit_mov` | `src/core/app_builtin.c` | `app_builtin_emit_mov` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_emit_number` | `src/core/app_builtin.c` | `app_builtin_emit_number` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_emit_query` | `src/core/app_builtin.c` | `app_builtin_emit_query` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_emit_u32_formatter` | `src/core/app_builtin.c` | `app_builtin_emit_u32_formatter` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_emit_uptime_output` | `src/core/app_builtin.c` | `app_builtin_emit_uptime_output` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_finalize_image` | `src/core/app_builtin.c` | `app_builtin_finalize_image` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_patch_relative8` | `src/core/app_builtin.c` | `app_builtin_patch_relative8` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_preflight_loader` | `src/core/app_builtin.c` | `app_builtin_preflight_loader` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_prepare_outputtest_chunk` | `src/core/app_builtin.c` | `app_builtin_prepare_outputtest_chunk` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_require_space` | `src/core/app_builtin.c` | `app_builtin_require_space` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_run_argtest` | `src/core/app_builtin.c` | `app_builtin_run_argtest` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_run_devtest` | `src/core/app_builtin.c` | `app_builtin_run_devtest` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_run_echo` | `src/core/app_builtin.c` | `app_builtin_run_echo` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_run_mem` | `src/core/app_builtin.c` | `app_builtin_run_mem` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_run_outputtest` | `src/core/app_builtin.c` | `app_builtin_run_outputtest` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_run_pathtest` | `src/core/app_builtin.c` | `app_builtin_run_pathtest` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_run_uptime` | `src/core/app_builtin.c` | `app_builtin_run_uptime` | `core` | `COVERED` | 1 |
+| `c:src/core/app_builtin.c:app_builtin_write_u32` | `src/core/app_builtin.c` | `app_builtin_write_u32` | `core` | `COVERED` | 1 |
 | `c:src/core/app_catalog.c:app_catalog_add_source` | `src/core/app_catalog.c` | `app_catalog_add_source` | `core` | `COVERED` | 1 |
 | `c:src/core/app_catalog.c:app_catalog_alias_matches` | `src/core/app_catalog.c` | `app_catalog_alias_matches` | `core` | `COVERED` | 1 |
 | `c:src/core/app_catalog.c:app_catalog_append` | `src/core/app_catalog.c` | `app_catalog_append` | `core` | `COVERED` | 1 |
@@ -2736,37 +2736,37 @@
 | `c:src/core/log.c:log_append_char` | `src/core/log.c` | `log_append_char` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_append_text` | `src/core/log.c` | `log_append_text` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_clear_buffer` | `src/core/log.c` | `log_clear_buffer` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_console_print_number` | `src/core/log.c` | `log_console_print_number` | `core` | `COVERED` | 29 |
+| `c:src/core/log.c:log_console_print_number` | `src/core/log.c` | `log_console_print_number` | `core` | `COVERED` | 30 |
 | `c:src/core/log.c:log_copy_recent` | `src/core/log.c` | `log_copy_recent` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_copy_text` | `src/core/log.c` | `log_copy_text` | `core` | `COVERED` | 31 |
+| `c:src/core/log.c:log_copy_text` | `src/core/log.c` | `log_copy_text` | `core` | `COVERED` | 32 |
 | `c:src/core/log.c:log_get_buffer` | `src/core/log.c` | `log_get_buffer` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_get_buffer_level` | `src/core/log.c` | `log_get_buffer_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_get_console_level` | `src/core/log.c` | `log_get_console_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_get_level` | `src/core/log.c` | `log_get_level` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_get_stats` | `src/core/log.c` | `log_get_stats` | `core` | `COVERED` | 2 |
-| `c:src/core/log.c:log_init` | `src/core/log.c` | `log_init` | `core` | `COVERED` | 24 |
-| `c:src/core/log.c:log_is_power_of_two` | `src/core/log.c` | `log_is_power_of_two` | `core` | `COVERED` | 29 |
-| `c:src/core/log.c:log_level_is_valid` | `src/core/log.c` | `log_level_is_valid` | `core` | `COVERED` | 31 |
+| `c:src/core/log.c:log_init` | `src/core/log.c` | `log_init` | `core` | `COVERED` | 25 |
+| `c:src/core/log.c:log_is_power_of_two` | `src/core/log.c` | `log_is_power_of_two` | `core` | `COVERED` | 30 |
+| `c:src/core/log.c:log_level_is_valid` | `src/core/log.c` | `log_level_is_valid` | `core` | `COVERED` | 32 |
 | `c:src/core/log.c:log_level_str` | `src/core/log.c` | `log_level_str` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_note_dropped_event` | `src/core/log.c` | `log_note_dropped_event` | `core` | `COVERED` | 2 |
-| `c:src/core/log.c:log_print` | `src/core/log.c` | `log_print` | `core` | `COVERED` | 31 |
+| `c:src/core/log.c:log_print` | `src/core/log.c` | `log_print` | `core` | `COVERED` | 32 |
 | `c:src/core/log.c:log_print_code` | `src/core/log.c` | `log_print_code` | `core` | `COVERED` | 7 |
-| `c:src/core/log.c:log_print_colored` | `src/core/log.c` | `log_print_colored` | `core` | `COVERED` | 31 |
-| `c:src/core/log.c:log_records_match` | `src/core/log.c` | `log_records_match` | `core` | `COVERED` | 31 |
-| `c:src/core/log.c:log_restore_interrupts` | `src/core/log.c` | `log_restore_interrupts` | `core` | `COVERED` | 31 |
+| `c:src/core/log.c:log_print_colored` | `src/core/log.c` | `log_print_colored` | `core` | `COVERED` | 32 |
+| `c:src/core/log.c:log_records_match` | `src/core/log.c` | `log_records_match` | `core` | `COVERED` | 32 |
+| `c:src/core/log.c:log_restore_interrupts` | `src/core/log.c` | `log_restore_interrupts` | `core` | `COVERED` | 32 |
 | `c:src/core/log.c:log_ring_clear` | `src/core/log.c` | `log_ring_clear` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_ring_copy_recent` | `src/core/log.c` | `log_ring_copy_recent` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_ring_initialize` | `src/core/log.c` | `log_ring_initialize` | `core` | `COVERED` | 26 |
-| `c:src/core/log.c:log_ring_latest_index` | `src/core/log.c` | `log_ring_latest_index` | `core` | `COVERED` | 31 |
-| `c:src/core/log.c:log_ring_store` | `src/core/log.c` | `log_ring_store` | `core` | `COVERED` | 31 |
+| `c:src/core/log.c:log_ring_initialize` | `src/core/log.c` | `log_ring_initialize` | `core` | `COVERED` | 27 |
+| `c:src/core/log.c:log_ring_latest_index` | `src/core/log.c` | `log_ring_latest_index` | `core` | `COVERED` | 32 |
+| `c:src/core/log.c:log_ring_store` | `src/core/log.c` | `log_ring_store` | `core` | `COVERED` | 32 |
 | `c:src/core/log.c:log_self_test` | `src/core/log.c` | `log_self_test` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_self_test_mark` | `src/core/log.c` | `log_self_test_mark` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_serialize_records` | `src/core/log.c` | `log_serialize_records` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_set_buffer_level` | `src/core/log.c` | `log_set_buffer_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_set_console_level` | `src/core/log.c` | `log_set_console_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_set_level` | `src/core/log.c` | `log_set_level` | `core` | `COVERED` | 2 |
-| `c:src/core/log.c:log_submit` | `src/core/log.c` | `log_submit` | `core` | `COVERED` | 31 |
-| `c:src/core/log.c:log_suspend_interrupts` | `src/core/log.c` | `log_suspend_interrupts` | `core` | `COVERED` | 31 |
+| `c:src/core/log.c:log_submit` | `src/core/log.c` | `log_submit` | `core` | `COVERED` | 32 |
+| `c:src/core/log.c:log_suspend_interrupts` | `src/core/log.c` | `log_suspend_interrupts` | `core` | `COVERED` | 32 |
 | `c:src/core/log.c:log_test_clear_behavior` | `src/core/log.c` | `log_test_clear_behavior` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_test_level_filtering` | `src/core/log.c` | `log_test_level_filtering` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_test_optional_error_code` | `src/core/log.c` | `log_test_optional_error_code` | `core` | `COVERED` | 3 |
@@ -2776,7 +2776,7 @@
 | `c:src/core/log.c:log_test_text_serialization` | `src/core/log.c` | `log_test_text_serialization` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_test_wrap_and_overwrite` | `src/core/log.c` | `log_test_wrap_and_overwrite` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_to_buffer` | `src/core/log.c` | `log_to_buffer` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_write_serial` | `src/core/log.c` | `log_write_serial` | `core` | `COVERED` | 31 |
+| `c:src/core/log.c:log_write_serial` | `src/core/log.c` | `log_write_serial` | `core` | `COVERED` | 32 |
 | `c:src/core/net_buffer.c:net_buffer_alignment_valid` | `src/core/net_buffer.c` | `net_buffer_alignment_valid` | `core` | `COVERED` | 4 |
 | `c:src/core/net_buffer.c:net_buffer_begin` | `src/core/net_buffer.c` | `net_buffer_begin` | `core` | `COVERED` | 4 |
 | `c:src/core/net_buffer.c:net_buffer_check_active_locked` | `src/core/net_buffer.c` | `net_buffer_check_active_locked` | `core` | `COVERED` | 4 |
@@ -3076,10 +3076,10 @@
 | `c:src/core/socket.c:socket_wait_local` | `src/core/socket.c` | `socket_wait_local` | `core` | `PENDING` | 0 |
 | `c:src/core/socket.c:socket_wait_owner` | `src/core/socket.c` | `socket_wait_owner` | `core` | `COVERED` | 2 |
 | `c:src/core/socket.c:socket_wake` | `src/core/socket.c` | `socket_wake` | `core` | `COVERED` | 2 |
-| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 38 |
-| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 38 |
-| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 31 |
-| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 34 |
+| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 39 |
+| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 39 |
+| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 32 |
+| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 35 |
 | `c:src/core/syscall.c:syscall_copy_user_string` | `src/core/syscall.c` | `syscall_copy_user_string` | `core` | `PENDING` | 0 |
 | `c:src/core/syscall.c:syscall_dispatch` | `src/core/syscall.c` | `syscall_dispatch` | `core` | `COVERED` | 1 |
 | `c:src/core/syscall.c:syscall_dispatch_user` | `src/core/syscall.c` | `syscall_dispatch_user` | `core` | `COVERED` | 1 |
@@ -7283,7 +7283,9 @@
 | ID | Executor | Perfil | Caso guest | Status | Timeout | Heartbeat | Isolamento | Proprietario | Camada | Pre-condicoes | Acao | Resultado esperado | Erros | Efeitos | Limpeza |
 |---|---|---|---|---|---:|---:|---|---|---|---|---|---|---|---|---|
 | `host:core:app-api` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fachada de arquivos, memoria, IPC e VMA com stubs controlados | APIs publicas preservam erros, limites, estados e dados retornados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado da fachada e backends estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:core:app-builtin` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar os construtores de aplicativos internos com loader falso | imagens ZAPP preservam cabecalho, limites, entrada, dados, pre-condicoes e retornos canonicos | compilador ausente, warning, imagem invalida, falha de assercao ou timeout | somente imagem estatica e estado do loader falso no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:app-catalog` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar catalogo com fontes de pacotes, dependencias, instalados e limites simulados | classificacao, aliases, planos, ciclos, motivos canonicos e indisponibilidade preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do catalogo e backends host simulados | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:core:app-files` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fachada app_files com VFS falso e entradas validas e invalidas | operacoes de arquivo preservam pre-condicoes, encaminhamento, retornos e limpeza | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico da fachada e do VFS falso no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:app-package` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar contratos de versao, estado, failpoint e motivos de pacote | validacao de argumentos, nomes canonicos, estados indisponiveis e failpoint respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do servico e artefatos host-only | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:bearssl-compat` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar compatibilidade de memoria e string para BearSSL | memcpy, memmove, memset, memcmp e strlen preservam seus contratos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e artefatos host-only | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:contracts` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar contratos de strings, log e clock com instrumentacao | contratos validos, erros canonicos e invariantes temporais sao observados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e artefatos host-only | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7367,7 +7369,6 @@
 | `qemu:tst6:stress:kernel` | `qemu` | `tst6` | `qemu:tst6:stress:kernel` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | paging, heap, SLAB, processos e threads estao READY | repetir ciclos deterministas de memoria e execucao sob teto obrigatorio | invariantes estaveis permanecem iguais e a primeira falha interrompe a suite | overflow, vazamento, deadlock, timeout, protocolo ou QEMU | alocacoes e objetos temporarios de cada ciclo em snapshot | devolver paginas, destruir objetos e registrar seed e iteracao |
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
-| `host:core:app-files` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fachada app_files com VFS falso e entradas validas e invalidas | operacoes de arquivo preservam pre-condicoes, encaminhamento, retornos e limpeza | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico da fachada e do VFS falso no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -7391,13 +7392,6 @@
 - `api:src/include/apps/mediaplayer.h:mp_stop`
 - `api:src/include/apps/mediaplayer.h:mp_update`
 - `api:src/include/apps/shell_job.h:shell_storage_start_job`
-- `api:src/include/core/app_builtin.h:app_builtin_run_argtest`
-- `api:src/include/core/app_builtin.h:app_builtin_run_devtest`
-- `api:src/include/core/app_builtin.h:app_builtin_run_echo`
-- `api:src/include/core/app_builtin.h:app_builtin_run_mem`
-- `api:src/include/core/app_builtin.h:app_builtin_run_outputtest`
-- `api:src/include/core/app_builtin.h:app_builtin_run_pathtest`
-- `api:src/include/core/app_builtin.h:app_builtin_run_uptime`
 - `api:src/include/core/app_remote.h:app_remote_apply_cached`
 - `api:src/include/core/app_remote.h:app_remote_build_plan`
 - `api:src/include/core/app_remote.h:app_remote_cache_state_name`
@@ -7815,48 +7809,6 @@
 - `c:src/boot/recovery_runtime.c:kstrcmp`
 - `c:src/boot/recovery_runtime.c:kstrlen`
 - `c:src/boot/recovery_runtime.c:log_print`
-- `c:src/core/app_builtin.c:app_builtin_build_argtest`
-- `c:src/core/app_builtin.c:app_builtin_build_devtest`
-- `c:src/core/app_builtin.c:app_builtin_build_echo`
-- `c:src/core/app_builtin.c:app_builtin_build_mem`
-- `c:src/core/app_builtin.c:app_builtin_build_outputtest`
-- `c:src/core/app_builtin.c:app_builtin_build_pathtest`
-- `c:src/core/app_builtin.c:app_builtin_build_uptime`
-- `c:src/core/app_builtin.c:app_builtin_emit_call`
-- `c:src/core/app_builtin.c:app_builtin_emit_console_and_exit`
-- `c:src/core/app_builtin.c:app_builtin_emit_console_write`
-- `c:src/core/app_builtin.c:app_builtin_emit_data`
-- `c:src/core/app_builtin.c:app_builtin_emit_dev_close`
-- `c:src/core/app_builtin.c:app_builtin_emit_dev_open`
-- `c:src/core/app_builtin.c:app_builtin_emit_divide`
-- `c:src/core/app_builtin.c:app_builtin_emit_exit_code`
-- `c:src/core/app_builtin.c:app_builtin_emit_exit_from_eax`
-- `c:src/core/app_builtin.c:app_builtin_emit_exit_on_error`
-- `c:src/core/app_builtin.c:app_builtin_emit_expect_error`
-- `c:src/core/app_builtin.c:app_builtin_emit_int80`
-- `c:src/core/app_builtin.c:app_builtin_emit_literal`
-- `c:src/core/app_builtin.c:app_builtin_emit_load_eax`
-- `c:src/core/app_builtin.c:app_builtin_emit_load_ebx`
-- `c:src/core/app_builtin.c:app_builtin_emit_load_ecx`
-- `c:src/core/app_builtin.c:app_builtin_emit_memory_output`
-- `c:src/core/app_builtin.c:app_builtin_emit_mov`
-- `c:src/core/app_builtin.c:app_builtin_emit_number`
-- `c:src/core/app_builtin.c:app_builtin_emit_query`
-- `c:src/core/app_builtin.c:app_builtin_emit_u32_formatter`
-- `c:src/core/app_builtin.c:app_builtin_emit_uptime_output`
-- `c:src/core/app_builtin.c:app_builtin_finalize_image`
-- `c:src/core/app_builtin.c:app_builtin_patch_relative8`
-- `c:src/core/app_builtin.c:app_builtin_preflight_loader`
-- `c:src/core/app_builtin.c:app_builtin_prepare_outputtest_chunk`
-- `c:src/core/app_builtin.c:app_builtin_require_space`
-- `c:src/core/app_builtin.c:app_builtin_run_argtest`
-- `c:src/core/app_builtin.c:app_builtin_run_devtest`
-- `c:src/core/app_builtin.c:app_builtin_run_echo`
-- `c:src/core/app_builtin.c:app_builtin_run_mem`
-- `c:src/core/app_builtin.c:app_builtin_run_outputtest`
-- `c:src/core/app_builtin.c:app_builtin_run_pathtest`
-- `c:src/core/app_builtin.c:app_builtin_run_uptime`
-- `c:src/core/app_builtin.c:app_builtin_write_u32`
 - `c:src/core/app_loader.c:app_loader_build_launch_info`
 - `c:src/core/app_loader.c:app_loader_cancel_foreground`
 - `c:src/core/app_loader.c:app_loader_get_foreground_pid`

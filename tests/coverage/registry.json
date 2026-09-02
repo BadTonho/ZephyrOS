@@ -84,6 +84,49 @@
       "evidence": "make test-app-catalog-host PASS com fontes validas e invalidas, aliases, dependencias, planos, limites, estados indisponiveis e erros de leitura no relatorio instrumentado"
     },
     {
+      "id": "app-builtin-host-dynamic",
+      "domain": "core-app-builtin",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:app-builtin"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/app-builtin-host/coverage.json",
+      "coverage_sources": [
+        "src/core/app_builtin.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-app-builtin-host PASS com validacao de imagens ZAPP geradas, casos de echo, argumentos, uptime, memoria, paths, dispositivos, saida, pre-condicoes e erros do loader no relatorio instrumentado",
+      "case_definition": {
+        "id": "host:core:app-builtin",
+        "scenario": "Geracao host-only das imagens ZAPP internas",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "compilar e executar os construtores de aplicativos internos com loader falso",
+        "expected": "imagens ZAPP preservam cabecalho, limites, entrada, dados, pre-condicoes e retornos canonicos",
+        "errors": "compilador ausente, warning, imagem invalida, falha de assercao ou timeout",
+        "effects": "somente imagem estatica e estado do loader falso no processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": []
+      }
+    },
+    {
       "id": "apps-qemu-tst5-dynamic",
       "domain": "applications-storage-shell",
       "owner": "quality",
