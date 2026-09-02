@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **6827**
-- Casos de teste: **79**
+- Casos de teste: **80**
 - Superfícies aposentadas: **20**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 3085 |
+| `COVERED` | 3086 |
 | `MANUAL` | 0 |
-| `PENDING` | 3742 |
+| `PENDING` | 3741 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 79 |
+| `AUTOMATED` | 80 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -6374,8 +6374,8 @@
 | `c:src/shell/shell_commands_wifi.c:wifi_print_usb_location` | `src/shell/shell_commands_wifi.c` | `wifi_print_usb_location` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_wifi.c:wifi_scan` | `src/shell/shell_commands_wifi.c` | `wifi_scan` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_wifi.c:wifi_state_color` | `src/shell/shell_commands_wifi.c` | `wifi_state_color` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_dispatch.c:shell_dispatch_execute` | `src/shell/shell_dispatch.c` | `shell_dispatch_execute` | `shell` | `COVERED` | 5 |
-| `c:src/shell/shell_dispatch.c:shell_dispatch_print_unknown` | `src/shell/shell_dispatch.c` | `shell_dispatch_print_unknown` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_dispatch.c:shell_dispatch_execute` | `src/shell/shell_dispatch.c` | `shell_dispatch_execute` | `shell` | `COVERED` | 6 |
+| `c:src/shell/shell_dispatch.c:shell_dispatch_print_unknown` | `src/shell/shell_dispatch.c` | `shell_dispatch_print_unknown` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_hosted.c:shell_hosted_close` | `src/shell/shell_hosted.c` | `shell_hosted_close` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_hosted.c:shell_hosted_draw` | `src/shell/shell_hosted.c` | `shell_hosted_draw` | `shell` | `COVERED` | 3 |
 | `c:src/shell/shell_hosted.c:shell_hosted_key` | `src/shell/shell_hosted.c` | `shell_hosted_key` | `shell` | `COVERED` | 3 |
@@ -6946,6 +6946,7 @@
 | `host:process:ipc` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fixture de IPC com processos estaticos | mensagens, filas, espera, foco e limpeza validos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente processos estaticos e filas falsas no processo host | filas, foco e estado da fixture restaurados com artefatos preservados |
 | `host:process:signals` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fixture de sinais com processos estaticos | mascaras, handlers, coalescencia, notificacao e invariantes validas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente processos estaticos e stubs de paging no processo host | estado de sinais restaurado e artefatos preservados |
 | `host:security:tls` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar politica, estados, validade, cadeia, SAN, pinning, rotacao, revogacao e autoteste TLS com relogio e RNG falsos | identidades validas sao aceitas, rejeicoes retornam motivo canonico e capacidades indisponiveis permanecem explicitas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado TLS, politica e dependencias falsas no processo host | estado TLS e dependencias falsas reiniciados e artefatos preservados |
+| `host:shell:dispatch` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar comandos desconhecidos, entrada normalizada, limite e comando conhecido | dispatcher retorna ERR_NULL para entrada nula e apresenta diagnostico deterministico para comando desconhecido | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e handlers falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:storage:block` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar block_self_test e block_cache_self_test com providers estaticos | filas BIO, limites, cancelamento, failpoints, cache, writeback e sync passam e o inventario retorna ao estado inicial | compilador ausente, warning, cobertura incompleta, failpoint residual, falha de assercao ou timeout | somente estruturas globais do processo host e buffers estaticos de provider | autotestes removem dispositivos temporarios, limpam cache e deixam fila sem pendencias |
 | `host:storage:fat12` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar FAT12 sobre imagem estatica com raiz, subdiretorio e provider ATA falso | leitura, caminhos, metadados, operacoes atomicas, streaming, cancelamento e erros preservam a imagem fixture | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente imagem FAT12 e heap estatico do processo host | streaming encerrado, cadeias liberadas e processo host finalizado com artefatos preservados |
 | `host:storage:fat32` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar FAT32 sobre imagem estatica grande o suficiente para a classificacao FAT32 | leitura, paths, metadados, criacao, escrita, remocao e classificacao de clusters preservam a fixture | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente imagem FAT32 estatica e heap estatico do processo host | fixture encerrada e processo host finalizado com manifesto, logs e cobertura preservados |
@@ -10352,7 +10353,6 @@
 - `c:src/shell/shell_commands_wifi.c:wifi_print_usb_location`
 - `c:src/shell/shell_commands_wifi.c:wifi_scan`
 - `c:src/shell/shell_commands_wifi.c:wifi_state_color`
-- `c:src/shell/shell_dispatch.c:shell_dispatch_print_unknown`
 - `c:src/shell/shell_hosted.c:shell_hosted_close`
 - `c:src/shell/shell_hosted.c:shell_hosted_mouse`
 - `c:src/shell/shell_hosted.c:shell_hosted_reset`

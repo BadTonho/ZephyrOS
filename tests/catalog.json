@@ -126596,6 +126596,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:dispatch",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -126603,7 +126604,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_dispatch.c:shell_dispatch_print_unknown",
@@ -126619,9 +126620,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_hosted.c:shell_hosted_close",
@@ -140122,6 +140126,39 @@
         "tls",
         "negative",
         "coverage"
+      ]
+    },
+    {
+      "id": "host:shell:dispatch",
+      "scenario": "Contrato host-only do dispatcher do Shell",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "executar comandos desconhecidos, entrada normalizada, limite e comando conhecido",
+      "expected": "dispatcher retorna ERR_NULL para entrada nula e apresenta diagnostico deterministico para comando desconhecido",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente buffers estaticos e handlers falsos no processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "c:src/shell/shell_dispatch.c:shell_dispatch_execute",
+        "c:src/shell/shell_dispatch.c:shell_dispatch_print_unknown"
+      ],
+      "tags": [
+        "host",
+        "shell",
+        "dispatcher",
+        "negative"
       ]
     },
     {

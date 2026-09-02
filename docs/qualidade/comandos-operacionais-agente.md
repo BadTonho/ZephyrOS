@@ -255,6 +255,16 @@ indefinidamente; o relatorio fica em `build/test-results/workqueue-host/`:
 make test-workqueue-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-shell-dispatch-host` exercita o dispatcher com handlers falsos e
+verifica o diagnostico de comando desconhecido, a normalizacao de espacos e
+escape, o limite de 31 caracteres, o encaminhamento de um comando conhecido e
+o erro canonico para entrada nula. O relatorio fica em
+`build/test-results/shell-dispatch-host/`:
+
+```text
+make test-shell-dispatch-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O registro em `tests/coverage/registry.json` somente seleciona enderecos de
 relatorios `PASS` existentes e filtra as fontes declaradas. Um relatorio
 ausente, com endereco desconhecido ou ambiguo bloqueia o gate estrito; nao ha
