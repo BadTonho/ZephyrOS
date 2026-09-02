@@ -87,6 +87,17 @@ class CoreHostRunnerTests(unittest.TestCase):
         self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
                       "test_usb_manager_host.c", sources)
 
+    def test_usb_hid_case_has_driver_fixture_sources(self):
+        result_dir, binary, sources, suite = core_host_runner.case_configuration(
+            "host:drivers:usb-hid")
+        self.assertEqual(suite, "usb-hid-host")
+        self.assertEqual(result_dir, core_host_runner.USB_HID_RESULT_DIR)
+        self.assertEqual(binary, core_host_runner.USB_HID_BINARY)
+        self.assertIn(core_host_runner.ROOT / "src" / "drivers" / "usb_hid.c",
+                      sources)
+        self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
+                      "test_usb_hid_host.c", sources)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -4410,3 +4410,19 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `PENDING` e 89 casos. A execucao `make test-tst7-quick` confirmou o novo
   caso e os demais host tests; permaneceu `BLOCKED` somente em
   `test-tst3-sanitize` pela indisponibilidade/permissao do runtime LLVM.
+
+- Concluida em: 2026-09-02
+
+  Incremento Drivers/usb_hid: foi criado o caso host-only
+  `host:drivers:usb-hid` e o alvo `make test-usb-hid-host` com dispositivos
+  HID Boot UHCI simulados. A fixture exercitou teclado, mouse, relatorios
+  validos e invalidos, rollover, duplicidade, eventos de entrada, overflow,
+  timeout, falhas de controle e interrupt, reconfiguracao, remocao, filtros
+  de candidatos, capacidade e recuperacao. A execucao instrumentada terminou
+  `PASS`, resolveu as 24 superficies de `src/drivers/usb_hid.c` e nao registrou
+  enderecos desconhecidos ou ambiguos. O catalogo foi sincronizado e validado
+  com 7.196 superficies, 4.182 `COVERED`, 3.014 `PENDING` e 90 casos. A
+  validacao de `q3check`, build limpo e catalogo tambem passou. Os 29 testes
+  unitarios dos runners passaram, e `make test-tst7-quick` confirmou todas as
+  suites host-only; o resultado geral permaneceu `BLOCKED` somente em
+  `test-tst3-sanitize` pela indisponibilidade/permissao do runtime LLVM.

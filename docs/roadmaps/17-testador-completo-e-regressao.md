@@ -1342,6 +1342,23 @@ pendente.
   7.196 superficies, 3.953 `COVERED`, 3.243 `PENDING` e 86 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Drivers/usb_hid concluido em 2026-09-02: foi criado o caso
+  host-only `host:drivers:usb-hid` com dispositivos HID Boot UHCI simulados.
+  A fixture cobre teclados e mouses, parsing de relatorios, rollover,
+  duplicidade, eventos de entrada, overflow, timeout, falhas de controle e
+  interrupt, reconfiguracao, remocao, filtros de candidatos e capacidade.
+  A evidencia instrumentada resolveu as 24 superficies de
+  `src/drivers/usb_hid.c`, sem enderecos desconhecidos ou ambiguos. O catalogo
+  foi sincronizado com 7.196 superficies, 4.182 `COVERED`, 3.014 `PENDING` e
+  90 casos. Foram executados `make q3check`, `make clean`, `make`,
+  `make test-usb-hid-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` e
+  `make catalog-test`; todos passaram. Os 29 testes unitarios dos runners
+  tambem passaram. `make test-tst7-quick HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
+  confirmou todas as suites host-only e permaneceu `BLOCKED` somente em
+  `test-tst3-sanitize` pela indisponibilidade/permissao do runtime LLVM. O
+  fechamento integral, o gate estrito e a validacao TST7 completa continuam
+  pendentes.
+
 - Incremento Core/usb_manager concluido em 2026-09-02: foi criado o caso
   host-only `host:core:usb-manager` com fixtures estaticos de PCI, UHCI, EHCI,
   MSC e HID. A fixture exercitou inventario de controladores, estados de

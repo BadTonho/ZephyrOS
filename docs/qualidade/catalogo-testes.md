@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7196**
-- Casos de teste: **89**
+- Casos de teste: **90**
 - Superfícies aposentadas: **22**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4164 |
+| `COVERED` | 4182 |
 | `MANUAL` | 0 |
-| `PENDING` | 3032 |
+| `PENDING` | 3014 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 89 |
+| `AUTOMATED` | 90 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -1011,15 +1011,15 @@
 | `api:src/include/drivers/uhci.h:uhci_poll` | `src/include/drivers/uhci.h` | `uhci_poll` | `drivers` | `COVERED` | 1 |
 | `api:src/include/drivers/uhci.h:uhci_reset_bulk_toggles` | `src/include/drivers/uhci.h` | `uhci_reset_bulk_toggles` | `drivers` | `COVERED` | 1 |
 | `api:src/include/drivers/uhci.h:uhci_validate_state` | `src/include/drivers/uhci.h` | `uhci_validate_state` | `drivers` | `COVERED` | 1 |
-| `api:src/include/drivers/usb_hid.h:usb_hid_find` | `src/include/drivers/usb_hid.h` | `usb_hid_find` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/usb_hid.h:usb_hid_get_at` | `src/include/drivers/usb_hid.h` | `usb_hid_get_at` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/usb_hid.h:usb_hid_get_count` | `src/include/drivers/usb_hid.h` | `usb_hid_get_count` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/usb_hid.h:usb_hid_init` | `src/include/drivers/usb_hid.h` | `usb_hid_init` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/usb_hid.h:usb_hid_is_active` | `src/include/drivers/usb_hid.h` | `usb_hid_is_active` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/usb_hid.h:usb_hid_kind_name` | `src/include/drivers/usb_hid.h` | `usb_hid_kind_name` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/usb_hid.h:usb_hid_refresh` | `src/include/drivers/usb_hid.h` | `usb_hid_refresh` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/usb_hid.h:usb_hid_state_name` | `src/include/drivers/usb_hid.h` | `usb_hid_state_name` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/usb_hid.h:usb_hid_validate_state` | `src/include/drivers/usb_hid.h` | `usb_hid_validate_state` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/usb_hid.h:usb_hid_find` | `src/include/drivers/usb_hid.h` | `usb_hid_find` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/usb_hid.h:usb_hid_get_at` | `src/include/drivers/usb_hid.h` | `usb_hid_get_at` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/usb_hid.h:usb_hid_get_count` | `src/include/drivers/usb_hid.h` | `usb_hid_get_count` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/usb_hid.h:usb_hid_init` | `src/include/drivers/usb_hid.h` | `usb_hid_init` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/usb_hid.h:usb_hid_is_active` | `src/include/drivers/usb_hid.h` | `usb_hid_is_active` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/usb_hid.h:usb_hid_kind_name` | `src/include/drivers/usb_hid.h` | `usb_hid_kind_name` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/usb_hid.h:usb_hid_refresh` | `src/include/drivers/usb_hid.h` | `usb_hid_refresh` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/usb_hid.h:usb_hid_state_name` | `src/include/drivers/usb_hid.h` | `usb_hid_state_name` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/usb_hid.h:usb_hid_validate_state` | `src/include/drivers/usb_hid.h` | `usb_hid_validate_state` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/usb_msc.h:usb_msc_find` | `src/include/drivers/usb_msc.h` | `usb_msc_find` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/usb_msc.h:usb_msc_get_at` | `src/include/drivers/usb_msc.h` | `usb_msc_get_at` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/usb_msc.h:usb_msc_get_count` | `src/include/drivers/usb_msc.h` | `usb_msc_get_count` | `drivers` | `COVERED` | 2 |
@@ -4517,30 +4517,30 @@
 | `c:src/drivers/uhci.c:uhci_validate_pci` | `src/drivers/uhci.c` | `uhci_validate_pci` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/uhci.c:uhci_validate_state` | `src/drivers/uhci.c` | `uhci_validate_state` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/uhci.c:uhci_wait_transfer` | `src/drivers/uhci.c` | `uhci_wait_transfer` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_hid.c:hid_activate` | `src/drivers/usb_hid.c` | `hid_activate` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_hid.c:hid_deactivate` | `src/drivers/usb_hid.c` | `hid_deactivate` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_hid.c:hid_interrupt_callback` | `src/drivers/usb_hid.c` | `hid_interrupt_callback` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_hid.c:hid_is_candidate` | `src/drivers/usb_hid.c` | `hid_is_candidate` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_hid.c:hid_key_in_previous` | `src/drivers/usb_hid.c` | `hid_key_in_previous` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_hid.c:hid_key_in_report` | `src/drivers/usb_hid.c` | `hid_key_in_report` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_hid.c:hid_kind_from_device` | `src/drivers/usb_hid.c` | `hid_kind_from_device` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_hid.c:hid_prepare_record` | `src/drivers/usb_hid.c` | `hid_prepare_record` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_hid.c:hid_process_keyboard` | `src/drivers/usb_hid.c` | `hid_process_keyboard` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_hid.c:hid_process_mouse` | `src/drivers/usb_hid.c` | `hid_process_mouse` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_hid.c:hid_publish_key` | `src/drivers/usb_hid.c` | `hid_publish_key` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_hid.c:hid_record_index` | `src/drivers/usb_hid.c` | `hid_record_index` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/usb_hid.c:hid_send_boot_requests` | `src/drivers/usb_hid.c` | `hid_send_boot_requests` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_hid.c:hid_text_equal` | `src/drivers/usb_hid.c` | `hid_text_equal` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/usb_hid.c:hid_update_device` | `src/drivers/usb_hid.c` | `hid_update_device` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_hid.c:usb_hid_find` | `src/drivers/usb_hid.c` | `usb_hid_find` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_hid.c:usb_hid_get_at` | `src/drivers/usb_hid.c` | `usb_hid_get_at` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_hid.c:usb_hid_get_count` | `src/drivers/usb_hid.c` | `usb_hid_get_count` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_hid.c:usb_hid_init` | `src/drivers/usb_hid.c` | `usb_hid_init` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_hid.c:usb_hid_is_active` | `src/drivers/usb_hid.c` | `usb_hid_is_active` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_hid.c:hid_activate` | `src/drivers/usb_hid.c` | `hid_activate` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_hid.c:hid_deactivate` | `src/drivers/usb_hid.c` | `hid_deactivate` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_hid.c:hid_interrupt_callback` | `src/drivers/usb_hid.c` | `hid_interrupt_callback` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_hid.c:hid_is_candidate` | `src/drivers/usb_hid.c` | `hid_is_candidate` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_hid.c:hid_key_in_previous` | `src/drivers/usb_hid.c` | `hid_key_in_previous` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_hid.c:hid_key_in_report` | `src/drivers/usb_hid.c` | `hid_key_in_report` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_hid.c:hid_kind_from_device` | `src/drivers/usb_hid.c` | `hid_kind_from_device` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_hid.c:hid_prepare_record` | `src/drivers/usb_hid.c` | `hid_prepare_record` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_hid.c:hid_process_keyboard` | `src/drivers/usb_hid.c` | `hid_process_keyboard` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_hid.c:hid_process_mouse` | `src/drivers/usb_hid.c` | `hid_process_mouse` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_hid.c:hid_publish_key` | `src/drivers/usb_hid.c` | `hid_publish_key` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_hid.c:hid_record_index` | `src/drivers/usb_hid.c` | `hid_record_index` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/usb_hid.c:hid_send_boot_requests` | `src/drivers/usb_hid.c` | `hid_send_boot_requests` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_hid.c:hid_text_equal` | `src/drivers/usb_hid.c` | `hid_text_equal` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/usb_hid.c:hid_update_device` | `src/drivers/usb_hid.c` | `hid_update_device` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_hid.c:usb_hid_find` | `src/drivers/usb_hid.c` | `usb_hid_find` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_hid.c:usb_hid_get_at` | `src/drivers/usb_hid.c` | `usb_hid_get_at` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_hid.c:usb_hid_get_count` | `src/drivers/usb_hid.c` | `usb_hid_get_count` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_hid.c:usb_hid_init` | `src/drivers/usb_hid.c` | `usb_hid_init` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_hid.c:usb_hid_is_active` | `src/drivers/usb_hid.c` | `usb_hid_is_active` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/usb_hid.c:usb_hid_kind_name` | `src/drivers/usb_hid.c` | `usb_hid_kind_name` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_hid.c:usb_hid_refresh` | `src/drivers/usb_hid.c` | `usb_hid_refresh` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/usb_hid.c:usb_hid_refresh` | `src/drivers/usb_hid.c` | `usb_hid_refresh` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/usb_hid.c:usb_hid_state_name` | `src/drivers/usb_hid.c` | `usb_hid_state_name` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_hid.c:usb_hid_validate_state` | `src/drivers/usb_hid.c` | `usb_hid_validate_state` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/usb_hid.c:usb_hid_validate_state` | `src/drivers/usb_hid.c` | `usb_hid_validate_state` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/usb_msc.c:msc_block_read` | `src/drivers/usb_msc.c` | `msc_block_read` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/usb_msc.c:msc_block_submit` | `src/drivers/usb_msc.c` | `msc_block_submit` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/usb_msc.c:msc_bot_command` | `src/drivers/usb_msc.c` | `msc_bot_command` | `drivers` | `PENDING` | 0 |
@@ -7298,6 +7298,7 @@
 | `host:core:scheduling` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar os autotestes de wait, workqueue e irq_deferred, alem de limites e estados invalidos | coalescencia, rerun, cancelamento, FIFO, capacidade, disponibilidade e invariantes respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente filas, trabalhos e buffers estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:state` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar contratos de recovery e notificadores de energia | estados, capacidades opcionais, timeouts, ordem e erros canonicos sao observados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico dos servicos e artefatos host-only | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:timer` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar timers one-shot e periodicos com IDT, PIC e scheduler simulados | handles, prazos, cancelamento, dispatch, callbacks, notifier e limpeza respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas estaticas do servico de timers no processo host | todos os timers e proprietarios sao destruidos e os artefatos sao preservados |
+| `host:core:usb-manager` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inventariar controladores UHCI, EHCI e fora do escopo, sincronizar drivers de classe, consultar portas e dispositivos, executar polling e refresh | estados, identificadores, agregacoes, limites, indisponibilidade e recuperacao preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente fixtures estaticos PCI, UHCI, EHCI, MSC e HID no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:wifi-manager` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inventariar candidatos PCI e USB, consultar interfaces, executar scan e conexao aberta com backends falsos | identificadores, estados, contadores, limites, indisponibilidade e recuperacao preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente fixtures estaticos PCI, USB e RTL8811CU no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:workqueue` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fixture de workqueue com espera controlada | autoteste, callbacks, filas, prioridades, limites e limpeza validos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico da workqueue e callbacks falsos no processo host | trabalhos destruidos, filas vazias, fallback restaurado e artefatos preservados |
 | `host:drivers:font` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inicializar o driver de fonte e consultar as dimensoes publicadas | font_init e idempotente e as dimensoes publicadas permanecem 8x16 | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabela estatica de fontes e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7370,7 +7371,7 @@
 | `qemu:tst6:stress:kernel` | `qemu` | `tst6` | `qemu:tst6:stress:kernel` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | paging, heap, SLAB, processos e threads estao READY | repetir ciclos deterministas de memoria e execucao sob teto obrigatorio | invariantes estaveis permanecem iguais e a primeira falha interrompe a suite | overflow, vazamento, deadlock, timeout, protocolo ou QEMU | alocacoes e objetos temporarios de cada ciclo em snapshot | devolver paginas, destruir objetos e registrar seed e iteracao |
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
-| `host:core:usb-manager` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inventariar controladores UHCI, EHCI e fora do escopo, sincronizar drivers de classe, consultar portas e dispositivos, executar polling e refresh | estados, identificadores, agregacoes, limites, indisponibilidade e recuperacao preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente fixtures estaticos PCI, UHCI, EHCI, MSC e HID no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:drivers:usb-hid` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enumerar teclados e mouses UHCI, enviar relatorios Boot, publicar eventos de entrada e exercitar refresh, remocao e limites | parsing valido, rejeicao de reports corrompidos, estados, contadores, cancelamento e indisponibilidade preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente dispositivos USB HID e callbacks de entrada estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -8887,25 +8888,7 @@
 - `c:src/drivers/uhci.c:uhci_update_resource_usage`
 - `c:src/drivers/uhci.c:uhci_validate_pci`
 - `c:src/drivers/uhci.c:uhci_wait_transfer`
-- `c:src/drivers/usb_hid.c:hid_activate`
-- `c:src/drivers/usb_hid.c:hid_deactivate`
-- `c:src/drivers/usb_hid.c:hid_interrupt_callback`
-- `c:src/drivers/usb_hid.c:hid_is_candidate`
-- `c:src/drivers/usb_hid.c:hid_key_in_previous`
-- `c:src/drivers/usb_hid.c:hid_key_in_report`
-- `c:src/drivers/usb_hid.c:hid_kind_from_device`
-- `c:src/drivers/usb_hid.c:hid_prepare_record`
-- `c:src/drivers/usb_hid.c:hid_process_keyboard`
-- `c:src/drivers/usb_hid.c:hid_process_mouse`
-- `c:src/drivers/usb_hid.c:hid_publish_key`
-- `c:src/drivers/usb_hid.c:hid_send_boot_requests`
-- `c:src/drivers/usb_hid.c:hid_update_device`
-- `c:src/drivers/usb_hid.c:usb_hid_find`
-- `c:src/drivers/usb_hid.c:usb_hid_get_at`
-- `c:src/drivers/usb_hid.c:usb_hid_get_count`
-- `c:src/drivers/usb_hid.c:usb_hid_init`
 - `c:src/drivers/usb_hid.c:usb_hid_kind_name`
-- `c:src/drivers/usb_hid.c:usb_hid_refresh`
 - `c:src/drivers/usb_hid.c:usb_hid_state_name`
 - `c:src/drivers/usb_msc.c:msc_block_read`
 - `c:src/drivers/usb_msc.c:msc_block_submit`

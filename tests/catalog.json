@@ -21825,12 +21825,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:usb-hid",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline",
         "qemu:tst6:matrix:usb-hid"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/usb_hid.h:usb_hid_get_at",
@@ -21848,12 +21849,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:usb-hid",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline",
         "qemu:tst6:matrix:usb-hid"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/usb_hid.h:usb_hid_get_count",
@@ -21871,12 +21873,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:usb-hid",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline",
         "qemu:tst6:matrix:usb-hid"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/usb_hid.h:usb_hid_init",
@@ -21894,12 +21897,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:usb-hid",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline",
         "qemu:tst6:matrix:usb-hid"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/usb_hid.h:usb_hid_is_active",
@@ -21917,12 +21921,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:usb-hid",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline",
         "qemu:tst6:matrix:usb-hid"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/usb_hid.h:usb_hid_kind_name",
@@ -21940,12 +21945,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:usb-hid",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline",
         "qemu:tst6:matrix:usb-hid"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/usb_hid.h:usb_hid_refresh",
@@ -21963,12 +21969,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:usb-hid",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline",
         "qemu:tst6:matrix:usb-hid"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/usb_hid.h:usb_hid_state_name",
@@ -21986,12 +21993,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:usb-hid",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline",
         "qemu:tst6:matrix:usb-hid"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/usb_hid.h:usb_hid_validate_state",
@@ -22009,12 +22017,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:usb-hid",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline",
         "qemu:tst6:matrix:usb-hid"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/usb_msc.h:usb_msc_find",
@@ -95186,9 +95195,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:usb-hid"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/usb_hid.c:hid_deactivate",
@@ -95204,9 +95216,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:usb-hid"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/usb_hid.c:hid_interrupt_callback",
@@ -95222,9 +95237,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:usb-hid"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/usb_hid.c:hid_is_candidate",
@@ -95240,9 +95258,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:usb-hid"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/usb_hid.c:hid_key_in_previous",
@@ -95258,9 +95279,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:usb-hid"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/usb_hid.c:hid_key_in_report",
@@ -95276,9 +95300,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:usb-hid"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/usb_hid.c:hid_kind_from_device",
@@ -95294,9 +95321,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:usb-hid"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/usb_hid.c:hid_prepare_record",
@@ -95312,9 +95342,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:usb-hid"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/usb_hid.c:hid_process_keyboard",
@@ -95330,9 +95363,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:usb-hid"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/usb_hid.c:hid_process_mouse",
@@ -95348,9 +95384,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:usb-hid"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/usb_hid.c:hid_publish_key",
@@ -95366,9 +95405,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:usb-hid"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/usb_hid.c:hid_record_index",
@@ -95386,10 +95428,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:usb-hid",
         "qemu:tst6:matrix:usb-hid"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/usb_hid.c:hid_send_boot_requests",
@@ -95405,9 +95448,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:usb-hid"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/usb_hid.c:hid_text_equal",
@@ -95425,10 +95471,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:usb-hid",
         "qemu:tst6:matrix:usb-hid"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/usb_hid.c:hid_update_device",
@@ -95444,9 +95491,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:usb-hid"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/usb_hid.c:usb_hid_find",
@@ -95462,9 +95512,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:usb-hid"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/usb_hid.c:usb_hid_get_at",
@@ -95480,9 +95533,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:usb-hid"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/usb_hid.c:usb_hid_get_count",
@@ -95498,9 +95554,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:usb-hid"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/usb_hid.c:usb_hid_init",
@@ -95516,9 +95575,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:usb-hid"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/usb_hid.c:usb_hid_is_active",
@@ -95536,10 +95598,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:usb-hid",
         "qemu:tst6:matrix:usb-hid"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/usb_hid.c:usb_hid_kind_name",
@@ -95573,9 +95636,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:usb-hid"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/usb_hid.c:usb_hid_state_name",
@@ -95611,12 +95677,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:usb-hid",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline",
         "qemu:tst6:matrix:usb-hid"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/usb_msc.c:msc_block_read",
@@ -152306,6 +152373,100 @@
       ]
     },
     {
+      "id": "host:core:usb-manager",
+      "scenario": "Inventario host-only de controladores, portas e dispositivos USB",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "inventariar controladores UHCI, EHCI e fora do escopo, sincronizar drivers de classe, consultar portas e dispositivos, executar polling e refresh",
+      "expected": "estados, identificadores, agregacoes, limites, indisponibilidade e recuperacao preservam o contrato",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente fixtures estaticos PCI, UHCI, EHCI, MSC e HID no processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/usb_manager.h:usb_manager_find",
+        "api:src/include/core/usb_manager.h:usb_manager_find_device",
+        "api:src/include/core/usb_manager.h:usb_manager_format_device_text",
+        "api:src/include/core/usb_manager.h:usb_manager_format_text",
+        "api:src/include/core/usb_manager.h:usb_manager_get_count",
+        "api:src/include/core/usb_manager.h:usb_manager_get_device",
+        "api:src/include/core/usb_manager.h:usb_manager_get_device_count",
+        "api:src/include/core/usb_manager.h:usb_manager_get_info",
+        "api:src/include/core/usb_manager.h:usb_manager_get_port",
+        "api:src/include/core/usb_manager.h:usb_manager_get_port_count",
+        "api:src/include/core/usb_manager.h:usb_manager_get_status",
+        "api:src/include/core/usb_manager.h:usb_manager_get_uhci_status",
+        "api:src/include/core/usb_manager.h:usb_manager_init",
+        "api:src/include/core/usb_manager.h:usb_manager_model_name",
+        "api:src/include/core/usb_manager.h:usb_manager_poll",
+        "api:src/include/core/usb_manager.h:usb_manager_port_reason_name",
+        "api:src/include/core/usb_manager.h:usb_manager_port_state_name",
+        "api:src/include/core/usb_manager.h:usb_manager_reason_name",
+        "api:src/include/core/usb_manager.h:usb_manager_refresh",
+        "api:src/include/core/usb_manager.h:usb_manager_speed_name",
+        "api:src/include/core/usb_manager.h:usb_manager_state_name",
+        "api:src/include/core/usb_manager.h:usb_manager_uhci_state_name",
+        "api:src/include/core/usb_manager.h:usb_manager_validate_state",
+        "c:src/core/usb_manager.c:usb_append_char",
+        "c:src/core/usb_manager.c:usb_append_hex",
+        "c:src/core/usb_manager.c:usb_append_text",
+        "c:src/core/usb_manager.c:usb_apply_ehci_runtime_controller",
+        "c:src/core/usb_manager.c:usb_apply_runtime_controller",
+        "c:src/core/usb_manager.c:usb_ascii_upper",
+        "c:src/core/usb_manager.c:usb_build_snapshot",
+        "c:src/core/usb_manager.c:usb_classify",
+        "c:src/core/usb_manager.c:usb_collect_runtime",
+        "c:src/core/usb_manager.c:usb_copy_pci",
+        "c:src/core/usb_manager.c:usb_format_controller_id",
+        "c:src/core/usb_manager.c:usb_id_matches",
+        "c:src/core/usb_manager.c:usb_manager_find",
+        "c:src/core/usb_manager.c:usb_manager_find_device",
+        "c:src/core/usb_manager.c:usb_manager_format_device_text",
+        "c:src/core/usb_manager.c:usb_manager_format_text",
+        "c:src/core/usb_manager.c:usb_manager_get_count",
+        "c:src/core/usb_manager.c:usb_manager_get_device",
+        "c:src/core/usb_manager.c:usb_manager_get_device_count",
+        "c:src/core/usb_manager.c:usb_manager_get_info",
+        "c:src/core/usb_manager.c:usb_manager_get_port",
+        "c:src/core/usb_manager.c:usb_manager_get_port_count",
+        "c:src/core/usb_manager.c:usb_manager_get_status",
+        "c:src/core/usb_manager.c:usb_manager_get_uhci_status",
+        "c:src/core/usb_manager.c:usb_manager_init",
+        "c:src/core/usb_manager.c:usb_manager_model_name",
+        "c:src/core/usb_manager.c:usb_manager_poll",
+        "c:src/core/usb_manager.c:usb_manager_port_reason_name",
+        "c:src/core/usb_manager.c:usb_manager_port_state_name",
+        "c:src/core/usb_manager.c:usb_manager_reason_name",
+        "c:src/core/usb_manager.c:usb_manager_refresh",
+        "c:src/core/usb_manager.c:usb_manager_speed_name",
+        "c:src/core/usb_manager.c:usb_manager_state_name",
+        "c:src/core/usb_manager.c:usb_manager_uhci_state_name",
+        "c:src/core/usb_manager.c:usb_manager_validate_state",
+        "c:src/core/usb_manager.c:usb_set_text",
+        "c:src/core/usb_manager.c:usb_start_controllers",
+        "c:src/core/usb_manager.c:usb_sync_hid_runtime",
+        "c:src/core/usb_manager.c:usb_sync_msc_runtime",
+        "c:src/core/usb_manager.c:usb_sync_recovery"
+      ],
+      "tags": [
+        "host",
+        "core",
+        "usb",
+        "coverage"
+      ]
+    },
+    {
       "id": "host:core:wifi-manager",
       "scenario": "Inventario host-only de interfaces Wi-Fi PCI e USB",
       "owner": "quality",
@@ -165612,8 +165773,8 @@
       ]
     },
     {
-      "id": "host:core:usb-manager",
-      "scenario": "Inventario host-only de controladores, portas e dispositivos USB",
+      "id": "host:drivers:usb-hid",
+      "scenario": "Processamento host-only de dispositivos HID Boot simulados",
       "owner": "quality",
       "layer": "host",
       "executor": "host",
@@ -165627,81 +165788,50 @@
         "warnings": "error"
       },
       "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "inventariar controladores UHCI, EHCI e fora do escopo, sincronizar drivers de classe, consultar portas e dispositivos, executar polling e refresh",
-      "expected": "estados, identificadores, agregacoes, limites, indisponibilidade e recuperacao preservam o contrato",
+      "action": "enumerar teclados e mouses UHCI, enviar relatorios Boot, publicar eventos de entrada e exercitar refresh, remocao e limites",
+      "expected": "parsing valido, rejeicao de reports corrompidos, estados, contadores, cancelamento e indisponibilidade preservam o contrato",
       "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
-      "effects": "somente fixtures estaticos PCI, UHCI, EHCI, MSC e HID no processo host",
+      "effects": "somente dispositivos USB HID e callbacks de entrada estaticos no processo host",
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
       "surface_ids": [
-        "api:src/include/core/usb_manager.h:usb_manager_find",
-        "api:src/include/core/usb_manager.h:usb_manager_find_device",
-        "api:src/include/core/usb_manager.h:usb_manager_format_device_text",
-        "api:src/include/core/usb_manager.h:usb_manager_format_text",
-        "api:src/include/core/usb_manager.h:usb_manager_get_count",
-        "api:src/include/core/usb_manager.h:usb_manager_get_device",
-        "api:src/include/core/usb_manager.h:usb_manager_get_device_count",
-        "api:src/include/core/usb_manager.h:usb_manager_get_info",
-        "api:src/include/core/usb_manager.h:usb_manager_get_port",
-        "api:src/include/core/usb_manager.h:usb_manager_get_port_count",
-        "api:src/include/core/usb_manager.h:usb_manager_get_status",
-        "api:src/include/core/usb_manager.h:usb_manager_get_uhci_status",
-        "api:src/include/core/usb_manager.h:usb_manager_init",
-        "api:src/include/core/usb_manager.h:usb_manager_model_name",
-        "api:src/include/core/usb_manager.h:usb_manager_poll",
-        "api:src/include/core/usb_manager.h:usb_manager_port_reason_name",
-        "api:src/include/core/usb_manager.h:usb_manager_port_state_name",
-        "api:src/include/core/usb_manager.h:usb_manager_reason_name",
-        "api:src/include/core/usb_manager.h:usb_manager_refresh",
-        "api:src/include/core/usb_manager.h:usb_manager_speed_name",
-        "api:src/include/core/usb_manager.h:usb_manager_state_name",
-        "api:src/include/core/usb_manager.h:usb_manager_uhci_state_name",
-        "api:src/include/core/usb_manager.h:usb_manager_validate_state",
-        "c:src/core/usb_manager.c:usb_append_char",
-        "c:src/core/usb_manager.c:usb_append_hex",
-        "c:src/core/usb_manager.c:usb_append_text",
-        "c:src/core/usb_manager.c:usb_apply_ehci_runtime_controller",
-        "c:src/core/usb_manager.c:usb_apply_runtime_controller",
-        "c:src/core/usb_manager.c:usb_ascii_upper",
-        "c:src/core/usb_manager.c:usb_build_snapshot",
-        "c:src/core/usb_manager.c:usb_classify",
-        "c:src/core/usb_manager.c:usb_collect_runtime",
-        "c:src/core/usb_manager.c:usb_copy_pci",
-        "c:src/core/usb_manager.c:usb_format_controller_id",
-        "c:src/core/usb_manager.c:usb_id_matches",
-        "c:src/core/usb_manager.c:usb_manager_find",
-        "c:src/core/usb_manager.c:usb_manager_find_device",
-        "c:src/core/usb_manager.c:usb_manager_format_device_text",
-        "c:src/core/usb_manager.c:usb_manager_format_text",
-        "c:src/core/usb_manager.c:usb_manager_get_count",
-        "c:src/core/usb_manager.c:usb_manager_get_device",
-        "c:src/core/usb_manager.c:usb_manager_get_device_count",
-        "c:src/core/usb_manager.c:usb_manager_get_info",
-        "c:src/core/usb_manager.c:usb_manager_get_port",
-        "c:src/core/usb_manager.c:usb_manager_get_port_count",
-        "c:src/core/usb_manager.c:usb_manager_get_status",
-        "c:src/core/usb_manager.c:usb_manager_get_uhci_status",
-        "c:src/core/usb_manager.c:usb_manager_init",
-        "c:src/core/usb_manager.c:usb_manager_model_name",
-        "c:src/core/usb_manager.c:usb_manager_poll",
-        "c:src/core/usb_manager.c:usb_manager_port_reason_name",
-        "c:src/core/usb_manager.c:usb_manager_port_state_name",
-        "c:src/core/usb_manager.c:usb_manager_reason_name",
-        "c:src/core/usb_manager.c:usb_manager_refresh",
-        "c:src/core/usb_manager.c:usb_manager_speed_name",
-        "c:src/core/usb_manager.c:usb_manager_state_name",
-        "c:src/core/usb_manager.c:usb_manager_uhci_state_name",
-        "c:src/core/usb_manager.c:usb_manager_validate_state",
-        "c:src/core/usb_manager.c:usb_set_text",
-        "c:src/core/usb_manager.c:usb_start_controllers",
-        "c:src/core/usb_manager.c:usb_sync_hid_runtime",
-        "c:src/core/usb_manager.c:usb_sync_msc_runtime",
-        "c:src/core/usb_manager.c:usb_sync_recovery"
+        "api:src/include/drivers/usb_hid.h:usb_hid_find",
+        "api:src/include/drivers/usb_hid.h:usb_hid_get_at",
+        "api:src/include/drivers/usb_hid.h:usb_hid_get_count",
+        "api:src/include/drivers/usb_hid.h:usb_hid_init",
+        "api:src/include/drivers/usb_hid.h:usb_hid_is_active",
+        "api:src/include/drivers/usb_hid.h:usb_hid_kind_name",
+        "api:src/include/drivers/usb_hid.h:usb_hid_refresh",
+        "api:src/include/drivers/usb_hid.h:usb_hid_state_name",
+        "api:src/include/drivers/usb_hid.h:usb_hid_validate_state",
+        "c:src/drivers/usb_hid.c:hid_activate",
+        "c:src/drivers/usb_hid.c:hid_deactivate",
+        "c:src/drivers/usb_hid.c:hid_interrupt_callback",
+        "c:src/drivers/usb_hid.c:hid_is_candidate",
+        "c:src/drivers/usb_hid.c:hid_key_in_previous",
+        "c:src/drivers/usb_hid.c:hid_key_in_report",
+        "c:src/drivers/usb_hid.c:hid_kind_from_device",
+        "c:src/drivers/usb_hid.c:hid_prepare_record",
+        "c:src/drivers/usb_hid.c:hid_process_keyboard",
+        "c:src/drivers/usb_hid.c:hid_process_mouse",
+        "c:src/drivers/usb_hid.c:hid_publish_key",
+        "c:src/drivers/usb_hid.c:hid_record_index",
+        "c:src/drivers/usb_hid.c:hid_send_boot_requests",
+        "c:src/drivers/usb_hid.c:hid_text_equal",
+        "c:src/drivers/usb_hid.c:hid_update_device",
+        "c:src/drivers/usb_hid.c:usb_hid_find",
+        "c:src/drivers/usb_hid.c:usb_hid_get_at",
+        "c:src/drivers/usb_hid.c:usb_hid_get_count",
+        "c:src/drivers/usb_hid.c:usb_hid_init",
+        "c:src/drivers/usb_hid.c:usb_hid_is_active",
+        "c:src/drivers/usb_hid.c:usb_hid_refresh",
+        "c:src/drivers/usb_hid.c:usb_hid_validate_state"
       ],
       "tags": [
         "host",
-        "core",
+        "drivers",
         "usb",
+        "hid",
         "coverage"
       ]
     }
