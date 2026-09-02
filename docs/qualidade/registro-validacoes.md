@@ -4369,3 +4369,15 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   validado com 7.196 superficies, 4.103 `COVERED`, 3.093 `PENDING` e 87 casos;
   o fechamento integral, o gate estrito e a validacao TST7 completa continuam
   pendentes.
+
+- 2026-09-02 — Incremento Drivers/RTC: `make test-rtc-status-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` terminou `PASS` com uma porta CMOS
+  simulada no build host, sem I/O privilegiado. A fixture exercitou
+  inicializacao invalida e valida, leituras BCD/binaria e 12/24 horas,
+  calendario invalido, leituras estaveis, autoteste, timeout de atualizacao e
+  estado restaurado apos erro. O relatorio
+  `build/test-results/rtc-status-host/coverage.json` observou 26 enderecos,
+  sem desconhecidos ou ambiguos, e resolveu todas as 17 superficies de
+  `src/drivers/rtc.c`. O catalogo foi sincronizado e validado com 7.196
+  superficies, 4.113 `COVERED`, 3.083 `PENDING` e 87 casos; o fechamento
+  integral, o gate estrito e a validacao TST7 completa continuam pendentes.

@@ -326,10 +326,11 @@ glyphs validos e fora da faixa com fallback seguro. O relatorio fica em
 make test-font-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
-O caso `test-rtc-status-host` exercita o contrato seguro de consulta do estado
-publicado pelo RTC sem acessar CMOS em modo host. Ele verifica destino nulo,
-snapshot inicial zerado e leituras repetidas sem mutacao. O relatorio fica em
-`build/test-results/rtc-status-host/`:
+O caso `test-rtc-status-host` exercita o RTC com uma porta CMOS simulada no
+build host, sem executar instrucoes privilegiadas. Ele verifica destino nulo,
+inicializacao invalida e valida, leituras BCD/binaria e 12/24 horas, calendario,
+leituras estaveis, autoteste, timeout de atualizacao e estado restaurado. O
+relatorio fica em `build/test-results/rtc-status-host/`:
 
 ```text
 make test-rtc-status-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
