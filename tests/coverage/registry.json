@@ -455,7 +455,7 @@
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-crypto-host PASS com SHA-256/SHA-512, limites e erros canonicos no relatorio instrumentado, sem enderecos desconhecidos ou ambiguos"
+      "evidence": "make test-crypto-host PASS com SHA-256/SHA-512, Ed25519, trim de scalar, limites e erros canonicos no relatorio instrumentado, sem enderecos desconhecidos ou ambiguos"
     },
     {
       "id": "device-manager-host-dynamic",
