@@ -1998,6 +1998,25 @@
       ],
       "include_public_apis": true,
       "evidence": "make test-tcp-host PASS com IPv4 e timer falsos, handshake, dados, ACK, FIN, RST, retransmissao, timeout, callbacks recusados, limites e limpeza sem rede externa"
+    },
+    {
+      "id": "tls-host-dynamic",
+      "domain": "security-tls",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:security:tls"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/tls-host/coverage.json",
+      "coverage_sources": [
+        "src/core/tls.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-tls-host PASS com relogio, RNG e cliente TLS falsos, estados disponiveis e indisponiveis, politicas, validade, cadeia, SAN, pinning, rotacao, revogacao e autoteste sem rede externa"
     }
   ]
 }

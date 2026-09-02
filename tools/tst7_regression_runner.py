@@ -57,6 +57,7 @@ QUICK_COMMANDS = (
     ("test-dhcp-host", "dhcp-host"),
     ("test-ethernet-host", "ethernet-host"),
     ("test-tcp-host", "tcp-host"),
+    ("test-tls-host", "tls-host"),
     ("test-qemu-selftest", "qemu-selftest"),
     ("test-tst2-host", "tst2-host"),
     ("test-tst3-host", "tst3-host"),
@@ -97,6 +98,7 @@ HOST_CASE_TARGETS = {
     "host:network:dhcp": "test-dhcp-host",
     "host:network:ethernet": "test-ethernet-host",
     "host:network:tcp": "test-tcp-host",
+    "host:security:tls": "test-tls-host",
     "host:tst2:protocol-core": "test-tst2-host",
     "host:tst3:string-compress": "test-tst3-host",
 }

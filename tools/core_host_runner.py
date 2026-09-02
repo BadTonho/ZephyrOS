@@ -83,6 +83,8 @@ ETHERNET_RESULT_DIR = ROOT / "build" / "test-results" / "ethernet-host"
 ETHERNET_BINARY = ROOT / "build" / "tests" / "test_ethernet_host.exe"
 TCP_RESULT_DIR = ROOT / "build" / "test-results" / "tcp-host"
 TCP_BINARY = ROOT / "build" / "tests" / "test_tcp_host.exe"
+TLS_RESULT_DIR = ROOT / "build" / "test-results" / "tls-host"
+TLS_BINARY = ROOT / "build" / "tests" / "test_tls_host.exe"
 DEFAULT_TIMEOUT = 120.0
 CORE_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_core_contracts.c",
@@ -276,6 +278,12 @@ TCP_SOURCE_FILES = (
     ROOT / "src" / "core" / "log.c",
     ROOT / "src" / "core" / "string.c",
 )
+TLS_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_tls_host.c",
+    ROOT / "src" / "core" / "tls.c",
+    ROOT / "src" / "core" / "log.c",
+    ROOT / "src" / "core" / "string.c",
+)
 SOURCE_FILES = CORE_SOURCE_FILES
 
 
@@ -349,6 +357,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
                 ETHERNET_SOURCE_FILES, "ethernet-host")
     if case_id == "host:network:tcp":
         return TCP_RESULT_DIR, TCP_BINARY, TCP_SOURCE_FILES, "tcp-host"
+    if case_id == "host:security:tls":
+        return TLS_RESULT_DIR, TLS_BINARY, TLS_SOURCE_FILES, "tls-host"
     raise ValueError(f"caso_host_invalido:{case_id}")
 
 
@@ -505,7 +515,8 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:core:timer", "host:network:udp",
                                  "host:network:arp", "host:network:icmp",
                                  "host:network:dns", "host:network:dhcp",
-                                 "host:network:ethernet", "host:network:tcp"))
+                                 "host:network:ethernet", "host:network:tcp",
+                                 "host:security:tls"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
     return parser.parse_args()

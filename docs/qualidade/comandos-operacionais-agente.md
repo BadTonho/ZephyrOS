@@ -72,6 +72,7 @@ make test-dns-host
 make test-dhcp-host
 make test-ethernet-host
 make test-tcp-host
+make test-tls-host
 ```
 
 O caso de scheduling cobre `wait`, `workqueue` e `irq_deferred` em processo
@@ -174,6 +175,10 @@ O caso `test-tcp-host` usa IPv4 e timer falsos para exercitar handshake,
 dados, ACK, FIN, RST, retransmissao, timeout, callbacks recusados, janelas,
 limites e limpeza sem rede externa; seu relatorio fica em
 `build/test-results/tcp-host/`.
+O caso `test-tls-host` usa relogio, RNG e cliente TLS falsos para exercitar
+politica, validade, cadeia, SAN, pinning, rotacao, revogacao, estados
+indisponiveis e autoteste sem rede externa; seu relatorio fica em
+`build/test-results/tls-host/`.
 
 Para reconstruir a imagem instrumentada separada e gerar o mapa de simbolos:
 
