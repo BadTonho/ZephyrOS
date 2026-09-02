@@ -38,15 +38,28 @@ typedef struct {
 
 static rtc_status_t rtc_status;
 
+#if defined(ZEPHYROS_HOST_TEST)
+extern void rtc_host_outb(uint16_t port, uint8_t value);
+extern uint8_t rtc_host_inb(uint16_t port);
+#endif
+
 static void rtc_outb(uint16_t port, uint8_t value) {
+#if defined(ZEPHYROS_HOST_TEST)
+    rtc_host_outb(port, value);
+#else
     __asm__ volatile("outb %0, %1" : : "a"(value), "Nd"(port));
+#endif
 }
 
 static uint8_t rtc_inb(uint16_t port) {
+#if defined(ZEPHYROS_HOST_TEST)
+    return rtc_host_inb(port);
+#else
     uint8_t value;
 
     __asm__ volatile("inb %1, %0" : "=a"(value) : "Nd"(port));
     return value;
+#endif
 }
 
 static uint8_t rtc_read_register(uint8_t reg) {

@@ -1927,7 +1927,7 @@
           "coverage"
         ]
       },
-      "evidence": "make test-rtc-status-host PASS com snapshot nulo, estado inicial zerado e leitura repetida sem mutacao no relatorio instrumentado"
+      "evidence": "make test-rtc-status-host PASS com CMOS simulado, inicializacao invalida e valida, leituras BCD/binaria e 12/24 horas, calendario invalido, leituras estaveis, autoteste, timeout de atualizacao e estado restaurado; 26 enderecos observados sem desconhecidos ou ambiguos"
     },
     {
       "id": "shell-introspection-host-dynamic",

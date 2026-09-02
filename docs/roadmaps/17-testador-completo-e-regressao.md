@@ -1249,6 +1249,17 @@ e a validacao TST7 completa continuam pendentes.
   `COVERED`, 3.307 `PENDING` e 85 casos. O fechamento integral do catalogo, o
   gate estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Drivers/RTC concluido em 2026-09-02: a fixture host-only de
+  `host:drivers:rtc-status` passou a simular a porta CMOS em vez de acessar I/O
+  privilegiado. O caso cobre inicializacao invalida e valida, leituras BCD e
+  binarias, modos de 12 e 24 horas, calendario, leituras estaveis, autoteste,
+  timeout de atualizacao e estado publicado apos falha. O relatorio
+  `build/test-results/rtc-status-host/coverage.json` terminou `PASS`, observou
+  26 enderecos sem desconhecidos ou ambiguos e resolveu todas as 17 superficies
+  de `src/drivers/rtc.c`. O catalogo registra 7.196 superficies, 4.113
+  `COVERED`, 3.083 `PENDING` e 87 casos; o fechamento integral, o gate estrito
+  e a validacao TST7 completa continuam pendentes.
+
 Incremento Storage/FAT32 concluido em 2026-09-02: o caso existente
 `host:storage:fat32` passou a exercitar diretamente as APIs publicas
 `fat32_write_file` e `fat32_read_file` em round-trip sobre imagem FAT32

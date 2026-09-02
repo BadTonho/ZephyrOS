@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4104 |
+| `COVERED` | 4113 |
 | `MANUAL` | 0 |
-| `PENDING` | 3092 |
+| `PENDING` | 3083 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -4291,23 +4291,23 @@
 | `c:src/drivers/rng.c:rng_init` | `src/drivers/rng.c` | `rng_init` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/rng.c:rng_read_word` | `src/drivers/rng.c` | `rng_read_word` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/rng.c:rng_validate_state` | `src/drivers/rng.c` | `rng_validate_state` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/rtc.c:rtc_datetime_valid` | `src/drivers/rtc.c` | `rtc_datetime_valid` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/rtc.c:rtc_days_in_month` | `src/drivers/rtc.c` | `rtc_days_in_month` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/rtc.c:rtc_decode_snapshot` | `src/drivers/rtc.c` | `rtc_decode_snapshot` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/rtc.c:rtc_decode_value` | `src/drivers/rtc.c` | `rtc_decode_value` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/rtc.c:rtc_datetime_valid` | `src/drivers/rtc.c` | `rtc_datetime_valid` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/rtc.c:rtc_days_in_month` | `src/drivers/rtc.c` | `rtc_days_in_month` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/rtc.c:rtc_decode_snapshot` | `src/drivers/rtc.c` | `rtc_decode_snapshot` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/rtc.c:rtc_decode_value` | `src/drivers/rtc.c` | `rtc_decode_value` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/rtc.c:rtc_get_status` | `src/drivers/rtc.c` | `rtc_get_status` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/rtc.c:rtc_inb` | `src/drivers/rtc.c` | `rtc_inb` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtc.c:rtc_init` | `src/drivers/rtc.c` | `rtc_init` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtc.c:rtc_is_leap_year` | `src/drivers/rtc.c` | `rtc_is_leap_year` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/rtc.c:rtc_outb` | `src/drivers/rtc.c` | `rtc_outb` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtc.c:rtc_raw_equal` | `src/drivers/rtc.c` | `rtc_raw_equal` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtc.c:rtc_read_raw` | `src/drivers/rtc.c` | `rtc_read_raw` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtc.c:rtc_read_raw_once` | `src/drivers/rtc.c` | `rtc_read_raw_once` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtc.c:rtc_read_register` | `src/drivers/rtc.c` | `rtc_read_register` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtc.c:rtc_read_utc` | `src/drivers/rtc.c` | `rtc_read_utc` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtc.c:rtc_self_test` | `src/drivers/rtc.c` | `rtc_self_test` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/rtc.c:rtc_validate_state` | `src/drivers/rtc.c` | `rtc_validate_state` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/rtc.c:rtc_wait_update_complete` | `src/drivers/rtc.c` | `rtc_wait_update_complete` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/rtc.c:rtc_inb` | `src/drivers/rtc.c` | `rtc_inb` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtc.c:rtc_init` | `src/drivers/rtc.c` | `rtc_init` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtc.c:rtc_is_leap_year` | `src/drivers/rtc.c` | `rtc_is_leap_year` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/rtc.c:rtc_outb` | `src/drivers/rtc.c` | `rtc_outb` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtc.c:rtc_raw_equal` | `src/drivers/rtc.c` | `rtc_raw_equal` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtc.c:rtc_read_raw` | `src/drivers/rtc.c` | `rtc_read_raw` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtc.c:rtc_read_raw_once` | `src/drivers/rtc.c` | `rtc_read_raw_once` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtc.c:rtc_read_register` | `src/drivers/rtc.c` | `rtc_read_register` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtc.c:rtc_read_utc` | `src/drivers/rtc.c` | `rtc_read_utc` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtc.c:rtc_self_test` | `src/drivers/rtc.c` | `rtc_self_test` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/rtc.c:rtc_validate_state` | `src/drivers/rtc.c` | `rtc_validate_state` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/rtc.c:rtc_wait_update_complete` | `src/drivers/rtc.c` | `rtc_wait_update_complete` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/rtl8139.c:rtl8139_advance_rx` | `src/drivers/rtl8139.c` | `rtl8139_advance_rx` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/rtl8139.c:rtl8139_allocate_device` | `src/drivers/rtl8139.c` | `rtl8139_allocate_device` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/rtl8139.c:rtl8139_allocate_dma` | `src/drivers/rtl8139.c` | `rtl8139_allocate_dma` | `drivers` | `PENDING` | 0 |
@@ -8814,15 +8814,6 @@
 - `c:src/drivers/rng.c:rng_get_bytes`
 - `c:src/drivers/rng.c:rng_init`
 - `c:src/drivers/rng.c:rng_read_word`
-- `c:src/drivers/rtc.c:rtc_inb`
-- `c:src/drivers/rtc.c:rtc_init`
-- `c:src/drivers/rtc.c:rtc_outb`
-- `c:src/drivers/rtc.c:rtc_raw_equal`
-- `c:src/drivers/rtc.c:rtc_read_raw`
-- `c:src/drivers/rtc.c:rtc_read_raw_once`
-- `c:src/drivers/rtc.c:rtc_read_register`
-- `c:src/drivers/rtc.c:rtc_read_utc`
-- `c:src/drivers/rtc.c:rtc_wait_update_complete`
 - `c:src/drivers/rtl8139.c:rtl8139_advance_rx`
 - `c:src/drivers/rtl8139.c:rtl8139_allocate_device`
 - `c:src/drivers/rtl8139.c:rtl8139_allocate_dma`
