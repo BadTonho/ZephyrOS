@@ -1684,6 +1684,9 @@ test-device-manager-host: tools\core_host_runner.py tools\coverage_collector.py 
 test-app-api-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_app_api_host.c tests\catalog.json src\core\app_api.c
 	python tools\core_host_runner.py --case host:core:app-api --cc "$(HOST_CC)"
 
+test-app-files-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_app_files_host.c tests\catalog.json src\core\app_files.c src\include\core\app_files.h
+	python tools\core_host_runner.py --case host:core:app-files --cc "$(HOST_CC)"
+
 test-app-catalog-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_app_catalog_host.c tests\catalog.json src\core\app_catalog.c
 	python tools\core_host_runner.py --case host:core:app-catalog --cc "$(HOST_CC)"
 
@@ -1878,5 +1881,5 @@ clean:
 .PHONY: test-tst6-host test-tst6-qemu-matrix-baseline test-tst6-qemu-matrix-minimal test-tst6-qemu-matrix-network test-tst6-qemu-matrix-usb-hid test-tst6-qemu-matrix-usb-storage test-tst6-qemu-matrix-audio test-tst6-qemu-matrix-display test-tst6-qemu-matrix-pci test-tst6-qemu-stress-kernel test-tst6-qemu-stress-storage test-tst6-qemu-stress-network test-tst6-qemu-stress-apps test-tst6-qemu-fault-memory test-tst6-qemu-fault-block test-tst6-qemu-fault-block-cache test-tst6-qemu-fault-package test-tst6-qemu-fault-update test-tst6-qemu-fault-network test-tst6-qemu-fault-process test-tst6-qemu-fault-recovery
 .PHONY: test-tst7-host test-tst7-quick test-tst7-full
 .PHONY: test-tst7-continuous-host test-tst7-continuous
-.PHONY: test-network-host test-network-manager-host test-route-host test-ipv4-host test-crypto-host test-scheduling-host test-package-host test-state-host test-device-manager-host test-app-api-host test-app-catalog-host test-input-host test-power-host test-vfs-path-host test-file-index-host test-fs-host test-storage-host test-block-host test-fat12-host test-fat32-host test-vfs-host test-slab-host test-timer-host test-udp-host test-arp-host test-icmp-host test-dns-host test-dhcp-host test-ethernet-host test-tcp-host test-tls-host test-http-host test-net-socket-host test-vma-host test-paging-host test-memory-host test-process-signal-host test-process-ipc-host test-workqueue-host test-bearssl-compat-host test-shell-dispatch-host test-shell-introspection-host test-font-host test-rtc-status-host test-shell-input-host test-shell-command-utils-host
+.PHONY: test-network-host test-network-manager-host test-route-host test-ipv4-host test-crypto-host test-scheduling-host test-package-host test-state-host test-device-manager-host test-app-api-host test-app-files-host test-app-catalog-host test-input-host test-power-host test-vfs-path-host test-file-index-host test-fs-host test-storage-host test-block-host test-fat12-host test-fat32-host test-vfs-host test-slab-host test-timer-host test-udp-host test-arp-host test-icmp-host test-dns-host test-dhcp-host test-ethernet-host test-tcp-host test-tls-host test-http-host test-net-socket-host test-vma-host test-paging-host test-memory-host test-process-signal-host test-process-ipc-host test-workqueue-host test-bearssl-compat-host test-shell-dispatch-host test-shell-introspection-host test-font-host test-rtc-status-host test-shell-input-host test-shell-command-utils-host
 .PHONY: catalog-test-strict

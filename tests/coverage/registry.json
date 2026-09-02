@@ -22,6 +22,49 @@
       "evidence": "make test-app-api-host PASS com fachada de arquivos, memoria, IPC, VMA, limites, estados e erros canonicos no relatorio instrumentado"
     },
     {
+      "id": "app-files-host-dynamic",
+      "domain": "core-app-files",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/app-files-host/coverage.json",
+      "coverage_sources": [
+        "src/core/app_files.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-app-files-host PASS com VFS falso, inicializacao, encaminhamento de todas as operacoes, erros canonicos e limpeza no relatorio instrumentado",
+      "case_definition": {
+        "id": "host:core:app-files",
+        "scenario": "Fachada host-only de arquivos sobre VFS falso",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "compilar e executar a fachada app_files com VFS falso e entradas validas e invalidas",
+        "expected": "operacoes de arquivo preservam pre-condicoes, encaminhamento, retornos e limpeza",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente estado estatico da fachada e do VFS falso no processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": []
+      }
+    },
+    {
       "id": "app-catalog-host-dynamic",
       "domain": "core-app-catalog",
       "owner": "quality",

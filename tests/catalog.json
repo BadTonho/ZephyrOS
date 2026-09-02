@@ -4069,9 +4069,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_files.h:app_files_close",
@@ -4087,9 +4090,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_files.h:app_files_close_owner",
@@ -4105,9 +4111,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_files.h:app_files_fsync",
@@ -4123,9 +4132,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_files.h:app_files_getcwd",
@@ -4141,9 +4153,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_files.h:app_files_init",
@@ -4159,9 +4174,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_files.h:app_files_ioctl",
@@ -4177,9 +4195,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_files.h:app_files_is_ready",
@@ -4195,9 +4216,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_files.h:app_files_lseek",
@@ -4213,9 +4237,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_files.h:app_files_open",
@@ -4231,9 +4258,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_files.h:app_files_pipe",
@@ -4249,9 +4279,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_files.h:app_files_poll",
@@ -4267,9 +4300,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_files.h:app_files_read",
@@ -4285,9 +4321,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_files.h:app_files_select",
@@ -4303,9 +4342,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_files.h:app_files_sync",
@@ -4321,9 +4363,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_files.h:app_files_write",
@@ -4339,9 +4384,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_loader.h:app_loader_build_launch_info",
@@ -8505,6 +8553,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -8554,6 +8603,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -8603,6 +8653,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -8652,6 +8703,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -8701,6 +8753,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -8750,6 +8803,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -8799,6 +8853,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -8848,6 +8903,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -8897,6 +8953,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -8946,6 +9003,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -8995,6 +9053,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -9044,6 +9103,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -9093,6 +9153,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -9142,6 +9203,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -9191,6 +9253,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -9240,6 +9303,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -12736,6 +12800,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -12793,6 +12858,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -12850,6 +12916,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -12900,6 +12967,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -43205,9 +43273,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_files.c:app_files_close",
@@ -43223,9 +43294,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_files.c:app_files_close_owner",
@@ -43241,9 +43315,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_files.c:app_files_fsync",
@@ -43259,9 +43336,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_files.c:app_files_getcwd",
@@ -43277,9 +43357,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_files.c:app_files_init",
@@ -43295,9 +43378,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_files.c:app_files_ioctl",
@@ -43313,9 +43399,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_files.c:app_files_is_ready",
@@ -43331,9 +43420,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_files.c:app_files_lseek",
@@ -43349,9 +43441,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_files.c:app_files_open",
@@ -43367,9 +43462,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_files.c:app_files_pipe",
@@ -43385,9 +43483,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_files.c:app_files_poll",
@@ -43403,9 +43504,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_files.c:app_files_read",
@@ -43421,9 +43525,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_files.c:app_files_select",
@@ -43439,9 +43546,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_files.c:app_files_sync",
@@ -43457,9 +43567,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_files.c:app_files_write",
@@ -43475,9 +43588,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-files"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_loader.c:app_loader_build_launch_info",
@@ -58682,6 +58798,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -58840,6 +58957,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -58932,6 +59050,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -59025,6 +59144,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -59102,6 +59222,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -59152,6 +59273,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -59202,6 +59324,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -59296,6 +59419,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -59341,6 +59465,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -59391,6 +59516,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -59576,6 +59702,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -59626,6 +59753,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -59881,6 +60009,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -66337,6 +66466,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -66394,6 +66524,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -66451,6 +66582,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -66501,6 +66633,7 @@
       "case_ids": [
         "host:core:app-api",
         "host:core:app-catalog",
+        "host:core:app-files",
         "host:core:app-package",
         "host:core:contracts",
         "host:core:crypto",
@@ -164341,6 +164474,100 @@
         "tst6",
         "stress",
         "storage"
+      ]
+    },
+    {
+      "id": "host:core:app-files",
+      "scenario": "Fachada host-only de arquivos sobre VFS falso",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "compilar e executar a fachada app_files com VFS falso e entradas validas e invalidas",
+      "expected": "operacoes de arquivo preservam pre-condicoes, encaminhamento, retornos e limpeza",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente estado estatico da fachada e do VFS falso no processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/app_files.h:app_files_chdir",
+        "api:src/include/core/app_files.h:app_files_close",
+        "api:src/include/core/app_files.h:app_files_close_owner",
+        "api:src/include/core/app_files.h:app_files_fsync",
+        "api:src/include/core/app_files.h:app_files_getcwd",
+        "api:src/include/core/app_files.h:app_files_init",
+        "api:src/include/core/app_files.h:app_files_ioctl",
+        "api:src/include/core/app_files.h:app_files_is_ready",
+        "api:src/include/core/app_files.h:app_files_lseek",
+        "api:src/include/core/app_files.h:app_files_open",
+        "api:src/include/core/app_files.h:app_files_pipe",
+        "api:src/include/core/app_files.h:app_files_poll",
+        "api:src/include/core/app_files.h:app_files_read",
+        "api:src/include/core/app_files.h:app_files_select",
+        "api:src/include/core/app_files.h:app_files_sync",
+        "api:src/include/core/app_files.h:app_files_write",
+        "api:src/include/core/log.h:log_clear_buffer",
+        "api:src/include/core/log.h:log_copy_recent",
+        "api:src/include/core/log.h:log_get_buffer",
+        "api:src/include/core/log.h:log_get_buffer_level",
+        "api:src/include/core/log.h:log_get_console_level",
+        "api:src/include/core/log.h:log_get_level",
+        "api:src/include/core/log.h:log_get_stats",
+        "api:src/include/core/log.h:log_init",
+        "api:src/include/core/log.h:log_level_str",
+        "api:src/include/core/log.h:log_print",
+        "api:src/include/core/log.h:log_print_code",
+        "api:src/include/core/log.h:log_self_test",
+        "api:src/include/core/log.h:log_set_buffer_level",
+        "api:src/include/core/log.h:log_set_console_level",
+        "api:src/include/core/log.h:log_set_level",
+        "api:src/include/core/log.h:log_to_buffer",
+        "api:src/include/core/string.h:kmemcpy",
+        "api:src/include/core/string.h:kmemset",
+        "api:src/include/core/string.h:kstrcmp",
+        "api:src/include/core/string.h:kstrlen",
+        "c:src/core/app_files.c:app_files_chdir",
+        "c:src/core/app_files.c:app_files_close",
+        "c:src/core/app_files.c:app_files_close_owner",
+        "c:src/core/app_files.c:app_files_fsync",
+        "c:src/core/app_files.c:app_files_getcwd",
+        "c:src/core/app_files.c:app_files_init",
+        "c:src/core/app_files.c:app_files_ioctl",
+        "c:src/core/app_files.c:app_files_is_ready",
+        "c:src/core/app_files.c:app_files_lseek",
+        "c:src/core/app_files.c:app_files_open",
+        "c:src/core/app_files.c:app_files_pipe",
+        "c:src/core/app_files.c:app_files_poll",
+        "c:src/core/app_files.c:app_files_read",
+        "c:src/core/app_files.c:app_files_select",
+        "c:src/core/app_files.c:app_files_sync",
+        "c:src/core/app_files.c:app_files_write",
+        "c:src/core/log.c:log_copy_text",
+        "c:src/core/log.c:log_init",
+        "c:src/core/log.c:log_level_is_valid",
+        "c:src/core/log.c:log_print",
+        "c:src/core/log.c:log_print_colored",
+        "c:src/core/log.c:log_records_match",
+        "c:src/core/log.c:log_restore_interrupts",
+        "c:src/core/log.c:log_ring_initialize",
+        "c:src/core/log.c:log_ring_latest_index",
+        "c:src/core/log.c:log_ring_store",
+        "c:src/core/log.c:log_submit",
+        "c:src/core/log.c:log_suspend_interrupts",
+        "c:src/core/log.c:log_write_serial",
+        "c:src/core/string.c:kmemcpy",
+        "c:src/core/string.c:kmemset",
+        "c:src/core/string.c:kstrcmp",
+        "c:src/core/string.c:kstrlen"
       ]
     }
   ],
