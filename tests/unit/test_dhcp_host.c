@@ -530,13 +530,20 @@ static int check_dhcp(void) {
         dhcp_take_event(&event, NULL) != ERR_NULL ||
         dhcp_complete_event(DHCP_EVENT_NONE, OK) != ERR_INVALID ||
         dhcp_validate_state() != OK) return 36;
+    length = make_reply(packet, DHCP_MESSAGE_OFFER, DHCP_OFFER_IP, 0U);
+    packet[DHCP_OFFSET_OPTIONS + 1U] = 2U;
+    if (dhcp_acquire(DHCP_INTERFACE, fixture_mac) != OK ||
+        deliver_packet(packet, length, DHCP_INTERFACE, DHCP_SERVER_IP,
+                       DHCP_SERVER_PORT, DHCP_CLIENT_PORT) != OK ||
+        dhcp_get_status(&status) != OK || status.invalid_packets == 0U ||
+        dhcp_release(&sent) != OK || dhcp_validate_state() != OK) return 37;
     kmemcpy(malformed, transmitted_payload, transmitted_length);
     malformed[DHCP_OFFSET_COOKIE] ^= 1U;
     if (dhcp_acquire(DHCP_INTERFACE, fixture_mac) != OK ||
         deliver_packet(malformed, transmitted_length, DHCP_INTERFACE,
                        DHCP_SERVER_IP, DHCP_SERVER_PORT, DHCP_CLIENT_PORT) != OK ||
         dhcp_get_status(&status) != OK || status.invalid_packets == 0U ||
-        dhcp_release(&sent) != OK || dhcp_validate_state() != OK) return 37;
+        dhcp_release(&sent) != OK || dhcp_validate_state() != OK) return 38;
     return 0;
 }
 

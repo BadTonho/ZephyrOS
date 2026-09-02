@@ -1009,6 +1009,16 @@ registra 6.827 superficies, 3.082 `COVERED`, 3.745 `PENDING` e 78 casos; o
 fechamento integral do catalogo, o gate estrito e a validacao TST7 completa
 continuam pendentes.
 
+Incremento Rede/DHCP/limites concluido em 2026-09-02 14:08: a fixture existente
+`host:network:dhcp` passou a enviar uma opcao DHCP com comprimento incompatível,
+exercitando o rejeito canonico de `dhcp_invalid_option_length` sem conexao
+externa. O relatorio instrumentado `build/test-results/dhcp-host/coverage.json`
+terminou `PASS` com as 52 funcoes de `src/core/dhcp.c` resolvidas, sem enderecos
+desconhecidos ou ambiguos. `make test-dhcp-host`, `make catalog-test` e
+`git diff --check` passaram. A sincronizacao atual registra 6.827 superficies,
+3.083 `COVERED`, 3.744 `PENDING` e 78 casos; o fechamento integral do catalogo,
+o gate estrito e a validacao TST7 completa continuam pendentes.
+
 Incremento Processos/IPC concluido em 2026-09-02 13:52: o caso host-only
 `host:process:ipc` e o alvo `make test-process-ipc-host` foram adicionados. A
 fixture usa processos, filas e wait falsos para exercitar inicializacao,

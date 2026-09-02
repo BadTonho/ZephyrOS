@@ -43034,9 +43034,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_lease_from_reply",
@@ -138839,6 +138842,7 @@
         "c:src/core/dhcp.c:dhcp_get_status",
         "c:src/core/dhcp.c:dhcp_handle_datagram",
         "c:src/core/dhcp.c:dhcp_init",
+        "c:src/core/dhcp.c:dhcp_invalid_option_length",
         "c:src/core/dhcp.c:dhcp_lease_from_reply",
         "c:src/core/dhcp.c:dhcp_lease_valid",
         "c:src/core/dhcp.c:dhcp_mac_equal",
