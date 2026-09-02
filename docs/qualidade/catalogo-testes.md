@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **6820**
-- Casos de teste: **70**
+- Casos de teste: **71**
 - Superfícies aposentadas: **20**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 2931 |
+| `COVERED` | 2979 |
 | `MANUAL` | 0 |
-| `PENDING` | 3889 |
+| `PENDING` | 3841 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 70 |
+| `AUTOMATED` | 71 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -364,16 +364,16 @@
 | `api:src/include/core/ethernet.h:ethernet_send` | `src/include/core/ethernet.h` | `ethernet_send` | `core` | `COVERED` | 1 |
 | `api:src/include/core/ethernet.h:ethernet_set_quiescing` | `src/include/core/ethernet.h` | `ethernet_set_quiescing` | `core` | `COVERED` | 1 |
 | `api:src/include/core/ethernet.h:ethernet_validate_state` | `src/include/core/ethernet.h` | `ethernet_validate_state` | `core` | `COVERED` | 3 |
-| `api:src/include/core/http.h:http_get_body` | `src/include/core/http.h` | `http_get_body` | `core` | `PENDING` | 0 |
-| `api:src/include/core/http.h:http_get_start` | `src/include/core/http.h` | `http_get_start` | `core` | `PENDING` | 0 |
-| `api:src/include/core/http.h:http_get_start_ex` | `src/include/core/http.h` | `http_get_start_ex` | `core` | `PENDING` | 0 |
-| `api:src/include/core/http.h:http_get_status` | `src/include/core/http.h` | `http_get_status` | `core` | `PENDING` | 0 |
-| `api:src/include/core/http.h:http_get_stream_start` | `src/include/core/http.h` | `http_get_stream_start` | `core` | `PENDING` | 0 |
-| `api:src/include/core/http.h:http_get_stream_start_ex` | `src/include/core/http.h` | `http_get_stream_start_ex` | `core` | `PENDING` | 0 |
-| `api:src/include/core/http.h:http_init` | `src/include/core/http.h` | `http_init` | `core` | `PENDING` | 0 |
-| `api:src/include/core/http.h:http_maintain` | `src/include/core/http.h` | `http_maintain` | `core` | `PENDING` | 0 |
-| `api:src/include/core/http.h:http_reset` | `src/include/core/http.h` | `http_reset` | `core` | `PENDING` | 0 |
-| `api:src/include/core/http.h:http_validate_state` | `src/include/core/http.h` | `http_validate_state` | `core` | `COVERED` | 2 |
+| `api:src/include/core/http.h:http_get_body` | `src/include/core/http.h` | `http_get_body` | `core` | `COVERED` | 1 |
+| `api:src/include/core/http.h:http_get_start` | `src/include/core/http.h` | `http_get_start` | `core` | `COVERED` | 1 |
+| `api:src/include/core/http.h:http_get_start_ex` | `src/include/core/http.h` | `http_get_start_ex` | `core` | `COVERED` | 1 |
+| `api:src/include/core/http.h:http_get_status` | `src/include/core/http.h` | `http_get_status` | `core` | `COVERED` | 1 |
+| `api:src/include/core/http.h:http_get_stream_start` | `src/include/core/http.h` | `http_get_stream_start` | `core` | `COVERED` | 1 |
+| `api:src/include/core/http.h:http_get_stream_start_ex` | `src/include/core/http.h` | `http_get_stream_start_ex` | `core` | `COVERED` | 1 |
+| `api:src/include/core/http.h:http_init` | `src/include/core/http.h` | `http_init` | `core` | `COVERED` | 1 |
+| `api:src/include/core/http.h:http_maintain` | `src/include/core/http.h` | `http_maintain` | `core` | `COVERED` | 1 |
+| `api:src/include/core/http.h:http_reset` | `src/include/core/http.h` | `http_reset` | `core` | `COVERED` | 1 |
+| `api:src/include/core/http.h:http_validate_state` | `src/include/core/http.h` | `http_validate_state` | `core` | `COVERED` | 3 |
 | `api:src/include/core/icmp.h:icmp_get_status` | `src/include/core/icmp.h` | `icmp_get_status` | `core` | `COVERED` | 1 |
 | `api:src/include/core/icmp.h:icmp_init` | `src/include/core/icmp.h` | `icmp_init` | `core` | `COVERED` | 1 |
 | `api:src/include/core/icmp.h:icmp_maintain` | `src/include/core/icmp.h` | `icmp_maintain` | `core` | `COVERED` | 1 |
@@ -424,9 +424,9 @@
 | `api:src/include/core/log.h:log_get_console_level` | `src/include/core/log.h` | `log_get_console_level` | `core` | `COVERED` | 1 |
 | `api:src/include/core/log.h:log_get_level` | `src/include/core/log.h` | `log_get_level` | `core` | `COVERED` | 1 |
 | `api:src/include/core/log.h:log_get_stats` | `src/include/core/log.h` | `log_get_stats` | `core` | `COVERED` | 2 |
-| `api:src/include/core/log.h:log_init` | `src/include/core/log.h` | `log_init` | `core` | `COVERED` | 21 |
-| `api:src/include/core/log.h:log_print` | `src/include/core/log.h` | `log_print` | `core` | `COVERED` | 24 |
-| `api:src/include/core/log.h:log_print_code` | `src/include/core/log.h` | `log_print_code` | `core` | `COVERED` | 6 |
+| `api:src/include/core/log.h:log_init` | `src/include/core/log.h` | `log_init` | `core` | `COVERED` | 22 |
+| `api:src/include/core/log.h:log_print` | `src/include/core/log.h` | `log_print` | `core` | `COVERED` | 25 |
+| `api:src/include/core/log.h:log_print_code` | `src/include/core/log.h` | `log_print_code` | `core` | `COVERED` | 7 |
 | `api:src/include/core/log.h:log_self_test` | `src/include/core/log.h` | `log_self_test` | `core` | `COVERED` | 3 |
 | `api:src/include/core/log.h:log_set_buffer_level` | `src/include/core/log.h` | `log_set_buffer_level` | `core` | `COVERED` | 1 |
 | `api:src/include/core/log.h:log_set_console_level` | `src/include/core/log.h` | `log_set_console_level` | `core` | `COVERED` | 1 |
@@ -555,10 +555,10 @@
 | `api:src/include/core/spinlock.h:spinlock_acquire` | `src/include/core/spinlock.h` | `spinlock_acquire` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_init` | `src/include/core/spinlock.h` | `spinlock_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_release` | `src/include/core/spinlock.h` | `spinlock_release` | `core` | `PENDING` | 0 |
-| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 32 |
-| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 32 |
-| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 25 |
-| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 29 |
+| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 33 |
+| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 33 |
+| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 26 |
+| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 30 |
 | `api:src/include/core/syscall.h:syscall_enable_user_mode` | `src/include/core/syscall.h` | `syscall_enable_user_mode` | `core` | `PENDING` | 0 |
 | `api:src/include/core/syscall.h:syscall_handler` | `src/include/core/syscall.h` | `syscall_handler` | `core` | `COVERED` | 1 |
 | `api:src/include/core/syscall.h:syscall_init` | `src/include/core/syscall.h` | `syscall_init` | `core` | `PENDING` | 0 |
@@ -2343,64 +2343,64 @@
 | `c:src/core/ethernet.c:ethernet_source_is_valid` | `src/core/ethernet.c` | `ethernet_source_is_valid` | `core` | `COVERED` | 1 |
 | `c:src/core/ethernet.c:ethernet_text_equal` | `src/core/ethernet.c` | `ethernet_text_equal` | `core` | `COVERED` | 1 |
 | `c:src/core/ethernet.c:ethernet_validate_state` | `src/core/ethernet.c` | `ethernet_validate_state` | `core` | `COVERED` | 3 |
-| `c:src/core/http.c:http_append_bytes` | `src/core/http.c` | `http_append_bytes` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_append_port` | `src/core/http.c` | `http_append_port` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_append_text` | `src/core/http.c` | `http_append_text` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_ascii_lower` | `src/core/http.c` | `http_ascii_lower` | `core` | `COVERED` | 2 |
-| `c:src/core/http.c:http_build_request` | `src/core/http.c` | `http_build_request` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_cancel_resolution` | `src/core/http.c` | `http_cancel_resolution` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_chunk_error` | `src/core/http.c` | `http_chunk_error` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_clear_session` | `src/core/http.c` | `http_clear_session` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_complete` | `src/core/http.c` | `http_complete` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_consume_body` | `src/core/http.c` | `http_consume_body` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_consume_bytes` | `src/core/http.c` | `http_consume_bytes` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_consume_chunked` | `src/core/http.c` | `http_consume_chunked` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_copy_text` | `src/core/http.c` | `http_copy_text` | `core` | `COVERED` | 2 |
-| `c:src/core/http.c:http_enforce_worker_stack_margin` | `src/core/http.c` | `http_enforce_worker_stack_margin` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_fail` | `src/core/http.c` | `http_fail` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_find_crlf` | `src/core/http.c` | `http_find_crlf` | `core` | `COVERED` | 2 |
-| `c:src/core/http.c:http_finish_headers` | `src/core/http.c` | `http_finish_headers` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_follow_redirect` | `src/core/http.c` | `http_follow_redirect` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_get_body` | `src/core/http.c` | `http_get_body` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_get_start` | `src/core/http.c` | `http_get_start` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_get_start_ex` | `src/core/http.c` | `http_get_start_ex` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_get_start_internal` | `src/core/http.c` | `http_get_start_internal` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_get_status` | `src/core/http.c` | `http_get_status` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_get_stream_start` | `src/core/http.c` | `http_get_stream_start` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_get_stream_start_ex` | `src/core/http.c` | `http_get_stream_start_ex` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_header_value_equal` | `src/core/http.c` | `http_header_value_equal` | `core` | `COVERED` | 2 |
-| `c:src/core/http.c:http_headers_complete` | `src/core/http.c` | `http_headers_complete` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_host_is_numeric` | `src/core/http.c` | `http_host_is_numeric` | `core` | `COVERED` | 2 |
-| `c:src/core/http.c:http_init` | `src/core/http.c` | `http_init` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_is_redirect_status` | `src/core/http.c` | `http_is_redirect_status` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_is_token_character` | `src/core/http.c` | `http_is_token_character` | `core` | `COVERED` | 2 |
-| `c:src/core/http.c:http_maintain` | `src/core/http.c` | `http_maintain` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_maintain_connecting` | `src/core/http.c` | `http_maintain_connecting` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_maintain_receiving` | `src/core/http.c` | `http_maintain_receiving` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_maintain_resolving` | `src/core/http.c` | `http_maintain_resolving` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_maintain_sending` | `src/core/http.c` | `http_maintain_sending` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_maintain_tls` | `src/core/http.c` | `http_maintain_tls` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_parse_decimal` | `src/core/http.c` | `http_parse_decimal` | `core` | `COVERED` | 2 |
-| `c:src/core/http.c:http_parse_header_line` | `src/core/http.c` | `http_parse_header_line` | `core` | `COVERED` | 2 |
-| `c:src/core/http.c:http_parse_headers` | `src/core/http.c` | `http_parse_headers` | `core` | `COVERED` | 2 |
-| `c:src/core/http.c:http_parse_ipv4` | `src/core/http.c` | `http_parse_ipv4` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_parse_port` | `src/core/http.c` | `http_parse_port` | `core` | `COVERED` | 2 |
-| `c:src/core/http.c:http_parse_status_line` | `src/core/http.c` | `http_parse_status_line` | `core` | `COVERED` | 2 |
-| `c:src/core/http.c:http_parse_url` | `src/core/http.c` | `http_parse_url` | `core` | `COVERED` | 2 |
-| `c:src/core/http.c:http_parse_url_ex` | `src/core/http.c` | `http_parse_url_ex` | `core` | `COVERED` | 2 |
-| `c:src/core/http.c:http_prepare_options` | `src/core/http.c` | `http_prepare_options` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_range_equal` | `src/core/http.c` | `http_range_equal` | `core` | `COVERED` | 2 |
-| `c:src/core/http.c:http_reject_unavailable_tls` | `src/core/http.c` | `http_reject_unavailable_tls` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_release_socket` | `src/core/http.c` | `http_release_socket` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_reset` | `src/core/http.c` | `http_reset` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_socket_exists` | `src/core/http.c` | `http_socket_exists` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_start_socket` | `src/core/http.c` | `http_start_socket` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_text_prefix_equal` | `src/core/http.c` | `http_text_prefix_equal` | `core` | `COVERED` | 2 |
-| `c:src/core/http.c:http_validate_header_value` | `src/core/http.c` | `http_validate_header_value` | `core` | `PENDING` | 0 |
-| `c:src/core/http.c:http_validate_header_vectors` | `src/core/http.c` | `http_validate_header_vectors` | `core` | `COVERED` | 2 |
-| `c:src/core/http.c:http_validate_host` | `src/core/http.c` | `http_validate_host` | `core` | `COVERED` | 2 |
-| `c:src/core/http.c:http_validate_state` | `src/core/http.c` | `http_validate_state` | `core` | `COVERED` | 2 |
-| `c:src/core/http.c:http_validate_url_vector` | `src/core/http.c` | `http_validate_url_vector` | `core` | `COVERED` | 2 |
+| `c:src/core/http.c:http_append_bytes` | `src/core/http.c` | `http_append_bytes` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_append_port` | `src/core/http.c` | `http_append_port` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_append_text` | `src/core/http.c` | `http_append_text` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_ascii_lower` | `src/core/http.c` | `http_ascii_lower` | `core` | `COVERED` | 3 |
+| `c:src/core/http.c:http_build_request` | `src/core/http.c` | `http_build_request` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_cancel_resolution` | `src/core/http.c` | `http_cancel_resolution` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_chunk_error` | `src/core/http.c` | `http_chunk_error` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_clear_session` | `src/core/http.c` | `http_clear_session` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_complete` | `src/core/http.c` | `http_complete` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_consume_body` | `src/core/http.c` | `http_consume_body` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_consume_bytes` | `src/core/http.c` | `http_consume_bytes` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_consume_chunked` | `src/core/http.c` | `http_consume_chunked` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_copy_text` | `src/core/http.c` | `http_copy_text` | `core` | `COVERED` | 3 |
+| `c:src/core/http.c:http_enforce_worker_stack_margin` | `src/core/http.c` | `http_enforce_worker_stack_margin` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_fail` | `src/core/http.c` | `http_fail` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_find_crlf` | `src/core/http.c` | `http_find_crlf` | `core` | `COVERED` | 3 |
+| `c:src/core/http.c:http_finish_headers` | `src/core/http.c` | `http_finish_headers` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_follow_redirect` | `src/core/http.c` | `http_follow_redirect` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_get_body` | `src/core/http.c` | `http_get_body` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_get_start` | `src/core/http.c` | `http_get_start` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_get_start_ex` | `src/core/http.c` | `http_get_start_ex` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_get_start_internal` | `src/core/http.c` | `http_get_start_internal` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_get_status` | `src/core/http.c` | `http_get_status` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_get_stream_start` | `src/core/http.c` | `http_get_stream_start` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_get_stream_start_ex` | `src/core/http.c` | `http_get_stream_start_ex` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_header_value_equal` | `src/core/http.c` | `http_header_value_equal` | `core` | `COVERED` | 3 |
+| `c:src/core/http.c:http_headers_complete` | `src/core/http.c` | `http_headers_complete` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_host_is_numeric` | `src/core/http.c` | `http_host_is_numeric` | `core` | `COVERED` | 3 |
+| `c:src/core/http.c:http_init` | `src/core/http.c` | `http_init` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_is_redirect_status` | `src/core/http.c` | `http_is_redirect_status` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_is_token_character` | `src/core/http.c` | `http_is_token_character` | `core` | `COVERED` | 3 |
+| `c:src/core/http.c:http_maintain` | `src/core/http.c` | `http_maintain` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_maintain_connecting` | `src/core/http.c` | `http_maintain_connecting` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_maintain_receiving` | `src/core/http.c` | `http_maintain_receiving` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_maintain_resolving` | `src/core/http.c` | `http_maintain_resolving` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_maintain_sending` | `src/core/http.c` | `http_maintain_sending` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_maintain_tls` | `src/core/http.c` | `http_maintain_tls` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_parse_decimal` | `src/core/http.c` | `http_parse_decimal` | `core` | `COVERED` | 3 |
+| `c:src/core/http.c:http_parse_header_line` | `src/core/http.c` | `http_parse_header_line` | `core` | `COVERED` | 3 |
+| `c:src/core/http.c:http_parse_headers` | `src/core/http.c` | `http_parse_headers` | `core` | `COVERED` | 3 |
+| `c:src/core/http.c:http_parse_ipv4` | `src/core/http.c` | `http_parse_ipv4` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_parse_port` | `src/core/http.c` | `http_parse_port` | `core` | `COVERED` | 3 |
+| `c:src/core/http.c:http_parse_status_line` | `src/core/http.c` | `http_parse_status_line` | `core` | `COVERED` | 3 |
+| `c:src/core/http.c:http_parse_url` | `src/core/http.c` | `http_parse_url` | `core` | `COVERED` | 3 |
+| `c:src/core/http.c:http_parse_url_ex` | `src/core/http.c` | `http_parse_url_ex` | `core` | `COVERED` | 3 |
+| `c:src/core/http.c:http_prepare_options` | `src/core/http.c` | `http_prepare_options` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_range_equal` | `src/core/http.c` | `http_range_equal` | `core` | `COVERED` | 3 |
+| `c:src/core/http.c:http_reject_unavailable_tls` | `src/core/http.c` | `http_reject_unavailable_tls` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_release_socket` | `src/core/http.c` | `http_release_socket` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_reset` | `src/core/http.c` | `http_reset` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_socket_exists` | `src/core/http.c` | `http_socket_exists` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_start_socket` | `src/core/http.c` | `http_start_socket` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_text_prefix_equal` | `src/core/http.c` | `http_text_prefix_equal` | `core` | `COVERED` | 3 |
+| `c:src/core/http.c:http_validate_header_value` | `src/core/http.c` | `http_validate_header_value` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_validate_header_vectors` | `src/core/http.c` | `http_validate_header_vectors` | `core` | `COVERED` | 3 |
+| `c:src/core/http.c:http_validate_host` | `src/core/http.c` | `http_validate_host` | `core` | `COVERED` | 3 |
+| `c:src/core/http.c:http_validate_state` | `src/core/http.c` | `http_validate_state` | `core` | `COVERED` | 3 |
+| `c:src/core/http.c:http_validate_url_vector` | `src/core/http.c` | `http_validate_url_vector` | `core` | `COVERED` | 3 |
 | `c:src/core/icmp.c:icmp_build_ping_message` | `src/core/icmp.c` | `icmp_build_ping_message` | `core` | `COVERED` | 1 |
 | `c:src/core/icmp.c:icmp_cancel_ping_timer` | `src/core/icmp.c` | `icmp_cancel_ping_timer` | `core` | `COVERED` | 1 |
 | `c:src/core/icmp.c:icmp_checksum` | `src/core/icmp.c` | `icmp_checksum` | `core` | `COVERED` | 3 |
@@ -2567,36 +2567,36 @@
 | `c:src/core/log.c:log_append_char` | `src/core/log.c` | `log_append_char` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_append_text` | `src/core/log.c` | `log_append_text` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_clear_buffer` | `src/core/log.c` | `log_clear_buffer` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_console_print_number` | `src/core/log.c` | `log_console_print_number` | `core` | `COVERED` | 25 |
+| `c:src/core/log.c:log_console_print_number` | `src/core/log.c` | `log_console_print_number` | `core` | `COVERED` | 26 |
 | `c:src/core/log.c:log_copy_recent` | `src/core/log.c` | `log_copy_recent` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_copy_text` | `src/core/log.c` | `log_copy_text` | `core` | `COVERED` | 25 |
+| `c:src/core/log.c:log_copy_text` | `src/core/log.c` | `log_copy_text` | `core` | `COVERED` | 26 |
 | `c:src/core/log.c:log_get_buffer` | `src/core/log.c` | `log_get_buffer` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_get_buffer_level` | `src/core/log.c` | `log_get_buffer_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_get_console_level` | `src/core/log.c` | `log_get_console_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_get_level` | `src/core/log.c` | `log_get_level` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_get_stats` | `src/core/log.c` | `log_get_stats` | `core` | `COVERED` | 2 |
-| `c:src/core/log.c:log_init` | `src/core/log.c` | `log_init` | `core` | `COVERED` | 21 |
-| `c:src/core/log.c:log_is_power_of_two` | `src/core/log.c` | `log_is_power_of_two` | `core` | `COVERED` | 25 |
-| `c:src/core/log.c:log_level_is_valid` | `src/core/log.c` | `log_level_is_valid` | `core` | `COVERED` | 25 |
+| `c:src/core/log.c:log_init` | `src/core/log.c` | `log_init` | `core` | `COVERED` | 22 |
+| `c:src/core/log.c:log_is_power_of_two` | `src/core/log.c` | `log_is_power_of_two` | `core` | `COVERED` | 26 |
+| `c:src/core/log.c:log_level_is_valid` | `src/core/log.c` | `log_level_is_valid` | `core` | `COVERED` | 26 |
 | `c:src/core/log.c:log_note_dropped_event` | `src/core/log.c` | `log_note_dropped_event` | `core` | `COVERED` | 2 |
-| `c:src/core/log.c:log_print` | `src/core/log.c` | `log_print` | `core` | `COVERED` | 25 |
-| `c:src/core/log.c:log_print_code` | `src/core/log.c` | `log_print_code` | `core` | `COVERED` | 6 |
-| `c:src/core/log.c:log_print_colored` | `src/core/log.c` | `log_print_colored` | `core` | `COVERED` | 25 |
-| `c:src/core/log.c:log_records_match` | `src/core/log.c` | `log_records_match` | `core` | `COVERED` | 25 |
-| `c:src/core/log.c:log_restore_interrupts` | `src/core/log.c` | `log_restore_interrupts` | `core` | `COVERED` | 25 |
+| `c:src/core/log.c:log_print` | `src/core/log.c` | `log_print` | `core` | `COVERED` | 26 |
+| `c:src/core/log.c:log_print_code` | `src/core/log.c` | `log_print_code` | `core` | `COVERED` | 7 |
+| `c:src/core/log.c:log_print_colored` | `src/core/log.c` | `log_print_colored` | `core` | `COVERED` | 26 |
+| `c:src/core/log.c:log_records_match` | `src/core/log.c` | `log_records_match` | `core` | `COVERED` | 26 |
+| `c:src/core/log.c:log_restore_interrupts` | `src/core/log.c` | `log_restore_interrupts` | `core` | `COVERED` | 26 |
 | `c:src/core/log.c:log_ring_clear` | `src/core/log.c` | `log_ring_clear` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_ring_copy_recent` | `src/core/log.c` | `log_ring_copy_recent` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_ring_initialize` | `src/core/log.c` | `log_ring_initialize` | `core` | `COVERED` | 23 |
-| `c:src/core/log.c:log_ring_latest_index` | `src/core/log.c` | `log_ring_latest_index` | `core` | `COVERED` | 25 |
-| `c:src/core/log.c:log_ring_store` | `src/core/log.c` | `log_ring_store` | `core` | `COVERED` | 25 |
+| `c:src/core/log.c:log_ring_initialize` | `src/core/log.c` | `log_ring_initialize` | `core` | `COVERED` | 24 |
+| `c:src/core/log.c:log_ring_latest_index` | `src/core/log.c` | `log_ring_latest_index` | `core` | `COVERED` | 26 |
+| `c:src/core/log.c:log_ring_store` | `src/core/log.c` | `log_ring_store` | `core` | `COVERED` | 26 |
 | `c:src/core/log.c:log_self_test` | `src/core/log.c` | `log_self_test` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_self_test_mark` | `src/core/log.c` | `log_self_test_mark` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_serialize_records` | `src/core/log.c` | `log_serialize_records` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_set_buffer_level` | `src/core/log.c` | `log_set_buffer_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_set_console_level` | `src/core/log.c` | `log_set_console_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_set_level` | `src/core/log.c` | `log_set_level` | `core` | `COVERED` | 2 |
-| `c:src/core/log.c:log_submit` | `src/core/log.c` | `log_submit` | `core` | `COVERED` | 25 |
-| `c:src/core/log.c:log_suspend_interrupts` | `src/core/log.c` | `log_suspend_interrupts` | `core` | `COVERED` | 25 |
+| `c:src/core/log.c:log_submit` | `src/core/log.c` | `log_submit` | `core` | `COVERED` | 26 |
+| `c:src/core/log.c:log_suspend_interrupts` | `src/core/log.c` | `log_suspend_interrupts` | `core` | `COVERED` | 26 |
 | `c:src/core/log.c:log_test_clear_behavior` | `src/core/log.c` | `log_test_clear_behavior` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_test_level_filtering` | `src/core/log.c` | `log_test_level_filtering` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_test_optional_error_code` | `src/core/log.c` | `log_test_optional_error_code` | `core` | `COVERED` | 3 |
@@ -2606,7 +2606,7 @@
 | `c:src/core/log.c:log_test_text_serialization` | `src/core/log.c` | `log_test_text_serialization` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_test_wrap_and_overwrite` | `src/core/log.c` | `log_test_wrap_and_overwrite` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_to_buffer` | `src/core/log.c` | `log_to_buffer` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_write_serial` | `src/core/log.c` | `log_write_serial` | `core` | `COVERED` | 25 |
+| `c:src/core/log.c:log_write_serial` | `src/core/log.c` | `log_write_serial` | `core` | `COVERED` | 26 |
 | `c:src/core/net_buffer.c:net_buffer_alignment_valid` | `src/core/net_buffer.c` | `net_buffer_alignment_valid` | `core` | `COVERED` | 4 |
 | `c:src/core/net_buffer.c:net_buffer_begin` | `src/core/net_buffer.c` | `net_buffer_begin` | `core` | `COVERED` | 4 |
 | `c:src/core/net_buffer.c:net_buffer_check_active_locked` | `src/core/net_buffer.c` | `net_buffer_check_active_locked` | `core` | `COVERED` | 4 |
@@ -2882,10 +2882,10 @@
 | `c:src/core/socket.c:socket_wait_local` | `src/core/socket.c` | `socket_wait_local` | `core` | `PENDING` | 0 |
 | `c:src/core/socket.c:socket_wait_owner` | `src/core/socket.c` | `socket_wait_owner` | `core` | `COVERED` | 2 |
 | `c:src/core/socket.c:socket_wake` | `src/core/socket.c` | `socket_wake` | `core` | `COVERED` | 2 |
-| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 32 |
-| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 32 |
-| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 25 |
-| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 29 |
+| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 33 |
+| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 33 |
+| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 26 |
+| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 30 |
 | `c:src/core/syscall.c:syscall_copy_user_string` | `src/core/syscall.c` | `syscall_copy_user_string` | `core` | `PENDING` | 0 |
 | `c:src/core/syscall.c:syscall_dispatch` | `src/core/syscall.c` | `syscall_dispatch` | `core` | `COVERED` | 1 |
 | `c:src/core/syscall.c:syscall_dispatch_user` | `src/core/syscall.c` | `syscall_dispatch_user` | `core` | `COVERED` | 1 |
@@ -6924,6 +6924,7 @@
 | `host:network:dhcp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar descoberta, oferta, lease, renovacao, rebinding e expiracao DHCP com UDP e timer simulados | leases validos percorrem eventos canonicos, mensagens invalidas falham e o estado retorna ao baseline | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado DHCP, buffers estaticos e transporte UDP falso no processo host | sessao e eventos DHCP reiniciados e artefatos preservados |
 | `host:network:dns` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar consultas DNS, cache, CNAME, timeout e pacotes invalidos com UDP e timer simulados | nomes validos sao resolvidos, respostas invalidas falham com codigo canonico e o estado retorna ao baseline | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado DNS, buffers estaticos e transporte UDP falso no processo host | cache e consulta DNS reiniciados e artefatos preservados |
 | `host:network:ethernet` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar registro de interfaces, handlers, polling, frames, transmissao, quiescencia e limpeza com drivers falsos | frames validos sao entregues, entradas invalidas sao rejeitadas e nenhum buffer de rede permanece ativo | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado Ethernet, sk_buff, net_buffer, SLAB e drivers falsos no processo host | buffers, interfaces, handlers e estado temporario encerrados e artefatos preservados |
+| `host:network:http` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar URLs, headers, corpos, streaming, redirects, HTTPS, limites e falhas com DNS, socket, TLS e timer falsos | respostas validas concluem, entradas e transportes invalidos falham com codigo canonico e nenhum estado HTTP residual permanece | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado HTTP, buffers estaticos e transportes falsos no processo host | socket, DNS, cliente TLS e sessao HTTP reiniciados e artefatos preservados |
 | `host:network:icmp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar checksum, echo, timeout, mudanca de configuracao, fila de reply e pacotes ICMP invalidos com IPv4 e timer simulados | echo valido e reply pendente sao processados, timeout e falhas de transporte retornam erros canonicos e o estado e restaurado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado ICMP, buffers estaticos e transportes IPv4 e timer falsos no processo host | estado ICMP, timer e transporte falso retornam ao estado inicial e os artefatos sao preservados |
 | `host:network:ipv4` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar configuraÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o, envio, broadcast, recepÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o, checksum e handlers IPv4 | datagramas validos sÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o entregues, entradas invÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡lidas sÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o recusadas e o estado ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â© restaurado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado IPv4, tabela de rotas e buffers falsos de ARP/Ethernet | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:network:route` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar rotas base, lookup, limites, overflow e restauracao | rotas validas e invalidas respeitam o contrato, sem residuos globais | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabela estatica de rotas no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7178,15 +7179,6 @@
 - `api:src/include/core/crypto.h:crypto_ed25519_verify_init`
 - `api:src/include/core/crypto.h:crypto_ed25519_verify_update`
 - `api:src/include/core/crypto.h:crypto_sha512_digest`
-- `api:src/include/core/http.h:http_get_body`
-- `api:src/include/core/http.h:http_get_start`
-- `api:src/include/core/http.h:http_get_start_ex`
-- `api:src/include/core/http.h:http_get_status`
-- `api:src/include/core/http.h:http_get_stream_start`
-- `api:src/include/core/http.h:http_get_stream_start_ex`
-- `api:src/include/core/http.h:http_init`
-- `api:src/include/core/http.h:http_maintain`
-- `api:src/include/core/http.h:http_reset`
 - `api:src/include/core/keyboard.h:keyboard_controller_reset`
 - `api:src/include/core/keyboard.h:keyboard_controller_reset_available`
 - `api:src/include/core/keyboard.h:keyboard_get_metrics`
@@ -8268,45 +8260,6 @@
 - `c:src/core/crypto_ed25519.c:crypto_eddsa_trim_scalar`
 - `c:src/core/crypto_ed25519.c:fe_cswap`
 - `c:src/core/dhcp.c:dhcp_invalid_option_length`
-- `c:src/core/http.c:http_append_bytes`
-- `c:src/core/http.c:http_append_port`
-- `c:src/core/http.c:http_append_text`
-- `c:src/core/http.c:http_build_request`
-- `c:src/core/http.c:http_cancel_resolution`
-- `c:src/core/http.c:http_chunk_error`
-- `c:src/core/http.c:http_clear_session`
-- `c:src/core/http.c:http_complete`
-- `c:src/core/http.c:http_consume_body`
-- `c:src/core/http.c:http_consume_bytes`
-- `c:src/core/http.c:http_consume_chunked`
-- `c:src/core/http.c:http_enforce_worker_stack_margin`
-- `c:src/core/http.c:http_fail`
-- `c:src/core/http.c:http_finish_headers`
-- `c:src/core/http.c:http_follow_redirect`
-- `c:src/core/http.c:http_get_body`
-- `c:src/core/http.c:http_get_start`
-- `c:src/core/http.c:http_get_start_ex`
-- `c:src/core/http.c:http_get_start_internal`
-- `c:src/core/http.c:http_get_status`
-- `c:src/core/http.c:http_get_stream_start`
-- `c:src/core/http.c:http_get_stream_start_ex`
-- `c:src/core/http.c:http_headers_complete`
-- `c:src/core/http.c:http_init`
-- `c:src/core/http.c:http_is_redirect_status`
-- `c:src/core/http.c:http_maintain`
-- `c:src/core/http.c:http_maintain_connecting`
-- `c:src/core/http.c:http_maintain_receiving`
-- `c:src/core/http.c:http_maintain_resolving`
-- `c:src/core/http.c:http_maintain_sending`
-- `c:src/core/http.c:http_maintain_tls`
-- `c:src/core/http.c:http_parse_ipv4`
-- `c:src/core/http.c:http_prepare_options`
-- `c:src/core/http.c:http_reject_unavailable_tls`
-- `c:src/core/http.c:http_release_socket`
-- `c:src/core/http.c:http_reset`
-- `c:src/core/http.c:http_socket_exists`
-- `c:src/core/http.c:http_start_socket`
-- `c:src/core/http.c:http_validate_header_value`
 - `c:src/core/net_socket.c:net_socket_abort`
 - `c:src/core/net_socket.c:net_socket_allocate_port`
 - `c:src/core/net_socket.c:net_socket_close`
