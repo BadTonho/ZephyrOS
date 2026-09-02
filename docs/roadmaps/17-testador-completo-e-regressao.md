@@ -1248,3 +1248,13 @@ e a validacao TST7 completa continuam pendentes.
   limpeza preservados. A sincronizacao atual registra 7.197 superficies, 3.890
   `COVERED`, 3.307 `PENDING` e 85 casos. O fechamento integral do catalogo, o
   gate estrito e a validacao TST7 completa continuam pendentes.
+
+Incremento Storage/FAT32 concluido em 2026-09-02: o caso existente
+`host:storage:fat32` passou a exercitar diretamente as APIs publicas
+`fat32_write_file` e `fat32_read_file` em round-trip sobre imagem FAT32
+estatica, seguido de remocao e verificacao de limpeza. O alvo
+`make test-fat32-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` terminou
+`PASS`, e a evidencia instrumentada foi sincronizada sem enderecos
+desconhecidos ou ambiguos. O catalogo registra 7.197 superficies, 3.892
+`COVERED`, 3.305 `PENDING` e 85 casos; o fechamento integral continua
+pendente.

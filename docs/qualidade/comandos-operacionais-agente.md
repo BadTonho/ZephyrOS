@@ -141,7 +141,8 @@ em `build/test-results/fat12-host/`.
 
 O caso `test-fat32-host` exercita o driver FAT32 sobre uma imagem estatica com
 cadeia de clusters, leitura, paths, metadados, criacao, escrita, remocao e
-limites. O caso `test-vfs-host` valida o nucleo de descritores e I/O da VFS,
+limites, incluindo as APIs publicas de leitura e escrita sobre nomes 8.3.
+O caso `test-vfs-host` valida o nucleo de descritores e I/O da VFS,
 incluindo arquivos regulares, dispositivos, pipes, sockets, poll/select,
 quiescencia e invariantes. Os relatorios ficam em
 `build/test-results/fat32-host/` e `build/test-results/vfs-host/`.

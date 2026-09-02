@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 3890 |
+| `COVERED` | 3892 |
 | `MANUAL` | 0 |
-| `PENDING` | 3307 |
+| `PENDING` | 3305 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -4998,7 +4998,7 @@
 | `c:src/fs/fat32.c:fat32_name_to_str` | `src/fs/fat32.c` | `fat32_name_to_str` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat32.c:fat32_read_cluster` | `src/fs/fat32.c` | `fat32_read_cluster` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat32.c:fat32_read_entry_range` | `src/fs/fat32.c` | `fat32_read_entry_range` | `fs` | `COVERED` | 1 |
-| `c:src/fs/fat32.c:fat32_read_file` | `src/fs/fat32.c` | `fat32_read_file` | `fs` | `PENDING` | 0 |
+| `c:src/fs/fat32.c:fat32_read_file` | `src/fs/fat32.c` | `fat32_read_file` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat32.c:fat32_read_file_at` | `src/fs/fat32.c` | `fat32_read_file_at` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat32.c:fat32_read_file_range_at` | `src/fs/fat32.c` | `fat32_read_file_range_at` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat32.c:fat32_release` | `src/fs/fat32.c` | `fat32_release` | `fs` | `COVERED` | 1 |
@@ -5007,7 +5007,7 @@
 | `c:src/fs/fat32.c:fat32_str_to_name` | `src/fs/fat32.c` | `fat32_str_to_name` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat32.c:fat32_strncmp` | `src/fs/fat32.c` | `fat32_strncmp` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat32.c:fat32_write_cluster` | `src/fs/fat32.c` | `fat32_write_cluster` | `fs` | `COVERED` | 1 |
-| `c:src/fs/fat32.c:fat32_write_file` | `src/fs/fat32.c` | `fat32_write_file` | `fs` | `PENDING` | 0 |
+| `c:src/fs/fat32.c:fat32_write_file` | `src/fs/fat32.c` | `fat32_write_file` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat32.c:fat32_write_file_in_dir` | `src/fs/fat32.c` | `fat32_write_file_in_dir` | `fs` | `COVERED` | 1 |
 | `c:src/fs/file_index.c:file_index_active_sources_equal` | `src/fs/file_index.c` | `file_index_active_sources_equal` | `fs` | `COVERED` | 2 |
 | `c:src/fs/file_index.c:file_index_active_validation_step` | `src/fs/file_index.c` | `file_index_active_validation_step` | `fs` | `COVERED` | 4 |
@@ -9298,8 +9298,6 @@
 - `c:src/fs/fat12.c:fat12_write_file`
 - `c:src/fs/fat12.c:fat12_write_file_in_dir`
 - `c:src/fs/fat12.c:to_upper`
-- `c:src/fs/fat32.c:fat32_read_file`
-- `c:src/fs/fat32.c:fat32_write_file`
 - `c:src/fs/procfs.c:procfs_append_hex`
 - `c:src/fs/procfs.c:procfs_append_line_hex`
 - `c:src/fs/procfs.c:procfs_init`
