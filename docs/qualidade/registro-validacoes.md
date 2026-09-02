@@ -4346,3 +4346,15 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   permaneceu `BLOCKED` pela permissao do runtime LLVM. O catalogo registra
   7.196 superficies, 4.002 `COVERED`, 3.194 `PENDING` e 87 casos. O fechamento
   integral, o gate estrito e o baseline TST7 continuam pendentes.
+
+- Incremento Core/app_package concluido em 2026-09-02: `make test-package-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` terminou `PASS`. A fixture
+  host-only passou a usar filesystem FAT12/FAT32 simulado e exercitou pacotes
+  ZPKG/ZAPP validos e corrompidos, parsing, CRC, instalacao transacional,
+  atualizacao, recuperacao apos failpoint, rollback, remocao, modo legado,
+  erros canonicos e limpeza. O relatorio instrumentado
+  `build/test-results/package-host/coverage.json` resolveu 111 superficies de
+  `src/core/app_package.c`, sem enderecos desconhecidos ou ambiguos. A
+  sincronizacao resultou em 7.196 superficies, 4.093 `COVERED`, 3.103
+  `PENDING` e 87 casos; o fechamento integral, o gate estrito e a validacao
+  TST7 completa continuam pendentes.
