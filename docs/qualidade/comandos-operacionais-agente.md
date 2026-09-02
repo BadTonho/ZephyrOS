@@ -239,6 +239,16 @@ sinal, foco, fallback, restauracao e limpeza. O relatorio fica em
 make test-process-ipc-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-workqueue-host` exercita a fila de trabalho com autoteste interno,
+callbacks, prioridades, FIFO, atrasos, coalescencia, rerun, cancelamento,
+fallback, quiescencia, worker e validacao de invariantes. O worker usa quatro
+iteracoes somente no build host para que a fixture nunca aguarde
+indefinidamente; o relatorio fica em `build/test-results/workqueue-host/`:
+
+```text
+make test-workqueue-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O registro em `tests/coverage/registry.json` somente seleciona enderecos de
 relatorios `PASS` existentes e filtra as fontes declaradas. Um relatorio
 ausente, com endereco desconhecido ou ambiguo bloqueia o gate estrito; nao ha

@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **6827**
-- Casos de teste: **77**
+- Casos de teste: **78**
 - Superfícies aposentadas: **20**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 3080 |
+| `COVERED` | 3082 |
 | `MANUAL` | 0 |
-| `PENDING` | 3747 |
+| `PENDING` | 3745 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 77 |
+| `AUTOMATED` | 78 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -778,24 +778,24 @@
 | `api:src/include/core/wifi_manager.h:wifi_manager_refresh` | `src/include/core/wifi_manager.h` | `wifi_manager_refresh` | `core` | `COVERED` | 2 |
 | `api:src/include/core/wifi_manager.h:wifi_manager_scan` | `src/include/core/wifi_manager.h` | `wifi_manager_scan` | `core` | `PENDING` | 0 |
 | `api:src/include/core/wifi_manager.h:wifi_manager_validate_state` | `src/include/core/wifi_manager.h` | `wifi_manager_validate_state` | `core` | `COVERED` | 2 |
-| `api:src/include/core/workqueue.h:cancel_work` | `src/include/core/workqueue.h` | `cancel_work` | `core` | `COVERED` | 1 |
-| `api:src/include/core/workqueue.h:schedule_delayed_work` | `src/include/core/workqueue.h` | `schedule_delayed_work` | `core` | `COVERED` | 2 |
-| `api:src/include/core/workqueue.h:schedule_work` | `src/include/core/workqueue.h` | `schedule_work` | `core` | `COVERED` | 2 |
-| `api:src/include/core/workqueue.h:work_destroy` | `src/include/core/workqueue.h` | `work_destroy` | `core` | `COVERED` | 1 |
-| `api:src/include/core/workqueue.h:work_init` | `src/include/core/workqueue.h` | `work_init` | `core` | `COVERED` | 1 |
-| `api:src/include/core/workqueue.h:workqueue_bind_worker` | `src/include/core/workqueue.h` | `workqueue_bind_worker` | `core` | `COVERED` | 1 |
-| `api:src/include/core/workqueue.h:workqueue_copy_info` | `src/include/core/workqueue.h` | `workqueue_copy_info` | `core` | `COVERED` | 1 |
-| `api:src/include/core/workqueue.h:workqueue_dispatch` | `src/include/core/workqueue.h` | `workqueue_dispatch` | `core` | `COVERED` | 2 |
-| `api:src/include/core/workqueue.h:workqueue_get_stats` | `src/include/core/workqueue.h` | `workqueue_get_stats` | `core` | `COVERED` | 1 |
-| `api:src/include/core/workqueue.h:workqueue_init` | `src/include/core/workqueue.h` | `workqueue_init` | `core` | `COVERED` | 1 |
-| `api:src/include/core/workqueue.h:workqueue_needs_fallback` | `src/include/core/workqueue.h` | `workqueue_needs_fallback` | `core` | `COVERED` | 1 |
-| `api:src/include/core/workqueue.h:workqueue_power_quiesce_until` | `src/include/core/workqueue.h` | `workqueue_power_quiesce_until` | `core` | `COVERED` | 1 |
-| `api:src/include/core/workqueue.h:workqueue_power_set_quiescing` | `src/include/core/workqueue.h` | `workqueue_power_set_quiescing` | `core` | `COVERED` | 1 |
+| `api:src/include/core/workqueue.h:cancel_work` | `src/include/core/workqueue.h` | `cancel_work` | `core` | `COVERED` | 2 |
+| `api:src/include/core/workqueue.h:schedule_delayed_work` | `src/include/core/workqueue.h` | `schedule_delayed_work` | `core` | `COVERED` | 3 |
+| `api:src/include/core/workqueue.h:schedule_work` | `src/include/core/workqueue.h` | `schedule_work` | `core` | `COVERED` | 3 |
+| `api:src/include/core/workqueue.h:work_destroy` | `src/include/core/workqueue.h` | `work_destroy` | `core` | `COVERED` | 2 |
+| `api:src/include/core/workqueue.h:work_init` | `src/include/core/workqueue.h` | `work_init` | `core` | `COVERED` | 2 |
+| `api:src/include/core/workqueue.h:workqueue_bind_worker` | `src/include/core/workqueue.h` | `workqueue_bind_worker` | `core` | `COVERED` | 2 |
+| `api:src/include/core/workqueue.h:workqueue_copy_info` | `src/include/core/workqueue.h` | `workqueue_copy_info` | `core` | `COVERED` | 2 |
+| `api:src/include/core/workqueue.h:workqueue_dispatch` | `src/include/core/workqueue.h` | `workqueue_dispatch` | `core` | `COVERED` | 3 |
+| `api:src/include/core/workqueue.h:workqueue_get_stats` | `src/include/core/workqueue.h` | `workqueue_get_stats` | `core` | `COVERED` | 2 |
+| `api:src/include/core/workqueue.h:workqueue_init` | `src/include/core/workqueue.h` | `workqueue_init` | `core` | `COVERED` | 2 |
+| `api:src/include/core/workqueue.h:workqueue_needs_fallback` | `src/include/core/workqueue.h` | `workqueue_needs_fallback` | `core` | `COVERED` | 2 |
+| `api:src/include/core/workqueue.h:workqueue_power_quiesce_until` | `src/include/core/workqueue.h` | `workqueue_power_quiesce_until` | `core` | `COVERED` | 2 |
+| `api:src/include/core/workqueue.h:workqueue_power_set_quiescing` | `src/include/core/workqueue.h` | `workqueue_power_set_quiescing` | `core` | `COVERED` | 2 |
 | `api:src/include/core/workqueue.h:workqueue_probe_worker` | `src/include/core/workqueue.h` | `workqueue_probe_worker` | `core` | `COVERED` | 1 |
-| `api:src/include/core/workqueue.h:workqueue_self_test` | `src/include/core/workqueue.h` | `workqueue_self_test` | `core` | `COVERED` | 3 |
-| `api:src/include/core/workqueue.h:workqueue_set_fallback` | `src/include/core/workqueue.h` | `workqueue_set_fallback` | `core` | `COVERED` | 1 |
-| `api:src/include/core/workqueue.h:workqueue_validate_state` | `src/include/core/workqueue.h` | `workqueue_validate_state` | `core` | `COVERED` | 3 |
-| `api:src/include/core/workqueue.h:workqueue_worker_main` | `src/include/core/workqueue.h` | `workqueue_worker_main` | `core` | `PENDING` | 0 |
+| `api:src/include/core/workqueue.h:workqueue_self_test` | `src/include/core/workqueue.h` | `workqueue_self_test` | `core` | `COVERED` | 4 |
+| `api:src/include/core/workqueue.h:workqueue_set_fallback` | `src/include/core/workqueue.h` | `workqueue_set_fallback` | `core` | `COVERED` | 2 |
+| `api:src/include/core/workqueue.h:workqueue_validate_state` | `src/include/core/workqueue.h` | `workqueue_validate_state` | `core` | `COVERED` | 4 |
+| `api:src/include/core/workqueue.h:workqueue_worker_main` | `src/include/core/workqueue.h` | `workqueue_worker_main` | `core` | `COVERED` | 1 |
 | `api:src/include/drivers/ac97.h:ac97_handler` | `src/include/drivers/ac97.h` | `ac97_handler` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/ac97.h:ac97_init` | `src/include/drivers/ac97.h` | `ac97_init` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/ac97.h:ac97_play` | `src/include/drivers/ac97.h` | `ac97_play` | `drivers` | `PENDING` | 0 |
@@ -3666,52 +3666,52 @@
 | `c:src/core/wifi_manager.c:wifi_manager_scan` | `src/core/wifi_manager.c` | `wifi_manager_scan` | `core` | `PENDING` | 0 |
 | `c:src/core/wifi_manager.c:wifi_manager_validate_state` | `src/core/wifi_manager.c` | `wifi_manager_validate_state` | `core` | `COVERED` | 2 |
 | `c:src/core/wifi_manager.c:wifi_validate_pci_metadata` | `src/core/wifi_manager.c` | `wifi_validate_pci_metadata` | `core` | `COVERED` | 2 |
-| `c:src/core/workqueue.c:cancel_work` | `src/core/workqueue.c` | `cancel_work` | `core` | `COVERED` | 1 |
-| `c:src/core/workqueue.c:schedule_delayed_work` | `src/core/workqueue.c` | `schedule_delayed_work` | `core` | `COVERED` | 2 |
-| `c:src/core/workqueue.c:schedule_work` | `src/core/workqueue.c` | `schedule_work` | `core` | `COVERED` | 2 |
-| `c:src/core/workqueue.c:work_destroy` | `src/core/workqueue.c` | `work_destroy` | `core` | `COVERED` | 1 |
-| `c:src/core/workqueue.c:work_init` | `src/core/workqueue.c` | `work_init` | `core` | `COVERED` | 1 |
-| `c:src/core/workqueue.c:workqueue_bind_worker` | `src/core/workqueue.c` | `workqueue_bind_worker` | `core` | `COVERED` | 1 |
-| `c:src/core/workqueue.c:workqueue_cancel_on` | `src/core/workqueue.c` | `workqueue_cancel_on` | `core` | `COVERED` | 3 |
-| `c:src/core/workqueue.c:workqueue_copy_info` | `src/core/workqueue.c` | `workqueue_copy_info` | `core` | `COVERED` | 1 |
-| `c:src/core/workqueue.c:workqueue_copy_owner` | `src/core/workqueue.c` | `workqueue_copy_owner` | `core` | `COVERED` | 3 |
-| `c:src/core/workqueue.c:workqueue_deadline_reached` | `src/core/workqueue.c` | `workqueue_deadline_reached` | `core` | `COVERED` | 4 |
-| `c:src/core/workqueue.c:workqueue_delayed_insert` | `src/core/workqueue.c` | `workqueue_delayed_insert` | `core` | `COVERED` | 4 |
-| `c:src/core/workqueue.c:workqueue_dispatch` | `src/core/workqueue.c` | `workqueue_dispatch` | `core` | `COVERED` | 2 |
-| `c:src/core/workqueue.c:workqueue_dispatch_on` | `src/core/workqueue.c` | `workqueue_dispatch_on` | `core` | `COVERED` | 4 |
-| `c:src/core/workqueue.c:workqueue_execute_one` | `src/core/workqueue.c` | `workqueue_execute_one` | `core` | `COVERED` | 4 |
-| `c:src/core/workqueue.c:workqueue_finish` | `src/core/workqueue.c` | `workqueue_finish` | `core` | `COVERED` | 4 |
-| `c:src/core/workqueue.c:workqueue_get_stats` | `src/core/workqueue.c` | `workqueue_get_stats` | `core` | `COVERED` | 1 |
-| `c:src/core/workqueue.c:workqueue_init` | `src/core/workqueue.c` | `workqueue_init` | `core` | `COVERED` | 1 |
-| `c:src/core/workqueue.c:workqueue_internal_result` | `src/core/workqueue.c` | `workqueue_internal_result` | `core` | `COVERED` | 3 |
-| `c:src/core/workqueue.c:workqueue_interrupts_enabled` | `src/core/workqueue.c` | `workqueue_interrupts_enabled` | `core` | `COVERED` | 4 |
-| `c:src/core/workqueue.c:workqueue_irq_restore` | `src/core/workqueue.c` | `workqueue_irq_restore` | `core` | `COVERED` | 4 |
-| `c:src/core/workqueue.c:workqueue_irq_save` | `src/core/workqueue.c` | `workqueue_irq_save` | `core` | `COVERED` | 4 |
-| `c:src/core/workqueue.c:workqueue_list_remove` | `src/core/workqueue.c` | `workqueue_list_remove` | `core` | `COVERED` | 4 |
-| `c:src/core/workqueue.c:workqueue_needs_fallback` | `src/core/workqueue.c` | `workqueue_needs_fallback` | `core` | `COVERED` | 1 |
-| `c:src/core/workqueue.c:workqueue_next_timeout` | `src/core/workqueue.c` | `workqueue_next_timeout` | `core` | `COVERED` | 1 |
-| `c:src/core/workqueue.c:workqueue_notify` | `src/core/workqueue.c` | `workqueue_notify` | `core` | `COVERED` | 4 |
-| `c:src/core/workqueue.c:workqueue_owner_valid` | `src/core/workqueue.c` | `workqueue_owner_valid` | `core` | `COVERED` | 3 |
-| `c:src/core/workqueue.c:workqueue_pending_count` | `src/core/workqueue.c` | `workqueue_pending_count` | `core` | `COVERED` | 4 |
-| `c:src/core/workqueue.c:workqueue_power_quiesce_until` | `src/core/workqueue.c` | `workqueue_power_quiesce_until` | `core` | `COVERED` | 1 |
-| `c:src/core/workqueue.c:workqueue_power_set_quiescing` | `src/core/workqueue.c` | `workqueue_power_set_quiescing` | `core` | `COVERED` | 1 |
+| `c:src/core/workqueue.c:cancel_work` | `src/core/workqueue.c` | `cancel_work` | `core` | `COVERED` | 2 |
+| `c:src/core/workqueue.c:schedule_delayed_work` | `src/core/workqueue.c` | `schedule_delayed_work` | `core` | `COVERED` | 3 |
+| `c:src/core/workqueue.c:schedule_work` | `src/core/workqueue.c` | `schedule_work` | `core` | `COVERED` | 3 |
+| `c:src/core/workqueue.c:work_destroy` | `src/core/workqueue.c` | `work_destroy` | `core` | `COVERED` | 2 |
+| `c:src/core/workqueue.c:work_init` | `src/core/workqueue.c` | `work_init` | `core` | `COVERED` | 2 |
+| `c:src/core/workqueue.c:workqueue_bind_worker` | `src/core/workqueue.c` | `workqueue_bind_worker` | `core` | `COVERED` | 2 |
+| `c:src/core/workqueue.c:workqueue_cancel_on` | `src/core/workqueue.c` | `workqueue_cancel_on` | `core` | `COVERED` | 4 |
+| `c:src/core/workqueue.c:workqueue_copy_info` | `src/core/workqueue.c` | `workqueue_copy_info` | `core` | `COVERED` | 2 |
+| `c:src/core/workqueue.c:workqueue_copy_owner` | `src/core/workqueue.c` | `workqueue_copy_owner` | `core` | `COVERED` | 4 |
+| `c:src/core/workqueue.c:workqueue_deadline_reached` | `src/core/workqueue.c` | `workqueue_deadline_reached` | `core` | `COVERED` | 5 |
+| `c:src/core/workqueue.c:workqueue_delayed_insert` | `src/core/workqueue.c` | `workqueue_delayed_insert` | `core` | `COVERED` | 5 |
+| `c:src/core/workqueue.c:workqueue_dispatch` | `src/core/workqueue.c` | `workqueue_dispatch` | `core` | `COVERED` | 3 |
+| `c:src/core/workqueue.c:workqueue_dispatch_on` | `src/core/workqueue.c` | `workqueue_dispatch_on` | `core` | `COVERED` | 5 |
+| `c:src/core/workqueue.c:workqueue_execute_one` | `src/core/workqueue.c` | `workqueue_execute_one` | `core` | `COVERED` | 5 |
+| `c:src/core/workqueue.c:workqueue_finish` | `src/core/workqueue.c` | `workqueue_finish` | `core` | `COVERED` | 5 |
+| `c:src/core/workqueue.c:workqueue_get_stats` | `src/core/workqueue.c` | `workqueue_get_stats` | `core` | `COVERED` | 2 |
+| `c:src/core/workqueue.c:workqueue_init` | `src/core/workqueue.c` | `workqueue_init` | `core` | `COVERED` | 2 |
+| `c:src/core/workqueue.c:workqueue_internal_result` | `src/core/workqueue.c` | `workqueue_internal_result` | `core` | `COVERED` | 4 |
+| `c:src/core/workqueue.c:workqueue_interrupts_enabled` | `src/core/workqueue.c` | `workqueue_interrupts_enabled` | `core` | `COVERED` | 5 |
+| `c:src/core/workqueue.c:workqueue_irq_restore` | `src/core/workqueue.c` | `workqueue_irq_restore` | `core` | `COVERED` | 5 |
+| `c:src/core/workqueue.c:workqueue_irq_save` | `src/core/workqueue.c` | `workqueue_irq_save` | `core` | `COVERED` | 5 |
+| `c:src/core/workqueue.c:workqueue_list_remove` | `src/core/workqueue.c` | `workqueue_list_remove` | `core` | `COVERED` | 5 |
+| `c:src/core/workqueue.c:workqueue_needs_fallback` | `src/core/workqueue.c` | `workqueue_needs_fallback` | `core` | `COVERED` | 2 |
+| `c:src/core/workqueue.c:workqueue_next_timeout` | `src/core/workqueue.c` | `workqueue_next_timeout` | `core` | `COVERED` | 2 |
+| `c:src/core/workqueue.c:workqueue_notify` | `src/core/workqueue.c` | `workqueue_notify` | `core` | `COVERED` | 5 |
+| `c:src/core/workqueue.c:workqueue_owner_valid` | `src/core/workqueue.c` | `workqueue_owner_valid` | `core` | `COVERED` | 4 |
+| `c:src/core/workqueue.c:workqueue_pending_count` | `src/core/workqueue.c` | `workqueue_pending_count` | `core` | `COVERED` | 5 |
+| `c:src/core/workqueue.c:workqueue_power_quiesce_until` | `src/core/workqueue.c` | `workqueue_power_quiesce_until` | `core` | `COVERED` | 2 |
+| `c:src/core/workqueue.c:workqueue_power_set_quiescing` | `src/core/workqueue.c` | `workqueue_power_set_quiescing` | `core` | `COVERED` | 2 |
 | `c:src/core/workqueue.c:workqueue_probe_callback` | `src/core/workqueue.c` | `workqueue_probe_callback` | `core` | `COVERED` | 1 |
 | `c:src/core/workqueue.c:workqueue_probe_condition` | `src/core/workqueue.c` | `workqueue_probe_condition` | `core` | `COVERED` | 1 |
 | `c:src/core/workqueue.c:workqueue_probe_worker` | `src/core/workqueue.c` | `workqueue_probe_worker` | `core` | `COVERED` | 1 |
-| `c:src/core/workqueue.c:workqueue_promote_due` | `src/core/workqueue.c` | `workqueue_promote_due` | `core` | `COVERED` | 4 |
-| `c:src/core/workqueue.c:workqueue_ready_append` | `src/core/workqueue.c` | `workqueue_ready_append` | `core` | `COVERED` | 4 |
-| `c:src/core/workqueue.c:workqueue_register_on` | `src/core/workqueue.c` | `workqueue_register_on` | `core` | `COVERED` | 3 |
-| `c:src/core/workqueue.c:workqueue_schedule_on` | `src/core/workqueue.c` | `workqueue_schedule_on` | `core` | `COVERED` | 4 |
-| `c:src/core/workqueue.c:workqueue_self_test` | `src/core/workqueue.c` | `workqueue_self_test` | `core` | `COVERED` | 3 |
-| `c:src/core/workqueue.c:workqueue_service_clear` | `src/core/workqueue.c` | `workqueue_service_clear` | `core` | `COVERED` | 3 |
-| `c:src/core/workqueue.c:workqueue_set_fallback` | `src/core/workqueue.c` | `workqueue_set_fallback` | `core` | `COVERED` | 1 |
-| `c:src/core/workqueue.c:workqueue_test_callback` | `src/core/workqueue.c` | `workqueue_test_callback` | `core` | `COVERED` | 3 |
-| `c:src/core/workqueue.c:workqueue_test_prepare` | `src/core/workqueue.c` | `workqueue_test_prepare` | `core` | `COVERED` | 3 |
-| `c:src/core/workqueue.c:workqueue_update_peak` | `src/core/workqueue.c` | `workqueue_update_peak` | `core` | `COVERED` | 4 |
-| `c:src/core/workqueue.c:workqueue_validate_on` | `src/core/workqueue.c` | `workqueue_validate_on` | `core` | `COVERED` | 3 |
-| `c:src/core/workqueue.c:workqueue_validate_state` | `src/core/workqueue.c` | `workqueue_validate_state` | `core` | `COVERED` | 3 |
-| `c:src/core/workqueue.c:workqueue_wait_condition` | `src/core/workqueue.c` | `workqueue_wait_condition` | `core` | `COVERED` | 1 |
-| `c:src/core/workqueue.c:workqueue_worker_main` | `src/core/workqueue.c` | `workqueue_worker_main` | `core` | `PENDING` | 0 |
+| `c:src/core/workqueue.c:workqueue_promote_due` | `src/core/workqueue.c` | `workqueue_promote_due` | `core` | `COVERED` | 5 |
+| `c:src/core/workqueue.c:workqueue_ready_append` | `src/core/workqueue.c` | `workqueue_ready_append` | `core` | `COVERED` | 5 |
+| `c:src/core/workqueue.c:workqueue_register_on` | `src/core/workqueue.c` | `workqueue_register_on` | `core` | `COVERED` | 4 |
+| `c:src/core/workqueue.c:workqueue_schedule_on` | `src/core/workqueue.c` | `workqueue_schedule_on` | `core` | `COVERED` | 5 |
+| `c:src/core/workqueue.c:workqueue_self_test` | `src/core/workqueue.c` | `workqueue_self_test` | `core` | `COVERED` | 4 |
+| `c:src/core/workqueue.c:workqueue_service_clear` | `src/core/workqueue.c` | `workqueue_service_clear` | `core` | `COVERED` | 4 |
+| `c:src/core/workqueue.c:workqueue_set_fallback` | `src/core/workqueue.c` | `workqueue_set_fallback` | `core` | `COVERED` | 2 |
+| `c:src/core/workqueue.c:workqueue_test_callback` | `src/core/workqueue.c` | `workqueue_test_callback` | `core` | `COVERED` | 4 |
+| `c:src/core/workqueue.c:workqueue_test_prepare` | `src/core/workqueue.c` | `workqueue_test_prepare` | `core` | `COVERED` | 4 |
+| `c:src/core/workqueue.c:workqueue_update_peak` | `src/core/workqueue.c` | `workqueue_update_peak` | `core` | `COVERED` | 5 |
+| `c:src/core/workqueue.c:workqueue_validate_on` | `src/core/workqueue.c` | `workqueue_validate_on` | `core` | `COVERED` | 4 |
+| `c:src/core/workqueue.c:workqueue_validate_state` | `src/core/workqueue.c` | `workqueue_validate_state` | `core` | `COVERED` | 4 |
+| `c:src/core/workqueue.c:workqueue_wait_condition` | `src/core/workqueue.c` | `workqueue_wait_condition` | `core` | `COVERED` | 2 |
+| `c:src/core/workqueue.c:workqueue_worker_main` | `src/core/workqueue.c` | `workqueue_worker_main` | `core` | `COVERED` | 1 |
 | `c:src/desktop/desktop.c:desktop_add_icon` | `src/desktop/desktop.c` | `desktop_add_icon` | `desktop` | `PENDING` | 0 |
 | `c:src/desktop/desktop.c:desktop_apply_drag_preview` | `src/desktop/desktop.c` | `desktop_apply_drag_preview` | `desktop` | `COVERED` | 2 |
 | `c:src/desktop/desktop.c:desktop_assign_classic_slots` | `src/desktop/desktop.c` | `desktop_assign_classic_slots` | `desktop` | `COVERED` | 2 |
@@ -6926,6 +6926,7 @@
 | `host:core:scheduling` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar os autotestes de wait, workqueue e irq_deferred, alem de limites e estados invalidos | coalescencia, rerun, cancelamento, FIFO, capacidade, disponibilidade e invariantes respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente filas, trabalhos e buffers estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:state` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar contratos de recovery e notificadores de energia | estados, capacidades opcionais, timeouts, ordem e erros canonicos sao observados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico dos servicos e artefatos host-only | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:timer` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar timers one-shot e periodicos com IDT, PIC e scheduler simulados | handles, prazos, cancelamento, dispatch, callbacks, notifier e limpeza respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas estaticas do servico de timers no processo host | todos os timers e proprietarios sao destruidos e os artefatos sao preservados |
+| `host:core:workqueue` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fixture de workqueue com espera controlada | autoteste, callbacks, filas, prioridades, limites e limpeza validos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico da workqueue e callbacks falsos no processo host | trabalhos destruidos, filas vazias, fallback restaurado e artefatos preservados |
 | `host:memory:memory` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar inicializacao E820, alocacao e liberacao PMM por zona, heap, alinhamento e estatisticas | PMM e heap rejeitam limites invalidos, contabilizam falhas e restauram todas as paginas e blocos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente mapa E820, bitmap PMM e heap estaticos no processo host | paginas e blocos liberados, estatisticas restauradas e artefatos preservados |
 | `host:memory:paging` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar init, mapeamento, diretorios de usuario, faults lazy, copias, limites e cleanup com PMM falso | o paging respeita os limites de usuario, rejeita estados invalidos e restaura os recursos da fixture | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente diretorios, tabelas e paginas estaticos no processo host | diretorios e tabelas liberados, pagina de usuario coletada e artefatos preservados |
 | `host:memory:slab-metadata` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar inicializacao, limites, metadados, estatisticas e limpeza do registrador SLAB sem alocar paginas reais | estado publicado, informacoes por indice, duplicidade e limpeza respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas de metadados no processo host; nenhuma pagina real e alocada | cache temporario destruido e manifesto, logs e cobertura preservados |
@@ -7370,7 +7371,6 @@
 - `api:src/include/core/wifi_manager.h:wifi_manager_get_count`
 - `api:src/include/core/wifi_manager.h:wifi_manager_get_interface`
 - `api:src/include/core/wifi_manager.h:wifi_manager_scan`
-- `api:src/include/core/workqueue.h:workqueue_worker_main`
 - `api:src/include/drivers/ac97.h:ac97_handler`
 - `api:src/include/drivers/ac97.h:ac97_init`
 - `api:src/include/drivers/ac97.h:ac97_play`
@@ -8859,7 +8859,6 @@
 - `c:src/core/wifi_manager.c:wifi_manager_get_count`
 - `c:src/core/wifi_manager.c:wifi_manager_get_interface`
 - `c:src/core/wifi_manager.c:wifi_manager_scan`
-- `c:src/core/workqueue.c:workqueue_worker_main`
 - `c:src/desktop/desktop.c:desktop_add_icon`
 - `c:src/desktop/desktop.c:desktop_drag_threshold_reached`
 - `c:src/desktop/desktop.c:desktop_draw`

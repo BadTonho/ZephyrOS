@@ -10,6 +10,9 @@
 #define WORKQUEUE_EFLAGS_INTERRUPT (1U << 9U)
 #define WORKQUEUE_SELF_TEST_CASE_COUNT 12U
 #define WORKQUEUE_TEST_ROLLOVER_DEADLINE 0x10U
+#if defined(ZEPHYROS_HOST_TEST)
+#define WORKQUEUE_HOST_WORKER_ITERATIONS 4U
+#endif
 
 typedef struct {
     work_struct_t* registry[WORKQUEUE_CAPACITY];
@@ -994,11 +997,17 @@ int workqueue_needs_fallback(uint8_t* out_required) {
 
 void workqueue_worker_main(void) {
     uint32_t flags = workqueue_irq_save();
+#if defined(ZEPHYROS_HOST_TEST)
+    uint32_t host_iterations = 0U;
+#endif
 
     workqueue_service.stats.worker_active = 1U;
     workqueue_service.stats.execution_context = WORK_CONTEXT_KWORKER;
     workqueue_irq_restore(flags);
     while (1) {
+#if defined(ZEPHYROS_HOST_TEST)
+        if (host_iterations++ >= WORKQUEUE_HOST_WORKER_ITERATIONS) return;
+#endif
         uint32_t executed = 0U;
         uint32_t timeout;
         wait_reason_t reason = WAIT_REASON_NONE;

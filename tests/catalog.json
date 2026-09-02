@@ -14419,7 +14419,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:scheduling"
+        "host:core:scheduling",
+        "host:core:workqueue"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -14441,6 +14442,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst5:processes"
       ],
       "tags": [],
@@ -14463,6 +14465,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst5:processes"
       ],
       "tags": [],
@@ -14484,7 +14487,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:scheduling"
+        "host:core:scheduling",
+        "host:core:workqueue"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -14505,7 +14509,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:scheduling"
+        "host:core:scheduling",
+        "host:core:workqueue"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -14526,7 +14531,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:scheduling"
+        "host:core:scheduling",
+        "host:core:workqueue"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -14547,7 +14553,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:scheduling"
+        "host:core:scheduling",
+        "host:core:workqueue"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -14569,6 +14576,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst5:processes"
       ],
       "tags": [],
@@ -14590,7 +14598,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:scheduling"
+        "host:core:scheduling",
+        "host:core:workqueue"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -14611,7 +14620,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:scheduling"
+        "host:core:scheduling",
+        "host:core:workqueue"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -14632,7 +14642,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:scheduling"
+        "host:core:scheduling",
+        "host:core:workqueue"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -14653,7 +14664,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:scheduling"
+        "host:core:scheduling",
+        "host:core:workqueue"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -14674,7 +14686,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:scheduling"
+        "host:core:scheduling",
+        "host:core:workqueue"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -14717,6 +14730,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst4:execution",
         "qemu:tst6:stress:kernel"
       ],
@@ -14739,7 +14753,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:scheduling"
+        "host:core:scheduling",
+        "host:core:workqueue"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -14761,6 +14776,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst4:execution",
         "qemu:tst6:stress:kernel"
       ],
@@ -14781,9 +14797,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:workqueue"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/ac97.h:ac97_handler",
@@ -72401,7 +72420,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:scheduling"
+        "host:core:scheduling",
+        "host:core:workqueue"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -72423,6 +72443,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst5:processes"
       ],
       "tags": [],
@@ -72445,6 +72466,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst5:processes"
       ],
       "tags": [],
@@ -72466,7 +72488,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:scheduling"
+        "host:core:scheduling",
+        "host:core:workqueue"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -72487,7 +72510,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:scheduling"
+        "host:core:scheduling",
+        "host:core:workqueue"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -72508,7 +72532,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:scheduling"
+        "host:core:scheduling",
+        "host:core:workqueue"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -72530,6 +72555,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst4:execution",
         "qemu:tst6:stress:kernel"
       ],
@@ -72552,7 +72578,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:scheduling"
+        "host:core:scheduling",
+        "host:core:workqueue"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -72574,6 +72601,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst4:execution",
         "qemu:tst6:stress:kernel"
       ],
@@ -72597,6 +72625,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst4:execution",
         "qemu:tst5:processes",
         "qemu:tst6:stress:kernel"
@@ -72621,6 +72650,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst4:execution",
         "qemu:tst5:processes",
         "qemu:tst6:stress:kernel"
@@ -72645,6 +72675,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst5:processes"
       ],
       "tags": [],
@@ -72667,6 +72698,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst4:execution",
         "qemu:tst5:processes",
         "qemu:tst6:stress:kernel"
@@ -72691,6 +72723,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst4:execution",
         "qemu:tst5:processes",
         "qemu:tst6:stress:kernel"
@@ -72715,6 +72748,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst4:execution",
         "qemu:tst5:processes",
         "qemu:tst6:stress:kernel"
@@ -72738,7 +72772,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:scheduling"
+        "host:core:scheduling",
+        "host:core:workqueue"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -72759,7 +72794,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:scheduling"
+        "host:core:scheduling",
+        "host:core:workqueue"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -72781,6 +72817,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst4:execution",
         "qemu:tst6:stress:kernel"
       ],
@@ -72804,6 +72841,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst4:execution",
         "qemu:tst5:processes",
         "qemu:tst6:stress:kernel"
@@ -72828,6 +72866,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst4:execution",
         "qemu:tst5:processes",
         "qemu:tst6:stress:kernel"
@@ -72852,6 +72891,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst4:execution",
         "qemu:tst5:processes",
         "qemu:tst6:stress:kernel"
@@ -72876,6 +72916,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst4:execution",
         "qemu:tst5:processes",
         "qemu:tst6:stress:kernel"
@@ -72899,7 +72940,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:scheduling"
+        "host:core:scheduling",
+        "host:core:workqueue"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -72920,10 +72962,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:workqueue",
         "qemu:tst5:processes"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/workqueue.c:workqueue_notify",
@@ -72942,6 +72985,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst4:execution",
         "qemu:tst5:processes",
         "qemu:tst6:stress:kernel"
@@ -72966,6 +73010,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst4:execution",
         "qemu:tst6:stress:kernel"
       ],
@@ -72989,6 +73034,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst4:execution",
         "qemu:tst5:processes",
         "qemu:tst6:stress:kernel"
@@ -73012,7 +73058,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:scheduling"
+        "host:core:scheduling",
+        "host:core:workqueue"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -73033,7 +73080,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:scheduling"
+        "host:core:scheduling",
+        "host:core:workqueue"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -73118,6 +73166,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst4:execution",
         "qemu:tst5:processes",
         "qemu:tst6:stress:kernel"
@@ -73142,6 +73191,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst4:execution",
         "qemu:tst5:processes",
         "qemu:tst6:stress:kernel"
@@ -73166,6 +73216,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst4:execution",
         "qemu:tst6:stress:kernel"
       ],
@@ -73189,6 +73240,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst4:execution",
         "qemu:tst5:processes",
         "qemu:tst6:stress:kernel"
@@ -73213,6 +73265,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst4:execution",
         "qemu:tst6:stress:kernel"
       ],
@@ -73236,6 +73289,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst4:execution",
         "qemu:tst6:stress:kernel"
       ],
@@ -73258,7 +73312,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:scheduling"
+        "host:core:scheduling",
+        "host:core:workqueue"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -73280,6 +73335,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst4:execution",
         "qemu:tst6:stress:kernel"
       ],
@@ -73303,6 +73359,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst4:execution",
         "qemu:tst6:stress:kernel"
       ],
@@ -73326,6 +73383,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst4:execution",
         "qemu:tst5:processes",
         "qemu:tst6:stress:kernel"
@@ -73350,6 +73408,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst4:execution",
         "qemu:tst6:stress:kernel"
       ],
@@ -73373,6 +73432,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:core:workqueue",
         "qemu:tst4:execution",
         "qemu:tst6:stress:kernel"
       ],
@@ -73395,10 +73455,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:workqueue",
         "qemu:tst5:processes"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/workqueue.c:workqueue_worker_main",
@@ -73414,9 +73475,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:workqueue"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_add_icon",
@@ -138174,6 +138238,98 @@
         "core",
         "timer",
         "negative"
+      ]
+    },
+    {
+      "id": "host:core:workqueue",
+      "scenario": "Contrato host-only da workqueue e worker cooperativo",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "worker_iterations": 4
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "compilar e executar a fixture de workqueue com espera controlada",
+      "expected": "autoteste, callbacks, filas, prioridades, limites e limpeza validos",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente estado estatico da workqueue e callbacks falsos no processo host",
+      "cleanup": "trabalhos destruidos, filas vazias, fallback restaurado e artefatos preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/workqueue.h:cancel_work",
+        "api:src/include/core/workqueue.h:schedule_delayed_work",
+        "api:src/include/core/workqueue.h:schedule_work",
+        "api:src/include/core/workqueue.h:work_destroy",
+        "api:src/include/core/workqueue.h:work_init",
+        "api:src/include/core/workqueue.h:workqueue_bind_worker",
+        "api:src/include/core/workqueue.h:workqueue_copy_info",
+        "api:src/include/core/workqueue.h:workqueue_dispatch",
+        "api:src/include/core/workqueue.h:workqueue_get_stats",
+        "api:src/include/core/workqueue.h:workqueue_init",
+        "api:src/include/core/workqueue.h:workqueue_needs_fallback",
+        "api:src/include/core/workqueue.h:workqueue_power_quiesce_until",
+        "api:src/include/core/workqueue.h:workqueue_power_set_quiescing",
+        "api:src/include/core/workqueue.h:workqueue_self_test",
+        "api:src/include/core/workqueue.h:workqueue_set_fallback",
+        "api:src/include/core/workqueue.h:workqueue_validate_state",
+        "api:src/include/core/workqueue.h:workqueue_worker_main",
+        "c:src/core/workqueue.c:cancel_work",
+        "c:src/core/workqueue.c:schedule_delayed_work",
+        "c:src/core/workqueue.c:schedule_work",
+        "c:src/core/workqueue.c:work_destroy",
+        "c:src/core/workqueue.c:work_init",
+        "c:src/core/workqueue.c:workqueue_bind_worker",
+        "c:src/core/workqueue.c:workqueue_cancel_on",
+        "c:src/core/workqueue.c:workqueue_copy_info",
+        "c:src/core/workqueue.c:workqueue_copy_owner",
+        "c:src/core/workqueue.c:workqueue_deadline_reached",
+        "c:src/core/workqueue.c:workqueue_delayed_insert",
+        "c:src/core/workqueue.c:workqueue_dispatch",
+        "c:src/core/workqueue.c:workqueue_dispatch_on",
+        "c:src/core/workqueue.c:workqueue_execute_one",
+        "c:src/core/workqueue.c:workqueue_finish",
+        "c:src/core/workqueue.c:workqueue_get_stats",
+        "c:src/core/workqueue.c:workqueue_init",
+        "c:src/core/workqueue.c:workqueue_internal_result",
+        "c:src/core/workqueue.c:workqueue_interrupts_enabled",
+        "c:src/core/workqueue.c:workqueue_irq_restore",
+        "c:src/core/workqueue.c:workqueue_irq_save",
+        "c:src/core/workqueue.c:workqueue_list_remove",
+        "c:src/core/workqueue.c:workqueue_needs_fallback",
+        "c:src/core/workqueue.c:workqueue_next_timeout",
+        "c:src/core/workqueue.c:workqueue_notify",
+        "c:src/core/workqueue.c:workqueue_owner_valid",
+        "c:src/core/workqueue.c:workqueue_pending_count",
+        "c:src/core/workqueue.c:workqueue_power_quiesce_until",
+        "c:src/core/workqueue.c:workqueue_power_set_quiescing",
+        "c:src/core/workqueue.c:workqueue_promote_due",
+        "c:src/core/workqueue.c:workqueue_ready_append",
+        "c:src/core/workqueue.c:workqueue_register_on",
+        "c:src/core/workqueue.c:workqueue_schedule_on",
+        "c:src/core/workqueue.c:workqueue_self_test",
+        "c:src/core/workqueue.c:workqueue_service_clear",
+        "c:src/core/workqueue.c:workqueue_set_fallback",
+        "c:src/core/workqueue.c:workqueue_test_callback",
+        "c:src/core/workqueue.c:workqueue_test_prepare",
+        "c:src/core/workqueue.c:workqueue_update_peak",
+        "c:src/core/workqueue.c:workqueue_validate_on",
+        "c:src/core/workqueue.c:workqueue_validate_state",
+        "c:src/core/workqueue.c:workqueue_wait_condition",
+        "c:src/core/workqueue.c:workqueue_worker_main"
+      ],
+      "tags": [
+        "host",
+        "core",
+        "workqueue",
+        "coverage"
       ]
     },
     {

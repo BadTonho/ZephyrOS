@@ -2148,6 +2148,23 @@
       ],
       "include_public_apis": true,
       "evidence": "make test-process-ipc-host PASS com mensagens, fila cheia, recebimento, espera, timeout, sinal, foco, fallback e limpeza em fixture estatica"
+    },
+    {
+      "id": "workqueue-host-dynamic",
+      "domain": "core-workqueue",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:workqueue"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/workqueue-host/coverage.json",
+      "coverage_sources": [
+        "src/core/workqueue.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-workqueue-host PASS com autoteste interno, prioridades, FIFO, atrasos, coalescencia, rerun, cancelamento, fallback, quiescencia e worker limitado no host"
     }
   ]
 }
