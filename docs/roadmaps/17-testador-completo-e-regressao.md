@@ -1175,3 +1175,13 @@ preexistentes em outros modulos. A sincronizacao atual registra 6.827
 superficies, 3.074 `COVERED`, 3.753 `PENDING` e 76 casos; o fechamento
 integral do catalogo, o gate estrito e a validacao TST7 completa continuam
 pendentes.
+
+Incremento Drivers/Fonte concluido em 2026-09-02: o caso host-only
+`host:drivers:font` e o alvo `make test-font-host` foram adicionados. A fixture
+exercita diretamente `font_init`, `font_get_width` e `font_get_height`,
+verificando inicializacao idempotente e dimensoes 8x16 com cobertura
+instrumentada. A validacao host encontrou e corrigiu uma comparacao de `char`
+que gerava `-Werror=type-limits`, sem alterar o comportamento para valores
+validos. A sincronizacao atual registra 6.826 superficies, 3.095 `COVERED`,
+3.731 `PENDING`, 82 casos e 21 superficies aposentadas; o fechamento integral
+do catalogo, o gate estrito e a validacao TST7 completa continuam pendentes.
