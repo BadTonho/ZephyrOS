@@ -139,8 +139,10 @@ leitura fisica e força a espera de uma entrada em leitura a retornar
 
 O caso `test-fat12-host` exercita o driver legado sobre uma imagem FAT12
 estatica, incluindo leitura, paths de subdiretorio, metadados, operacoes
-atomicas, streaming, cancelamento e erros de nome/tamanho. O relatorio fica
-em `build/test-results/fat12-host/`.
+atomicas, streaming, cancelamento e erros de nome/tamanho. A fixture tambem
+valida as APIs legadas de escrita e remocao na raiz, escrita e remocao em
+subdiretorio e criacao de entradas de diretorio, com nomes codificados em
+8.3. O relatorio fica em `build/test-results/fat12-host/`.
 
 O caso `test-fat32-host` exercita o driver FAT32 sobre uma imagem estatica com
 cadeia de clusters, leitura, paths, metadados, criacao, escrita, remocao e

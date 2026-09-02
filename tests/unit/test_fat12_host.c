@@ -261,6 +261,7 @@ int main(void) {
     uint8_t buffer[32];
     uint8_t payload[] = {'n', 'e', 'w'};
     uint8_t replacement[] = {'o', 'k'};
+    uint8_t legacy_payload[] = {'l', 'e', 'g'};
     char name[13];
     uint32_t size;
     uint8_t attributes;
@@ -313,6 +314,12 @@ int main(void) {
     EXPECT(fat12_atomic_write_root("BIG.TXT", payload, 0U, 0x20U, 0) ==
            ERR_OVERFLOW);
 
+    EXPECT(fat12_write_file("RAW.TXT", legacy_payload,
+                            sizeof(legacy_payload)) == 3);
+    EXPECT(fat12_read_file("RAW.TXT", buffer, sizeof(buffer)) == 3);
+    EXPECT(memcmp(buffer, legacy_payload, sizeof(legacy_payload)) == 0);
+    EXPECT(fat12_delete_file("RAW.TXT") == OK);
+
     EXPECT(fat12_atomic_write_file_in_dir(HOST_DIR_CLUSTER, "INNER.TXT",
                                           payload, sizeof(payload), 0x20U, 0) ==
            OK);
@@ -322,6 +329,13 @@ int main(void) {
     EXPECT(fat12_read_file_at("DIR/REN.TXT", buffer, sizeof(buffer)) == 3);
     EXPECT(fat12_atomic_delete_file_in_dir(HOST_DIR_CLUSTER, "REN.TXT") == OK);
     EXPECT(fat12_delete_file_in_dir(HOST_DIR_CLUSTER, "missing") != OK);
+    EXPECT(fat12_write_file_in_dir(HOST_DIR_CLUSTER, "LEGACY.TXT",
+                                   legacy_payload, sizeof(legacy_payload)) == 3);
+    EXPECT(fat12_read_file_at("DIR/LEGACY.TXT", buffer, sizeof(buffer)) == 3);
+    EXPECT(memcmp(buffer, legacy_payload, sizeof(legacy_payload)) == 0);
+    EXPECT(fat12_delete_file_in_dir(HOST_DIR_CLUSTER, "LEGACY.TXT") == OK);
+    EXPECT(fat12_create_dir_entry(HOST_DIR_CLUSTER, "SUB", 0x10U) == OK);
+    EXPECT(fat12_delete_file_in_dir(HOST_DIR_CLUSTER, "SUB") == OK);
 
     EXPECT(fat12_stream_begin_root("STREAM.TXT", sizeof(payload), 0x20U) == OK);
     EXPECT(fat12_stream_is_active() == 1);

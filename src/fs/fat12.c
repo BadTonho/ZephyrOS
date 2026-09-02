@@ -60,14 +60,6 @@ static int fat12_strncmp(const char* a, const char* b, uint32_t n) {
     return 0;
 }
 
-static void to_upper(char* str, int max_len) {
-    for (int i = 0; i < max_len && str[i]; i++) {
-        if (str[i] >= 'a' && str[i] <= 'z') {
-            str[i] -= 32;
-        }
-    }
-}
-
 #define FAT12_CHAIN_LIMIT 4096
 #define FAT12_ATOMIC_MAX_CLUSTERS 128U
 #define FAT12_STREAM_MAX_SIZE (128U * 1024U)
@@ -480,7 +472,11 @@ int fat12_read_file(const char* filename, uint8_t* buffer, uint32_t max_size) {
 }
 
 int fat12_write_file(const char* filename, const uint8_t* data, uint32_t size) {
-    fat12_dir_entry_t* entry = fat12_find_entry(filename);
+    char encoded_name[11];
+    fat12_dir_entry_t* entry;
+
+    if (fat12_encode_root_name(filename, encoded_name) != OK) return -1;
+    entry = fat12_find_entry(filename);
 
     if (!entry) {
         for (uint32_t i = 0; i < fs.bpb.root_entries; i++) {
@@ -488,7 +484,7 @@ int fat12_write_file(const char* filename, const uint8_t* data, uint32_t size) {
                 (uint8_t)fs.root_dir[i].name[0] == 0xE5U) {
                 entry = &fs.root_dir[i];
                 kmemset(entry, 0, sizeof(fat12_dir_entry_t));
-                kmemcpy(entry->name, filename, 11);
+                kmemcpy(entry->name, encoded_name, sizeof(encoded_name));
                 entry->attributes = 0x20;
                 break;
             }

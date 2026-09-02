@@ -102910,9 +102910,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:fat12"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/fat12.c:fat12_delete_file",
@@ -102928,9 +102931,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:fat12"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/fat12.c:fat12_delete_file_in_dir",
@@ -103030,9 +103036,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:fat12"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/fat12.c:fat12_find_in_dir",
@@ -103910,9 +103919,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:fat12"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/fat12.c:fat12_write_file_in_dir",
@@ -103928,27 +103940,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
-    },
-    {
-      "id": "c:src/fs/fat12.c:to_upper",
-      "kind": "c_function",
-      "source": "src/fs/fat12.c",
-      "symbol": "to_upper",
-      "linkage": "static",
-      "owner": "fs",
-      "layer": "kernel-source",
-      "preconditions": "definir no caso de teste associado",
-      "action": "definir no caso de teste associado",
-      "expected": "superficie localizada e contrato observado",
-      "errors": "definir erros canonicos aplicaveis",
-      "effects": "nenhum efeito durante a catalogacao",
-      "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:fat12"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/fat32.c:cluster_to_lba",
@@ -153735,10 +153732,13 @@
         "c:src/fs/fat12.c:fat12_atomic_delete_root",
         "c:src/fs/fat12.c:fat12_atomic_write_file_in_dir",
         "c:src/fs/fat12.c:fat12_atomic_write_root",
+        "c:src/fs/fat12.c:fat12_create_dir_entry",
+        "c:src/fs/fat12.c:fat12_delete_file",
         "c:src/fs/fat12.c:fat12_delete_file_in_dir",
         "c:src/fs/fat12.c:fat12_encode_root_name",
         "c:src/fs/fat12.c:fat12_find_dir_slot",
         "c:src/fs/fat12.c:fat12_find_entry",
+        "c:src/fs/fat12.c:fat12_find_free_cluster",
         "c:src/fs/fat12.c:fat12_find_in_dir",
         "c:src/fs/fat12.c:fat12_find_path_entry",
         "c:src/fs/fat12.c:fat12_find_root_index",
@@ -153779,7 +153779,9 @@
         "c:src/fs/fat12.c:fat12_strncmp",
         "c:src/fs/fat12.c:fat12_validate_bpb",
         "c:src/fs/fat12.c:fat12_write_atomic_clusters",
-        "c:src/fs/fat12.c:fat12_write_dir_cluster"
+        "c:src/fs/fat12.c:fat12_write_dir_cluster",
+        "c:src/fs/fat12.c:fat12_write_file",
+        "c:src/fs/fat12.c:fat12_write_file_in_dir"
       ],
       "tags": [
         "host",
@@ -164397,6 +164399,13 @@
       "kind": "c_function",
       "source": "src/fs/fat12.c",
       "symbol": "strncmp",
+      "retired_reason": "surface ausente na fonte atual; confirmar remocao ou renomeacao"
+    },
+    {
+      "id": "c:src/fs/fat12.c:to_upper",
+      "kind": "c_function",
+      "source": "src/fs/fat12.c",
+      "symbol": "to_upper",
       "retired_reason": "surface ausente na fonte atual; confirmar remocao ou renomeacao"
     },
     {
