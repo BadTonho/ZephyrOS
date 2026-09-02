@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **6826**
-- Casos de teste: **84**
+- Superfícies ativas: **7197**
+- Casos de teste: **85**
 - Superfícies aposentadas: **21**
 
 | Tipo | Quantidade |
 |---|---:|
-| `api_function` | 1410 |
+| `api_function` | 1541 |
 | `asm_entry` | 101 |
-| `c_function` | 5195 |
+| `c_function` | 5435 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 3679 |
+| `COVERED` | 3793 |
 | `MANUAL` | 0 |
-| `PENDING` | 3147 |
+| `PENDING` | 3404 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 84 |
+| `AUTOMATED` | 85 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -34,26 +34,26 @@
 
 | Proprietario | Superficies |
 |---|---:|
-| `apps` | 128 |
-| `appstore` | 83 |
-| `boot` | 129 |
-| `core` | 2595 |
-| `desktop` | 39 |
-| `drivers` | 871 |
+| `apps` | 134 |
+| `appstore` | 88 |
+| `boot` | 136 |
+| `core` | 2769 |
+| `desktop` | 40 |
+| `drivers` | 915 |
 | `filemanager` | 92 |
-| `fs` | 932 |
-| `gui` | 28 |
-| `icons` | 13 |
+| `fs` | 958 |
+| `gui` | 30 |
+| `icons` | 18 |
 | `kernel` | 40 |
-| `memory` | 161 |
-| `process` | 239 |
+| `memory` | 194 |
+| `process` | 257 |
 | `settings` | 55 |
-| `shell` | 1054 |
-| `taskbar` | 46 |
-| `thread` | 30 |
-| `ui` | 130 |
-| `updater` | 83 |
-| `wm` | 78 |
+| `shell` | 1082 |
+| `taskbar` | 47 |
+| `thread` | 34 |
+| `ui` | 141 |
+| `updater` | 86 |
+| `wm` | 81 |
 
 ## Superfícies
 
@@ -77,6 +77,7 @@
 | `api:src/include/apps/guitest.h:guitest_is_active` | `src/include/apps/guitest.h` | `guitest_is_active` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/guitest.h:guitest_open` | `src/include/apps/guitest.h` | `guitest_open` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/guitest.h:guitest_open_modern` | `src/include/apps/guitest.h` | `guitest_open_modern` | `apps` | `COVERED` | 2 |
+| `api:src/include/apps/mediaplayer.h:mp_get_status` | `src/include/apps/mediaplayer.h` | `mp_get_status` | `apps` | `PENDING` | 0 |
 | `api:src/include/apps/mediaplayer.h:mp_init` | `src/include/apps/mediaplayer.h` | `mp_init` | `apps` | `PENDING` | 0 |
 | `api:src/include/apps/mediaplayer.h:mp_main` | `src/include/apps/mediaplayer.h` | `mp_main` | `apps` | `PENDING` | 0 |
 | `api:src/include/apps/mediaplayer.h:mp_pause` | `src/include/apps/mediaplayer.h` | `mp_pause` | `apps` | `PENDING` | 0 |
@@ -95,17 +96,19 @@
 | `api:src/include/apps/shell.h:shell_report_app_loader_result` | `src/include/apps/shell.h` | `shell_report_app_loader_result` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell.h:shell_report_user_test_result` | `src/include/apps/shell.h` | `shell_report_user_test_result` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell.h:shell_update_hosted_terminal` | `src/include/apps/shell.h` | `shell_update_hosted_terminal` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell_command_utils.h:shell_command_args_equal` | `src/include/apps/shell_command_utils.h` | `shell_command_args_equal` | `apps` | `COVERED` | 3 |
-| `api:src/include/apps/shell_command_utils.h:shell_command_parse_number` | `src/include/apps/shell_command_utils.h` | `shell_command_parse_number` | `apps` | `COVERED` | 3 |
-| `api:src/include/apps/shell_command_utils.h:shell_command_print_hex` | `src/include/apps/shell_command_utils.h` | `shell_command_print_hex` | `apps` | `COVERED` | 3 |
-| `api:src/include/apps/shell_command_utils.h:shell_command_print_num` | `src/include/apps/shell_command_utils.h` | `shell_command_print_num` | `apps` | `COVERED` | 3 |
-| `api:src/include/apps/shell_command_utils.h:shell_command_read_four_args` | `src/include/apps/shell_command_utils.h` | `shell_command_read_four_args` | `apps` | `COVERED` | 3 |
-| `api:src/include/apps/shell_command_utils.h:shell_command_read_single_arg` | `src/include/apps/shell_command_utils.h` | `shell_command_read_single_arg` | `apps` | `COVERED` | 3 |
-| `api:src/include/apps/shell_command_utils.h:shell_command_read_token` | `src/include/apps/shell_command_utils.h` | `shell_command_read_token` | `apps` | `COVERED` | 3 |
-| `api:src/include/apps/shell_command_utils.h:shell_command_read_two_args` | `src/include/apps/shell_command_utils.h` | `shell_command_read_two_args` | `apps` | `COVERED` | 3 |
-| `api:src/include/apps/shell_command_utils.h:shell_command_uppercase` | `src/include/apps/shell_command_utils.h` | `shell_command_uppercase` | `apps` | `COVERED` | 3 |
+| `api:src/include/apps/shell_command_utils.h:shell_command_args_equal` | `src/include/apps/shell_command_utils.h` | `shell_command_args_equal` | `apps` | `COVERED` | 4 |
+| `api:src/include/apps/shell_command_utils.h:shell_command_match_subcommand` | `src/include/apps/shell_command_utils.h` | `shell_command_match_subcommand` | `apps` | `COVERED` | 4 |
+| `api:src/include/apps/shell_command_utils.h:shell_command_parse_number` | `src/include/apps/shell_command_utils.h` | `shell_command_parse_number` | `apps` | `COVERED` | 4 |
+| `api:src/include/apps/shell_command_utils.h:shell_command_print_hex` | `src/include/apps/shell_command_utils.h` | `shell_command_print_hex` | `apps` | `COVERED` | 4 |
+| `api:src/include/apps/shell_command_utils.h:shell_command_print_num` | `src/include/apps/shell_command_utils.h` | `shell_command_print_num` | `apps` | `COVERED` | 4 |
+| `api:src/include/apps/shell_command_utils.h:shell_command_read_four_args` | `src/include/apps/shell_command_utils.h` | `shell_command_read_four_args` | `apps` | `COVERED` | 4 |
+| `api:src/include/apps/shell_command_utils.h:shell_command_read_single_arg` | `src/include/apps/shell_command_utils.h` | `shell_command_read_single_arg` | `apps` | `COVERED` | 4 |
+| `api:src/include/apps/shell_command_utils.h:shell_command_read_token` | `src/include/apps/shell_command_utils.h` | `shell_command_read_token` | `apps` | `COVERED` | 4 |
+| `api:src/include/apps/shell_command_utils.h:shell_command_read_two_args` | `src/include/apps/shell_command_utils.h` | `shell_command_read_two_args` | `apps` | `COVERED` | 4 |
+| `api:src/include/apps/shell_command_utils.h:shell_command_uppercase` | `src/include/apps/shell_command_utils.h` | `shell_command_uppercase` | `apps` | `COVERED` | 4 |
 | `api:src/include/apps/shell_dispatch.h:shell_dispatch_execute` | `src/include/apps/shell_dispatch.h` | `shell_dispatch_execute` | `apps` | `COVERED` | 6 |
 | `api:src/include/apps/shell_input.h:shell_input_cancel_extended` | `src/include/apps/shell_input.h` | `shell_input_cancel_extended` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_input.h:shell_input_get_buffer` | `src/include/apps/shell_input.h` | `shell_input_get_buffer` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell_input.h:shell_input_handle_key` | `src/include/apps/shell_input.h` | `shell_input_handle_key` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell_input.h:shell_input_init` | `src/include/apps/shell_input.h` | `shell_input_init` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell_input.h:shell_input_print_prompt` | `src/include/apps/shell_input.h` | `shell_input_print_prompt` | `apps` | `COVERED` | 8 |
@@ -128,6 +131,7 @@
 | `api:src/include/apps/shell_job.h:shell_job_handle_key` | `src/include/apps/shell_job.h` | `shell_job_handle_key` | `apps` | `COVERED` | 6 |
 | `api:src/include/apps/shell_job.h:shell_job_input_blocked` | `src/include/apps/shell_job.h` | `shell_job_input_blocked` | `apps` | `COVERED` | 6 |
 | `api:src/include/apps/shell_job.h:shell_job_is_active` | `src/include/apps/shell_job.h` | `shell_job_is_active` | `apps` | `COVERED` | 6 |
+| `api:src/include/apps/shell_job.h:shell_job_kind_name` | `src/include/apps/shell_job.h` | `shell_job_kind_name` | `apps` | `COVERED` | 6 |
 | `api:src/include/apps/shell_job.h:shell_job_note_stale_event` | `src/include/apps/shell_job.h` | `shell_job_note_stale_event` | `apps` | `COVERED` | 6 |
 | `api:src/include/apps/shell_job.h:shell_job_poll` | `src/include/apps/shell_job.h` | `shell_job_poll` | `apps` | `COVERED` | 6 |
 | `api:src/include/apps/shell_job.h:shell_job_pump_events` | `src/include/apps/shell_job.h` | `shell_job_pump_events` | `apps` | `COVERED` | 6 |
@@ -139,6 +143,7 @@
 | `api:src/include/apps/shell_job.h:shell_job_set_progress` | `src/include/apps/shell_job.h` | `shell_job_set_progress` | `apps` | `COVERED` | 6 |
 | `api:src/include/apps/shell_job.h:shell_job_set_timeout` | `src/include/apps/shell_job.h` | `shell_job_set_timeout` | `apps` | `COVERED` | 6 |
 | `api:src/include/apps/shell_job.h:shell_job_start` | `src/include/apps/shell_job.h` | `shell_job_start` | `apps` | `COVERED` | 6 |
+| `api:src/include/apps/shell_job.h:shell_job_state_name` | `src/include/apps/shell_job.h` | `shell_job_state_name` | `apps` | `COVERED` | 6 |
 | `api:src/include/apps/shell_job.h:shell_network_start_job` | `src/include/apps/shell_job.h` | `shell_network_start_job` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/shell_job.h:shell_packages_start_job` | `src/include/apps/shell_job.h` | `shell_packages_start_job` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/shell_job.h:shell_storage_start_job` | `src/include/apps/shell_job.h` | `shell_storage_start_job` | `apps` | `PENDING` | 0 |
@@ -154,6 +159,7 @@
 | `api:src/include/apps/shell_runtime.h:shell_checks_report_user_test_result` | `src/include/apps/shell_runtime.h` | `shell_checks_report_user_test_result` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/shell_runtime.h:shell_checks_run_app_inputtest` | `src/include/apps/shell_runtime.h` | `shell_checks_run_app_inputtest` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/shell_runtime.h:shell_checks_should_cancel_focused_user` | `src/include/apps/shell_runtime.h` | `shell_checks_should_cancel_focused_user` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_runtime.h:shell_core_builtin_app_name` | `src/include/apps/shell_runtime.h` | `shell_core_builtin_app_name` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_runtime.h:shell_core_handle_loader_result` | `src/include/apps/shell_runtime.h` | `shell_core_handle_loader_result` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_runtime.h:shell_core_migrated_builtin_is_ready` | `src/include/apps/shell_runtime.h` | `shell_core_migrated_builtin_is_ready` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_runtime.h:shell_core_reboot` | `src/include/apps/shell_runtime.h` | `shell_core_reboot` | `apps` | `COVERED` | 2 |
@@ -229,7 +235,9 @@
 | `api:src/include/core/app_catalog.h:app_catalog_get_status` | `src/include/core/app_catalog.h` | `app_catalog_get_status` | `core` | `COVERED` | 1 |
 | `api:src/include/core/app_catalog.h:app_catalog_init` | `src/include/core/app_catalog.h` | `app_catalog_init` | `core` | `COVERED` | 1 |
 | `api:src/include/core/app_catalog.h:app_catalog_is_ready` | `src/include/core/app_catalog.h` | `app_catalog_is_ready` | `core` | `COVERED` | 1 |
+| `api:src/include/core/app_catalog.h:app_catalog_reason_name` | `src/include/core/app_catalog.h` | `app_catalog_reason_name` | `core` | `COVERED` | 1 |
 | `api:src/include/core/app_catalog.h:app_catalog_refresh` | `src/include/core/app_catalog.h` | `app_catalog_refresh` | `core` | `COVERED` | 1 |
+| `api:src/include/core/app_catalog.h:app_catalog_state_name` | `src/include/core/app_catalog.h` | `app_catalog_state_name` | `core` | `COVERED` | 1 |
 | `api:src/include/core/app_files.h:app_files_chdir` | `src/include/core/app_files.h` | `app_files_chdir` | `core` | `PENDING` | 0 |
 | `api:src/include/core/app_files.h:app_files_close` | `src/include/core/app_files.h` | `app_files_close` | `core` | `PENDING` | 0 |
 | `api:src/include/core/app_files.h:app_files_close_owner` | `src/include/core/app_files.h` | `app_files_close_owner` | `core` | `PENDING` | 0 |
@@ -259,6 +267,7 @@
 | `api:src/include/core/app_loader.h:app_loader_set_operation_generation` | `src/include/core/app_loader.h` | `app_loader_set_operation_generation` | `core` | `COVERED` | 3 |
 | `api:src/include/core/app_loader.h:app_loader_take_finished_result` | `src/include/core/app_loader.h` | `app_loader_take_finished_result` | `core` | `COVERED` | 3 |
 | `api:src/include/core/app_loader.h:app_loader_validate_image` | `src/include/core/app_loader.h` | `app_loader_validate_image` | `core` | `COVERED` | 3 |
+| `api:src/include/core/app_package.h:app_package_action_reason_name` | `src/include/core/app_package.h` | `app_package_action_reason_name` | `core` | `COVERED` | 2 |
 | `api:src/include/core/app_package.h:app_package_apply_plan_confirmed` | `src/include/core/app_package.h` | `app_package_apply_plan_confirmed` | `core` | `COVERED` | 2 |
 | `api:src/include/core/app_package.h:app_package_apply_plan_from_directory_confirmed` | `src/include/core/app_package.h` | `app_package_apply_plan_from_directory_confirmed` | `core` | `COVERED` | 2 |
 | `api:src/include/core/app_package.h:app_package_compare_versions` | `src/include/core/app_package.h` | `app_package_compare_versions` | `core` | `COVERED` | 2 |
@@ -268,11 +277,14 @@
 | `api:src/include/core/app_package.h:app_package_get_installed_info` | `src/include/core/app_package.h` | `app_package_get_installed_info` | `core` | `COVERED` | 2 |
 | `api:src/include/core/app_package.h:app_package_get_installed_info_by_id` | `src/include/core/app_package.h` | `app_package_get_installed_info_by_id` | `core` | `COVERED` | 2 |
 | `api:src/include/core/app_package.h:app_package_get_status` | `src/include/core/app_package.h` | `app_package_get_status` | `core` | `COVERED` | 2 |
+| `api:src/include/core/app_package.h:app_package_history_operation_name` | `src/include/core/app_package.h` | `app_package_history_operation_name` | `core` | `COVERED` | 2 |
+| `api:src/include/core/app_package.h:app_package_history_outcome_name` | `src/include/core/app_package.h` | `app_package_history_outcome_name` | `core` | `COVERED` | 2 |
 | `api:src/include/core/app_package.h:app_package_init` | `src/include/core/app_package.h` | `app_package_init` | `core` | `COVERED` | 2 |
 | `api:src/include/core/app_package.h:app_package_install_confirmed` | `src/include/core/app_package.h` | `app_package_install_confirmed` | `core` | `COVERED` | 2 |
 | `api:src/include/core/app_package.h:app_package_install_file` | `src/include/core/app_package.h` | `app_package_install_file` | `core` | `COVERED` | 2 |
 | `api:src/include/core/app_package.h:app_package_is_mutation_active` | `src/include/core/app_package.h` | `app_package_is_mutation_active` | `core` | `COVERED` | 2 |
 | `api:src/include/core/app_package.h:app_package_is_ready` | `src/include/core/app_package.h` | `app_package_is_ready` | `core` | `COVERED` | 2 |
+| `api:src/include/core/app_package.h:app_package_plan_action_name` | `src/include/core/app_package.h` | `app_package_plan_action_name` | `core` | `COVERED` | 2 |
 | `api:src/include/core/app_package.h:app_package_preflight_install` | `src/include/core/app_package.h` | `app_package_preflight_install` | `core` | `COVERED` | 2 |
 | `api:src/include/core/app_package.h:app_package_preflight_plan` | `src/include/core/app_package.h` | `app_package_preflight_plan` | `core` | `COVERED` | 2 |
 | `api:src/include/core/app_package.h:app_package_preflight_plan_from_directory` | `src/include/core/app_package.h` | `app_package_preflight_plan_from_directory` | `core` | `COVERED` | 2 |
@@ -287,10 +299,12 @@
 | `api:src/include/core/app_package.h:app_package_verify_file` | `src/include/core/app_package.h` | `app_package_verify_file` | `core` | `COVERED` | 2 |
 | `api:src/include/core/app_remote.h:app_remote_apply_cached` | `src/include/core/app_remote.h` | `app_remote_apply_cached` | `core` | `PENDING` | 0 |
 | `api:src/include/core/app_remote.h:app_remote_build_plan` | `src/include/core/app_remote.h` | `app_remote_build_plan` | `core` | `PENDING` | 0 |
+| `api:src/include/core/app_remote.h:app_remote_cache_state_name` | `src/include/core/app_remote.h` | `app_remote_cache_state_name` | `core` | `PENDING` | 0 |
 | `api:src/include/core/app_remote.h:app_remote_check` | `src/include/core/app_remote.h` | `app_remote_check` | `core` | `PENDING` | 0 |
 | `api:src/include/core/app_remote.h:app_remote_clear` | `src/include/core/app_remote.h` | `app_remote_clear` | `core` | `PENDING` | 0 |
 | `api:src/include/core/app_remote.h:app_remote_disable` | `src/include/core/app_remote.h` | `app_remote_disable` | `core` | `PENDING` | 0 |
 | `api:src/include/core/app_remote.h:app_remote_enable` | `src/include/core/app_remote.h` | `app_remote_enable` | `core` | `PENDING` | 0 |
+| `api:src/include/core/app_remote.h:app_remote_entry_state_name` | `src/include/core/app_remote.h` | `app_remote_entry_state_name` | `core` | `PENDING` | 0 |
 | `api:src/include/core/app_remote.h:app_remote_fetch` | `src/include/core/app_remote.h` | `app_remote_fetch` | `core` | `PENDING` | 0 |
 | `api:src/include/core/app_remote.h:app_remote_find_entry` | `src/include/core/app_remote.h` | `app_remote_find_entry` | `core` | `PENDING` | 0 |
 | `api:src/include/core/app_remote.h:app_remote_get_count` | `src/include/core/app_remote.h` | `app_remote_get_count` | `core` | `PENDING` | 0 |
@@ -299,11 +313,14 @@
 | `api:src/include/core/app_remote.h:app_remote_get_status` | `src/include/core/app_remote.h` | `app_remote_get_status` | `core` | `PENDING` | 0 |
 | `api:src/include/core/app_remote.h:app_remote_init` | `src/include/core/app_remote.h` | `app_remote_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/app_remote.h:app_remote_is_provenance_available` | `src/include/core/app_remote.h` | `app_remote_is_provenance_available` | `core` | `PENDING` | 0 |
+| `api:src/include/core/app_remote.h:app_remote_reason_name` | `src/include/core/app_remote.h` | `app_remote_reason_name` | `core` | `PENDING` | 0 |
 | `api:src/include/core/app_remote.h:app_remote_refresh_provenance` | `src/include/core/app_remote.h` | `app_remote_refresh_provenance` | `core` | `PENDING` | 0 |
 | `api:src/include/core/app_remote.h:app_remote_request_cancel` | `src/include/core/app_remote.h` | `app_remote_request_cancel` | `core` | `PENDING` | 0 |
+| `api:src/include/core/app_remote.h:app_remote_state_name` | `src/include/core/app_remote.h` | `app_remote_state_name` | `core` | `PENDING` | 0 |
 | `api:src/include/core/app_remote.h:app_remote_test_fail_after` | `src/include/core/app_remote.h` | `app_remote_test_fail_after` | `core` | `PENDING` | 0 |
 | `api:src/include/core/arp.h:arp_clear` | `src/include/core/arp.h` | `arp_clear` | `core` | `COVERED` | 2 |
 | `api:src/include/core/arp.h:arp_configure` | `src/include/core/arp.h` | `arp_configure` | `core` | `COVERED` | 2 |
+| `api:src/include/core/arp.h:arp_entry_state_name` | `src/include/core/arp.h` | `arp_entry_state_name` | `core` | `COVERED` | 2 |
 | `api:src/include/core/arp.h:arp_get_cache_entry` | `src/include/core/arp.h` | `arp_get_cache_entry` | `core` | `COVERED` | 2 |
 | `api:src/include/core/arp.h:arp_get_status` | `src/include/core/arp.h` | `arp_get_status` | `core` | `COVERED` | 2 |
 | `api:src/include/core/arp.h:arp_init` | `src/include/core/arp.h` | `arp_init` | `core` | `COVERED` | 2 |
@@ -317,6 +334,7 @@
 | `api:src/include/core/clock.h:clock_get_utc` | `src/include/core/clock.h` | `clock_get_utc` | `core` | `COVERED` | 3 |
 | `api:src/include/core/clock.h:clock_init` | `src/include/core/clock.h` | `clock_init` | `core` | `COVERED` | 3 |
 | `api:src/include/core/clock.h:clock_self_test` | `src/include/core/clock.h` | `clock_self_test` | `core` | `COVERED` | 3 |
+| `api:src/include/core/clock.h:clock_source_name` | `src/include/core/clock.h` | `clock_source_name` | `core` | `COVERED` | 3 |
 | `api:src/include/core/clock.h:clock_validate_state` | `src/include/core/clock.h` | `clock_validate_state` | `core` | `COVERED` | 3 |
 | `api:src/include/core/crypto.h:crypto_ed25519_verify_final` | `src/include/core/crypto.h` | `crypto_ed25519_verify_final` | `core` | `COVERED` | 2 |
 | `api:src/include/core/crypto.h:crypto_ed25519_verify_init` | `src/include/core/crypto.h` | `crypto_ed25519_verify_init` | `core` | `COVERED` | 2 |
@@ -334,6 +352,7 @@
 | `api:src/include/core/device_manager.h:device_manager_get_info` | `src/include/core/device_manager.h` | `device_manager_get_info` | `core` | `COVERED` | 3 |
 | `api:src/include/core/device_manager.h:device_manager_init` | `src/include/core/device_manager.h` | `device_manager_init` | `core` | `COVERED` | 3 |
 | `api:src/include/core/device_manager.h:device_manager_refresh` | `src/include/core/device_manager.h` | `device_manager_refresh` | `core` | `COVERED` | 3 |
+| `api:src/include/core/device_manager.h:device_manager_status_name` | `src/include/core/device_manager.h` | `device_manager_status_name` | `core` | `COVERED` | 3 |
 | `api:src/include/core/dhcp.h:dhcp_acquire` | `src/include/core/dhcp.h` | `dhcp_acquire` | `core` | `COVERED` | 2 |
 | `api:src/include/core/dhcp.h:dhcp_complete_event` | `src/include/core/dhcp.h` | `dhcp_complete_event` | `core` | `COVERED` | 2 |
 | `api:src/include/core/dhcp.h:dhcp_get_status` | `src/include/core/dhcp.h` | `dhcp_get_status` | `core` | `COVERED` | 2 |
@@ -342,6 +361,7 @@
 | `api:src/include/core/dhcp.h:dhcp_release` | `src/include/core/dhcp.h` | `dhcp_release` | `core` | `COVERED` | 2 |
 | `api:src/include/core/dhcp.h:dhcp_renew` | `src/include/core/dhcp.h` | `dhcp_renew` | `core` | `COVERED` | 2 |
 | `api:src/include/core/dhcp.h:dhcp_reset` | `src/include/core/dhcp.h` | `dhcp_reset` | `core` | `COVERED` | 2 |
+| `api:src/include/core/dhcp.h:dhcp_state_name` | `src/include/core/dhcp.h` | `dhcp_state_name` | `core` | `COVERED` | 2 |
 | `api:src/include/core/dhcp.h:dhcp_take_event` | `src/include/core/dhcp.h` | `dhcp_take_event` | `core` | `COVERED` | 2 |
 | `api:src/include/core/dhcp.h:dhcp_validate_state` | `src/include/core/dhcp.h` | `dhcp_validate_state` | `core` | `COVERED` | 3 |
 | `api:src/include/core/dns.h:dns_clear` | `src/include/core/dns.h` | `dns_clear` | `core` | `COVERED` | 2 |
@@ -352,6 +372,7 @@
 | `api:src/include/core/dns.h:dns_maintain` | `src/include/core/dns.h` | `dns_maintain` | `core` | `COVERED` | 2 |
 | `api:src/include/core/dns.h:dns_reset` | `src/include/core/dns.h` | `dns_reset` | `core` | `COVERED` | 2 |
 | `api:src/include/core/dns.h:dns_resolve` | `src/include/core/dns.h` | `dns_resolve` | `core` | `COVERED` | 2 |
+| `api:src/include/core/dns.h:dns_state_name` | `src/include/core/dns.h` | `dns_state_name` | `core` | `COVERED` | 2 |
 | `api:src/include/core/dns.h:dns_unconfigure` | `src/include/core/dns.h` | `dns_unconfigure` | `core` | `COVERED` | 2 |
 | `api:src/include/core/dns.h:dns_validate_state` | `src/include/core/dns.h` | `dns_validate_state` | `core` | `COVERED` | 3 |
 | `api:src/include/core/ethernet.h:ethernet_attach_interface` | `src/include/core/ethernet.h` | `ethernet_attach_interface` | `core` | `COVERED` | 2 |
@@ -373,11 +394,13 @@
 | `api:src/include/core/http.h:http_init` | `src/include/core/http.h` | `http_init` | `core` | `COVERED` | 2 |
 | `api:src/include/core/http.h:http_maintain` | `src/include/core/http.h` | `http_maintain` | `core` | `COVERED` | 2 |
 | `api:src/include/core/http.h:http_reset` | `src/include/core/http.h` | `http_reset` | `core` | `COVERED` | 2 |
+| `api:src/include/core/http.h:http_state_name` | `src/include/core/http.h` | `http_state_name` | `core` | `COVERED` | 2 |
 | `api:src/include/core/http.h:http_validate_state` | `src/include/core/http.h` | `http_validate_state` | `core` | `COVERED` | 3 |
 | `api:src/include/core/icmp.h:icmp_get_status` | `src/include/core/icmp.h` | `icmp_get_status` | `core` | `COVERED` | 2 |
 | `api:src/include/core/icmp.h:icmp_init` | `src/include/core/icmp.h` | `icmp_init` | `core` | `COVERED` | 2 |
 | `api:src/include/core/icmp.h:icmp_maintain` | `src/include/core/icmp.h` | `icmp_maintain` | `core` | `COVERED` | 2 |
 | `api:src/include/core/icmp.h:icmp_ping_start` | `src/include/core/icmp.h` | `icmp_ping_start` | `core` | `COVERED` | 2 |
+| `api:src/include/core/icmp.h:icmp_ping_state_name` | `src/include/core/icmp.h` | `icmp_ping_state_name` | `core` | `COVERED` | 2 |
 | `api:src/include/core/icmp.h:icmp_reset` | `src/include/core/icmp.h` | `icmp_reset` | `core` | `COVERED` | 2 |
 | `api:src/include/core/icmp.h:icmp_validate_state` | `src/include/core/icmp.h` | `icmp_validate_state` | `core` | `COVERED` | 3 |
 | `api:src/include/core/input.h:input_dispatch` | `src/include/core/input.h` | `input_dispatch` | `core` | `COVERED` | 6 |
@@ -393,6 +416,7 @@
 | `api:src/include/core/ipv4.h:ipv4_get_status` | `src/include/core/ipv4.h` | `ipv4_get_status` | `core` | `COVERED` | 4 |
 | `api:src/include/core/ipv4.h:ipv4_init` | `src/include/core/ipv4.h` | `ipv4_init` | `core` | `COVERED` | 3 |
 | `api:src/include/core/ipv4.h:ipv4_mask_is_valid` | `src/include/core/ipv4.h` | `ipv4_mask_is_valid` | `core` | `COVERED` | 4 |
+| `api:src/include/core/ipv4.h:ipv4_protocol_name` | `src/include/core/ipv4.h` | `ipv4_protocol_name` | `core` | `COVERED` | 2 |
 | `api:src/include/core/ipv4.h:ipv4_register_handler` | `src/include/core/ipv4.h` | `ipv4_register_handler` | `core` | `COVERED` | 3 |
 | `api:src/include/core/ipv4.h:ipv4_send` | `src/include/core/ipv4.h` | `ipv4_send` | `core` | `COVERED` | 3 |
 | `api:src/include/core/ipv4.h:ipv4_send_limited_broadcast` | `src/include/core/ipv4.h` | `ipv4_send_limited_broadcast` | `core` | `COVERED` | 3 |
@@ -425,6 +449,7 @@
 | `api:src/include/core/log.h:log_get_level` | `src/include/core/log.h` | `log_get_level` | `core` | `COVERED` | 29 |
 | `api:src/include/core/log.h:log_get_stats` | `src/include/core/log.h` | `log_get_stats` | `core` | `COVERED` | 29 |
 | `api:src/include/core/log.h:log_init` | `src/include/core/log.h` | `log_init` | `core` | `COVERED` | 29 |
+| `api:src/include/core/log.h:log_level_str` | `src/include/core/log.h` | `log_level_str` | `core` | `COVERED` | 29 |
 | `api:src/include/core/log.h:log_print` | `src/include/core/log.h` | `log_print` | `core` | `COVERED` | 29 |
 | `api:src/include/core/log.h:log_print_code` | `src/include/core/log.h` | `log_print_code` | `core` | `COVERED` | 29 |
 | `api:src/include/core/log.h:log_self_test` | `src/include/core/log.h` | `log_self_test` | `core` | `COVERED` | 29 |
@@ -433,6 +458,8 @@
 | `api:src/include/core/log.h:log_set_level` | `src/include/core/log.h` | `log_set_level` | `core` | `COVERED` | 29 |
 | `api:src/include/core/log.h:log_to_buffer` | `src/include/core/log.h` | `log_to_buffer` | `core` | `COVERED` | 29 |
 | `api:src/include/core/memory.h:kfree` | `src/include/core/memory.h` | `kfree` | `core` | `COVERED` | 6 |
+| `api:src/include/core/memory.h:kmalloc` | `src/include/core/memory.h` | `kmalloc` | `core` | `COVERED` | 6 |
+| `api:src/include/core/memory.h:kmalloc_aligned` | `src/include/core/memory.h` | `kmalloc_aligned` | `core` | `COVERED` | 6 |
 | `api:src/include/core/memory.h:memory_get_detailed_stats` | `src/include/core/memory.h` | `memory_get_detailed_stats` | `core` | `COVERED` | 7 |
 | `api:src/include/core/memory.h:memory_get_free` | `src/include/core/memory.h` | `memory_get_free` | `core` | `COVERED` | 6 |
 | `api:src/include/core/memory.h:memory_get_free_pages` | `src/include/core/memory.h` | `memory_get_free_pages` | `core` | `COVERED` | 7 |
@@ -443,6 +470,10 @@
 | `api:src/include/core/memory.h:memory_get_total_pages` | `src/include/core/memory.h` | `memory_get_total_pages` | `core` | `COVERED` | 6 |
 | `api:src/include/core/memory.h:memory_get_used` | `src/include/core/memory.h` | `memory_get_used` | `core` | `COVERED` | 6 |
 | `api:src/include/core/memory.h:memory_init` | `src/include/core/memory.h` | `memory_init` | `core` | `COVERED` | 6 |
+| `api:src/include/core/memory.h:pmm_alloc_page` | `src/include/core/memory.h` | `pmm_alloc_page` | `core` | `COVERED` | 6 |
+| `api:src/include/core/memory.h:pmm_alloc_page_in_zone` | `src/include/core/memory.h` | `pmm_alloc_page_in_zone` | `core` | `COVERED` | 6 |
+| `api:src/include/core/memory.h:pmm_alloc_pages` | `src/include/core/memory.h` | `pmm_alloc_pages` | `core` | `COVERED` | 6 |
+| `api:src/include/core/memory.h:pmm_alloc_pages_in_zone` | `src/include/core/memory.h` | `pmm_alloc_pages_in_zone` | `core` | `COVERED` | 6 |
 | `api:src/include/core/memory.h:pmm_free_page` | `src/include/core/memory.h` | `pmm_free_page` | `core` | `COVERED` | 6 |
 | `api:src/include/core/memory.h:pmm_free_pages` | `src/include/core/memory.h` | `pmm_free_pages` | `core` | `COVERED` | 6 |
 | `api:src/include/core/net_buffer.h:net_buffer_begin` | `src/include/core/net_buffer.h` | `net_buffer_begin` | `core` | `COVERED` | 5 |
@@ -473,6 +504,7 @@
 | `api:src/include/core/net_socket.h:net_socket_reset` | `src/include/core/net_socket.h` | `net_socket_reset` | `core` | `COVERED` | 2 |
 | `api:src/include/core/net_socket.h:net_socket_self_test` | `src/include/core/net_socket.h` | `net_socket_self_test` | `core` | `COVERED` | 3 |
 | `api:src/include/core/net_socket.h:net_socket_send` | `src/include/core/net_socket.h` | `net_socket_send` | `core` | `COVERED` | 2 |
+| `api:src/include/core/net_socket.h:net_socket_state_name` | `src/include/core/net_socket.h` | `net_socket_state_name` | `core` | `COVERED` | 2 |
 | `api:src/include/core/net_socket.h:net_socket_validate_state` | `src/include/core/net_socket.h` | `net_socket_validate_state` | `core` | `COVERED` | 3 |
 | `api:src/include/core/net_socket.h:net_socket_wait` | `src/include/core/net_socket.h` | `net_socket_wait` | `core` | `COVERED` | 2 |
 | `api:src/include/core/network_manager.h:network_manager_acquire_dhcp` | `src/include/core/network_manager.h` | `network_manager_acquire_dhcp` | `core` | `COVERED` | 3 |
@@ -486,6 +518,10 @@
 | `api:src/include/core/network_manager.h:network_manager_get_interface` | `src/include/core/network_manager.h` | `network_manager_get_interface` | `core` | `COVERED` | 3 |
 | `api:src/include/core/network_manager.h:network_manager_get_status` | `src/include/core/network_manager.h` | `network_manager_get_status` | `core` | `COVERED` | 3 |
 | `api:src/include/core/network_manager.h:network_manager_init` | `src/include/core/network_manager.h` | `network_manager_init` | `core` | `COVERED` | 3 |
+| `api:src/include/core/network_manager.h:network_manager_interface_state_name` | `src/include/core/network_manager.h` | `network_manager_interface_state_name` | `core` | `COVERED` | 3 |
+| `api:src/include/core/network_manager.h:network_manager_ipv4_source_name` | `src/include/core/network_manager.h` | `network_manager_ipv4_source_name` | `core` | `COVERED` | 3 |
+| `api:src/include/core/network_manager.h:network_manager_link_state_name` | `src/include/core/network_manager.h` | `network_manager_link_state_name` | `core` | `COVERED` | 3 |
+| `api:src/include/core/network_manager.h:network_manager_model_name` | `src/include/core/network_manager.h` | `network_manager_model_name` | `core` | `COVERED` | 3 |
 | `api:src/include/core/network_manager.h:network_manager_poll` | `src/include/core/network_manager.h` | `network_manager_poll` | `core` | `COVERED` | 3 |
 | `api:src/include/core/network_manager.h:network_manager_quiesce` | `src/include/core/network_manager.h` | `network_manager_quiesce` | `core` | `COVERED` | 3 |
 | `api:src/include/core/network_manager.h:network_manager_refresh` | `src/include/core/network_manager.h` | `network_manager_refresh` | `core` | `COVERED` | 3 |
@@ -496,12 +532,17 @@
 | `api:src/include/core/panic.h:panic` | `src/include/core/panic.h` | `panic` | `core` | `PENDING` | 0 |
 | `api:src/include/core/panic.h:panic_halt` | `src/include/core/panic.h` | `panic_halt` | `core` | `PENDING` | 0 |
 | `api:src/include/core/panic.h:panic_memory` | `src/include/core/panic.h` | `panic_memory` | `core` | `PENDING` | 0 |
+| `api:src/include/core/power.h:power_capability_name` | `src/include/core/power.h` | `power_capability_name` | `core` | `COVERED` | 4 |
 | `api:src/include/core/power.h:power_get_status` | `src/include/core/power.h` | `power_get_status` | `core` | `COVERED` | 4 |
 | `api:src/include/core/power.h:power_init` | `src/include/core/power.h` | `power_init` | `core` | `COVERED` | 4 |
+| `api:src/include/core/power.h:power_quiescence_state_name` | `src/include/core/power.h` | `power_quiescence_state_name` | `core` | `COVERED` | 4 |
 | `api:src/include/core/power.h:power_reboot` | `src/include/core/power.h` | `power_reboot` | `core` | `COVERED` | 4 |
+| `api:src/include/core/power.h:power_service_state_name` | `src/include/core/power.h` | `power_service_state_name` | `core` | `COVERED` | 4 |
 | `api:src/include/core/power.h:power_shutdown` | `src/include/core/power.h` | `power_shutdown` | `core` | `COVERED` | 4 |
 | `api:src/include/core/power.h:power_shutdown_prepare` | `src/include/core/power.h` | `power_shutdown_prepare` | `core` | `COVERED` | 4 |
 | `api:src/include/core/power.h:power_shutdown_request` | `src/include/core/power.h` | `power_shutdown_request` | `core` | `COVERED` | 4 |
+| `api:src/include/core/power.h:power_transaction_phase_name` | `src/include/core/power.h` | `power_transaction_phase_name` | `core` | `COVERED` | 4 |
+| `api:src/include/core/power.h:power_transaction_target_name` | `src/include/core/power.h` | `power_transaction_target_name` | `core` | `COVERED` | 4 |
 | `api:src/include/core/power.h:system_reboot` | `src/include/core/power.h` | `system_reboot` | `core` | `COVERED` | 4 |
 | `api:src/include/core/power_notifier.h:power_notifier_finalize` | `src/include/core/power_notifier.h` | `power_notifier_finalize` | `core` | `COVERED` | 4 |
 | `api:src/include/core/power_notifier.h:power_notifier_get_count` | `src/include/core/power_notifier.h` | `power_notifier_get_count` | `core` | `COVERED` | 4 |
@@ -510,6 +551,7 @@
 | `api:src/include/core/power_notifier.h:power_notifier_quiesce` | `src/include/core/power_notifier.h` | `power_notifier_quiesce` | `core` | `COVERED` | 4 |
 | `api:src/include/core/power_notifier.h:power_notifier_register` | `src/include/core/power_notifier.h` | `power_notifier_register` | `core` | `COVERED` | 4 |
 | `api:src/include/core/power_notifier.h:power_notifier_validate_state` | `src/include/core/power_notifier.h` | `power_notifier_validate_state` | `core` | `COVERED` | 4 |
+| `api:src/include/core/recovery.h:recovery_get` | `src/include/core/recovery.h` | `recovery_get` | `core` | `COVERED` | 3 |
 | `api:src/include/core/recovery.h:recovery_get_count` | `src/include/core/recovery.h` | `recovery_get_count` | `core` | `COVERED` | 3 |
 | `api:src/include/core/recovery.h:recovery_init` | `src/include/core/recovery.h` | `recovery_init` | `core` | `COVERED` | 3 |
 | `api:src/include/core/recovery.h:recovery_is_available` | `src/include/core/recovery.h` | `recovery_is_available` | `core` | `COVERED` | 3 |
@@ -517,6 +559,7 @@
 | `api:src/include/core/recovery.h:recovery_mark_degraded` | `src/include/core/recovery.h` | `recovery_mark_degraded` | `core` | `COVERED` | 3 |
 | `api:src/include/core/recovery.h:recovery_mark_disabled` | `src/include/core/recovery.h` | `recovery_mark_disabled` | `core` | `COVERED` | 3 |
 | `api:src/include/core/recovery.h:recovery_mark_ready` | `src/include/core/recovery.h` | `recovery_mark_ready` | `core` | `COVERED` | 3 |
+| `api:src/include/core/recovery.h:recovery_state_name` | `src/include/core/recovery.h` | `recovery_state_name` | `core` | `COVERED` | 3 |
 | `api:src/include/core/route.h:route_add` | `src/include/core/route.h` | `route_add` | `core` | `COVERED` | 4 |
 | `api:src/include/core/route.h:route_clear` | `src/include/core/route.h` | `route_clear` | `core` | `COVERED` | 3 |
 | `api:src/include/core/route.h:route_delete` | `src/include/core/route.h` | `route_delete` | `core` | `COVERED` | 4 |
@@ -529,10 +572,14 @@
 | `api:src/include/core/route.h:route_set_base` | `src/include/core/route.h` | `route_set_base` | `core` | `COVERED` | 4 |
 | `api:src/include/core/route.h:route_set_default` | `src/include/core/route.h` | `route_set_default` | `core` | `COVERED` | 4 |
 | `api:src/include/core/route.h:route_validate_state` | `src/include/core/route.h` | `route_validate_state` | `core` | `COVERED` | 4 |
+| `api:src/include/core/sk_buff.h:alloc_skb` | `src/include/core/sk_buff.h` | `alloc_skb` | `core` | `COVERED` | 2 |
 | `api:src/include/core/sk_buff.h:free_skb` | `src/include/core/sk_buff.h` | `free_skb` | `core` | `COVERED` | 2 |
 | `api:src/include/core/sk_buff.h:skb_complete` | `src/include/core/sk_buff.h` | `skb_complete` | `core` | `COVERED` | 3 |
 | `api:src/include/core/sk_buff.h:skb_get_stats` | `src/include/core/sk_buff.h` | `skb_get_stats` | `core` | `COVERED` | 3 |
 | `api:src/include/core/sk_buff.h:skb_init` | `src/include/core/sk_buff.h` | `skb_init` | `core` | `COVERED` | 2 |
+| `api:src/include/core/sk_buff.h:skb_pull` | `src/include/core/sk_buff.h` | `skb_pull` | `core` | `COVERED` | 2 |
+| `api:src/include/core/sk_buff.h:skb_push` | `src/include/core/sk_buff.h` | `skb_push` | `core` | `COVERED` | 2 |
+| `api:src/include/core/sk_buff.h:skb_put` | `src/include/core/sk_buff.h` | `skb_put` | `core` | `COVERED` | 2 |
 | `api:src/include/core/sk_buff.h:skb_release` | `src/include/core/sk_buff.h` | `skb_release` | `core` | `COVERED` | 3 |
 | `api:src/include/core/sk_buff.h:skb_retain` | `src/include/core/sk_buff.h` | `skb_retain` | `core` | `COVERED` | 3 |
 | `api:src/include/core/sk_buff.h:skb_self_test` | `src/include/core/sk_buff.h` | `skb_self_test` | `core` | `COVERED` | 3 |
@@ -543,6 +590,7 @@
 | `api:src/include/core/socket.h:socket_close` | `src/include/core/socket.h` | `socket_close` | `core` | `COVERED` | 3 |
 | `api:src/include/core/socket.h:socket_connect` | `src/include/core/socket.h` | `socket_connect` | `core` | `COVERED` | 3 |
 | `api:src/include/core/socket.h:socket_create` | `src/include/core/socket.h` | `socket_create` | `core` | `COVERED` | 3 |
+| `api:src/include/core/socket.h:socket_family_name` | `src/include/core/socket.h` | `socket_family_name` | `core` | `COVERED` | 2 |
 | `api:src/include/core/socket.h:socket_get_info` | `src/include/core/socket.h` | `socket_get_info` | `core` | `COVERED` | 3 |
 | `api:src/include/core/socket.h:socket_get_status` | `src/include/core/socket.h` | `socket_get_status` | `core` | `COVERED` | 3 |
 | `api:src/include/core/socket.h:socket_init` | `src/include/core/socket.h` | `socket_init` | `core` | `COVERED` | 2 |
@@ -551,6 +599,7 @@
 | `api:src/include/core/socket.h:socket_self_test` | `src/include/core/socket.h` | `socket_self_test` | `core` | `COVERED` | 3 |
 | `api:src/include/core/socket.h:socket_send` | `src/include/core/socket.h` | `socket_send` | `core` | `COVERED` | 3 |
 | `api:src/include/core/socket.h:socket_set_nonblocking` | `src/include/core/socket.h` | `socket_set_nonblocking` | `core` | `COVERED` | 3 |
+| `api:src/include/core/socket.h:socket_state_name` | `src/include/core/socket.h` | `socket_state_name` | `core` | `COVERED` | 2 |
 | `api:src/include/core/socket.h:socket_validate_state` | `src/include/core/socket.h` | `socket_validate_state` | `core` | `COVERED` | 3 |
 | `api:src/include/core/spinlock.h:spinlock_acquire` | `src/include/core/spinlock.h` | `spinlock_acquire` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_init` | `src/include/core/spinlock.h` | `spinlock_init` | `core` | `PENDING` | 0 |
@@ -575,6 +624,7 @@
 | `api:src/include/core/tcp.h:tcp_reset` | `src/include/core/tcp.h` | `tcp_reset` | `core` | `COVERED` | 3 |
 | `api:src/include/core/tcp.h:tcp_send` | `src/include/core/tcp.h` | `tcp_send` | `core` | `COVERED` | 3 |
 | `api:src/include/core/tcp.h:tcp_set_receive_window` | `src/include/core/tcp.h` | `tcp_set_receive_window` | `core` | `COVERED` | 3 |
+| `api:src/include/core/tcp.h:tcp_state_name` | `src/include/core/tcp.h` | `tcp_state_name` | `core` | `COVERED` | 3 |
 | `api:src/include/core/tcp.h:tcp_validate_state` | `src/include/core/tcp.h` | `tcp_validate_state` | `core` | `COVERED` | 4 |
 | `api:src/include/core/test_protocol.h:test_protocol_init` | `src/include/core/test_protocol.h` | `test_protocol_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/test_protocol.h:test_protocol_is_active` | `src/include/core/test_protocol.h` | `test_protocol_is_active` | `core` | `PENDING` | 0 |
@@ -593,19 +643,23 @@
 | `api:src/include/core/timer.h:timer_get_ticks` | `src/include/core/timer.h` | `timer_get_ticks` | `core` | `COVERED` | 3 |
 | `api:src/include/core/timer.h:timer_handler` | `src/include/core/timer.h` | `timer_handler` | `core` | `COVERED` | 3 |
 | `api:src/include/core/timer.h:timer_init` | `src/include/core/timer.h` | `timer_init` | `core` | `COVERED` | 3 |
+| `api:src/include/core/timer.h:timer_mode_name` | `src/include/core/timer.h` | `timer_mode_name` | `core` | `COVERED` | 3 |
 | `api:src/include/core/timer.h:timer_owner_create` | `src/include/core/timer.h` | `timer_owner_create` | `core` | `COVERED` | 3 |
 | `api:src/include/core/timer.h:timer_owner_destroy` | `src/include/core/timer.h` | `timer_owner_destroy` | `core` | `COVERED` | 3 |
 | `api:src/include/core/timer.h:timer_self_test` | `src/include/core/timer.h` | `timer_self_test` | `core` | `COVERED` | 3 |
 | `api:src/include/core/timer.h:timer_set_pending_notifier` | `src/include/core/timer.h` | `timer_set_pending_notifier` | `core` | `COVERED` | 3 |
 | `api:src/include/core/timer.h:timer_start_once` | `src/include/core/timer.h` | `timer_start_once` | `core` | `COVERED` | 3 |
 | `api:src/include/core/timer.h:timer_start_periodic` | `src/include/core/timer.h` | `timer_start_periodic` | `core` | `COVERED` | 3 |
+| `api:src/include/core/timer.h:timer_state_name` | `src/include/core/timer.h` | `timer_state_name` | `core` | `COVERED` | 3 |
 | `api:src/include/core/timer.h:timer_validate_state` | `src/include/core/timer.h` | `timer_validate_state` | `core` | `COVERED` | 3 |
 | `api:src/include/core/tls.h:tls_capability_available` | `src/include/core/tls.h` | `tls_capability_available` | `core` | `COVERED` | 2 |
 | `api:src/include/core/tls.h:tls_get_policy` | `src/include/core/tls.h` | `tls_get_policy` | `core` | `COVERED` | 2 |
 | `api:src/include/core/tls.h:tls_get_status` | `src/include/core/tls.h` | `tls_get_status` | `core` | `COVERED` | 2 |
 | `api:src/include/core/tls.h:tls_init` | `src/include/core/tls.h` | `tls_init` | `core` | `COVERED` | 2 |
 | `api:src/include/core/tls.h:tls_policy_validate` | `src/include/core/tls.h` | `tls_policy_validate` | `core` | `COVERED` | 2 |
+| `api:src/include/core/tls.h:tls_reason_name` | `src/include/core/tls.h` | `tls_reason_name` | `core` | `COVERED` | 2 |
 | `api:src/include/core/tls.h:tls_self_test` | `src/include/core/tls.h` | `tls_self_test` | `core` | `COVERED` | 3 |
+| `api:src/include/core/tls.h:tls_state_name` | `src/include/core/tls.h` | `tls_state_name` | `core` | `COVERED` | 2 |
 | `api:src/include/core/tls.h:tls_validate_state` | `src/include/core/tls.h` | `tls_validate_state` | `core` | `COVERED` | 3 |
 | `api:src/include/core/tls_client.h:tls_client_close` | `src/include/core/tls_client.h` | `tls_client_close` | `core` | `COVERED` | 1 |
 | `api:src/include/core/tls_client.h:tls_client_get_status` | `src/include/core/tls_client.h` | `tls_client_get_status` | `core` | `COVERED` | 2 |
@@ -622,18 +676,23 @@
 | `api:src/include/core/udp.h:udp_send_limited_broadcast` | `src/include/core/udp.h` | `udp_send_limited_broadcast` | `core` | `COVERED` | 2 |
 | `api:src/include/core/udp.h:udp_unbind` | `src/include/core/udp.h` | `udp_unbind` | `core` | `COVERED` | 2 |
 | `api:src/include/core/udp.h:udp_validate_state` | `src/include/core/udp.h` | `udp_validate_state` | `core` | `COVERED` | 3 |
+| `api:src/include/core/update.h:update_action_reason_name` | `src/include/core/update.h` | `update_action_reason_name` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update.h:update_apply_file` | `src/include/core/update.h` | `update_apply_file` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update.h:update_get_capabilities` | `src/include/core/update.h` | `update_get_capabilities` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update.h:update_get_history_count` | `src/include/core/update.h` | `update_get_history_count` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update.h:update_get_history_entry` | `src/include/core/update.h` | `update_get_history_entry` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update.h:update_get_installed_version` | `src/include/core/update.h` | `update_get_installed_version` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update.h:update_get_status` | `src/include/core/update.h` | `update_get_status` | `core` | `PENDING` | 0 |
+| `api:src/include/core/update.h:update_history_operation_name` | `src/include/core/update.h` | `update_history_operation_name` | `core` | `PENDING` | 0 |
+| `api:src/include/core/update.h:update_history_outcome_name` | `src/include/core/update.h` | `update_history_outcome_name` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update.h:update_init` | `src/include/core/update.h` | `update_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update.h:update_is_ready` | `src/include/core/update.h` | `update_is_ready` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update.h:update_rollback` | `src/include/core/update.h` | `update_rollback` | `core` | `PENDING` | 0 |
+| `api:src/include/core/update.h:update_store_state_name` | `src/include/core/update.h` | `update_store_state_name` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update.h:update_sync_runtime_state` | `src/include/core/update.h` | `update_sync_runtime_state` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update.h:update_test_fail_after` | `src/include/core/update.h` | `update_test_fail_after` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update.h:update_verify_file` | `src/include/core/update.h` | `update_verify_file` | `core` | `PENDING` | 0 |
+| `api:src/include/core/update.h:zupd_reason_name` | `src/include/core/update.h` | `zupd_reason_name` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_remote.h:update_remote_capability_available` | `src/include/core/update_remote.h` | `update_remote_capability_available` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_remote.h:update_remote_check` | `src/include/core/update_remote.h` | `update_remote_check` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_remote.h:update_remote_clear` | `src/include/core/update_remote.h` | `update_remote_clear` | `core` | `PENDING` | 0 |
@@ -643,8 +702,11 @@
 | `api:src/include/core/update_remote.h:update_remote_get_cached_alias` | `src/include/core/update_remote.h` | `update_remote_get_cached_alias` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_remote.h:update_remote_get_status` | `src/include/core/update_remote.h` | `update_remote_get_status` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_remote.h:update_remote_init` | `src/include/core/update_remote.h` | `update_remote_init` | `core` | `PENDING` | 0 |
+| `api:src/include/core/update_remote.h:update_remote_reason_name` | `src/include/core/update_remote.h` | `update_remote_reason_name` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_remote.h:update_remote_release_check` | `src/include/core/update_remote.h` | `update_remote_release_check` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_remote.h:update_remote_release_fetch` | `src/include/core/update_remote.h` | `update_remote_release_fetch` | `core` | `PENDING` | 0 |
+| `api:src/include/core/update_remote.h:update_remote_state_name` | `src/include/core/update_remote.h` | `update_remote_state_name` | `core` | `PENDING` | 0 |
+| `api:src/include/core/update_remote.h:update_remote_store_name` | `src/include/core/update_remote.h` | `update_remote_store_name` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_remote_github.h:update_remote_github_query` | `src/include/core/update_remote_github.h` | `update_remote_github_query` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_remote_github.h:update_remote_github_runtime_query` | `src/include/core/update_remote_github.h` | `update_remote_github_runtime_query` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_remote_runtime.h:update_remote_runtime_capability_available` | `src/include/core/update_remote_runtime.h` | `update_remote_runtime_capability_available` | `core` | `COVERED` | 1 |
@@ -657,11 +719,15 @@
 | `api:src/include/core/update_remote_runtime.h:update_remote_runtime_get_cached_alias` | `src/include/core/update_remote_runtime.h` | `update_remote_runtime_get_cached_alias` | `core` | `COVERED` | 1 |
 | `api:src/include/core/update_remote_runtime.h:update_remote_runtime_get_status` | `src/include/core/update_remote_runtime.h` | `update_remote_runtime_get_status` | `core` | `COVERED` | 1 |
 | `api:src/include/core/update_remote_runtime.h:update_remote_runtime_init` | `src/include/core/update_remote_runtime.h` | `update_remote_runtime_init` | `core` | `COVERED` | 1 |
+| `api:src/include/core/update_remote_runtime.h:update_remote_runtime_reason_name` | `src/include/core/update_remote_runtime.h` | `update_remote_runtime_reason_name` | `core` | `COVERED` | 1 |
+| `api:src/include/core/update_remote_runtime.h:update_remote_runtime_state_name` | `src/include/core/update_remote_runtime.h` | `update_remote_runtime_state_name` | `core` | `COVERED` | 1 |
 | `api:src/include/core/update_remote_system.h:update_remote_system_clear` | `src/include/core/update_remote_system.h` | `update_remote_system_clear` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_remote_system.h:update_remote_system_fetch` | `src/include/core/update_remote_system.h` | `update_remote_system_fetch` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_remote_system.h:update_remote_system_get_cached_path` | `src/include/core/update_remote_system.h` | `update_remote_system_get_cached_path` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_remote_system.h:update_remote_system_get_status` | `src/include/core/update_remote_system.h` | `update_remote_system_get_status` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_remote_system.h:update_remote_system_init` | `src/include/core/update_remote_system.h` | `update_remote_system_init` | `core` | `PENDING` | 0 |
+| `api:src/include/core/update_remote_system.h:update_remote_system_reason_name` | `src/include/core/update_remote_system.h` | `update_remote_system_reason_name` | `core` | `PENDING` | 0 |
+| `api:src/include/core/update_remote_system.h:update_remote_system_state_name` | `src/include/core/update_remote_system.h` | `update_remote_system_state_name` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_runtime.h:update_runtime_apply_cached` | `src/include/core/update_runtime.h` | `update_runtime_apply_cached` | `core` | `COVERED` | 1 |
 | `api:src/include/core/update_runtime.h:update_runtime_apply_file` | `src/include/core/update_runtime.h` | `update_runtime_apply_file` | `core` | `COVERED` | 1 |
 | `api:src/include/core/update_runtime.h:update_runtime_file_matches` | `src/include/core/update_runtime.h` | `update_runtime_file_matches` | `core` | `COVERED` | 1 |
@@ -672,6 +738,7 @@
 | `api:src/include/core/update_runtime.h:update_runtime_init` | `src/include/core/update_runtime.h` | `update_runtime_init` | `core` | `COVERED` | 1 |
 | `api:src/include/core/update_runtime.h:update_runtime_is_ready` | `src/include/core/update_runtime.h` | `update_runtime_is_ready` | `core` | `COVERED` | 1 |
 | `api:src/include/core/update_runtime.h:update_runtime_parse_manifest` | `src/include/core/update_runtime.h` | `update_runtime_parse_manifest` | `core` | `COVERED` | 1 |
+| `api:src/include/core/update_runtime.h:update_runtime_reason_name` | `src/include/core/update_runtime.h` | `update_runtime_reason_name` | `core` | `COVERED` | 1 |
 | `api:src/include/core/update_runtime.h:update_runtime_rollback` | `src/include/core/update_runtime.h` | `update_runtime_rollback` | `core` | `COVERED` | 1 |
 | `api:src/include/core/update_runtime.h:update_runtime_test_fail_after` | `src/include/core/update_runtime.h` | `update_runtime_test_fail_after` | `core` | `COVERED` | 1 |
 | `api:src/include/core/update_runtime.h:update_runtime_verify_file` | `src/include/core/update_runtime.h` | `update_runtime_verify_file` | `core` | `COVERED` | 1 |
@@ -679,16 +746,22 @@
 | `api:src/include/core/update_system.h:update_system_check_tag` | `src/include/core/update_system.h` | `update_system_check_tag` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_system.h:update_system_init` | `src/include/core/update_system.h` | `update_system_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_system.h:update_system_is_ready` | `src/include/core/update_system.h` | `update_system_is_ready` | `core` | `PENDING` | 0 |
+| `api:src/include/core/update_system.h:update_system_reason_name` | `src/include/core/update_system.h` | `update_system_reason_name` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_system.h:update_system_transfer_tag` | `src/include/core/update_system.h` | `update_system_transfer_tag` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_system.h:update_system_verify_file` | `src/include/core/update_system.h` | `update_system_verify_file` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_system.h:update_system_verify_file_for_slot` | `src/include/core/update_system.h` | `update_system_verify_file_for_slot` | `core` | `PENDING` | 0 |
+| `api:src/include/core/update_system_slots.h:update_system_slot_file_state_name` | `src/include/core/update_system_slots.h` | `update_system_slot_file_state_name` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_system_slots.h:update_system_slots_boot_confirm` | `src/include/core/update_system_slots.h` | `update_system_slots_boot_confirm` | `core` | `PENDING` | 0 |
+| `api:src/include/core/update_system_slots.h:update_system_slots_boot_state_name` | `src/include/core/update_system_slots.h` | `update_system_slots_boot_state_name` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_system_slots.h:update_system_slots_cancel_pending` | `src/include/core/update_system_slots.h` | `update_system_slots_cancel_pending` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_system_slots.h:update_system_slots_get_status` | `src/include/core/update_system_slots.h` | `update_system_slots_get_status` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_system_slots.h:update_system_slots_init` | `src/include/core/update_system_slots.h` | `update_system_slots_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_system_slots.h:update_system_slots_is_ready` | `src/include/core/update_system_slots.h` | `update_system_slots_is_ready` | `core` | `PENDING` | 0 |
+| `api:src/include/core/update_system_slots.h:update_system_slots_journal_phase_name` | `src/include/core/update_system_slots.h` | `update_system_slots_journal_phase_name` | `core` | `PENDING` | 0 |
+| `api:src/include/core/update_system_slots.h:update_system_slots_reason_name` | `src/include/core/update_system_slots.h` | `update_system_slots_reason_name` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_system_slots.h:update_system_slots_reboot_preflight` | `src/include/core/update_system_slots.h` | `update_system_slots_reboot_preflight` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_system_slots.h:update_system_slots_stage_file` | `src/include/core/update_system_slots.h` | `update_system_slots_stage_file` | `core` | `PENDING` | 0 |
+| `api:src/include/core/update_system_slots.h:update_system_slots_state_name` | `src/include/core/update_system_slots.h` | `update_system_slots_state_name` | `core` | `PENDING` | 0 |
 | `api:src/include/core/usb_manager.h:usb_manager_find` | `src/include/core/usb_manager.h` | `usb_manager_find` | `core` | `COVERED` | 3 |
 | `api:src/include/core/usb_manager.h:usb_manager_find_device` | `src/include/core/usb_manager.h` | `usb_manager_find_device` | `core` | `COVERED` | 3 |
 | `api:src/include/core/usb_manager.h:usb_manager_format_device_text` | `src/include/core/usb_manager.h` | `usb_manager_format_device_text` | `core` | `COVERED` | 3 |
@@ -702,8 +775,15 @@
 | `api:src/include/core/usb_manager.h:usb_manager_get_status` | `src/include/core/usb_manager.h` | `usb_manager_get_status` | `core` | `COVERED` | 3 |
 | `api:src/include/core/usb_manager.h:usb_manager_get_uhci_status` | `src/include/core/usb_manager.h` | `usb_manager_get_uhci_status` | `core` | `COVERED` | 3 |
 | `api:src/include/core/usb_manager.h:usb_manager_init` | `src/include/core/usb_manager.h` | `usb_manager_init` | `core` | `COVERED` | 3 |
+| `api:src/include/core/usb_manager.h:usb_manager_model_name` | `src/include/core/usb_manager.h` | `usb_manager_model_name` | `core` | `COVERED` | 3 |
 | `api:src/include/core/usb_manager.h:usb_manager_poll` | `src/include/core/usb_manager.h` | `usb_manager_poll` | `core` | `COVERED` | 3 |
+| `api:src/include/core/usb_manager.h:usb_manager_port_reason_name` | `src/include/core/usb_manager.h` | `usb_manager_port_reason_name` | `core` | `COVERED` | 3 |
+| `api:src/include/core/usb_manager.h:usb_manager_port_state_name` | `src/include/core/usb_manager.h` | `usb_manager_port_state_name` | `core` | `COVERED` | 3 |
+| `api:src/include/core/usb_manager.h:usb_manager_reason_name` | `src/include/core/usb_manager.h` | `usb_manager_reason_name` | `core` | `COVERED` | 3 |
 | `api:src/include/core/usb_manager.h:usb_manager_refresh` | `src/include/core/usb_manager.h` | `usb_manager_refresh` | `core` | `COVERED` | 3 |
+| `api:src/include/core/usb_manager.h:usb_manager_speed_name` | `src/include/core/usb_manager.h` | `usb_manager_speed_name` | `core` | `COVERED` | 3 |
+| `api:src/include/core/usb_manager.h:usb_manager_state_name` | `src/include/core/usb_manager.h` | `usb_manager_state_name` | `core` | `COVERED` | 3 |
+| `api:src/include/core/usb_manager.h:usb_manager_uhci_state_name` | `src/include/core/usb_manager.h` | `usb_manager_uhci_state_name` | `core` | `COVERED` | 3 |
 | `api:src/include/core/usb_manager.h:usb_manager_validate_state` | `src/include/core/usb_manager.h` | `usb_manager_validate_state` | `core` | `COVERED` | 3 |
 | `api:src/include/core/usb_transport.h:usb_transport_bulk_transfer` | `src/include/core/usb_transport.h` | `usb_transport_bulk_transfer` | `core` | `PENDING` | 0 |
 | `api:src/include/core/usb_transport.h:usb_transport_control_request` | `src/include/core/usb_transport.h` | `usb_transport_control_request` | `core` | `PENDING` | 0 |
@@ -765,8 +845,10 @@
 | `api:src/include/core/wait.h:wait_queue_entry_init` | `src/include/core/wait.h` | `wait_queue_entry_init` | `core` | `COVERED` | 6 |
 | `api:src/include/core/wait.h:wait_queue_remove` | `src/include/core/wait.h` | `wait_queue_remove` | `core` | `COVERED` | 6 |
 | `api:src/include/core/wait.h:wait_queue_wake_target` | `src/include/core/wait.h` | `wait_queue_wake_target` | `core` | `COVERED` | 6 |
+| `api:src/include/core/wait.h:wait_reason_name` | `src/include/core/wait.h` | `wait_reason_name` | `core` | `COVERED` | 6 |
 | `api:src/include/core/wait.h:wait_self_test` | `src/include/core/wait.h` | `wait_self_test` | `core` | `COVERED` | 6 |
 | `api:src/include/core/wait.h:wait_validate_state` | `src/include/core/wait.h` | `wait_validate_state` | `core` | `COVERED` | 6 |
+| `api:src/include/core/wait.h:wait_wake_mode_name` | `src/include/core/wait.h` | `wait_wake_mode_name` | `core` | `COVERED` | 6 |
 | `api:src/include/core/wait.h:wake_up` | `src/include/core/wait.h` | `wake_up` | `core` | `COVERED` | 6 |
 | `api:src/include/core/wait.h:wake_up_all` | `src/include/core/wait.h` | `wake_up_all` | `core` | `COVERED` | 6 |
 | `api:src/include/core/wifi_manager.h:wifi_manager_connect_open` | `src/include/core/wifi_manager.h` | `wifi_manager_connect_open` | `core` | `COVERED` | 2 |
@@ -777,6 +859,7 @@
 | `api:src/include/core/wifi_manager.h:wifi_manager_init` | `src/include/core/wifi_manager.h` | `wifi_manager_init` | `core` | `COVERED` | 2 |
 | `api:src/include/core/wifi_manager.h:wifi_manager_refresh` | `src/include/core/wifi_manager.h` | `wifi_manager_refresh` | `core` | `COVERED` | 2 |
 | `api:src/include/core/wifi_manager.h:wifi_manager_scan` | `src/include/core/wifi_manager.h` | `wifi_manager_scan` | `core` | `COVERED` | 2 |
+| `api:src/include/core/wifi_manager.h:wifi_manager_state_name` | `src/include/core/wifi_manager.h` | `wifi_manager_state_name` | `core` | `COVERED` | 2 |
 | `api:src/include/core/wifi_manager.h:wifi_manager_validate_state` | `src/include/core/wifi_manager.h` | `wifi_manager_validate_state` | `core` | `COVERED` | 2 |
 | `api:src/include/core/workqueue.h:cancel_work` | `src/include/core/workqueue.h` | `cancel_work` | `core` | `COVERED` | 5 |
 | `api:src/include/core/workqueue.h:schedule_delayed_work` | `src/include/core/workqueue.h` | `schedule_delayed_work` | `core` | `COVERED` | 5 |
@@ -784,6 +867,7 @@
 | `api:src/include/core/workqueue.h:work_destroy` | `src/include/core/workqueue.h` | `work_destroy` | `core` | `COVERED` | 5 |
 | `api:src/include/core/workqueue.h:work_init` | `src/include/core/workqueue.h` | `work_init` | `core` | `COVERED` | 5 |
 | `api:src/include/core/workqueue.h:workqueue_bind_worker` | `src/include/core/workqueue.h` | `workqueue_bind_worker` | `core` | `COVERED` | 5 |
+| `api:src/include/core/workqueue.h:workqueue_context_name` | `src/include/core/workqueue.h` | `workqueue_context_name` | `core` | `COVERED` | 5 |
 | `api:src/include/core/workqueue.h:workqueue_copy_info` | `src/include/core/workqueue.h` | `workqueue_copy_info` | `core` | `COVERED` | 5 |
 | `api:src/include/core/workqueue.h:workqueue_dispatch` | `src/include/core/workqueue.h` | `workqueue_dispatch` | `core` | `COVERED` | 5 |
 | `api:src/include/core/workqueue.h:workqueue_get_stats` | `src/include/core/workqueue.h` | `workqueue_get_stats` | `core` | `COVERED` | 5 |
@@ -791,11 +875,14 @@
 | `api:src/include/core/workqueue.h:workqueue_needs_fallback` | `src/include/core/workqueue.h` | `workqueue_needs_fallback` | `core` | `COVERED` | 5 |
 | `api:src/include/core/workqueue.h:workqueue_power_quiesce_until` | `src/include/core/workqueue.h` | `workqueue_power_quiesce_until` | `core` | `COVERED` | 5 |
 | `api:src/include/core/workqueue.h:workqueue_power_set_quiescing` | `src/include/core/workqueue.h` | `workqueue_power_set_quiescing` | `core` | `COVERED` | 5 |
+| `api:src/include/core/workqueue.h:workqueue_priority_name` | `src/include/core/workqueue.h` | `workqueue_priority_name` | `core` | `COVERED` | 5 |
 | `api:src/include/core/workqueue.h:workqueue_probe_worker` | `src/include/core/workqueue.h` | `workqueue_probe_worker` | `core` | `COVERED` | 5 |
 | `api:src/include/core/workqueue.h:workqueue_self_test` | `src/include/core/workqueue.h` | `workqueue_self_test` | `core` | `COVERED` | 5 |
 | `api:src/include/core/workqueue.h:workqueue_set_fallback` | `src/include/core/workqueue.h` | `workqueue_set_fallback` | `core` | `COVERED` | 5 |
+| `api:src/include/core/workqueue.h:workqueue_state_name` | `src/include/core/workqueue.h` | `workqueue_state_name` | `core` | `COVERED` | 5 |
 | `api:src/include/core/workqueue.h:workqueue_validate_state` | `src/include/core/workqueue.h` | `workqueue_validate_state` | `core` | `COVERED` | 5 |
 | `api:src/include/core/workqueue.h:workqueue_worker_main` | `src/include/core/workqueue.h` | `workqueue_worker_main` | `core` | `COVERED` | 5 |
+| `api:src/include/drivers/ac97.h:ac97_get_device` | `src/include/drivers/ac97.h` | `ac97_get_device` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/ac97.h:ac97_handler` | `src/include/drivers/ac97.h` | `ac97_handler` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/ac97.h:ac97_init` | `src/include/drivers/ac97.h` | `ac97_init` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/ac97.h:ac97_play` | `src/include/drivers/ac97.h` | `ac97_play` | `drivers` | `PENDING` | 0 |
@@ -813,7 +900,9 @@
 | `api:src/include/drivers/acpi.h:acpi_init` | `src/include/drivers/acpi.h` | `acpi_init` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/acpi.h:acpi_poweroff` | `src/include/drivers/acpi.h` | `acpi_poweroff` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/acpi.h:acpi_reset` | `src/include/drivers/acpi.h` | `acpi_reset` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/acpi.h:acpi_root_kind_name` | `src/include/drivers/acpi.h` | `acpi_root_kind_name` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/ata.h:ata_flush_device` | `src/include/drivers/ata.h` | `ata_flush_device` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/ata.h:ata_get_device` | `src/include/drivers/ata.h` | `ata_get_device` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/ata.h:ata_get_device_at` | `src/include/drivers/ata.h` | `ata_get_device_at` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/ata.h:ata_get_device_count` | `src/include/drivers/ata.h` | `ata_get_device_count` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/ata.h:ata_get_device_counters` | `src/include/drivers/ata.h` | `ata_get_device_counters` | `drivers` | `COVERED` | 3 |
@@ -841,6 +930,7 @@
 | `api:src/include/drivers/ehci.h:ehci_validate_state` | `src/include/drivers/ehci.h` | `ehci_validate_state` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/font.h:font_get_face` | `src/include/drivers/font.h` | `font_get_face` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/font.h:font_get_face_glyph` | `src/include/drivers/font.h` | `font_get_face_glyph` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/font.h:font_get_glyph` | `src/include/drivers/font.h` | `font_get_glyph` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/font.h:font_get_height` | `src/include/drivers/font.h` | `font_get_height` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/font.h:font_get_width` | `src/include/drivers/font.h` | `font_get_width` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/font.h:font_init` | `src/include/drivers/font.h` | `font_init` | `drivers` | `COVERED` | 3 |
@@ -870,7 +960,9 @@
 | `api:src/include/drivers/pci.h:pci_enable_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_bus_mastering` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_io_and_bus_mastering` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_memory_and_bus_mastering` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/pci.h:pci_get_device` | `src/include/drivers/pci.h` | `pci_get_device` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/pci.h:pci_get_device_at` | `src/include/drivers/pci.h` | `pci_get_device_at` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/pci.h:pci_get_device_by_id` | `src/include/drivers/pci.h` | `pci_get_device_by_id` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/pci.h:pci_get_device_count` | `src/include/drivers/pci.h` | `pci_get_device_count` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/pci.h:pci_init` | `src/include/drivers/pci.h` | `pci_init` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/pci.h:pci_read` | `src/include/drivers/pci.h` | `pci_read` | `drivers` | `COVERED` | 2 |
@@ -891,6 +983,7 @@
 | `api:src/include/drivers/rtl8811cu.h:rtl8811cu_init` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_init` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/rtl8811cu.h:rtl8811cu_probe` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_probe` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/rtl8811cu.h:rtl8811cu_scan` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_scan` | `drivers` | `PENDING` | 0 |
+| `api:src/include/drivers/rtl8811cu.h:rtl8811cu_state_name` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_state_name` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/rtl8811cu.h:rtl8811cu_validate_state` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_validate_state` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/serial.h:serial_flush` | `src/include/drivers/serial.h` | `serial_flush` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/serial.h:serial_init` | `src/include/drivers/serial.h` | `serial_init` | `drivers` | `COVERED` | 2 |
@@ -923,7 +1016,9 @@
 | `api:src/include/drivers/usb_hid.h:usb_hid_get_count` | `src/include/drivers/usb_hid.h` | `usb_hid_get_count` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/usb_hid.h:usb_hid_init` | `src/include/drivers/usb_hid.h` | `usb_hid_init` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/usb_hid.h:usb_hid_is_active` | `src/include/drivers/usb_hid.h` | `usb_hid_is_active` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/usb_hid.h:usb_hid_kind_name` | `src/include/drivers/usb_hid.h` | `usb_hid_kind_name` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/usb_hid.h:usb_hid_refresh` | `src/include/drivers/usb_hid.h` | `usb_hid_refresh` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/usb_hid.h:usb_hid_state_name` | `src/include/drivers/usb_hid.h` | `usb_hid_state_name` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/usb_hid.h:usb_hid_validate_state` | `src/include/drivers/usb_hid.h` | `usb_hid_validate_state` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/usb_msc.h:usb_msc_find` | `src/include/drivers/usb_msc.h` | `usb_msc_find` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/usb_msc.h:usb_msc_get_at` | `src/include/drivers/usb_msc.h` | `usb_msc_get_at` | `drivers` | `COVERED` | 2 |
@@ -931,6 +1026,7 @@
 | `api:src/include/drivers/usb_msc.h:usb_msc_init` | `src/include/drivers/usb_msc.h` | `usb_msc_init` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/usb_msc.h:usb_msc_is_active` | `src/include/drivers/usb_msc.h` | `usb_msc_is_active` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/usb_msc.h:usb_msc_refresh` | `src/include/drivers/usb_msc.h` | `usb_msc_refresh` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/usb_msc.h:usb_msc_state_name` | `src/include/drivers/usb_msc.h` | `usb_msc_state_name` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/usb_msc.h:usb_msc_validate_state` | `src/include/drivers/usb_msc.h` | `usb_msc_validate_state` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/vesa.h:vesa_clear` | `src/include/drivers/vesa.h` | `vesa_clear` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/vesa.h:vesa_disable` | `src/include/drivers/vesa.h` | `vesa_disable` | `drivers` | `COVERED` | 4 |
@@ -952,6 +1048,7 @@
 | `api:src/include/drivers/vesa.h:vesa_frame_end` | `src/include/drivers/vesa.h` | `vesa_frame_end` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/vesa.h:vesa_frame_mark_region` | `src/include/drivers/vesa.h` | `vesa_frame_mark_region` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/vesa.h:vesa_get_metrics` | `src/include/drivers/vesa.h` | `vesa_get_metrics` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/vesa.h:vesa_get_mode` | `src/include/drivers/vesa.h` | `vesa_get_mode` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/vesa.h:vesa_get_pixel` | `src/include/drivers/vesa.h` | `vesa_get_pixel` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/vesa.h:vesa_has_backbuffer` | `src/include/drivers/vesa.h` | `vesa_has_backbuffer` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/vesa.h:vesa_init` | `src/include/drivers/vesa.h` | `vesa_init` | `drivers` | `COVERED` | 4 |
@@ -1021,6 +1118,7 @@
 | `api:src/include/fs/fat12.h:fat12_get_file_info` | `src/include/fs/fat12.h` | `fat12_get_file_info` | `fs` | `COVERED` | 2 |
 | `api:src/include/fs/fat12.h:fat12_get_file_info_at` | `src/include/fs/fat12.h` | `fat12_get_file_info_at` | `fs` | `COVERED` | 2 |
 | `api:src/include/fs/fat12.h:fat12_get_free_clusters` | `src/include/fs/fat12.h` | `fat12_get_free_clusters` | `fs` | `COVERED` | 2 |
+| `api:src/include/fs/fat12.h:fat12_get_fs` | `src/include/fs/fat12.h` | `fat12_get_fs` | `fs` | `COVERED` | 2 |
 | `api:src/include/fs/fat12.h:fat12_get_root_file_info` | `src/include/fs/fat12.h` | `fat12_get_root_file_info` | `fs` | `COVERED` | 2 |
 | `api:src/include/fs/fat12.h:fat12_init` | `src/include/fs/fat12.h` | `fat12_init` | `fs` | `COVERED` | 2 |
 | `api:src/include/fs/fat12.h:fat12_list_dir` | `src/include/fs/fat12.h` | `fat12_list_dir` | `fs` | `COVERED` | 2 |
@@ -1044,6 +1142,7 @@
 | `api:src/include/fs/fat32.h:fat32_get_file_info` | `src/include/fs/fat32.h` | `fat32_get_file_info` | `fs` | `COVERED` | 1 |
 | `api:src/include/fs/fat32.h:fat32_get_file_info_at` | `src/include/fs/fat32.h` | `fat32_get_file_info_at` | `fs` | `COVERED` | 1 |
 | `api:src/include/fs/fat32.h:fat32_get_free_clusters` | `src/include/fs/fat32.h` | `fat32_get_free_clusters` | `fs` | `COVERED` | 1 |
+| `api:src/include/fs/fat32.h:fat32_get_fs` | `src/include/fs/fat32.h` | `fat32_get_fs` | `fs` | `COVERED` | 1 |
 | `api:src/include/fs/fat32.h:fat32_init` | `src/include/fs/fat32.h` | `fat32_init` | `fs` | `COVERED` | 1 |
 | `api:src/include/fs/fat32.h:fat32_list_dir` | `src/include/fs/fat32.h` | `fat32_list_dir` | `fs` | `COVERED` | 1 |
 | `api:src/include/fs/fat32.h:fat32_read_file` | `src/include/fs/fat32.h` | `fat32_read_file` | `fs` | `COVERED` | 1 |
@@ -1059,6 +1158,7 @@
 | `api:src/include/fs/file_index.h:file_index_rebuild` | `src/include/fs/file_index.h` | `file_index_rebuild` | `fs` | `COVERED` | 6 |
 | `api:src/include/fs/file_index.h:file_index_search` | `src/include/fs/file_index.h` | `file_index_search` | `fs` | `COVERED` | 6 |
 | `api:src/include/fs/file_index.h:file_index_self_test` | `src/include/fs/file_index.h` | `file_index_self_test` | `fs` | `COVERED` | 6 |
+| `api:src/include/fs/file_index.h:file_index_state_name` | `src/include/fs/file_index.h` | `file_index_state_name` | `fs` | `COVERED` | 6 |
 | `api:src/include/fs/file_index.h:file_index_validate_state` | `src/include/fs/file_index.h` | `file_index_validate_state` | `fs` | `COVERED` | 6 |
 | `api:src/include/fs/fs.h:fs_atomic_delete_file_in_dir` | `src/include/fs/fs.h` | `fs_atomic_delete_file_in_dir` | `fs` | `COVERED` | 6 |
 | `api:src/include/fs/fs.h:fs_atomic_delete_root` | `src/include/fs/fs.h` | `fs_atomic_delete_root` | `fs` | `COVERED` | 6 |
@@ -1113,6 +1213,7 @@
 | `api:src/include/fs/storage.h:storage_find_disk` | `src/include/fs/storage.h` | `storage_find_disk` | `fs` | `COVERED` | 6 |
 | `api:src/include/fs/storage.h:storage_find_system_volume` | `src/include/fs/storage.h` | `storage_find_system_volume` | `fs` | `COVERED` | 6 |
 | `api:src/include/fs/storage.h:storage_find_volume` | `src/include/fs/storage.h` | `storage_find_volume` | `fs` | `COVERED` | 6 |
+| `api:src/include/fs/storage.h:storage_fs_name` | `src/include/fs/storage.h` | `storage_fs_name` | `fs` | `COVERED` | 6 |
 | `api:src/include/fs/storage.h:storage_get_disk_at` | `src/include/fs/storage.h` | `storage_get_disk_at` | `fs` | `COVERED` | 6 |
 | `api:src/include/fs/storage.h:storage_get_file_info` | `src/include/fs/storage.h` | `storage_get_file_info` | `fs` | `COVERED` | 6 |
 | `api:src/include/fs/storage.h:storage_get_free_space` | `src/include/fs/storage.h` | `storage_get_free_space` | `fs` | `COVERED` | 6 |
@@ -1147,6 +1248,7 @@
 | `api:src/include/fs/storage.h:storage_transaction_writer_write` | `src/include/fs/storage.h` | `storage_transaction_writer_write` | `fs` | `COVERED` | 6 |
 | `api:src/include/fs/storage.h:storage_unmount` | `src/include/fs/storage.h` | `storage_unmount` | `fs` | `COVERED` | 6 |
 | `api:src/include/fs/storage.h:storage_unmount_after_sync` | `src/include/fs/storage.h` | `storage_unmount_after_sync` | `fs` | `COVERED` | 6 |
+| `api:src/include/fs/storage.h:storage_volume_state_name` | `src/include/fs/storage.h` | `storage_volume_state_name` | `fs` | `COVERED` | 6 |
 | `api:src/include/fs/storage.h:storage_write_file` | `src/include/fs/storage.h` | `storage_write_file` | `fs` | `COVERED` | 6 |
 | `api:src/include/fs/sysfs.h:sysfs_init` | `src/include/fs/sysfs.h` | `sysfs_init` | `fs` | `COVERED` | 2 |
 | `api:src/include/fs/sysfs.h:sysfs_is_ready` | `src/include/fs/sysfs.h` | `sysfs_is_ready` | `fs` | `COVERED` | 2 |
@@ -1210,15 +1312,21 @@
 | `api:src/include/memory/compress.h:compress_disable` | `src/include/memory/compress.h` | `compress_disable` | `memory` | `COVERED` | 1 |
 | `api:src/include/memory/compress.h:compress_enable` | `src/include/memory/compress.h` | `compress_enable` | `memory` | `COVERED` | 1 |
 | `api:src/include/memory/compress.h:compress_get_max_size` | `src/include/memory/compress.h` | `compress_get_max_size` | `memory` | `COVERED` | 1 |
+| `api:src/include/memory/compress.h:compress_get_stats` | `src/include/memory/compress.h` | `compress_get_stats` | `memory` | `PENDING` | 0 |
 | `api:src/include/memory/compress.h:compress_init` | `src/include/memory/compress.h` | `compress_init` | `memory` | `COVERED` | 1 |
 | `api:src/include/memory/compress.h:compress_is_enabled` | `src/include/memory/compress.h` | `compress_is_enabled` | `memory` | `COVERED` | 1 |
 | `api:src/include/memory/compress.h:compress_print_stats` | `src/include/memory/compress.h` | `compress_print_stats` | `memory` | `COVERED` | 1 |
 | `api:src/include/memory/compress.h:decompress_data` | `src/include/memory/compress.h` | `decompress_data` | `memory` | `COVERED` | 1 |
 | `api:src/include/memory/paging.h:paging_copy_from_user` | `src/include/memory/paging.h` | `paging_copy_from_user` | `memory` | `COVERED` | 7 |
 | `api:src/include/memory/paging.h:paging_copy_to_user` | `src/include/memory/paging.h` | `paging_copy_to_user` | `memory` | `COVERED` | 7 |
+| `api:src/include/memory/paging.h:paging_create_directory` | `src/include/memory/paging.h` | `paging_create_directory` | `memory` | `COVERED` | 7 |
+| `api:src/include/memory/paging.h:paging_create_user_directory` | `src/include/memory/paging.h` | `paging_create_user_directory` | `memory` | `COVERED` | 7 |
 | `api:src/include/memory/paging.h:paging_free_directory` | `src/include/memory/paging.h` | `paging_free_directory` | `memory` | `COVERED` | 7 |
 | `api:src/include/memory/paging.h:paging_free_user_directory` | `src/include/memory/paging.h` | `paging_free_user_directory` | `memory` | `COVERED` | 7 |
 | `api:src/include/memory/paging.h:paging_get_boot_stats` | `src/include/memory/paging.h` | `paging_get_boot_stats` | `memory` | `COVERED` | 7 |
+| `api:src/include/memory/paging.h:paging_get_current_directory` | `src/include/memory/paging.h` | `paging_get_current_directory` | `memory` | `COVERED` | 7 |
+| `api:src/include/memory/paging.h:paging_get_page` | `src/include/memory/paging.h` | `paging_get_page` | `memory` | `COVERED` | 7 |
+| `api:src/include/memory/paging.h:paging_get_page_in_directory` | `src/include/memory/paging.h` | `paging_get_page_in_directory` | `memory` | `COVERED` | 7 |
 | `api:src/include/memory/paging.h:paging_get_user_page_count` | `src/include/memory/paging.h` | `paging_get_user_page_count` | `memory` | `COVERED` | 7 |
 | `api:src/include/memory/paging.h:paging_get_user_stats` | `src/include/memory/paging.h` | `paging_get_user_stats` | `memory` | `COVERED` | 7 |
 | `api:src/include/memory/paging.h:paging_init` | `src/include/memory/paging.h` | `paging_init` | `memory` | `COVERED` | 7 |
@@ -1228,6 +1336,8 @@
 | `api:src/include/memory/paging.h:paging_switch_directory` | `src/include/memory/paging.h` | `paging_switch_directory` | `memory` | `COVERED` | 7 |
 | `api:src/include/memory/paging.h:paging_unmap_user_page_in_directory` | `src/include/memory/paging.h` | `paging_unmap_user_page_in_directory` | `memory` | `COVERED` | 7 |
 | `api:src/include/memory/paging.h:paging_validate_user_range` | `src/include/memory/paging.h` | `paging_validate_user_range` | `memory` | `COVERED` | 7 |
+| `api:src/include/memory/slab.h:kmem_cache_alloc` | `src/include/memory/slab.h` | `kmem_cache_alloc` | `memory` | `COVERED` | 7 |
+| `api:src/include/memory/slab.h:kmem_cache_create` | `src/include/memory/slab.h` | `kmem_cache_create` | `memory` | `COVERED` | 7 |
 | `api:src/include/memory/slab.h:kmem_cache_destroy` | `src/include/memory/slab.h` | `kmem_cache_destroy` | `memory` | `COVERED` | 7 |
 | `api:src/include/memory/slab.h:kmem_cache_free` | `src/include/memory/slab.h` | `kmem_cache_free` | `memory` | `COVERED` | 7 |
 | `api:src/include/memory/slab.h:kmem_cache_get_count` | `src/include/memory/slab.h` | `kmem_cache_get_count` | `memory` | `COVERED` | 7 |
@@ -1263,14 +1373,18 @@
 | `api:src/include/process/process.h:process_cancel_wait` | `src/include/process/process.h` | `process_cancel_wait` | `process` | `COVERED` | 7 |
 | `api:src/include/process/process.h:process_context_switch` | `src/include/process/process.h` | `process_context_switch` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:process_copy_waiters` | `src/include/process/process.h` | `process_copy_waiters` | `process` | `COVERED` | 7 |
+| `api:src/include/process/process.h:process_create` | `src/include/process/process.h` | `process_create` | `process` | `COVERED` | 7 |
 | `api:src/include/process/process.h:process_create_user_image` | `src/include/process/process.h` | `process_create_user_image` | `process` | `COVERED` | 7 |
 | `api:src/include/process/process.h:process_create_user_image_suspended` | `src/include/process/process.h` | `process_create_user_image_suspended` | `process` | `COVERED` | 7 |
 | `api:src/include/process/process.h:process_create_user_image_suspended_with_launch` | `src/include/process/process.h` | `process_create_user_image_suspended_with_launch` | `process` | `COVERED` | 7 |
 | `api:src/include/process/process.h:process_create_user_test` | `src/include/process/process.h` | `process_create_user_test` | `process` | `COVERED` | 7 |
+| `api:src/include/process/process.h:process_create_with_stack_size` | `src/include/process/process.h` | `process_create_with_stack_size` | `process` | `COVERED` | 7 |
 | `api:src/include/process/process.h:process_destroy` | `src/include/process/process.h` | `process_destroy` | `process` | `COVERED` | 7 |
 | `api:src/include/process/process.h:process_exit_current` | `src/include/process/process.h` | `process_exit_current` | `process` | `COVERED` | 7 |
 | `api:src/include/process/process.h:process_finish_user_termination` | `src/include/process/process.h` | `process_finish_user_termination` | `process` | `COVERED` | 7 |
+| `api:src/include/process/process.h:process_get_by_pid` | `src/include/process/process.h` | `process_get_by_pid` | `process` | `COVERED` | 7 |
 | `api:src/include/process/process.h:process_get_count` | `src/include/process/process.h` | `process_get_count` | `process` | `COVERED` | 7 |
+| `api:src/include/process/process.h:process_get_current` | `src/include/process/process.h` | `process_get_current` | `process` | `COVERED` | 7 |
 | `api:src/include/process/process.h:process_get_current_pid` | `src/include/process/process.h` | `process_get_current_pid` | `process` | `COVERED` | 7 |
 | `api:src/include/process/process.h:process_get_event_generation` | `src/include/process/process.h` | `process_get_event_generation` | `process` | `COVERED` | 7 |
 | `api:src/include/process/process.h:process_get_focus` | `src/include/process/process.h` | `process_get_focus` | `process` | `COVERED` | 5 |
@@ -1308,6 +1422,7 @@
 | `api:src/include/process/process.h:scheduler_get_stats` | `src/include/process/process.h` | `scheduler_get_stats` | `process` | `COVERED` | 7 |
 | `api:src/include/process/process.h:scheduler_init` | `src/include/process/process.h` | `scheduler_init` | `process` | `COVERED` | 7 |
 | `api:src/include/process/process.h:scheduler_preempt_user` | `src/include/process/process.h` | `scheduler_preempt_user` | `process` | `COVERED` | 7 |
+| `api:src/include/process/process.h:scheduler_schedule` | `src/include/process/process.h` | `scheduler_schedule` | `process` | `COVERED` | 7 |
 | `api:src/include/process/process.h:scheduler_tick` | `src/include/process/process.h` | `scheduler_tick` | `process` | `COVERED` | 7 |
 | `api:src/include/process/process.h:scheduler_validate_invariants` | `src/include/process/process.h` | `scheduler_validate_invariants` | `process` | `COVERED` | 7 |
 | `api:src/include/process/signal.h:process_signal_action` | `src/include/process/signal.h` | `process_signal_action` | `process` | `COVERED` | 8 |
@@ -1315,6 +1430,7 @@
 | `api:src/include/process/signal.h:process_signal_get_stats` | `src/include/process/signal.h` | `process_signal_get_stats` | `process` | `COVERED` | 8 |
 | `api:src/include/process/signal.h:process_signal_init` | `src/include/process/signal.h` | `process_signal_init` | `process` | `COVERED` | 8 |
 | `api:src/include/process/signal.h:process_signal_mask` | `src/include/process/signal.h` | `process_signal_mask` | `process` | `COVERED` | 8 |
+| `api:src/include/process/signal.h:process_signal_name` | `src/include/process/signal.h` | `process_signal_name` | `process` | `COVERED` | 8 |
 | `api:src/include/process/signal.h:process_signal_prepare_user_return` | `src/include/process/signal.h` | `process_signal_prepare_user_return` | `process` | `COVERED` | 8 |
 | `api:src/include/process/signal.h:process_signal_process_created` | `src/include/process/signal.h` | `process_signal_process_created` | `process` | `COVERED` | 8 |
 | `api:src/include/process/signal.h:process_signal_process_destroyed` | `src/include/process/signal.h` | `process_signal_process_destroyed` | `process` | `COVERED` | 8 |
@@ -1330,12 +1446,16 @@
 | `api:src/include/process/thread.h:thread_cancel_wait` | `src/include/process/thread.h` | `thread_cancel_wait` | `process` | `COVERED` | 7 |
 | `api:src/include/process/thread.h:thread_context_switch` | `src/include/process/thread.h` | `thread_context_switch` | `process` | `PENDING` | 0 |
 | `api:src/include/process/thread.h:thread_copy_waiters` | `src/include/process/thread.h` | `thread_copy_waiters` | `process` | `COVERED` | 7 |
+| `api:src/include/process/thread.h:thread_create` | `src/include/process/thread.h` | `thread_create` | `process` | `COVERED` | 7 |
 | `api:src/include/process/thread.h:thread_destroy` | `src/include/process/thread.h` | `thread_destroy` | `process` | `COVERED` | 7 |
+| `api:src/include/process/thread.h:thread_get_by_id` | `src/include/process/thread.h` | `thread_get_by_id` | `process` | `COVERED` | 7 |
 | `api:src/include/process/thread.h:thread_get_count` | `src/include/process/thread.h` | `thread_get_count` | `process` | `COVERED` | 7 |
 | `api:src/include/process/thread.h:thread_get_count_by_owner` | `src/include/process/thread.h` | `thread_get_count_by_owner` | `process` | `COVERED` | 7 |
+| `api:src/include/process/thread.h:thread_get_current` | `src/include/process/thread.h` | `thread_get_current` | `process` | `COVERED` | 7 |
 | `api:src/include/process/thread.h:thread_init` | `src/include/process/thread.h` | `thread_init` | `process` | `COVERED` | 7 |
 | `api:src/include/process/thread.h:thread_is_ready` | `src/include/process/thread.h` | `thread_is_ready` | `process` | `COVERED` | 7 |
 | `api:src/include/process/thread.h:thread_run_self_test` | `src/include/process/thread.h` | `thread_run_self_test` | `process` | `COVERED` | 7 |
+| `api:src/include/process/thread.h:thread_schedule_next` | `src/include/process/thread.h` | `thread_schedule_next` | `process` | `COVERED` | 7 |
 | `api:src/include/process/thread.h:thread_scheduler_tick` | `src/include/process/thread.h` | `thread_scheduler_tick` | `process` | `COVERED` | 7 |
 | `api:src/include/process/thread.h:thread_unblock` | `src/include/process/thread.h` | `thread_unblock` | `process` | `COVERED` | 7 |
 | `api:src/include/process/thread.h:thread_wait` | `src/include/process/thread.h` | `thread_wait` | `process` | `COVERED` | 7 |
@@ -1367,6 +1487,7 @@
 | `api:src/include/ui/display.h:display_get_metrics` | `src/include/ui/display.h` | `display_get_metrics` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/display.h:display_init` | `src/include/ui/display.h` | `display_init` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/display.h:display_parse_scale` | `src/include/ui/display.h` | `display_parse_scale` | `ui` | `COVERED` | 2 |
+| `api:src/include/ui/display.h:display_scale_name` | `src/include/ui/display.h` | `display_scale_name` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/display.h:display_scale_px` | `src/include/ui/display.h` | `display_scale_px` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/filemanager.h:fm_close` | `src/include/ui/filemanager.h` | `fm_close` | `ui` | `COVERED` | 1 |
 | `api:src/include/ui/filemanager.h:fm_draw` | `src/include/ui/filemanager.h` | `fm_draw` | `ui` | `COVERED` | 1 |
@@ -1392,9 +1513,15 @@
 | `api:src/include/ui/gui.h:gui_init` | `src/include/ui/gui.h` | `gui_init` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/gui.h:gui_measure_scaled_text` | `src/include/ui/gui.h` | `gui_measure_scaled_text` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/gui.h:gui_set_theme` | `src/include/ui/gui.h` | `gui_set_theme` | `ui` | `COVERED` | 2 |
+| `api:src/include/ui/gui.h:gui_theme_name` | `src/include/ui/gui.h` | `gui_theme_name` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/icons.h:icons_draw_desktop_bitmap` | `src/include/ui/icons.h` | `icons_draw_desktop_bitmap` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/icons.h:icons_draw_desktop_bitmap_resized` | `src/include/ui/icons.h` | `icons_draw_desktop_bitmap_resized` | `ui` | `COVERED` | 2 |
+| `api:src/include/ui/icons.h:icons_get_desktop` | `src/include/ui/icons.h` | `icons_get_desktop` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/icons.h:icons_get_desktop_bitmap_status` | `src/include/ui/icons.h` | `icons_get_desktop_bitmap_status` | `ui` | `COVERED` | 2 |
+| `api:src/include/ui/icons.h:icons_get_fm` | `src/include/ui/icons.h` | `icons_get_fm` | `ui` | `COVERED` | 2 |
+| `api:src/include/ui/icons.h:icons_get_registry` | `src/include/ui/icons.h` | `icons_get_registry` | `ui` | `COVERED` | 2 |
+| `api:src/include/ui/icons.h:icons_get_tb` | `src/include/ui/icons.h` | `icons_get_tb` | `ui` | `COVERED` | 2 |
+| `api:src/include/ui/icons.h:icons_get_wm` | `src/include/ui/icons.h` | `icons_get_wm` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/icons.h:icons_init` | `src/include/ui/icons.h` | `icons_init` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/icons.h:icons_reset_defaults` | `src/include/ui/icons.h` | `icons_reset_defaults` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/icons.h:icons_set_desktop` | `src/include/ui/icons.h` | `icons_set_desktop` | `ui` | `COVERED` | 2 |
@@ -1414,6 +1541,7 @@
 | `api:src/include/ui/taskbar.h:taskbar_draw` | `src/include/ui/taskbar.h` | `taskbar_draw` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/taskbar.h:taskbar_draw_config_menu` | `src/include/ui/taskbar.h` | `taskbar_draw_config_menu` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/taskbar.h:taskbar_get_bounds` | `src/include/ui/taskbar.h` | `taskbar_get_bounds` | `ui` | `COVERED` | 2 |
+| `api:src/include/ui/taskbar.h:taskbar_get_config` | `src/include/ui/taskbar.h` | `taskbar_get_config` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/taskbar.h:taskbar_get_work_area` | `src/include/ui/taskbar.h` | `taskbar_get_work_area` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/taskbar.h:taskbar_handle_click` | `src/include/ui/taskbar.h` | `taskbar_handle_click` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/taskbar.h:taskbar_handle_config_key` | `src/include/ui/taskbar.h` | `taskbar_handle_config_key` | `ui` | `COVERED` | 2 |
@@ -1449,7 +1577,10 @@
 | `api:src/include/ui/wm.h:wm_focus_next` | `src/include/ui/wm.h` | `wm_focus_next` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/wm.h:wm_focus_prev` | `src/include/ui/wm.h` | `wm_focus_prev` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/wm.h:wm_focus_window` | `src/include/ui/wm.h` | `wm_focus_window` | `ui` | `COVERED` | 2 |
+| `api:src/include/ui/wm.h:wm_get_config` | `src/include/ui/wm.h` | `wm_get_config` | `ui` | `COVERED` | 2 |
+| `api:src/include/ui/wm.h:wm_get_focused` | `src/include/ui/wm.h` | `wm_get_focused` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/wm.h:wm_get_focused_id` | `src/include/ui/wm.h` | `wm_get_focused_id` | `ui` | `COVERED` | 2 |
+| `api:src/include/ui/wm.h:wm_get_window` | `src/include/ui/wm.h` | `wm_get_window` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/wm.h:wm_handle_click` | `src/include/ui/wm.h` | `wm_handle_click` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/wm.h:wm_handle_key` | `src/include/ui/wm.h` | `wm_handle_key` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/wm.h:wm_handle_mouse` | `src/include/ui/wm.h` | `wm_handle_mouse` | `ui` | `COVERED` | 2 |
@@ -1598,6 +1729,9 @@
 | `c:src/appstore/appstore.c:appstore_draw_classic_remote` | `src/appstore/appstore.c` | `appstore_draw_classic_remote` | `appstore` | `PENDING` | 0 |
 | `c:src/appstore/appstore.c:appstore_draw_simple` | `src/appstore/appstore.c` | `appstore_draw_simple` | `appstore` | `PENDING` | 0 |
 | `c:src/appstore/appstore.c:appstore_entry_color` | `src/appstore/appstore.c` | `appstore_entry_color` | `appstore` | `PENDING` | 0 |
+| `c:src/appstore/appstore.c:appstore_entry_info` | `src/appstore/appstore.c` | `appstore_entry_info` | `appstore` | `PENDING` | 0 |
+| `c:src/appstore/appstore.c:appstore_entry_label` | `src/appstore/appstore.c` | `appstore_entry_label` | `appstore` | `PENDING` | 0 |
+| `c:src/appstore/appstore.c:appstore_entry_trust` | `src/appstore/appstore.c` | `appstore_entry_trust` | `appstore` | `PENDING` | 0 |
 | `c:src/appstore/appstore.c:appstore_get_mode` | `src/appstore/appstore.c` | `appstore_get_mode` | `appstore` | `PENDING` | 0 |
 | `c:src/appstore/appstore.c:appstore_gui_draw_action_button` | `src/appstore/appstore.c` | `appstore_gui_draw_action_button` | `appstore` | `PENDING` | 0 |
 | `c:src/appstore/appstore.c:appstore_gui_draw_confirmation` | `src/appstore/appstore.c` | `appstore_gui_draw_confirmation` | `appstore` | `PENDING` | 0 |
@@ -1640,7 +1774,9 @@
 | `c:src/appstore/appstore.c:appstore_restore_selection` | `src/appstore/appstore.c` | `appstore_restore_selection` | `appstore` | `PENDING` | 0 |
 | `c:src/appstore/appstore.c:appstore_rollback_is_available` | `src/appstore/appstore.c` | `appstore_rollback_is_available` | `appstore` | `PENDING` | 0 |
 | `c:src/appstore/appstore.c:appstore_select_first_visible` | `src/appstore/appstore.c` | `appstore_select_first_visible` | `appstore` | `PENDING` | 0 |
+| `c:src/appstore/appstore.c:appstore_selected_entry` | `src/appstore/appstore.c` | `appstore_selected_entry` | `appstore` | `PENDING` | 0 |
 | `c:src/appstore/appstore.c:appstore_selected_key` | `src/appstore/appstore.c` | `appstore_selected_key` | `appstore` | `PENDING` | 0 |
+| `c:src/appstore/appstore.c:appstore_selected_remote_entry` | `src/appstore/appstore.c` | `appstore_selected_remote_entry` | `appstore` | `PENDING` | 0 |
 | `c:src/appstore/appstore.c:appstore_set_result` | `src/appstore/appstore.c` | `appstore_set_result` | `appstore` | `PENDING` | 0 |
 | `c:src/appstore/appstore.c:appstore_simple_draw_confirmation` | `src/appstore/appstore.c` | `appstore_simple_draw_confirmation` | `appstore` | `PENDING` | 0 |
 | `c:src/appstore/appstore.c:appstore_simple_draw_details` | `src/appstore/appstore.c` | `appstore_simple_draw_details` | `appstore` | `PENDING` | 0 |
@@ -1669,6 +1805,7 @@
 | `c:src/boot/recovery_loader.c:recovery_boot_legacy` | `src/boot/recovery_loader.c` | `recovery_boot_legacy` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_loader.c:recovery_boot_prepared` | `src/boot/recovery_loader.c` | `recovery_boot_prepared` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_loader.c:recovery_boot_previous` | `src/boot/recovery_loader.c` | `recovery_boot_previous` | `boot` | `PENDING` | 0 |
+| `c:src/boot/recovery_loader.c:recovery_boot_state_name` | `src/boot/recovery_loader.c` | `recovery_boot_state_name` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_loader.c:recovery_build_menu_view` | `src/boot/recovery_loader.c` | `recovery_build_menu_view` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_loader.c:recovery_clear` | `src/boot/recovery_loader.c` | `recovery_clear` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_loader.c:recovery_clear_chain_handoff` | `src/boot/recovery_loader.c` | `recovery_clear_chain_handoff` | `boot` | `PENDING` | 0 |
@@ -1707,11 +1844,15 @@
 | `c:src/boot/recovery_loader.c:recovery_read_sector` | `src/boot/recovery_loader.c` | `recovery_read_sector` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_loader.c:recovery_reader_init` | `src/boot/recovery_loader.c` | `recovery_reader_init` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_loader.c:recovery_reader_read` | `src/boot/recovery_loader.c` | `recovery_reader_read` | `boot` | `PENDING` | 0 |
+| `c:src/boot/recovery_loader.c:recovery_reason_name` | `src/boot/recovery_loader.c` | `recovery_reason_name` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_loader.c:recovery_restrict_legacy` | `src/boot/recovery_loader.c` | `recovery_restrict_legacy` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_loader.c:recovery_retry_candidate` | `src/boot/recovery_loader.c` | `recovery_retry_candidate` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_loader.c:recovery_run_menu` | `src/boot/recovery_loader.c` | `recovery_run_menu` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_loader.c:recovery_slot_available` | `src/boot/recovery_loader.c` | `recovery_slot_available` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_loader.c:recovery_slot_metadata_matches` | `src/boot/recovery_loader.c` | `recovery_slot_metadata_matches` | `boot` | `PENDING` | 0 |
+| `c:src/boot/recovery_loader.c:recovery_slot_name` | `src/boot/recovery_loader.c` | `recovery_slot_name` | `boot` | `PENDING` | 0 |
+| `c:src/boot/recovery_loader.c:recovery_slot_record` | `src/boot/recovery_loader.c` | `recovery_slot_record` | `boot` | `PENDING` | 0 |
+| `c:src/boot/recovery_loader.c:recovery_slot_state_name` | `src/boot/recovery_loader.c` | `recovery_slot_state_name` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_loader.c:recovery_state_sequence_safe` | `src/boot/recovery_loader.c` | `recovery_state_sequence_safe` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_loader.c:recovery_state_slot_record_valid` | `src/boot/recovery_loader.c` | `recovery_state_slot_record_valid` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_loader.c:recovery_state_write_u16` | `src/boot/recovery_loader.c` | `recovery_state_write_u16` | `boot` | `PENDING` | 0 |
@@ -1728,6 +1869,7 @@
 | `c:src/boot/recovery_loader.c:recovery_zero` | `src/boot/recovery_loader.c` | `recovery_zero` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_menu.c:recovery_console_clear` | `src/boot/recovery_menu.c` | `recovery_console_clear` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_menu.c:recovery_console_draw_glyph` | `src/boot/recovery_menu.c` | `recovery_console_draw_glyph` | `boot` | `PENDING` | 0 |
+| `c:src/boot/recovery_menu.c:recovery_console_glyph` | `src/boot/recovery_menu.c` | `recovery_console_glyph` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_menu.c:recovery_console_init` | `src/boot/recovery_menu.c` | `recovery_console_init` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_menu.c:recovery_console_pixel` | `src/boot/recovery_menu.c` | `recovery_console_pixel` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_menu.c:recovery_console_print` | `src/boot/recovery_menu.c` | `recovery_console_print` | `boot` | `PENDING` | 0 |
@@ -1736,6 +1878,7 @@
 | `c:src/boot/recovery_menu.c:recovery_console_u16` | `src/boot/recovery_menu.c` | `recovery_console_u16` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_menu.c:recovery_console_u32` | `src/boot/recovery_menu.c` | `recovery_console_u32` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_menu.c:recovery_console_vesa_ready` | `src/boot/recovery_menu.c` | `recovery_console_vesa_ready` | `boot` | `PENDING` | 0 |
+| `c:src/boot/recovery_menu.c:recovery_menu_action_name` | `src/boot/recovery_menu.c` | `recovery_menu_action_name` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_menu.c:recovery_menu_actions` | `src/boot/recovery_menu.c` | `recovery_menu_actions` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_menu.c:recovery_menu_confirm_retry` | `src/boot/recovery_menu.c` | `recovery_menu_confirm_retry` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_menu.c:recovery_menu_print_version` | `src/boot/recovery_menu.c` | `recovery_menu_print_version` | `boot` | `PENDING` | 0 |
@@ -1831,7 +1974,9 @@
 | `c:src/core/app_catalog.c:app_catalog_collect_sources` | `src/core/app_catalog.c` | `app_catalog_collect_sources` | `core` | `COVERED` | 1 |
 | `c:src/core/app_catalog.c:app_catalog_compare_versions` | `src/core/app_catalog.c` | `app_catalog_compare_versions` | `core` | `COVERED` | 1 |
 | `c:src/core/app_catalog.c:app_catalog_copy_text` | `src/core/app_catalog.c` | `app_catalog_copy_text` | `core` | `COVERED` | 1 |
+| `c:src/core/app_catalog.c:app_catalog_entry_key` | `src/core/app_catalog.c` | `app_catalog_entry_key` | `core` | `PENDING` | 0 |
 | `c:src/core/app_catalog.c:app_catalog_find_entry` | `src/core/app_catalog.c` | `app_catalog_find_entry` | `core` | `COVERED` | 1 |
+| `c:src/core/app_catalog.c:app_catalog_find_installed` | `src/core/app_catalog.c` | `app_catalog_find_installed` | `core` | `PENDING` | 0 |
 | `c:src/core/app_catalog.c:app_catalog_find_source_index` | `src/core/app_catalog.c` | `app_catalog_find_source_index` | `core` | `COVERED` | 1 |
 | `c:src/core/app_catalog.c:app_catalog_get_count` | `src/core/app_catalog.c` | `app_catalog_get_count` | `core` | `COVERED` | 1 |
 | `c:src/core/app_catalog.c:app_catalog_get_entry` | `src/core/app_catalog.c` | `app_catalog_get_entry` | `core` | `COVERED` | 1 |
@@ -1846,11 +1991,13 @@
 | `c:src/core/app_catalog.c:app_catalog_plan_append` | `src/core/app_catalog.c` | `app_catalog_plan_append` | `core` | `COVERED` | 1 |
 | `c:src/core/app_catalog.c:app_catalog_plan_sort_dependencies` | `src/core/app_catalog.c` | `app_catalog_plan_sort_dependencies` | `core` | `COVERED` | 1 |
 | `c:src/core/app_catalog.c:app_catalog_plan_visit` | `src/core/app_catalog.c` | `app_catalog_plan_visit` | `core` | `COVERED` | 1 |
+| `c:src/core/app_catalog.c:app_catalog_reason_name` | `src/core/app_catalog.c` | `app_catalog_reason_name` | `core` | `PENDING` | 0 |
 | `c:src/core/app_catalog.c:app_catalog_reason_priority` | `src/core/app_catalog.c` | `app_catalog_reason_priority` | `core` | `COVERED` | 1 |
 | `c:src/core/app_catalog.c:app_catalog_record_problem` | `src/core/app_catalog.c` | `app_catalog_record_problem` | `core` | `COVERED` | 1 |
 | `c:src/core/app_catalog.c:app_catalog_refresh` | `src/core/app_catalog.c` | `app_catalog_refresh` | `core` | `COVERED` | 1 |
 | `c:src/core/app_catalog.c:app_catalog_refresh_recovery` | `src/core/app_catalog.c` | `app_catalog_refresh_recovery` | `core` | `COVERED` | 1 |
 | `c:src/core/app_catalog.c:app_catalog_sort_entries` | `src/core/app_catalog.c` | `app_catalog_sort_entries` | `core` | `COVERED` | 1 |
+| `c:src/core/app_catalog.c:app_catalog_state_name` | `src/core/app_catalog.c` | `app_catalog_state_name` | `core` | `PENDING` | 0 |
 | `c:src/core/app_files.c:app_files_chdir` | `src/core/app_files.c` | `app_files_chdir` | `core` | `PENDING` | 0 |
 | `c:src/core/app_files.c:app_files_close` | `src/core/app_files.c` | `app_files_close` | `core` | `PENDING` | 0 |
 | `c:src/core/app_files.c:app_files_close_owner` | `src/core/app_files.c` | `app_files_close_owner` | `core` | `PENDING` | 0 |
@@ -1892,6 +2039,7 @@
 | `c:src/core/app_loader.c:app_loader_validate_launch_info` | `src/core/app_loader.c` | `app_loader_validate_launch_info` | `core` | `PENDING` | 0 |
 | `c:src/core/app_loader.c:app_loader_validate_layout` | `src/core/app_loader.c` | `app_loader_validate_layout` | `core` | `PENDING` | 0 |
 | `c:src/core/app_package.c:app_package_action_fail` | `src/core/app_package.c` | `app_package_action_fail` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_action_reason_name` | `src/core/app_package.c` | `app_package_action_reason_name` | `core` | `PENDING` | 0 |
 | `c:src/core/app_package.c:app_package_action_reset` | `src/core/app_package.c` | `app_package_action_reset` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_add_blocker` | `src/core/app_package.c` | `app_package_add_blocker` | `core` | `PENDING` | 0 |
 | `c:src/core/app_package.c:app_package_alias_is_valid` | `src/core/app_package.c` | `app_package_alias_is_valid` | `core` | `PENDING` | 0 |
@@ -1937,6 +2085,8 @@
 | `c:src/core/app_package.c:app_package_header_is_valid` | `src/core/app_package.c` | `app_package_header_is_valid` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_history_append` | `src/core/app_package.c` | `app_package_history_append` | `core` | `PENDING` | 0 |
 | `c:src/core/app_package.c:app_package_history_is_valid` | `src/core/app_package.c` | `app_package_history_is_valid` | `core` | `PENDING` | 0 |
+| `c:src/core/app_package.c:app_package_history_operation_name` | `src/core/app_package.c` | `app_package_history_operation_name` | `core` | `PENDING` | 0 |
+| `c:src/core/app_package.c:app_package_history_outcome_name` | `src/core/app_package.c` | `app_package_history_outcome_name` | `core` | `PENDING` | 0 |
 | `c:src/core/app_package.c:app_package_id_is_valid` | `src/core/app_package.c` | `app_package_id_is_valid` | `core` | `PENDING` | 0 |
 | `c:src/core/app_package.c:app_package_init` | `src/core/app_package.c` | `app_package_init` | `core` | `PENDING` | 0 |
 | `c:src/core/app_package.c:app_package_install_confirmed` | `src/core/app_package.c` | `app_package_install_confirmed` | `core` | `PENDING` | 0 |
@@ -1949,6 +2099,7 @@
 | `c:src/core/app_package.c:app_package_mutation_end` | `src/core/app_package.c` | `app_package_mutation_end` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_parse_dependencies` | `src/core/app_package.c` | `app_package_parse_dependencies` | `core` | `PENDING` | 0 |
 | `c:src/core/app_package.c:app_package_parse_manifest` | `src/core/app_package.c` | `app_package_parse_manifest` | `core` | `PENDING` | 0 |
+| `c:src/core/app_package.c:app_package_plan_action_name` | `src/core/app_package.c` | `app_package_plan_action_name` | `core` | `PENDING` | 0 |
 | `c:src/core/app_package.c:app_package_plan_contains_before` | `src/core/app_package.c` | `app_package_plan_contains_before` | `core` | `PENDING` | 0 |
 | `c:src/core/app_package.c:app_package_preflight_install` | `src/core/app_package.c` | `app_package_preflight_install` | `core` | `PENDING` | 0 |
 | `c:src/core/app_package.c:app_package_preflight_plan` | `src/core/app_package.c` | `app_package_preflight_plan` | `core` | `PENDING` | 0 |
@@ -2006,6 +2157,7 @@
 | `c:src/core/app_remote.c:app_remote_build_plan` | `src/core/app_remote.c` | `app_remote_build_plan` | `core` | `PENDING` | 0 |
 | `c:src/core/app_remote.c:app_remote_build_plan_internal` | `src/core/app_remote.c` | `app_remote_build_plan_internal` | `core` | `PENDING` | 0 |
 | `c:src/core/app_remote.c:app_remote_cache_path` | `src/core/app_remote.c` | `app_remote_cache_path` | `core` | `PENDING` | 0 |
+| `c:src/core/app_remote.c:app_remote_cache_state_name` | `src/core/app_remote.c` | `app_remote_cache_state_name` | `core` | `PENDING` | 0 |
 | `c:src/core/app_remote.c:app_remote_check` | `src/core/app_remote.c` | `app_remote_check` | `core` | `PENDING` | 0 |
 | `c:src/core/app_remote.c:app_remote_classify_entries` | `src/core/app_remote.c` | `app_remote_classify_entries` | `core` | `PENDING` | 0 |
 | `c:src/core/app_remote.c:app_remote_clear` | `src/core/app_remote.c` | `app_remote_clear` | `core` | `PENDING` | 0 |
@@ -2017,6 +2169,7 @@
 | `c:src/core/app_remote.c:app_remote_enable` | `src/core/app_remote.c` | `app_remote_enable` | `core` | `PENDING` | 0 |
 | `c:src/core/app_remote.c:app_remote_end_ready` | `src/core/app_remote.c` | `app_remote_end_ready` | `core` | `PENDING` | 0 |
 | `c:src/core/app_remote.c:app_remote_ensure_directory` | `src/core/app_remote.c` | `app_remote_ensure_directory` | `core` | `PENDING` | 0 |
+| `c:src/core/app_remote.c:app_remote_entry_state_name` | `src/core/app_remote.c` | `app_remote_entry_state_name` | `core` | `PENDING` | 0 |
 | `c:src/core/app_remote.c:app_remote_fail` | `src/core/app_remote.c` | `app_remote_fail` | `core` | `PENDING` | 0 |
 | `c:src/core/app_remote.c:app_remote_fetch` | `src/core/app_remote.c` | `app_remote_fetch` | `core` | `PENDING` | 0 |
 | `c:src/core/app_remote.c:app_remote_fetch_packages` | `src/core/app_remote.c` | `app_remote_fetch_packages` | `core` | `PENDING` | 0 |
@@ -2050,6 +2203,7 @@
 | `c:src/core/app_remote.c:app_remote_publish_cache` | `src/core/app_remote.c` | `app_remote_publish_cache` | `core` | `PENDING` | 0 |
 | `c:src/core/app_remote.c:app_remote_read_u16` | `src/core/app_remote.c` | `app_remote_read_u16` | `core` | `PENDING` | 0 |
 | `c:src/core/app_remote.c:app_remote_read_u32` | `src/core/app_remote.c` | `app_remote_read_u32` | `core` | `PENDING` | 0 |
+| `c:src/core/app_remote.c:app_remote_reason_name` | `src/core/app_remote.c` | `app_remote_reason_name` | `core` | `PENDING` | 0 |
 | `c:src/core/app_remote.c:app_remote_record_decode` | `src/core/app_remote.c` | `app_remote_record_decode` | `core` | `PENDING` | 0 |
 | `c:src/core/app_remote.c:app_remote_record_encode` | `src/core/app_remote.c` | `app_remote_record_encode` | `core` | `PENDING` | 0 |
 | `c:src/core/app_remote.c:app_remote_record_provenance` | `src/core/app_remote.c` | `app_remote_record_provenance` | `core` | `PENDING` | 0 |
@@ -2059,6 +2213,7 @@
 | `c:src/core/app_remote.c:app_remote_result_status` | `src/core/app_remote.c` | `app_remote_result_status` | `core` | `PENDING` | 0 |
 | `c:src/core/app_remote.c:app_remote_revalidate_pending_cache` | `src/core/app_remote.c` | `app_remote_revalidate_pending_cache` | `core` | `PENDING` | 0 |
 | `c:src/core/app_remote.c:app_remote_sort_dependencies` | `src/core/app_remote.c` | `app_remote_sort_dependencies` | `core` | `PENDING` | 0 |
+| `c:src/core/app_remote.c:app_remote_state_name` | `src/core/app_remote.c` | `app_remote_state_name` | `core` | `PENDING` | 0 |
 | `c:src/core/app_remote.c:app_remote_test_fail_after` | `src/core/app_remote.c` | `app_remote_test_fail_after` | `core` | `PENDING` | 0 |
 | `c:src/core/app_remote.c:app_remote_transport_reason` | `src/core/app_remote.c` | `app_remote_transport_reason` | `core` | `PENDING` | 0 |
 | `c:src/core/app_remote.c:app_remote_validate_download` | `src/core/app_remote.c` | `app_remote_validate_download` | `core` | `PENDING` | 0 |
@@ -2076,6 +2231,7 @@
 | `c:src/core/arp.c:arp_copy_text` | `src/core/arp.c` | `arp_copy_text` | `core` | `COVERED` | 1 |
 | `c:src/core/arp.c:arp_count_entries` | `src/core/arp.c` | `arp_count_entries` | `core` | `COVERED` | 1 |
 | `c:src/core/arp.c:arp_elapsed` | `src/core/arp.c` | `arp_elapsed` | `core` | `COVERED` | 1 |
+| `c:src/core/arp.c:arp_entry_state_name` | `src/core/arp.c` | `arp_entry_state_name` | `core` | `PENDING` | 0 |
 | `c:src/core/arp.c:arp_find_entry` | `src/core/arp.c` | `arp_find_entry` | `core` | `COVERED` | 1 |
 | `c:src/core/arp.c:arp_get_cache_entry` | `src/core/arp.c` | `arp_get_cache_entry` | `core` | `COVERED` | 1 |
 | `c:src/core/arp.c:arp_get_status` | `src/core/arp.c` | `arp_get_status` | `core` | `COVERED` | 1 |
@@ -2106,6 +2262,9 @@
 | `c:src/core/arp.c:arp_write_u16` | `src/core/arp.c` | `arp_write_u16` | `core` | `COVERED` | 1 |
 | `c:src/core/arp.c:arp_write_u32` | `src/core/arp.c` | `arp_write_u32` | `core` | `COVERED` | 1 |
 | `c:src/core/bearssl_compat.c:memcmp` | `src/core/bearssl_compat.c` | `memcmp` | `core` | `COVERED` | 1 |
+| `c:src/core/bearssl_compat.c:memcpy` | `src/core/bearssl_compat.c` | `memcpy` | `core` | `PENDING` | 0 |
+| `c:src/core/bearssl_compat.c:memmove` | `src/core/bearssl_compat.c` | `memmove` | `core` | `PENDING` | 0 |
+| `c:src/core/bearssl_compat.c:memset` | `src/core/bearssl_compat.c` | `memset` | `core` | `PENDING` | 0 |
 | `c:src/core/bearssl_compat.c:strlen` | `src/core/bearssl_compat.c` | `strlen` | `core` | `COVERED` | 1 |
 | `c:src/core/clock.c:clock_datetime_to_unix` | `src/core/clock.c` | `clock_datetime_to_unix` | `core` | `COVERED` | 3 |
 | `c:src/core/clock.c:clock_days_in_month` | `src/core/clock.c` | `clock_days_in_month` | `core` | `COVERED` | 3 |
@@ -2118,6 +2277,7 @@
 | `c:src/core/clock.c:clock_init` | `src/core/clock.c` | `clock_init` | `core` | `COVERED` | 1 |
 | `c:src/core/clock.c:clock_is_leap_year` | `src/core/clock.c` | `clock_is_leap_year` | `core` | `COVERED` | 3 |
 | `c:src/core/clock.c:clock_self_test` | `src/core/clock.c` | `clock_self_test` | `core` | `COVERED` | 3 |
+| `c:src/core/clock.c:clock_source_name` | `src/core/clock.c` | `clock_source_name` | `core` | `PENDING` | 0 |
 | `c:src/core/clock.c:clock_update_monotonic` | `src/core/clock.c` | `clock_update_monotonic` | `core` | `COVERED` | 3 |
 | `c:src/core/clock.c:clock_validate_state` | `src/core/clock.c` | `clock_validate_state` | `core` | `COVERED` | 3 |
 | `c:src/core/crypto.c:crypto_equal` | `src/core/crypto.c` | `crypto_equal` | `core` | `COVERED` | 3 |
@@ -2205,6 +2365,7 @@
 | `c:src/core/crypto_ed25519.c:store64_be` | `src/core/crypto_ed25519.c` | `store64_be` | `core` | `COVERED` | 3 |
 | `c:src/core/crypto_ed25519.c:x16` | `src/core/crypto_ed25519.c` | `x16` | `core` | `COVERED` | 3 |
 | `c:src/core/crypto_ed25519.c:x32` | `src/core/crypto_ed25519.c` | `x32` | `core` | `COVERED` | 3 |
+| `c:src/core/device_manager.c:device_add` | `src/core/device_manager.c` | `device_add` | `core` | `PENDING` | 0 |
 | `c:src/core/device_manager.c:device_add_ac97` | `src/core/device_manager.c` | `device_add_ac97` | `core` | `COVERED` | 1 |
 | `c:src/core/device_manager.c:device_add_ata` | `src/core/device_manager.c` | `device_add_ata` | `core` | `COVERED` | 1 |
 | `c:src/core/device_manager.c:device_add_builtin_entries` | `src/core/device_manager.c` | `device_add_builtin_entries` | `core` | `COVERED` | 1 |
@@ -2226,6 +2387,8 @@
 | `c:src/core/device_manager.c:device_manager_get_info` | `src/core/device_manager.c` | `device_manager_get_info` | `core` | `COVERED` | 3 |
 | `c:src/core/device_manager.c:device_manager_init` | `src/core/device_manager.c` | `device_manager_init` | `core` | `COVERED` | 1 |
 | `c:src/core/device_manager.c:device_manager_refresh` | `src/core/device_manager.c` | `device_manager_refresh` | `core` | `COVERED` | 1 |
+| `c:src/core/device_manager.c:device_manager_status_name` | `src/core/device_manager.c` | `device_manager_status_name` | `core` | `PENDING` | 0 |
+| `c:src/core/device_manager.c:device_pci_class_name` | `src/core/device_manager.c` | `device_pci_class_name` | `core` | `PENDING` | 0 |
 | `c:src/core/device_manager.c:device_set_text` | `src/core/device_manager.c` | `device_set_text` | `core` | `COVERED` | 3 |
 | `c:src/core/device_manager.c:device_status_from_recovery` | `src/core/device_manager.c` | `device_status_from_recovery` | `core` | `COVERED` | 1 |
 | `c:src/core/dhcp.c:dhcp_acquire` | `src/core/dhcp.c` | `dhcp_acquire` | `core` | `COVERED` | 1 |
@@ -2274,6 +2437,7 @@
 | `c:src/core/dhcp.c:dhcp_send_discover` | `src/core/dhcp.c` | `dhcp_send_discover` | `core` | `COVERED` | 1 |
 | `c:src/core/dhcp.c:dhcp_send_selecting_request` | `src/core/dhcp.c` | `dhcp_send_selecting_request` | `core` | `COVERED` | 1 |
 | `c:src/core/dhcp.c:dhcp_set_default_timers` | `src/core/dhcp.c` | `dhcp_set_default_timers` | `core` | `COVERED` | 1 |
+| `c:src/core/dhcp.c:dhcp_state_name` | `src/core/dhcp.c` | `dhcp_state_name` | `core` | `PENDING` | 0 |
 | `c:src/core/dhcp.c:dhcp_take_event` | `src/core/dhcp.c` | `dhcp_take_event` | `core` | `COVERED` | 1 |
 | `c:src/core/dhcp.c:dhcp_text_is_equal` | `src/core/dhcp.c` | `dhcp_text_is_equal` | `core` | `COVERED` | 1 |
 | `c:src/core/dhcp.c:dhcp_validate_option_vectors` | `src/core/dhcp.c` | `dhcp_validate_option_vectors` | `core` | `COVERED` | 3 |
@@ -2313,6 +2477,7 @@
 | `c:src/core/dns.c:dns_seconds_to_ticks` | `src/core/dns.c` | `dns_seconds_to_ticks` | `core` | `COVERED` | 1 |
 | `c:src/core/dns.c:dns_select_cache` | `src/core/dns.c` | `dns_select_cache` | `core` | `COVERED` | 1 |
 | `c:src/core/dns.c:dns_send_query` | `src/core/dns.c` | `dns_send_query` | `core` | `COVERED` | 1 |
+| `c:src/core/dns.c:dns_state_name` | `src/core/dns.c` | `dns_state_name` | `core` | `PENDING` | 0 |
 | `c:src/core/dns.c:dns_ttl_min` | `src/core/dns.c` | `dns_ttl_min` | `core` | `COVERED` | 1 |
 | `c:src/core/dns.c:dns_unconfigure` | `src/core/dns.c` | `dns_unconfigure` | `core` | `COVERED` | 1 |
 | `c:src/core/dns.c:dns_validate_name_vectors` | `src/core/dns.c` | `dns_validate_name_vectors` | `core` | `COVERED` | 3 |
@@ -2325,6 +2490,7 @@
 | `c:src/core/ethernet.c:ethernet_copy_id` | `src/core/ethernet.c` | `ethernet_copy_id` | `core` | `COVERED` | 1 |
 | `c:src/core/ethernet.c:ethernet_dispatch_frame` | `src/core/ethernet.c` | `ethernet_dispatch_frame` | `core` | `COVERED` | 1 |
 | `c:src/core/ethernet.c:ethernet_find_handler` | `src/core/ethernet.c` | `ethernet_find_handler` | `core` | `COVERED` | 1 |
+| `c:src/core/ethernet.c:ethernet_find_slot` | `src/core/ethernet.c` | `ethernet_find_slot` | `core` | `PENDING` | 0 |
 | `c:src/core/ethernet.c:ethernet_get_interface_status` | `src/core/ethernet.c` | `ethernet_get_interface_status` | `core` | `COVERED` | 1 |
 | `c:src/core/ethernet.c:ethernet_get_status` | `src/core/ethernet.c` | `ethernet_get_status` | `core` | `COVERED` | 1 |
 | `c:src/core/ethernet.c:ethernet_init` | `src/core/ethernet.c` | `ethernet_init` | `core` | `COVERED` | 1 |
@@ -2394,6 +2560,7 @@
 | `c:src/core/http.c:http_reset` | `src/core/http.c` | `http_reset` | `core` | `COVERED` | 1 |
 | `c:src/core/http.c:http_socket_exists` | `src/core/http.c` | `http_socket_exists` | `core` | `COVERED` | 1 |
 | `c:src/core/http.c:http_start_socket` | `src/core/http.c` | `http_start_socket` | `core` | `COVERED` | 1 |
+| `c:src/core/http.c:http_state_name` | `src/core/http.c` | `http_state_name` | `core` | `PENDING` | 0 |
 | `c:src/core/http.c:http_text_prefix_equal` | `src/core/http.c` | `http_text_prefix_equal` | `core` | `COVERED` | 3 |
 | `c:src/core/http.c:http_validate_header_value` | `src/core/http.c` | `http_validate_header_value` | `core` | `COVERED` | 1 |
 | `c:src/core/http.c:http_validate_header_vectors` | `src/core/http.c` | `http_validate_header_vectors` | `core` | `COVERED` | 3 |
@@ -2411,6 +2578,7 @@
 | `c:src/core/icmp.c:icmp_init` | `src/core/icmp.c` | `icmp_init` | `core` | `COVERED` | 1 |
 | `c:src/core/icmp.c:icmp_maintain` | `src/core/icmp.c` | `icmp_maintain` | `core` | `COVERED` | 1 |
 | `c:src/core/icmp.c:icmp_ping_start` | `src/core/icmp.c` | `icmp_ping_start` | `core` | `COVERED` | 1 |
+| `c:src/core/icmp.c:icmp_ping_state_name` | `src/core/icmp.c` | `icmp_ping_state_name` | `core` | `PENDING` | 0 |
 | `c:src/core/icmp.c:icmp_ping_timeout_callback` | `src/core/icmp.c` | `icmp_ping_timeout_callback` | `core` | `COVERED` | 1 |
 | `c:src/core/icmp.c:icmp_preserve_module_counters` | `src/core/icmp.c` | `icmp_preserve_module_counters` | `core` | `COVERED` | 1 |
 | `c:src/core/icmp.c:icmp_queue_reply` | `src/core/icmp.c` | `icmp_queue_reply` | `core` | `COVERED` | 1 |
@@ -2455,6 +2623,7 @@
 | `c:src/core/ipv4.c:ipv4_mac_is_equal` | `src/core/ipv4.c` | `ipv4_mac_is_equal` | `core` | `COVERED` | 1 |
 | `c:src/core/ipv4.c:ipv4_mac_is_valid` | `src/core/ipv4.c` | `ipv4_mac_is_valid` | `core` | `COVERED` | 1 |
 | `c:src/core/ipv4.c:ipv4_mask_is_valid` | `src/core/ipv4.c` | `ipv4_mask_is_valid` | `core` | `COVERED` | 3 |
+| `c:src/core/ipv4.c:ipv4_protocol_name` | `src/core/ipv4.c` | `ipv4_protocol_name` | `core` | `PENDING` | 0 |
 | `c:src/core/ipv4.c:ipv4_read_u16` | `src/core/ipv4.c` | `ipv4_read_u16` | `core` | `COVERED` | 3 |
 | `c:src/core/ipv4.c:ipv4_read_u32` | `src/core/ipv4.c` | `ipv4_read_u32` | `core` | `COVERED` | 1 |
 | `c:src/core/ipv4.c:ipv4_register_handler` | `src/core/ipv4.c` | `ipv4_register_handler` | `core` | `COVERED` | 1 |
@@ -2500,6 +2669,7 @@
 | `c:src/core/kernel_tests_blackbox.c:blackbox_contains` | `src/core/kernel_tests_blackbox.c` | `blackbox_contains` | `core` | `COVERED` | 3 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_equals` | `src/core/kernel_tests_blackbox.c` | `blackbox_equals` | `core` | `COVERED` | 3 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_length` | `src/core/kernel_tests_blackbox.c` | `blackbox_length` | `core` | `COVERED` | 3 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_marker` | `src/core/kernel_tests_blackbox.c` | `blackbox_marker` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_report` | `src/core/kernel_tests_blackbox.c` | `blackbox_report` | `core` | `COVERED` | 3 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_snapshot` | `src/core/kernel_tests_blackbox.c` | `blackbox_snapshot` | `core` | `COVERED` | 3 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_wait_for_marker` | `src/core/kernel_tests_blackbox.c` | `blackbox_wait_for_marker` | `core` | `COVERED` | 3 |
@@ -2577,6 +2747,7 @@
 | `c:src/core/log.c:log_init` | `src/core/log.c` | `log_init` | `core` | `COVERED` | 23 |
 | `c:src/core/log.c:log_is_power_of_two` | `src/core/log.c` | `log_is_power_of_two` | `core` | `COVERED` | 29 |
 | `c:src/core/log.c:log_level_is_valid` | `src/core/log.c` | `log_level_is_valid` | `core` | `COVERED` | 30 |
+| `c:src/core/log.c:log_level_str` | `src/core/log.c` | `log_level_str` | `core` | `PENDING` | 0 |
 | `c:src/core/log.c:log_note_dropped_event` | `src/core/log.c` | `log_note_dropped_event` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_print` | `src/core/log.c` | `log_print` | `core` | `COVERED` | 30 |
 | `c:src/core/log.c:log_print_code` | `src/core/log.c` | `log_print_code` | `core` | `COVERED` | 7 |
@@ -2660,6 +2831,7 @@
 | `c:src/core/net_socket.c:net_socket_self_test` | `src/core/net_socket.c` | `net_socket_self_test` | `core` | `COVERED` | 3 |
 | `c:src/core/net_socket.c:net_socket_send` | `src/core/net_socket.c` | `net_socket_send` | `core` | `COVERED` | 1 |
 | `c:src/core/net_socket.c:net_socket_start_close` | `src/core/net_socket.c` | `net_socket_start_close` | `core` | `COVERED` | 1 |
+| `c:src/core/net_socket.c:net_socket_state_name` | `src/core/net_socket.c` | `net_socket_state_name` | `core` | `PENDING` | 0 |
 | `c:src/core/net_socket.c:net_socket_tcp_event` | `src/core/net_socket.c` | `net_socket_tcp_event` | `core` | `COVERED` | 1 |
 | `c:src/core/net_socket.c:net_socket_test_block` | `src/core/net_socket.c` | `net_socket_test_block` | `core` | `COVERED` | 3 |
 | `c:src/core/net_socket.c:net_socket_test_count` | `src/core/net_socket.c` | `net_socket_test_count` | `core` | `COVERED` | 3 |
@@ -2687,6 +2859,7 @@
 | `c:src/core/network_manager.c:network_detect_model` | `src/core/network_manager.c` | `network_detect_model` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_dns_reachable` | `src/core/network_manager.c` | `network_dns_reachable` | `core` | `PENDING` | 0 |
 | `c:src/core/network_manager.c:network_drop_dhcp_configuration` | `src/core/network_manager.c` | `network_drop_dhcp_configuration` | `core` | `PENDING` | 0 |
+| `c:src/core/network_manager.c:network_find_driver_record` | `src/core/network_manager.c` | `network_find_driver_record` | `core` | `PENDING` | 0 |
 | `c:src/core/network_manager.c:network_find_pci_device` | `src/core/network_manager.c` | `network_find_pci_device` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_get_protocol_status` | `src/core/network_manager.c` | `network_get_protocol_status` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_id_matches` | `src/core/network_manager.c` | `network_id_matches` | `core` | `COVERED` | 1 |
@@ -2703,6 +2876,10 @@
 | `c:src/core/network_manager.c:network_manager_get_interface` | `src/core/network_manager.c` | `network_manager_get_interface` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_manager_get_status` | `src/core/network_manager.c` | `network_manager_get_status` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_manager_init` | `src/core/network_manager.c` | `network_manager_init` | `core` | `COVERED` | 1 |
+| `c:src/core/network_manager.c:network_manager_interface_state_name` | `src/core/network_manager.c` | `network_manager_interface_state_name` | `core` | `PENDING` | 0 |
+| `c:src/core/network_manager.c:network_manager_ipv4_source_name` | `src/core/network_manager.c` | `network_manager_ipv4_source_name` | `core` | `PENDING` | 0 |
+| `c:src/core/network_manager.c:network_manager_link_state_name` | `src/core/network_manager.c` | `network_manager_link_state_name` | `core` | `PENDING` | 0 |
+| `c:src/core/network_manager.c:network_manager_model_name` | `src/core/network_manager.c` | `network_manager_model_name` | `core` | `PENDING` | 0 |
 | `c:src/core/network_manager.c:network_manager_poll` | `src/core/network_manager.c` | `network_manager_poll` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_manager_quiesce` | `src/core/network_manager.c` | `network_manager_quiesce` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_manager_refresh` | `src/core/network_manager.c` | `network_manager_refresh` | `core` | `COVERED` | 1 |
@@ -2729,6 +2906,7 @@
 | `c:src/core/network_manager.c:network_start_tcp` | `src/core/network_manager.c` | `network_start_tcp` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_start_udp` | `src/core/network_manager.c` | `network_start_udp` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_sync_recovery` | `src/core/network_manager.c` | `network_sync_recovery` | `core` | `COVERED` | 1 |
+| `c:src/core/power.c:power_capability_name` | `src/core/power.c` | `power_capability_name` | `core` | `PENDING` | 0 |
 | `c:src/core/power.c:power_deadline_expired` | `src/core/power.c` | `power_deadline_expired` | `core` | `COVERED` | 1 |
 | `c:src/core/power.c:power_get_status` | `src/core/power.c` | `power_get_status` | `core` | `COVERED` | 4 |
 | `c:src/core/power.c:power_init` | `src/core/power.c` | `power_init` | `core` | `COVERED` | 1 |
@@ -2747,18 +2925,22 @@
 | `c:src/core/power.c:power_quiesce_vfs` | `src/core/power.c` | `power_quiesce_vfs` | `core` | `COVERED` | 1 |
 | `c:src/core/power.c:power_quiesce_video` | `src/core/power.c` | `power_quiesce_video` | `core` | `COVERED` | 1 |
 | `c:src/core/power.c:power_quiesce_workqueue` | `src/core/power.c` | `power_quiesce_workqueue` | `core` | `COVERED` | 1 |
+| `c:src/core/power.c:power_quiescence_state_name` | `src/core/power.c` | `power_quiescence_state_name` | `core` | `PENDING` | 0 |
 | `c:src/core/power.c:power_reboot` | `src/core/power.c` | `power_reboot` | `core` | `COVERED` | 1 |
 | `c:src/core/power.c:power_reboot_commit` | `src/core/power.c` | `power_reboot_commit` | `core` | `PENDING` | 0 |
 | `c:src/core/power.c:power_record_admission_error` | `src/core/power.c` | `power_record_admission_error` | `core` | `COVERED` | 1 |
 | `c:src/core/power.c:power_record_failure` | `src/core/power.c` | `power_record_failure` | `core` | `COVERED` | 1 |
 | `c:src/core/power.c:power_register_notifiers` | `src/core/power.c` | `power_register_notifiers` | `core` | `COVERED` | 1 |
 | `c:src/core/power.c:power_run_precommit` | `src/core/power.c` | `power_run_precommit` | `core` | `COVERED` | 1 |
+| `c:src/core/power.c:power_service_state_name` | `src/core/power.c` | `power_service_state_name` | `core` | `PENDING` | 0 |
 | `c:src/core/power.c:power_shutdown` | `src/core/power.c` | `power_shutdown` | `core` | `COVERED` | 1 |
 | `c:src/core/power.c:power_shutdown_prepare` | `src/core/power.c` | `power_shutdown_prepare` | `core` | `COVERED` | 1 |
 | `c:src/core/power.c:power_shutdown_request` | `src/core/power.c` | `power_shutdown_request` | `core` | `COVERED` | 1 |
 | `c:src/core/power.c:power_terminal_halt` | `src/core/power.c` | `power_terminal_halt` | `core` | `PENDING` | 0 |
 | `c:src/core/power.c:power_transaction_begin` | `src/core/power.c` | `power_transaction_begin` | `core` | `COVERED` | 1 |
 | `c:src/core/power.c:power_transaction_hardware_phase` | `src/core/power.c` | `power_transaction_hardware_phase` | `core` | `COVERED` | 1 |
+| `c:src/core/power.c:power_transaction_phase_name` | `src/core/power.c` | `power_transaction_phase_name` | `core` | `PENDING` | 0 |
+| `c:src/core/power.c:power_transaction_target_name` | `src/core/power.c` | `power_transaction_target_name` | `core` | `PENDING` | 0 |
 | `c:src/core/power.c:power_trigger_triple_fault` | `src/core/power.c` | `power_trigger_triple_fault` | `core` | `PENDING` | 0 |
 | `c:src/core/power.c:system_reboot` | `src/core/power.c` | `system_reboot` | `core` | `COVERED` | 1 |
 | `c:src/core/power_notifier.c:power_notifier_copy_name` | `src/core/power_notifier.c` | `power_notifier_copy_name` | `core` | `COVERED` | 2 |
@@ -2771,6 +2953,7 @@
 | `c:src/core/power_notifier.c:power_notifier_register` | `src/core/power_notifier.c` | `power_notifier_register` | `core` | `COVERED` | 2 |
 | `c:src/core/power_notifier.c:power_notifier_run` | `src/core/power_notifier.c` | `power_notifier_run` | `core` | `COVERED` | 2 |
 | `c:src/core/power_notifier.c:power_notifier_validate_state` | `src/core/power_notifier.c` | `power_notifier_validate_state` | `core` | `COVERED` | 4 |
+| `c:src/core/recovery.c:recovery_get` | `src/core/recovery.c` | `recovery_get` | `core` | `PENDING` | 0 |
 | `c:src/core/recovery.c:recovery_get_count` | `src/core/recovery.c` | `recovery_get_count` | `core` | `COVERED` | 1 |
 | `c:src/core/recovery.c:recovery_init` | `src/core/recovery.c` | `recovery_init` | `core` | `COVERED` | 3 |
 | `c:src/core/recovery.c:recovery_is_available` | `src/core/recovery.c` | `recovery_is_available` | `core` | `COVERED` | 1 |
@@ -2779,6 +2962,7 @@
 | `c:src/core/recovery.c:recovery_mark_disabled` | `src/core/recovery.c` | `recovery_mark_disabled` | `core` | `COVERED` | 1 |
 | `c:src/core/recovery.c:recovery_mark_ready` | `src/core/recovery.c` | `recovery_mark_ready` | `core` | `COVERED` | 2 |
 | `c:src/core/recovery.c:recovery_set_state` | `src/core/recovery.c` | `recovery_set_state` | `core` | `COVERED` | 3 |
+| `c:src/core/recovery.c:recovery_state_name` | `src/core/recovery.c` | `recovery_state_name` | `core` | `PENDING` | 0 |
 | `c:src/core/recovery.c:recovery_valid_component` | `src/core/recovery.c` | `recovery_valid_component` | `core` | `COVERED` | 3 |
 | `c:src/core/route.c:route_add` | `src/core/route.c` | `route_add` | `core` | `COVERED` | 3 |
 | `c:src/core/route.c:route_clear` | `src/core/route.c` | `route_clear` | `core` | `COVERED` | 1 |
@@ -2800,14 +2984,19 @@
 | `c:src/core/route.c:route_set_default` | `src/core/route.c` | `route_set_default` | `core` | `COVERED` | 3 |
 | `c:src/core/route.c:route_test_count` | `src/core/route.c` | `route_test_count` | `core` | `COVERED` | 3 |
 | `c:src/core/route.c:route_validate_state` | `src/core/route.c` | `route_validate_state` | `core` | `COVERED` | 3 |
+| `c:src/core/sk_buff.c:alloc_skb` | `src/core/sk_buff.c` | `alloc_skb` | `core` | `PENDING` | 0 |
 | `c:src/core/sk_buff.c:free_skb` | `src/core/sk_buff.c` | `free_skb` | `core` | `COVERED` | 1 |
 | `c:src/core/sk_buff.c:skb_check_geometry` | `src/core/sk_buff.c` | `skb_check_geometry` | `core` | `COVERED` | 3 |
 | `c:src/core/sk_buff.c:skb_complete` | `src/core/sk_buff.c` | `skb_complete` | `core` | `COVERED` | 3 |
+| `c:src/core/sk_buff.c:skb_entry_from_pointer` | `src/core/sk_buff.c` | `skb_entry_from_pointer` | `core` | `PENDING` | 0 |
 | `c:src/core/sk_buff.c:skb_find_locked` | `src/core/sk_buff.c` | `skb_find_locked` | `core` | `COVERED` | 3 |
 | `c:src/core/sk_buff.c:skb_free_slot_locked` | `src/core/sk_buff.c` | `skb_free_slot_locked` | `core` | `COVERED` | 3 |
 | `c:src/core/sk_buff.c:skb_get_stats` | `src/core/sk_buff.c` | `skb_get_stats` | `core` | `COVERED` | 3 |
 | `c:src/core/sk_buff.c:skb_init` | `src/core/sk_buff.c` | `skb_init` | `core` | `COVERED` | 1 |
 | `c:src/core/sk_buff.c:skb_log_failure` | `src/core/sk_buff.c` | `skb_log_failure` | `core` | `COVERED` | 3 |
+| `c:src/core/sk_buff.c:skb_pull` | `src/core/sk_buff.c` | `skb_pull` | `core` | `PENDING` | 0 |
+| `c:src/core/sk_buff.c:skb_push` | `src/core/sk_buff.c` | `skb_push` | `core` | `PENDING` | 0 |
+| `c:src/core/sk_buff.c:skb_put` | `src/core/sk_buff.c` | `skb_put` | `core` | `PENDING` | 0 |
 | `c:src/core/sk_buff.c:skb_record_failure_locked` | `src/core/sk_buff.c` | `skb_record_failure_locked` | `core` | `COVERED` | 3 |
 | `c:src/core/sk_buff.c:skb_registry_count_locked` | `src/core/sk_buff.c` | `skb_registry_count_locked` | `core` | `COVERED` | 3 |
 | `c:src/core/sk_buff.c:skb_release` | `src/core/sk_buff.c` | `skb_release` | `core` | `COVERED` | 3 |
@@ -2833,21 +3022,27 @@
 | `c:src/core/socket.c:socket_create` | `src/core/socket.c` | `socket_create` | `core` | `COVERED` | 2 |
 | `c:src/core/socket.c:socket_destroy` | `src/core/socket.c` | `socket_destroy` | `core` | `COVERED` | 2 |
 | `c:src/core/socket.c:socket_drop_buffer` | `src/core/socket.c` | `socket_drop_buffer` | `core` | `COVERED` | 2 |
+| `c:src/core/socket.c:socket_family_name` | `src/core/socket.c` | `socket_family_name` | `core` | `PENDING` | 0 |
 | `c:src/core/socket.c:socket_fill_info` | `src/core/socket.c` | `socket_fill_info` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_find_fd` | `src/core/socket.c` | `socket_find_fd` | `core` | `PENDING` | 0 |
 | `c:src/core/socket.c:socket_get_info` | `src/core/socket.c` | `socket_get_info` | `core` | `COVERED` | 3 |
 | `c:src/core/socket.c:socket_get_status` | `src/core/socket.c` | `socket_get_status` | `core` | `COVERED` | 3 |
 | `c:src/core/socket.c:socket_index_locked` | `src/core/socket.c` | `socket_index_locked` | `core` | `COVERED` | 2 |
 | `c:src/core/socket.c:socket_init` | `src/core/socket.c` | `socket_init` | `core` | `PENDING` | 0 |
 | `c:src/core/socket.c:socket_listen` | `src/core/socket.c` | `socket_listen` | `core` | `COVERED` | 2 |
+| `c:src/core/socket.c:socket_pending_pop_locked` | `src/core/socket.c` | `socket_pending_pop_locked` | `core` | `PENDING` | 0 |
 | `c:src/core/socket.c:socket_pending_remove_locked` | `src/core/socket.c` | `socket_pending_remove_locked` | `core` | `PENDING` | 0 |
 | `c:src/core/socket.c:socket_poll_revents` | `src/core/socket.c` | `socket_poll_revents` | `core` | `PENDING` | 0 |
 | `c:src/core/socket.c:socket_queue_clear` | `src/core/socket.c` | `socket_queue_clear` | `core` | `COVERED` | 2 |
+| `c:src/core/socket.c:socket_queue_front_locked` | `src/core/socket.c` | `socket_queue_front_locked` | `core` | `PENDING` | 0 |
+| `c:src/core/socket.c:socket_queue_pop_locked` | `src/core/socket.c` | `socket_queue_pop_locked` | `core` | `PENDING` | 0 |
 | `c:src/core/socket.c:socket_queue_push_locked` | `src/core/socket.c` | `socket_queue_push_locked` | `core` | `COVERED` | 2 |
 | `c:src/core/socket.c:socket_record_failure_locked` | `src/core/socket.c` | `socket_record_failure_locked` | `core` | `PENDING` | 0 |
 | `c:src/core/socket.c:socket_recv` | `src/core/socket.c` | `socket_recv` | `core` | `COVERED` | 2 |
 | `c:src/core/socket.c:socket_self_test` | `src/core/socket.c` | `socket_self_test` | `core` | `COVERED` | 2 |
 | `c:src/core/socket.c:socket_send` | `src/core/socket.c` | `socket_send` | `core` | `COVERED` | 2 |
 | `c:src/core/socket.c:socket_set_nonblocking` | `src/core/socket.c` | `socket_set_nonblocking` | `core` | `COVERED` | 2 |
+| `c:src/core/socket.c:socket_state_name` | `src/core/socket.c` | `socket_state_name` | `core` | `PENDING` | 0 |
 | `c:src/core/socket.c:socket_tcp_accept` | `src/core/socket.c` | `socket_tcp_accept` | `core` | `PENDING` | 0 |
 | `c:src/core/socket.c:socket_tcp_close` | `src/core/socket.c` | `socket_tcp_close` | `core` | `PENDING` | 0 |
 | `c:src/core/socket.c:socket_tcp_connect` | `src/core/socket.c` | `socket_tcp_connect` | `core` | `PENDING` | 0 |
@@ -2962,6 +3157,7 @@
 | `c:src/core/tcp.c:tcp_sequence_between` | `src/core/tcp.c` | `tcp_sequence_between` | `core` | `COVERED` | 1 |
 | `c:src/core/tcp.c:tcp_sequence_less` | `src/core/tcp.c` | `tcp_sequence_less` | `core` | `COVERED` | 3 |
 | `c:src/core/tcp.c:tcp_set_receive_window` | `src/core/tcp.c` | `tcp_set_receive_window` | `core` | `COVERED` | 1 |
+| `c:src/core/tcp.c:tcp_state_name` | `src/core/tcp.c` | `tcp_state_name` | `core` | `PENDING` | 0 |
 | `c:src/core/tcp.c:tcp_transmit` | `src/core/tcp.c` | `tcp_transmit` | `core` | `COVERED` | 1 |
 | `c:src/core/tcp.c:tcp_try_send_pending` | `src/core/tcp.c` | `tcp_try_send_pending` | `core` | `COVERED` | 1 |
 | `c:src/core/tcp.c:tcp_update_rto` | `src/core/tcp.c` | `tcp_update_rto` | `core` | `COVERED` | 3 |
@@ -2985,6 +3181,7 @@
 | `c:src/core/test_protocol.c:protocol_copy_text` | `src/core/test_protocol.c` | `protocol_copy_text` | `core` | `PENDING` | 0 |
 | `c:src/core/test_protocol.c:protocol_dispatch_case` | `src/core/test_protocol.c` | `protocol_dispatch_case` | `core` | `COVERED` | 7 |
 | `c:src/core/test_protocol.c:protocol_emit_event` | `src/core/test_protocol.c` | `protocol_emit_event` | `core` | `COVERED` | 3 |
+| `c:src/core/test_protocol.c:protocol_error_name` | `src/core/test_protocol.c` | `protocol_error_name` | `core` | `PENDING` | 0 |
 | `c:src/core/test_protocol.c:protocol_length` | `src/core/test_protocol.c` | `protocol_length` | `core` | `COVERED` | 7 |
 | `c:src/core/test_protocol.c:protocol_receive` | `src/core/test_protocol.c` | `protocol_receive` | `core` | `PENDING` | 0 |
 | `c:src/core/test_protocol.c:protocol_report_phase` | `src/core/test_protocol.c` | `protocol_report_phase` | `core` | `COVERED` | 2 |
@@ -3006,6 +3203,8 @@
 | `c:src/core/test_protocol_core.c:core_emit_case` | `src/core/test_protocol_core.c` | `core_emit_case` | `core` | `COVERED` | 2 |
 | `c:src/core/test_protocol_core.c:core_emit_event` | `src/core/test_protocol_core.c` | `core_emit_event` | `core` | `COVERED` | 2 |
 | `c:src/core/test_protocol_core.c:core_emit_simple` | `src/core/test_protocol_core.c` | `core_emit_simple` | `core` | `COVERED` | 2 |
+| `c:src/core/test_protocol_core.c:core_error_name` | `src/core/test_protocol_core.c` | `core_error_name` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol_core.c:core_event_name` | `src/core/test_protocol_core.c` | `core_event_name` | `core` | `PENDING` | 0 |
 | `c:src/core/test_protocol_core.c:core_field` | `src/core/test_protocol_core.c` | `core_field` | `core` | `COVERED` | 2 |
 | `c:src/core/test_protocol_core.c:core_fields_valid` | `src/core/test_protocol_core.c` | `core_fields_valid` | `core` | `COVERED` | 2 |
 | `c:src/core/test_protocol_core.c:core_frame_crc_valid` | `src/core/test_protocol_core.c` | `core_frame_crc_valid` | `core` | `COVERED` | 2 |
@@ -3033,9 +3232,11 @@
 | `c:src/core/tls.c:tls_policy_failure` | `src/core/tls.c` | `tls_policy_failure` | `core` | `COVERED` | 3 |
 | `c:src/core/tls.c:tls_policy_validate` | `src/core/tls.c` | `tls_policy_validate` | `core` | `COVERED` | 1 |
 | `c:src/core/tls.c:tls_policy_validate_at` | `src/core/tls.c` | `tls_policy_validate_at` | `core` | `COVERED` | 3 |
+| `c:src/core/tls.c:tls_reason_name` | `src/core/tls.c` | `tls_reason_name` | `core` | `PENDING` | 0 |
 | `c:src/core/tls.c:tls_reject` | `src/core/tls.c` | `tls_reject` | `core` | `COVERED` | 1 |
 | `c:src/core/tls.c:tls_self_test` | `src/core/tls.c` | `tls_self_test` | `core` | `COVERED` | 3 |
 | `c:src/core/tls.c:tls_self_test_case` | `src/core/tls.c` | `tls_self_test_case` | `core` | `COVERED` | 3 |
+| `c:src/core/tls.c:tls_state_name` | `src/core/tls.c` | `tls_state_name` | `core` | `PENDING` | 0 |
 | `c:src/core/tls.c:tls_validate_state` | `src/core/tls.c` | `tls_validate_state` | `core` | `COVERED` | 3 |
 | `c:src/core/tls_client.c:tls_client_close` | `src/core/tls_client.c` | `tls_client_close` | `core` | `PENDING` | 0 |
 | `c:src/core/tls_client.c:tls_client_configure` | `src/core/tls_client.c` | `tls_client_configure` | `core` | `PENDING` | 0 |
@@ -3069,6 +3270,7 @@
 | `c:src/core/udp.c:udp_validate_state` | `src/core/udp.c` | `udp_validate_state` | `core` | `COVERED` | 3 |
 | `c:src/core/udp.c:udp_write_u16` | `src/core/udp.c` | `udp_write_u16` | `core` | `COVERED` | 3 |
 | `c:src/core/update.c:update_action_fail` | `src/core/update.c` | `update_action_fail` | `core` | `PENDING` | 0 |
+| `c:src/core/update.c:update_action_reason_name` | `src/core/update.c` | `update_action_reason_name` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_apply_file` | `src/core/update.c` | `update_apply_file` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_apply_recover_failure` | `src/core/update.c` | `update_apply_recover_failure` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_apply_state_from_journal` | `src/core/update.c` | `update_apply_state_from_journal` | `core` | `PENDING` | 0 |
@@ -3121,6 +3323,8 @@
 | `c:src/core/update.c:update_history_copy_alias` | `src/core/update.c` | `update_history_copy_alias` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_history_mark_invalid` | `src/core/update.c` | `update_history_mark_invalid` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_history_newest` | `src/core/update.c` | `update_history_newest` | `core` | `PENDING` | 0 |
+| `c:src/core/update.c:update_history_operation_name` | `src/core/update.c` | `update_history_operation_name` | `core` | `PENDING` | 0 |
+| `c:src/core/update.c:update_history_outcome_name` | `src/core/update.c` | `update_history_outcome_name` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_history_record_action` | `src/core/update.c` | `update_history_record_action` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_history_record_recovery` | `src/core/update.c` | `update_history_record_recovery` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_init` | `src/core/update.c` | `update_init` | `core` | `PENDING` | 0 |
@@ -3156,6 +3360,7 @@
 | `c:src/core/update.c:update_set_compile_time_version` | `src/core/update.c` | `update_set_compile_time_version` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_stage_apply_files` | `src/core/update.c` | `update_stage_apply_files` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_start_apply_transaction` | `src/core/update.c` | `update_start_apply_transaction` | `core` | `PENDING` | 0 |
+| `c:src/core/update.c:update_store_state_name` | `src/core/update.c` | `update_store_state_name` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_sync_runtime_state` | `src/core/update.c` | `update_sync_runtime_state` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_target_exists` | `src/core/update.c` | `update_target_exists` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_target_id` | `src/core/update.c` | `update_target_id` | `core` | `PENDING` | 0 |
@@ -3176,6 +3381,7 @@
 | `c:src/core/update.c:update_write_state_record` | `src/core/update.c` | `update_write_state_record` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_write_u16` | `src/core/update.c` | `update_write_u16` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_write_u32` | `src/core/update.c` | `update_write_u32` | `core` | `PENDING` | 0 |
+| `c:src/core/update.c:zupd_reason_name` | `src/core/update.c` | `zupd_reason_name` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote.c:update_remote_abort_pending` | `src/core/update_remote.c` | `update_remote_abort_pending` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote.c:update_remote_begin` | `src/core/update_remote.c` | `update_remote_begin` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote.c:update_remote_build_package_url` | `src/core/update_remote.c` | `update_remote_build_package_url` | `core` | `PENDING` | 0 |
@@ -3190,6 +3396,7 @@
 | `c:src/core/update_remote.c:update_remote_delete_root` | `src/core/update_remote.c` | `update_remote_delete_root` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote.c:update_remote_disable` | `src/core/update_remote.c` | `update_remote_disable` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote.c:update_remote_download_attempt` | `src/core/update_remote.c` | `update_remote_download_attempt` | `core` | `PENDING` | 0 |
+| `c:src/core/update_remote.c:update_remote_effective_url` | `src/core/update_remote.c` | `update_remote_effective_url` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote.c:update_remote_enable` | `src/core/update_remote.c` | `update_remote_enable` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote.c:update_remote_encode_version` | `src/core/update_remote.c` | `update_remote_encode_version` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote.c:update_remote_end_ready` | `src/core/update_remote.c` | `update_remote_end_ready` | `core` | `PENDING` | 0 |
@@ -3209,6 +3416,7 @@
 | `c:src/core/update_remote.c:update_remote_read_record` | `src/core/update_remote.c` | `update_remote_read_record` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote.c:update_remote_read_u16` | `src/core/update_remote.c` | `update_remote_read_u16` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote.c:update_remote_read_u32` | `src/core/update_remote.c` | `update_remote_read_u32` | `core` | `PENDING` | 0 |
+| `c:src/core/update_remote.c:update_remote_reason_name` | `src/core/update_remote.c` | `update_remote_reason_name` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote.c:update_remote_receive_package` | `src/core/update_remote.c` | `update_remote_receive_package` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote.c:update_remote_record_decode` | `src/core/update_remote.c` | `update_remote_record_decode` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote.c:update_remote_record_encode` | `src/core/update_remote.c` | `update_remote_record_encode` | `core` | `PENDING` | 0 |
@@ -3217,6 +3425,8 @@
 | `c:src/core/update_remote.c:update_remote_reject` | `src/core/update_remote.c` | `update_remote_reject` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote.c:update_remote_result_copy` | `src/core/update_remote.c` | `update_remote_result_copy` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote.c:update_remote_space_available` | `src/core/update_remote.c` | `update_remote_space_available` | `core` | `PENDING` | 0 |
+| `c:src/core/update_remote.c:update_remote_state_name` | `src/core/update_remote.c` | `update_remote_state_name` | `core` | `PENDING` | 0 |
+| `c:src/core/update_remote.c:update_remote_store_name` | `src/core/update_remote.c` | `update_remote_store_name` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote.c:update_remote_stream_sink` | `src/core/update_remote.c` | `update_remote_stream_sink` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote.c:update_remote_transient_error` | `src/core/update_remote.c` | `update_remote_transient_error` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote.c:update_remote_validate_cached_package` | `src/core/update_remote.c` | `update_remote_validate_cached_package` | `core` | `PENDING` | 0 |
@@ -3266,6 +3476,7 @@
 | `c:src/core/update_remote_github.c:update_remote_github_query` | `src/core/update_remote_github.c` | `update_remote_github_query` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote_github.c:update_remote_github_query_mode` | `src/core/update_remote_github.c` | `update_remote_github_query_mode` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote_github.c:update_remote_github_runtime_query` | `src/core/update_remote_github.c` | `update_remote_github_runtime_query` | `core` | `PENDING` | 0 |
+| `c:src/core/update_remote_release.c:update_release_basename` | `src/core/update_remote_release.c` | `update_release_basename` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote_release.c:update_release_build_descriptor_url` | `src/core/update_remote_release.c` | `update_release_build_descriptor_url` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote_release.c:update_release_build_manifest_url` | `src/core/update_remote_release.c` | `update_release_build_manifest_url` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote_release.c:update_release_candidate_matches` | `src/core/update_remote_release.c` | `update_release_candidate_matches` | `core` | `PENDING` | 0 |
@@ -3315,6 +3526,7 @@
 | `c:src/core/update_remote_runtime.c:runtime_remote_encode_record` | `src/core/update_remote_runtime.c` | `runtime_remote_encode_record` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote_runtime.c:runtime_remote_fetch_descriptor` | `src/core/update_remote_runtime.c` | `runtime_remote_fetch_descriptor` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote_runtime.c:runtime_remote_fetch_manifest` | `src/core/update_remote_runtime.c` | `runtime_remote_fetch_manifest` | `core` | `PENDING` | 0 |
+| `c:src/core/update_remote_runtime.c:runtime_remote_find_github_asset` | `src/core/update_remote_runtime.c` | `runtime_remote_find_github_asset` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote_runtime.c:runtime_remote_hash_file` | `src/core/update_remote_runtime.c` | `runtime_remote_hash_file` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote_runtime.c:runtime_remote_http_options` | `src/core/update_remote_runtime.c` | `runtime_remote_http_options` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote_runtime.c:runtime_remote_http_reason` | `src/core/update_remote_runtime.c` | `runtime_remote_http_reason` | `core` | `PENDING` | 0 |
@@ -3352,6 +3564,8 @@
 | `c:src/core/update_remote_runtime.c:update_remote_runtime_get_cached_alias` | `src/core/update_remote_runtime.c` | `update_remote_runtime_get_cached_alias` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote_runtime.c:update_remote_runtime_get_status` | `src/core/update_remote_runtime.c` | `update_remote_runtime_get_status` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote_runtime.c:update_remote_runtime_init` | `src/core/update_remote_runtime.c` | `update_remote_runtime_init` | `core` | `PENDING` | 0 |
+| `c:src/core/update_remote_runtime.c:update_remote_runtime_reason_name` | `src/core/update_remote_runtime.c` | `update_remote_runtime_reason_name` | `core` | `PENDING` | 0 |
+| `c:src/core/update_remote_runtime.c:update_remote_runtime_state_name` | `src/core/update_remote_runtime.c` | `update_remote_runtime_state_name` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote_system.c:system_cache_copy_text` | `src/core/update_remote_system.c` | `system_cache_copy_text` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote_system.c:system_cache_decode` | `src/core/update_remote_system.c` | `system_cache_decode` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote_system.c:system_cache_decode_text` | `src/core/update_remote_system.c` | `system_cache_decode_text` | `core` | `PENDING` | 0 |
@@ -3377,6 +3591,8 @@
 | `c:src/core/update_remote_system.c:update_remote_system_get_cached_path` | `src/core/update_remote_system.c` | `update_remote_system_get_cached_path` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote_system.c:update_remote_system_get_status` | `src/core/update_remote_system.c` | `update_remote_system_get_status` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote_system.c:update_remote_system_init` | `src/core/update_remote_system.c` | `update_remote_system_init` | `core` | `PENDING` | 0 |
+| `c:src/core/update_remote_system.c:update_remote_system_reason_name` | `src/core/update_remote_system.c` | `update_remote_system_reason_name` | `core` | `PENDING` | 0 |
+| `c:src/core/update_remote_system.c:update_remote_system_state_name` | `src/core/update_remote_system.c` | `update_remote_system_state_name` | `core` | `PENDING` | 0 |
 | `c:src/core/update_runtime.c:runtime_action_fail` | `src/core/update_runtime.c` | `runtime_action_fail` | `core` | `PENDING` | 0 |
 | `c:src/core/update_runtime.c:runtime_alias` | `src/core/update_runtime.c` | `runtime_alias` | `core` | `PENDING` | 0 |
 | `c:src/core/update_runtime.c:runtime_apply_plan` | `src/core/update_runtime.c` | `runtime_apply_plan` | `core` | `PENDING` | 0 |
@@ -3467,6 +3683,7 @@
 | `c:src/core/update_runtime.c:update_runtime_init` | `src/core/update_runtime.c` | `update_runtime_init` | `core` | `PENDING` | 0 |
 | `c:src/core/update_runtime.c:update_runtime_is_ready` | `src/core/update_runtime.c` | `update_runtime_is_ready` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:update_runtime_parse_manifest` | `src/core/update_runtime.c` | `update_runtime_parse_manifest` | `core` | `PENDING` | 0 |
+| `c:src/core/update_runtime.c:update_runtime_reason_name` | `src/core/update_runtime.c` | `update_runtime_reason_name` | `core` | `PENDING` | 0 |
 | `c:src/core/update_runtime.c:update_runtime_rollback` | `src/core/update_runtime.c` | `update_runtime_rollback` | `core` | `PENDING` | 0 |
 | `c:src/core/update_runtime.c:update_runtime_test_fail_after` | `src/core/update_runtime.c` | `update_runtime_test_fail_after` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:update_runtime_verify_file` | `src/core/update_runtime.c` | `update_runtime_verify_file` | `core` | `PENDING` | 0 |
@@ -3482,6 +3699,7 @@
 | `c:src/core/update_system.c:update_system_read_base` | `src/core/update_system.c` | `update_system_read_base` | `core` | `PENDING` | 0 |
 | `c:src/core/update_system.c:update_system_read_u16` | `src/core/update_system.c` | `update_system_read_u16` | `core` | `PENDING` | 0 |
 | `c:src/core/update_system.c:update_system_read_u32` | `src/core/update_system.c` | `update_system_read_u32` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_reason_name` | `src/core/update_system.c` | `update_system_reason_name` | `core` | `PENDING` | 0 |
 | `c:src/core/update_system.c:update_system_reject` | `src/core/update_system.c` | `update_system_reject` | `core` | `PENDING` | 0 |
 | `c:src/core/update_system.c:update_system_remote_begin` | `src/core/update_system.c` | `update_system_remote_begin` | `core` | `PENDING` | 0 |
 | `c:src/core/update_system.c:update_system_remote_compatible` | `src/core/update_system.c` | `update_system_remote_compatible` | `core` | `PENDING` | 0 |
@@ -3541,13 +3759,18 @@
 | `c:src/core/update_system_slots.c:system_slots_write_state_locked` | `src/core/update_system_slots.c` | `system_slots_write_state_locked` | `core` | `PENDING` | 0 |
 | `c:src/core/update_system_slots.c:system_slots_write_u16` | `src/core/update_system_slots.c` | `system_slots_write_u16` | `core` | `PENDING` | 0 |
 | `c:src/core/update_system_slots.c:system_slots_write_u32` | `src/core/update_system_slots.c` | `system_slots_write_u32` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system_slots.c:update_system_slot_file_state_name` | `src/core/update_system_slots.c` | `update_system_slot_file_state_name` | `core` | `PENDING` | 0 |
 | `c:src/core/update_system_slots.c:update_system_slots_boot_confirm` | `src/core/update_system_slots.c` | `update_system_slots_boot_confirm` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system_slots.c:update_system_slots_boot_state_name` | `src/core/update_system_slots.c` | `update_system_slots_boot_state_name` | `core` | `PENDING` | 0 |
 | `c:src/core/update_system_slots.c:update_system_slots_cancel_pending` | `src/core/update_system_slots.c` | `update_system_slots_cancel_pending` | `core` | `PENDING` | 0 |
 | `c:src/core/update_system_slots.c:update_system_slots_get_status` | `src/core/update_system_slots.c` | `update_system_slots_get_status` | `core` | `PENDING` | 0 |
 | `c:src/core/update_system_slots.c:update_system_slots_init` | `src/core/update_system_slots.c` | `update_system_slots_init` | `core` | `PENDING` | 0 |
 | `c:src/core/update_system_slots.c:update_system_slots_is_ready` | `src/core/update_system_slots.c` | `update_system_slots_is_ready` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system_slots.c:update_system_slots_journal_phase_name` | `src/core/update_system_slots.c` | `update_system_slots_journal_phase_name` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system_slots.c:update_system_slots_reason_name` | `src/core/update_system_slots.c` | `update_system_slots_reason_name` | `core` | `PENDING` | 0 |
 | `c:src/core/update_system_slots.c:update_system_slots_reboot_preflight` | `src/core/update_system_slots.c` | `update_system_slots_reboot_preflight` | `core` | `PENDING` | 0 |
 | `c:src/core/update_system_slots.c:update_system_slots_stage_file` | `src/core/update_system_slots.c` | `update_system_slots_stage_file` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system_slots.c:update_system_slots_state_name` | `src/core/update_system_slots.c` | `update_system_slots_state_name` | `core` | `PENDING` | 0 |
 | `c:src/core/usb_manager.c:usb_append_char` | `src/core/usb_manager.c` | `usb_append_char` | `core` | `PENDING` | 0 |
 | `c:src/core/usb_manager.c:usb_append_hex` | `src/core/usb_manager.c` | `usb_append_hex` | `core` | `PENDING` | 0 |
 | `c:src/core/usb_manager.c:usb_append_text` | `src/core/usb_manager.c` | `usb_append_text` | `core` | `PENDING` | 0 |
@@ -3573,8 +3796,15 @@
 | `c:src/core/usb_manager.c:usb_manager_get_status` | `src/core/usb_manager.c` | `usb_manager_get_status` | `core` | `PENDING` | 0 |
 | `c:src/core/usb_manager.c:usb_manager_get_uhci_status` | `src/core/usb_manager.c` | `usb_manager_get_uhci_status` | `core` | `PENDING` | 0 |
 | `c:src/core/usb_manager.c:usb_manager_init` | `src/core/usb_manager.c` | `usb_manager_init` | `core` | `PENDING` | 0 |
+| `c:src/core/usb_manager.c:usb_manager_model_name` | `src/core/usb_manager.c` | `usb_manager_model_name` | `core` | `PENDING` | 0 |
 | `c:src/core/usb_manager.c:usb_manager_poll` | `src/core/usb_manager.c` | `usb_manager_poll` | `core` | `PENDING` | 0 |
+| `c:src/core/usb_manager.c:usb_manager_port_reason_name` | `src/core/usb_manager.c` | `usb_manager_port_reason_name` | `core` | `PENDING` | 0 |
+| `c:src/core/usb_manager.c:usb_manager_port_state_name` | `src/core/usb_manager.c` | `usb_manager_port_state_name` | `core` | `PENDING` | 0 |
+| `c:src/core/usb_manager.c:usb_manager_reason_name` | `src/core/usb_manager.c` | `usb_manager_reason_name` | `core` | `PENDING` | 0 |
 | `c:src/core/usb_manager.c:usb_manager_refresh` | `src/core/usb_manager.c` | `usb_manager_refresh` | `core` | `PENDING` | 0 |
+| `c:src/core/usb_manager.c:usb_manager_speed_name` | `src/core/usb_manager.c` | `usb_manager_speed_name` | `core` | `PENDING` | 0 |
+| `c:src/core/usb_manager.c:usb_manager_state_name` | `src/core/usb_manager.c` | `usb_manager_state_name` | `core` | `PENDING` | 0 |
+| `c:src/core/usb_manager.c:usb_manager_uhci_state_name` | `src/core/usb_manager.c` | `usb_manager_uhci_state_name` | `core` | `PENDING` | 0 |
 | `c:src/core/usb_manager.c:usb_manager_validate_state` | `src/core/usb_manager.c` | `usb_manager_validate_state` | `core` | `COVERED` | 3 |
 | `c:src/core/usb_manager.c:usb_set_text` | `src/core/usb_manager.c` | `usb_set_text` | `core` | `PENDING` | 0 |
 | `c:src/core/usb_manager.c:usb_start_controllers` | `src/core/usb_manager.c` | `usb_start_controllers` | `core` | `PENDING` | 0 |
@@ -3626,6 +3856,7 @@
 | `c:src/core/wait.c:wait_queue_unregister_locked` | `src/core/wait.c` | `wait_queue_unregister_locked` | `core` | `COVERED` | 6 |
 | `c:src/core/wait.c:wait_queue_valid` | `src/core/wait.c` | `wait_queue_valid` | `core` | `COVERED` | 7 |
 | `c:src/core/wait.c:wait_queue_wake_target` | `src/core/wait.c` | `wait_queue_wake_target` | `core` | `COVERED` | 7 |
+| `c:src/core/wait.c:wait_reason_name` | `src/core/wait.c` | `wait_reason_name` | `core` | `PENDING` | 0 |
 | `c:src/core/wait.c:wait_reason_valid` | `src/core/wait.c` | `wait_reason_valid` | `core` | `COVERED` | 8 |
 | `c:src/core/wait.c:wait_self_test` | `src/core/wait.c` | `wait_self_test` | `core` | `COVERED` | 3 |
 | `c:src/core/wait.c:wait_target_valid` | `src/core/wait.c` | `wait_target_valid` | `core` | `COVERED` | 7 |
@@ -3639,6 +3870,7 @@
 | `c:src/core/wait.c:wait_test_yield` | `src/core/wait.c` | `wait_test_yield` | `core` | `COVERED` | 3 |
 | `c:src/core/wait.c:wait_validate_queue_locked` | `src/core/wait.c` | `wait_validate_queue_locked` | `core` | `COVERED` | 4 |
 | `c:src/core/wait.c:wait_validate_state` | `src/core/wait.c` | `wait_validate_state` | `core` | `COVERED` | 4 |
+| `c:src/core/wait.c:wait_wake_mode_name` | `src/core/wait.c` | `wait_wake_mode_name` | `core` | `PENDING` | 0 |
 | `c:src/core/wait.c:wake_up` | `src/core/wait.c` | `wake_up` | `core` | `COVERED` | 7 |
 | `c:src/core/wait.c:wake_up_all` | `src/core/wait.c` | `wake_up_all` | `core` | `COVERED` | 6 |
 | `c:src/core/wifi_manager.c:wifi_append_char` | `src/core/wifi_manager.c` | `wifi_append_char` | `core` | `PENDING` | 0 |
@@ -3663,6 +3895,7 @@
 | `c:src/core/wifi_manager.c:wifi_manager_init` | `src/core/wifi_manager.c` | `wifi_manager_init` | `core` | `COVERED` | 2 |
 | `c:src/core/wifi_manager.c:wifi_manager_refresh` | `src/core/wifi_manager.c` | `wifi_manager_refresh` | `core` | `COVERED` | 2 |
 | `c:src/core/wifi_manager.c:wifi_manager_scan` | `src/core/wifi_manager.c` | `wifi_manager_scan` | `core` | `PENDING` | 0 |
+| `c:src/core/wifi_manager.c:wifi_manager_state_name` | `src/core/wifi_manager.c` | `wifi_manager_state_name` | `core` | `PENDING` | 0 |
 | `c:src/core/wifi_manager.c:wifi_manager_validate_state` | `src/core/wifi_manager.c` | `wifi_manager_validate_state` | `core` | `COVERED` | 2 |
 | `c:src/core/wifi_manager.c:wifi_validate_pci_metadata` | `src/core/wifi_manager.c` | `wifi_validate_pci_metadata` | `core` | `COVERED` | 2 |
 | `c:src/core/workqueue.c:cancel_work` | `src/core/workqueue.c` | `cancel_work` | `core` | `COVERED` | 2 |
@@ -3672,6 +3905,7 @@
 | `c:src/core/workqueue.c:work_init` | `src/core/workqueue.c` | `work_init` | `core` | `COVERED` | 2 |
 | `c:src/core/workqueue.c:workqueue_bind_worker` | `src/core/workqueue.c` | `workqueue_bind_worker` | `core` | `COVERED` | 2 |
 | `c:src/core/workqueue.c:workqueue_cancel_on` | `src/core/workqueue.c` | `workqueue_cancel_on` | `core` | `COVERED` | 4 |
+| `c:src/core/workqueue.c:workqueue_context_name` | `src/core/workqueue.c` | `workqueue_context_name` | `core` | `PENDING` | 0 |
 | `c:src/core/workqueue.c:workqueue_copy_info` | `src/core/workqueue.c` | `workqueue_copy_info` | `core` | `COVERED` | 2 |
 | `c:src/core/workqueue.c:workqueue_copy_owner` | `src/core/workqueue.c` | `workqueue_copy_owner` | `core` | `COVERED` | 4 |
 | `c:src/core/workqueue.c:workqueue_deadline_reached` | `src/core/workqueue.c` | `workqueue_deadline_reached` | `core` | `COVERED` | 5 |
@@ -3694,6 +3928,7 @@
 | `c:src/core/workqueue.c:workqueue_pending_count` | `src/core/workqueue.c` | `workqueue_pending_count` | `core` | `COVERED` | 5 |
 | `c:src/core/workqueue.c:workqueue_power_quiesce_until` | `src/core/workqueue.c` | `workqueue_power_quiesce_until` | `core` | `COVERED` | 2 |
 | `c:src/core/workqueue.c:workqueue_power_set_quiescing` | `src/core/workqueue.c` | `workqueue_power_set_quiescing` | `core` | `COVERED` | 2 |
+| `c:src/core/workqueue.c:workqueue_priority_name` | `src/core/workqueue.c` | `workqueue_priority_name` | `core` | `PENDING` | 0 |
 | `c:src/core/workqueue.c:workqueue_probe_callback` | `src/core/workqueue.c` | `workqueue_probe_callback` | `core` | `COVERED` | 1 |
 | `c:src/core/workqueue.c:workqueue_probe_condition` | `src/core/workqueue.c` | `workqueue_probe_condition` | `core` | `COVERED` | 1 |
 | `c:src/core/workqueue.c:workqueue_probe_worker` | `src/core/workqueue.c` | `workqueue_probe_worker` | `core` | `COVERED` | 1 |
@@ -3704,6 +3939,8 @@
 | `c:src/core/workqueue.c:workqueue_self_test` | `src/core/workqueue.c` | `workqueue_self_test` | `core` | `COVERED` | 4 |
 | `c:src/core/workqueue.c:workqueue_service_clear` | `src/core/workqueue.c` | `workqueue_service_clear` | `core` | `COVERED` | 4 |
 | `c:src/core/workqueue.c:workqueue_set_fallback` | `src/core/workqueue.c` | `workqueue_set_fallback` | `core` | `COVERED` | 2 |
+| `c:src/core/workqueue.c:workqueue_state_name` | `src/core/workqueue.c` | `workqueue_state_name` | `core` | `PENDING` | 0 |
+| `c:src/core/workqueue.c:workqueue_take_ready` | `src/core/workqueue.c` | `workqueue_take_ready` | `core` | `PENDING` | 0 |
 | `c:src/core/workqueue.c:workqueue_test_callback` | `src/core/workqueue.c` | `workqueue_test_callback` | `core` | `COVERED` | 4 |
 | `c:src/core/workqueue.c:workqueue_test_prepare` | `src/core/workqueue.c` | `workqueue_test_prepare` | `core` | `COVERED` | 4 |
 | `c:src/core/workqueue.c:workqueue_update_peak` | `src/core/workqueue.c` | `workqueue_update_peak` | `core` | `COVERED` | 5 |
@@ -3732,6 +3969,7 @@
 | `c:src/desktop/desktop.c:desktop_find_free_slot` | `src/desktop/desktop.c` | `desktop_find_free_slot` | `desktop` | `PENDING` | 0 |
 | `c:src/desktop/desktop.c:desktop_find_nearest_slot` | `src/desktop/desktop.c` | `desktop_find_nearest_slot` | `desktop` | `PENDING` | 0 |
 | `c:src/desktop/desktop.c:desktop_find_slot_by_grid` | `src/desktop/desktop.c` | `desktop_find_slot_by_grid` | `desktop` | `COVERED` | 2 |
+| `c:src/desktop/desktop.c:desktop_get_icon_entry` | `src/desktop/desktop.c` | `desktop_get_icon_entry` | `desktop` | `PENDING` | 0 |
 | `c:src/desktop/desktop.c:desktop_get_mode` | `src/desktop/desktop.c` | `desktop_get_mode` | `desktop` | `COVERED` | 2 |
 | `c:src/desktop/desktop.c:desktop_get_selected_app` | `src/desktop/desktop.c` | `desktop_get_selected_app` | `desktop` | `PENDING` | 0 |
 | `c:src/desktop/desktop.c:desktop_handle_click` | `src/desktop/desktop.c` | `desktop_handle_click` | `desktop` | `PENDING` | 0 |
@@ -3751,6 +3989,7 @@
 | `c:src/desktop/desktop.c:draw_single_icon_classic` | `src/desktop/desktop.c` | `draw_single_icon_classic` | `desktop` | `COVERED` | 2 |
 | `c:src/desktop/desktop.c:draw_single_icon_simple` | `src/desktop/desktop.c` | `draw_single_icon_simple` | `desktop` | `PENDING` | 0 |
 | `c:src/drivers/ac97.c:ac97_delay` | `src/drivers/ac97.c` | `ac97_delay` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/ac97.c:ac97_get_device` | `src/drivers/ac97.c` | `ac97_get_device` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/ac97.c:ac97_get_sample_rate` | `src/drivers/ac97.c` | `ac97_get_sample_rate` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/ac97.c:ac97_handler` | `src/drivers/ac97.c` | `ac97_handler` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/ac97.c:ac97_init` | `src/drivers/ac97.c` | `ac97_init` | `drivers` | `PENDING` | 0 |
@@ -3778,6 +4017,8 @@
 | `c:src/drivers/acpi.c:acpi_enable_mode_or_halt` | `src/drivers/acpi.c` | `acpi_enable_mode_or_halt` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/acpi.c:acpi_enter_s5` | `src/drivers/acpi.c` | `acpi_enter_s5` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/acpi.c:acpi_finalize_s5_capability` | `src/drivers/acpi.c` | `acpi_finalize_s5_capability` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/acpi.c:acpi_find_rsdp` | `src/drivers/acpi.c` | `acpi_find_rsdp` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/acpi.c:acpi_find_rsdp_range` | `src/drivers/acpi.c` | `acpi_find_rsdp_range` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/acpi.c:acpi_find_table` | `src/drivers/acpi.c` | `acpi_find_table` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/acpi.c:acpi_finish_init` | `src/drivers/acpi.c` | `acpi_finish_init` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/acpi.c:acpi_gas_valid` | `src/drivers/acpi.c` | `acpi_gas_valid` | `drivers` | `PENDING` | 0 |
@@ -3815,6 +4056,7 @@
 | `c:src/drivers/acpi.c:acpi_read_u64` | `src/drivers/acpi.c` | `acpi_read_u64` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/acpi.c:acpi_reset` | `src/drivers/acpi.c` | `acpi_reset` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/acpi.c:acpi_reset_register_valid` | `src/drivers/acpi.c` | `acpi_reset_register_valid` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/acpi.c:acpi_root_kind_name` | `src/drivers/acpi.c` | `acpi_root_kind_name` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/acpi.c:acpi_s5_preflight` | `src/drivers/acpi.c` | `acpi_s5_preflight` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/acpi.c:acpi_select_pm_register` | `src/drivers/acpi.c` | `acpi_select_pm_register` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/acpi.c:acpi_select_root` | `src/drivers/acpi.c` | `acpi_select_root` | `drivers` | `PENDING` | 0 |
@@ -3822,9 +4064,12 @@
 | `c:src/drivers/acpi.c:acpi_signature_equal` | `src/drivers/acpi.c` | `acpi_signature_equal` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/acpi.c:acpi_store_table` | `src/drivers/acpi.c` | `acpi_store_table` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/acpi.c:acpi_table_already_stored` | `src/drivers/acpi.c` | `acpi_table_already_stored` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/acpi.c:acpi_validate_sdt` | `src/drivers/acpi.c` | `acpi_validate_sdt` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/ata.c:ata_delay` | `src/drivers/ata.c` | `ata_delay` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/ata.c:ata_detect` | `src/drivers/ata.c` | `ata_detect` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/ata.c:ata_first_present` | `src/drivers/ata.c` | `ata_first_present` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/ata.c:ata_flush_device` | `src/drivers/ata.c` | `ata_flush_device` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/ata.c:ata_get_device` | `src/drivers/ata.c` | `ata_get_device` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/ata.c:ata_get_device_at` | `src/drivers/ata.c` | `ata_get_device_at` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/ata.c:ata_get_device_count` | `src/drivers/ata.c` | `ata_get_device_count` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/ata.c:ata_get_device_counters` | `src/drivers/ata.c` | `ata_get_device_counters` | `drivers` | `PENDING` | 0 |
@@ -3851,6 +4096,7 @@
 | `c:src/drivers/ata.c:inw` | `src/drivers/ata.c` | `inw` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/ata.c:outb` | `src/drivers/ata.c` | `outb` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/ata.c:outw` | `src/drivers/ata.c` | `outw` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_allocate_device` | `src/drivers/e1000.c` | `e1000_allocate_device` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/e1000.c:e1000_allocate_dma` | `src/drivers/e1000.c` | `e1000_allocate_dma` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/e1000.c:e1000_bottom_half` | `src/drivers/e1000.c` | `e1000_bottom_half` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/e1000.c:e1000_copy_interface_id` | `src/drivers/e1000.c` | `e1000_copy_interface_id` | `drivers` | `PENDING` | 0 |
@@ -3858,6 +4104,7 @@
 | `c:src/drivers/e1000.c:e1000_enqueue_rx` | `src/drivers/e1000.c` | `e1000_enqueue_rx` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/e1000.c:e1000_fail_init` | `src/drivers/e1000.c` | `e1000_fail_init` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/e1000.c:e1000_fill_interface` | `src/drivers/e1000.c` | `e1000_fill_interface` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/e1000.c:e1000_find_device` | `src/drivers/e1000.c` | `e1000_find_device` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/e1000.c:e1000_get_driver_status` | `src/drivers/e1000.c` | `e1000_get_driver_status` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/e1000.c:e1000_handler` | `src/drivers/e1000.c` | `e1000_handler` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/e1000.c:e1000_has_pending_rx` | `src/drivers/e1000.c` | `e1000_has_pending_rx` | `drivers` | `PENDING` | 0 |
@@ -3891,6 +4138,9 @@
 | `c:src/drivers/ehci.c:ehci_deadline_expired` | `src/drivers/ehci.c` | `ehci_deadline_expired` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/ehci.c:ehci_disable` | `src/drivers/ehci.c` | `ehci_disable` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/ehci.c:ehci_enumerate_port` | `src/drivers/ehci.c` | `ehci_enumerate_port` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/ehci.c:ehci_find` | `src/drivers/ehci.c` | `ehci_find` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/ehci.c:ehci_find_device_record` | `src/drivers/ehci.c` | `ehci_find_device_record` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/ehci.c:ehci_find_port_record` | `src/drivers/ehci.c` | `ehci_find_port_record` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/ehci.c:ehci_get_device` | `src/drivers/ehci.c` | `ehci_get_device` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/ehci.c:ehci_get_device_count` | `src/drivers/ehci.c` | `ehci_get_device_count` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/ehci.c:ehci_get_port` | `src/drivers/ehci.c` | `ehci_get_port` | `drivers` | `PENDING` | 0 |
@@ -3931,6 +4181,7 @@
 | `c:src/drivers/ehci.c:ehci_write` | `src/drivers/ehci.c` | `ehci_write` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/font.c:font_get_face` | `src/drivers/font.c` | `font_get_face` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/font.c:font_get_face_glyph` | `src/drivers/font.c` | `font_get_face_glyph` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/font.c:font_get_glyph` | `src/drivers/font.c` | `font_get_glyph` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/font.c:font_get_height` | `src/drivers/font.c` | `font_get_height` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/font.c:font_get_width` | `src/drivers/font.c` | `font_get_width` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/font.c:font_init` | `src/drivers/font.c` | `font_init` | `drivers` | `COVERED` | 1 |
@@ -4024,7 +4275,9 @@
 | `c:src/drivers/pci.c:pci_enable_bus_mastering` | `src/drivers/pci.c` | `pci_enable_bus_mastering` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/pci.c:pci_enable_io_and_bus_mastering` | `src/drivers/pci.c` | `pci_enable_io_and_bus_mastering` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/pci.c:pci_enable_memory_and_bus_mastering` | `src/drivers/pci.c` | `pci_enable_memory_and_bus_mastering` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/pci.c:pci_get_device` | `src/drivers/pci.c` | `pci_get_device` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/pci.c:pci_get_device_at` | `src/drivers/pci.c` | `pci_get_device_at` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/pci.c:pci_get_device_by_id` | `src/drivers/pci.c` | `pci_get_device_by_id` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/pci.c:pci_get_device_count` | `src/drivers/pci.c` | `pci_get_device_count` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/pci.c:pci_init` | `src/drivers/pci.c` | `pci_init` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/pci.c:pci_read` | `src/drivers/pci.c` | `pci_read` | `drivers` | `PENDING` | 0 |
@@ -4056,6 +4309,7 @@
 | `c:src/drivers/rtc.c:rtc_validate_state` | `src/drivers/rtc.c` | `rtc_validate_state` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/rtc.c:rtc_wait_update_complete` | `src/drivers/rtc.c` | `rtc_wait_update_complete` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/rtl8139.c:rtl8139_advance_rx` | `src/drivers/rtl8139.c` | `rtl8139_advance_rx` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/rtl8139.c:rtl8139_allocate_device` | `src/drivers/rtl8139.c` | `rtl8139_allocate_device` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/rtl8139.c:rtl8139_allocate_dma` | `src/drivers/rtl8139.c` | `rtl8139_allocate_dma` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/rtl8139.c:rtl8139_bottom_half` | `src/drivers/rtl8139.c` | `rtl8139_bottom_half` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/rtl8139.c:rtl8139_configure_dma` | `src/drivers/rtl8139.c` | `rtl8139_configure_dma` | `drivers` | `PENDING` | 0 |
@@ -4064,6 +4318,7 @@
 | `c:src/drivers/rtl8139.c:rtl8139_drain_rx` | `src/drivers/rtl8139.c` | `rtl8139_drain_rx` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/rtl8139.c:rtl8139_fail_init` | `src/drivers/rtl8139.c` | `rtl8139_fail_init` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/rtl8139.c:rtl8139_fill_interface` | `src/drivers/rtl8139.c` | `rtl8139_fill_interface` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/rtl8139.c:rtl8139_find_device` | `src/drivers/rtl8139.c` | `rtl8139_find_device` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/rtl8139.c:rtl8139_get_driver_status` | `src/drivers/rtl8139.c` | `rtl8139_get_driver_status` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/rtl8139.c:rtl8139_handler` | `src/drivers/rtl8139.c` | `rtl8139_handler` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/rtl8139.c:rtl8139_has_pending_rx` | `src/drivers/rtl8139.c` | `rtl8139_has_pending_rx` | `drivers` | `PENDING` | 0 |
@@ -4103,6 +4358,7 @@
 | `c:src/drivers/rtl8811cu.c:rtl8811cu_scan` | `src/drivers/rtl8811cu.c` | `rtl8811cu_scan` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/rtl8811cu.c:rtl8811cu_send_frame` | `src/drivers/rtl8811cu.c` | `rtl8811cu_send_frame` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/rtl8811cu.c:rtl8811cu_service_pending` | `src/drivers/rtl8811cu.c` | `rtl8811cu_service_pending` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/rtl8811cu.c:rtl8811cu_state_name` | `src/drivers/rtl8811cu.c` | `rtl8811cu_state_name` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/rtl8811cu.c:rtl8811cu_validate_state` | `src/drivers/rtl8811cu.c` | `rtl8811cu_validate_state` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/serial.c:serial_byte_allowed` | `src/drivers/serial.c` | `serial_byte_allowed` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/serial.c:serial_flush` | `src/drivers/serial.c` | `serial_flush` | `drivers` | `COVERED` | 2 |
@@ -4143,6 +4399,7 @@
 | `c:src/drivers/timer.c:timer_init` | `src/drivers/timer.c` | `timer_init` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/timer.c:timer_make_handle` | `src/drivers/timer.c` | `timer_make_handle` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/timer.c:timer_milliseconds_to_ticks` | `src/drivers/timer.c` | `timer_milliseconds_to_ticks` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/timer.c:timer_mode_name` | `src/drivers/timer.c` | `timer_mode_name` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/timer.c:timer_name_is_valid` | `src/drivers/timer.c` | `timer_name_is_valid` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/timer.c:timer_next_generation` | `src/drivers/timer.c` | `timer_next_generation` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/timer.c:timer_note_invalid_operation` | `src/drivers/timer.c` | `timer_note_invalid_operation` | `drivers` | `COVERED` | 1 |
@@ -4168,6 +4425,7 @@
 | `c:src/drivers/timer.c:timer_set_pending_notifier` | `src/drivers/timer.c` | `timer_set_pending_notifier` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/timer.c:timer_start_once` | `src/drivers/timer.c` | `timer_start_once` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/timer.c:timer_start_periodic` | `src/drivers/timer.c` | `timer_start_periodic` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/timer.c:timer_state_name` | `src/drivers/timer.c` | `timer_state_name` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/timer.c:timer_suspend_interrupts` | `src/drivers/timer.c` | `timer_suspend_interrupts` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/timer.c:timer_test_callback` | `src/drivers/timer.c` | `timer_test_callback` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/timer.c:timer_test_callback_errors` | `src/drivers/timer.c` | `timer_test_callback_errors` | `drivers` | `COVERED` | 2 |
@@ -4190,6 +4448,7 @@
 | `c:src/drivers/tss.c:tss_is_ready` | `src/drivers/tss.c` | `tss_is_ready` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/tss.c:tss_load_gdt` | `src/drivers/tss.c` | `tss_load_gdt` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/tss.c:tss_set_kernel_stack` | `src/drivers/tss.c` | `tss_set_kernel_stack` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/uhci.c:uhci_allocate` | `src/drivers/uhci.c` | `uhci_allocate` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/uhci.c:uhci_allocate_dma` | `src/drivers/uhci.c` | `uhci_allocate_dma` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/uhci.c:uhci_bulk_transfer` | `src/drivers/uhci.c` | `uhci_bulk_transfer` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/uhci.c:uhci_bulk_transfer_once` | `src/drivers/uhci.c` | `uhci_bulk_transfer_once` | `drivers` | `PENDING` | 0 |
@@ -4203,8 +4462,13 @@
 | `c:src/drivers/uhci.c:uhci_enumerate_port_once` | `src/drivers/uhci.c` | `uhci_enumerate_port_once` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/uhci.c:uhci_enumeration_reason` | `src/drivers/uhci.c` | `uhci_enumeration_reason` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/uhci.c:uhci_enumeration_retryable` | `src/drivers/uhci.c` | `uhci_enumeration_retryable` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/uhci.c:uhci_find` | `src/drivers/uhci.c` | `uhci_find` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/uhci.c:uhci_find_device_record` | `src/drivers/uhci.c` | `uhci_find_device_record` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/uhci.c:uhci_find_free_interrupt_request` | `src/drivers/uhci.c` | `uhci_find_free_interrupt_request` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/uhci.c:uhci_find_interrupt_request` | `src/drivers/uhci.c` | `uhci_find_interrupt_request` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/uhci.c:uhci_get_device` | `src/drivers/uhci.c` | `uhci_get_device` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/uhci.c:uhci_get_device_count` | `src/drivers/uhci.c` | `uhci_get_device_count` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/uhci.c:uhci_get_device_record_at` | `src/drivers/uhci.c` | `uhci_get_device_record_at` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/uhci.c:uhci_get_port` | `src/drivers/uhci.c` | `uhci_get_port` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/uhci.c:uhci_get_port_count` | `src/drivers/uhci.c` | `uhci_get_port_count` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/uhci.c:uhci_get_status` | `src/drivers/uhci.c` | `uhci_get_status` | `drivers` | `COVERED` | 1 |
@@ -4213,6 +4477,7 @@
 | `c:src/drivers/uhci.c:uhci_init_instance` | `src/drivers/uhci.c` | `uhci_init_instance` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/uhci.c:uhci_initialize_ports` | `src/drivers/uhci.c` | `uhci_initialize_ports` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/uhci.c:uhci_interrupt_arm` | `src/drivers/uhci.c` | `uhci_interrupt_arm` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/uhci.c:uhci_interrupt_buffer` | `src/drivers/uhci.c` | `uhci_interrupt_buffer` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/uhci.c:uhci_interrupt_cancel` | `src/drivers/uhci.c` | `uhci_interrupt_cancel` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/uhci.c:uhci_interrupt_completion` | `src/drivers/uhci.c` | `uhci_interrupt_completion` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/uhci.c:uhci_interrupt_deadline_expired` | `src/drivers/uhci.c` | `uhci_interrupt_deadline_expired` | `drivers` | `PENDING` | 0 |
@@ -4232,6 +4497,7 @@
 | `c:src/drivers/uhci.c:uhci_parse_configuration` | `src/drivers/uhci.c` | `uhci_parse_configuration` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/uhci.c:uhci_poll` | `src/drivers/uhci.c` | `uhci_poll` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/uhci.c:uhci_port_offset` | `src/drivers/uhci.c` | `uhci_port_offset` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/uhci.c:uhci_queue_head_at` | `src/drivers/uhci.c` | `uhci_queue_head_at` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/uhci.c:uhci_read_descriptor` | `src/drivers/uhci.c` | `uhci_read_descriptor` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/uhci.c:uhci_recover_controller` | `src/drivers/uhci.c` | `uhci_recover_controller` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/uhci.c:uhci_release_dma` | `src/drivers/uhci.c` | `uhci_release_dma` | `drivers` | `PENDING` | 0 |
@@ -4271,7 +4537,9 @@
 | `c:src/drivers/usb_hid.c:usb_hid_get_count` | `src/drivers/usb_hid.c` | `usb_hid_get_count` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/usb_hid.c:usb_hid_init` | `src/drivers/usb_hid.c` | `usb_hid_init` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/usb_hid.c:usb_hid_is_active` | `src/drivers/usb_hid.c` | `usb_hid_is_active` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_hid.c:usb_hid_kind_name` | `src/drivers/usb_hid.c` | `usb_hid_kind_name` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/usb_hid.c:usb_hid_refresh` | `src/drivers/usb_hid.c` | `usb_hid_refresh` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/usb_hid.c:usb_hid_state_name` | `src/drivers/usb_hid.c` | `usb_hid_state_name` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/usb_hid.c:usb_hid_validate_state` | `src/drivers/usb_hid.c` | `usb_hid_validate_state` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/usb_msc.c:msc_block_read` | `src/drivers/usb_msc.c` | `msc_block_read` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/usb_msc.c:msc_block_submit` | `src/drivers/usb_msc.c` | `msc_block_submit` | `drivers` | `PENDING` | 0 |
@@ -4297,7 +4565,9 @@
 | `c:src/drivers/usb_msc.c:usb_msc_init` | `src/drivers/usb_msc.c` | `usb_msc_init` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/usb_msc.c:usb_msc_is_active` | `src/drivers/usb_msc.c` | `usb_msc_is_active` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/usb_msc.c:usb_msc_refresh` | `src/drivers/usb_msc.c` | `usb_msc_refresh` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/usb_msc.c:usb_msc_state_name` | `src/drivers/usb_msc.c` | `usb_msc_state_name` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/usb_msc.c:usb_msc_validate_state` | `src/drivers/usb_msc.c` | `usb_msc_validate_state` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/vesa.c:memset_simple` | `src/drivers/vesa.c` | `memset_simple` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/vesa.c:vesa_accumulate_region` | `src/drivers/vesa.c` | `vesa_accumulate_region` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/vesa.c:vesa_clear` | `src/drivers/vesa.c` | `vesa_clear` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/vesa.c:vesa_clip_rect` | `src/drivers/vesa.c` | `vesa_clip_rect` | `drivers` | `COVERED` | 4 |
@@ -4321,6 +4591,7 @@
 | `c:src/drivers/vesa.c:vesa_frame_end` | `src/drivers/vesa.c` | `vesa_frame_end` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/vesa.c:vesa_frame_mark_region` | `src/drivers/vesa.c` | `vesa_frame_mark_region` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/vesa.c:vesa_get_metrics` | `src/drivers/vesa.c` | `vesa_get_metrics` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/vesa.c:vesa_get_mode` | `src/drivers/vesa.c` | `vesa_get_mode` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/vesa.c:vesa_get_pixel` | `src/drivers/vesa.c` | `vesa_get_pixel` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/vesa.c:vesa_has_backbuffer` | `src/drivers/vesa.c` | `vesa_has_backbuffer` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/vesa.c:vesa_init` | `src/drivers/vesa.c` | `vesa_init` | `drivers` | `PENDING` | 0 |
@@ -4638,6 +4909,7 @@
 | `c:src/fs/devfs.c:devfs_null_read` | `src/fs/devfs.c` | `devfs_null_read` | `fs` | `COVERED` | 2 |
 | `c:src/fs/devfs.c:devfs_null_write` | `src/fs/devfs.c` | `devfs_null_write` | `fs` | `COVERED` | 2 |
 | `c:src/fs/devfs.c:devfs_open_file` | `src/fs/devfs.c` | `devfs_open_file` | `fs` | `COVERED` | 2 |
+| `c:src/fs/devfs.c:devfs_operations` | `src/fs/devfs.c` | `devfs_operations` | `fs` | `PENDING` | 0 |
 | `c:src/fs/devfs.c:devfs_path_node` | `src/fs/devfs.c` | `devfs_path_node` | `fs` | `COVERED` | 2 |
 | `c:src/fs/devfs.c:devfs_self_test` | `src/fs/devfs.c` | `devfs_self_test` | `fs` | `COVERED` | 2 |
 | `c:src/fs/devfs.c:devfs_speaker_ioctl` | `src/fs/devfs.c` | `devfs_speaker_ioctl` | `fs` | `COVERED` | 2 |
@@ -4660,7 +4932,10 @@
 | `c:src/fs/fat12.c:fat12_delete_file_in_dir` | `src/fs/fat12.c` | `fat12_delete_file_in_dir` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_encode_root_name` | `src/fs/fat12.c` | `fat12_encode_root_name` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_find_dir_slot` | `src/fs/fat12.c` | `fat12_find_dir_slot` | `fs` | `COVERED` | 1 |
+| `c:src/fs/fat12.c:fat12_find_entry` | `src/fs/fat12.c` | `fat12_find_entry` | `fs` | `PENDING` | 0 |
 | `c:src/fs/fat12.c:fat12_find_free_cluster` | `src/fs/fat12.c` | `fat12_find_free_cluster` | `fs` | `PENDING` | 0 |
+| `c:src/fs/fat12.c:fat12_find_in_dir` | `src/fs/fat12.c` | `fat12_find_in_dir` | `fs` | `PENDING` | 0 |
+| `c:src/fs/fat12.c:fat12_find_path_entry` | `src/fs/fat12.c` | `fat12_find_path_entry` | `fs` | `PENDING` | 0 |
 | `c:src/fs/fat12.c:fat12_find_root_index` | `src/fs/fat12.c` | `fat12_find_root_index` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_find_root_slot` | `src/fs/fat12.c` | `fat12_find_root_slot` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_flush_fats` | `src/fs/fat12.c` | `fat12_flush_fats` | `fs` | `COVERED` | 1 |
@@ -4671,10 +4946,12 @@
 | `c:src/fs/fat12.c:fat12_get_file_info` | `src/fs/fat12.c` | `fat12_get_file_info` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_get_file_info_at` | `src/fs/fat12.c` | `fat12_get_file_info_at` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_get_free_clusters` | `src/fs/fat12.c` | `fat12_get_free_clusters` | `fs` | `COVERED` | 1 |
+| `c:src/fs/fat12.c:fat12_get_fs` | `src/fs/fat12.c` | `fat12_get_fs` | `fs` | `PENDING` | 0 |
 | `c:src/fs/fat12.c:fat12_get_root_file_info` | `src/fs/fat12.c` | `fat12_get_root_file_info` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_init` | `src/fs/fat12.c` | `fat12_init` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_list_dir` | `src/fs/fat12.c` | `fat12_list_dir` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_name_to_str` | `src/fs/fat12.c` | `fat12_name_to_str` | `fs` | `COVERED` | 1 |
+| `c:src/fs/fat12.c:fat12_read_dir_cluster` | `src/fs/fat12.c` | `fat12_read_dir_cluster` | `fs` | `PENDING` | 0 |
 | `c:src/fs/fat12.c:fat12_read_dir_cluster_buffer` | `src/fs/fat12.c` | `fat12_read_dir_cluster_buffer` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_read_entry_range` | `src/fs/fat12.c` | `fat12_read_entry_range` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_read_file` | `src/fs/fat12.c` | `fat12_read_file` | `fs` | `COVERED` | 1 |
@@ -4714,6 +4991,7 @@
 | `c:src/fs/fat32.c:fat32_get_file_info` | `src/fs/fat32.c` | `fat32_get_file_info` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat32.c:fat32_get_file_info_at` | `src/fs/fat32.c` | `fat32_get_file_info_at` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat32.c:fat32_get_free_clusters` | `src/fs/fat32.c` | `fat32_get_free_clusters` | `fs` | `COVERED` | 1 |
+| `c:src/fs/fat32.c:fat32_get_fs` | `src/fs/fat32.c` | `fat32_get_fs` | `fs` | `PENDING` | 0 |
 | `c:src/fs/fat32.c:fat32_init` | `src/fs/fat32.c` | `fat32_init` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat32.c:fat32_list_dir` | `src/fs/fat32.c` | `fat32_list_dir` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat32.c:fat32_max_cluster_steps` | `src/fs/fat32.c` | `fat32_max_cluster_steps` | `fs` | `COVERED` | 1 |
@@ -4772,6 +5050,7 @@
 | `c:src/fs/file_index.c:file_index_source_structure_valid` | `src/fs/file_index.c` | `file_index_source_structure_valid` | `fs` | `COVERED` | 6 |
 | `c:src/fs/file_index.c:file_index_sources_equal` | `src/fs/file_index.c` | `file_index_sources_equal` | `fs` | `COVERED` | 6 |
 | `c:src/fs/file_index.c:file_index_start_rebuild_unlocked` | `src/fs/file_index.c` | `file_index_start_rebuild_unlocked` | `fs` | `COVERED` | 2 |
+| `c:src/fs/file_index.c:file_index_state_name` | `src/fs/file_index.c` | `file_index_state_name` | `fs` | `PENDING` | 0 |
 | `c:src/fs/file_index.c:file_index_table_valid` | `src/fs/file_index.c` | `file_index_table_valid` | `fs` | `COVERED` | 3 |
 | `c:src/fs/file_index.c:file_index_text_equal` | `src/fs/file_index.c` | `file_index_text_equal` | `fs` | `COVERED` | 6 |
 | `c:src/fs/file_index.c:file_index_text_terminated` | `src/fs/file_index.c` | `file_index_text_terminated` | `fs` | `COVERED` | 6 |
@@ -4803,6 +5082,7 @@
 | `c:src/fs/fs.c:fs_has_system_volume` | `src/fs/fs.c` | `fs_has_system_volume` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fs.c:fs_init` | `src/fs/fs.c` | `fs_init` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fs.c:fs_is_legacy_path` | `src/fs/fs.c` | `fs_is_legacy_path` | `fs` | `COVERED` | 2 |
+| `c:src/fs/fs.c:fs_legacy_relative_path` | `src/fs/fs.c` | `fs_legacy_relative_path` | `fs` | `PENDING` | 0 |
 | `c:src/fs/fs.c:fs_list_dir` | `src/fs/fs.c` | `fs_list_dir` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fs.c:fs_read_file` | `src/fs/fs.c` | `fs_read_file` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fs.c:fs_read_file_at` | `src/fs/fs.c` | `fs_read_file_at` | `fs` | `COVERED` | 1 |
@@ -4854,6 +5134,7 @@
 | `c:src/fs/procfs.c:procfs_is_ready` | `src/fs/procfs.c` | `procfs_is_ready` | `fs` | `PENDING` | 0 |
 | `c:src/fs/procfs.c:procfs_list` | `src/fs/procfs.c` | `procfs_list` | `fs` | `PENDING` | 0 |
 | `c:src/fs/procfs.c:procfs_list_path` | `src/fs/procfs.c` | `procfs_list_path` | `fs` | `COVERED` | 3 |
+| `c:src/fs/procfs.c:procfs_log_level_name` | `src/fs/procfs.c` | `procfs_log_level_name` | `fs` | `PENDING` | 0 |
 | `c:src/fs/procfs.c:procfs_lookup` | `src/fs/procfs.c` | `procfs_lookup` | `fs` | `COVERED` | 3 |
 | `c:src/fs/procfs.c:procfs_lseek` | `src/fs/procfs.c` | `procfs_lseek` | `fs` | `COVERED` | 2 |
 | `c:src/fs/procfs.c:procfs_meminfo_read` | `src/fs/procfs.c` | `procfs_meminfo_read` | `fs` | `COVERED` | 3 |
@@ -4881,6 +5162,7 @@
 | `c:src/fs/procfs.c:procfs_write` | `src/fs/procfs.c` | `procfs_write` | `fs` | `COVERED` | 2 |
 | `c:src/fs/procfs.c:procfs_write_allowed` | `src/fs/procfs.c` | `procfs_write_allowed` | `fs` | `COVERED` | 2 |
 | `c:src/fs/storage.c:storage_add_disk` | `src/fs/storage.c` | `storage_add_disk` | `fs` | `COVERED` | 1 |
+| `c:src/fs/storage.c:storage_add_volume` | `src/fs/storage.c` | `storage_add_volume` | `fs` | `PENDING` | 0 |
 | `c:src/fs/storage.c:storage_alias_is_used` | `src/fs/storage.c` | `storage_alias_is_used` | `fs` | `COVERED` | 1 |
 | `c:src/fs/storage.c:storage_alias_visitor` | `src/fs/storage.c` | `storage_alias_visitor` | `fs` | `COVERED` | 1 |
 | `c:src/fs/storage.c:storage_allocate_fat32_cluster` | `src/fs/storage.c` | `storage_allocate_fat32_cluster` | `fs` | `COVERED` | 1 |
@@ -4920,6 +5202,8 @@
 | `c:src/fs/storage.c:storage_find_long_visitor` | `src/fs/storage.c` | `storage_find_long_visitor` | `fs` | `COVERED` | 4 |
 | `c:src/fs/storage.c:storage_find_system_volume` | `src/fs/storage.c` | `storage_find_system_volume` | `fs` | `COVERED` | 1 |
 | `c:src/fs/storage.c:storage_find_volume` | `src/fs/storage.c` | `storage_find_volume` | `fs` | `COVERED` | 2 |
+| `c:src/fs/storage.c:storage_free_mount` | `src/fs/storage.c` | `storage_free_mount` | `fs` | `PENDING` | 0 |
+| `c:src/fs/storage.c:storage_fs_name` | `src/fs/storage.c` | `storage_fs_name` | `fs` | `PENDING` | 0 |
 | `c:src/fs/storage.c:storage_generate_alias` | `src/fs/storage.c` | `storage_generate_alias` | `fs` | `COVERED` | 1 |
 | `c:src/fs/storage.c:storage_get_disk_at` | `src/fs/storage.c` | `storage_get_disk_at` | `fs` | `COVERED` | 1 |
 | `c:src/fs/storage.c:storage_get_file_info` | `src/fs/storage.c` | `storage_get_file_info` | `fs` | `COVERED` | 1 |
@@ -4948,6 +5232,7 @@
 | `c:src/fs/storage.c:storage_mark_overlaps` | `src/fs/storage.c` | `storage_mark_overlaps` | `fs` | `COVERED` | 1 |
 | `c:src/fs/storage.c:storage_mark_volume_error` | `src/fs/storage.c` | `storage_mark_volume_error` | `fs` | `PENDING` | 0 |
 | `c:src/fs/storage.c:storage_mount` | `src/fs/storage.c` | `storage_mount` | `fs` | `COVERED` | 1 |
+| `c:src/fs/storage.c:storage_mount_for_volume` | `src/fs/storage.c` | `storage_mount_for_volume` | `fs` | `PENDING` | 0 |
 | `c:src/fs/storage.c:storage_name_to_fat` | `src/fs/storage.c` | `storage_name_to_fat` | `fs` | `COVERED` | 2 |
 | `c:src/fs/storage.c:storage_next_cluster` | `src/fs/storage.c` | `storage_next_cluster` | `fs` | `COVERED` | 2 |
 | `c:src/fs/storage.c:storage_next_component` | `src/fs/storage.c` | `storage_next_component` | `fs` | `COVERED` | 5 |
@@ -5001,6 +5286,7 @@
 | `c:src/fs/storage.c:storage_visit_long_sector` | `src/fs/storage.c` | `storage_visit_long_sector` | `fs` | `COVERED` | 5 |
 | `c:src/fs/storage.c:storage_visit_sector` | `src/fs/storage.c` | `storage_visit_sector` | `fs` | `COVERED` | 1 |
 | `c:src/fs/storage.c:storage_volume_index` | `src/fs/storage.c` | `storage_volume_index` | `fs` | `COVERED` | 5 |
+| `c:src/fs/storage.c:storage_volume_state_name` | `src/fs/storage.c` | `storage_volume_state_name` | `fs` | `PENDING` | 0 |
 | `c:src/fs/storage.c:storage_walk_directory` | `src/fs/storage.c` | `storage_walk_directory` | `fs` | `COVERED` | 1 |
 | `c:src/fs/storage.c:storage_walk_directory_long` | `src/fs/storage.c` | `storage_walk_directory_long` | `fs` | `COVERED` | 5 |
 | `c:src/fs/storage.c:storage_write_cluster` | `src/fs/storage.c` | `storage_write_cluster` | `fs` | `PENDING` | 0 |
@@ -5023,6 +5309,7 @@
 | `c:src/fs/sysfs.c:sysfs_append_text` | `src/fs/sysfs.c` | `sysfs_append_text` | `fs` | `COVERED` | 2 |
 | `c:src/fs/sysfs.c:sysfs_attribute_index` | `src/fs/sysfs.c` | `sysfs_attribute_index` | `fs` | `PENDING` | 0 |
 | `c:src/fs/sysfs.c:sysfs_block_copy` | `src/fs/sysfs.c` | `sysfs_block_copy` | `fs` | `PENDING` | 0 |
+| `c:src/fs/sysfs.c:sysfs_block_provider` | `src/fs/sysfs.c` | `sysfs_block_provider` | `fs` | `PENDING` | 0 |
 | `c:src/fs/sysfs.c:sysfs_buffer_contains` | `src/fs/sysfs.c` | `sysfs_buffer_contains` | `fs` | `COVERED` | 2 |
 | `c:src/fs/sysfs.c:sysfs_buffer_valid` | `src/fs/sysfs.c` | `sysfs_buffer_valid` | `fs` | `COVERED` | 2 |
 | `c:src/fs/sysfs.c:sysfs_close` | `src/fs/sysfs.c` | `sysfs_close` | `fs` | `COVERED` | 2 |
@@ -5042,6 +5329,9 @@
 | `c:src/fs/sysfs.c:sysfs_lookup` | `src/fs/sysfs.c` | `sysfs_lookup` | `fs` | `COVERED` | 2 |
 | `c:src/fs/sysfs.c:sysfs_lseek` | `src/fs/sysfs.c` | `sysfs_lseek` | `fs` | `COVERED` | 2 |
 | `c:src/fs/sysfs.c:sysfs_network_copy` | `src/fs/sysfs.c` | `sysfs_network_copy` | `fs` | `COVERED` | 2 |
+| `c:src/fs/sysfs.c:sysfs_network_link` | `src/fs/sysfs.c` | `sysfs_network_link` | `fs` | `PENDING` | 0 |
+| `c:src/fs/sysfs.c:sysfs_network_model` | `src/fs/sysfs.c` | `sysfs_network_model` | `fs` | `PENDING` | 0 |
+| `c:src/fs/sysfs.c:sysfs_network_state` | `src/fs/sysfs.c` | `sysfs_network_state` | `fs` | `PENDING` | 0 |
 | `c:src/fs/sysfs.c:sysfs_open` | `src/fs/sysfs.c` | `sysfs_open` | `fs` | `PENDING` | 0 |
 | `c:src/fs/sysfs.c:sysfs_open_file` | `src/fs/sysfs.c` | `sysfs_open_file` | `fs` | `COVERED` | 2 |
 | `c:src/fs/sysfs.c:sysfs_parse_dynamic` | `src/fs/sysfs.c` | `sysfs_parse_dynamic` | `fs` | `COVERED` | 2 |
@@ -5050,6 +5340,7 @@
 | `c:src/fs/sysfs.c:sysfs_path_starts` | `src/fs/sysfs.c` | `sysfs_path_starts` | `fs` | `COVERED` | 2 |
 | `c:src/fs/sysfs.c:sysfs_pci_copy` | `src/fs/sysfs.c` | `sysfs_pci_copy` | `fs` | `COVERED` | 2 |
 | `c:src/fs/sysfs.c:sysfs_poll` | `src/fs/sysfs.c` | `sysfs_poll` | `fs` | `PENDING` | 0 |
+| `c:src/fs/sysfs.c:sysfs_power_capability` | `src/fs/sysfs.c` | `sysfs_power_capability` | `fs` | `PENDING` | 0 |
 | `c:src/fs/sysfs.c:sysfs_power_default` | `src/fs/sysfs.c` | `sysfs_power_default` | `fs` | `PENDING` | 0 |
 | `c:src/fs/sysfs.c:sysfs_read` | `src/fs/sysfs.c` | `sysfs_read` | `fs` | `COVERED` | 2 |
 | `c:src/fs/sysfs.c:sysfs_render_block` | `src/fs/sysfs.c` | `sysfs_render_block` | `fs` | `PENDING` | 0 |
@@ -5089,6 +5380,7 @@
 | `c:src/fs/vfs.c:vfs_pipe_close` | `src/fs/vfs.c` | `vfs_pipe_close` | `fs` | `COVERED` | 3 |
 | `c:src/fs/vfs.c:vfs_pipe_copy_in` | `src/fs/vfs.c` | `vfs_pipe_copy_in` | `fs` | `COVERED` | 3 |
 | `c:src/fs/vfs.c:vfs_pipe_copy_out` | `src/fs/vfs.c` | `vfs_pipe_copy_out` | `fs` | `COVERED` | 3 |
+| `c:src/fs/vfs.c:vfs_pipe_from_file` | `src/fs/vfs.c` | `vfs_pipe_from_file` | `fs` | `PENDING` | 0 |
 | `c:src/fs/vfs.c:vfs_pipe_lseek` | `src/fs/vfs.c` | `vfs_pipe_lseek` | `fs` | `PENDING` | 0 |
 | `c:src/fs/vfs.c:vfs_pipe_open` | `src/fs/vfs.c` | `vfs_pipe_open` | `fs` | `COVERED` | 3 |
 | `c:src/fs/vfs.c:vfs_pipe_poll` | `src/fs/vfs.c` | `vfs_pipe_poll` | `fs` | `COVERED` | 1 |
@@ -5192,6 +5484,7 @@
 | `c:src/gui/display.c:display_mode_supports` | `src/gui/display.c` | `display_mode_supports` | `gui` | `PENDING` | 0 |
 | `c:src/gui/display.c:display_parse_scale` | `src/gui/display.c` | `display_parse_scale` | `gui` | `PENDING` | 0 |
 | `c:src/gui/display.c:display_refresh_scene` | `src/gui/display.c` | `display_refresh_scene` | `gui` | `PENDING` | 0 |
+| `c:src/gui/display.c:display_scale_name` | `src/gui/display.c` | `display_scale_name` | `gui` | `PENDING` | 0 |
 | `c:src/gui/display.c:display_scale_px` | `src/gui/display.c` | `display_scale_px` | `gui` | `COVERED` | 2 |
 | `c:src/gui/gui.c:gui_clamp_to_screen` | `src/gui/gui.c` | `gui_clamp_to_screen` | `gui` | `COVERED` | 2 |
 | `c:src/gui/gui.c:gui_draw_button` | `src/gui/gui.c` | `gui_draw_button` | `gui` | `PENDING` | 0 |
@@ -5214,9 +5507,15 @@
 | `c:src/gui/gui.c:gui_measure_scaled_text` | `src/gui/gui.c` | `gui_measure_scaled_text` | `gui` | `COVERED` | 2 |
 | `c:src/gui/gui.c:gui_min_u32` | `src/gui/gui.c` | `gui_min_u32` | `gui` | `COVERED` | 2 |
 | `c:src/gui/gui.c:gui_set_theme` | `src/gui/gui.c` | `gui_set_theme` | `gui` | `PENDING` | 0 |
+| `c:src/gui/gui.c:gui_theme_name` | `src/gui/gui.c` | `gui_theme_name` | `gui` | `PENDING` | 0 |
 | `c:src/icons/icons.c:icons_draw_desktop_bitmap` | `src/icons/icons.c` | `icons_draw_desktop_bitmap` | `icons` | `PENDING` | 0 |
 | `c:src/icons/icons.c:icons_draw_desktop_bitmap_resized` | `src/icons/icons.c` | `icons_draw_desktop_bitmap_resized` | `icons` | `COVERED` | 2 |
+| `c:src/icons/icons.c:icons_get_desktop` | `src/icons/icons.c` | `icons_get_desktop` | `icons` | `PENDING` | 0 |
 | `c:src/icons/icons.c:icons_get_desktop_bitmap_status` | `src/icons/icons.c` | `icons_get_desktop_bitmap_status` | `icons` | `PENDING` | 0 |
+| `c:src/icons/icons.c:icons_get_fm` | `src/icons/icons.c` | `icons_get_fm` | `icons` | `PENDING` | 0 |
+| `c:src/icons/icons.c:icons_get_registry` | `src/icons/icons.c` | `icons_get_registry` | `icons` | `PENDING` | 0 |
+| `c:src/icons/icons.c:icons_get_tb` | `src/icons/icons.c` | `icons_get_tb` | `icons` | `PENDING` | 0 |
+| `c:src/icons/icons.c:icons_get_wm` | `src/icons/icons.c` | `icons_get_wm` | `icons` | `PENDING` | 0 |
 | `c:src/icons/icons.c:icons_init` | `src/icons/icons.c` | `icons_init` | `icons` | `PENDING` | 0 |
 | `c:src/icons/icons.c:icons_load_desktop_bmp` | `src/icons/icons.c` | `icons_load_desktop_bmp` | `icons` | `PENDING` | 0 |
 | `c:src/icons/icons.c:icons_release_desktop_bmps` | `src/icons/icons.c` | `icons_release_desktop_bmps` | `icons` | `PENDING` | 0 |
@@ -5265,12 +5564,14 @@
 | `c:src/memory/compress.c:compress_disable` | `src/memory/compress.c` | `compress_disable` | `memory` | `COVERED` | 1 |
 | `c:src/memory/compress.c:compress_enable` | `src/memory/compress.c` | `compress_enable` | `memory` | `COVERED` | 1 |
 | `c:src/memory/compress.c:compress_get_max_size` | `src/memory/compress.c` | `compress_get_max_size` | `memory` | `COVERED` | 1 |
+| `c:src/memory/compress.c:compress_get_stats` | `src/memory/compress.c` | `compress_get_stats` | `memory` | `PENDING` | 0 |
 | `c:src/memory/compress.c:compress_init` | `src/memory/compress.c` | `compress_init` | `memory` | `COVERED` | 1 |
 | `c:src/memory/compress.c:compress_is_enabled` | `src/memory/compress.c` | `compress_is_enabled` | `memory` | `COVERED` | 1 |
 | `c:src/memory/compress.c:compress_print_stats` | `src/memory/compress.c` | `compress_print_stats` | `memory` | `COVERED` | 1 |
 | `c:src/memory/compress.c:decompress_data` | `src/memory/compress.c` | `decompress_data` | `memory` | `COVERED` | 1 |
 | `c:src/memory/memory.c:align_up` | `src/memory/memory.c` | `align_up` | `memory` | `COVERED` | 1 |
 | `c:src/memory/memory.c:heap_align_size` | `src/memory/memory.c` | `heap_align_size` | `memory` | `COVERED` | 5 |
+| `c:src/memory/memory.c:heap_block_from_pointer` | `src/memory/memory.c` | `heap_block_from_pointer` | `memory` | `PENDING` | 0 |
 | `c:src/memory/memory.c:heap_block_is_consistent` | `src/memory/memory.c` | `heap_block_is_consistent` | `memory` | `COVERED` | 6 |
 | `c:src/memory/memory.c:heap_block_matches` | `src/memory/memory.c` | `heap_block_matches` | `memory` | `COVERED` | 5 |
 | `c:src/memory/memory.c:heap_initialize` | `src/memory/memory.c` | `heap_initialize` | `memory` | `COVERED` | 5 |
@@ -5279,6 +5580,9 @@
 | `c:src/memory/memory.c:heap_pointer_was_freed` | `src/memory/memory.c` | `heap_pointer_was_freed` | `memory` | `COVERED` | 1 |
 | `c:src/memory/memory.c:heap_range_contains` | `src/memory/memory.c` | `heap_range_contains` | `memory` | `COVERED` | 6 |
 | `c:src/memory/memory.c:kfree` | `src/memory/memory.c` | `kfree` | `memory` | `COVERED` | 5 |
+| `c:src/memory/memory.c:kmalloc` | `src/memory/memory.c` | `kmalloc` | `memory` | `PENDING` | 0 |
+| `c:src/memory/memory.c:kmalloc_aligned` | `src/memory/memory.c` | `kmalloc_aligned` | `memory` | `PENDING` | 0 |
+| `c:src/memory/memory.c:kmalloc_internal` | `src/memory/memory.c` | `kmalloc_internal` | `memory` | `PENDING` | 0 |
 | `c:src/memory/memory.c:memory_find_total` | `src/memory/memory.c` | `memory_find_total` | `memory` | `COVERED` | 1 |
 | `c:src/memory/memory.c:memory_get_detailed_stats` | `src/memory/memory.c` | `memory_get_detailed_stats` | `memory` | `COVERED` | 4 |
 | `c:src/memory/memory.c:memory_get_free` | `src/memory/memory.c` | `memory_get_free` | `memory` | `COVERED` | 3 |
@@ -5289,15 +5593,21 @@
 | `c:src/memory/memory.c:memory_get_total` | `src/memory/memory.c` | `memory_get_total` | `memory` | `COVERED` | 3 |
 | `c:src/memory/memory.c:memory_get_total_pages` | `src/memory/memory.c` | `memory_get_total_pages` | `memory` | `COVERED` | 1 |
 | `c:src/memory/memory.c:memory_get_used` | `src/memory/memory.c` | `memory_get_used` | `memory` | `COVERED` | 3 |
+| `c:src/memory/memory.c:memory_heap_pointer` | `src/memory/memory.c` | `memory_heap_pointer` | `memory` | `PENDING` | 0 |
 | `c:src/memory/memory.c:memory_host_init` | `src/memory/memory.c` | `memory_host_init` | `memory` | `COVERED` | 1 |
 | `c:src/memory/memory.c:memory_init` | `src/memory/memory.c` | `memory_init` | `memory` | `COVERED` | 1 |
 | `c:src/memory/memory.c:memory_initialize_page_zones` | `src/memory/memory.c` | `memory_initialize_page_zones` | `memory` | `COVERED` | 1 |
 | `c:src/memory/memory.c:memory_mark_usable` | `src/memory/memory.c` | `memory_mark_usable` | `memory` | `COVERED` | 1 |
+| `c:src/memory/memory.c:memory_physical_pointer` | `src/memory/memory.c` | `memory_physical_pointer` | `memory` | `PENDING` | 0 |
 | `c:src/memory/memory.c:memory_pointer_address` | `src/memory/memory.c` | `memory_pointer_address` | `memory` | `COVERED` | 1 |
 | `c:src/memory/memory.c:memory_range_is_usable` | `src/memory/memory.c` | `memory_range_is_usable` | `memory` | `COVERED` | 1 |
 | `c:src/memory/memory.c:memory_record_free_run` | `src/memory/memory.c` | `memory_record_free_run` | `memory` | `COVERED` | 3 |
 | `c:src/memory/memory.c:memory_recount` | `src/memory/memory.c` | `memory_recount` | `memory` | `COVERED` | 1 |
 | `c:src/memory/memory.c:memory_reserve_range` | `src/memory/memory.c` | `memory_reserve_range` | `memory` | `COVERED` | 1 |
+| `c:src/memory/memory.c:pmm_alloc_page` | `src/memory/memory.c` | `pmm_alloc_page` | `memory` | `PENDING` | 0 |
+| `c:src/memory/memory.c:pmm_alloc_page_in_zone` | `src/memory/memory.c` | `pmm_alloc_page_in_zone` | `memory` | `PENDING` | 0 |
+| `c:src/memory/memory.c:pmm_alloc_pages` | `src/memory/memory.c` | `pmm_alloc_pages` | `memory` | `PENDING` | 0 |
+| `c:src/memory/memory.c:pmm_alloc_pages_in_zone` | `src/memory/memory.c` | `pmm_alloc_pages_in_zone` | `memory` | `PENDING` | 0 |
 | `c:src/memory/memory.c:pmm_claim_pages` | `src/memory/memory.c` | `pmm_claim_pages` | `memory` | `COVERED` | 5 |
 | `c:src/memory/memory.c:pmm_free_page` | `src/memory/memory.c` | `pmm_free_page` | `memory` | `COVERED` | 2 |
 | `c:src/memory/memory.c:pmm_free_pages` | `src/memory/memory.c` | `pmm_free_pages` | `memory` | `COVERED` | 3 |
@@ -5312,16 +5622,24 @@
 | `c:src/memory/memory.c:pmm_zone_is_allocatable` | `src/memory/memory.c` | `pmm_zone_is_allocatable` | `memory` | `COVERED` | 5 |
 | `c:src/memory/memory.c:pmm_zone_to_tag` | `src/memory/memory.c` | `pmm_zone_to_tag` | `memory` | `COVERED` | 5 |
 | `c:src/memory/paging.c:paging_abort_init` | `src/memory/paging.c` | `paging_abort_init` | `memory` | `COVERED` | 1 |
+| `c:src/memory/paging.c:paging_bootstrap_get_table` | `src/memory/paging.c` | `paging_bootstrap_get_table` | `memory` | `PENDING` | 0 |
 | `c:src/memory/paging.c:paging_copy_from_user` | `src/memory/paging.c` | `paging_copy_from_user` | `memory` | `COVERED` | 1 |
 | `c:src/memory/paging.c:paging_copy_to_user` | `src/memory/paging.c` | `paging_copy_to_user` | `memory` | `COVERED` | 2 |
+| `c:src/memory/paging.c:paging_create_directory` | `src/memory/paging.c` | `paging_create_directory` | `memory` | `PENDING` | 0 |
+| `c:src/memory/paging.c:paging_create_user_directory` | `src/memory/paging.c` | `paging_create_user_directory` | `memory` | `PENDING` | 0 |
 | `c:src/memory/paging.c:paging_free_directory` | `src/memory/paging.c` | `paging_free_directory` | `memory` | `COVERED` | 1 |
 | `c:src/memory/paging.c:paging_free_table_entry` | `src/memory/paging.c` | `paging_free_table_entry` | `memory` | `COVERED` | 1 |
 | `c:src/memory/paging.c:paging_free_user_directory` | `src/memory/paging.c` | `paging_free_user_directory` | `memory` | `COVERED` | 2 |
 | `c:src/memory/paging.c:paging_get_boot_stats` | `src/memory/paging.c` | `paging_get_boot_stats` | `memory` | `COVERED` | 1 |
+| `c:src/memory/paging.c:paging_get_current_directory` | `src/memory/paging.c` | `paging_get_current_directory` | `memory` | `PENDING` | 0 |
+| `c:src/memory/paging.c:paging_get_page` | `src/memory/paging.c` | `paging_get_page` | `memory` | `PENDING` | 0 |
+| `c:src/memory/paging.c:paging_get_page_in_directory` | `src/memory/paging.c` | `paging_get_page_in_directory` | `memory` | `PENDING` | 0 |
 | `c:src/memory/paging.c:paging_get_user_page_count` | `src/memory/paging.c` | `paging_get_user_page_count` | `memory` | `COVERED` | 2 |
 | `c:src/memory/paging.c:paging_get_user_stats` | `src/memory/paging.c` | `paging_get_user_stats` | `memory` | `COVERED` | 2 |
 | `c:src/memory/paging.c:paging_host_register_user_buffer` | `src/memory/paging.c` | `paging_host_register_user_buffer` | `memory` | `COVERED` | 1 |
 | `c:src/memory/paging.c:paging_host_release_table` | `src/memory/paging.c` | `paging_host_release_table` | `memory` | `COVERED` | 1 |
+| `c:src/memory/paging.c:paging_host_resolve_user_pointer` | `src/memory/paging.c` | `paging_host_resolve_user_pointer` | `memory` | `PENDING` | 0 |
+| `c:src/memory/paging.c:paging_host_table_from_entry` | `src/memory/paging.c` | `paging_host_table_from_entry` | `memory` | `PENDING` | 0 |
 | `c:src/memory/paging.c:paging_host_table_token` | `src/memory/paging.c` | `paging_host_table_token` | `memory` | `COVERED` | 1 |
 | `c:src/memory/paging.c:paging_init` | `src/memory/paging.c` | `paging_init` | `memory` | `COVERED` | 1 |
 | `c:src/memory/paging.c:paging_invalidate` | `src/memory/paging.c` | `paging_invalidate` | `memory` | `COVERED` | 2 |
@@ -5331,6 +5649,7 @@
 | `c:src/memory/paging.c:paging_map_identity_range_fast` | `src/memory/paging.c` | `paging_map_identity_range_fast` | `memory` | `COVERED` | 1 |
 | `c:src/memory/paging.c:paging_map_page` | `src/memory/paging.c` | `paging_map_page` | `memory` | `COVERED` | 1 |
 | `c:src/memory/paging.c:paging_map_page_in_directory` | `src/memory/paging.c` | `paging_map_page_in_directory` | `memory` | `COVERED` | 2 |
+| `c:src/memory/paging.c:paging_physical_pointer` | `src/memory/paging.c` | `paging_physical_pointer` | `memory` | `PENDING` | 0 |
 | `c:src/memory/paging.c:paging_pointer_address` | `src/memory/paging.c` | `paging_pointer_address` | `memory` | `COVERED` | 1 |
 | `c:src/memory/paging.c:paging_register_user_directory` | `src/memory/paging.c` | `paging_register_user_directory` | `memory` | `COVERED` | 2 |
 | `c:src/memory/paging.c:paging_switch_directory` | `src/memory/paging.c` | `paging_switch_directory` | `memory` | `COVERED` | 2 |
@@ -5339,6 +5658,8 @@
 | `c:src/memory/paging.c:paging_unregister_user_directory` | `src/memory/paging.c` | `paging_unregister_user_directory` | `memory` | `COVERED` | 2 |
 | `c:src/memory/paging.c:paging_user_directory_index` | `src/memory/paging.c` | `paging_user_directory_index` | `memory` | `COVERED` | 2 |
 | `c:src/memory/paging.c:paging_validate_user_range` | `src/memory/paging.c` | `paging_validate_user_range` | `memory` | `COVERED` | 2 |
+| `c:src/memory/slab.c:kmem_cache_alloc` | `src/memory/slab.c` | `kmem_cache_alloc` | `memory` | `PENDING` | 0 |
+| `c:src/memory/slab.c:kmem_cache_create` | `src/memory/slab.c` | `kmem_cache_create` | `memory` | `PENDING` | 0 |
 | `c:src/memory/slab.c:kmem_cache_destroy` | `src/memory/slab.c` | `kmem_cache_destroy` | `memory` | `COVERED` | 3 |
 | `c:src/memory/slab.c:kmem_cache_free` | `src/memory/slab.c` | `kmem_cache_free` | `memory` | `COVERED` | 5 |
 | `c:src/memory/slab.c:kmem_cache_get_count` | `src/memory/slab.c` | `kmem_cache_get_count` | `memory` | `COVERED` | 1 |
@@ -5367,8 +5688,11 @@
 | `c:src/memory/slab.c:slab_validate_slab` | `src/memory/slab.c` | `slab_validate_slab` | `memory` | `COVERED` | 4 |
 | `c:src/memory/vma.c:process_vma_access_allowed` | `src/memory/vma.c` | `process_vma_access_allowed` | `memory` | `COVERED` | 2 |
 | `c:src/memory/vma.c:process_vma_copy` | `src/memory/vma.c` | `process_vma_copy` | `memory` | `COVERED` | 1 |
+| `c:src/memory/vma.c:process_vma_create` | `src/memory/vma.c` | `process_vma_create` | `memory` | `PENDING` | 0 |
 | `c:src/memory/vma.c:process_vma_ensure_page` | `src/memory/vma.c` | `process_vma_ensure_page` | `memory` | `COVERED` | 2 |
+| `c:src/memory/vma.c:process_vma_find_containing` | `src/memory/vma.c` | `process_vma_find_containing` | `memory` | `PENDING` | 0 |
 | `c:src/memory/vma.c:process_vma_find_gap` | `src/memory/vma.c` | `process_vma_find_gap` | `memory` | `COVERED` | 2 |
+| `c:src/memory/vma.c:process_vma_find_page` | `src/memory/vma.c` | `process_vma_find_page` | `memory` | `PENDING` | 0 |
 | `c:src/memory/vma.c:process_vma_get_page_fault_stats` | `src/memory/vma.c` | `process_vma_get_page_fault_stats` | `memory` | `COVERED` | 2 |
 | `c:src/memory/vma.c:process_vma_handle_page_fault` | `src/memory/vma.c` | `process_vma_handle_page_fault` | `memory` | `COVERED` | 2 |
 | `c:src/memory/vma.c:process_vma_insert_sorted` | `src/memory/vma.c` | `process_vma_insert_sorted` | `memory` | `COVERED` | 2 |
@@ -5406,16 +5730,21 @@
 | `c:src/process/process.c:process_cancel_wait` | `src/process/process.c` | `process_cancel_wait` | `process` | `PENDING` | 0 |
 | `c:src/process/process.c:process_copy_wait_text` | `src/process/process.c` | `process_copy_wait_text` | `process` | `PENDING` | 0 |
 | `c:src/process/process.c:process_copy_waiters` | `src/process/process.c` | `process_copy_waiters` | `process` | `PENDING` | 0 |
+| `c:src/process/process.c:process_create` | `src/process/process.c` | `process_create` | `process` | `PENDING` | 0 |
+| `c:src/process/process.c:process_create_internal` | `src/process/process.c` | `process_create_internal` | `process` | `PENDING` | 0 |
 | `c:src/process/process.c:process_create_user_image` | `src/process/process.c` | `process_create_user_image` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_create_user_image_internal` | `src/process/process.c` | `process_create_user_image_internal` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_create_user_image_suspended` | `src/process/process.c` | `process_create_user_image_suspended` | `process` | `PENDING` | 0 |
 | `c:src/process/process.c:process_create_user_image_suspended_with_launch` | `src/process/process.c` | `process_create_user_image_suspended_with_launch` | `process` | `PENDING` | 0 |
 | `c:src/process/process.c:process_create_user_test` | `src/process/process.c` | `process_create_user_test` | `process` | `PENDING` | 0 |
+| `c:src/process/process.c:process_create_with_stack_size` | `src/process/process.c` | `process_create_with_stack_size` | `process` | `PENDING` | 0 |
 | `c:src/process/process.c:process_destroy` | `src/process/process.c` | `process_destroy` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:process_discard_new_process` | `src/process/process.c` | `process_discard_new_process` | `process` | `PENDING` | 0 |
 | `c:src/process/process.c:process_exit_current` | `src/process/process.c` | `process_exit_current` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_finish_user_termination` | `src/process/process.c` | `process_finish_user_termination` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_get_by_pid` | `src/process/process.c` | `process_get_by_pid` | `process` | `PENDING` | 0 |
 | `c:src/process/process.c:process_get_count` | `src/process/process.c` | `process_get_count` | `process` | `COVERED` | 2 |
+| `c:src/process/process.c:process_get_current` | `src/process/process.c` | `process_get_current` | `process` | `PENDING` | 0 |
 | `c:src/process/process.c:process_get_current_pid` | `src/process/process.c` | `process_get_current_pid` | `process` | `COVERED` | 6 |
 | `c:src/process/process.c:process_get_event_generation` | `src/process/process.c` | `process_get_event_generation` | `process` | `PENDING` | 0 |
 | `c:src/process/process.c:process_get_last_user_fault` | `src/process/process.c` | `process_get_last_user_fault` | `process` | `PENDING` | 0 |
@@ -5490,9 +5819,11 @@
 | `c:src/process/process.c:process_wait_yield_transition` | `src/process/process.c` | `process_wait_yield_transition` | `process` | `COVERED` | 3 |
 | `c:src/process/process.c:process_wake_channel` | `src/process/process.c` | `process_wake_channel` | `process` | `PENDING` | 0 |
 | `c:src/process/process.c:process_yield` | `src/process/process.c` | `process_yield` | `process` | `COVERED` | 3 |
+| `c:src/process/process.c:scheduler_find_next_ready` | `src/process/process.c` | `scheduler_find_next_ready` | `process` | `PENDING` | 0 |
 | `c:src/process/process.c:scheduler_get_stats` | `src/process/process.c` | `scheduler_get_stats` | `process` | `PENDING` | 0 |
 | `c:src/process/process.c:scheduler_init` | `src/process/process.c` | `scheduler_init` | `process` | `PENDING` | 0 |
 | `c:src/process/process.c:scheduler_preempt_user` | `src/process/process.c` | `scheduler_preempt_user` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:scheduler_schedule` | `src/process/process.c` | `scheduler_schedule` | `process` | `PENDING` | 0 |
 | `c:src/process/process.c:scheduler_tick` | `src/process/process.c` | `scheduler_tick` | `process` | `COVERED` | 8 |
 | `c:src/process/process.c:scheduler_validate_invariants` | `src/process/process.c` | `scheduler_validate_invariants` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:scheduler_validate_pid_table` | `src/process/process.c` | `scheduler_validate_pid_table` | `process` | `COVERED` | 2 |
@@ -5503,6 +5834,7 @@
 | `c:src/process/signal.c:process_signal_get_stats` | `src/process/signal.c` | `process_signal_get_stats` | `process` | `COVERED` | 1 |
 | `c:src/process/signal.c:process_signal_init` | `src/process/signal.c` | `process_signal_init` | `process` | `COVERED` | 1 |
 | `c:src/process/signal.c:process_signal_mask` | `src/process/signal.c` | `process_signal_mask` | `process` | `COVERED` | 1 |
+| `c:src/process/signal.c:process_signal_name` | `src/process/signal.c` | `process_signal_name` | `process` | `PENDING` | 0 |
 | `c:src/process/signal.c:process_signal_prepare_user_return` | `src/process/signal.c` | `process_signal_prepare_user_return` | `process` | `COVERED` | 9 |
 | `c:src/process/signal.c:process_signal_process_created` | `src/process/signal.c` | `process_signal_process_created` | `process` | `COVERED` | 3 |
 | `c:src/process/signal.c:process_signal_process_destroyed` | `src/process/signal.c` | `process_signal_process_destroyed` | `process` | `COVERED` | 3 |
@@ -5581,6 +5913,7 @@
 | `c:src/settings/settings.c:settings_update_taskbar_position_options` | `src/settings/settings.c` | `settings_update_taskbar_position_options` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_update_window_order_values` | `src/settings/settings.c` | `settings_update_window_order_values` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_visible_category_count` | `src/settings/settings.c` | `settings_visible_category_count` | `settings` | `COVERED` | 1 |
+| `c:src/shell/editor.c:alloc_line` | `src/shell/editor.c` | `alloc_line` | `shell` | `PENDING` | 0 |
 | `c:src/shell/editor.c:detect_encoding` | `src/shell/editor.c` | `detect_encoding` | `shell` | `PENDING` | 0 |
 | `c:src/shell/editor.c:detect_line_ending` | `src/shell/editor.c` | `detect_line_ending` | `shell` | `PENDING` | 0 |
 | `c:src/shell/editor.c:detect_syntax` | `src/shell/editor.c` | `detect_syntax` | `shell` | `PENDING` | 0 |
@@ -5632,13 +5965,16 @@
 | `c:src/shell/guitest_app.c:guitest_handle_mouse` | `src/shell/guitest_app.c` | `guitest_handle_mouse` | `shell` | `PENDING` | 0 |
 | `c:src/shell/guitest_app.c:guitest_is_active` | `src/shell/guitest_app.c` | `guitest_is_active` | `shell` | `COVERED` | 2 |
 | `c:src/shell/guitest_app.c:guitest_is_inside` | `src/shell/guitest_app.c` | `guitest_is_inside` | `shell` | `PENDING` | 0 |
+| `c:src/shell/guitest_app.c:guitest_modern_button_state_name` | `src/shell/guitest_app.c` | `guitest_modern_button_state_name` | `shell` | `PENDING` | 0 |
 | `c:src/shell/guitest_app.c:guitest_open` | `src/shell/guitest_app.c` | `guitest_open` | `shell` | `PENDING` | 0 |
 | `c:src/shell/guitest_app.c:guitest_open_modern` | `src/shell/guitest_app.c` | `guitest_open_modern` | `shell` | `PENDING` | 0 |
 | `c:src/shell/guitest_app.c:guitest_open_scene` | `src/shell/guitest_app.c` | `guitest_open_scene` | `shell` | `PENDING` | 0 |
 | `c:src/shell/guitest_app.c:guitest_prepare_classic_layout` | `src/shell/guitest_app.c` | `guitest_prepare_classic_layout` | `shell` | `PENDING` | 0 |
 | `c:src/shell/guitest_app.c:guitest_set_modern_button_state` | `src/shell/guitest_app.c` | `guitest_set_modern_button_state` | `shell` | `PENDING` | 0 |
 | `c:src/shell/guitest_app.c:guitest_update_modern_layout` | `src/shell/guitest_app.c` | `guitest_update_modern_layout` | `shell` | `PENDING` | 0 |
+| `c:src/shell/mediaplayer.c:load_file` | `src/shell/mediaplayer.c` | `load_file` | `shell` | `PENDING` | 0 |
 | `c:src/shell/mediaplayer.c:mp_cleanup` | `src/shell/mediaplayer.c` | `mp_cleanup` | `shell` | `PENDING` | 0 |
+| `c:src/shell/mediaplayer.c:mp_get_status` | `src/shell/mediaplayer.c` | `mp_get_status` | `shell` | `PENDING` | 0 |
 | `c:src/shell/mediaplayer.c:mp_init` | `src/shell/mediaplayer.c` | `mp_init` | `shell` | `PENDING` | 0 |
 | `c:src/shell/mediaplayer.c:mp_pause` | `src/shell/mediaplayer.c` | `mp_pause` | `shell` | `PENDING` | 0 |
 | `c:src/shell/mediaplayer.c:mp_play_audio` | `src/shell/mediaplayer.c` | `mp_play_audio` | `shell` | `PENDING` | 0 |
@@ -5688,6 +6024,7 @@
 | `c:src/shell/shell_checks.c:shell_appcheck_is_compact_job` | `src/shell/shell_checks.c` | `shell_appcheck_is_compact_job` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_appcheck_label_is_unavailable` | `src/shell/shell_checks.c` | `shell_appcheck_label_is_unavailable` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_appcheck_migration_is_valid` | `src/shell/shell_checks.c` | `shell_appcheck_migration_is_valid` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_checks.c:shell_appcheck_phase_name` | `src/shell/shell_checks.c` | `shell_appcheck_phase_name` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_appcheck_print_summary` | `src/shell/shell_checks.c` | `shell_appcheck_print_summary` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_appcheck_record_result` | `src/shell/shell_checks.c` | `shell_appcheck_record_result` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_appcheck_set_phase` | `src/shell/shell_checks.c` | `shell_appcheck_set_phase` | `shell` | `PENDING` | 0 |
@@ -5695,6 +6032,7 @@
 | `c:src/shell/shell_checks.c:shell_appcheck_summary_finish` | `src/shell/shell_checks.c` | `shell_appcheck_summary_finish` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_appcheck_summary_reset` | `src/shell/shell_checks.c` | `shell_appcheck_summary_reset` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_appcheck_vma_is_valid` | `src/shell/shell_checks.c` | `shell_appcheck_vma_is_valid` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_checks.c:shell_blkcheck_case_name` | `src/shell/shell_checks.c` | `shell_blkcheck_case_name` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_blkcheck_cleanup` | `src/shell/shell_checks.c` | `shell_blkcheck_cleanup` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_blkcheck_copy_failure` | `src/shell/shell_checks.c` | `shell_blkcheck_copy_failure` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_blkcheck_copy_id` | `src/shell/shell_checks.c` | `shell_blkcheck_copy_id` | `shell` | `PENDING` | 0 |
@@ -5707,6 +6045,7 @@
 | `c:src/shell/shell_checks.c:shell_blkcheck_job_drain` | `src/shell/shell_checks.c` | `shell_blkcheck_job_drain` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_blkcheck_job_finish` | `src/shell/shell_checks.c` | `shell_blkcheck_job_finish` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_blkcheck_job_step` | `src/shell/shell_checks.c` | `shell_blkcheck_job_step` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_checks.c:shell_blkcheck_phase_name` | `src/shell/shell_checks.c` | `shell_blkcheck_phase_name` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_blkcheck_prepare_fixture` | `src/shell/shell_checks.c` | `shell_blkcheck_prepare_fixture` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_blkcheck_save_inventory` | `src/shell/shell_checks.c` | `shell_blkcheck_save_inventory` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_blkcheck_validate_fixture` | `src/shell/shell_checks.c` | `shell_blkcheck_validate_fixture` | `shell` | `PENDING` | 0 |
@@ -5778,15 +6117,16 @@
 | `c:src/shell/shell_checks.c:shell_regcheck_validate_usb_entry` | `src/shell/shell_checks.c` | `shell_regcheck_validate_usb_entry` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_remove_image` | `src/shell/shell_checks.c` | `shell_remove_image` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_verify_image` | `src/shell/shell_checks.c` | `shell_verify_image` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_command_utils.c:shell_command_args_equal` | `src/shell/shell_command_utils.c` | `shell_command_args_equal` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_command_utils.c:shell_command_parse_number` | `src/shell/shell_command_utils.c` | `shell_command_parse_number` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_command_utils.c:shell_command_print_hex` | `src/shell/shell_command_utils.c` | `shell_command_print_hex` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_command_utils.c:shell_command_print_num` | `src/shell/shell_command_utils.c` | `shell_command_print_num` | `shell` | `COVERED` | 2 |
-| `c:src/shell/shell_command_utils.c:shell_command_read_four_args` | `src/shell/shell_command_utils.c` | `shell_command_read_four_args` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_command_utils.c:shell_command_read_single_arg` | `src/shell/shell_command_utils.c` | `shell_command_read_single_arg` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_command_utils.c:shell_command_read_token` | `src/shell/shell_command_utils.c` | `shell_command_read_token` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_command_utils.c:shell_command_read_two_args` | `src/shell/shell_command_utils.c` | `shell_command_read_two_args` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_command_utils.c:shell_command_uppercase` | `src/shell/shell_command_utils.c` | `shell_command_uppercase` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_command_utils.c:shell_command_args_equal` | `src/shell/shell_command_utils.c` | `shell_command_args_equal` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_command_utils.c:shell_command_match_subcommand` | `src/shell/shell_command_utils.c` | `shell_command_match_subcommand` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_command_utils.c:shell_command_parse_number` | `src/shell/shell_command_utils.c` | `shell_command_parse_number` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_command_utils.c:shell_command_print_hex` | `src/shell/shell_command_utils.c` | `shell_command_print_hex` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_command_utils.c:shell_command_print_num` | `src/shell/shell_command_utils.c` | `shell_command_print_num` | `shell` | `COVERED` | 3 |
+| `c:src/shell/shell_command_utils.c:shell_command_read_four_args` | `src/shell/shell_command_utils.c` | `shell_command_read_four_args` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_command_utils.c:shell_command_read_single_arg` | `src/shell/shell_command_utils.c` | `shell_command_read_single_arg` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_command_utils.c:shell_command_read_token` | `src/shell/shell_command_utils.c` | `shell_command_read_token` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_command_utils.c:shell_command_read_two_args` | `src/shell/shell_command_utils.c` | `shell_command_read_two_args` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_command_utils.c:shell_command_uppercase` | `src/shell/shell_command_utils.c` | `shell_command_uppercase` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_apps.c:cmd_app` | `src/shell/shell_commands_apps.c` | `cmd_app` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_apps.c:cmd_app_argtest` | `src/shell/shell_commands_apps.c` | `cmd_app_argtest` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_apps.c:cmd_app_devtest` | `src/shell/shell_commands_apps.c` | `cmd_app_devtest` | `shell` | `PENDING` | 0 |
@@ -5836,6 +6176,7 @@
 | `c:src/shell/shell_commands_core.c:cmd_threadtest` | `src/shell/shell_commands_core.c` | `cmd_threadtest` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_core.c:cmd_uptime` | `src/shell/shell_commands_core.c` | `cmd_uptime` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_core.c:cmd_uptime_native` | `src/shell/shell_commands_core.c` | `cmd_uptime_native` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_core.c:shell_core_builtin_app_name` | `src/shell/shell_commands_core.c` | `shell_core_builtin_app_name` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_core.c:shell_core_handle_loader_result` | `src/shell/shell_commands_core.c` | `shell_core_handle_loader_result` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_core.c:shell_core_reboot` | `src/shell/shell_commands_core.c` | `shell_core_reboot` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_core.c:shell_core_shutdown` | `src/shell/shell_commands_core.c` | `shell_core_shutdown` | `shell` | `PENDING` | 0 |
@@ -5860,11 +6201,14 @@
 | `c:src/shell/shell_commands_core.c:shell_report_builtin_failure` | `src/shell/shell_commands_core.c` | `shell_report_builtin_failure` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_core.c:shell_stack_print_info` | `src/shell/shell_commands_core.c` | `shell_stack_print_info` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_acpi` | `src/shell/shell_commands_diagnostics.c` | `cmd_acpi` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_mode_name` | `src/shell/shell_commands_diagnostics.c` | `cmd_acpi_mode_name` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_print_address` | `src/shell/shell_commands_diagnostics.c` | `cmd_acpi_print_address` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_print_power` | `src/shell/shell_commands_diagnostics.c` | `cmd_acpi_print_power` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_print_register` | `src/shell/shell_commands_diagnostics.c` | `cmd_acpi_print_register` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_print_snapshot_table` | `src/shell/shell_commands_diagnostics.c` | `cmd_acpi_print_snapshot_table` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_print_table` | `src/shell/shell_commands_diagnostics.c` | `cmd_acpi_print_table` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_s5_name` | `src/shell/shell_commands_diagnostics.c` | `cmd_acpi_s5_name` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_space_name` | `src/shell/shell_commands_diagnostics.c` | `cmd_acpi_space_name` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_tables` | `src/shell/shell_commands_diagnostics.c` | `cmd_acpi_tables` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_cd` | `src/shell/shell_commands_diagnostics.c` | `cmd_cd` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_clock` | `src/shell/shell_commands_diagnostics.c` | `cmd_clock` | `shell` | `PENDING` | 0 |
@@ -5895,6 +6239,7 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_signals` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_signals` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_sockets` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_sockets` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_tls` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_tls` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_tls_detail` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_tls_detail` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_update` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update_capabilities` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_update_capabilities` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update_remote` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_update_remote` | `shell` | `PENDING` | 0 |
@@ -5939,6 +6284,7 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_log_check` | `src/shell/shell_commands_diagnostics.c` | `cmd_log_check` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_log_invalid` | `src/shell/shell_commands_diagnostics.c` | `cmd_log_invalid` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_log_level` | `src/shell/shell_commands_diagnostics.c` | `cmd_log_level` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_log_level_name` | `src/shell/shell_commands_diagnostics.c` | `cmd_log_level_name` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_log_parse_level` | `src/shell/shell_commands_diagnostics.c` | `cmd_log_parse_level` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_log_parse_tail_count` | `src/shell/shell_commands_diagnostics.c` | `cmd_log_parse_tail_count` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_log_print_levels` | `src/shell/shell_commands_diagnostics.c` | `cmd_log_print_levels` | `shell` | `PENDING` | 0 |
@@ -6008,9 +6354,11 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_usb_status` | `src/shell/shell_commands_diagnostics.c` | `cmd_usb_status` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_usb_storage` | `src/shell/shell_commands_diagnostics.c` | `cmd_usb_storage` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_vfs` | `src/shell/shell_commands_diagnostics.c` | `cmd_vfs` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_vfs_node_name` | `src/shell/shell_commands_diagnostics.c` | `cmd_vfs_node_name` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_vfs_status` | `src/shell/shell_commands_diagnostics.c` | `cmd_vfs_status` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_vfs_test` | `src/shell/shell_commands_diagnostics.c` | `cmd_vfs_test` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_vmamap` | `src/shell/shell_commands_diagnostics.c` | `cmd_vmamap` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_vmamap_area_type` | `src/shell/shell_commands_diagnostics.c` | `cmd_vmamap_area_type` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_vmamap_parse_pid` | `src/shell/shell_commands_diagnostics.c` | `cmd_vmamap_parse_pid` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_vmamap_print_permissions` | `src/shell/shell_commands_diagnostics.c` | `cmd_vmamap_print_permissions` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_wait` | `src/shell/shell_commands_diagnostics.c` | `cmd_wait` | `shell` | `PENDING` | 0 |
@@ -6072,6 +6420,7 @@
 | `c:src/shell/shell_commands_diagnostics.c:shell_memcheck_same_layout` | `src/shell/shell_commands_diagnostics.c` | `shell_memcheck_same_layout` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_memcheck_same_memory_metrics` | `src/shell/shell_commands_diagnostics.c` | `shell_memcheck_same_memory_metrics` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_memcheck_valid_memory_metrics` | `src/shell/shell_commands_diagnostics.c` | `shell_memcheck_valid_memory_metrics` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_diagnostics.c:shell_process_state_name` | `src/shell/shell_commands_diagnostics.c` | `shell_process_state_name` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_dns_wait` | `src/shell/shell_commands_network.c` | `cmd_dns_wait` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_http` | `src/shell/shell_commands_network.c` | `cmd_http` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_http_execute` | `src/shell/shell_commands_network.c` | `cmd_http_execute` | `shell` | `PENDING` | 0 |
@@ -6101,6 +6450,7 @@
 | `c:src/shell/shell_commands_network.c:cmd_net_check_qemu_tcp` | `src/shell/shell_commands_network.c` | `cmd_net_check_qemu_tcp` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_check_qemu_tcp_print` | `src/shell/shell_commands_network.c` | `cmd_net_check_qemu_tcp_print` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_check_qemu_timeout` | `src/shell/shell_commands_network.c` | `cmd_net_check_qemu_timeout` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_network.c:cmd_net_destination_name` | `src/shell/shell_commands_network.c` | `cmd_net_destination_name` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_devices` | `src/shell/shell_commands_network.c` | `cmd_net_devices` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_dhcp` | `src/shell/shell_commands_network.c` | `cmd_net_dhcp` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_dhcp_acquire` | `src/shell/shell_commands_network.c` | `cmd_net_dhcp_acquire` | `shell` | `PENDING` | 0 |
@@ -6192,6 +6542,7 @@
 | `c:src/shell/shell_commands_network.c:shell_network_job_check_emit_stage` | `src/shell/shell_commands_network.c` | `shell_network_job_check_emit_stage` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:shell_network_job_check_report_step` | `src/shell/shell_commands_network.c` | `shell_network_job_check_report_step` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:shell_network_job_check_stage_is_optional` | `src/shell/shell_commands_network.c` | `shell_network_job_check_stage_is_optional` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_network.c:shell_network_job_check_stage_name` | `src/shell/shell_commands_network.c` | `shell_network_job_check_stage_name` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:shell_network_job_drain` | `src/shell/shell_commands_network.c` | `shell_network_job_drain` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:shell_network_job_finish` | `src/shell/shell_commands_network.c` | `shell_network_job_finish` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:shell_network_job_prepare_check` | `src/shell/shell_commands_network.c` | `shell_network_job_prepare_check` | `shell` | `PENDING` | 0 |
@@ -6342,6 +6693,7 @@
 | `c:src/shell/shell_commands_storage.c:cmd_storage_print_volume` | `src/shell/shell_commands_storage.c` | `cmd_storage_print_volume` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_storage.c:cmd_storage_read_token` | `src/shell/shell_commands_storage.c` | `cmd_storage_read_token` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_storage.c:cmd_sync` | `src/shell/shell_commands_storage.c` | `cmd_sync` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_storage.c:cmd_sync_durability_name` | `src/shell/shell_commands_storage.c` | `cmd_sync_durability_name` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_storage.c:cmd_sync_print_usage` | `src/shell/shell_commands_storage.c` | `cmd_sync_print_usage` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_blkstat` | `src/shell/shell_commands_storage.c` | `shell_dispatch_cmd_blkstat` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_cache` | `src/shell/shell_commands_storage.c` | `shell_dispatch_cmd_cache` | `shell` | `PENDING` | 0 |
@@ -6384,6 +6736,7 @@
 | `c:src/shell/shell_hosted.c:shell_hosted_reset` | `src/shell/shell_hosted.c` | `shell_hosted_reset` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_hosted.c:shell_runtime_is_hosted_visible` | `src/shell/shell_hosted.c` | `shell_runtime_is_hosted_visible` | `shell` | `COVERED` | 3 |
 | `c:src/shell/shell_input.c:shell_input_cancel_extended` | `src/shell/shell_input.c` | `shell_input_cancel_extended` | `shell` | `COVERED` | 8 |
+| `c:src/shell/shell_input.c:shell_input_get_buffer` | `src/shell/shell_input.c` | `shell_input_get_buffer` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_input.c:shell_input_handle_key` | `src/shell/shell_input.c` | `shell_input_handle_key` | `shell` | `COVERED` | 8 |
 | `c:src/shell/shell_input.c:shell_input_handle_terminal_scroll_key` | `src/shell/shell_input.c` | `shell_input_handle_terminal_scroll_key` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_input.c:shell_input_history_copy` | `src/shell/shell_input.c` | `shell_input_history_copy` | `shell` | `COVERED` | 6 |
@@ -6419,6 +6772,7 @@
 | `c:src/shell/shell_job.c:shell_job_handle_key` | `src/shell/shell_job.c` | `shell_job_handle_key` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_job.c:shell_job_input_blocked` | `src/shell/shell_job.c` | `shell_job_input_blocked` | `shell` | `COVERED` | 5 |
 | `c:src/shell/shell_job.c:shell_job_is_active` | `src/shell/shell_job.c` | `shell_job_is_active` | `shell` | `COVERED` | 6 |
+| `c:src/shell/shell_job.c:shell_job_kind_name` | `src/shell/shell_job.c` | `shell_job_kind_name` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_job.c:shell_job_mark_cancel_requested` | `src/shell/shell_job.c` | `shell_job_mark_cancel_requested` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_job.c:shell_job_mark_timeout_requested` | `src/shell/shell_job.c` | `shell_job_mark_timeout_requested` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_job.c:shell_job_note_stale_event` | `src/shell/shell_job.c` | `shell_job_note_stale_event` | `shell` | `PENDING` | 0 |
@@ -6433,6 +6787,7 @@
 | `c:src/shell/shell_job.c:shell_job_set_progress` | `src/shell/shell_job.c` | `shell_job_set_progress` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_job.c:shell_job_set_timeout` | `src/shell/shell_job.c` | `shell_job_set_timeout` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_job.c:shell_job_start` | `src/shell/shell_job.c` | `shell_job_start` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_job.c:shell_job_state_name` | `src/shell/shell_job.c` | `shell_job_state_name` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_pipeline.c:shell_pipeline_all_finished` | `src/shell/shell_pipeline.c` | `shell_pipeline_all_finished` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_pipeline.c:shell_pipeline_close_fd` | `src/shell/shell_pipeline.c` | `shell_pipeline_close_fd` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_pipeline.c:shell_pipeline_close_resources` | `src/shell/shell_pipeline.c` | `shell_pipeline_close_resources` | `shell` | `PENDING` | 0 |
@@ -6441,6 +6796,7 @@
 | `c:src/shell/shell_pipeline.c:shell_pipeline_copy_target` | `src/shell/shell_pipeline.c` | `shell_pipeline_copy_target` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_pipeline.c:shell_pipeline_copy_text` | `src/shell/shell_pipeline.c` | `shell_pipeline_copy_text` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_pipeline.c:shell_pipeline_create_resources` | `src/shell/shell_pipeline.c` | `shell_pipeline_create_resources` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_pipeline.c:shell_pipeline_current_stage` | `src/shell/shell_pipeline.c` | `shell_pipeline_current_stage` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_pipeline.c:shell_pipeline_destroy_threads` | `src/shell/shell_pipeline.c` | `shell_pipeline_destroy_threads` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_pipeline.c:shell_pipeline_has_operator` | `src/shell/shell_pipeline.c` | `shell_pipeline_has_operator` | `shell` | `COVERED` | 5 |
 | `c:src/shell/shell_pipeline.c:shell_pipeline_is_active` | `src/shell/shell_pipeline.c` | `shell_pipeline_is_active` | `shell` | `PENDING` | 0 |
@@ -6471,6 +6827,7 @@
 | `c:src/shell/taskmanager.c:taskmgr_clamp_window` | `src/shell/taskmanager.c` | `taskmgr_clamp_window` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_close` | `src/shell/taskmanager.c` | `taskmgr_close` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_count_process_states` | `src/shell/taskmanager.c` | `taskmgr_count_process_states` | `shell` | `PENDING` | 0 |
+| `c:src/shell/taskmanager.c:taskmgr_find_thread_by_row` | `src/shell/taskmanager.c` | `taskmgr_find_thread_by_row` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_get_work_area` | `src/shell/taskmanager.c` | `taskmgr_get_work_area` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_aggregate_load` | `src/shell/taskmanager.c` | `taskmgr_gui_aggregate_load` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_append_number` | `src/shell/taskmanager.c` | `taskmgr_gui_append_number` | `shell` | `COVERED` | 1 |
@@ -6534,10 +6891,13 @@
 | `c:src/shell/taskmanager.c:taskmgr_pages_used` | `src/shell/taskmanager.c` | `taskmgr_pages_used` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_percent` | `src/shell/taskmanager.c` | `taskmgr_percent` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_print_hex_at` | `src/shell/taskmanager.c` | `taskmgr_print_hex_at` | `shell` | `PENDING` | 0 |
+| `c:src/shell/taskmanager.c:taskmgr_process_state_name` | `src/shell/taskmanager.c` | `taskmgr_process_state_name` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_process_tick_usage` | `src/shell/taskmanager.c` | `taskmgr_process_tick_usage` | `shell` | `PENDING` | 0 |
+| `c:src/shell/taskmanager.c:taskmgr_process_type` | `src/shell/taskmanager.c` | `taskmgr_process_type` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_redraw_after_menu_close` | `src/shell/taskmanager.c` | `taskmgr_redraw_after_menu_close` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_refresh` | `src/shell/taskmanager.c` | `taskmgr_refresh` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_run` | `src/shell/taskmanager.c` | `taskmgr_run` | `shell` | `PENDING` | 0 |
+| `c:src/shell/taskmanager.c:taskmgr_thread_state_name` | `src/shell/taskmanager.c` | `taskmgr_thread_state_name` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_update_cpu_metrics` | `src/shell/taskmanager.c` | `taskmgr_update_cpu_metrics` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_update_memory_stats` | `src/shell/taskmanager.c` | `taskmgr_update_memory_stats` | `shell` | `PENDING` | 0 |
 | `c:src/taskbar/taskbar.c:get_col` | `src/taskbar/taskbar.c` | `get_col` | `taskbar` | `PENDING` | 0 |
@@ -6562,6 +6922,7 @@
 | `c:src/taskbar/taskbar.c:taskbar_get_bounds` | `src/taskbar/taskbar.c` | `taskbar_get_bounds` | `taskbar` | `COVERED` | 2 |
 | `c:src/taskbar/taskbar.c:taskbar_get_button_rect` | `src/taskbar/taskbar.c` | `taskbar_get_button_rect` | `taskbar` | `COVERED` | 2 |
 | `c:src/taskbar/taskbar.c:taskbar_get_clock_rect` | `src/taskbar/taskbar.c` | `taskbar_get_clock_rect` | `taskbar` | `COVERED` | 2 |
+| `c:src/taskbar/taskbar.c:taskbar_get_config` | `src/taskbar/taskbar.c` | `taskbar_get_config` | `taskbar` | `PENDING` | 0 |
 | `c:src/taskbar/taskbar.c:taskbar_get_menu_bounds` | `src/taskbar/taskbar.c` | `taskbar_get_menu_bounds` | `taskbar` | `COVERED` | 2 |
 | `c:src/taskbar/taskbar.c:taskbar_get_work_area` | `src/taskbar/taskbar.c` | `taskbar_get_work_area` | `taskbar` | `COVERED` | 2 |
 | `c:src/taskbar/taskbar.c:taskbar_handle_click` | `src/taskbar/taskbar.c` | `taskbar_handle_click` | `taskbar` | `PENDING` | 0 |
@@ -6591,15 +6952,19 @@
 | `c:src/thread/thread.c:thread_cancel_wait` | `src/thread/thread.c` | `thread_cancel_wait` | `thread` | `PENDING` | 0 |
 | `c:src/thread/thread.c:thread_copy_wait_text` | `src/thread/thread.c` | `thread_copy_wait_text` | `thread` | `PENDING` | 0 |
 | `c:src/thread/thread.c:thread_copy_waiters` | `src/thread/thread.c` | `thread_copy_waiters` | `thread` | `PENDING` | 0 |
+| `c:src/thread/thread.c:thread_create` | `src/thread/thread.c` | `thread_create` | `thread` | `PENDING` | 0 |
 | `c:src/thread/thread.c:thread_destroy` | `src/thread/thread.c` | `thread_destroy` | `thread` | `COVERED` | 2 |
 | `c:src/thread/thread.c:thread_entry_trampoline` | `src/thread/thread.c` | `thread_entry_trampoline` | `thread` | `COVERED` | 2 |
+| `c:src/thread/thread.c:thread_get_by_id` | `src/thread/thread.c` | `thread_get_by_id` | `thread` | `PENDING` | 0 |
 | `c:src/thread/thread.c:thread_get_count` | `src/thread/thread.c` | `thread_get_count` | `thread` | `COVERED` | 4 |
 | `c:src/thread/thread.c:thread_get_count_by_owner` | `src/thread/thread.c` | `thread_get_count_by_owner` | `thread` | `COVERED` | 2 |
+| `c:src/thread/thread.c:thread_get_current` | `src/thread/thread.c` | `thread_get_current` | `thread` | `PENDING` | 0 |
 | `c:src/thread/thread.c:thread_index` | `src/thread/thread.c` | `thread_index` | `thread` | `COVERED` | 2 |
 | `c:src/thread/thread.c:thread_init` | `src/thread/thread.c` | `thread_init` | `thread` | `PENDING` | 0 |
 | `c:src/thread/thread.c:thread_is_ready` | `src/thread/thread.c` | `thread_is_ready` | `thread` | `COVERED` | 2 |
 | `c:src/thread/thread.c:thread_prepare_stack` | `src/thread/thread.c` | `thread_prepare_stack` | `thread` | `COVERED` | 2 |
 | `c:src/thread/thread.c:thread_run_self_test` | `src/thread/thread.c` | `thread_run_self_test` | `thread` | `COVERED` | 2 |
+| `c:src/thread/thread.c:thread_schedule_next` | `src/thread/thread.c` | `thread_schedule_next` | `thread` | `PENDING` | 0 |
 | `c:src/thread/thread.c:thread_scheduler_tick` | `src/thread/thread.c` | `thread_scheduler_tick` | `thread` | `COVERED` | 7 |
 | `c:src/thread/thread.c:thread_switch_to_scheduler` | `src/thread/thread.c` | `thread_switch_to_scheduler` | `thread` | `COVERED` | 2 |
 | `c:src/thread/thread.c:thread_test_record` | `src/thread/thread.c` | `thread_test_record` | `thread` | `COVERED` | 2 |
@@ -6655,6 +7020,7 @@
 | `c:src/updater/updater.c:updater_refresh_component` | `src/updater/updater.c` | `updater_refresh_component` | `updater` | `PENDING` | 0 |
 | `c:src/updater/updater.c:updater_refresh_packages` | `src/updater/updater.c` | `updater_refresh_packages` | `updater` | `PENDING` | 0 |
 | `c:src/updater/updater.c:updater_refresh_status` | `src/updater/updater.c` | `updater_refresh_status` | `updater` | `PENDING` | 0 |
+| `c:src/updater/updater.c:updater_remote_active_job_name` | `src/updater/updater.c` | `updater_remote_active_job_name` | `updater` | `PENDING` | 0 |
 | `c:src/updater/updater.c:updater_remote_clear_preflight` | `src/updater/updater.c` | `updater_remote_clear_preflight` | `updater` | `PENDING` | 0 |
 | `c:src/updater/updater.c:updater_remote_confirm_clear` | `src/updater/updater.c` | `updater_remote_confirm_clear` | `updater` | `PENDING` | 0 |
 | `c:src/updater/updater.c:updater_remote_confirm_fetch` | `src/updater/updater.c` | `updater_remote_confirm_fetch` | `updater` | `PENDING` | 0 |
@@ -6672,6 +7038,7 @@
 | `c:src/updater/updater.c:updater_runtime_preflight_rollback` | `src/updater/updater.c` | `updater_runtime_preflight_rollback` | `updater` | `PENDING` | 0 |
 | `c:src/updater/updater.c:updater_runtime_run_check` | `src/updater/updater.c` | `updater_runtime_run_check` | `updater` | `PENDING` | 0 |
 | `c:src/updater/updater.c:updater_runtime_start_job` | `src/updater/updater.c` | `updater_runtime_start_job` | `updater` | `PENDING` | 0 |
+| `c:src/updater/updater.c:updater_selected_package` | `src/updater/updater.c` | `updater_selected_package` | `updater` | `PENDING` | 0 |
 | `c:src/updater/updater.c:updater_simple_draw_confirmation` | `src/updater/updater.c` | `updater_simple_draw_confirmation` | `updater` | `PENDING` | 0 |
 | `c:src/updater/updater.c:updater_simple_draw_history` | `src/updater/updater.c` | `updater_simple_draw_history` | `updater` | `PENDING` | 0 |
 | `c:src/updater/updater.c:updater_simple_draw_packages` | `src/updater/updater.c` | `updater_simple_draw_packages` | `updater` | `PENDING` | 0 |
@@ -6689,6 +7056,7 @@
 | `c:src/updater/updater.c:updater_system_run_check` | `src/updater/updater.c` | `updater_system_run_check` | `updater` | `PENDING` | 0 |
 | `c:src/updater/updater.c:updater_system_run_fetch` | `src/updater/updater.c` | `updater_system_run_fetch` | `updater` | `PENDING` | 0 |
 | `c:src/updater/updater.c:updater_system_run_verify` | `src/updater/updater.c` | `updater_system_run_verify` | `updater` | `PENDING` | 0 |
+| `c:src/updater/updater.c:updater_system_slot_name` | `src/updater/updater.c` | `updater_system_slot_name` | `updater` | `PENDING` | 0 |
 | `c:src/updater/updater.c:updater_system_tag_begin` | `src/updater/updater.c` | `updater_system_tag_begin` | `updater` | `PENDING` | 0 |
 | `c:src/updater/updater.c:updater_system_tag_finish` | `src/updater/updater.c` | `updater_system_tag_finish` | `updater` | `PENDING` | 0 |
 | `c:src/updater/updater.c:updater_system_tag_key` | `src/updater/updater.c` | `updater_system_tag_key` | `updater` | `PENDING` | 0 |
@@ -6713,7 +7081,10 @@
 | `c:src/wm/wm.c:wm_focus_next` | `src/wm/wm.c` | `wm_focus_next` | `wm` | `PENDING` | 0 |
 | `c:src/wm/wm.c:wm_focus_prev` | `src/wm/wm.c` | `wm_focus_prev` | `wm` | `PENDING` | 0 |
 | `c:src/wm/wm.c:wm_focus_window` | `src/wm/wm.c` | `wm_focus_window` | `wm` | `PENDING` | 0 |
+| `c:src/wm/wm.c:wm_get_config` | `src/wm/wm.c` | `wm_get_config` | `wm` | `PENDING` | 0 |
+| `c:src/wm/wm.c:wm_get_focused` | `src/wm/wm.c` | `wm_get_focused` | `wm` | `PENDING` | 0 |
 | `c:src/wm/wm.c:wm_get_focused_id` | `src/wm/wm.c` | `wm_get_focused_id` | `wm` | `PENDING` | 0 |
+| `c:src/wm/wm.c:wm_get_window` | `src/wm/wm.c` | `wm_get_window` | `wm` | `PENDING` | 0 |
 | `c:src/wm/wm.c:wm_gui_begin_drag` | `src/wm/wm.c` | `wm_gui_begin_drag` | `wm` | `PENDING` | 0 |
 | `c:src/wm/wm.c:wm_gui_begin_resize` | `src/wm/wm.c` | `wm_gui_begin_resize` | `wm` | `PENDING` | 0 |
 | `c:src/wm/wm.c:wm_gui_clear_interaction` | `src/wm/wm.c` | `wm_gui_clear_interaction` | `wm` | `COVERED` | 2 |
@@ -6996,6 +7367,7 @@
 | `qemu:tst6:stress:kernel` | `qemu` | `tst6` | `qemu:tst6:stress:kernel` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | paging, heap, SLAB, processos e threads estao READY | repetir ciclos deterministas de memoria e execucao sob teto obrigatorio | invariantes estaveis permanecem iguais e a primeira falha interrompe a suite | overflow, vazamento, deadlock, timeout, protocolo ou QEMU | alocacoes e objetos temporarios de cada ciclo em snapshot | devolver paginas, destruir objetos e registrar seed e iteracao |
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
+| `host:shell:command-utils` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar parsing, validacao de argumentos, normalizacao e formatacao | utilitarios aceitam entradas validas, rejeitam limites e formatam valores corretamente | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos de entrada, saida e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -7008,6 +7380,7 @@
 - `api:src/include/apps/editor.h:editor_open`
 - `api:src/include/apps/editor.h:editor_run`
 - `api:src/include/apps/editor.h:editor_run_file`
+- `api:src/include/apps/mediaplayer.h:mp_get_status`
 - `api:src/include/apps/mediaplayer.h:mp_init`
 - `api:src/include/apps/mediaplayer.h:mp_main`
 - `api:src/include/apps/mediaplayer.h:mp_pause`
@@ -7043,10 +7416,12 @@
 - `api:src/include/core/app_files.h:app_files_write`
 - `api:src/include/core/app_remote.h:app_remote_apply_cached`
 - `api:src/include/core/app_remote.h:app_remote_build_plan`
+- `api:src/include/core/app_remote.h:app_remote_cache_state_name`
 - `api:src/include/core/app_remote.h:app_remote_check`
 - `api:src/include/core/app_remote.h:app_remote_clear`
 - `api:src/include/core/app_remote.h:app_remote_disable`
 - `api:src/include/core/app_remote.h:app_remote_enable`
+- `api:src/include/core/app_remote.h:app_remote_entry_state_name`
 - `api:src/include/core/app_remote.h:app_remote_fetch`
 - `api:src/include/core/app_remote.h:app_remote_find_entry`
 - `api:src/include/core/app_remote.h:app_remote_get_count`
@@ -7055,8 +7430,10 @@
 - `api:src/include/core/app_remote.h:app_remote_get_status`
 - `api:src/include/core/app_remote.h:app_remote_init`
 - `api:src/include/core/app_remote.h:app_remote_is_provenance_available`
+- `api:src/include/core/app_remote.h:app_remote_reason_name`
 - `api:src/include/core/app_remote.h:app_remote_refresh_provenance`
 - `api:src/include/core/app_remote.h:app_remote_request_cancel`
+- `api:src/include/core/app_remote.h:app_remote_state_name`
 - `api:src/include/core/app_remote.h:app_remote_test_fail_after`
 - `api:src/include/core/panic.h:panic`
 - `api:src/include/core/panic.h:panic_halt`
@@ -7070,18 +7447,23 @@
 - `api:src/include/core/test_protocol.h:test_protocol_poll`
 - `api:src/include/core/test_protocol.h:test_protocol_set_boot_ready`
 - `api:src/include/core/test_protocol.h:test_protocol_timeout`
+- `api:src/include/core/update.h:update_action_reason_name`
 - `api:src/include/core/update.h:update_apply_file`
 - `api:src/include/core/update.h:update_get_capabilities`
 - `api:src/include/core/update.h:update_get_history_count`
 - `api:src/include/core/update.h:update_get_history_entry`
 - `api:src/include/core/update.h:update_get_installed_version`
 - `api:src/include/core/update.h:update_get_status`
+- `api:src/include/core/update.h:update_history_operation_name`
+- `api:src/include/core/update.h:update_history_outcome_name`
 - `api:src/include/core/update.h:update_init`
 - `api:src/include/core/update.h:update_is_ready`
 - `api:src/include/core/update.h:update_rollback`
+- `api:src/include/core/update.h:update_store_state_name`
 - `api:src/include/core/update.h:update_sync_runtime_state`
 - `api:src/include/core/update.h:update_test_fail_after`
 - `api:src/include/core/update.h:update_verify_file`
+- `api:src/include/core/update.h:zupd_reason_name`
 - `api:src/include/core/update_remote.h:update_remote_capability_available`
 - `api:src/include/core/update_remote.h:update_remote_check`
 - `api:src/include/core/update_remote.h:update_remote_clear`
@@ -7091,8 +7473,11 @@
 - `api:src/include/core/update_remote.h:update_remote_get_cached_alias`
 - `api:src/include/core/update_remote.h:update_remote_get_status`
 - `api:src/include/core/update_remote.h:update_remote_init`
+- `api:src/include/core/update_remote.h:update_remote_reason_name`
 - `api:src/include/core/update_remote.h:update_remote_release_check`
 - `api:src/include/core/update_remote.h:update_remote_release_fetch`
+- `api:src/include/core/update_remote.h:update_remote_state_name`
+- `api:src/include/core/update_remote.h:update_remote_store_name`
 - `api:src/include/core/update_remote_github.h:update_remote_github_query`
 - `api:src/include/core/update_remote_github.h:update_remote_github_runtime_query`
 - `api:src/include/core/update_remote_system.h:update_remote_system_clear`
@@ -7100,24 +7485,33 @@
 - `api:src/include/core/update_remote_system.h:update_remote_system_get_cached_path`
 - `api:src/include/core/update_remote_system.h:update_remote_system_get_status`
 - `api:src/include/core/update_remote_system.h:update_remote_system_init`
+- `api:src/include/core/update_remote_system.h:update_remote_system_reason_name`
+- `api:src/include/core/update_remote_system.h:update_remote_system_state_name`
 - `api:src/include/core/update_system.h:update_system_check_tag`
 - `api:src/include/core/update_system.h:update_system_init`
 - `api:src/include/core/update_system.h:update_system_is_ready`
+- `api:src/include/core/update_system.h:update_system_reason_name`
 - `api:src/include/core/update_system.h:update_system_transfer_tag`
 - `api:src/include/core/update_system.h:update_system_verify_file`
 - `api:src/include/core/update_system.h:update_system_verify_file_for_slot`
+- `api:src/include/core/update_system_slots.h:update_system_slot_file_state_name`
 - `api:src/include/core/update_system_slots.h:update_system_slots_boot_confirm`
+- `api:src/include/core/update_system_slots.h:update_system_slots_boot_state_name`
 - `api:src/include/core/update_system_slots.h:update_system_slots_cancel_pending`
 - `api:src/include/core/update_system_slots.h:update_system_slots_get_status`
 - `api:src/include/core/update_system_slots.h:update_system_slots_init`
 - `api:src/include/core/update_system_slots.h:update_system_slots_is_ready`
+- `api:src/include/core/update_system_slots.h:update_system_slots_journal_phase_name`
+- `api:src/include/core/update_system_slots.h:update_system_slots_reason_name`
 - `api:src/include/core/update_system_slots.h:update_system_slots_reboot_preflight`
 - `api:src/include/core/update_system_slots.h:update_system_slots_stage_file`
+- `api:src/include/core/update_system_slots.h:update_system_slots_state_name`
 - `api:src/include/core/usb_transport.h:usb_transport_bulk_transfer`
 - `api:src/include/core/usb_transport.h:usb_transport_control_request`
 - `api:src/include/core/usb_transport.h:usb_transport_interrupt_cancel`
 - `api:src/include/core/usb_transport.h:usb_transport_interrupt_submit`
 - `api:src/include/core/usb_transport.h:usb_transport_reset_bulk_toggles`
+- `api:src/include/drivers/ac97.h:ac97_get_device`
 - `api:src/include/drivers/ac97.h:ac97_handler`
 - `api:src/include/drivers/ac97.h:ac97_init`
 - `api:src/include/drivers/ac97.h:ac97_play`
@@ -7145,6 +7539,7 @@
 - `api:src/include/drivers/rtl8811cu.h:rtl8811cu_init`
 - `api:src/include/drivers/rtl8811cu.h:rtl8811cu_probe`
 - `api:src/include/drivers/rtl8811cu.h:rtl8811cu_scan`
+- `api:src/include/drivers/rtl8811cu.h:rtl8811cu_state_name`
 - `api:src/include/drivers/rtl8811cu.h:rtl8811cu_validate_state`
 - `api:src/include/drivers/tss.h:tss_init`
 - `api:src/include/drivers/tss.h:tss_is_ready`
@@ -7154,6 +7549,7 @@
 - `api:src/include/fs/wav.h:wav_init`
 - `api:src/include/fs/wav.h:wav_load`
 - `api:src/include/fs/wav.h:wav_play`
+- `api:src/include/memory/compress.h:compress_get_stats`
 - `api:src/include/process/process.h:process_context_switch`
 - `api:src/include/process/process.h:process_user_enter`
 - `api:src/include/process/process.h:process_user_termination_enter`
@@ -7275,6 +7671,9 @@
 - `c:src/appstore/appstore.c:appstore_draw_classic_remote`
 - `c:src/appstore/appstore.c:appstore_draw_simple`
 - `c:src/appstore/appstore.c:appstore_entry_color`
+- `c:src/appstore/appstore.c:appstore_entry_info`
+- `c:src/appstore/appstore.c:appstore_entry_label`
+- `c:src/appstore/appstore.c:appstore_entry_trust`
 - `c:src/appstore/appstore.c:appstore_get_mode`
 - `c:src/appstore/appstore.c:appstore_gui_draw_action_button`
 - `c:src/appstore/appstore.c:appstore_gui_draw_confirmation`
@@ -7316,7 +7715,9 @@
 - `c:src/appstore/appstore.c:appstore_restore_selection`
 - `c:src/appstore/appstore.c:appstore_rollback_is_available`
 - `c:src/appstore/appstore.c:appstore_select_first_visible`
+- `c:src/appstore/appstore.c:appstore_selected_entry`
 - `c:src/appstore/appstore.c:appstore_selected_key`
+- `c:src/appstore/appstore.c:appstore_selected_remote_entry`
 - `c:src/appstore/appstore.c:appstore_set_result`
 - `c:src/appstore/appstore.c:appstore_simple_draw_confirmation`
 - `c:src/appstore/appstore.c:appstore_simple_draw_details`
@@ -7345,6 +7746,7 @@
 - `c:src/boot/recovery_loader.c:recovery_boot_legacy`
 - `c:src/boot/recovery_loader.c:recovery_boot_prepared`
 - `c:src/boot/recovery_loader.c:recovery_boot_previous`
+- `c:src/boot/recovery_loader.c:recovery_boot_state_name`
 - `c:src/boot/recovery_loader.c:recovery_build_menu_view`
 - `c:src/boot/recovery_loader.c:recovery_clear`
 - `c:src/boot/recovery_loader.c:recovery_clear_chain_handoff`
@@ -7383,11 +7785,15 @@
 - `c:src/boot/recovery_loader.c:recovery_read_sector`
 - `c:src/boot/recovery_loader.c:recovery_reader_init`
 - `c:src/boot/recovery_loader.c:recovery_reader_read`
+- `c:src/boot/recovery_loader.c:recovery_reason_name`
 - `c:src/boot/recovery_loader.c:recovery_restrict_legacy`
 - `c:src/boot/recovery_loader.c:recovery_retry_candidate`
 - `c:src/boot/recovery_loader.c:recovery_run_menu`
 - `c:src/boot/recovery_loader.c:recovery_slot_available`
 - `c:src/boot/recovery_loader.c:recovery_slot_metadata_matches`
+- `c:src/boot/recovery_loader.c:recovery_slot_name`
+- `c:src/boot/recovery_loader.c:recovery_slot_record`
+- `c:src/boot/recovery_loader.c:recovery_slot_state_name`
 - `c:src/boot/recovery_loader.c:recovery_state_sequence_safe`
 - `c:src/boot/recovery_loader.c:recovery_state_slot_record_valid`
 - `c:src/boot/recovery_loader.c:recovery_state_write_u16`
@@ -7404,6 +7810,7 @@
 - `c:src/boot/recovery_loader.c:recovery_zero`
 - `c:src/boot/recovery_menu.c:recovery_console_clear`
 - `c:src/boot/recovery_menu.c:recovery_console_draw_glyph`
+- `c:src/boot/recovery_menu.c:recovery_console_glyph`
 - `c:src/boot/recovery_menu.c:recovery_console_init`
 - `c:src/boot/recovery_menu.c:recovery_console_pixel`
 - `c:src/boot/recovery_menu.c:recovery_console_print`
@@ -7412,6 +7819,7 @@
 - `c:src/boot/recovery_menu.c:recovery_console_u16`
 - `c:src/boot/recovery_menu.c:recovery_console_u32`
 - `c:src/boot/recovery_menu.c:recovery_console_vesa_ready`
+- `c:src/boot/recovery_menu.c:recovery_menu_action_name`
 - `c:src/boot/recovery_menu.c:recovery_menu_actions`
 - `c:src/boot/recovery_menu.c:recovery_menu_confirm_retry`
 - `c:src/boot/recovery_menu.c:recovery_menu_print_version`
@@ -7466,6 +7874,10 @@
 - `c:src/core/app_builtin.c:app_builtin_run_pathtest`
 - `c:src/core/app_builtin.c:app_builtin_run_uptime`
 - `c:src/core/app_builtin.c:app_builtin_write_u32`
+- `c:src/core/app_catalog.c:app_catalog_entry_key`
+- `c:src/core/app_catalog.c:app_catalog_find_installed`
+- `c:src/core/app_catalog.c:app_catalog_reason_name`
+- `c:src/core/app_catalog.c:app_catalog_state_name`
 - `c:src/core/app_files.c:app_files_chdir`
 - `c:src/core/app_files.c:app_files_close`
 - `c:src/core/app_files.c:app_files_close_owner`
@@ -7500,6 +7912,7 @@
 - `c:src/core/app_loader.c:app_loader_validate_image`
 - `c:src/core/app_loader.c:app_loader_validate_launch_info`
 - `c:src/core/app_loader.c:app_loader_validate_layout`
+- `c:src/core/app_package.c:app_package_action_reason_name`
 - `c:src/core/app_package.c:app_package_add_blocker`
 - `c:src/core/app_package.c:app_package_alias_is_valid`
 - `c:src/core/app_package.c:app_package_apply_file`
@@ -7537,6 +7950,8 @@
 - `c:src/core/app_package.c:app_package_get_installed_info_by_id`
 - `c:src/core/app_package.c:app_package_history_append`
 - `c:src/core/app_package.c:app_package_history_is_valid`
+- `c:src/core/app_package.c:app_package_history_operation_name`
+- `c:src/core/app_package.c:app_package_history_outcome_name`
 - `c:src/core/app_package.c:app_package_id_is_valid`
 - `c:src/core/app_package.c:app_package_init`
 - `c:src/core/app_package.c:app_package_install_confirmed`
@@ -7545,6 +7960,7 @@
 - `c:src/core/app_package.c:app_package_journal_is_valid`
 - `c:src/core/app_package.c:app_package_parse_dependencies`
 - `c:src/core/app_package.c:app_package_parse_manifest`
+- `c:src/core/app_package.c:app_package_plan_action_name`
 - `c:src/core/app_package.c:app_package_plan_contains_before`
 - `c:src/core/app_package.c:app_package_preflight_install`
 - `c:src/core/app_package.c:app_package_preflight_plan`
@@ -7599,6 +8015,7 @@
 - `c:src/core/app_remote.c:app_remote_build_plan`
 - `c:src/core/app_remote.c:app_remote_build_plan_internal`
 - `c:src/core/app_remote.c:app_remote_cache_path`
+- `c:src/core/app_remote.c:app_remote_cache_state_name`
 - `c:src/core/app_remote.c:app_remote_check`
 - `c:src/core/app_remote.c:app_remote_classify_entries`
 - `c:src/core/app_remote.c:app_remote_clear`
@@ -7610,6 +8027,7 @@
 - `c:src/core/app_remote.c:app_remote_enable`
 - `c:src/core/app_remote.c:app_remote_end_ready`
 - `c:src/core/app_remote.c:app_remote_ensure_directory`
+- `c:src/core/app_remote.c:app_remote_entry_state_name`
 - `c:src/core/app_remote.c:app_remote_fail`
 - `c:src/core/app_remote.c:app_remote_fetch`
 - `c:src/core/app_remote.c:app_remote_fetch_packages`
@@ -7643,6 +8061,7 @@
 - `c:src/core/app_remote.c:app_remote_publish_cache`
 - `c:src/core/app_remote.c:app_remote_read_u16`
 - `c:src/core/app_remote.c:app_remote_read_u32`
+- `c:src/core/app_remote.c:app_remote_reason_name`
 - `c:src/core/app_remote.c:app_remote_record_decode`
 - `c:src/core/app_remote.c:app_remote_record_encode`
 - `c:src/core/app_remote.c:app_remote_record_provenance`
@@ -7652,6 +8071,7 @@
 - `c:src/core/app_remote.c:app_remote_result_status`
 - `c:src/core/app_remote.c:app_remote_revalidate_pending_cache`
 - `c:src/core/app_remote.c:app_remote_sort_dependencies`
+- `c:src/core/app_remote.c:app_remote_state_name`
 - `c:src/core/app_remote.c:app_remote_test_fail_after`
 - `c:src/core/app_remote.c:app_remote_transport_reason`
 - `c:src/core/app_remote.c:app_remote_validate_download`
@@ -7663,24 +8083,64 @@
 - `c:src/core/app_remote.c:app_remote_write_record`
 - `c:src/core/app_remote.c:app_remote_write_u16`
 - `c:src/core/app_remote.c:app_remote_write_u32`
+- `c:src/core/arp.c:arp_entry_state_name`
+- `c:src/core/bearssl_compat.c:memcpy`
+- `c:src/core/bearssl_compat.c:memmove`
+- `c:src/core/bearssl_compat.c:memset`
+- `c:src/core/clock.c:clock_source_name`
+- `c:src/core/device_manager.c:device_add`
+- `c:src/core/device_manager.c:device_manager_status_name`
+- `c:src/core/device_manager.c:device_pci_class_name`
+- `c:src/core/dhcp.c:dhcp_state_name`
+- `c:src/core/dns.c:dns_state_name`
+- `c:src/core/ethernet.c:ethernet_find_slot`
+- `c:src/core/http.c:http_state_name`
+- `c:src/core/icmp.c:icmp_ping_state_name`
+- `c:src/core/ipv4.c:ipv4_protocol_name`
+- `c:src/core/kernel_tests_blackbox.c:blackbox_marker`
+- `c:src/core/log.c:log_level_str`
+- `c:src/core/net_socket.c:net_socket_state_name`
 - `c:src/core/network_manager.c:network_apply_dhcp_lease`
 - `c:src/core/network_manager.c:network_cancel_dynamic_clients`
 - `c:src/core/network_manager.c:network_copy_usb_interface`
 - `c:src/core/network_manager.c:network_dns_reachable`
 - `c:src/core/network_manager.c:network_drop_dhcp_configuration`
+- `c:src/core/network_manager.c:network_find_driver_record`
 - `c:src/core/network_manager.c:network_ipv4_changed`
 - `c:src/core/network_manager.c:network_ipv4_parameters_valid`
+- `c:src/core/network_manager.c:network_manager_interface_state_name`
+- `c:src/core/network_manager.c:network_manager_ipv4_source_name`
+- `c:src/core/network_manager.c:network_manager_link_state_name`
+- `c:src/core/network_manager.c:network_manager_model_name`
 - `c:src/core/network_manager.c:network_process_dhcp_event`
 - `c:src/core/network_manager.c:network_refresh_dynamic_status`
 - `c:src/core/network_manager.c:network_reset_remote_clients`
 - `c:src/core/network_manager.c:network_restore_configuration`
+- `c:src/core/power.c:power_capability_name`
+- `c:src/core/power.c:power_quiescence_state_name`
 - `c:src/core/power.c:power_reboot_commit`
+- `c:src/core/power.c:power_service_state_name`
 - `c:src/core/power.c:power_terminal_halt`
+- `c:src/core/power.c:power_transaction_phase_name`
+- `c:src/core/power.c:power_transaction_target_name`
 - `c:src/core/power.c:power_trigger_triple_fault`
+- `c:src/core/recovery.c:recovery_get`
+- `c:src/core/recovery.c:recovery_state_name`
+- `c:src/core/sk_buff.c:alloc_skb`
+- `c:src/core/sk_buff.c:skb_entry_from_pointer`
+- `c:src/core/sk_buff.c:skb_pull`
+- `c:src/core/sk_buff.c:skb_push`
+- `c:src/core/sk_buff.c:skb_put`
+- `c:src/core/socket.c:socket_family_name`
+- `c:src/core/socket.c:socket_find_fd`
 - `c:src/core/socket.c:socket_init`
+- `c:src/core/socket.c:socket_pending_pop_locked`
 - `c:src/core/socket.c:socket_pending_remove_locked`
 - `c:src/core/socket.c:socket_poll_revents`
+- `c:src/core/socket.c:socket_queue_front_locked`
+- `c:src/core/socket.c:socket_queue_pop_locked`
 - `c:src/core/socket.c:socket_record_failure_locked`
+- `c:src/core/socket.c:socket_state_name`
 - `c:src/core/socket.c:socket_tcp_accept`
 - `c:src/core/socket.c:socket_tcp_close`
 - `c:src/core/socket.c:socket_tcp_connect`
@@ -7722,6 +8182,7 @@
 - `c:src/core/syscall.c:syscall_user_signal_mask`
 - `c:src/core/syscall.c:syscall_user_sync`
 - `c:src/core/syscall.c:syscall_user_uptime`
+- `c:src/core/tcp.c:tcp_state_name`
 - `c:src/core/test_coverage.c:__cyg_profile_func_enter`
 - `c:src/core/test_coverage.c:__cyg_profile_func_exit`
 - `c:src/core/test_coverage.c:coverage_append`
@@ -7734,6 +8195,7 @@
 - `c:src/core/test_coverage.c:test_coverage_begin_case`
 - `c:src/core/test_coverage.c:test_coverage_end_case`
 - `c:src/core/test_protocol.c:protocol_copy_text`
+- `c:src/core/test_protocol.c:protocol_error_name`
 - `c:src/core/test_protocol.c:protocol_receive`
 - `c:src/core/test_protocol.c:protocol_run_case`
 - `c:src/core/test_protocol.c:test_protocol_init`
@@ -7741,6 +8203,10 @@
 - `c:src/core/test_protocol.c:test_protocol_poll`
 - `c:src/core/test_protocol.c:test_protocol_set_boot_ready`
 - `c:src/core/test_protocol.c:test_protocol_timeout`
+- `c:src/core/test_protocol_core.c:core_error_name`
+- `c:src/core/test_protocol_core.c:core_event_name`
+- `c:src/core/tls.c:tls_reason_name`
+- `c:src/core/tls.c:tls_state_name`
 - `c:src/core/tls_client.c:tls_client_close`
 - `c:src/core/tls_client.c:tls_client_configure`
 - `c:src/core/tls_client.c:tls_client_divide_u64`
@@ -7754,6 +8220,7 @@
 - `c:src/core/tls_client.c:tls_client_send`
 - `c:src/core/tls_client.c:tls_client_start`
 - `c:src/core/update.c:update_action_fail`
+- `c:src/core/update.c:update_action_reason_name`
 - `c:src/core/update.c:update_apply_file`
 - `c:src/core/update.c:update_apply_recover_failure`
 - `c:src/core/update.c:update_apply_state_from_journal`
@@ -7806,6 +8273,8 @@
 - `c:src/core/update.c:update_history_copy_alias`
 - `c:src/core/update.c:update_history_mark_invalid`
 - `c:src/core/update.c:update_history_newest`
+- `c:src/core/update.c:update_history_operation_name`
+- `c:src/core/update.c:update_history_outcome_name`
 - `c:src/core/update.c:update_history_record_action`
 - `c:src/core/update.c:update_history_record_recovery`
 - `c:src/core/update.c:update_init`
@@ -7841,6 +8310,7 @@
 - `c:src/core/update.c:update_set_compile_time_version`
 - `c:src/core/update.c:update_stage_apply_files`
 - `c:src/core/update.c:update_start_apply_transaction`
+- `c:src/core/update.c:update_store_state_name`
 - `c:src/core/update.c:update_sync_runtime_state`
 - `c:src/core/update.c:update_target_exists`
 - `c:src/core/update.c:update_target_id`
@@ -7861,6 +8331,7 @@
 - `c:src/core/update.c:update_write_state_record`
 - `c:src/core/update.c:update_write_u16`
 - `c:src/core/update.c:update_write_u32`
+- `c:src/core/update.c:zupd_reason_name`
 - `c:src/core/update_remote.c:update_remote_abort_pending`
 - `c:src/core/update_remote.c:update_remote_begin`
 - `c:src/core/update_remote.c:update_remote_build_package_url`
@@ -7875,6 +8346,7 @@
 - `c:src/core/update_remote.c:update_remote_delete_root`
 - `c:src/core/update_remote.c:update_remote_disable`
 - `c:src/core/update_remote.c:update_remote_download_attempt`
+- `c:src/core/update_remote.c:update_remote_effective_url`
 - `c:src/core/update_remote.c:update_remote_enable`
 - `c:src/core/update_remote.c:update_remote_encode_version`
 - `c:src/core/update_remote.c:update_remote_end_ready`
@@ -7894,6 +8366,7 @@
 - `c:src/core/update_remote.c:update_remote_read_record`
 - `c:src/core/update_remote.c:update_remote_read_u16`
 - `c:src/core/update_remote.c:update_remote_read_u32`
+- `c:src/core/update_remote.c:update_remote_reason_name`
 - `c:src/core/update_remote.c:update_remote_receive_package`
 - `c:src/core/update_remote.c:update_remote_record_decode`
 - `c:src/core/update_remote.c:update_remote_record_encode`
@@ -7902,6 +8375,8 @@
 - `c:src/core/update_remote.c:update_remote_reject`
 - `c:src/core/update_remote.c:update_remote_result_copy`
 - `c:src/core/update_remote.c:update_remote_space_available`
+- `c:src/core/update_remote.c:update_remote_state_name`
+- `c:src/core/update_remote.c:update_remote_store_name`
 - `c:src/core/update_remote.c:update_remote_stream_sink`
 - `c:src/core/update_remote.c:update_remote_transient_error`
 - `c:src/core/update_remote.c:update_remote_validate_cached_package`
@@ -7951,6 +8426,7 @@
 - `c:src/core/update_remote_github.c:update_remote_github_query`
 - `c:src/core/update_remote_github.c:update_remote_github_query_mode`
 - `c:src/core/update_remote_github.c:update_remote_github_runtime_query`
+- `c:src/core/update_remote_release.c:update_release_basename`
 - `c:src/core/update_remote_release.c:update_release_build_descriptor_url`
 - `c:src/core/update_remote_release.c:update_release_build_manifest_url`
 - `c:src/core/update_remote_release.c:update_release_candidate_matches`
@@ -8000,6 +8476,7 @@
 - `c:src/core/update_remote_runtime.c:runtime_remote_encode_record`
 - `c:src/core/update_remote_runtime.c:runtime_remote_fetch_descriptor`
 - `c:src/core/update_remote_runtime.c:runtime_remote_fetch_manifest`
+- `c:src/core/update_remote_runtime.c:runtime_remote_find_github_asset`
 - `c:src/core/update_remote_runtime.c:runtime_remote_hash_file`
 - `c:src/core/update_remote_runtime.c:runtime_remote_http_options`
 - `c:src/core/update_remote_runtime.c:runtime_remote_http_reason`
@@ -8036,6 +8513,8 @@
 - `c:src/core/update_remote_runtime.c:update_remote_runtime_get_cached_alias`
 - `c:src/core/update_remote_runtime.c:update_remote_runtime_get_status`
 - `c:src/core/update_remote_runtime.c:update_remote_runtime_init`
+- `c:src/core/update_remote_runtime.c:update_remote_runtime_reason_name`
+- `c:src/core/update_remote_runtime.c:update_remote_runtime_state_name`
 - `c:src/core/update_remote_system.c:system_cache_copy_text`
 - `c:src/core/update_remote_system.c:system_cache_decode`
 - `c:src/core/update_remote_system.c:system_cache_decode_text`
@@ -8061,6 +8540,8 @@
 - `c:src/core/update_remote_system.c:update_remote_system_get_cached_path`
 - `c:src/core/update_remote_system.c:update_remote_system_get_status`
 - `c:src/core/update_remote_system.c:update_remote_system_init`
+- `c:src/core/update_remote_system.c:update_remote_system_reason_name`
+- `c:src/core/update_remote_system.c:update_remote_system_state_name`
 - `c:src/core/update_runtime.c:runtime_action_fail`
 - `c:src/core/update_runtime.c:runtime_alias`
 - `c:src/core/update_runtime.c:runtime_apply_plan`
@@ -8147,6 +8628,7 @@
 - `c:src/core/update_runtime.c:update_runtime_get_installed_version`
 - `c:src/core/update_runtime.c:update_runtime_init`
 - `c:src/core/update_runtime.c:update_runtime_parse_manifest`
+- `c:src/core/update_runtime.c:update_runtime_reason_name`
 - `c:src/core/update_runtime.c:update_runtime_rollback`
 - `c:src/core/update_runtime.c:update_runtime_verify_file`
 - `c:src/core/update_runtime.c:update_runtime_verify_file_for_manifest`
@@ -8161,6 +8643,7 @@
 - `c:src/core/update_system.c:update_system_read_base`
 - `c:src/core/update_system.c:update_system_read_u16`
 - `c:src/core/update_system.c:update_system_read_u32`
+- `c:src/core/update_system.c:update_system_reason_name`
 - `c:src/core/update_system.c:update_system_reject`
 - `c:src/core/update_system.c:update_system_remote_begin`
 - `c:src/core/update_system.c:update_system_remote_compatible`
@@ -8220,13 +8703,18 @@
 - `c:src/core/update_system_slots.c:system_slots_write_state_locked`
 - `c:src/core/update_system_slots.c:system_slots_write_u16`
 - `c:src/core/update_system_slots.c:system_slots_write_u32`
+- `c:src/core/update_system_slots.c:update_system_slot_file_state_name`
 - `c:src/core/update_system_slots.c:update_system_slots_boot_confirm`
+- `c:src/core/update_system_slots.c:update_system_slots_boot_state_name`
 - `c:src/core/update_system_slots.c:update_system_slots_cancel_pending`
 - `c:src/core/update_system_slots.c:update_system_slots_get_status`
 - `c:src/core/update_system_slots.c:update_system_slots_init`
 - `c:src/core/update_system_slots.c:update_system_slots_is_ready`
+- `c:src/core/update_system_slots.c:update_system_slots_journal_phase_name`
+- `c:src/core/update_system_slots.c:update_system_slots_reason_name`
 - `c:src/core/update_system_slots.c:update_system_slots_reboot_preflight`
 - `c:src/core/update_system_slots.c:update_system_slots_stage_file`
+- `c:src/core/update_system_slots.c:update_system_slots_state_name`
 - `c:src/core/usb_manager.c:usb_append_char`
 - `c:src/core/usb_manager.c:usb_append_hex`
 - `c:src/core/usb_manager.c:usb_append_text`
@@ -8246,8 +8734,15 @@
 - `c:src/core/usb_manager.c:usb_manager_get_status`
 - `c:src/core/usb_manager.c:usb_manager_get_uhci_status`
 - `c:src/core/usb_manager.c:usb_manager_init`
+- `c:src/core/usb_manager.c:usb_manager_model_name`
 - `c:src/core/usb_manager.c:usb_manager_poll`
+- `c:src/core/usb_manager.c:usb_manager_port_reason_name`
+- `c:src/core/usb_manager.c:usb_manager_port_state_name`
+- `c:src/core/usb_manager.c:usb_manager_reason_name`
 - `c:src/core/usb_manager.c:usb_manager_refresh`
+- `c:src/core/usb_manager.c:usb_manager_speed_name`
+- `c:src/core/usb_manager.c:usb_manager_state_name`
+- `c:src/core/usb_manager.c:usb_manager_uhci_state_name`
 - `c:src/core/usb_manager.c:usb_set_text`
 - `c:src/core/usb_manager.c:usb_start_controllers`
 - `c:src/core/usb_manager.c:usb_sync_hid_runtime`
@@ -8260,6 +8755,8 @@
 - `c:src/core/usb_transport.c:usb_transport_is_ehci`
 - `c:src/core/usb_transport.c:usb_transport_is_uhci`
 - `c:src/core/usb_transport.c:usb_transport_reset_bulk_toggles`
+- `c:src/core/wait.c:wait_reason_name`
+- `c:src/core/wait.c:wait_wake_mode_name`
 - `c:src/core/wifi_manager.c:wifi_append_char`
 - `c:src/core/wifi_manager.c:wifi_append_decimal`
 - `c:src/core/wifi_manager.c:wifi_append_hex`
@@ -8277,6 +8774,11 @@
 - `c:src/core/wifi_manager.c:wifi_manager_get_count`
 - `c:src/core/wifi_manager.c:wifi_manager_get_interface`
 - `c:src/core/wifi_manager.c:wifi_manager_scan`
+- `c:src/core/wifi_manager.c:wifi_manager_state_name`
+- `c:src/core/workqueue.c:workqueue_context_name`
+- `c:src/core/workqueue.c:workqueue_priority_name`
+- `c:src/core/workqueue.c:workqueue_state_name`
+- `c:src/core/workqueue.c:workqueue_take_ready`
 - `c:src/desktop/desktop.c:desktop_add_icon`
 - `c:src/desktop/desktop.c:desktop_drag_threshold_reached`
 - `c:src/desktop/desktop.c:desktop_draw`
@@ -8288,6 +8790,7 @@
 - `c:src/desktop/desktop.c:desktop_find_drop_slot`
 - `c:src/desktop/desktop.c:desktop_find_free_slot`
 - `c:src/desktop/desktop.c:desktop_find_nearest_slot`
+- `c:src/desktop/desktop.c:desktop_get_icon_entry`
 - `c:src/desktop/desktop.c:desktop_get_selected_app`
 - `c:src/desktop/desktop.c:desktop_handle_click`
 - `c:src/desktop/desktop.c:desktop_handle_mouse`
@@ -8302,6 +8805,7 @@
 - `c:src/desktop/desktop.c:desktop_update_selection`
 - `c:src/desktop/desktop.c:draw_single_icon_simple`
 - `c:src/drivers/ac97.c:ac97_delay`
+- `c:src/drivers/ac97.c:ac97_get_device`
 - `c:src/drivers/ac97.c:ac97_get_sample_rate`
 - `c:src/drivers/ac97.c:ac97_handler`
 - `c:src/drivers/ac97.c:ac97_init`
@@ -8329,6 +8833,8 @@
 - `c:src/drivers/acpi.c:acpi_enable_mode_or_halt`
 - `c:src/drivers/acpi.c:acpi_enter_s5`
 - `c:src/drivers/acpi.c:acpi_finalize_s5_capability`
+- `c:src/drivers/acpi.c:acpi_find_rsdp`
+- `c:src/drivers/acpi.c:acpi_find_rsdp_range`
 - `c:src/drivers/acpi.c:acpi_find_table`
 - `c:src/drivers/acpi.c:acpi_finish_init`
 - `c:src/drivers/acpi.c:acpi_gas_valid`
@@ -8364,6 +8870,7 @@
 - `c:src/drivers/acpi.c:acpi_read_u64`
 - `c:src/drivers/acpi.c:acpi_reset`
 - `c:src/drivers/acpi.c:acpi_reset_register_valid`
+- `c:src/drivers/acpi.c:acpi_root_kind_name`
 - `c:src/drivers/acpi.c:acpi_s5_preflight`
 - `c:src/drivers/acpi.c:acpi_select_pm_register`
 - `c:src/drivers/acpi.c:acpi_select_root`
@@ -8371,8 +8878,11 @@
 - `c:src/drivers/acpi.c:acpi_signature_equal`
 - `c:src/drivers/acpi.c:acpi_store_table`
 - `c:src/drivers/acpi.c:acpi_table_already_stored`
+- `c:src/drivers/acpi.c:acpi_validate_sdt`
 - `c:src/drivers/ata.c:ata_detect`
+- `c:src/drivers/ata.c:ata_first_present`
 - `c:src/drivers/ata.c:ata_flush_device`
+- `c:src/drivers/ata.c:ata_get_device`
 - `c:src/drivers/ata.c:ata_get_device_count`
 - `c:src/drivers/ata.c:ata_get_device_counters`
 - `c:src/drivers/ata.c:ata_get_read_ops`
@@ -8385,6 +8895,7 @@
 - `c:src/drivers/ata.c:ata_soft_reset`
 - `c:src/drivers/ata.c:ata_wait_identify`
 - `c:src/drivers/ata.c:ata_write_sectors`
+- `c:src/drivers/e1000.c:e1000_allocate_device`
 - `c:src/drivers/e1000.c:e1000_allocate_dma`
 - `c:src/drivers/e1000.c:e1000_bottom_half`
 - `c:src/drivers/e1000.c:e1000_copy_interface_id`
@@ -8392,6 +8903,7 @@
 - `c:src/drivers/e1000.c:e1000_enqueue_rx`
 - `c:src/drivers/e1000.c:e1000_fail_init`
 - `c:src/drivers/e1000.c:e1000_fill_interface`
+- `c:src/drivers/e1000.c:e1000_find_device`
 - `c:src/drivers/e1000.c:e1000_get_driver_status`
 - `c:src/drivers/e1000.c:e1000_handler`
 - `c:src/drivers/e1000.c:e1000_has_pending_rx`
@@ -8425,6 +8937,9 @@
 - `c:src/drivers/ehci.c:ehci_deadline_expired`
 - `c:src/drivers/ehci.c:ehci_disable`
 - `c:src/drivers/ehci.c:ehci_enumerate_port`
+- `c:src/drivers/ehci.c:ehci_find`
+- `c:src/drivers/ehci.c:ehci_find_device_record`
+- `c:src/drivers/ehci.c:ehci_find_port_record`
 - `c:src/drivers/ehci.c:ehci_get_device`
 - `c:src/drivers/ehci.c:ehci_get_device_count`
 - `c:src/drivers/ehci.c:ehci_get_port`
@@ -8463,6 +8978,7 @@
 - `c:src/drivers/ehci.c:ehci_validate_state`
 - `c:src/drivers/ehci.c:ehci_wait_qtds`
 - `c:src/drivers/ehci.c:ehci_write`
+- `c:src/drivers/font.c:font_get_glyph`
 - `c:src/drivers/idt.c:idt_enable_user_syscall`
 - `c:src/drivers/idt.c:idt_get_irq_status`
 - `c:src/drivers/idt.c:idt_get_shared_irq_handler_count`
@@ -8522,6 +9038,8 @@
 - `c:src/drivers/pci.c:pci_enable_bus_mastering`
 - `c:src/drivers/pci.c:pci_enable_io_and_bus_mastering`
 - `c:src/drivers/pci.c:pci_enable_memory_and_bus_mastering`
+- `c:src/drivers/pci.c:pci_get_device`
+- `c:src/drivers/pci.c:pci_get_device_by_id`
 - `c:src/drivers/pci.c:pci_init`
 - `c:src/drivers/pci.c:pci_read`
 - `c:src/drivers/pci.c:pci_scan_device`
@@ -8542,6 +9060,7 @@
 - `c:src/drivers/rtc.c:rtc_read_utc`
 - `c:src/drivers/rtc.c:rtc_wait_update_complete`
 - `c:src/drivers/rtl8139.c:rtl8139_advance_rx`
+- `c:src/drivers/rtl8139.c:rtl8139_allocate_device`
 - `c:src/drivers/rtl8139.c:rtl8139_allocate_dma`
 - `c:src/drivers/rtl8139.c:rtl8139_bottom_half`
 - `c:src/drivers/rtl8139.c:rtl8139_configure_dma`
@@ -8550,6 +9069,7 @@
 - `c:src/drivers/rtl8139.c:rtl8139_drain_rx`
 - `c:src/drivers/rtl8139.c:rtl8139_fail_init`
 - `c:src/drivers/rtl8139.c:rtl8139_fill_interface`
+- `c:src/drivers/rtl8139.c:rtl8139_find_device`
 - `c:src/drivers/rtl8139.c:rtl8139_get_driver_status`
 - `c:src/drivers/rtl8139.c:rtl8139_handler`
 - `c:src/drivers/rtl8139.c:rtl8139_has_pending_rx`
@@ -8589,13 +9109,17 @@
 - `c:src/drivers/rtl8811cu.c:rtl8811cu_scan`
 - `c:src/drivers/rtl8811cu.c:rtl8811cu_send_frame`
 - `c:src/drivers/rtl8811cu.c:rtl8811cu_service_pending`
+- `c:src/drivers/rtl8811cu.c:rtl8811cu_state_name`
 - `c:src/drivers/rtl8811cu.c:rtl8811cu_validate_state`
 - `c:src/drivers/serial.c:serial_init`
 - `c:src/drivers/serial.c:serial_read_byte`
 - `c:src/drivers/speaker.c:speaker_init`
 - `c:src/drivers/speaker.c:speaker_play_melody`
+- `c:src/drivers/timer.c:timer_mode_name`
+- `c:src/drivers/timer.c:timer_state_name`
 - `c:src/drivers/tss.c:tss_init`
 - `c:src/drivers/tss.c:tss_load_gdt`
+- `c:src/drivers/uhci.c:uhci_allocate`
 - `c:src/drivers/uhci.c:uhci_allocate_dma`
 - `c:src/drivers/uhci.c:uhci_bulk_transfer`
 - `c:src/drivers/uhci.c:uhci_bulk_transfer_once`
@@ -8607,8 +9131,13 @@
 - `c:src/drivers/uhci.c:uhci_enumerate_port_once`
 - `c:src/drivers/uhci.c:uhci_enumeration_reason`
 - `c:src/drivers/uhci.c:uhci_enumeration_retryable`
+- `c:src/drivers/uhci.c:uhci_find`
+- `c:src/drivers/uhci.c:uhci_find_device_record`
+- `c:src/drivers/uhci.c:uhci_find_free_interrupt_request`
+- `c:src/drivers/uhci.c:uhci_find_interrupt_request`
 - `c:src/drivers/uhci.c:uhci_get_device`
 - `c:src/drivers/uhci.c:uhci_get_device_count`
+- `c:src/drivers/uhci.c:uhci_get_device_record_at`
 - `c:src/drivers/uhci.c:uhci_get_port`
 - `c:src/drivers/uhci.c:uhci_get_port_count`
 - `c:src/drivers/uhci.c:uhci_in16`
@@ -8616,6 +9145,7 @@
 - `c:src/drivers/uhci.c:uhci_init_instance`
 - `c:src/drivers/uhci.c:uhci_initialize_ports`
 - `c:src/drivers/uhci.c:uhci_interrupt_arm`
+- `c:src/drivers/uhci.c:uhci_interrupt_buffer`
 - `c:src/drivers/uhci.c:uhci_interrupt_cancel`
 - `c:src/drivers/uhci.c:uhci_interrupt_completion`
 - `c:src/drivers/uhci.c:uhci_interrupt_deadline_expired`
@@ -8635,6 +9165,7 @@
 - `c:src/drivers/uhci.c:uhci_parse_configuration`
 - `c:src/drivers/uhci.c:uhci_poll`
 - `c:src/drivers/uhci.c:uhci_port_offset`
+- `c:src/drivers/uhci.c:uhci_queue_head_at`
 - `c:src/drivers/uhci.c:uhci_read_descriptor`
 - `c:src/drivers/uhci.c:uhci_recover_controller`
 - `c:src/drivers/uhci.c:uhci_release_dma`
@@ -8669,7 +9200,9 @@
 - `c:src/drivers/usb_hid.c:usb_hid_get_at`
 - `c:src/drivers/usb_hid.c:usb_hid_get_count`
 - `c:src/drivers/usb_hid.c:usb_hid_init`
+- `c:src/drivers/usb_hid.c:usb_hid_kind_name`
 - `c:src/drivers/usb_hid.c:usb_hid_refresh`
+- `c:src/drivers/usb_hid.c:usb_hid_state_name`
 - `c:src/drivers/usb_msc.c:msc_block_read`
 - `c:src/drivers/usb_msc.c:msc_block_submit`
 - `c:src/drivers/usb_msc.c:msc_bot_command`
@@ -8694,12 +9227,15 @@
 - `c:src/drivers/usb_msc.c:usb_msc_init`
 - `c:src/drivers/usb_msc.c:usb_msc_is_active`
 - `c:src/drivers/usb_msc.c:usb_msc_refresh`
+- `c:src/drivers/usb_msc.c:usb_msc_state_name`
+- `c:src/drivers/vesa.c:memset_simple`
 - `c:src/drivers/vesa.c:vesa_disable`
 - `c:src/drivers/vesa.c:vesa_draw_bitmap`
 - `c:src/drivers/vesa.c:vesa_draw_circle`
 - `c:src/drivers/vesa.c:vesa_draw_string`
 - `c:src/drivers/vesa.c:vesa_flip`
 - `c:src/drivers/vesa.c:vesa_get_metrics`
+- `c:src/drivers/vesa.c:vesa_get_mode`
 - `c:src/drivers/vesa.c:vesa_init`
 - `c:src/drivers/vesa.c:vesa_init_backbuffer`
 - `c:src/drivers/vesa.c:vesa_rgba`
@@ -8807,35 +9343,49 @@
 - `c:src/fs/bmp.c:read_u32`
 - `c:src/fs/devfs.c:devfs_init`
 - `c:src/fs/devfs.c:devfs_is_ready`
+- `c:src/fs/devfs.c:devfs_operations`
 - `c:src/fs/devfs.c:devfs_unavailable_ioctl`
 - `c:src/fs/devfs.c:devfs_unavailable_lseek`
 - `c:src/fs/devfs.c:devfs_unavailable_read`
 - `c:src/fs/devfs.c:devfs_unavailable_write`
 - `c:src/fs/fat12.c:fat12_create_dir_entry`
 - `c:src/fs/fat12.c:fat12_delete_file`
+- `c:src/fs/fat12.c:fat12_find_entry`
 - `c:src/fs/fat12.c:fat12_find_free_cluster`
+- `c:src/fs/fat12.c:fat12_find_in_dir`
+- `c:src/fs/fat12.c:fat12_find_path_entry`
+- `c:src/fs/fat12.c:fat12_get_fs`
+- `c:src/fs/fat12.c:fat12_read_dir_cluster`
 - `c:src/fs/fat12.c:fat12_write_file`
 - `c:src/fs/fat12.c:fat12_write_file_in_dir`
 - `c:src/fs/fat12.c:to_upper`
+- `c:src/fs/fat32.c:fat32_get_fs`
 - `c:src/fs/fat32.c:fat32_read_file`
 - `c:src/fs/fat32.c:fat32_write_file`
+- `c:src/fs/file_index.c:file_index_state_name`
+- `c:src/fs/fs.c:fs_legacy_relative_path`
 - `c:src/fs/procfs.c:procfs_append_hex`
 - `c:src/fs/procfs.c:procfs_append_line_hex`
 - `c:src/fs/procfs.c:procfs_init`
 - `c:src/fs/procfs.c:procfs_ioctl`
 - `c:src/fs/procfs.c:procfs_is_ready`
 - `c:src/fs/procfs.c:procfs_list`
+- `c:src/fs/procfs.c:procfs_log_level_name`
 - `c:src/fs/procfs.c:procfs_open`
 - `c:src/fs/procfs.c:procfs_poll`
 - `c:src/fs/procfs.c:procfs_sync`
 - `c:src/fs/procfs.c:procfs_test_process_entry`
+- `c:src/fs/storage.c:storage_add_volume`
 - `c:src/fs/storage.c:storage_buffers_equal`
 - `c:src/fs/storage.c:storage_check_chain`
 - `c:src/fs/storage.c:storage_check_directory_visitor`
 - `c:src/fs/storage.c:storage_check_metadata`
 - `c:src/fs/storage.c:storage_find_file_long`
+- `c:src/fs/storage.c:storage_free_mount`
+- `c:src/fs/storage.c:storage_fs_name`
 - `c:src/fs/storage.c:storage_mark_directory_entries_deleted`
 - `c:src/fs/storage.c:storage_mark_volume_error`
+- `c:src/fs/storage.c:storage_mount_for_volume`
 - `c:src/fs/storage.c:storage_release_fat32_chain`
 - `c:src/fs/storage.c:storage_slot_writer_abort`
 - `c:src/fs/storage.c:storage_slot_writer_build_entry`
@@ -8846,6 +9396,7 @@
 - `c:src/fs/storage.c:storage_transaction_writer_abort`
 - `c:src/fs/storage.c:storage_transaction_writer_finish`
 - `c:src/fs/storage.c:storage_transaction_writer_write`
+- `c:src/fs/storage.c:storage_volume_state_name`
 - `c:src/fs/storage.c:storage_write_cluster`
 - `c:src/fs/sysfs.c:sysfs_append_decimal`
 - `c:src/fs/sysfs.c:sysfs_append_hex_digits`
@@ -8858,19 +9409,25 @@
 - `c:src/fs/sysfs.c:sysfs_append_signed`
 - `c:src/fs/sysfs.c:sysfs_attribute_index`
 - `c:src/fs/sysfs.c:sysfs_block_copy`
+- `c:src/fs/sysfs.c:sysfs_block_provider`
 - `c:src/fs/sysfs.c:sysfs_init`
 - `c:src/fs/sysfs.c:sysfs_ioctl`
 - `c:src/fs/sysfs.c:sysfs_is_ready`
 - `c:src/fs/sysfs.c:sysfs_list`
 - `c:src/fs/sysfs.c:sysfs_list_attributes`
+- `c:src/fs/sysfs.c:sysfs_network_link`
+- `c:src/fs/sysfs.c:sysfs_network_model`
+- `c:src/fs/sysfs.c:sysfs_network_state`
 - `c:src/fs/sysfs.c:sysfs_open`
 - `c:src/fs/sysfs.c:sysfs_poll`
+- `c:src/fs/sysfs.c:sysfs_power_capability`
 - `c:src/fs/sysfs.c:sysfs_power_default`
 - `c:src/fs/sysfs.c:sysfs_render_block`
 - `c:src/fs/sysfs.c:sysfs_render_network`
 - `c:src/fs/sysfs.c:sysfs_render_pci`
 - `c:src/fs/sysfs.c:sysfs_sync`
 - `c:src/fs/sysfs.c:sysfs_write`
+- `c:src/fs/vfs.c:vfs_pipe_from_file`
 - `c:src/fs/vfs.c:vfs_pipe_lseek`
 - `c:src/fs/vfs.c:vfs_pipe_read_ready`
 - `c:src/fs/vfs.c:vfs_pipe_write_ready`
@@ -8899,6 +9456,7 @@
 - `c:src/gui/display.c:display_mode_supports`
 - `c:src/gui/display.c:display_parse_scale`
 - `c:src/gui/display.c:display_refresh_scene`
+- `c:src/gui/display.c:display_scale_name`
 - `c:src/gui/gui.c:gui_draw_button`
 - `c:src/gui/gui.c:gui_draw_panel`
 - `c:src/gui/gui.c:gui_draw_resampled_glyph`
@@ -8909,8 +9467,14 @@
 - `c:src/gui/gui.c:gui_get_theme`
 - `c:src/gui/gui.c:gui_init`
 - `c:src/gui/gui.c:gui_set_theme`
+- `c:src/gui/gui.c:gui_theme_name`
 - `c:src/icons/icons.c:icons_draw_desktop_bitmap`
+- `c:src/icons/icons.c:icons_get_desktop`
 - `c:src/icons/icons.c:icons_get_desktop_bitmap_status`
+- `c:src/icons/icons.c:icons_get_fm`
+- `c:src/icons/icons.c:icons_get_registry`
+- `c:src/icons/icons.c:icons_get_tb`
+- `c:src/icons/icons.c:icons_get_wm`
 - `c:src/icons/icons.c:icons_init`
 - `c:src/icons/icons.c:icons_load_desktop_bmp`
 - `c:src/icons/icons.c:icons_release_desktop_bmps`
@@ -8950,6 +9514,31 @@
 - `c:src/kernel/panic.c:panic_memory`
 - `c:src/kernel/panic.c:panic_print_metric`
 - `c:src/kernel/panic.c:panic_print_number`
+- `c:src/memory/compress.c:compress_get_stats`
+- `c:src/memory/memory.c:heap_block_from_pointer`
+- `c:src/memory/memory.c:kmalloc`
+- `c:src/memory/memory.c:kmalloc_aligned`
+- `c:src/memory/memory.c:kmalloc_internal`
+- `c:src/memory/memory.c:memory_heap_pointer`
+- `c:src/memory/memory.c:memory_physical_pointer`
+- `c:src/memory/memory.c:pmm_alloc_page`
+- `c:src/memory/memory.c:pmm_alloc_page_in_zone`
+- `c:src/memory/memory.c:pmm_alloc_pages`
+- `c:src/memory/memory.c:pmm_alloc_pages_in_zone`
+- `c:src/memory/paging.c:paging_bootstrap_get_table`
+- `c:src/memory/paging.c:paging_create_directory`
+- `c:src/memory/paging.c:paging_create_user_directory`
+- `c:src/memory/paging.c:paging_get_current_directory`
+- `c:src/memory/paging.c:paging_get_page`
+- `c:src/memory/paging.c:paging_get_page_in_directory`
+- `c:src/memory/paging.c:paging_host_resolve_user_pointer`
+- `c:src/memory/paging.c:paging_host_table_from_entry`
+- `c:src/memory/paging.c:paging_physical_pointer`
+- `c:src/memory/slab.c:kmem_cache_alloc`
+- `c:src/memory/slab.c:kmem_cache_create`
+- `c:src/memory/vma.c:process_vma_create`
+- `c:src/memory/vma.c:process_vma_find_containing`
+- `c:src/memory/vma.c:process_vma_find_page`
 - `c:src/process/process.c:process_apply_pending_cancel`
 - `c:src/process/process.c:process_bootstrap_idle`
 - `c:src/process/process.c:process_cancel_focused_user`
@@ -8958,10 +9547,15 @@
 - `c:src/process/process.c:process_cancel_wait`
 - `c:src/process/process.c:process_copy_wait_text`
 - `c:src/process/process.c:process_copy_waiters`
+- `c:src/process/process.c:process_create`
+- `c:src/process/process.c:process_create_internal`
 - `c:src/process/process.c:process_create_user_image_suspended`
 - `c:src/process/process.c:process_create_user_image_suspended_with_launch`
 - `c:src/process/process.c:process_create_user_test`
+- `c:src/process/process.c:process_create_with_stack_size`
 - `c:src/process/process.c:process_discard_new_process`
+- `c:src/process/process.c:process_get_by_pid`
+- `c:src/process/process.c:process_get_current`
 - `c:src/process/process.c:process_get_event_generation`
 - `c:src/process/process.c:process_get_last_user_fault`
 - `c:src/process/process.c:process_get_user_fault_count`
@@ -8989,8 +9583,11 @@
 - `c:src/process/process.c:process_user_emit_mov`
 - `c:src/process/process.c:process_user_patch_u32`
 - `c:src/process/process.c:process_wake_channel`
+- `c:src/process/process.c:scheduler_find_next_ready`
 - `c:src/process/process.c:scheduler_get_stats`
 - `c:src/process/process.c:scheduler_init`
+- `c:src/process/process.c:scheduler_schedule`
+- `c:src/process/signal.c:process_signal_name`
 - `c:src/settings/settings.c:apply_mouse_settings`
 - `c:src/settings/settings.c:apply_taskbar_settings`
 - `c:src/settings/settings.c:apply_wm_settings`
@@ -9025,6 +9622,7 @@
 - `c:src/settings/settings.c:settings_hosted_mouse`
 - `c:src/settings/settings.c:settings_init`
 - `c:src/settings/settings.c:settings_select_mode`
+- `c:src/shell/editor.c:alloc_line`
 - `c:src/shell/editor.c:detect_encoding`
 - `c:src/shell/editor.c:detect_line_ending`
 - `c:src/shell/editor.c:detect_syntax`
@@ -9075,13 +9673,16 @@
 - `c:src/shell/guitest_app.c:guitest_handle_modern_button_mouse`
 - `c:src/shell/guitest_app.c:guitest_handle_mouse`
 - `c:src/shell/guitest_app.c:guitest_is_inside`
+- `c:src/shell/guitest_app.c:guitest_modern_button_state_name`
 - `c:src/shell/guitest_app.c:guitest_open`
 - `c:src/shell/guitest_app.c:guitest_open_modern`
 - `c:src/shell/guitest_app.c:guitest_open_scene`
 - `c:src/shell/guitest_app.c:guitest_prepare_classic_layout`
 - `c:src/shell/guitest_app.c:guitest_set_modern_button_state`
 - `c:src/shell/guitest_app.c:guitest_update_modern_layout`
+- `c:src/shell/mediaplayer.c:load_file`
 - `c:src/shell/mediaplayer.c:mp_cleanup`
+- `c:src/shell/mediaplayer.c:mp_get_status`
 - `c:src/shell/mediaplayer.c:mp_init`
 - `c:src/shell/mediaplayer.c:mp_pause`
 - `c:src/shell/mediaplayer.c:mp_play_audio`
@@ -9117,6 +9718,7 @@
 - `c:src/shell/shell_checks.c:shell_appcheck_is_compact_job`
 - `c:src/shell/shell_checks.c:shell_appcheck_label_is_unavailable`
 - `c:src/shell/shell_checks.c:shell_appcheck_migration_is_valid`
+- `c:src/shell/shell_checks.c:shell_appcheck_phase_name`
 - `c:src/shell/shell_checks.c:shell_appcheck_print_summary`
 - `c:src/shell/shell_checks.c:shell_appcheck_record_result`
 - `c:src/shell/shell_checks.c:shell_appcheck_set_phase`
@@ -9124,6 +9726,7 @@
 - `c:src/shell/shell_checks.c:shell_appcheck_summary_finish`
 - `c:src/shell/shell_checks.c:shell_appcheck_summary_reset`
 - `c:src/shell/shell_checks.c:shell_appcheck_vma_is_valid`
+- `c:src/shell/shell_checks.c:shell_blkcheck_case_name`
 - `c:src/shell/shell_checks.c:shell_blkcheck_cleanup`
 - `c:src/shell/shell_checks.c:shell_blkcheck_copy_failure`
 - `c:src/shell/shell_checks.c:shell_blkcheck_copy_id`
@@ -9136,6 +9739,7 @@
 - `c:src/shell/shell_checks.c:shell_blkcheck_job_drain`
 - `c:src/shell/shell_checks.c:shell_blkcheck_job_finish`
 - `c:src/shell/shell_checks.c:shell_blkcheck_job_step`
+- `c:src/shell/shell_checks.c:shell_blkcheck_phase_name`
 - `c:src/shell/shell_checks.c:shell_blkcheck_prepare_fixture`
 - `c:src/shell/shell_checks.c:shell_blkcheck_save_inventory`
 - `c:src/shell/shell_checks.c:shell_blkcheck_validate_fixture`
@@ -9205,12 +9809,6 @@
 - `c:src/shell/shell_checks.c:shell_regcheck_validate_usb_entry`
 - `c:src/shell/shell_checks.c:shell_remove_image`
 - `c:src/shell/shell_checks.c:shell_verify_image`
-- `c:src/shell/shell_command_utils.c:shell_command_parse_number`
-- `c:src/shell/shell_command_utils.c:shell_command_print_hex`
-- `c:src/shell/shell_command_utils.c:shell_command_read_four_args`
-- `c:src/shell/shell_command_utils.c:shell_command_read_single_arg`
-- `c:src/shell/shell_command_utils.c:shell_command_read_two_args`
-- `c:src/shell/shell_command_utils.c:shell_command_uppercase`
 - `c:src/shell/shell_commands_apps.c:cmd_app`
 - `c:src/shell/shell_commands_apps.c:cmd_app_argtest`
 - `c:src/shell/shell_commands_apps.c:cmd_app_devtest`
@@ -9254,6 +9852,7 @@
 - `c:src/shell/shell_commands_core.c:cmd_threadtest`
 - `c:src/shell/shell_commands_core.c:cmd_uptime`
 - `c:src/shell/shell_commands_core.c:cmd_uptime_native`
+- `c:src/shell/shell_commands_core.c:shell_core_builtin_app_name`
 - `c:src/shell/shell_commands_core.c:shell_core_handle_loader_result`
 - `c:src/shell/shell_commands_core.c:shell_core_reboot`
 - `c:src/shell/shell_commands_core.c:shell_core_shutdown`
@@ -9275,11 +9874,14 @@
 - `c:src/shell/shell_commands_core.c:shell_report_builtin_failure`
 - `c:src/shell/shell_commands_core.c:shell_stack_print_info`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_acpi`
+- `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_mode_name`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_print_address`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_print_power`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_print_register`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_print_snapshot_table`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_print_table`
+- `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_s5_name`
+- `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_space_name`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_tables`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_cd`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_clock`
@@ -9310,6 +9912,7 @@
 - `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_signals`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_sockets`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_tls`
+- `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_tls_detail`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update_capabilities`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update_remote`
@@ -9354,6 +9957,7 @@
 - `c:src/shell/shell_commands_diagnostics.c:cmd_log_check`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_log_invalid`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_log_level`
+- `c:src/shell/shell_commands_diagnostics.c:cmd_log_level_name`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_log_parse_level`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_log_parse_tail_count`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_log_print_levels`
@@ -9421,9 +10025,11 @@
 - `c:src/shell/shell_commands_diagnostics.c:cmd_usb_status`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_usb_storage`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_vfs`
+- `c:src/shell/shell_commands_diagnostics.c:cmd_vfs_node_name`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_vfs_status`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_vfs_test`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_vmamap`
+- `c:src/shell/shell_commands_diagnostics.c:cmd_vmamap_area_type`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_vmamap_parse_pid`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_vmamap_print_permissions`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_wait`
@@ -9482,6 +10088,7 @@
 - `c:src/shell/shell_commands_diagnostics.c:shell_memcheck_same_layout`
 - `c:src/shell/shell_commands_diagnostics.c:shell_memcheck_same_memory_metrics`
 - `c:src/shell/shell_commands_diagnostics.c:shell_memcheck_valid_memory_metrics`
+- `c:src/shell/shell_commands_diagnostics.c:shell_process_state_name`
 - `c:src/shell/shell_commands_network.c:cmd_dns_wait`
 - `c:src/shell/shell_commands_network.c:cmd_http`
 - `c:src/shell/shell_commands_network.c:cmd_http_execute`
@@ -9511,6 +10118,7 @@
 - `c:src/shell/shell_commands_network.c:cmd_net_check_qemu_tcp`
 - `c:src/shell/shell_commands_network.c:cmd_net_check_qemu_tcp_print`
 - `c:src/shell/shell_commands_network.c:cmd_net_check_qemu_timeout`
+- `c:src/shell/shell_commands_network.c:cmd_net_destination_name`
 - `c:src/shell/shell_commands_network.c:cmd_net_devices`
 - `c:src/shell/shell_commands_network.c:cmd_net_dhcp`
 - `c:src/shell/shell_commands_network.c:cmd_net_dhcp_acquire`
@@ -9592,6 +10200,7 @@
 - `c:src/shell/shell_commands_network.c:shell_network_job_check_emit_stage`
 - `c:src/shell/shell_commands_network.c:shell_network_job_check_report_step`
 - `c:src/shell/shell_commands_network.c:shell_network_job_check_stage_is_optional`
+- `c:src/shell/shell_commands_network.c:shell_network_job_check_stage_name`
 - `c:src/shell/shell_commands_network.c:shell_network_job_drain`
 - `c:src/shell/shell_commands_network.c:shell_network_job_finish`
 - `c:src/shell/shell_commands_network.c:shell_network_job_prepare_check`
@@ -9737,6 +10346,7 @@
 - `c:src/shell/shell_commands_storage.c:cmd_storage_print_volume`
 - `c:src/shell/shell_commands_storage.c:cmd_storage_read_token`
 - `c:src/shell/shell_commands_storage.c:cmd_sync`
+- `c:src/shell/shell_commands_storage.c:cmd_sync_durability_name`
 - `c:src/shell/shell_commands_storage.c:cmd_sync_print_usage`
 - `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_blkstat`
 - `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_cache`
@@ -9771,6 +10381,7 @@
 - `c:src/shell/shell_hosted.c:shell_hosted_close`
 - `c:src/shell/shell_hosted.c:shell_hosted_mouse`
 - `c:src/shell/shell_hosted.c:shell_hosted_reset`
+- `c:src/shell/shell_input.c:shell_input_get_buffer`
 - `c:src/shell/shell_job.c:shell_dispatch_cmd_job`
 - `c:src/shell/shell_job.c:shell_job_begin_drain`
 - `c:src/shell/shell_job.c:shell_job_cancel_requested`
@@ -9782,6 +10393,7 @@
 - `c:src/shell/shell_job.c:shell_job_get_generation`
 - `c:src/shell/shell_job.c:shell_job_get_status`
 - `c:src/shell/shell_job.c:shell_job_handle_key`
+- `c:src/shell/shell_job.c:shell_job_kind_name`
 - `c:src/shell/shell_job.c:shell_job_mark_cancel_requested`
 - `c:src/shell/shell_job.c:shell_job_mark_timeout_requested`
 - `c:src/shell/shell_job.c:shell_job_note_stale_event`
@@ -9795,6 +10407,7 @@
 - `c:src/shell/shell_job.c:shell_job_set_progress`
 - `c:src/shell/shell_job.c:shell_job_set_timeout`
 - `c:src/shell/shell_job.c:shell_job_start`
+- `c:src/shell/shell_job.c:shell_job_state_name`
 - `c:src/shell/shell_pipeline.c:shell_pipeline_all_finished`
 - `c:src/shell/shell_pipeline.c:shell_pipeline_close_fd`
 - `c:src/shell/shell_pipeline.c:shell_pipeline_close_resources`
@@ -9803,6 +10416,7 @@
 - `c:src/shell/shell_pipeline.c:shell_pipeline_copy_target`
 - `c:src/shell/shell_pipeline.c:shell_pipeline_copy_text`
 - `c:src/shell/shell_pipeline.c:shell_pipeline_create_resources`
+- `c:src/shell/shell_pipeline.c:shell_pipeline_current_stage`
 - `c:src/shell/shell_pipeline.c:shell_pipeline_destroy_threads`
 - `c:src/shell/shell_pipeline.c:shell_pipeline_is_active`
 - `c:src/shell/shell_pipeline.c:shell_pipeline_is_space`
@@ -9828,6 +10442,7 @@
 - `c:src/shell/taskmanager.c:taskmgr_clamp_window`
 - `c:src/shell/taskmanager.c:taskmgr_close`
 - `c:src/shell/taskmanager.c:taskmgr_count_process_states`
+- `c:src/shell/taskmanager.c:taskmgr_find_thread_by_row`
 - `c:src/shell/taskmanager.c:taskmgr_get_work_area`
 - `c:src/shell/taskmanager.c:taskmgr_gui_delete_selected`
 - `c:src/shell/taskmanager.c:taskmgr_gui_draw_bar`
@@ -9856,10 +10471,13 @@
 - `c:src/shell/taskmanager.c:taskmgr_open`
 - `c:src/shell/taskmanager.c:taskmgr_pages_used`
 - `c:src/shell/taskmanager.c:taskmgr_print_hex_at`
+- `c:src/shell/taskmanager.c:taskmgr_process_state_name`
 - `c:src/shell/taskmanager.c:taskmgr_process_tick_usage`
+- `c:src/shell/taskmanager.c:taskmgr_process_type`
 - `c:src/shell/taskmanager.c:taskmgr_redraw_after_menu_close`
 - `c:src/shell/taskmanager.c:taskmgr_refresh`
 - `c:src/shell/taskmanager.c:taskmgr_run`
+- `c:src/shell/taskmanager.c:taskmgr_thread_state_name`
 - `c:src/shell/taskmanager.c:taskmgr_update_cpu_metrics`
 - `c:src/shell/taskmanager.c:taskmgr_update_memory_stats`
 - `c:src/taskbar/taskbar.c:get_col`
@@ -9871,6 +10489,7 @@
 - `c:src/taskbar/taskbar.c:taskbar_close_menu`
 - `c:src/taskbar/taskbar.c:taskbar_config_item_count`
 - `c:src/taskbar/taskbar.c:taskbar_draw_config_menu`
+- `c:src/taskbar/taskbar.c:taskbar_get_config`
 - `c:src/taskbar/taskbar.c:taskbar_handle_click`
 - `c:src/taskbar/taskbar.c:taskbar_handle_click_gui`
 - `c:src/taskbar/taskbar.c:taskbar_init`
@@ -9890,7 +10509,11 @@
 - `c:src/thread/thread.c:thread_cancel_wait`
 - `c:src/thread/thread.c:thread_copy_wait_text`
 - `c:src/thread/thread.c:thread_copy_waiters`
+- `c:src/thread/thread.c:thread_create`
+- `c:src/thread/thread.c:thread_get_by_id`
+- `c:src/thread/thread.c:thread_get_current`
 - `c:src/thread/thread.c:thread_init`
+- `c:src/thread/thread.c:thread_schedule_next`
 - `c:src/thread/thread.c:thread_unblock`
 - `c:src/thread/thread.c:thread_wait`
 - `c:src/thread/thread.c:thread_wait_block_transition`
@@ -9939,6 +10562,7 @@
 - `c:src/updater/updater.c:updater_refresh_component`
 - `c:src/updater/updater.c:updater_refresh_packages`
 - `c:src/updater/updater.c:updater_refresh_status`
+- `c:src/updater/updater.c:updater_remote_active_job_name`
 - `c:src/updater/updater.c:updater_remote_clear_preflight`
 - `c:src/updater/updater.c:updater_remote_confirm_clear`
 - `c:src/updater/updater.c:updater_remote_confirm_fetch`
@@ -9956,6 +10580,7 @@
 - `c:src/updater/updater.c:updater_runtime_preflight_rollback`
 - `c:src/updater/updater.c:updater_runtime_run_check`
 - `c:src/updater/updater.c:updater_runtime_start_job`
+- `c:src/updater/updater.c:updater_selected_package`
 - `c:src/updater/updater.c:updater_simple_draw_confirmation`
 - `c:src/updater/updater.c:updater_simple_draw_history`
 - `c:src/updater/updater.c:updater_simple_draw_packages`
@@ -9973,6 +10598,7 @@
 - `c:src/updater/updater.c:updater_system_run_check`
 - `c:src/updater/updater.c:updater_system_run_fetch`
 - `c:src/updater/updater.c:updater_system_run_verify`
+- `c:src/updater/updater.c:updater_system_slot_name`
 - `c:src/updater/updater.c:updater_system_tag_begin`
 - `c:src/updater/updater.c:updater_system_tag_finish`
 - `c:src/updater/updater.c:updater_system_tag_key`
@@ -9996,7 +10622,10 @@
 - `c:src/wm/wm.c:wm_focus_next`
 - `c:src/wm/wm.c:wm_focus_prev`
 - `c:src/wm/wm.c:wm_focus_window`
+- `c:src/wm/wm.c:wm_get_config`
+- `c:src/wm/wm.c:wm_get_focused`
 - `c:src/wm/wm.c:wm_get_focused_id`
+- `c:src/wm/wm.c:wm_get_window`
 - `c:src/wm/wm.c:wm_gui_begin_drag`
 - `c:src/wm/wm.c:wm_gui_begin_resize`
 - `c:src/wm/wm.c:wm_gui_focus_prev`

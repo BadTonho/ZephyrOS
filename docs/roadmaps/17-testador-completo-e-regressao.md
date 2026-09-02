@@ -1210,3 +1210,18 @@ continuam pendentes para uma fixture QEMU segura. A sincronizacao atual
 registra 6.826 superficies, 3.097 `COVERED`, 3.729 `PENDING`, 83 casos e
 nenhuma superficie `RETIRED`; o fechamento integral do catalogo, o gate estrito
 e a validacao TST7 completa continuam pendentes.
+
+- Incremento Shell/utilitarios concluido em 2026-09-02 16:00
+  (America/Sao_Paulo): o novo caso host-only `host:shell:command-utils` e o
+  alvo `make test-shell-command-utils-host` foram adicionados. A fixture
+  passou com parsing de tokens e argumentos, comparacao de subcomandos,
+  normalizacao, conversao numerica, limites, entradas invalidas e formatacao
+  decimal/hexadecimal, usando somente buffers e logs falsos. O relatorio
+  instrumentado `build/test-results/shell-command-utils-host/coverage.json`
+  terminou `PASS` e resolveu diretamente as funcoes e APIs do utilitario,
+  incluindo `shell_command_match_subcommand`. O descobridor do catalogo passou
+  a registrar declaracoes e definicoes com retorno por ponteiro; o teste
+  unitario confirmou esse comportamento. A sincronizacao atual registra 7.197
+  superficies, 3.793 `COVERED`, 3.404 `PENDING` e 85 casos. O fechamento
+  integral do catalogo, o gate estrito e a validacao TST7 completa continuam
+  pendentes.

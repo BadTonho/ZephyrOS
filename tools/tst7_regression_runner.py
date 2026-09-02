@@ -72,6 +72,7 @@ QUICK_COMMANDS = (
     ("test-font-host", "font-host"),
     ("test-rtc-status-host", "rtc-status-host"),
     ("test-shell-input-host", "shell-input-host"),
+    ("test-shell-command-utils-host", "shell-command-utils-host"),
     ("test-qemu-selftest", "qemu-selftest"),
     ("test-tst2-host", "tst2-host"),
     ("test-tst3-host", "tst3-host"),
@@ -127,6 +128,7 @@ HOST_CASE_TARGETS = {
     "host:drivers:font": "test-font-host",
     "host:drivers:rtc-status": "test-rtc-status-host",
     "host:shell:input": "test-shell-input-host",
+    "host:shell:command-utils": "test-shell-command-utils-host",
     "host:tst2:protocol-core": "test-tst2-host",
     "host:tst3:string-compress": "test-tst3-host",
 }

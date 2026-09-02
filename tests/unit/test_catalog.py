@@ -313,8 +313,31 @@ class CatalogContractTests(unittest.TestCase):
                 entry, {"host:coverage:sample": catalog["cases"][0]},
                 {item["id"]: item for item in catalog["surfaces"]}, root), [
                     "api:src/include/apps/sample.h:sample",
-                    "c:src/core/sample.c:sample",
-                ])
+                "c:src/core/sample.c:sample",
+            ])
+
+    def test_discover_c_functions_includes_pointer_return_definition(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "pointer.c"
+            source.write_text(
+                "const char* sample_match(const char* value) {\n"
+                "    return value;\n"
+                "}\n", encoding="utf-8")
+            surfaces = test_catalog.discover_c_functions(source, root)
+        self.assertEqual([surface["symbol"] for surface in surfaces],
+                         ["sample_match"])
+
+    def test_discover_header_apis_includes_pointer_return_declaration(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            header = root / "pointer.h"
+            header.write_text(
+                "const char* sample_match(const char* value);\n",
+                encoding="utf-8")
+            surfaces = test_catalog.discover_header_apis(header, root)
+        self.assertEqual([surface["symbol"] for surface in surfaces],
+                         ["sample_match"])
 
     def test_registry_checks_each_explicit_surface_link(self):
         catalog = sample_catalog()

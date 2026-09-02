@@ -4237,3 +4237,15 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   superficies, 3.679 `COVERED`, 3.147 `PENDING` e 84 casos. O teste unitario
   do sincronizador tambem confirmou o vinculo seguro entre API publica e
   implementacao C observada em subdiretorio diferente.
+
+- Incremento Shell/utilitarios concluido em: 2026-09-02 16:00
+  (America/Sao_Paulo): o caso host-only `host:shell:command-utils` e o alvo
+  `make test-shell-command-utils-host` foram adicionados. A fixture passou com
+  parsing de tokens e argumentos, comparacao de subcomandos, normalizacao,
+  conversao numerica, limites, entradas invalidas e formatacao
+  decimal/hexadecimal, sem hardware real. O relatorio
+  `build/test-results/shell-command-utils-host/coverage.json` terminou `PASS`,
+  sem enderecos desconhecidos ou ambiguos, e resolveu as funcoes e APIs de
+  `src/shell/shell_command_utils.c`. O teste do catalogo confirmou a descoberta
+  de declaracoes e definicoes com retorno por ponteiro. A sincronizacao atual
+  registra 7.197 superficies, 3.793 `COVERED`, 3.404 `PENDING` e 85 casos.

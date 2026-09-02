@@ -358,9 +358,6 @@ def discover_c_functions(path: Path, root: Path) -> list[dict[str, Any]]:
         if not IDENTIFIER_RE.match(name) or name in NON_FUNCTION_IDENTIFIERS:
             index += 1
             continue
-        if index >= 2 and tokens[index - 2] in {"*", ".", "->"}:
-            index += 1
-            continue
         close = matching_token(tokens, index, "(", ")")
         if close is None:
             raise CatalogError(f"parenteses desbalanceados em {source}")
@@ -408,13 +405,11 @@ def discover_header_apis(path: Path, root: Path) -> list[dict[str, Any]]:
             depth = max(0, depth - 1)
         elif token == "(" and depth == 0 and index > 0:
             name = tokens[index - 1]
-            previous = tokens[index - 2] if index >= 2 else ""
             close = matching_token(tokens, index, "(", ")")
             following = tokens[close + 1] if close is not None and close + 1 < len(tokens) else ""
             start = declaration_start(tokens, index - 1)
             declaration = tokens[start:index]
             if (IDENTIFIER_RE.match(name) and name not in NON_FUNCTION_IDENTIFIERS
-                    and previous not in {"*", ".", "->"}
                     and "typedef" not in declaration and following in {";", "{"}):
                 surfaces.append({
                     "id": f"api:{source}:{name}",
