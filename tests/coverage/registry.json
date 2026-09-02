@@ -2076,6 +2076,25 @@
       ],
       "include_public_apis": true,
       "evidence": "make test-vma-host PASS com VMAs fixas e anonimas, materializacao lazy, faults validos e invalidos, mmap, munmap, limites, estatisticas e limpeza usando paging e PMM falsos"
+    },
+    {
+      "id": "paging-host-dynamic",
+      "domain": "memory-paging",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/paging-host/coverage.json",
+      "coverage_sources": [
+        "src/memory/paging.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-paging-host PASS com fixture estatica de diretorios e tabelas, mapeamentos, VMAs lazy, copias de usuario, limites, cleanup, falha de alocacao e recuperacao sem hardware"
     }
   ]
 }

@@ -91,6 +91,8 @@ NET_SOCKET_RESULT_DIR = ROOT / "build" / "test-results" / "net-socket-host"
 NET_SOCKET_BINARY = ROOT / "build" / "tests" / "test_net_socket_host.exe"
 VMA_RESULT_DIR = ROOT / "build" / "test-results" / "vma-host"
 VMA_BINARY = ROOT / "build" / "tests" / "test_vma_host.exe"
+PAGING_RESULT_DIR = ROOT / "build" / "test-results" / "paging-host"
+PAGING_BINARY = ROOT / "build" / "tests" / "test_paging_host.exe"
 DEFAULT_TIMEOUT = 120.0
 CORE_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_core_contracts.c",
@@ -310,6 +312,12 @@ VMA_SOURCE_FILES = (
     ROOT / "src" / "core" / "log.c",
     ROOT / "src" / "core" / "string.c",
 )
+PAGING_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_paging_host.c",
+    ROOT / "src" / "memory" / "paging.c",
+    ROOT / "src" / "core" / "log.c",
+    ROOT / "src" / "core" / "string.c",
+)
 SOURCE_FILES = CORE_SOURCE_FILES
 
 
@@ -392,6 +400,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
                 NET_SOCKET_SOURCE_FILES, "net-socket-host")
     if case_id == "host:memory:vma":
         return VMA_RESULT_DIR, VMA_BINARY, VMA_SOURCE_FILES, "vma-host"
+    if case_id == "host:memory:paging":
+        return PAGING_RESULT_DIR, PAGING_BINARY, PAGING_SOURCE_FILES, "paging-host"
     raise ValueError(f"caso_host_invalido:{case_id}")
 
 
@@ -550,7 +560,8 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:network:dns", "host:network:dhcp",
                                  "host:network:ethernet", "host:network:tcp",
                                  "host:security:tls", "host:network:http",
-                                 "host:network:socket", "host:memory:vma"))
+                                 "host:network:socket", "host:memory:vma",
+                                 "host:memory:paging"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
     return parser.parse_args()

@@ -191,6 +191,16 @@ O caso `test-vma-host` usa processo ring 3, paging, PMM e VFS falsos para
 exercitar VMAs fixas e anonimas, materializacao lazy, page faults validos e
 invalidos, `mmap`, `munmap`, limites, estatisticas e limpeza; seu relatorio fica
 em `build/test-results/vma-host/`.
+O caso `test-paging-host` exercita diretamente o diretorio de paginas, tabelas,
+mapas de kernel e usuario, framebuffer, copia entre espacos, materializacao
+lazy, limites, overflow, paginas ausentes e limpeza. A fixture usa PMM, VESA e
+processo falsos com buffers estaticos, sem instrucoes privilegiadas ou hardware;
+seu relatorio fica em `build/test-results/paging-host/`. Execute-o com
+`HOST_CC` apontando para um compilador C nativo:
+
+```text
+make test-paging-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
 
 Para reconstruir a imagem instrumentada separada e gerar o mapa de simbolos:
 

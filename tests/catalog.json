@@ -7169,6 +7169,7 @@
         "host:core:scheduling",
         "host:core:state",
         "host:core:timer",
+        "host:memory:paging",
         "host:memory:slab-metadata",
         "host:memory:vma",
         "host:network:arp",
@@ -9999,6 +10000,7 @@
         "host:core:scheduling",
         "host:core:state",
         "host:core:timer",
+        "host:memory:paging",
         "host:memory:slab-metadata",
         "host:memory:vma",
         "host:network:arp",
@@ -10054,6 +10056,7 @@
         "host:core:scheduling",
         "host:core:state",
         "host:core:timer",
+        "host:memory:paging",
         "host:memory:slab-metadata",
         "host:memory:vma",
         "host:network:arp",
@@ -10109,6 +10112,7 @@
         "host:core:scheduling",
         "host:core:state",
         "host:core:timer",
+        "host:memory:paging",
         "host:memory:slab-metadata",
         "host:memory:vma",
         "host:network:arp",
@@ -10157,6 +10161,7 @@
         "host:core:scheduling",
         "host:core:state",
         "host:core:timer",
+        "host:memory:paging",
         "host:memory:slab-metadata",
         "host:memory:vma",
         "host:network:arp",
@@ -23299,9 +23304,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/memory/paging.h:paging_copy_to_user",
@@ -23319,10 +23327,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:paging",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/memory/paging.h:paging_free_directory",
@@ -23338,9 +23347,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/memory/paging.h:paging_free_user_directory",
@@ -23358,10 +23370,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:paging",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/memory/paging.h:paging_get_boot_stats",
@@ -23377,9 +23390,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/memory/paging.h:paging_get_user_page_count",
@@ -23397,10 +23413,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:paging",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/memory/paging.h:paging_get_user_stats",
@@ -23418,10 +23435,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:paging",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/memory/paging.h:paging_init",
@@ -23437,9 +23455,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/memory/paging.h:paging_is_ready",
@@ -23457,6 +23478,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:paging",
         "qemu:tst4:memory-slab",
         "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
@@ -23466,7 +23488,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/memory/paging.h:paging_map_page",
@@ -23482,9 +23504,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/memory/paging.h:paging_map_page_in_directory",
@@ -23502,10 +23527,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:paging",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/memory/paging.h:paging_switch_directory",
@@ -23523,10 +23549,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:paging",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/memory/paging.h:paging_unmap_user_page_in_directory",
@@ -23544,10 +23571,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:paging",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/memory/paging.h:paging_validate_user_range",
@@ -23565,10 +23593,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:paging",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/memory/slab.h:kmem_cache_destroy",
@@ -50029,6 +50058,7 @@
         "host:core:scheduling",
         "host:core:state",
         "host:core:timer",
+        "host:memory:paging",
         "host:memory:slab-metadata",
         "host:memory:vma",
         "host:network:arp",
@@ -50275,6 +50305,7 @@
         "host:core:scheduling",
         "host:core:state",
         "host:core:timer",
+        "host:memory:paging",
         "host:memory:slab-metadata",
         "host:memory:vma",
         "host:network:arp",
@@ -50345,6 +50376,7 @@
         "host:core:scheduling",
         "host:core:state",
         "host:core:timer",
+        "host:memory:paging",
         "host:memory:slab-metadata",
         "host:memory:vma",
         "host:network:arp",
@@ -50420,6 +50452,7 @@
         "host:core:scheduling",
         "host:core:state",
         "host:core:timer",
+        "host:memory:paging",
         "host:memory:slab-metadata",
         "host:memory:vma",
         "host:network:arp",
@@ -50468,6 +50501,7 @@
         "host:core:scheduling",
         "host:core:state",
         "host:core:timer",
+        "host:memory:paging",
         "host:memory:slab-metadata",
         "host:memory:vma",
         "host:network:arp",
@@ -50516,6 +50550,7 @@
         "host:core:scheduling",
         "host:core:state",
         "host:core:timer",
+        "host:memory:paging",
         "host:memory:slab-metadata",
         "host:memory:vma",
         "host:network:arp",
@@ -50652,6 +50687,7 @@
         "host:core:scheduling",
         "host:core:state",
         "host:core:timer",
+        "host:memory:paging",
         "host:memory:slab-metadata",
         "host:memory:vma",
         "host:network:arp",
@@ -50700,6 +50736,7 @@
         "host:core:scheduling",
         "host:core:state",
         "host:core:timer",
+        "host:memory:paging",
         "host:memory:slab-metadata",
         "host:memory:vma",
         "host:network:arp",
@@ -50883,6 +50920,7 @@
         "host:core:scheduling",
         "host:core:state",
         "host:core:timer",
+        "host:memory:paging",
         "host:memory:slab-metadata",
         "host:memory:vma",
         "host:network:arp",
@@ -50931,6 +50969,7 @@
         "host:core:scheduling",
         "host:core:state",
         "host:core:timer",
+        "host:memory:paging",
         "host:memory:slab-metadata",
         "host:memory:vma",
         "host:network:arp",
@@ -51184,6 +51223,7 @@
         "host:core:scheduling",
         "host:core:state",
         "host:core:timer",
+        "host:memory:paging",
         "host:memory:slab-metadata",
         "host:memory:vma",
         "host:network:arp",
@@ -57150,6 +57190,7 @@
         "host:core:scheduling",
         "host:core:state",
         "host:core:timer",
+        "host:memory:paging",
         "host:memory:slab-metadata",
         "host:memory:vma",
         "host:network:arp",
@@ -57205,6 +57246,7 @@
         "host:core:scheduling",
         "host:core:state",
         "host:core:timer",
+        "host:memory:paging",
         "host:memory:slab-metadata",
         "host:memory:vma",
         "host:network:arp",
@@ -57260,6 +57302,7 @@
         "host:core:scheduling",
         "host:core:state",
         "host:core:timer",
+        "host:memory:paging",
         "host:memory:slab-metadata",
         "host:memory:vma",
         "host:network:arp",
@@ -57308,6 +57351,7 @@
         "host:core:scheduling",
         "host:core:state",
         "host:core:timer",
+        "host:memory:paging",
         "host:memory:slab-metadata",
         "host:memory:vma",
         "host:network:arp",
@@ -106097,9 +106141,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_copy_from_user",
@@ -106115,9 +106162,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_copy_to_user",
@@ -106135,10 +106185,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:paging",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_free_directory",
@@ -106154,9 +106205,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_free_user_directory",
@@ -106174,10 +106228,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:paging",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_get_boot_stats",
@@ -106193,9 +106248,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_get_user_page_count",
@@ -106213,10 +106271,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:paging",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_get_user_stats",
@@ -106234,10 +106293,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:paging",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_init",
@@ -106253,9 +106313,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_invalidate",
@@ -106273,10 +106336,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:paging",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_is_ready",
@@ -106294,6 +106358,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:paging",
         "qemu:tst4:memory-slab",
         "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
@@ -106303,7 +106368,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_is_registered_user_directory",
@@ -106321,10 +106386,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:paging",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_map_framebuffer",
@@ -106340,9 +106406,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_map_identity_range_fast",
@@ -106358,9 +106427,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_map_page",
@@ -106376,9 +106448,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_map_page_in_directory",
@@ -106396,10 +106471,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:paging",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_register_user_directory",
@@ -106417,10 +106493,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:paging",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_switch_directory",
@@ -106438,10 +106515,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:paging",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_table_is_empty",
@@ -106459,10 +106537,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:paging",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_unmap_user_page_in_directory",
@@ -106480,10 +106559,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:paging",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_unregister_user_directory",
@@ -106501,10 +106581,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:paging",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_user_directory_index",
@@ -106522,10 +106603,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:paging",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_validate_user_range",
@@ -106543,10 +106625,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:paging",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/slab.c:kmem_cache_destroy",
@@ -136270,6 +136353,111 @@
       "status": "PENDING",
       "case_ids": [],
       "tags": []
+    },
+    {
+      "id": "c:src/memory/paging.c:paging_free_table_entry",
+      "kind": "c_function",
+      "source": "src/memory/paging.c",
+      "symbol": "paging_free_table_entry",
+      "linkage": "static",
+      "owner": "memory",
+      "layer": "kernel-source",
+      "preconditions": "paging inicializado e entrada de tabela valida",
+      "action": "liberar a tabela associada a uma entrada de diretorio",
+      "expected": "a tabela e devolvida ao PMM sem deixar token publicado",
+      "errors": "entrada invalida ou tabela ausente",
+      "effects": "altera somente o diretorio e o ownership da pagina de tabela",
+      "cleanup": "tabela liberada pelo fixture host",
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/memory/paging.c:paging_host_register_user_buffer",
+      "kind": "c_function",
+      "source": "src/memory/paging.c",
+      "symbol": "paging_host_register_user_buffer",
+      "linkage": "external",
+      "owner": "memory",
+      "layer": "kernel-source",
+      "preconditions": "build host-only e buffer estatico disponiveis",
+      "action": "registrar a traducao de um endereco virtual de usuario para fixture host",
+      "expected": "a copia host resolve somente buffers registrados e validos",
+      "errors": "endereco, ponteiro ou tamanho invalidos, ou limite de buffers",
+      "effects": "altera somente a tabela interna de fixtures host",
+      "cleanup": "tabela de fixtures zerada na inicializacao seguinte",
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/memory/paging.c:paging_host_release_table",
+      "kind": "c_function",
+      "source": "src/memory/paging.c",
+      "symbol": "paging_host_release_table",
+      "linkage": "static",
+      "owner": "memory",
+      "layer": "kernel-source",
+      "preconditions": "fixture host de tabela ativa",
+      "action": "remover o token host de uma tabela liberada",
+      "expected": "o token deixa de resolver para uma tabela",
+      "errors": "token fora da faixa e ignorado",
+      "effects": "altera somente a tabela de tokens host",
+      "cleanup": "tokens reinicializados pelo proximo paging_init",
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/memory/paging.c:paging_host_table_token",
+      "kind": "c_function",
+      "source": "src/memory/paging.c",
+      "symbol": "paging_host_table_token",
+      "linkage": "static",
+      "owner": "memory",
+      "layer": "kernel-source",
+      "preconditions": "fixture host e pagina de tabela disponiveis",
+      "action": "atribuir token estavel a uma tabela de paginas host",
+      "expected": "a mesma tabela reutiliza o mesmo token e o limite e respeitado",
+      "errors": "capacidade de tokens esgotada",
+      "effects": "altera somente o mapa de tabelas host",
+      "cleanup": "tokens liberados junto com as tabelas",
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/memory/paging.c:paging_pointer_address",
+      "kind": "c_function",
+      "source": "src/memory/paging.c",
+      "symbol": "paging_pointer_address",
+      "linkage": "static",
+      "owner": "memory",
+      "layer": "kernel-source",
+      "preconditions": "ponteiro de usuario nulo ou registrado",
+      "action": "converter ponteiro de copia para endereco virtual de usuario",
+      "expected": "buffers registrados usam o endereco fixture e outros ponteiros seguem o contrato da plataforma",
+      "errors": "ponteiro nulo tratado pela camada chamadora",
+      "effects": "nenhum estado persistente",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     }
   ],
   "cases": [
@@ -137902,6 +138090,99 @@
         "host",
         "memory",
         "vma",
+        "paging",
+        "coverage"
+      ]
+    },
+    {
+      "id": "host:memory:paging",
+      "scenario": "Contrato host-only de paging com diretorios e tabelas estaticos",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "compilar e executar init, mapeamento, diretorios de usuario, faults lazy, copias, limites e cleanup com PMM falso",
+      "expected": "o paging respeita os limites de usuario, rejeita estados invalidos e restaura os recursos da fixture",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente diretorios, tabelas e paginas estaticos no processo host",
+      "cleanup": "diretorios e tabelas liberados, pagina de usuario coletada e artefatos preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/log.h:log_print",
+        "api:src/include/core/string.h:kmemcpy",
+        "api:src/include/core/string.h:kmemset",
+        "api:src/include/core/string.h:kstrcmp",
+        "api:src/include/core/string.h:kstrlen",
+        "api:src/include/memory/paging.h:paging_copy_from_user",
+        "api:src/include/memory/paging.h:paging_copy_to_user",
+        "api:src/include/memory/paging.h:paging_free_directory",
+        "api:src/include/memory/paging.h:paging_free_user_directory",
+        "api:src/include/memory/paging.h:paging_get_boot_stats",
+        "api:src/include/memory/paging.h:paging_get_user_page_count",
+        "api:src/include/memory/paging.h:paging_get_user_stats",
+        "api:src/include/memory/paging.h:paging_init",
+        "api:src/include/memory/paging.h:paging_is_ready",
+        "api:src/include/memory/paging.h:paging_map_page",
+        "api:src/include/memory/paging.h:paging_map_page_in_directory",
+        "api:src/include/memory/paging.h:paging_switch_directory",
+        "api:src/include/memory/paging.h:paging_unmap_user_page_in_directory",
+        "api:src/include/memory/paging.h:paging_validate_user_range",
+        "c:src/core/log.c:log_copy_text",
+        "c:src/core/log.c:log_level_is_valid",
+        "c:src/core/log.c:log_print",
+        "c:src/core/log.c:log_print_colored",
+        "c:src/core/log.c:log_records_match",
+        "c:src/core/log.c:log_restore_interrupts",
+        "c:src/core/log.c:log_ring_latest_index",
+        "c:src/core/log.c:log_ring_store",
+        "c:src/core/log.c:log_submit",
+        "c:src/core/log.c:log_suspend_interrupts",
+        "c:src/core/log.c:log_write_serial",
+        "c:src/core/string.c:kmemcpy",
+        "c:src/core/string.c:kmemset",
+        "c:src/core/string.c:kstrcmp",
+        "c:src/core/string.c:kstrlen",
+        "c:src/memory/paging.c:paging_abort_init",
+        "c:src/memory/paging.c:paging_copy_from_user",
+        "c:src/memory/paging.c:paging_copy_to_user",
+        "c:src/memory/paging.c:paging_free_directory",
+        "c:src/memory/paging.c:paging_free_table_entry",
+        "c:src/memory/paging.c:paging_free_user_directory",
+        "c:src/memory/paging.c:paging_get_boot_stats",
+        "c:src/memory/paging.c:paging_get_user_page_count",
+        "c:src/memory/paging.c:paging_get_user_stats",
+        "c:src/memory/paging.c:paging_host_register_user_buffer",
+        "c:src/memory/paging.c:paging_host_release_table",
+        "c:src/memory/paging.c:paging_host_table_token",
+        "c:src/memory/paging.c:paging_init",
+        "c:src/memory/paging.c:paging_invalidate",
+        "c:src/memory/paging.c:paging_is_ready",
+        "c:src/memory/paging.c:paging_is_registered_user_directory",
+        "c:src/memory/paging.c:paging_map_framebuffer",
+        "c:src/memory/paging.c:paging_map_identity_range_fast",
+        "c:src/memory/paging.c:paging_map_page",
+        "c:src/memory/paging.c:paging_map_page_in_directory",
+        "c:src/memory/paging.c:paging_pointer_address",
+        "c:src/memory/paging.c:paging_register_user_directory",
+        "c:src/memory/paging.c:paging_switch_directory",
+        "c:src/memory/paging.c:paging_table_is_empty",
+        "c:src/memory/paging.c:paging_unmap_user_page_in_directory",
+        "c:src/memory/paging.c:paging_unregister_user_directory",
+        "c:src/memory/paging.c:paging_user_directory_index",
+        "c:src/memory/paging.c:paging_validate_user_range"
+      ],
+      "tags": [
+        "host",
+        "memory",
         "paging",
         "coverage"
       ]

@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **6820**
-- Casos de teste: **73**
+- Superfícies ativas: **6825**
+- Casos de teste: **74**
 - Superfícies aposentadas: **20**
 
 | Tipo | Quantidade |
 |---|---:|
 | `api_function` | 1410 |
 | `asm_entry` | 101 |
-| `c_function` | 5189 |
+| `c_function` | 5194 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 3021 |
+| `COVERED` | 3039 |
 | `MANUAL` | 0 |
-| `PENDING` | 3799 |
+| `PENDING` | 3786 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 73 |
+| `AUTOMATED` | 74 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -45,7 +45,7 @@
 | `gui` | 28 |
 | `icons` | 13 |
 | `kernel` | 40 |
-| `memory` | 154 |
+| `memory` | 159 |
 | `process` | 239 |
 | `settings` | 55 |
 | `shell` | 1054 |
@@ -425,7 +425,7 @@
 | `api:src/include/core/log.h:log_get_level` | `src/include/core/log.h` | `log_get_level` | `core` | `COVERED` | 1 |
 | `api:src/include/core/log.h:log_get_stats` | `src/include/core/log.h` | `log_get_stats` | `core` | `COVERED` | 2 |
 | `api:src/include/core/log.h:log_init` | `src/include/core/log.h` | `log_init` | `core` | `COVERED` | 22 |
-| `api:src/include/core/log.h:log_print` | `src/include/core/log.h` | `log_print` | `core` | `COVERED` | 27 |
+| `api:src/include/core/log.h:log_print` | `src/include/core/log.h` | `log_print` | `core` | `COVERED` | 28 |
 | `api:src/include/core/log.h:log_print_code` | `src/include/core/log.h` | `log_print_code` | `core` | `COVERED` | 7 |
 | `api:src/include/core/log.h:log_self_test` | `src/include/core/log.h` | `log_self_test` | `core` | `COVERED` | 3 |
 | `api:src/include/core/log.h:log_set_buffer_level` | `src/include/core/log.h` | `log_set_buffer_level` | `core` | `COVERED` | 1 |
@@ -555,10 +555,10 @@
 | `api:src/include/core/spinlock.h:spinlock_acquire` | `src/include/core/spinlock.h` | `spinlock_acquire` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_init` | `src/include/core/spinlock.h` | `spinlock_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_release` | `src/include/core/spinlock.h` | `spinlock_release` | `core` | `PENDING` | 0 |
-| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 35 |
-| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 35 |
-| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 28 |
-| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 32 |
+| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 36 |
+| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 36 |
+| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 29 |
+| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 33 |
 | `api:src/include/core/syscall.h:syscall_enable_user_mode` | `src/include/core/syscall.h` | `syscall_enable_user_mode` | `core` | `PENDING` | 0 |
 | `api:src/include/core/syscall.h:syscall_handler` | `src/include/core/syscall.h` | `syscall_handler` | `core` | `COVERED` | 1 |
 | `api:src/include/core/syscall.h:syscall_init` | `src/include/core/syscall.h` | `syscall_init` | `core` | `PENDING` | 0 |
@@ -1214,20 +1214,20 @@
 | `api:src/include/memory/compress.h:compress_is_enabled` | `src/include/memory/compress.h` | `compress_is_enabled` | `memory` | `COVERED` | 1 |
 | `api:src/include/memory/compress.h:compress_print_stats` | `src/include/memory/compress.h` | `compress_print_stats` | `memory` | `COVERED` | 1 |
 | `api:src/include/memory/compress.h:decompress_data` | `src/include/memory/compress.h` | `decompress_data` | `memory` | `COVERED` | 1 |
-| `api:src/include/memory/paging.h:paging_copy_from_user` | `src/include/memory/paging.h` | `paging_copy_from_user` | `memory` | `PENDING` | 0 |
-| `api:src/include/memory/paging.h:paging_copy_to_user` | `src/include/memory/paging.h` | `paging_copy_to_user` | `memory` | `COVERED` | 1 |
-| `api:src/include/memory/paging.h:paging_free_directory` | `src/include/memory/paging.h` | `paging_free_directory` | `memory` | `PENDING` | 0 |
-| `api:src/include/memory/paging.h:paging_free_user_directory` | `src/include/memory/paging.h` | `paging_free_user_directory` | `memory` | `COVERED` | 1 |
-| `api:src/include/memory/paging.h:paging_get_boot_stats` | `src/include/memory/paging.h` | `paging_get_boot_stats` | `memory` | `PENDING` | 0 |
-| `api:src/include/memory/paging.h:paging_get_user_page_count` | `src/include/memory/paging.h` | `paging_get_user_page_count` | `memory` | `COVERED` | 1 |
-| `api:src/include/memory/paging.h:paging_get_user_stats` | `src/include/memory/paging.h` | `paging_get_user_stats` | `memory` | `COVERED` | 1 |
-| `api:src/include/memory/paging.h:paging_init` | `src/include/memory/paging.h` | `paging_init` | `memory` | `PENDING` | 0 |
-| `api:src/include/memory/paging.h:paging_is_ready` | `src/include/memory/paging.h` | `paging_is_ready` | `memory` | `COVERED` | 7 |
-| `api:src/include/memory/paging.h:paging_map_page` | `src/include/memory/paging.h` | `paging_map_page` | `memory` | `PENDING` | 0 |
-| `api:src/include/memory/paging.h:paging_map_page_in_directory` | `src/include/memory/paging.h` | `paging_map_page_in_directory` | `memory` | `COVERED` | 1 |
-| `api:src/include/memory/paging.h:paging_switch_directory` | `src/include/memory/paging.h` | `paging_switch_directory` | `memory` | `COVERED` | 1 |
-| `api:src/include/memory/paging.h:paging_unmap_user_page_in_directory` | `src/include/memory/paging.h` | `paging_unmap_user_page_in_directory` | `memory` | `COVERED` | 1 |
-| `api:src/include/memory/paging.h:paging_validate_user_range` | `src/include/memory/paging.h` | `paging_validate_user_range` | `memory` | `COVERED` | 1 |
+| `api:src/include/memory/paging.h:paging_copy_from_user` | `src/include/memory/paging.h` | `paging_copy_from_user` | `memory` | `COVERED` | 1 |
+| `api:src/include/memory/paging.h:paging_copy_to_user` | `src/include/memory/paging.h` | `paging_copy_to_user` | `memory` | `COVERED` | 2 |
+| `api:src/include/memory/paging.h:paging_free_directory` | `src/include/memory/paging.h` | `paging_free_directory` | `memory` | `COVERED` | 1 |
+| `api:src/include/memory/paging.h:paging_free_user_directory` | `src/include/memory/paging.h` | `paging_free_user_directory` | `memory` | `COVERED` | 2 |
+| `api:src/include/memory/paging.h:paging_get_boot_stats` | `src/include/memory/paging.h` | `paging_get_boot_stats` | `memory` | `COVERED` | 1 |
+| `api:src/include/memory/paging.h:paging_get_user_page_count` | `src/include/memory/paging.h` | `paging_get_user_page_count` | `memory` | `COVERED` | 2 |
+| `api:src/include/memory/paging.h:paging_get_user_stats` | `src/include/memory/paging.h` | `paging_get_user_stats` | `memory` | `COVERED` | 2 |
+| `api:src/include/memory/paging.h:paging_init` | `src/include/memory/paging.h` | `paging_init` | `memory` | `COVERED` | 1 |
+| `api:src/include/memory/paging.h:paging_is_ready` | `src/include/memory/paging.h` | `paging_is_ready` | `memory` | `COVERED` | 8 |
+| `api:src/include/memory/paging.h:paging_map_page` | `src/include/memory/paging.h` | `paging_map_page` | `memory` | `COVERED` | 1 |
+| `api:src/include/memory/paging.h:paging_map_page_in_directory` | `src/include/memory/paging.h` | `paging_map_page_in_directory` | `memory` | `COVERED` | 2 |
+| `api:src/include/memory/paging.h:paging_switch_directory` | `src/include/memory/paging.h` | `paging_switch_directory` | `memory` | `COVERED` | 2 |
+| `api:src/include/memory/paging.h:paging_unmap_user_page_in_directory` | `src/include/memory/paging.h` | `paging_unmap_user_page_in_directory` | `memory` | `COVERED` | 2 |
+| `api:src/include/memory/paging.h:paging_validate_user_range` | `src/include/memory/paging.h` | `paging_validate_user_range` | `memory` | `COVERED` | 2 |
 | `api:src/include/memory/slab.h:kmem_cache_destroy` | `src/include/memory/slab.h` | `kmem_cache_destroy` | `memory` | `COVERED` | 3 |
 | `api:src/include/memory/slab.h:kmem_cache_free` | `src/include/memory/slab.h` | `kmem_cache_free` | `memory` | `COVERED` | 5 |
 | `api:src/include/memory/slab.h:kmem_cache_get_count` | `src/include/memory/slab.h` | `kmem_cache_get_count` | `memory` | `COVERED` | 1 |
@@ -2569,7 +2569,7 @@
 | `c:src/core/log.c:log_clear_buffer` | `src/core/log.c` | `log_clear_buffer` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_console_print_number` | `src/core/log.c` | `log_console_print_number` | `core` | `COVERED` | 28 |
 | `c:src/core/log.c:log_copy_recent` | `src/core/log.c` | `log_copy_recent` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_copy_text` | `src/core/log.c` | `log_copy_text` | `core` | `COVERED` | 28 |
+| `c:src/core/log.c:log_copy_text` | `src/core/log.c` | `log_copy_text` | `core` | `COVERED` | 29 |
 | `c:src/core/log.c:log_get_buffer` | `src/core/log.c` | `log_get_buffer` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_get_buffer_level` | `src/core/log.c` | `log_get_buffer_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_get_console_level` | `src/core/log.c` | `log_get_console_level` | `core` | `COVERED` | 2 |
@@ -2577,26 +2577,26 @@
 | `c:src/core/log.c:log_get_stats` | `src/core/log.c` | `log_get_stats` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_init` | `src/core/log.c` | `log_init` | `core` | `COVERED` | 22 |
 | `c:src/core/log.c:log_is_power_of_two` | `src/core/log.c` | `log_is_power_of_two` | `core` | `COVERED` | 28 |
-| `c:src/core/log.c:log_level_is_valid` | `src/core/log.c` | `log_level_is_valid` | `core` | `COVERED` | 28 |
+| `c:src/core/log.c:log_level_is_valid` | `src/core/log.c` | `log_level_is_valid` | `core` | `COVERED` | 29 |
 | `c:src/core/log.c:log_note_dropped_event` | `src/core/log.c` | `log_note_dropped_event` | `core` | `COVERED` | 2 |
-| `c:src/core/log.c:log_print` | `src/core/log.c` | `log_print` | `core` | `COVERED` | 28 |
+| `c:src/core/log.c:log_print` | `src/core/log.c` | `log_print` | `core` | `COVERED` | 29 |
 | `c:src/core/log.c:log_print_code` | `src/core/log.c` | `log_print_code` | `core` | `COVERED` | 7 |
-| `c:src/core/log.c:log_print_colored` | `src/core/log.c` | `log_print_colored` | `core` | `COVERED` | 28 |
-| `c:src/core/log.c:log_records_match` | `src/core/log.c` | `log_records_match` | `core` | `COVERED` | 28 |
-| `c:src/core/log.c:log_restore_interrupts` | `src/core/log.c` | `log_restore_interrupts` | `core` | `COVERED` | 28 |
+| `c:src/core/log.c:log_print_colored` | `src/core/log.c` | `log_print_colored` | `core` | `COVERED` | 29 |
+| `c:src/core/log.c:log_records_match` | `src/core/log.c` | `log_records_match` | `core` | `COVERED` | 29 |
+| `c:src/core/log.c:log_restore_interrupts` | `src/core/log.c` | `log_restore_interrupts` | `core` | `COVERED` | 29 |
 | `c:src/core/log.c:log_ring_clear` | `src/core/log.c` | `log_ring_clear` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_ring_copy_recent` | `src/core/log.c` | `log_ring_copy_recent` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_ring_initialize` | `src/core/log.c` | `log_ring_initialize` | `core` | `COVERED` | 24 |
-| `c:src/core/log.c:log_ring_latest_index` | `src/core/log.c` | `log_ring_latest_index` | `core` | `COVERED` | 28 |
-| `c:src/core/log.c:log_ring_store` | `src/core/log.c` | `log_ring_store` | `core` | `COVERED` | 28 |
+| `c:src/core/log.c:log_ring_latest_index` | `src/core/log.c` | `log_ring_latest_index` | `core` | `COVERED` | 29 |
+| `c:src/core/log.c:log_ring_store` | `src/core/log.c` | `log_ring_store` | `core` | `COVERED` | 29 |
 | `c:src/core/log.c:log_self_test` | `src/core/log.c` | `log_self_test` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_self_test_mark` | `src/core/log.c` | `log_self_test_mark` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_serialize_records` | `src/core/log.c` | `log_serialize_records` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_set_buffer_level` | `src/core/log.c` | `log_set_buffer_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_set_console_level` | `src/core/log.c` | `log_set_console_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_set_level` | `src/core/log.c` | `log_set_level` | `core` | `COVERED` | 2 |
-| `c:src/core/log.c:log_submit` | `src/core/log.c` | `log_submit` | `core` | `COVERED` | 28 |
-| `c:src/core/log.c:log_suspend_interrupts` | `src/core/log.c` | `log_suspend_interrupts` | `core` | `COVERED` | 28 |
+| `c:src/core/log.c:log_submit` | `src/core/log.c` | `log_submit` | `core` | `COVERED` | 29 |
+| `c:src/core/log.c:log_suspend_interrupts` | `src/core/log.c` | `log_suspend_interrupts` | `core` | `COVERED` | 29 |
 | `c:src/core/log.c:log_test_clear_behavior` | `src/core/log.c` | `log_test_clear_behavior` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_test_level_filtering` | `src/core/log.c` | `log_test_level_filtering` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_test_optional_error_code` | `src/core/log.c` | `log_test_optional_error_code` | `core` | `COVERED` | 3 |
@@ -2606,7 +2606,7 @@
 | `c:src/core/log.c:log_test_text_serialization` | `src/core/log.c` | `log_test_text_serialization` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_test_wrap_and_overwrite` | `src/core/log.c` | `log_test_wrap_and_overwrite` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_to_buffer` | `src/core/log.c` | `log_to_buffer` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_write_serial` | `src/core/log.c` | `log_write_serial` | `core` | `COVERED` | 28 |
+| `c:src/core/log.c:log_write_serial` | `src/core/log.c` | `log_write_serial` | `core` | `COVERED` | 29 |
 | `c:src/core/net_buffer.c:net_buffer_alignment_valid` | `src/core/net_buffer.c` | `net_buffer_alignment_valid` | `core` | `COVERED` | 4 |
 | `c:src/core/net_buffer.c:net_buffer_begin` | `src/core/net_buffer.c` | `net_buffer_begin` | `core` | `COVERED` | 4 |
 | `c:src/core/net_buffer.c:net_buffer_check_active_locked` | `src/core/net_buffer.c` | `net_buffer_check_active_locked` | `core` | `COVERED` | 4 |
@@ -2882,10 +2882,10 @@
 | `c:src/core/socket.c:socket_wait_local` | `src/core/socket.c` | `socket_wait_local` | `core` | `PENDING` | 0 |
 | `c:src/core/socket.c:socket_wait_owner` | `src/core/socket.c` | `socket_wait_owner` | `core` | `COVERED` | 2 |
 | `c:src/core/socket.c:socket_wake` | `src/core/socket.c` | `socket_wake` | `core` | `COVERED` | 2 |
-| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 35 |
-| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 35 |
-| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 28 |
-| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 32 |
+| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 36 |
+| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 36 |
+| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 29 |
+| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 33 |
 | `c:src/core/syscall.c:syscall_copy_user_string` | `src/core/syscall.c` | `syscall_copy_user_string` | `core` | `PENDING` | 0 |
 | `c:src/core/syscall.c:syscall_dispatch` | `src/core/syscall.c` | `syscall_dispatch` | `core` | `COVERED` | 1 |
 | `c:src/core/syscall.c:syscall_dispatch_user` | `src/core/syscall.c` | `syscall_dispatch_user` | `core` | `COVERED` | 1 |
@@ -5310,29 +5310,29 @@
 | `c:src/memory/memory.c:pmm_validate_release` | `src/memory/memory.c` | `pmm_validate_release` | `memory` | `COVERED` | 3 |
 | `c:src/memory/memory.c:pmm_zone_is_allocatable` | `src/memory/memory.c` | `pmm_zone_is_allocatable` | `memory` | `COVERED` | 4 |
 | `c:src/memory/memory.c:pmm_zone_to_tag` | `src/memory/memory.c` | `pmm_zone_to_tag` | `memory` | `COVERED` | 4 |
-| `c:src/memory/paging.c:paging_abort_init` | `src/memory/paging.c` | `paging_abort_init` | `memory` | `PENDING` | 0 |
-| `c:src/memory/paging.c:paging_copy_from_user` | `src/memory/paging.c` | `paging_copy_from_user` | `memory` | `PENDING` | 0 |
-| `c:src/memory/paging.c:paging_copy_to_user` | `src/memory/paging.c` | `paging_copy_to_user` | `memory` | `COVERED` | 1 |
-| `c:src/memory/paging.c:paging_free_directory` | `src/memory/paging.c` | `paging_free_directory` | `memory` | `PENDING` | 0 |
-| `c:src/memory/paging.c:paging_free_user_directory` | `src/memory/paging.c` | `paging_free_user_directory` | `memory` | `COVERED` | 1 |
-| `c:src/memory/paging.c:paging_get_boot_stats` | `src/memory/paging.c` | `paging_get_boot_stats` | `memory` | `PENDING` | 0 |
-| `c:src/memory/paging.c:paging_get_user_page_count` | `src/memory/paging.c` | `paging_get_user_page_count` | `memory` | `COVERED` | 1 |
-| `c:src/memory/paging.c:paging_get_user_stats` | `src/memory/paging.c` | `paging_get_user_stats` | `memory` | `COVERED` | 1 |
-| `c:src/memory/paging.c:paging_init` | `src/memory/paging.c` | `paging_init` | `memory` | `PENDING` | 0 |
-| `c:src/memory/paging.c:paging_invalidate` | `src/memory/paging.c` | `paging_invalidate` | `memory` | `COVERED` | 1 |
-| `c:src/memory/paging.c:paging_is_ready` | `src/memory/paging.c` | `paging_is_ready` | `memory` | `COVERED` | 7 |
-| `c:src/memory/paging.c:paging_is_registered_user_directory` | `src/memory/paging.c` | `paging_is_registered_user_directory` | `memory` | `COVERED` | 1 |
-| `c:src/memory/paging.c:paging_map_framebuffer` | `src/memory/paging.c` | `paging_map_framebuffer` | `memory` | `PENDING` | 0 |
-| `c:src/memory/paging.c:paging_map_identity_range_fast` | `src/memory/paging.c` | `paging_map_identity_range_fast` | `memory` | `PENDING` | 0 |
-| `c:src/memory/paging.c:paging_map_page` | `src/memory/paging.c` | `paging_map_page` | `memory` | `PENDING` | 0 |
-| `c:src/memory/paging.c:paging_map_page_in_directory` | `src/memory/paging.c` | `paging_map_page_in_directory` | `memory` | `COVERED` | 1 |
-| `c:src/memory/paging.c:paging_register_user_directory` | `src/memory/paging.c` | `paging_register_user_directory` | `memory` | `COVERED` | 1 |
-| `c:src/memory/paging.c:paging_switch_directory` | `src/memory/paging.c` | `paging_switch_directory` | `memory` | `COVERED` | 1 |
-| `c:src/memory/paging.c:paging_table_is_empty` | `src/memory/paging.c` | `paging_table_is_empty` | `memory` | `COVERED` | 1 |
-| `c:src/memory/paging.c:paging_unmap_user_page_in_directory` | `src/memory/paging.c` | `paging_unmap_user_page_in_directory` | `memory` | `COVERED` | 1 |
-| `c:src/memory/paging.c:paging_unregister_user_directory` | `src/memory/paging.c` | `paging_unregister_user_directory` | `memory` | `COVERED` | 1 |
-| `c:src/memory/paging.c:paging_user_directory_index` | `src/memory/paging.c` | `paging_user_directory_index` | `memory` | `COVERED` | 1 |
-| `c:src/memory/paging.c:paging_validate_user_range` | `src/memory/paging.c` | `paging_validate_user_range` | `memory` | `COVERED` | 1 |
+| `c:src/memory/paging.c:paging_abort_init` | `src/memory/paging.c` | `paging_abort_init` | `memory` | `COVERED` | 1 |
+| `c:src/memory/paging.c:paging_copy_from_user` | `src/memory/paging.c` | `paging_copy_from_user` | `memory` | `COVERED` | 1 |
+| `c:src/memory/paging.c:paging_copy_to_user` | `src/memory/paging.c` | `paging_copy_to_user` | `memory` | `COVERED` | 2 |
+| `c:src/memory/paging.c:paging_free_directory` | `src/memory/paging.c` | `paging_free_directory` | `memory` | `COVERED` | 1 |
+| `c:src/memory/paging.c:paging_free_user_directory` | `src/memory/paging.c` | `paging_free_user_directory` | `memory` | `COVERED` | 2 |
+| `c:src/memory/paging.c:paging_get_boot_stats` | `src/memory/paging.c` | `paging_get_boot_stats` | `memory` | `COVERED` | 1 |
+| `c:src/memory/paging.c:paging_get_user_page_count` | `src/memory/paging.c` | `paging_get_user_page_count` | `memory` | `COVERED` | 2 |
+| `c:src/memory/paging.c:paging_get_user_stats` | `src/memory/paging.c` | `paging_get_user_stats` | `memory` | `COVERED` | 2 |
+| `c:src/memory/paging.c:paging_init` | `src/memory/paging.c` | `paging_init` | `memory` | `COVERED` | 1 |
+| `c:src/memory/paging.c:paging_invalidate` | `src/memory/paging.c` | `paging_invalidate` | `memory` | `COVERED` | 2 |
+| `c:src/memory/paging.c:paging_is_ready` | `src/memory/paging.c` | `paging_is_ready` | `memory` | `COVERED` | 8 |
+| `c:src/memory/paging.c:paging_is_registered_user_directory` | `src/memory/paging.c` | `paging_is_registered_user_directory` | `memory` | `COVERED` | 2 |
+| `c:src/memory/paging.c:paging_map_framebuffer` | `src/memory/paging.c` | `paging_map_framebuffer` | `memory` | `COVERED` | 1 |
+| `c:src/memory/paging.c:paging_map_identity_range_fast` | `src/memory/paging.c` | `paging_map_identity_range_fast` | `memory` | `COVERED` | 1 |
+| `c:src/memory/paging.c:paging_map_page` | `src/memory/paging.c` | `paging_map_page` | `memory` | `COVERED` | 1 |
+| `c:src/memory/paging.c:paging_map_page_in_directory` | `src/memory/paging.c` | `paging_map_page_in_directory` | `memory` | `COVERED` | 2 |
+| `c:src/memory/paging.c:paging_register_user_directory` | `src/memory/paging.c` | `paging_register_user_directory` | `memory` | `COVERED` | 2 |
+| `c:src/memory/paging.c:paging_switch_directory` | `src/memory/paging.c` | `paging_switch_directory` | `memory` | `COVERED` | 2 |
+| `c:src/memory/paging.c:paging_table_is_empty` | `src/memory/paging.c` | `paging_table_is_empty` | `memory` | `COVERED` | 2 |
+| `c:src/memory/paging.c:paging_unmap_user_page_in_directory` | `src/memory/paging.c` | `paging_unmap_user_page_in_directory` | `memory` | `COVERED` | 2 |
+| `c:src/memory/paging.c:paging_unregister_user_directory` | `src/memory/paging.c` | `paging_unregister_user_directory` | `memory` | `COVERED` | 2 |
+| `c:src/memory/paging.c:paging_user_directory_index` | `src/memory/paging.c` | `paging_user_directory_index` | `memory` | `COVERED` | 2 |
+| `c:src/memory/paging.c:paging_validate_user_range` | `src/memory/paging.c` | `paging_validate_user_range` | `memory` | `COVERED` | 2 |
 | `c:src/memory/slab.c:kmem_cache_destroy` | `src/memory/slab.c` | `kmem_cache_destroy` | `memory` | `COVERED` | 3 |
 | `c:src/memory/slab.c:kmem_cache_free` | `src/memory/slab.c` | `kmem_cache_free` | `memory` | `COVERED` | 5 |
 | `c:src/memory/slab.c:kmem_cache_get_count` | `src/memory/slab.c` | `kmem_cache_get_count` | `memory` | `COVERED` | 1 |
@@ -6771,6 +6771,11 @@
 | `c:src/wm/wm.c:wm_set_show_title` | `src/wm/wm.c` | `wm_set_show_title` | `wm` | `PENDING` | 0 |
 | `c:src/wm/wm.c:wm_toggle_window` | `src/wm/wm.c` | `wm_toggle_window` | `wm` | `PENDING` | 0 |
 | `c:src/wm/wm.c:wm_update_cpu_stats` | `src/wm/wm.c` | `wm_update_cpu_stats` | `wm` | `PENDING` | 0 |
+| `c:src/memory/paging.c:paging_free_table_entry` | `src/memory/paging.c` | `paging_free_table_entry` | `memory` | `COVERED` | 1 |
+| `c:src/memory/paging.c:paging_host_register_user_buffer` | `src/memory/paging.c` | `paging_host_register_user_buffer` | `memory` | `COVERED` | 1 |
+| `c:src/memory/paging.c:paging_host_release_table` | `src/memory/paging.c` | `paging_host_release_table` | `memory` | `COVERED` | 1 |
+| `c:src/memory/paging.c:paging_host_table_token` | `src/memory/paging.c` | `paging_host_table_token` | `memory` | `COVERED` | 1 |
+| `c:src/memory/paging.c:paging_pointer_address` | `src/memory/paging.c` | `paging_pointer_address` | `memory` | `COVERED` | 1 |
 
 ### shell_command
 
@@ -6921,6 +6926,7 @@
 | `host:core:timer` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar timers one-shot e periodicos com IDT, PIC e scheduler simulados | handles, prazos, cancelamento, dispatch, callbacks, notifier e limpeza respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas estaticas do servico de timers no processo host | todos os timers e proprietarios sao destruidos e os artefatos sao preservados |
 | `host:memory:slab-metadata` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar inicializacao, limites, metadados, estatisticas e limpeza do registrador SLAB sem alocar paginas reais | estado publicado, informacoes por indice, duplicidade e limpeza respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas de metadados no processo host; nenhuma pagina real e alocada | cache temporario destruido e manifesto, logs e cobertura preservados |
 | `host:memory:vma` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar VMAs fixas e anonimas, materializacao lazy, faults validos e invalidos, mmap, munmap, limites, estatisticas e limpeza com paging e PMM falsos | VMAs respeitam protecao e intervalos, faults retornam codigos canonicos e nenhum metadado ou page fixture permanece apos a limpeza | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente processo, diretorio, paginas e metadados VMA estaticos no processo host | VMAs, paginas mapeadas, pool de metadados e estado de faults reiniciados e artefatos preservados |
+| `host:memory:paging` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar init, mapeamento, diretorios de usuario, faults lazy, copias, limites e cleanup com PMM falso | o paging respeita os limites de usuario, rejeita estados invalidos e restaura os recursos da fixture | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente diretorios, tabelas e paginas estaticos no processo host | diretorios e tabelas liberados, pagina de usuario coletada e artefatos preservados |
 | `host:network:arp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar configuracao, resolucao, cache, retries e recepcao ARP com Ethernet simulada | enderecos validos sao resolvidos, pacotes invalidos sao rejeitados e o cache retorna ao estado inicial | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente cache ARP, buffers estaticos e transporte Ethernet falso no processo host | cache desconfigurado e artefatos preservados |
 | `host:network:dhcp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar descoberta, oferta, lease, renovacao, rebinding e expiracao DHCP com UDP e timer simulados | leases validos percorrem eventos canonicos, mensagens invalidas falham e o estado retorna ao baseline | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado DHCP, buffers estaticos e transporte UDP falso no processo host | sessao e eventos DHCP reiniciados e artefatos preservados |
 | `host:network:dns` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar consultas DNS, cache, CNAME, timeout e pacotes invalidos com UDP e timer simulados | nomes validos sao resolvidos, respostas invalidas falham com codigo canonico e o estado retorna ao baseline | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado DNS, buffers estaticos e transporte UDP falso no processo host | cache e consulta DNS reiniciados e artefatos preservados |
@@ -7532,11 +7538,6 @@
 - `api:src/include/fs/wav.h:wav_init`
 - `api:src/include/fs/wav.h:wav_load`
 - `api:src/include/fs/wav.h:wav_play`
-- `api:src/include/memory/paging.h:paging_copy_from_user`
-- `api:src/include/memory/paging.h:paging_free_directory`
-- `api:src/include/memory/paging.h:paging_get_boot_stats`
-- `api:src/include/memory/paging.h:paging_init`
-- `api:src/include/memory/paging.h:paging_map_page`
 - `api:src/include/process/process.h:ipc_current_has_pending`
 - `api:src/include/process/process.h:ipc_get_pending_count`
 - `api:src/include/process/process.h:ipc_get_stats`
@@ -9552,14 +9553,6 @@
 - `c:src/memory/memory.c:memory_range_is_usable`
 - `c:src/memory/memory.c:memory_recount`
 - `c:src/memory/memory.c:memory_reserve_range`
-- `c:src/memory/paging.c:paging_abort_init`
-- `c:src/memory/paging.c:paging_copy_from_user`
-- `c:src/memory/paging.c:paging_free_directory`
-- `c:src/memory/paging.c:paging_get_boot_stats`
-- `c:src/memory/paging.c:paging_init`
-- `c:src/memory/paging.c:paging_map_framebuffer`
-- `c:src/memory/paging.c:paging_map_identity_range_fast`
-- `c:src/memory/paging.c:paging_map_page`
 - `c:src/process/ipc.c:ipc_get_stats`
 - `c:src/process/ipc.c:ipc_init`
 - `c:src/process/ipc.c:process_focus_target_is_valid`
