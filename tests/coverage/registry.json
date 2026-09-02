@@ -2024,6 +2024,54 @@
       "evidence": "make test-usb-manager-host PASS com inventario PCI, runtime UHCI/EHCI, portas, dispositivos, polling, formatos, limites, falhas de driver, indisponibilidade e recuperacao; relatorio instrumentado sem enderecos desconhecidos ou ambiguos"
     },
     {
+      "id": "usb-hid-host-dynamic",
+      "domain": "drivers-usb-hid",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:drivers:usb-hid"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/usb-hid-host/coverage.json",
+      "coverage_sources": [
+        "src/drivers/usb_hid.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:drivers:usb-hid",
+        "scenario": "Processamento host-only de dispositivos HID Boot simulados",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "enumerar teclados e mouses UHCI, enviar relatorios Boot, publicar eventos de entrada e exercitar refresh, remocao e limites",
+        "expected": "parsing valido, rejeicao de reports corrompidos, estados, contadores, cancelamento e indisponibilidade preservam o contrato",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente dispositivos USB HID e callbacks de entrada estaticos no processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "drivers",
+          "usb",
+          "hid",
+          "coverage"
+        ]
+      },
+      "evidence": "make test-usb-hid-host PASS com teclado, mouse, relatorios validos e invalidos, rollover, duplicidade, overflow, timeout, falhas de controle/interrupt, reconfiguracao, remocao e capacidade; relatorio instrumentado sem enderecos desconhecidos ou ambiguos"
+    },
+    {
       "id": "shell-introspection-host-dynamic",
       "domain": "shell-introspection",
       "owner": "quality",

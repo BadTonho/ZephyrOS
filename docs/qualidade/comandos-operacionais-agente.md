@@ -356,6 +356,16 @@ relatorio fica em `build/test-results/usb-manager-host/`:
 make test-usb-manager-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-usb-hid-host` exercita o driver HID Boot com teclados e mouses
+UHCI simulados, relatorios validos e corrompidos, rollover, duplicidade,
+overflow, timeout, falhas de controle e interrupt, reconfiguracao, remocao,
+limites e estados indisponiveis. A fixture publica apenas eventos de entrada
+falsos e o relatorio fica em `build/test-results/usb-hid-host/`:
+
+```text
+make test-usb-hid-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O caso `test-shell-input-host` exercita a entrada do Shell com terminal,
 historico, navegacao para cima/baixo, edicao, teclas de rolagem, cancelamento,
 bloqueio, modificadores e limite do buffer. A fixture usa apenas video,
