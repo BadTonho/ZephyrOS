@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **6820**
-- Casos de teste: **67**
+- Casos de teste: **68**
 - Superfícies aposentadas: **20**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 2841 |
+| `COVERED` | 2876 |
 | `MANUAL` | 0 |
-| `PENDING` | 3979 |
+| `PENDING` | 3944 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 67 |
+| `AUTOMATED` | 68 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -354,16 +354,16 @@
 | `api:src/include/core/dns.h:dns_resolve` | `src/include/core/dns.h` | `dns_resolve` | `core` | `COVERED` | 1 |
 | `api:src/include/core/dns.h:dns_unconfigure` | `src/include/core/dns.h` | `dns_unconfigure` | `core` | `COVERED` | 1 |
 | `api:src/include/core/dns.h:dns_validate_state` | `src/include/core/dns.h` | `dns_validate_state` | `core` | `COVERED` | 3 |
-| `api:src/include/core/ethernet.h:ethernet_attach_interface` | `src/include/core/ethernet.h` | `ethernet_attach_interface` | `core` | `PENDING` | 0 |
-| `api:src/include/core/ethernet.h:ethernet_get_interface_status` | `src/include/core/ethernet.h` | `ethernet_get_interface_status` | `core` | `PENDING` | 0 |
-| `api:src/include/core/ethernet.h:ethernet_get_status` | `src/include/core/ethernet.h` | `ethernet_get_status` | `core` | `PENDING` | 0 |
-| `api:src/include/core/ethernet.h:ethernet_init` | `src/include/core/ethernet.h` | `ethernet_init` | `core` | `PENDING` | 0 |
-| `api:src/include/core/ethernet.h:ethernet_poll` | `src/include/core/ethernet.h` | `ethernet_poll` | `core` | `PENDING` | 0 |
-| `api:src/include/core/ethernet.h:ethernet_quiesce` | `src/include/core/ethernet.h` | `ethernet_quiesce` | `core` | `PENDING` | 0 |
-| `api:src/include/core/ethernet.h:ethernet_register_handler` | `src/include/core/ethernet.h` | `ethernet_register_handler` | `core` | `PENDING` | 0 |
-| `api:src/include/core/ethernet.h:ethernet_send` | `src/include/core/ethernet.h` | `ethernet_send` | `core` | `PENDING` | 0 |
-| `api:src/include/core/ethernet.h:ethernet_set_quiescing` | `src/include/core/ethernet.h` | `ethernet_set_quiescing` | `core` | `PENDING` | 0 |
-| `api:src/include/core/ethernet.h:ethernet_validate_state` | `src/include/core/ethernet.h` | `ethernet_validate_state` | `core` | `COVERED` | 2 |
+| `api:src/include/core/ethernet.h:ethernet_attach_interface` | `src/include/core/ethernet.h` | `ethernet_attach_interface` | `core` | `COVERED` | 1 |
+| `api:src/include/core/ethernet.h:ethernet_get_interface_status` | `src/include/core/ethernet.h` | `ethernet_get_interface_status` | `core` | `COVERED` | 1 |
+| `api:src/include/core/ethernet.h:ethernet_get_status` | `src/include/core/ethernet.h` | `ethernet_get_status` | `core` | `COVERED` | 1 |
+| `api:src/include/core/ethernet.h:ethernet_init` | `src/include/core/ethernet.h` | `ethernet_init` | `core` | `COVERED` | 1 |
+| `api:src/include/core/ethernet.h:ethernet_poll` | `src/include/core/ethernet.h` | `ethernet_poll` | `core` | `COVERED` | 1 |
+| `api:src/include/core/ethernet.h:ethernet_quiesce` | `src/include/core/ethernet.h` | `ethernet_quiesce` | `core` | `COVERED` | 1 |
+| `api:src/include/core/ethernet.h:ethernet_register_handler` | `src/include/core/ethernet.h` | `ethernet_register_handler` | `core` | `COVERED` | 1 |
+| `api:src/include/core/ethernet.h:ethernet_send` | `src/include/core/ethernet.h` | `ethernet_send` | `core` | `COVERED` | 1 |
+| `api:src/include/core/ethernet.h:ethernet_set_quiescing` | `src/include/core/ethernet.h` | `ethernet_set_quiescing` | `core` | `COVERED` | 1 |
+| `api:src/include/core/ethernet.h:ethernet_validate_state` | `src/include/core/ethernet.h` | `ethernet_validate_state` | `core` | `COVERED` | 3 |
 | `api:src/include/core/http.h:http_get_body` | `src/include/core/http.h` | `http_get_body` | `core` | `PENDING` | 0 |
 | `api:src/include/core/http.h:http_get_start` | `src/include/core/http.h` | `http_get_start` | `core` | `PENDING` | 0 |
 | `api:src/include/core/http.h:http_get_start_ex` | `src/include/core/http.h` | `http_get_start_ex` | `core` | `PENDING` | 0 |
@@ -424,9 +424,9 @@
 | `api:src/include/core/log.h:log_get_console_level` | `src/include/core/log.h` | `log_get_console_level` | `core` | `COVERED` | 1 |
 | `api:src/include/core/log.h:log_get_level` | `src/include/core/log.h` | `log_get_level` | `core` | `COVERED` | 1 |
 | `api:src/include/core/log.h:log_get_stats` | `src/include/core/log.h` | `log_get_stats` | `core` | `COVERED` | 2 |
-| `api:src/include/core/log.h:log_init` | `src/include/core/log.h` | `log_init` | `core` | `COVERED` | 18 |
-| `api:src/include/core/log.h:log_print` | `src/include/core/log.h` | `log_print` | `core` | `COVERED` | 21 |
-| `api:src/include/core/log.h:log_print_code` | `src/include/core/log.h` | `log_print_code` | `core` | `COVERED` | 5 |
+| `api:src/include/core/log.h:log_init` | `src/include/core/log.h` | `log_init` | `core` | `COVERED` | 19 |
+| `api:src/include/core/log.h:log_print` | `src/include/core/log.h` | `log_print` | `core` | `COVERED` | 22 |
+| `api:src/include/core/log.h:log_print_code` | `src/include/core/log.h` | `log_print_code` | `core` | `COVERED` | 6 |
 | `api:src/include/core/log.h:log_self_test` | `src/include/core/log.h` | `log_self_test` | `core` | `COVERED` | 3 |
 | `api:src/include/core/log.h:log_set_buffer_level` | `src/include/core/log.h` | `log_set_buffer_level` | `core` | `COVERED` | 1 |
 | `api:src/include/core/log.h:log_set_console_level` | `src/include/core/log.h` | `log_set_console_level` | `core` | `COVERED` | 1 |
@@ -445,21 +445,21 @@
 | `api:src/include/core/memory.h:memory_init` | `src/include/core/memory.h` | `memory_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/memory.h:pmm_free_page` | `src/include/core/memory.h` | `pmm_free_page` | `core` | `PENDING` | 0 |
 | `api:src/include/core/memory.h:pmm_free_pages` | `src/include/core/memory.h` | `pmm_free_pages` | `core` | `PENDING` | 0 |
-| `api:src/include/core/net_buffer.h:net_buffer_begin` | `src/include/core/net_buffer.h` | `net_buffer_begin` | `core` | `COVERED` | 3 |
-| `api:src/include/core/net_buffer.h:net_buffer_complete` | `src/include/core/net_buffer.h` | `net_buffer_complete` | `core` | `COVERED` | 3 |
-| `api:src/include/core/net_buffer.h:net_buffer_get_stats` | `src/include/core/net_buffer.h` | `net_buffer_get_stats` | `core` | `COVERED` | 3 |
-| `api:src/include/core/net_buffer.h:net_buffer_init` | `src/include/core/net_buffer.h` | `net_buffer_init` | `core` | `COVERED` | 1 |
+| `api:src/include/core/net_buffer.h:net_buffer_begin` | `src/include/core/net_buffer.h` | `net_buffer_begin` | `core` | `COVERED` | 4 |
+| `api:src/include/core/net_buffer.h:net_buffer_complete` | `src/include/core/net_buffer.h` | `net_buffer_complete` | `core` | `COVERED` | 4 |
+| `api:src/include/core/net_buffer.h:net_buffer_get_stats` | `src/include/core/net_buffer.h` | `net_buffer_get_stats` | `core` | `COVERED` | 4 |
+| `api:src/include/core/net_buffer.h:net_buffer_init` | `src/include/core/net_buffer.h` | `net_buffer_init` | `core` | `COVERED` | 2 |
 | `api:src/include/core/net_buffer.h:net_buffer_note_clone` | `src/include/core/net_buffer.h` | `net_buffer_note_clone` | `core` | `COVERED` | 3 |
-| `api:src/include/core/net_buffer.h:net_buffer_note_copy` | `src/include/core/net_buffer.h` | `net_buffer_note_copy` | `core` | `COVERED` | 3 |
+| `api:src/include/core/net_buffer.h:net_buffer_note_copy` | `src/include/core/net_buffer.h` | `net_buffer_note_copy` | `core` | `COVERED` | 4 |
 | `api:src/include/core/net_buffer.h:net_buffer_note_fragment` | `src/include/core/net_buffer.h` | `net_buffer_note_fragment` | `core` | `COVERED` | 3 |
-| `api:src/include/core/net_buffer.h:net_buffer_release` | `src/include/core/net_buffer.h` | `net_buffer_release` | `core` | `COVERED` | 3 |
-| `api:src/include/core/net_buffer.h:net_buffer_restore_stats` | `src/include/core/net_buffer.h` | `net_buffer_restore_stats` | `core` | `COVERED` | 3 |
-| `api:src/include/core/net_buffer.h:net_buffer_retain` | `src/include/core/net_buffer.h` | `net_buffer_retain` | `core` | `COVERED` | 3 |
+| `api:src/include/core/net_buffer.h:net_buffer_release` | `src/include/core/net_buffer.h` | `net_buffer_release` | `core` | `COVERED` | 4 |
+| `api:src/include/core/net_buffer.h:net_buffer_restore_stats` | `src/include/core/net_buffer.h` | `net_buffer_restore_stats` | `core` | `COVERED` | 4 |
+| `api:src/include/core/net_buffer.h:net_buffer_retain` | `src/include/core/net_buffer.h` | `net_buffer_retain` | `core` | `COVERED` | 4 |
 | `api:src/include/core/net_buffer.h:net_buffer_self_test` | `src/include/core/net_buffer.h` | `net_buffer_self_test` | `core` | `COVERED` | 3 |
-| `api:src/include/core/net_buffer.h:net_buffer_set_layout` | `src/include/core/net_buffer.h` | `net_buffer_set_layout` | `core` | `COVERED` | 3 |
+| `api:src/include/core/net_buffer.h:net_buffer_set_layout` | `src/include/core/net_buffer.h` | `net_buffer_set_layout` | `core` | `COVERED` | 4 |
 | `api:src/include/core/net_buffer.h:net_buffer_set_length` | `src/include/core/net_buffer.h` | `net_buffer_set_length` | `core` | `COVERED` | 3 |
-| `api:src/include/core/net_buffer.h:net_buffer_transition` | `src/include/core/net_buffer.h` | `net_buffer_transition` | `core` | `COVERED` | 3 |
-| `api:src/include/core/net_buffer.h:net_buffer_validate_state` | `src/include/core/net_buffer.h` | `net_buffer_validate_state` | `core` | `COVERED` | 3 |
+| `api:src/include/core/net_buffer.h:net_buffer_transition` | `src/include/core/net_buffer.h` | `net_buffer_transition` | `core` | `COVERED` | 4 |
+| `api:src/include/core/net_buffer.h:net_buffer_validate_state` | `src/include/core/net_buffer.h` | `net_buffer_validate_state` | `core` | `COVERED` | 4 |
 | `api:src/include/core/net_socket.h:net_socket_abort` | `src/include/core/net_socket.h` | `net_socket_abort` | `core` | `PENDING` | 0 |
 | `api:src/include/core/net_socket.h:net_socket_close` | `src/include/core/net_socket.h` | `net_socket_close` | `core` | `PENDING` | 0 |
 | `api:src/include/core/net_socket.h:net_socket_connect` | `src/include/core/net_socket.h` | `net_socket_connect` | `core` | `PENDING` | 0 |
@@ -529,15 +529,15 @@
 | `api:src/include/core/route.h:route_set_base` | `src/include/core/route.h` | `route_set_base` | `core` | `COVERED` | 3 |
 | `api:src/include/core/route.h:route_set_default` | `src/include/core/route.h` | `route_set_default` | `core` | `COVERED` | 3 |
 | `api:src/include/core/route.h:route_validate_state` | `src/include/core/route.h` | `route_validate_state` | `core` | `COVERED` | 3 |
-| `api:src/include/core/sk_buff.h:free_skb` | `src/include/core/sk_buff.h` | `free_skb` | `core` | `PENDING` | 0 |
-| `api:src/include/core/sk_buff.h:skb_complete` | `src/include/core/sk_buff.h` | `skb_complete` | `core` | `COVERED` | 2 |
-| `api:src/include/core/sk_buff.h:skb_get_stats` | `src/include/core/sk_buff.h` | `skb_get_stats` | `core` | `COVERED` | 2 |
-| `api:src/include/core/sk_buff.h:skb_init` | `src/include/core/sk_buff.h` | `skb_init` | `core` | `PENDING` | 0 |
-| `api:src/include/core/sk_buff.h:skb_release` | `src/include/core/sk_buff.h` | `skb_release` | `core` | `COVERED` | 2 |
-| `api:src/include/core/sk_buff.h:skb_retain` | `src/include/core/sk_buff.h` | `skb_retain` | `core` | `COVERED` | 2 |
-| `api:src/include/core/sk_buff.h:skb_self_test` | `src/include/core/sk_buff.h` | `skb_self_test` | `core` | `COVERED` | 2 |
-| `api:src/include/core/sk_buff.h:skb_transition` | `src/include/core/sk_buff.h` | `skb_transition` | `core` | `COVERED` | 2 |
-| `api:src/include/core/sk_buff.h:skb_validate_state` | `src/include/core/sk_buff.h` | `skb_validate_state` | `core` | `COVERED` | 2 |
+| `api:src/include/core/sk_buff.h:free_skb` | `src/include/core/sk_buff.h` | `free_skb` | `core` | `COVERED` | 1 |
+| `api:src/include/core/sk_buff.h:skb_complete` | `src/include/core/sk_buff.h` | `skb_complete` | `core` | `COVERED` | 3 |
+| `api:src/include/core/sk_buff.h:skb_get_stats` | `src/include/core/sk_buff.h` | `skb_get_stats` | `core` | `COVERED` | 3 |
+| `api:src/include/core/sk_buff.h:skb_init` | `src/include/core/sk_buff.h` | `skb_init` | `core` | `COVERED` | 1 |
+| `api:src/include/core/sk_buff.h:skb_release` | `src/include/core/sk_buff.h` | `skb_release` | `core` | `COVERED` | 3 |
+| `api:src/include/core/sk_buff.h:skb_retain` | `src/include/core/sk_buff.h` | `skb_retain` | `core` | `COVERED` | 3 |
+| `api:src/include/core/sk_buff.h:skb_self_test` | `src/include/core/sk_buff.h` | `skb_self_test` | `core` | `COVERED` | 3 |
+| `api:src/include/core/sk_buff.h:skb_transition` | `src/include/core/sk_buff.h` | `skb_transition` | `core` | `COVERED` | 3 |
+| `api:src/include/core/sk_buff.h:skb_validate_state` | `src/include/core/sk_buff.h` | `skb_validate_state` | `core` | `COVERED` | 3 |
 | `api:src/include/core/socket.h:socket_accept` | `src/include/core/socket.h` | `socket_accept` | `core` | `COVERED` | 2 |
 | `api:src/include/core/socket.h:socket_bind` | `src/include/core/socket.h` | `socket_bind` | `core` | `COVERED` | 2 |
 | `api:src/include/core/socket.h:socket_close` | `src/include/core/socket.h` | `socket_close` | `core` | `COVERED` | 2 |
@@ -555,10 +555,10 @@
 | `api:src/include/core/spinlock.h:spinlock_acquire` | `src/include/core/spinlock.h` | `spinlock_acquire` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_init` | `src/include/core/spinlock.h` | `spinlock_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_release` | `src/include/core/spinlock.h` | `spinlock_release` | `core` | `PENDING` | 0 |
-| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 29 |
-| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 29 |
-| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 22 |
-| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 26 |
+| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 30 |
+| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 30 |
+| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 23 |
+| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 27 |
 | `api:src/include/core/syscall.h:syscall_enable_user_mode` | `src/include/core/syscall.h` | `syscall_enable_user_mode` | `core` | `PENDING` | 0 |
 | `api:src/include/core/syscall.h:syscall_handler` | `src/include/core/syscall.h` | `syscall_handler` | `core` | `COVERED` | 1 |
 | `api:src/include/core/syscall.h:syscall_init` | `src/include/core/syscall.h` | `syscall_init` | `core` | `PENDING` | 0 |
@@ -1229,13 +1229,13 @@
 | `api:src/include/memory/paging.h:paging_unmap_user_page_in_directory` | `src/include/memory/paging.h` | `paging_unmap_user_page_in_directory` | `memory` | `COVERED` | 1 |
 | `api:src/include/memory/paging.h:paging_validate_user_range` | `src/include/memory/paging.h` | `paging_validate_user_range` | `memory` | `COVERED` | 1 |
 | `api:src/include/memory/slab.h:kmem_cache_destroy` | `src/include/memory/slab.h` | `kmem_cache_destroy` | `memory` | `COVERED` | 3 |
-| `api:src/include/memory/slab.h:kmem_cache_free` | `src/include/memory/slab.h` | `kmem_cache_free` | `memory` | `COVERED` | 4 |
+| `api:src/include/memory/slab.h:kmem_cache_free` | `src/include/memory/slab.h` | `kmem_cache_free` | `memory` | `COVERED` | 5 |
 | `api:src/include/memory/slab.h:kmem_cache_get_count` | `src/include/memory/slab.h` | `kmem_cache_get_count` | `memory` | `COVERED` | 1 |
-| `api:src/include/memory/slab.h:kmem_cache_get_info` | `src/include/memory/slab.h` | `kmem_cache_get_info` | `memory` | `COVERED` | 3 |
+| `api:src/include/memory/slab.h:kmem_cache_get_info` | `src/include/memory/slab.h` | `kmem_cache_get_info` | `memory` | `COVERED` | 4 |
 | `api:src/include/memory/slab.h:kmem_cache_get_info_at` | `src/include/memory/slab.h` | `kmem_cache_get_info_at` | `memory` | `COVERED` | 1 |
 | `api:src/include/memory/slab.h:kmem_cache_get_stats` | `src/include/memory/slab.h` | `kmem_cache_get_stats` | `memory` | `COVERED` | 6 |
-| `api:src/include/memory/slab.h:kmem_cache_init` | `src/include/memory/slab.h` | `kmem_cache_init` | `memory` | `COVERED` | 1 |
-| `api:src/include/memory/slab.h:kmem_cache_owns` | `src/include/memory/slab.h` | `kmem_cache_owns` | `memory` | `COVERED` | 6 |
+| `api:src/include/memory/slab.h:kmem_cache_init` | `src/include/memory/slab.h` | `kmem_cache_init` | `memory` | `COVERED` | 2 |
+| `api:src/include/memory/slab.h:kmem_cache_owns` | `src/include/memory/slab.h` | `kmem_cache_owns` | `memory` | `COVERED` | 7 |
 | `api:src/include/memory/slab.h:kmem_cache_self_test` | `src/include/memory/slab.h` | `kmem_cache_self_test` | `memory` | `COVERED` | 3 |
 | `api:src/include/memory/slab.h:kmem_cache_validate` | `src/include/memory/slab.h` | `kmem_cache_validate` | `memory` | `COVERED` | 6 |
 | `api:src/include/memory/vma.h:process_vma_copy` | `src/include/memory/vma.h` | `process_vma_copy` | `memory` | `PENDING` | 0 |
@@ -2320,29 +2320,29 @@
 | `c:src/core/dns.c:dns_validate_record_vectors` | `src/core/dns.c` | `dns_validate_record_vectors` | `core` | `COVERED` | 3 |
 | `c:src/core/dns.c:dns_validate_state` | `src/core/dns.c` | `dns_validate_state` | `core` | `COVERED` | 3 |
 | `c:src/core/dns.c:dns_write_u16` | `src/core/dns.c` | `dns_write_u16` | `core` | `COVERED` | 3 |
-| `c:src/core/ethernet.c:ethernet_attach_interface` | `src/core/ethernet.c` | `ethernet_attach_interface` | `core` | `PENDING` | 0 |
-| `c:src/core/ethernet.c:ethernet_build_frame` | `src/core/ethernet.c` | `ethernet_build_frame` | `core` | `PENDING` | 0 |
-| `c:src/core/ethernet.c:ethernet_classify_destination` | `src/core/ethernet.c` | `ethernet_classify_destination` | `core` | `PENDING` | 0 |
-| `c:src/core/ethernet.c:ethernet_copy_id` | `src/core/ethernet.c` | `ethernet_copy_id` | `core` | `PENDING` | 0 |
-| `c:src/core/ethernet.c:ethernet_dispatch_frame` | `src/core/ethernet.c` | `ethernet_dispatch_frame` | `core` | `PENDING` | 0 |
-| `c:src/core/ethernet.c:ethernet_find_handler` | `src/core/ethernet.c` | `ethernet_find_handler` | `core` | `PENDING` | 0 |
-| `c:src/core/ethernet.c:ethernet_get_interface_status` | `src/core/ethernet.c` | `ethernet_get_interface_status` | `core` | `PENDING` | 0 |
-| `c:src/core/ethernet.c:ethernet_get_status` | `src/core/ethernet.c` | `ethernet_get_status` | `core` | `PENDING` | 0 |
-| `c:src/core/ethernet.c:ethernet_init` | `src/core/ethernet.c` | `ethernet_init` | `core` | `PENDING` | 0 |
-| `c:src/core/ethernet.c:ethernet_mac_is_broadcast` | `src/core/ethernet.c` | `ethernet_mac_is_broadcast` | `core` | `PENDING` | 0 |
-| `c:src/core/ethernet.c:ethernet_mac_is_equal` | `src/core/ethernet.c` | `ethernet_mac_is_equal` | `core` | `PENDING` | 0 |
-| `c:src/core/ethernet.c:ethernet_mac_is_zero` | `src/core/ethernet.c` | `ethernet_mac_is_zero` | `core` | `PENDING` | 0 |
-| `c:src/core/ethernet.c:ethernet_poll` | `src/core/ethernet.c` | `ethernet_poll` | `core` | `PENDING` | 0 |
-| `c:src/core/ethernet.c:ethernet_poll_slot` | `src/core/ethernet.c` | `ethernet_poll_slot` | `core` | `PENDING` | 0 |
-| `c:src/core/ethernet.c:ethernet_process_frame` | `src/core/ethernet.c` | `ethernet_process_frame` | `core` | `PENDING` | 0 |
-| `c:src/core/ethernet.c:ethernet_quiesce` | `src/core/ethernet.c` | `ethernet_quiesce` | `core` | `PENDING` | 0 |
-| `c:src/core/ethernet.c:ethernet_record_frame` | `src/core/ethernet.c` | `ethernet_record_frame` | `core` | `PENDING` | 0 |
-| `c:src/core/ethernet.c:ethernet_register_handler` | `src/core/ethernet.c` | `ethernet_register_handler` | `core` | `PENDING` | 0 |
-| `c:src/core/ethernet.c:ethernet_send` | `src/core/ethernet.c` | `ethernet_send` | `core` | `PENDING` | 0 |
-| `c:src/core/ethernet.c:ethernet_set_quiescing` | `src/core/ethernet.c` | `ethernet_set_quiescing` | `core` | `PENDING` | 0 |
-| `c:src/core/ethernet.c:ethernet_source_is_valid` | `src/core/ethernet.c` | `ethernet_source_is_valid` | `core` | `PENDING` | 0 |
-| `c:src/core/ethernet.c:ethernet_text_equal` | `src/core/ethernet.c` | `ethernet_text_equal` | `core` | `PENDING` | 0 |
-| `c:src/core/ethernet.c:ethernet_validate_state` | `src/core/ethernet.c` | `ethernet_validate_state` | `core` | `COVERED` | 2 |
+| `c:src/core/ethernet.c:ethernet_attach_interface` | `src/core/ethernet.c` | `ethernet_attach_interface` | `core` | `COVERED` | 1 |
+| `c:src/core/ethernet.c:ethernet_build_frame` | `src/core/ethernet.c` | `ethernet_build_frame` | `core` | `COVERED` | 1 |
+| `c:src/core/ethernet.c:ethernet_classify_destination` | `src/core/ethernet.c` | `ethernet_classify_destination` | `core` | `COVERED` | 1 |
+| `c:src/core/ethernet.c:ethernet_copy_id` | `src/core/ethernet.c` | `ethernet_copy_id` | `core` | `COVERED` | 1 |
+| `c:src/core/ethernet.c:ethernet_dispatch_frame` | `src/core/ethernet.c` | `ethernet_dispatch_frame` | `core` | `COVERED` | 1 |
+| `c:src/core/ethernet.c:ethernet_find_handler` | `src/core/ethernet.c` | `ethernet_find_handler` | `core` | `COVERED` | 1 |
+| `c:src/core/ethernet.c:ethernet_get_interface_status` | `src/core/ethernet.c` | `ethernet_get_interface_status` | `core` | `COVERED` | 1 |
+| `c:src/core/ethernet.c:ethernet_get_status` | `src/core/ethernet.c` | `ethernet_get_status` | `core` | `COVERED` | 1 |
+| `c:src/core/ethernet.c:ethernet_init` | `src/core/ethernet.c` | `ethernet_init` | `core` | `COVERED` | 1 |
+| `c:src/core/ethernet.c:ethernet_mac_is_broadcast` | `src/core/ethernet.c` | `ethernet_mac_is_broadcast` | `core` | `COVERED` | 1 |
+| `c:src/core/ethernet.c:ethernet_mac_is_equal` | `src/core/ethernet.c` | `ethernet_mac_is_equal` | `core` | `COVERED` | 1 |
+| `c:src/core/ethernet.c:ethernet_mac_is_zero` | `src/core/ethernet.c` | `ethernet_mac_is_zero` | `core` | `COVERED` | 1 |
+| `c:src/core/ethernet.c:ethernet_poll` | `src/core/ethernet.c` | `ethernet_poll` | `core` | `COVERED` | 1 |
+| `c:src/core/ethernet.c:ethernet_poll_slot` | `src/core/ethernet.c` | `ethernet_poll_slot` | `core` | `COVERED` | 1 |
+| `c:src/core/ethernet.c:ethernet_process_frame` | `src/core/ethernet.c` | `ethernet_process_frame` | `core` | `COVERED` | 1 |
+| `c:src/core/ethernet.c:ethernet_quiesce` | `src/core/ethernet.c` | `ethernet_quiesce` | `core` | `COVERED` | 1 |
+| `c:src/core/ethernet.c:ethernet_record_frame` | `src/core/ethernet.c` | `ethernet_record_frame` | `core` | `COVERED` | 1 |
+| `c:src/core/ethernet.c:ethernet_register_handler` | `src/core/ethernet.c` | `ethernet_register_handler` | `core` | `COVERED` | 1 |
+| `c:src/core/ethernet.c:ethernet_send` | `src/core/ethernet.c` | `ethernet_send` | `core` | `COVERED` | 1 |
+| `c:src/core/ethernet.c:ethernet_set_quiescing` | `src/core/ethernet.c` | `ethernet_set_quiescing` | `core` | `COVERED` | 1 |
+| `c:src/core/ethernet.c:ethernet_source_is_valid` | `src/core/ethernet.c` | `ethernet_source_is_valid` | `core` | `COVERED` | 1 |
+| `c:src/core/ethernet.c:ethernet_text_equal` | `src/core/ethernet.c` | `ethernet_text_equal` | `core` | `COVERED` | 1 |
+| `c:src/core/ethernet.c:ethernet_validate_state` | `src/core/ethernet.c` | `ethernet_validate_state` | `core` | `COVERED` | 3 |
 | `c:src/core/http.c:http_append_bytes` | `src/core/http.c` | `http_append_bytes` | `core` | `PENDING` | 0 |
 | `c:src/core/http.c:http_append_port` | `src/core/http.c` | `http_append_port` | `core` | `PENDING` | 0 |
 | `c:src/core/http.c:http_append_text` | `src/core/http.c` | `http_append_text` | `core` | `PENDING` | 0 |
@@ -2567,36 +2567,36 @@
 | `c:src/core/log.c:log_append_char` | `src/core/log.c` | `log_append_char` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_append_text` | `src/core/log.c` | `log_append_text` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_clear_buffer` | `src/core/log.c` | `log_clear_buffer` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_console_print_number` | `src/core/log.c` | `log_console_print_number` | `core` | `COVERED` | 22 |
+| `c:src/core/log.c:log_console_print_number` | `src/core/log.c` | `log_console_print_number` | `core` | `COVERED` | 23 |
 | `c:src/core/log.c:log_copy_recent` | `src/core/log.c` | `log_copy_recent` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_copy_text` | `src/core/log.c` | `log_copy_text` | `core` | `COVERED` | 22 |
+| `c:src/core/log.c:log_copy_text` | `src/core/log.c` | `log_copy_text` | `core` | `COVERED` | 23 |
 | `c:src/core/log.c:log_get_buffer` | `src/core/log.c` | `log_get_buffer` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_get_buffer_level` | `src/core/log.c` | `log_get_buffer_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_get_console_level` | `src/core/log.c` | `log_get_console_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_get_level` | `src/core/log.c` | `log_get_level` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_get_stats` | `src/core/log.c` | `log_get_stats` | `core` | `COVERED` | 2 |
-| `c:src/core/log.c:log_init` | `src/core/log.c` | `log_init` | `core` | `COVERED` | 18 |
-| `c:src/core/log.c:log_is_power_of_two` | `src/core/log.c` | `log_is_power_of_two` | `core` | `COVERED` | 22 |
-| `c:src/core/log.c:log_level_is_valid` | `src/core/log.c` | `log_level_is_valid` | `core` | `COVERED` | 22 |
+| `c:src/core/log.c:log_init` | `src/core/log.c` | `log_init` | `core` | `COVERED` | 19 |
+| `c:src/core/log.c:log_is_power_of_two` | `src/core/log.c` | `log_is_power_of_two` | `core` | `COVERED` | 23 |
+| `c:src/core/log.c:log_level_is_valid` | `src/core/log.c` | `log_level_is_valid` | `core` | `COVERED` | 23 |
 | `c:src/core/log.c:log_note_dropped_event` | `src/core/log.c` | `log_note_dropped_event` | `core` | `COVERED` | 2 |
-| `c:src/core/log.c:log_print` | `src/core/log.c` | `log_print` | `core` | `COVERED` | 22 |
-| `c:src/core/log.c:log_print_code` | `src/core/log.c` | `log_print_code` | `core` | `COVERED` | 5 |
-| `c:src/core/log.c:log_print_colored` | `src/core/log.c` | `log_print_colored` | `core` | `COVERED` | 22 |
-| `c:src/core/log.c:log_records_match` | `src/core/log.c` | `log_records_match` | `core` | `COVERED` | 22 |
-| `c:src/core/log.c:log_restore_interrupts` | `src/core/log.c` | `log_restore_interrupts` | `core` | `COVERED` | 22 |
+| `c:src/core/log.c:log_print` | `src/core/log.c` | `log_print` | `core` | `COVERED` | 23 |
+| `c:src/core/log.c:log_print_code` | `src/core/log.c` | `log_print_code` | `core` | `COVERED` | 6 |
+| `c:src/core/log.c:log_print_colored` | `src/core/log.c` | `log_print_colored` | `core` | `COVERED` | 23 |
+| `c:src/core/log.c:log_records_match` | `src/core/log.c` | `log_records_match` | `core` | `COVERED` | 23 |
+| `c:src/core/log.c:log_restore_interrupts` | `src/core/log.c` | `log_restore_interrupts` | `core` | `COVERED` | 23 |
 | `c:src/core/log.c:log_ring_clear` | `src/core/log.c` | `log_ring_clear` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_ring_copy_recent` | `src/core/log.c` | `log_ring_copy_recent` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_ring_initialize` | `src/core/log.c` | `log_ring_initialize` | `core` | `COVERED` | 20 |
-| `c:src/core/log.c:log_ring_latest_index` | `src/core/log.c` | `log_ring_latest_index` | `core` | `COVERED` | 22 |
-| `c:src/core/log.c:log_ring_store` | `src/core/log.c` | `log_ring_store` | `core` | `COVERED` | 22 |
+| `c:src/core/log.c:log_ring_initialize` | `src/core/log.c` | `log_ring_initialize` | `core` | `COVERED` | 21 |
+| `c:src/core/log.c:log_ring_latest_index` | `src/core/log.c` | `log_ring_latest_index` | `core` | `COVERED` | 23 |
+| `c:src/core/log.c:log_ring_store` | `src/core/log.c` | `log_ring_store` | `core` | `COVERED` | 23 |
 | `c:src/core/log.c:log_self_test` | `src/core/log.c` | `log_self_test` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_self_test_mark` | `src/core/log.c` | `log_self_test_mark` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_serialize_records` | `src/core/log.c` | `log_serialize_records` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_set_buffer_level` | `src/core/log.c` | `log_set_buffer_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_set_console_level` | `src/core/log.c` | `log_set_console_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_set_level` | `src/core/log.c` | `log_set_level` | `core` | `COVERED` | 2 |
-| `c:src/core/log.c:log_submit` | `src/core/log.c` | `log_submit` | `core` | `COVERED` | 22 |
-| `c:src/core/log.c:log_suspend_interrupts` | `src/core/log.c` | `log_suspend_interrupts` | `core` | `COVERED` | 22 |
+| `c:src/core/log.c:log_submit` | `src/core/log.c` | `log_submit` | `core` | `COVERED` | 23 |
+| `c:src/core/log.c:log_suspend_interrupts` | `src/core/log.c` | `log_suspend_interrupts` | `core` | `COVERED` | 23 |
 | `c:src/core/log.c:log_test_clear_behavior` | `src/core/log.c` | `log_test_clear_behavior` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_test_level_filtering` | `src/core/log.c` | `log_test_level_filtering` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_test_optional_error_code` | `src/core/log.c` | `log_test_optional_error_code` | `core` | `COVERED` | 3 |
@@ -2606,36 +2606,36 @@
 | `c:src/core/log.c:log_test_text_serialization` | `src/core/log.c` | `log_test_text_serialization` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_test_wrap_and_overwrite` | `src/core/log.c` | `log_test_wrap_and_overwrite` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_to_buffer` | `src/core/log.c` | `log_to_buffer` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_write_serial` | `src/core/log.c` | `log_write_serial` | `core` | `COVERED` | 22 |
-| `c:src/core/net_buffer.c:net_buffer_alignment_valid` | `src/core/net_buffer.c` | `net_buffer_alignment_valid` | `core` | `COVERED` | 3 |
-| `c:src/core/net_buffer.c:net_buffer_begin` | `src/core/net_buffer.c` | `net_buffer_begin` | `core` | `COVERED` | 3 |
-| `c:src/core/net_buffer.c:net_buffer_check_active_locked` | `src/core/net_buffer.c` | `net_buffer_check_active_locked` | `core` | `COVERED` | 3 |
-| `c:src/core/net_buffer.c:net_buffer_complete` | `src/core/net_buffer.c` | `net_buffer_complete` | `core` | `COVERED` | 3 |
-| `c:src/core/net_buffer.c:net_buffer_complete_locked` | `src/core/net_buffer.c` | `net_buffer_complete_locked` | `core` | `COVERED` | 3 |
-| `c:src/core/net_buffer.c:net_buffer_fail_locked` | `src/core/net_buffer.c` | `net_buffer_fail_locked` | `core` | `COVERED` | 3 |
-| `c:src/core/net_buffer.c:net_buffer_find_locked` | `src/core/net_buffer.c` | `net_buffer_find_locked` | `core` | `COVERED` | 3 |
-| `c:src/core/net_buffer.c:net_buffer_free_slot_locked` | `src/core/net_buffer.c` | `net_buffer_free_slot_locked` | `core` | `COVERED` | 3 |
-| `c:src/core/net_buffer.c:net_buffer_get_stats` | `src/core/net_buffer.c` | `net_buffer_get_stats` | `core` | `COVERED` | 3 |
-| `c:src/core/net_buffer.c:net_buffer_init` | `src/core/net_buffer.c` | `net_buffer_init` | `core` | `COVERED` | 1 |
-| `c:src/core/net_buffer.c:net_buffer_log_failure` | `src/core/net_buffer.c` | `net_buffer_log_failure` | `core` | `COVERED` | 3 |
+| `c:src/core/log.c:log_write_serial` | `src/core/log.c` | `log_write_serial` | `core` | `COVERED` | 23 |
+| `c:src/core/net_buffer.c:net_buffer_alignment_valid` | `src/core/net_buffer.c` | `net_buffer_alignment_valid` | `core` | `COVERED` | 4 |
+| `c:src/core/net_buffer.c:net_buffer_begin` | `src/core/net_buffer.c` | `net_buffer_begin` | `core` | `COVERED` | 4 |
+| `c:src/core/net_buffer.c:net_buffer_check_active_locked` | `src/core/net_buffer.c` | `net_buffer_check_active_locked` | `core` | `COVERED` | 4 |
+| `c:src/core/net_buffer.c:net_buffer_complete` | `src/core/net_buffer.c` | `net_buffer_complete` | `core` | `COVERED` | 4 |
+| `c:src/core/net_buffer.c:net_buffer_complete_locked` | `src/core/net_buffer.c` | `net_buffer_complete_locked` | `core` | `COVERED` | 4 |
+| `c:src/core/net_buffer.c:net_buffer_fail_locked` | `src/core/net_buffer.c` | `net_buffer_fail_locked` | `core` | `COVERED` | 4 |
+| `c:src/core/net_buffer.c:net_buffer_find_locked` | `src/core/net_buffer.c` | `net_buffer_find_locked` | `core` | `COVERED` | 4 |
+| `c:src/core/net_buffer.c:net_buffer_free_slot_locked` | `src/core/net_buffer.c` | `net_buffer_free_slot_locked` | `core` | `COVERED` | 4 |
+| `c:src/core/net_buffer.c:net_buffer_get_stats` | `src/core/net_buffer.c` | `net_buffer_get_stats` | `core` | `COVERED` | 4 |
+| `c:src/core/net_buffer.c:net_buffer_init` | `src/core/net_buffer.c` | `net_buffer_init` | `core` | `COVERED` | 2 |
+| `c:src/core/net_buffer.c:net_buffer_log_failure` | `src/core/net_buffer.c` | `net_buffer_log_failure` | `core` | `COVERED` | 4 |
 | `c:src/core/net_buffer.c:net_buffer_note_clone` | `src/core/net_buffer.c` | `net_buffer_note_clone` | `core` | `COVERED` | 3 |
-| `c:src/core/net_buffer.c:net_buffer_note_copy` | `src/core/net_buffer.c` | `net_buffer_note_copy` | `core` | `COVERED` | 3 |
+| `c:src/core/net_buffer.c:net_buffer_note_copy` | `src/core/net_buffer.c` | `net_buffer_note_copy` | `core` | `COVERED` | 4 |
 | `c:src/core/net_buffer.c:net_buffer_note_fragment` | `src/core/net_buffer.c` | `net_buffer_note_fragment` | `core` | `COVERED` | 3 |
-| `c:src/core/net_buffer.c:net_buffer_owner_valid` | `src/core/net_buffer.c` | `net_buffer_owner_valid` | `core` | `COVERED` | 3 |
-| `c:src/core/net_buffer.c:net_buffer_release` | `src/core/net_buffer.c` | `net_buffer_release` | `core` | `COVERED` | 3 |
-| `c:src/core/net_buffer.c:net_buffer_restore_stats` | `src/core/net_buffer.c` | `net_buffer_restore_stats` | `core` | `COVERED` | 3 |
-| `c:src/core/net_buffer.c:net_buffer_retain` | `src/core/net_buffer.c` | `net_buffer_retain` | `core` | `COVERED` | 3 |
+| `c:src/core/net_buffer.c:net_buffer_owner_valid` | `src/core/net_buffer.c` | `net_buffer_owner_valid` | `core` | `COVERED` | 4 |
+| `c:src/core/net_buffer.c:net_buffer_release` | `src/core/net_buffer.c` | `net_buffer_release` | `core` | `COVERED` | 4 |
+| `c:src/core/net_buffer.c:net_buffer_restore_stats` | `src/core/net_buffer.c` | `net_buffer_restore_stats` | `core` | `COVERED` | 4 |
+| `c:src/core/net_buffer.c:net_buffer_retain` | `src/core/net_buffer.c` | `net_buffer_retain` | `core` | `COVERED` | 4 |
 | `c:src/core/net_buffer.c:net_buffer_self_test` | `src/core/net_buffer.c` | `net_buffer_self_test` | `core` | `COVERED` | 3 |
-| `c:src/core/net_buffer.c:net_buffer_set_layout` | `src/core/net_buffer.c` | `net_buffer_set_layout` | `core` | `COVERED` | 3 |
-| `c:src/core/net_buffer.c:net_buffer_set_layout_locked` | `src/core/net_buffer.c` | `net_buffer_set_layout_locked` | `core` | `COVERED` | 3 |
+| `c:src/core/net_buffer.c:net_buffer_set_layout` | `src/core/net_buffer.c` | `net_buffer_set_layout` | `core` | `COVERED` | 4 |
+| `c:src/core/net_buffer.c:net_buffer_set_layout_locked` | `src/core/net_buffer.c` | `net_buffer_set_layout_locked` | `core` | `COVERED` | 4 |
 | `c:src/core/net_buffer.c:net_buffer_set_length` | `src/core/net_buffer.c` | `net_buffer_set_length` | `core` | `COVERED` | 3 |
-| `c:src/core/net_buffer.c:net_buffer_state_owner_valid` | `src/core/net_buffer.c` | `net_buffer_state_owner_valid` | `core` | `COVERED` | 3 |
+| `c:src/core/net_buffer.c:net_buffer_state_owner_valid` | `src/core/net_buffer.c` | `net_buffer_state_owner_valid` | `core` | `COVERED` | 4 |
 | `c:src/core/net_buffer.c:net_buffer_test_delivered` | `src/core/net_buffer.c` | `net_buffer_test_delivered` | `core` | `COVERED` | 3 |
 | `c:src/core/net_buffer.c:net_buffer_test_dropped` | `src/core/net_buffer.c` | `net_buffer_test_dropped` | `core` | `COVERED` | 3 |
-| `c:src/core/net_buffer.c:net_buffer_transition` | `src/core/net_buffer.c` | `net_buffer_transition` | `core` | `COVERED` | 3 |
-| `c:src/core/net_buffer.c:net_buffer_transition_allowed` | `src/core/net_buffer.c` | `net_buffer_transition_allowed` | `core` | `COVERED` | 3 |
-| `c:src/core/net_buffer.c:net_buffer_validate_entry_locked` | `src/core/net_buffer.c` | `net_buffer_validate_entry_locked` | `core` | `COVERED` | 3 |
-| `c:src/core/net_buffer.c:net_buffer_validate_state` | `src/core/net_buffer.c` | `net_buffer_validate_state` | `core` | `COVERED` | 3 |
+| `c:src/core/net_buffer.c:net_buffer_transition` | `src/core/net_buffer.c` | `net_buffer_transition` | `core` | `COVERED` | 4 |
+| `c:src/core/net_buffer.c:net_buffer_transition_allowed` | `src/core/net_buffer.c` | `net_buffer_transition_allowed` | `core` | `COVERED` | 4 |
+| `c:src/core/net_buffer.c:net_buffer_validate_entry_locked` | `src/core/net_buffer.c` | `net_buffer_validate_entry_locked` | `core` | `COVERED` | 4 |
+| `c:src/core/net_buffer.c:net_buffer_validate_state` | `src/core/net_buffer.c` | `net_buffer_validate_state` | `core` | `COVERED` | 4 |
 | `c:src/core/net_socket.c:net_socket_abort` | `src/core/net_socket.c` | `net_socket_abort` | `core` | `PENDING` | 0 |
 | `c:src/core/net_socket.c:net_socket_allocate_port` | `src/core/net_socket.c` | `net_socket_allocate_port` | `core` | `PENDING` | 0 |
 | `c:src/core/net_socket.c:net_socket_close` | `src/core/net_socket.c` | `net_socket_close` | `core` | `PENDING` | 0 |
@@ -2801,27 +2801,27 @@
 | `c:src/core/route.c:route_set_default` | `src/core/route.c` | `route_set_default` | `core` | `COVERED` | 3 |
 | `c:src/core/route.c:route_test_count` | `src/core/route.c` | `route_test_count` | `core` | `COVERED` | 3 |
 | `c:src/core/route.c:route_validate_state` | `src/core/route.c` | `route_validate_state` | `core` | `COVERED` | 3 |
-| `c:src/core/sk_buff.c:free_skb` | `src/core/sk_buff.c` | `free_skb` | `core` | `PENDING` | 0 |
-| `c:src/core/sk_buff.c:skb_check_geometry` | `src/core/sk_buff.c` | `skb_check_geometry` | `core` | `COVERED` | 2 |
-| `c:src/core/sk_buff.c:skb_complete` | `src/core/sk_buff.c` | `skb_complete` | `core` | `COVERED` | 2 |
-| `c:src/core/sk_buff.c:skb_find_locked` | `src/core/sk_buff.c` | `skb_find_locked` | `core` | `COVERED` | 2 |
-| `c:src/core/sk_buff.c:skb_free_slot_locked` | `src/core/sk_buff.c` | `skb_free_slot_locked` | `core` | `COVERED` | 2 |
-| `c:src/core/sk_buff.c:skb_get_stats` | `src/core/sk_buff.c` | `skb_get_stats` | `core` | `COVERED` | 2 |
-| `c:src/core/sk_buff.c:skb_init` | `src/core/sk_buff.c` | `skb_init` | `core` | `PENDING` | 0 |
-| `c:src/core/sk_buff.c:skb_log_failure` | `src/core/sk_buff.c` | `skb_log_failure` | `core` | `COVERED` | 2 |
-| `c:src/core/sk_buff.c:skb_record_failure_locked` | `src/core/sk_buff.c` | `skb_record_failure_locked` | `core` | `COVERED` | 2 |
-| `c:src/core/sk_buff.c:skb_registry_count_locked` | `src/core/sk_buff.c` | `skb_registry_count_locked` | `core` | `COVERED` | 2 |
-| `c:src/core/sk_buff.c:skb_release` | `src/core/sk_buff.c` | `skb_release` | `core` | `COVERED` | 2 |
-| `c:src/core/sk_buff.c:skb_retain` | `src/core/sk_buff.c` | `skb_retain` | `core` | `COVERED` | 2 |
-| `c:src/core/sk_buff.c:skb_self_test` | `src/core/sk_buff.c` | `skb_self_test` | `core` | `COVERED` | 2 |
-| `c:src/core/sk_buff.c:skb_sync_refcount` | `src/core/sk_buff.c` | `skb_sync_refcount` | `core` | `COVERED` | 2 |
-| `c:src/core/sk_buff.c:skb_test_drop` | `src/core/sk_buff.c` | `skb_test_drop` | `core` | `COVERED` | 2 |
-| `c:src/core/sk_buff.c:skb_test_lifetime` | `src/core/sk_buff.c` | `skb_test_lifetime` | `core` | `COVERED` | 2 |
-| `c:src/core/sk_buff.c:skb_test_pointer_ops` | `src/core/sk_buff.c` | `skb_test_pointer_ops` | `core` | `COVERED` | 2 |
-| `c:src/core/sk_buff.c:skb_transition` | `src/core/sk_buff.c` | `skb_transition` | `core` | `COVERED` | 2 |
-| `c:src/core/sk_buff.c:skb_update_layout` | `src/core/sk_buff.c` | `skb_update_layout` | `core` | `COVERED` | 2 |
-| `c:src/core/sk_buff.c:skb_validate_locked` | `src/core/sk_buff.c` | `skb_validate_locked` | `core` | `COVERED` | 2 |
-| `c:src/core/sk_buff.c:skb_validate_state` | `src/core/sk_buff.c` | `skb_validate_state` | `core` | `COVERED` | 2 |
+| `c:src/core/sk_buff.c:free_skb` | `src/core/sk_buff.c` | `free_skb` | `core` | `COVERED` | 1 |
+| `c:src/core/sk_buff.c:skb_check_geometry` | `src/core/sk_buff.c` | `skb_check_geometry` | `core` | `COVERED` | 3 |
+| `c:src/core/sk_buff.c:skb_complete` | `src/core/sk_buff.c` | `skb_complete` | `core` | `COVERED` | 3 |
+| `c:src/core/sk_buff.c:skb_find_locked` | `src/core/sk_buff.c` | `skb_find_locked` | `core` | `COVERED` | 3 |
+| `c:src/core/sk_buff.c:skb_free_slot_locked` | `src/core/sk_buff.c` | `skb_free_slot_locked` | `core` | `COVERED` | 3 |
+| `c:src/core/sk_buff.c:skb_get_stats` | `src/core/sk_buff.c` | `skb_get_stats` | `core` | `COVERED` | 3 |
+| `c:src/core/sk_buff.c:skb_init` | `src/core/sk_buff.c` | `skb_init` | `core` | `COVERED` | 1 |
+| `c:src/core/sk_buff.c:skb_log_failure` | `src/core/sk_buff.c` | `skb_log_failure` | `core` | `COVERED` | 3 |
+| `c:src/core/sk_buff.c:skb_record_failure_locked` | `src/core/sk_buff.c` | `skb_record_failure_locked` | `core` | `COVERED` | 3 |
+| `c:src/core/sk_buff.c:skb_registry_count_locked` | `src/core/sk_buff.c` | `skb_registry_count_locked` | `core` | `COVERED` | 3 |
+| `c:src/core/sk_buff.c:skb_release` | `src/core/sk_buff.c` | `skb_release` | `core` | `COVERED` | 3 |
+| `c:src/core/sk_buff.c:skb_retain` | `src/core/sk_buff.c` | `skb_retain` | `core` | `COVERED` | 3 |
+| `c:src/core/sk_buff.c:skb_self_test` | `src/core/sk_buff.c` | `skb_self_test` | `core` | `COVERED` | 3 |
+| `c:src/core/sk_buff.c:skb_sync_refcount` | `src/core/sk_buff.c` | `skb_sync_refcount` | `core` | `COVERED` | 3 |
+| `c:src/core/sk_buff.c:skb_test_drop` | `src/core/sk_buff.c` | `skb_test_drop` | `core` | `COVERED` | 3 |
+| `c:src/core/sk_buff.c:skb_test_lifetime` | `src/core/sk_buff.c` | `skb_test_lifetime` | `core` | `COVERED` | 3 |
+| `c:src/core/sk_buff.c:skb_test_pointer_ops` | `src/core/sk_buff.c` | `skb_test_pointer_ops` | `core` | `COVERED` | 3 |
+| `c:src/core/sk_buff.c:skb_transition` | `src/core/sk_buff.c` | `skb_transition` | `core` | `COVERED` | 3 |
+| `c:src/core/sk_buff.c:skb_update_layout` | `src/core/sk_buff.c` | `skb_update_layout` | `core` | `COVERED` | 3 |
+| `c:src/core/sk_buff.c:skb_validate_locked` | `src/core/sk_buff.c` | `skb_validate_locked` | `core` | `COVERED` | 3 |
+| `c:src/core/sk_buff.c:skb_validate_state` | `src/core/sk_buff.c` | `skb_validate_state` | `core` | `COVERED` | 3 |
 | `c:src/core/socket.c:socket_accept` | `src/core/socket.c` | `socket_accept` | `core` | `COVERED` | 2 |
 | `c:src/core/socket.c:socket_address_clear` | `src/core/socket.c` | `socket_address_clear` | `core` | `COVERED` | 2 |
 | `c:src/core/socket.c:socket_address_equal` | `src/core/socket.c` | `socket_address_equal` | `core` | `COVERED` | 2 |
@@ -2882,10 +2882,10 @@
 | `c:src/core/socket.c:socket_wait_local` | `src/core/socket.c` | `socket_wait_local` | `core` | `PENDING` | 0 |
 | `c:src/core/socket.c:socket_wait_owner` | `src/core/socket.c` | `socket_wait_owner` | `core` | `COVERED` | 2 |
 | `c:src/core/socket.c:socket_wake` | `src/core/socket.c` | `socket_wake` | `core` | `COVERED` | 2 |
-| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 29 |
-| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 29 |
-| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 22 |
-| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 26 |
+| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 30 |
+| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 30 |
+| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 23 |
+| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 27 |
 | `c:src/core/syscall.c:syscall_copy_user_string` | `src/core/syscall.c` | `syscall_copy_user_string` | `core` | `PENDING` | 0 |
 | `c:src/core/syscall.c:syscall_dispatch` | `src/core/syscall.c` | `syscall_dispatch` | `core` | `COVERED` | 1 |
 | `c:src/core/syscall.c:syscall_dispatch_user` | `src/core/syscall.c` | `syscall_dispatch_user` | `core` | `COVERED` | 1 |
@@ -5334,28 +5334,28 @@
 | `c:src/memory/paging.c:paging_user_directory_index` | `src/memory/paging.c` | `paging_user_directory_index` | `memory` | `COVERED` | 1 |
 | `c:src/memory/paging.c:paging_validate_user_range` | `src/memory/paging.c` | `paging_validate_user_range` | `memory` | `COVERED` | 1 |
 | `c:src/memory/slab.c:kmem_cache_destroy` | `src/memory/slab.c` | `kmem_cache_destroy` | `memory` | `COVERED` | 3 |
-| `c:src/memory/slab.c:kmem_cache_free` | `src/memory/slab.c` | `kmem_cache_free` | `memory` | `COVERED` | 4 |
+| `c:src/memory/slab.c:kmem_cache_free` | `src/memory/slab.c` | `kmem_cache_free` | `memory` | `COVERED` | 5 |
 | `c:src/memory/slab.c:kmem_cache_get_count` | `src/memory/slab.c` | `kmem_cache_get_count` | `memory` | `COVERED` | 1 |
-| `c:src/memory/slab.c:kmem_cache_get_info` | `src/memory/slab.c` | `kmem_cache_get_info` | `memory` | `COVERED` | 3 |
+| `c:src/memory/slab.c:kmem_cache_get_info` | `src/memory/slab.c` | `kmem_cache_get_info` | `memory` | `COVERED` | 4 |
 | `c:src/memory/slab.c:kmem_cache_get_info_at` | `src/memory/slab.c` | `kmem_cache_get_info_at` | `memory` | `COVERED` | 1 |
 | `c:src/memory/slab.c:kmem_cache_get_stats` | `src/memory/slab.c` | `kmem_cache_get_stats` | `memory` | `COVERED` | 6 |
-| `c:src/memory/slab.c:kmem_cache_init` | `src/memory/slab.c` | `kmem_cache_init` | `memory` | `COVERED` | 1 |
-| `c:src/memory/slab.c:kmem_cache_owns` | `src/memory/slab.c` | `kmem_cache_owns` | `memory` | `COVERED` | 6 |
+| `c:src/memory/slab.c:kmem_cache_init` | `src/memory/slab.c` | `kmem_cache_init` | `memory` | `COVERED` | 2 |
+| `c:src/memory/slab.c:kmem_cache_owns` | `src/memory/slab.c` | `kmem_cache_owns` | `memory` | `COVERED` | 7 |
 | `c:src/memory/slab.c:kmem_cache_self_test` | `src/memory/slab.c` | `kmem_cache_self_test` | `memory` | `COVERED` | 3 |
 | `c:src/memory/slab.c:kmem_cache_validate` | `src/memory/slab.c` | `kmem_cache_validate` | `memory` | `COVERED` | 6 |
-| `c:src/memory/slab.c:slab_align_up` | `src/memory/slab.c` | `slab_align_up` | `memory` | `COVERED` | 3 |
-| `c:src/memory/slab.c:slab_bit_is_set` | `src/memory/slab.c` | `slab_bit_is_set` | `memory` | `COVERED` | 4 |
-| `c:src/memory/slab.c:slab_cache_registered` | `src/memory/slab.c` | `slab_cache_registered` | `memory` | `COVERED` | 6 |
-| `c:src/memory/slab.c:slab_copy_info` | `src/memory/slab.c` | `slab_copy_info` | `memory` | `COVERED` | 3 |
-| `c:src/memory/slab.c:slab_copy_text` | `src/memory/slab.c` | `slab_copy_text` | `memory` | `COVERED` | 3 |
-| `c:src/memory/slab.c:slab_find_cache_slot` | `src/memory/slab.c` | `slab_find_cache_slot` | `memory` | `COVERED` | 3 |
-| `c:src/memory/slab.c:slab_find_free_record` | `src/memory/slab.c` | `slab_find_free_record` | `memory` | `COVERED` | 3 |
-| `c:src/memory/slab.c:slab_list_add` | `src/memory/slab.c` | `slab_list_add` | `memory` | `COVERED` | 3 |
-| `c:src/memory/slab.c:slab_list_remove` | `src/memory/slab.c` | `slab_list_remove` | `memory` | `COVERED` | 3 |
-| `c:src/memory/slab.c:slab_object_location` | `src/memory/slab.c` | `slab_object_location` | `memory` | `COVERED` | 5 |
-| `c:src/memory/slab.c:slab_power_of_two` | `src/memory/slab.c` | `slab_power_of_two` | `memory` | `COVERED` | 3 |
-| `c:src/memory/slab.c:slab_prepare_record` | `src/memory/slab.c` | `slab_prepare_record` | `memory` | `COVERED` | 3 |
-| `c:src/memory/slab.c:slab_set_bit` | `src/memory/slab.c` | `slab_set_bit` | `memory` | `COVERED` | 4 |
+| `c:src/memory/slab.c:slab_align_up` | `src/memory/slab.c` | `slab_align_up` | `memory` | `COVERED` | 4 |
+| `c:src/memory/slab.c:slab_bit_is_set` | `src/memory/slab.c` | `slab_bit_is_set` | `memory` | `COVERED` | 5 |
+| `c:src/memory/slab.c:slab_cache_registered` | `src/memory/slab.c` | `slab_cache_registered` | `memory` | `COVERED` | 7 |
+| `c:src/memory/slab.c:slab_copy_info` | `src/memory/slab.c` | `slab_copy_info` | `memory` | `COVERED` | 4 |
+| `c:src/memory/slab.c:slab_copy_text` | `src/memory/slab.c` | `slab_copy_text` | `memory` | `COVERED` | 4 |
+| `c:src/memory/slab.c:slab_find_cache_slot` | `src/memory/slab.c` | `slab_find_cache_slot` | `memory` | `COVERED` | 4 |
+| `c:src/memory/slab.c:slab_find_free_record` | `src/memory/slab.c` | `slab_find_free_record` | `memory` | `COVERED` | 4 |
+| `c:src/memory/slab.c:slab_list_add` | `src/memory/slab.c` | `slab_list_add` | `memory` | `COVERED` | 4 |
+| `c:src/memory/slab.c:slab_list_remove` | `src/memory/slab.c` | `slab_list_remove` | `memory` | `COVERED` | 4 |
+| `c:src/memory/slab.c:slab_object_location` | `src/memory/slab.c` | `slab_object_location` | `memory` | `COVERED` | 6 |
+| `c:src/memory/slab.c:slab_power_of_two` | `src/memory/slab.c` | `slab_power_of_two` | `memory` | `COVERED` | 4 |
+| `c:src/memory/slab.c:slab_prepare_record` | `src/memory/slab.c` | `slab_prepare_record` | `memory` | `COVERED` | 4 |
+| `c:src/memory/slab.c:slab_set_bit` | `src/memory/slab.c` | `slab_set_bit` | `memory` | `COVERED` | 5 |
 | `c:src/memory/slab.c:slab_test_progress` | `src/memory/slab.c` | `slab_test_progress` | `memory` | `COVERED` | 2 |
 | `c:src/memory/slab.c:slab_validate_list` | `src/memory/slab.c` | `slab_validate_list` | `memory` | `COVERED` | 5 |
 | `c:src/memory/slab.c:slab_validate_slab` | `src/memory/slab.c` | `slab_validate_slab` | `memory` | `COVERED` | 4 |
@@ -6923,8 +6923,9 @@
 | `host:network:arp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar configuracao, resolucao, cache, retries e recepcao ARP com Ethernet simulada | enderecos validos sao resolvidos, pacotes invalidos sao rejeitados e o cache retorna ao estado inicial | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente cache ARP, buffers estaticos e transporte Ethernet falso no processo host | cache desconfigurado e artefatos preservados |
 | `host:network:dhcp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar descoberta, oferta, lease, renovacao, rebinding e expiracao DHCP com UDP e timer simulados | leases validos percorrem eventos canonicos, mensagens invalidas falham e o estado retorna ao baseline | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado DHCP, buffers estaticos e transporte UDP falso no processo host | sessao e eventos DHCP reiniciados e artefatos preservados |
 | `host:network:dns` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar consultas DNS, cache, CNAME, timeout e pacotes invalidos com UDP e timer simulados | nomes validos sao resolvidos, respostas invalidas falham com codigo canonico e o estado retorna ao baseline | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado DNS, buffers estaticos e transporte UDP falso no processo host | cache e consulta DNS reiniciados e artefatos preservados |
+| `host:network:ethernet` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar registro de interfaces, handlers, polling, frames, transmissao, quiescencia e limpeza com drivers falsos | frames validos sao entregues, entradas invalidas sao rejeitadas e nenhum buffer de rede permanece ativo | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado Ethernet, sk_buff, net_buffer, SLAB e drivers falsos no processo host | buffers, interfaces, handlers e estado temporario encerrados e artefatos preservados |
 | `host:network:icmp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar checksum, echo, timeout, mudanca de configuracao, fila de reply e pacotes ICMP invalidos com IPv4 e timer simulados | echo valido e reply pendente sao processados, timeout e falhas de transporte retornam erros canonicos e o estado e restaurado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado ICMP, buffers estaticos e transportes IPv4 e timer falsos no processo host | estado ICMP, timer e transporte falso retornam ao estado inicial e os artefatos sao preservados |
-| `host:network:ipv4` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar configuraÃ§Ã£o, envio, broadcast, recepÃ§Ã£o, checksum e handlers IPv4 | datagramas validos sÃ£o entregues, entradas invÃ¡lidas sÃ£o recusadas e o estado Ã© restaurado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado IPv4, tabela de rotas e buffers falsos de ARP/Ethernet | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:network:ipv4` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar configuraÃƒÂ§ÃƒÂ£o, envio, broadcast, recepÃƒÂ§ÃƒÂ£o, checksum e handlers IPv4 | datagramas validos sÃƒÂ£o entregues, entradas invÃƒÂ¡lidas sÃƒÂ£o recusadas e o estado ÃƒÂ© restaurado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado IPv4, tabela de rotas e buffers falsos de ARP/Ethernet | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:network:route` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar rotas base, lookup, limites, overflow e restauracao | rotas validas e invalidas respeitam o contrato, sem residuos globais | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabela estatica de rotas no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:network:udp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar envio, reinjecao, checksum, listeners, broadcast e erros UDP com IPv4 simulado | datagramas validos sao entregues, entradas corrompidas sao rejeitadas e endpoints sao liberados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos, endpoints UDP e transporte IPv4 falso no processo host | todos os endpoints sao desvinculados e os artefatos sao preservados |
 | `host:storage:block` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar block_self_test e block_cache_self_test com providers estaticos | filas BIO, limites, cancelamento, failpoints, cache, writeback e sync passam e o inventario retorna ao estado inicial | compilador ausente, warning, cobertura incompleta, failpoint residual, falha de assercao ou timeout | somente estruturas globais do processo host e buffers estaticos de provider | autotestes removem dispositivos temporarios, limpam cache e deixam fila sem pendencias |
@@ -7175,15 +7176,6 @@
 - `api:src/include/core/crypto.h:crypto_ed25519_verify_init`
 - `api:src/include/core/crypto.h:crypto_ed25519_verify_update`
 - `api:src/include/core/crypto.h:crypto_sha512_digest`
-- `api:src/include/core/ethernet.h:ethernet_attach_interface`
-- `api:src/include/core/ethernet.h:ethernet_get_interface_status`
-- `api:src/include/core/ethernet.h:ethernet_get_status`
-- `api:src/include/core/ethernet.h:ethernet_init`
-- `api:src/include/core/ethernet.h:ethernet_poll`
-- `api:src/include/core/ethernet.h:ethernet_quiesce`
-- `api:src/include/core/ethernet.h:ethernet_register_handler`
-- `api:src/include/core/ethernet.h:ethernet_send`
-- `api:src/include/core/ethernet.h:ethernet_set_quiescing`
 - `api:src/include/core/http.h:http_get_body`
 - `api:src/include/core/http.h:http_get_start`
 - `api:src/include/core/http.h:http_get_start_ex`
@@ -7226,8 +7218,6 @@
 - `api:src/include/core/panic.h:panic`
 - `api:src/include/core/panic.h:panic_halt`
 - `api:src/include/core/panic.h:panic_memory`
-- `api:src/include/core/sk_buff.h:free_skb`
-- `api:src/include/core/sk_buff.h:skb_init`
 - `api:src/include/core/socket.h:socket_init`
 - `api:src/include/core/spinlock.h:spinlock_acquire`
 - `api:src/include/core/spinlock.h:spinlock_init`
@@ -8289,28 +8279,6 @@
 - `c:src/core/crypto_ed25519.c:crypto_eddsa_trim_scalar`
 - `c:src/core/crypto_ed25519.c:fe_cswap`
 - `c:src/core/dhcp.c:dhcp_invalid_option_length`
-- `c:src/core/ethernet.c:ethernet_attach_interface`
-- `c:src/core/ethernet.c:ethernet_build_frame`
-- `c:src/core/ethernet.c:ethernet_classify_destination`
-- `c:src/core/ethernet.c:ethernet_copy_id`
-- `c:src/core/ethernet.c:ethernet_dispatch_frame`
-- `c:src/core/ethernet.c:ethernet_find_handler`
-- `c:src/core/ethernet.c:ethernet_get_interface_status`
-- `c:src/core/ethernet.c:ethernet_get_status`
-- `c:src/core/ethernet.c:ethernet_init`
-- `c:src/core/ethernet.c:ethernet_mac_is_broadcast`
-- `c:src/core/ethernet.c:ethernet_mac_is_equal`
-- `c:src/core/ethernet.c:ethernet_mac_is_zero`
-- `c:src/core/ethernet.c:ethernet_poll`
-- `c:src/core/ethernet.c:ethernet_poll_slot`
-- `c:src/core/ethernet.c:ethernet_process_frame`
-- `c:src/core/ethernet.c:ethernet_quiesce`
-- `c:src/core/ethernet.c:ethernet_record_frame`
-- `c:src/core/ethernet.c:ethernet_register_handler`
-- `c:src/core/ethernet.c:ethernet_send`
-- `c:src/core/ethernet.c:ethernet_set_quiescing`
-- `c:src/core/ethernet.c:ethernet_source_is_valid`
-- `c:src/core/ethernet.c:ethernet_text_equal`
 - `c:src/core/http.c:http_append_bytes`
 - `c:src/core/http.c:http_append_port`
 - `c:src/core/http.c:http_append_text`
@@ -8391,8 +8359,6 @@
 - `c:src/core/power.c:power_reboot_commit`
 - `c:src/core/power.c:power_terminal_halt`
 - `c:src/core/power.c:power_trigger_triple_fault`
-- `c:src/core/sk_buff.c:free_skb`
-- `c:src/core/sk_buff.c:skb_init`
 - `c:src/core/socket.c:socket_init`
 - `c:src/core/socket.c:socket_pending_remove_locked`
 - `c:src/core/socket.c:socket_poll_revents`
