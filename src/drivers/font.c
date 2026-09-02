@@ -134,7 +134,7 @@ void font_init(void) {
 }
 
 const uint8_t* font_get_glyph(char c) {
-    if (c >= 0 && c < 128) {
+    if ((uint8_t)c < 128U) {
         return font_8x16[(int)c];
     }
     return font_8x16[0];

@@ -4197,3 +4197,17 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   sincronizacao atual registra 6.827 superficies, 3.080 `COVERED`, 3.747
   `PENDING` e 77 casos; o fechamento integral do catalogo, o gate estrito e a
   validacao TST7 completa continuam pendentes.
+
+- Incremento Drivers/Fonte concluido em 2026-09-02
+  (America/Sao_Paulo): o novo caso host-only `host:drivers:font` e o alvo
+  `make test-font-host` foram adicionados. A fixture exercita diretamente
+  `font_init`, `font_get_width` e `font_get_height`, verifica inicializacao
+  idempotente e dimensoes 8x16, e produz cobertura instrumentada sem hardware.
+  A compilacao encontrou uma comparacao de `char` incompatível com
+  `-Werror=type-limits`; a condicao foi ajustada para preservar o comportamento
+  para caracteres validos. `make q3check`, `make clean`, `make`,
+  `make test-font-host`, a regeneracao do quick do TST7, `make catalog-test` e
+  `git diff --check` passaram. O quick terminou `BLOCKED` somente em
+  `tst3-sanitize`, pela ausencia de Clang/runtime sanitizador, e os demais
+  alvos passaram. A sincronizacao atual registra 6.826 superficies, 3.095
+  `COVERED`, 3.731 `PENDING`, 82 casos e 21 superficies aposentadas.

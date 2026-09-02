@@ -370,6 +370,12 @@ SHELL_INTROSPECTION_SOURCE_FILES = (
     ROOT / "src" / "shell" / "shell_introspection.c",
     ROOT / "src" / "core" / "string.c",
 )
+FONT_RESULT_DIR = ROOT / "build" / "test-results" / "font-host"
+FONT_BINARY = ROOT / "build" / "tests" / "test_font_host.exe"
+FONT_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_font_host.c",
+    ROOT / "src" / "drivers" / "font.c",
+)
 SOURCE_FILES = CORE_SOURCE_FILES
 
 
@@ -471,6 +477,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
     if case_id == "host:shell:introspection":
         return (SHELL_INTROSPECTION_RESULT_DIR, SHELL_INTROSPECTION_BINARY,
                 SHELL_INTROSPECTION_SOURCE_FILES, "shell-introspection-host")
+    if case_id == "host:drivers:font":
+        return FONT_RESULT_DIR, FONT_BINARY, FONT_SOURCE_FILES, "font-host"
     raise ValueError(f"caso_host_invalido:{case_id}")
 
 
@@ -635,7 +643,8 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:memory:paging", "host:memory:memory",
                                  "host:process:signals", "host:process:ipc",
                                  "host:core:workqueue", "host:core:bearssl-compat",
-                                 "host:shell:dispatch", "host:shell:introspection"))
+                                 "host:shell:dispatch", "host:shell:introspection",
+                                 "host:drivers:font"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
     return parser.parse_args()
