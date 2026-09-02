@@ -127211,9 +127211,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:introspection"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_introspection.c:shell_introspection_key_matches",
@@ -127250,9 +127253,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:introspection"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_introspection.c:shell_introspection_parse_u32",
@@ -140158,6 +140164,39 @@
         "host",
         "shell",
         "dispatcher",
+        "negative"
+      ]
+    },
+    {
+      "id": "host:shell:introspection",
+      "scenario": "Parsers host-only da introspeccao do Shell",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "validar parser hexadecimal com limites e entradas invalidas",
+      "expected": "parse_hex_u32 aceita digitos validos e rejeita prefixo, digito e overflow com codigos canonicos",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente buffers estaticos e processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "c:src/shell/shell_introspection.c:shell_introspection_hex_digit",
+        "c:src/shell/shell_introspection.c:shell_introspection_parse_hex_u32"
+      ],
+      "tags": [
+        "host",
+        "shell",
+        "introspection",
         "negative"
       ]
     },

@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **6827**
-- Casos de teste: **80**
+- Casos de teste: **81**
 - Superfícies aposentadas: **20**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 3086 |
+| `COVERED` | 3088 |
 | `MANUAL` | 0 |
-| `PENDING` | 3741 |
+| `PENDING` | 3739 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 80 |
+| `AUTOMATED` | 81 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -6401,9 +6401,9 @@
 | `c:src/shell/shell_input.c:shell_input_return_to_terminal_tail` | `src/shell/shell_input.c` | `shell_input_return_to_terminal_tail` | `shell` | `COVERED` | 7 |
 | `c:src/shell/shell_introspection.c:shell_introspection_ascii_valid` | `src/shell/shell_introspection.c` | `shell_introspection_ascii_valid` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_introspection.c:shell_introspection_find_value` | `src/shell/shell_introspection.c` | `shell_introspection_find_value` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_introspection.c:shell_introspection_hex_digit` | `src/shell/shell_introspection.c` | `shell_introspection_hex_digit` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_introspection.c:shell_introspection_hex_digit` | `src/shell/shell_introspection.c` | `shell_introspection_hex_digit` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_introspection.c:shell_introspection_key_matches` | `src/shell/shell_introspection.c` | `shell_introspection_key_matches` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_introspection.c:shell_introspection_parse_hex_u32` | `src/shell/shell_introspection.c` | `shell_introspection_parse_hex_u32` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_introspection.c:shell_introspection_parse_hex_u32` | `src/shell/shell_introspection.c` | `shell_introspection_parse_hex_u32` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_introspection.c:shell_introspection_parse_u32` | `src/shell/shell_introspection.c` | `shell_introspection_parse_u32` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_introspection.c:shell_introspection_read_file` | `src/shell/shell_introspection.c` | `shell_introspection_read_file` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_job.c:shell_dispatch_cmd_job` | `src/shell/shell_job.c` | `shell_dispatch_cmd_job` | `shell` | `PENDING` | 0 |
@@ -6947,6 +6947,7 @@
 | `host:process:signals` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fixture de sinais com processos estaticos | mascaras, handlers, coalescencia, notificacao e invariantes validas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente processos estaticos e stubs de paging no processo host | estado de sinais restaurado e artefatos preservados |
 | `host:security:tls` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar politica, estados, validade, cadeia, SAN, pinning, rotacao, revogacao e autoteste TLS com relogio e RNG falsos | identidades validas sao aceitas, rejeicoes retornam motivo canonico e capacidades indisponiveis permanecem explicitas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado TLS, politica e dependencias falsas no processo host | estado TLS e dependencias falsas reiniciados e artefatos preservados |
 | `host:shell:dispatch` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar comandos desconhecidos, entrada normalizada, limite e comando conhecido | dispatcher retorna ERR_NULL para entrada nula e apresenta diagnostico deterministico para comando desconhecido | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e handlers falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:shell:introspection` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar parser hexadecimal com limites e entradas invalidas | parse_hex_u32 aceita digitos validos e rejeita prefixo, digito e overflow com codigos canonicos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:storage:block` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar block_self_test e block_cache_self_test com providers estaticos | filas BIO, limites, cancelamento, failpoints, cache, writeback e sync passam e o inventario retorna ao estado inicial | compilador ausente, warning, cobertura incompleta, failpoint residual, falha de assercao ou timeout | somente estruturas globais do processo host e buffers estaticos de provider | autotestes removem dispositivos temporarios, limpam cache e deixam fila sem pendencias |
 | `host:storage:fat12` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar FAT12 sobre imagem estatica com raiz, subdiretorio e provider ATA falso | leitura, caminhos, metadados, operacoes atomicas, streaming, cancelamento e erros preservam a imagem fixture | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente imagem FAT12 e heap estatico do processo host | streaming encerrado, cadeias liberadas e processo host finalizado com artefatos preservados |
 | `host:storage:fat32` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar FAT32 sobre imagem estatica grande o suficiente para a classificacao FAT32 | leitura, paths, metadados, criacao, escrita, remocao e classificacao de clusters preservam a fixture | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente imagem FAT32 estatica e heap estatico do processo host | fixture encerrada e processo host finalizado com manifesto, logs e cobertura preservados |
@@ -10360,8 +10361,6 @@
 - `c:src/shell/shell_input.c:shell_input_history_navigate`
 - `c:src/shell/shell_input.c:shell_input_history_replace_input`
 - `c:src/shell/shell_input.c:shell_input_init`
-- `c:src/shell/shell_introspection.c:shell_introspection_hex_digit`
-- `c:src/shell/shell_introspection.c:shell_introspection_parse_hex_u32`
 - `c:src/shell/shell_job.c:shell_dispatch_cmd_job`
 - `c:src/shell/shell_job.c:shell_job_begin_drain`
 - `c:src/shell/shell_job.c:shell_job_cancel_requested`

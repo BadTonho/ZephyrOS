@@ -68,6 +68,7 @@ QUICK_COMMANDS = (
     ("test-workqueue-host", "workqueue-host"),
     ("test-bearssl-compat-host", "bearssl-compat-host"),
     ("test-shell-dispatch-host", "shell-dispatch-host"),
+    ("test-shell-introspection-host", "shell-introspection-host"),
     ("test-qemu-selftest", "qemu-selftest"),
     ("test-tst2-host", "tst2-host"),
     ("test-tst3-host", "tst3-host"),
@@ -119,6 +120,7 @@ HOST_CASE_TARGETS = {
     "host:core:workqueue": "test-workqueue-host",
     "host:core:bearssl-compat": "test-bearssl-compat-host",
     "host:shell:dispatch": "test-shell-dispatch-host",
+    "host:shell:introspection": "test-shell-introspection-host",
     "host:tst2:protocol-core": "test-tst2-host",
     "host:tst3:string-compress": "test-tst3-host",
 }

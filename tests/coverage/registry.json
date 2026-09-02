@@ -3,6 +3,1121 @@
   "version": 1,
   "entries": [
     {
+      "id": "app-api-host-dynamic",
+      "domain": "core-app-api",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:app-api"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/app-api-host/coverage.json",
+      "coverage_sources": [
+        "src/core/app_api.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-app-api-host PASS com fachada de arquivos, memoria, IPC, VMA, limites, estados e erros canonicos no relatorio instrumentado"
+    },
+    {
+      "id": "app-catalog-host-dynamic",
+      "domain": "core-app-catalog",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:app-catalog"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/app-catalog-host/coverage.json",
+      "coverage_sources": [
+        "src/core/app_catalog.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-app-catalog-host PASS com fontes validas e invalidas, aliases, dependencias, planos, limites, estados indisponiveis e erros de leitura no relatorio instrumentado"
+    },
+    {
+      "id": "apps-qemu-tst5-dynamic",
+      "domain": "applications-storage-shell",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst5:apps"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build-coverage/test-results/tst5-apps/cov-tst5-apps-1/coverage.json",
+      "coverage_sources": [
+        "src/appstore/appstore.c",
+        "src/core/app_loader.c",
+        "src/core/input.c",
+        "src/core/kernel_tests_blackbox.c",
+        "src/core/log.c",
+        "src/core/string.c",
+        "src/desktop/desktop.c",
+        "src/drivers/ata.c",
+        "src/drivers/font.c",
+        "src/drivers/keyboard.c",
+        "src/drivers/mouse.c",
+        "src/drivers/vesa.c",
+        "src/drivers/video.c",
+        "src/filemanager/filemanager.c",
+        "src/fs/block.c",
+        "src/fs/block_cache.c",
+        "src/fs/bmp.c",
+        "src/fs/fat12.c",
+        "src/fs/file_index.c",
+        "src/fs/fs.c",
+        "src/fs/procfs.c",
+        "src/fs/storage.c",
+        "src/fs/vfs.c",
+        "src/fs/vfs_path.c",
+        "src/gui/display.c",
+        "src/gui/gui.c",
+        "src/icons/icons.c",
+        "src/memory/memory.c",
+        "src/memory/paging.c",
+        "src/memory/slab.c",
+        "src/process/ipc.c",
+        "src/process/process.c",
+        "src/process/signal.c",
+        "src/settings/settings.c",
+        "src/shell/guitest_app.c",
+        "src/shell/shell.c",
+        "src/shell/shell_commands_apps.c",
+        "src/shell/shell_dispatch.c",
+        "src/shell/shell_hosted.c",
+        "src/shell/shell_input.c",
+        "src/shell/shell_introspection.c",
+        "src/shell/shell_job.c",
+        "src/shell/shell_pipeline.c",
+        "src/shell/taskmanager.c",
+        "src/taskbar/taskbar.c",
+        "src/thread/thread.c",
+        "src/updater/updater.c",
+        "src/wm/wm.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "QEMU TST5 apps cov-tst5-apps-1 PASS com settings/taskmgr/explorer e coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
+    },
+    {
+      "id": "arp-host-dynamic",
+      "domain": "network-arp",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:network:arp"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/arp-host/coverage.json",
+      "coverage_sources": [
+        "src/core/arp.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-arp-host PASS com Ethernet falsa, retries ate timeout, requests e replies, entradas invalidas e limpeza do cache"
+    },
+    {
+      "id": "bearssl-compat-host-dynamic",
+      "domain": "core-bearssl-compat",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:bearssl-compat"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/bearssl-compat-host/coverage.json",
+      "coverage_sources": [
+        "src/core/bearssl_compat.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-bearssl-compat-host PASS com copia, movimento sobreposto, preenchimento, comparacao e comprimentos nulos e validos"
+    },
+    {
+      "id": "block-host-dynamic",
+      "domain": "storage-block",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:storage:block"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/block-host/coverage.json",
+      "coverage_sources": [
+        "src/fs/block.c",
+        "src/fs/block_cache.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-block-host PASS com autotestes de BIO e cache, limites, cancelamento, failpoints, eviction, writeback, sync e restauracao do inventario no relatorio instrumentado"
+    },
+    {
+      "id": "core-contracts-dynamic-host",
+      "domain": "core",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:contracts"
+      ],
+      "surface_ids": [
+        "c:src/core/clock.c:clock_datetime_to_unix",
+        "c:src/core/clock.c:clock_days_in_month",
+        "c:src/core/clock.c:clock_extend_tick",
+        "c:src/core/clock.c:clock_get_monotonic_ticks",
+        "c:src/core/clock.c:clock_get_status",
+        "c:src/core/clock.c:clock_get_utc",
+        "c:src/core/clock.c:clock_init",
+        "c:src/core/clock.c:clock_is_leap_year",
+        "c:src/core/clock.c:clock_self_test",
+        "c:src/core/clock.c:clock_update_monotonic",
+        "c:src/core/clock.c:clock_validate_state",
+        "c:src/core/log.c:log_append_char",
+        "c:src/core/log.c:log_append_text",
+        "c:src/core/log.c:log_copy_text",
+        "c:src/core/log.c:log_get_buffer",
+        "c:src/core/log.c:log_get_stats",
+        "c:src/core/log.c:log_init",
+        "c:src/core/log.c:log_level_is_valid",
+        "c:src/core/log.c:log_note_dropped_event",
+        "c:src/core/log.c:log_print",
+        "c:src/core/log.c:log_print_colored",
+        "c:src/core/log.c:log_records_match",
+        "c:src/core/log.c:log_restore_interrupts",
+        "c:src/core/log.c:log_ring_clear",
+        "c:src/core/log.c:log_ring_copy_recent",
+        "c:src/core/log.c:log_ring_initialize",
+        "c:src/core/log.c:log_ring_latest_index",
+        "c:src/core/log.c:log_ring_store",
+        "c:src/core/log.c:log_self_test",
+        "c:src/core/log.c:log_self_test_mark",
+        "c:src/core/log.c:log_serialize_records",
+        "c:src/core/log.c:log_set_buffer_level",
+        "c:src/core/log.c:log_submit",
+        "c:src/core/log.c:log_suspend_interrupts",
+        "c:src/core/log.c:log_test_clear_behavior",
+        "c:src/core/log.c:log_test_level_filtering",
+        "c:src/core/log.c:log_test_optional_error_code",
+        "c:src/core/log.c:log_test_order_and_metadata",
+        "c:src/core/log.c:log_test_repetition_grouping",
+        "c:src/core/log.c:log_test_safe_truncation",
+        "c:src/core/log.c:log_test_text_serialization",
+        "c:src/core/log.c:log_test_wrap_and_overwrite",
+        "c:src/core/log.c:log_write_serial",
+        "c:src/core/string.c:kmemcpy",
+        "c:src/core/string.c:kmemset",
+        "c:src/core/string.c:kstrcmp",
+        "c:src/core/string.c:kstrlen",
+        "c:src/core/test_protocol_core.c:core_append_hex",
+        "c:src/core/test_protocol_core.c:core_append_text",
+        "c:src/core/test_protocol_core.c:core_append_uint",
+        "c:src/core/test_protocol_core.c:core_copy",
+        "c:src/core/test_protocol_core.c:core_copy_reason",
+        "c:src/core/test_protocol_core.c:core_crc32",
+        "c:src/core/test_protocol_core.c:core_emit_case",
+        "c:src/core/test_protocol_core.c:core_emit_event",
+        "c:src/core/test_protocol_core.c:core_emit_simple",
+        "c:src/core/test_protocol_core.c:core_field",
+        "c:src/core/test_protocol_core.c:core_fields_valid",
+        "c:src/core/test_protocol_core.c:core_frame_crc_valid",
+        "c:src/core/test_protocol_core.c:core_handle_frame",
+        "c:src/core/test_protocol_core.c:core_length",
+        "c:src/core/test_protocol_core.c:core_parse_hex",
+        "c:src/core/test_protocol_core.c:core_parse_uint",
+        "c:src/core/test_protocol_core.c:core_prefix_valid",
+        "c:src/core/test_protocol_core.c:core_token_equals",
+        "c:src/core/test_protocol_core.c:core_token_valid",
+        "c:src/core/test_protocol_core.c:core_zero",
+        "c:src/core/test_protocol_core.c:test_protocol_core_emit",
+        "c:src/core/test_protocol_core.c:test_protocol_core_feed_byte",
+        "c:src/core/test_protocol_core.c:test_protocol_core_format_event",
+        "c:src/core/test_protocol_core.c:test_protocol_core_init",
+        "c:src/core/test_protocol_core.c:test_protocol_core_is_active",
+        "c:src/core/test_protocol_core.c:test_protocol_core_poll",
+        "c:src/core/test_protocol_core.c:test_protocol_core_set_boot_ready",
+        "c:src/core/test_protocol_core.c:test_protocol_core_set_case_reason",
+        "c:src/core/test_protocol_core.c:test_protocol_core_set_ticks"
+      ],
+      "evidence": "build/test-results/core-host/coverage.json gerado em execucao instrumentada aprovada"
+    },
+    {
+      "id": "core-contracts-observed-dynamic",
+      "domain": "core",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:contracts"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/core-host/coverage.json",
+      "coverage_sources": [
+        "src/core/clock.c",
+        "src/core/log.c",
+        "src/core/string.c",
+        "src/core/test_protocol_core.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-core-host PASS com caminho UTC indisponivel e disponivel, rollover, limites de log, protocolo ZTEST e relatorio instrumentado atualizado"
+    },
+    {
+      "id": "core-net-buffer-host",
+      "domain": "core-network",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:net-buffer"
+      ],
+      "surface_ids": [
+        "api:src/include/core/net_buffer.h:net_buffer_begin",
+        "api:src/include/core/net_buffer.h:net_buffer_complete",
+        "api:src/include/core/net_buffer.h:net_buffer_get_stats",
+        "api:src/include/core/net_buffer.h:net_buffer_init",
+        "api:src/include/core/net_buffer.h:net_buffer_note_clone",
+        "api:src/include/core/net_buffer.h:net_buffer_note_copy",
+        "api:src/include/core/net_buffer.h:net_buffer_note_fragment",
+        "api:src/include/core/net_buffer.h:net_buffer_release",
+        "api:src/include/core/net_buffer.h:net_buffer_restore_stats",
+        "api:src/include/core/net_buffer.h:net_buffer_retain",
+        "api:src/include/core/net_buffer.h:net_buffer_self_test",
+        "api:src/include/core/net_buffer.h:net_buffer_set_layout",
+        "api:src/include/core/net_buffer.h:net_buffer_set_length",
+        "api:src/include/core/net_buffer.h:net_buffer_transition",
+        "api:src/include/core/net_buffer.h:net_buffer_validate_state",
+        "c:src/core/net_buffer.c:net_buffer_alignment_valid",
+        "c:src/core/net_buffer.c:net_buffer_begin",
+        "c:src/core/net_buffer.c:net_buffer_check_active_locked",
+        "c:src/core/net_buffer.c:net_buffer_complete",
+        "c:src/core/net_buffer.c:net_buffer_complete_locked",
+        "c:src/core/net_buffer.c:net_buffer_fail_locked",
+        "c:src/core/net_buffer.c:net_buffer_find_locked",
+        "c:src/core/net_buffer.c:net_buffer_free_slot_locked",
+        "c:src/core/net_buffer.c:net_buffer_get_stats",
+        "c:src/core/net_buffer.c:net_buffer_init",
+        "c:src/core/net_buffer.c:net_buffer_log_failure",
+        "c:src/core/net_buffer.c:net_buffer_note_clone",
+        "c:src/core/net_buffer.c:net_buffer_note_copy",
+        "c:src/core/net_buffer.c:net_buffer_note_fragment",
+        "c:src/core/net_buffer.c:net_buffer_owner_valid",
+        "c:src/core/net_buffer.c:net_buffer_release",
+        "c:src/core/net_buffer.c:net_buffer_restore_stats",
+        "c:src/core/net_buffer.c:net_buffer_retain",
+        "c:src/core/net_buffer.c:net_buffer_self_test",
+        "c:src/core/net_buffer.c:net_buffer_set_layout",
+        "c:src/core/net_buffer.c:net_buffer_set_layout_locked",
+        "c:src/core/net_buffer.c:net_buffer_set_length",
+        "c:src/core/net_buffer.c:net_buffer_state_owner_valid",
+        "c:src/core/net_buffer.c:net_buffer_test_delivered",
+        "c:src/core/net_buffer.c:net_buffer_test_dropped",
+        "c:src/core/net_buffer.c:net_buffer_transition",
+        "c:src/core/net_buffer.c:net_buffer_transition_allowed",
+        "c:src/core/net_buffer.c:net_buffer_validate_entry_locked",
+        "c:src/core/net_buffer.c:net_buffer_validate_state"
+      ],
+      "evidence": "make test-network-host aprovado com relatorio instrumentado build/test-results/network-host/coverage.json"
+    },
+    {
+      "id": "core-protocol-host",
+      "domain": "core",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "host:tst2:protocol-core"
+      ],
+      "surface_ids": [
+        "c:src/core/test_protocol_core.c:core_append_hex",
+        "c:src/core/test_protocol_core.c:core_append_text",
+        "c:src/core/test_protocol_core.c:core_append_uint",
+        "c:src/core/test_protocol_core.c:core_copy",
+        "c:src/core/test_protocol_core.c:core_copy_reason",
+        "c:src/core/test_protocol_core.c:core_crc32",
+        "c:src/core/test_protocol_core.c:core_emit_case",
+        "c:src/core/test_protocol_core.c:core_emit_event",
+        "c:src/core/test_protocol_core.c:core_emit_simple",
+        "c:src/core/test_protocol_core.c:core_field",
+        "c:src/core/test_protocol_core.c:core_fields_valid",
+        "c:src/core/test_protocol_core.c:core_frame_crc_valid",
+        "c:src/core/test_protocol_core.c:core_handle_frame",
+        "c:src/core/test_protocol_core.c:core_length",
+        "c:src/core/test_protocol_core.c:core_parse_hex",
+        "c:src/core/test_protocol_core.c:core_parse_uint",
+        "c:src/core/test_protocol_core.c:core_prefix_valid",
+        "c:src/core/test_protocol_core.c:core_token_equals",
+        "c:src/core/test_protocol_core.c:core_token_valid",
+        "c:src/core/test_protocol_core.c:core_zero"
+      ],
+      "evidence": "make test-tst2-host aprovado; frames validos, CRC invalido, sequencia invalida, descarte e formatacao"
+    },
+    {
+      "id": "core-protocol-public-host",
+      "domain": "core",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:tst2:protocol-core"
+      ],
+      "surface_ids": [
+        "c:src/core/test_protocol_core.c:test_protocol_core_emit",
+        "c:src/core/test_protocol_core.c:test_protocol_core_feed_byte",
+        "c:src/core/test_protocol_core.c:test_protocol_core_format_event",
+        "c:src/core/test_protocol_core.c:test_protocol_core_init",
+        "c:src/core/test_protocol_core.c:test_protocol_core_is_active",
+        "c:src/core/test_protocol_core.c:test_protocol_core_poll",
+        "c:src/core/test_protocol_core.c:test_protocol_core_set_boot_ready",
+        "c:src/core/test_protocol_core.c:test_protocol_core_set_case_reason",
+        "c:src/core/test_protocol_core.c:test_protocol_core_set_ticks"
+      ],
+      "evidence": "make test-tst2-host aprovado com teste publico de contrato e tratamento de estados"
+    },
+    {
+      "id": "core-state-host-dynamic",
+      "domain": "core-state",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:state"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/state-host/coverage.json",
+      "coverage_sources": [
+        "src/core/log.c",
+        "src/core/power_notifier.c",
+        "src/core/recovery.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-state-host PASS com estados de recovery, cadeia de notificadores, callbacks opcionais, timeout e falhas canonicas no relatorio instrumentado"
+    },
+    {
+      "id": "core-string-compress-host",
+      "domain": "core-memory",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:tst3:string-compress"
+      ],
+      "surface_ids": [
+        "api:src/include/core/string.h:kmemcpy",
+        "api:src/include/core/string.h:kmemset",
+        "api:src/include/core/string.h:kstrcmp",
+        "api:src/include/core/string.h:kstrlen",
+        "api:src/include/memory/compress.h:compress_data",
+        "api:src/include/memory/compress.h:compress_disable",
+        "api:src/include/memory/compress.h:compress_enable",
+        "api:src/include/memory/compress.h:compress_get_max_size",
+        "api:src/include/memory/compress.h:compress_init",
+        "api:src/include/memory/compress.h:compress_is_enabled",
+        "api:src/include/memory/compress.h:compress_print_stats",
+        "api:src/include/memory/compress.h:decompress_data",
+        "c:src/core/string.c:kmemcpy",
+        "c:src/core/string.c:kmemset",
+        "c:src/core/string.c:kstrcmp",
+        "c:src/core/string.c:kstrlen",
+        "c:src/memory/compress.c:compress_data",
+        "c:src/memory/compress.c:compress_disable",
+        "c:src/memory/compress.c:compress_enable",
+        "c:src/memory/compress.c:compress_get_max_size",
+        "c:src/memory/compress.c:compress_init",
+        "c:src/memory/compress.c:compress_is_enabled",
+        "c:src/memory/compress.c:compress_print_stats",
+        "c:src/memory/compress.c:decompress_data"
+      ],
+      "evidence": "make test-tst3-host aprovado com strings, round-trip, dados vazios, limites, truncamento, overflow e stub de video_print"
+    },
+    {
+      "id": "crypto-host-dynamic",
+      "domain": "core-crypto",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:crypto"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/crypto-host/coverage.json",
+      "coverage_sources": [
+        "src/core/crypto.c",
+        "src/core/crypto_ed25519.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-crypto-host PASS com SHA-256/SHA-512, limites e erros canonicos no relatorio instrumentado, sem enderecos desconhecidos ou ambiguos"
+    },
+    {
+      "id": "device-manager-host-dynamic",
+      "domain": "core-device-manager",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:device-manager"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/device-manager-host/coverage.json",
+      "coverage_sources": [
+        "src/core/device_manager.c",
+        "src/core/log.c",
+        "src/core/recovery.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-device-manager-host PASS com inventario PCI/ATA/AC97 simulado, aliases, estados indisponiveis, falha de backend e overflow no relatorio instrumentado"
+    },
+    {
+      "id": "dhcp-host-dynamic",
+      "domain": "network-dhcp",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/dhcp-host/coverage.json",
+      "coverage_sources": [
+        "src/core/dhcp.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-dhcp-host PASS com descoberta, oferta, lease, renovacao, rebinding, expiracao, mensagens invalidas e falhas de transporte usando UDP e timer falsos"
+    },
+    {
+      "id": "dns-host-dynamic",
+      "domain": "network-dns",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:network:dns"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/dns-host/coverage.json",
+      "coverage_sources": [
+        "src/core/dns.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-dns-host PASS com consultas, cache, CNAME, timeout, respostas invalidas e falhas de transporte usando UDP e timer falsos"
+    },
+    {
+      "id": "ethernet-host-dynamic",
+      "domain": "network-ethernet",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:network:ethernet"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/ethernet-host/coverage.json",
+      "coverage_sources": [
+        "src/core/ethernet.c",
+        "src/core/sk_buff.c",
+        "src/core/net_buffer.c",
+        "src/memory/slab.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-ethernet-host PASS com interfaces falsas, handlers, polling, frames validos e invalidos, transmissao, quiescencia, sk_buff e limpeza sem hardware real"
+    },
+    {
+      "id": "execution-qemu-tst4-dynamic",
+      "domain": "process-execution",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst4:execution"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build-coverage/test-results/cov-tst4-execution/cov-tst4-execution-1/coverage.json",
+      "coverage_sources": [
+        "src/core/kernel_tests_execution.c",
+        "src/core/irq_deferred.c",
+        "src/core/wait.c",
+        "src/core/workqueue.c",
+        "src/process/process.c",
+        "src/process/signal.c",
+        "src/thread/thread.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "QEMU TST4 execution cov-tst4-execution-1 PASS com coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
+    },
+    {
+      "id": "fat12-host-dynamic",
+      "domain": "storage-fat12",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:storage:fat12"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/fat12-host/coverage.json",
+      "coverage_sources": [
+        "src/fs/fat12.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-fat12-host PASS com imagem FAT12 estatica, leitura, paths, metadados, operacoes atomicas, streaming, cancelamento e erros canonicos no relatorio instrumentado"
+    },
+    {
+      "id": "fat32-host-dynamic",
+      "domain": "storage-fat32",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:storage:fat32"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/fat32-host/coverage.json",
+      "coverage_sources": [
+        "src/fs/fat32.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-fat32-host PASS com imagem FAT32 compacta, classificacao de clusters, leitura, paths, metadados, criacao, escrita e remocao em fixture estatica no relatorio instrumentado"
+    },
+    {
+      "id": "fault-memory-qemu-tst6-dynamic",
+      "domain": "memory-fault-recovery",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst6:fault:memory"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build-coverage/test-results/tst6-fault-memory/cov-tst6-fault-memory-1/coverage.json",
+      "coverage_sources": [
+        "src/core/kernel_tests_tst6.c",
+        "src/memory/memory.c",
+        "src/memory/paging.c",
+        "src/memory/slab.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "QEMU TST6 fault memory cov-tst6-fault-memory-1 PASS com failpoint one-shot, recuperacao e coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
+    },
+    {
+      "id": "fault-package-qemu-tst6-dynamic",
+      "domain": "packages-fault-recovery",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst6:fault:package"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build-coverage/test-results/tst6-fault-package/cov-tst6-fault-package-1/coverage.json",
+      "coverage_sources": [
+        "src/core/app_package.c",
+        "src/core/kernel_tests_tst6.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "QEMU TST6 fault package cov-tst6-fault-package-1 PASS com pacote corrompido, recuperacao e coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
+    },
+    {
+      "id": "fault-update-qemu-tst6-dynamic",
+      "domain": "update-fault-recovery",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst6:fault:update"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build-coverage/test-results/tst6-fault-update/cov-tst6-fault-update-1/coverage.json",
+      "coverage_sources": [
+        "src/core/update_remote_runtime.c",
+        "src/core/update_runtime.c",
+        "src/core/kernel_tests_tst6.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "QEMU TST6 fault update cov-tst6-fault-update-1 PASS com cancelamento e retorno ao estado anterior, coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
+    },
+    {
+      "id": "file-index-host-dynamic",
+      "domain": "storage-file-index",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:storage:file-index"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/file-index-host/coverage.json",
+      "coverage_sources": [
+        "src/fs/file_index.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-file-index-host PASS com rebuild cooperativo, cancelamento, pesquisa, classificacao stale/missing, cursores boot/storage e recuperacao de corrupcao no relatorio instrumentado"
+    },
+    {
+      "id": "fs-host-dynamic",
+      "domain": "storage-fs",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:storage:fs"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/fs-host/coverage.json",
+      "coverage_sources": [
+        "src/fs/fs.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-fs-host PASS com fixture FAT32, paths legacy e storage, cursores, operacoes atomicas, streaming e erros canonicos no relatorio instrumentado"
+    },
+    {
+      "id": "harness-apps-qemu-observed",
+      "domain": "test-harness",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst5:apps"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build-coverage/test-results/tst5-apps/cov-tst5-apps-1/coverage.json",
+      "coverage_sources": [
+        "src/core/kernel_tests.c",
+        "src/core/test_protocol.c",
+        "src/core/usb_manager.c",
+        "src/drivers/tss.c",
+        "src/kernel/kernel.c"
+      ],
+      "include_public_apis": false,
+      "evidence": "relatorio QEMU PASS do caso apps observou o executor black-box e a integracao com filas e processos"
+    },
+    {
+      "id": "harness-execution-qemu-observed",
+      "domain": "test-harness",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst4:execution"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build-coverage/test-results/cov-tst4-execution/cov-tst4-execution-1/coverage.json",
+      "coverage_sources": [
+        "src/core/kernel_tests.c",
+        "src/core/test_protocol.c"
+      ],
+      "include_public_apis": false,
+      "evidence": "relatorio QEMU PASS do caso execution observou diretamente o executor de fases e o adaptador ZTEST"
+    },
+    {
+      "id": "harness-input-qemu-observed",
+      "domain": "test-harness",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst5:input"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build-coverage/test-results/tst5-input/cov-tst5-input-1/coverage.json",
+      "coverage_sources": [
+        "src/core/kernel_tests.c",
+        "src/core/test_protocol.c",
+        "src/core/usb_manager.c",
+        "src/drivers/tss.c",
+        "src/drivers/video.c",
+        "src/kernel/kernel.c"
+      ],
+      "include_public_apis": false,
+      "evidence": "relatorio QEMU PASS do caso input observou entrada, video, filas e protocolo no fluxo black-box"
+    },
+    {
+      "id": "harness-memory-qemu-observed",
+      "domain": "test-harness",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst4:memory-slab"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build-coverage/test-results/tst4-memory-slab/cov-tst4-memory-3/coverage.json",
+      "coverage_sources": [
+        "src/core/kernel_tests.c",
+        "src/core/test_protocol.c"
+      ],
+      "include_public_apis": false,
+      "evidence": "relatorio QEMU PASS do caso memory-slab observou captura, comparacao, progresso e encerramento do harness"
+    },
+    {
+      "id": "harness-network-qemu-observed",
+      "domain": "test-harness",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst4:network"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build-coverage/test-results/tst4-network/cov-tst4-network-2/coverage.json",
+      "coverage_sources": [
+        "src/core/kernel_tests.c",
+        "src/core/test_protocol.c",
+        "src/drivers/timer.c"
+      ],
+      "include_public_apis": false,
+      "evidence": "relatorio QEMU PASS do caso network observou progresso do harness, protocolo e informacao de timer"
+    },
+    {
+      "id": "harness-paging-qemu-observed",
+      "domain": "test-harness",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst4:paging-vma"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build-coverage/test-results/cov-tst4-paging/cov-tst4-paging-1/coverage.json",
+      "coverage_sources": [
+        "src/core/kernel_tests.c",
+        "src/core/test_protocol.c",
+        "src/core/wait.c",
+        "src/drivers/idt.c",
+        "src/drivers/tss.c",
+        "src/kernel/kernel.c",
+        "src/process/process.c",
+        "src/process/signal.c"
+      ],
+      "include_public_apis": false,
+      "evidence": "relatorio QEMU PASS do caso paging-vma observou o fluxo ring 3, terminacao e o protocolo de teste"
+    },
+    {
+      "id": "harness-storage-qemu-observed",
+      "domain": "test-harness",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst4:storage-vfs"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build-coverage/test-results/cov-tst4-storage/cov-tst4-storage-1/coverage.json",
+      "coverage_sources": [
+        "src/core/kernel_tests.c",
+        "src/core/test_protocol.c",
+        "src/core/log.c",
+        "src/core/wait.c",
+        "src/drivers/timer.c"
+      ],
+      "include_public_apis": false,
+      "evidence": "relatorio QEMU PASS do caso storage-vfs observou diagnosticos de log, wait, timer e protocolo durante o fluxo real"
+    },
+    {
+      "id": "http-host-dynamic",
+      "domain": "network-http",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/http-host/coverage.json",
+      "coverage_sources": [
+        "src/core/http.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-http-host PASS com DNS, socket, TLS e timer falsos, URLs, headers, corpos Content-Length/chunked/EOF, streaming, redirects, limites, timeouts e falhas sem rede externa"
+    },
+    {
+      "id": "icmp-host-dynamic",
+      "domain": "network-icmp",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:network:icmp"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/icmp-host/coverage.json",
+      "coverage_sources": [
+        "src/core/icmp.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-icmp-host PASS com IPv4 e timer falsos, checksum, echo request/reply, timeout, mudanca de configuracao, fila pendente, pacotes invalidos e falhas de transporte"
+    },
+    {
+      "id": "input-host-dynamic",
+      "domain": "core-input",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:input"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/input-host/coverage.json",
+      "coverage_sources": [
+        "src/core/input.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-input-host PASS com filas de teclado e ponteiro, coalescencia, limites, erro de sink e validacao de estado no relatorio instrumentado"
+    },
+    {
+      "id": "input-qemu-tst5-dynamic",
+      "domain": "input-shell",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst5:input"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build-coverage/test-results/tst5-input/cov-tst5-input-1/coverage.json",
+      "coverage_sources": [
+        "src/core/input.c",
+        "src/core/kernel_tests_blackbox.c",
+        "src/drivers/keyboard.c",
+        "src/drivers/mouse.c",
+        "src/shell/shell.c",
+        "src/shell/shell_input.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "QEMU TST5 input cov-tst5-input-1 PASS com coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
+    },
+    {
+      "id": "matrix-baseline-qemu-tst6-dynamic",
+      "domain": "drivers-platform-matrix",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst6:matrix:baseline"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build-coverage/test-results/tst6-matrix-baseline/cov-tst6-matrix-baseline-1/coverage.json",
+      "coverage_sources": [
+        "src/core/clock.c",
+        "src/core/device_manager.c",
+        "src/core/input.c",
+        "src/core/irq_deferred.c",
+        "src/core/kernel_tests_platform.c",
+        "src/core/kernel_tests_tst6.c",
+        "src/core/log.c",
+        "src/core/power.c",
+        "src/core/power_notifier.c",
+        "src/core/string.c",
+        "src/core/usb_manager.c",
+        "src/core/wait.c",
+        "src/core/wifi_manager.c",
+        "src/drivers/acpi.c",
+        "src/drivers/ata.c",
+        "src/drivers/idt.c",
+        "src/drivers/pci.c",
+        "src/drivers/rng.c",
+        "src/drivers/rtc.c",
+        "src/drivers/serial.c",
+        "src/drivers/timer.c",
+        "src/drivers/usb_hid.c",
+        "src/drivers/usb_msc.c",
+        "src/drivers/vesa.c",
+        "src/drivers/video.c",
+        "src/memory/paging.c",
+        "src/memory/slab.c",
+        "src/process/process.c",
+        "src/process/signal.c",
+        "src/thread/thread.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "QEMU TST6 matrix baseline cov-tst6-matrix-baseline-1 PASS com perfil allowlisted e coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
+    },
+    {
+      "id": "matrix-usb-hid-qemu-tst6-dynamic",
+      "domain": "usb-hid-platform",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst6:matrix:usb-hid"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build-coverage/test-results/tst6-matrix-usb-hid/cov-tst6-matrix-usb-hid-1/coverage.json",
+      "coverage_sources": [
+        "src/core/usb_manager.c",
+        "src/drivers/uhci.c",
+        "src/drivers/usb_hid.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "QEMU TST6 matrix usb-hid cov-tst6-matrix-usb-hid-1 PASS com perfil allowlisted e coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
+    },
+    {
+      "id": "memory-host-dynamic",
+      "domain": "memory-pmm-heap",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:memory:memory"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/memory-host/coverage.json",
+      "coverage_sources": [
+        "src/memory/memory.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-memory-host PASS com mapa E820, PMM por zona, heap, alinhamento, limites, erros canonicos, cleanup e estatisticas restauradas sem hardware"
+    },
+    {
+      "id": "memory-slab",
+      "domain": "memory",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst4:memory-slab"
+      ],
+      "surface_ids": [
+        "api:src/include/core/memory.h:memory_get_detailed_stats",
+        "api:src/include/core/memory.h:memory_get_free_pages",
+        "api:src/include/core/memory.h:memory_get_heap_stats",
+        "api:src/include/core/memory.h:memory_get_pmm_stats",
+        "api:src/include/memory/paging.h:paging_is_ready",
+        "api:src/include/memory/slab.h:kmem_cache_get_stats",
+        "api:src/include/memory/slab.h:kmem_cache_self_test",
+        "api:src/include/memory/slab.h:kmem_cache_validate",
+        "c:src/core/kernel_tests.c:kernel_tests_run_memory_slab",
+        "c:src/memory/memory.c:memory_get_detailed_stats",
+        "c:src/memory/memory.c:memory_get_free_pages",
+        "c:src/memory/memory.c:memory_get_heap_stats",
+        "c:src/memory/memory.c:memory_get_pmm_stats",
+        "c:src/memory/paging.c:paging_is_ready",
+        "c:src/memory/slab.c:kmem_cache_get_stats",
+        "c:src/memory/slab.c:kmem_cache_self_test",
+        "c:src/memory/slab.c:kmem_cache_validate"
+      ],
+      "evidence": "TST4 memory-slab aprovado com invariantes antes e depois"
+    },
+    {
+      "id": "net-socket-host-dynamic",
+      "domain": "network-socket",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/net-socket-host/coverage.json",
+      "coverage_sources": [
+        "src/core/net_socket.c",
+        "src/core/wait.c",
+        "src/core/net_buffer.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-net-socket-host PASS com handles geracionais, conexao, filas RX/TX, eventos, EOF, timeout, cancelamento, limites, reset e limpeza usando TCP, timer e VFS falsos"
+    },
+    {
+      "id": "network-ipv4-host",
+      "domain": "network-ipv4",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:network:ipv4"
+      ],
+      "surface_ids": [
+        "api:src/include/core/ipv4.h:ipv4_address_is_unicast",
+        "api:src/include/core/ipv4.h:ipv4_configure",
+        "api:src/include/core/ipv4.h:ipv4_get_status",
+        "api:src/include/core/ipv4.h:ipv4_init",
+        "api:src/include/core/ipv4.h:ipv4_mask_is_valid",
+        "api:src/include/core/ipv4.h:ipv4_register_handler",
+        "api:src/include/core/ipv4.h:ipv4_send",
+        "api:src/include/core/ipv4.h:ipv4_send_limited_broadcast",
+        "api:src/include/core/ipv4.h:ipv4_unconfigure",
+        "api:src/include/core/ipv4.h:ipv4_validate_state",
+        "c:src/core/ipv4.c:ipv4_address_is_unicast",
+        "c:src/core/ipv4.c:ipv4_build_packet",
+        "c:src/core/ipv4.c:ipv4_checksum",
+        "c:src/core/ipv4.c:ipv4_config_is_valid",
+        "c:src/core/ipv4.c:ipv4_configure",
+        "c:src/core/ipv4.c:ipv4_copy_text",
+        "c:src/core/ipv4.c:ipv4_dispatch",
+        "c:src/core/ipv4.c:ipv4_find_handler",
+        "c:src/core/ipv4.c:ipv4_get_status",
+        "c:src/core/ipv4.c:ipv4_handle_frame",
+        "c:src/core/ipv4.c:ipv4_header_is_supported",
+        "c:src/core/ipv4.c:ipv4_init",
+        "c:src/core/ipv4.c:ipv4_mac_is_equal",
+        "c:src/core/ipv4.c:ipv4_mac_is_valid",
+        "c:src/core/ipv4.c:ipv4_mask_is_valid",
+        "c:src/core/ipv4.c:ipv4_read_u16",
+        "c:src/core/ipv4.c:ipv4_read_u32",
+        "c:src/core/ipv4.c:ipv4_register_handler",
+        "c:src/core/ipv4.c:ipv4_select_next_hop",
+        "c:src/core/ipv4.c:ipv4_send",
+        "c:src/core/ipv4.c:ipv4_send_limited_broadcast",
+        "c:src/core/ipv4.c:ipv4_text_is_equal",
+        "c:src/core/ipv4.c:ipv4_unconfigure",
+        "c:src/core/ipv4.c:ipv4_validate_checksum_vector",
+        "c:src/core/ipv4.c:ipv4_validate_handlers",
+        "c:src/core/ipv4.c:ipv4_validate_state",
+        "c:src/core/ipv4.c:ipv4_write_u16",
+        "c:src/core/ipv4.c:ipv4_write_u32"
+      ],
+      "evidence": "make test-ipv4-host aprovado com coverage.json instrumentado em build/test-results/ipv4-host/coverage.json"
+    },
+    {
+      "id": "network-manager-host-dynamic",
+      "domain": "core-network-manager",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:network-manager"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/network-manager-host/coverage.json",
+      "coverage_sources": [
+        "src/core/network_manager.c",
+        "src/core/recovery.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-network-manager-host PASS com inventario PCI simulado, driver indisponivel, estado offline, contratos negativos, formatacao e limpeza no relatorio instrumentado"
+    },
+    {
       "id": "network-qemu-tst4-dynamic",
       "domain": "network",
       "owner": "quality",
@@ -367,55 +1482,32 @@
       "evidence": "QEMU TST4 network cov-tst4-network-2 PASS com coverage.json instrumentado; 0 enderecos desconhecidos ou ambiguos"
     },
     {
-      "id": "network-ipv4-host",
-      "domain": "network-ipv4",
+      "id": "network-qemu-tst5-dynamic",
+      "domain": "network-shell",
       "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
+      "executor": "qemu",
+      "coverage_mode": "integration",
       "case_ids": [
-        "host:network:ipv4"
+        "qemu:tst5:network"
       ],
-      "surface_ids": [
-        "api:src/include/core/ipv4.h:ipv4_address_is_unicast",
-        "api:src/include/core/ipv4.h:ipv4_configure",
-        "api:src/include/core/ipv4.h:ipv4_get_status",
-        "api:src/include/core/ipv4.h:ipv4_init",
-        "api:src/include/core/ipv4.h:ipv4_mask_is_valid",
-        "api:src/include/core/ipv4.h:ipv4_register_handler",
-        "api:src/include/core/ipv4.h:ipv4_send",
-        "api:src/include/core/ipv4.h:ipv4_send_limited_broadcast",
-        "api:src/include/core/ipv4.h:ipv4_unconfigure",
-        "api:src/include/core/ipv4.h:ipv4_validate_state",
-        "c:src/core/ipv4.c:ipv4_address_is_unicast",
-        "c:src/core/ipv4.c:ipv4_build_packet",
-        "c:src/core/ipv4.c:ipv4_checksum",
-        "c:src/core/ipv4.c:ipv4_config_is_valid",
-        "c:src/core/ipv4.c:ipv4_configure",
-        "c:src/core/ipv4.c:ipv4_copy_text",
-        "c:src/core/ipv4.c:ipv4_dispatch",
-        "c:src/core/ipv4.c:ipv4_find_handler",
-        "c:src/core/ipv4.c:ipv4_get_status",
-        "c:src/core/ipv4.c:ipv4_handle_frame",
-        "c:src/core/ipv4.c:ipv4_header_is_supported",
-        "c:src/core/ipv4.c:ipv4_init",
-        "c:src/core/ipv4.c:ipv4_mac_is_equal",
-        "c:src/core/ipv4.c:ipv4_mac_is_valid",
-        "c:src/core/ipv4.c:ipv4_mask_is_valid",
-        "c:src/core/ipv4.c:ipv4_read_u16",
-        "c:src/core/ipv4.c:ipv4_read_u32",
-        "c:src/core/ipv4.c:ipv4_register_handler",
-        "c:src/core/ipv4.c:ipv4_select_next_hop",
-        "c:src/core/ipv4.c:ipv4_send",
-        "c:src/core/ipv4.c:ipv4_send_limited_broadcast",
-        "c:src/core/ipv4.c:ipv4_text_is_equal",
-        "c:src/core/ipv4.c:ipv4_unconfigure",
-        "c:src/core/ipv4.c:ipv4_validate_checksum_vector",
-        "c:src/core/ipv4.c:ipv4_validate_handlers",
-        "c:src/core/ipv4.c:ipv4_validate_state",
-        "c:src/core/ipv4.c:ipv4_write_u16",
-        "c:src/core/ipv4.c:ipv4_write_u32"
+      "surface_selector": "coverage_report",
+      "coverage_report": "build-coverage/test-results/tst5-network/cov-tst5-network-1/coverage.json",
+      "coverage_sources": [
+        "src/core/ipv4.c",
+        "src/core/network_manager.c",
+        "src/core/route.c",
+        "src/core/socket.c",
+        "src/core/tcp.c",
+        "src/shell/shell.c",
+        "src/shell/shell_command_utils.c",
+        "src/shell/shell_commands_network.c",
+        "src/shell/shell_dispatch.c",
+        "src/shell/shell_input.c",
+        "src/shell/shell_job.c",
+        "src/shell/shell_pipeline.c"
       ],
-      "evidence": "make test-ipv4-host aprovado com coverage.json instrumentado em build/test-results/ipv4-host/coverage.json"
+      "include_public_apis": true,
+      "evidence": "QEMU TST5 network cov-tst5-network-1 PASS em modo offline, com netstat/route/sockstat e coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
     },
     {
       "id": "network-route-host",
@@ -463,292 +1555,240 @@
       "evidence": "make test-route-host aprovado com coverage.json instrumentado em build/test-results/route-host/coverage.json"
     },
     {
-      "id": "core-net-buffer-host",
-      "domain": "core-network",
+      "id": "package-host-dynamic",
+      "domain": "core-packages",
       "owner": "quality",
       "executor": "host",
       "coverage_mode": "direct",
       "case_ids": [
-        "host:core:net-buffer"
-      ],
-      "surface_ids": [
-        "api:src/include/core/net_buffer.h:net_buffer_begin",
-        "api:src/include/core/net_buffer.h:net_buffer_complete",
-        "api:src/include/core/net_buffer.h:net_buffer_get_stats",
-        "api:src/include/core/net_buffer.h:net_buffer_init",
-        "api:src/include/core/net_buffer.h:net_buffer_note_clone",
-        "api:src/include/core/net_buffer.h:net_buffer_note_copy",
-        "api:src/include/core/net_buffer.h:net_buffer_note_fragment",
-        "api:src/include/core/net_buffer.h:net_buffer_release",
-        "api:src/include/core/net_buffer.h:net_buffer_restore_stats",
-        "api:src/include/core/net_buffer.h:net_buffer_retain",
-        "api:src/include/core/net_buffer.h:net_buffer_self_test",
-        "api:src/include/core/net_buffer.h:net_buffer_set_layout",
-        "api:src/include/core/net_buffer.h:net_buffer_set_length",
-        "api:src/include/core/net_buffer.h:net_buffer_transition",
-        "api:src/include/core/net_buffer.h:net_buffer_validate_state",
-        "c:src/core/net_buffer.c:net_buffer_alignment_valid",
-        "c:src/core/net_buffer.c:net_buffer_begin",
-        "c:src/core/net_buffer.c:net_buffer_check_active_locked",
-        "c:src/core/net_buffer.c:net_buffer_complete",
-        "c:src/core/net_buffer.c:net_buffer_complete_locked",
-        "c:src/core/net_buffer.c:net_buffer_fail_locked",
-        "c:src/core/net_buffer.c:net_buffer_find_locked",
-        "c:src/core/net_buffer.c:net_buffer_free_slot_locked",
-        "c:src/core/net_buffer.c:net_buffer_get_stats",
-        "c:src/core/net_buffer.c:net_buffer_init",
-        "c:src/core/net_buffer.c:net_buffer_log_failure",
-        "c:src/core/net_buffer.c:net_buffer_note_clone",
-        "c:src/core/net_buffer.c:net_buffer_note_copy",
-        "c:src/core/net_buffer.c:net_buffer_note_fragment",
-        "c:src/core/net_buffer.c:net_buffer_owner_valid",
-        "c:src/core/net_buffer.c:net_buffer_release",
-        "c:src/core/net_buffer.c:net_buffer_restore_stats",
-        "c:src/core/net_buffer.c:net_buffer_retain",
-        "c:src/core/net_buffer.c:net_buffer_self_test",
-        "c:src/core/net_buffer.c:net_buffer_set_layout",
-        "c:src/core/net_buffer.c:net_buffer_set_layout_locked",
-        "c:src/core/net_buffer.c:net_buffer_set_length",
-        "c:src/core/net_buffer.c:net_buffer_state_owner_valid",
-        "c:src/core/net_buffer.c:net_buffer_test_delivered",
-        "c:src/core/net_buffer.c:net_buffer_test_dropped",
-        "c:src/core/net_buffer.c:net_buffer_transition",
-        "c:src/core/net_buffer.c:net_buffer_transition_allowed",
-        "c:src/core/net_buffer.c:net_buffer_validate_entry_locked",
-        "c:src/core/net_buffer.c:net_buffer_validate_state"
-      ],
-      "evidence": "make test-network-host aprovado com relatorio instrumentado build/test-results/network-host/coverage.json"
-    },
-    {
-      "id": "core-contracts-dynamic-host",
-      "domain": "core",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:core:contracts"
-      ],
-      "surface_ids": [
-        "c:src/core/clock.c:clock_datetime_to_unix",
-        "c:src/core/clock.c:clock_days_in_month",
-        "c:src/core/clock.c:clock_extend_tick",
-        "c:src/core/clock.c:clock_get_monotonic_ticks",
-        "c:src/core/clock.c:clock_get_status",
-        "c:src/core/clock.c:clock_get_utc",
-        "c:src/core/clock.c:clock_init",
-        "c:src/core/clock.c:clock_is_leap_year",
-        "c:src/core/clock.c:clock_self_test",
-        "c:src/core/clock.c:clock_update_monotonic",
-        "c:src/core/clock.c:clock_validate_state",
-        "c:src/core/log.c:log_append_char",
-        "c:src/core/log.c:log_append_text",
-        "c:src/core/log.c:log_copy_text",
-        "c:src/core/log.c:log_get_buffer",
-        "c:src/core/log.c:log_get_stats",
-        "c:src/core/log.c:log_init",
-        "c:src/core/log.c:log_level_is_valid",
-        "c:src/core/log.c:log_note_dropped_event",
-        "c:src/core/log.c:log_print",
-        "c:src/core/log.c:log_print_colored",
-        "c:src/core/log.c:log_records_match",
-        "c:src/core/log.c:log_restore_interrupts",
-        "c:src/core/log.c:log_ring_clear",
-        "c:src/core/log.c:log_ring_copy_recent",
-        "c:src/core/log.c:log_ring_initialize",
-        "c:src/core/log.c:log_ring_latest_index",
-        "c:src/core/log.c:log_ring_store",
-        "c:src/core/log.c:log_self_test",
-        "c:src/core/log.c:log_self_test_mark",
-        "c:src/core/log.c:log_serialize_records",
-        "c:src/core/log.c:log_set_buffer_level",
-        "c:src/core/log.c:log_submit",
-        "c:src/core/log.c:log_suspend_interrupts",
-        "c:src/core/log.c:log_test_clear_behavior",
-        "c:src/core/log.c:log_test_level_filtering",
-        "c:src/core/log.c:log_test_optional_error_code",
-        "c:src/core/log.c:log_test_order_and_metadata",
-        "c:src/core/log.c:log_test_repetition_grouping",
-        "c:src/core/log.c:log_test_safe_truncation",
-        "c:src/core/log.c:log_test_text_serialization",
-        "c:src/core/log.c:log_test_wrap_and_overwrite",
-        "c:src/core/log.c:log_write_serial",
-        "c:src/core/string.c:kmemcpy",
-        "c:src/core/string.c:kmemset",
-        "c:src/core/string.c:kstrcmp",
-        "c:src/core/string.c:kstrlen",
-        "c:src/core/test_protocol_core.c:core_append_hex",
-        "c:src/core/test_protocol_core.c:core_append_text",
-        "c:src/core/test_protocol_core.c:core_append_uint",
-        "c:src/core/test_protocol_core.c:core_copy",
-        "c:src/core/test_protocol_core.c:core_copy_reason",
-        "c:src/core/test_protocol_core.c:core_crc32",
-        "c:src/core/test_protocol_core.c:core_emit_case",
-        "c:src/core/test_protocol_core.c:core_emit_event",
-        "c:src/core/test_protocol_core.c:core_emit_simple",
-        "c:src/core/test_protocol_core.c:core_field",
-        "c:src/core/test_protocol_core.c:core_fields_valid",
-        "c:src/core/test_protocol_core.c:core_frame_crc_valid",
-        "c:src/core/test_protocol_core.c:core_handle_frame",
-        "c:src/core/test_protocol_core.c:core_length",
-        "c:src/core/test_protocol_core.c:core_parse_hex",
-        "c:src/core/test_protocol_core.c:core_parse_uint",
-        "c:src/core/test_protocol_core.c:core_prefix_valid",
-        "c:src/core/test_protocol_core.c:core_token_equals",
-        "c:src/core/test_protocol_core.c:core_token_valid",
-        "c:src/core/test_protocol_core.c:core_zero",
-        "c:src/core/test_protocol_core.c:test_protocol_core_emit",
-        "c:src/core/test_protocol_core.c:test_protocol_core_feed_byte",
-        "c:src/core/test_protocol_core.c:test_protocol_core_format_event",
-        "c:src/core/test_protocol_core.c:test_protocol_core_init",
-        "c:src/core/test_protocol_core.c:test_protocol_core_is_active",
-        "c:src/core/test_protocol_core.c:test_protocol_core_poll",
-        "c:src/core/test_protocol_core.c:test_protocol_core_set_boot_ready",
-        "c:src/core/test_protocol_core.c:test_protocol_core_set_case_reason",
-        "c:src/core/test_protocol_core.c:test_protocol_core_set_ticks"
-      ],
-      "evidence": "build/test-results/core-host/coverage.json gerado em execucao instrumentada aprovada"
-    },
-    {
-      "id": "memory-slab",
-      "domain": "memory",
-      "owner": "quality",
-      "executor": "qemu",
-      "coverage_mode": "integration",
-      "case_ids": [
-        "qemu:tst4:memory-slab"
-      ],
-      "surface_ids": [
-        "api:src/include/core/memory.h:memory_get_detailed_stats",
-        "api:src/include/core/memory.h:memory_get_free_pages",
-        "api:src/include/core/memory.h:memory_get_heap_stats",
-        "api:src/include/core/memory.h:memory_get_pmm_stats",
-        "api:src/include/memory/paging.h:paging_is_ready",
-        "api:src/include/memory/slab.h:kmem_cache_get_stats",
-        "api:src/include/memory/slab.h:kmem_cache_self_test",
-        "api:src/include/memory/slab.h:kmem_cache_validate",
-        "c:src/core/kernel_tests.c:kernel_tests_run_memory_slab",
-        "c:src/memory/memory.c:memory_get_detailed_stats",
-        "c:src/memory/memory.c:memory_get_free_pages",
-        "c:src/memory/memory.c:memory_get_heap_stats",
-        "c:src/memory/memory.c:memory_get_pmm_stats",
-        "c:src/memory/paging.c:paging_is_ready",
-        "c:src/memory/slab.c:kmem_cache_get_stats",
-        "c:src/memory/slab.c:kmem_cache_self_test",
-        "c:src/memory/slab.c:kmem_cache_validate"
-      ],
-      "evidence": "TST4 memory-slab aprovado com invariantes antes e depois"
-    },
-    {
-      "id": "core-protocol-host",
-      "domain": "core",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "integration",
-      "case_ids": [
-        "host:tst2:protocol-core"
-      ],
-      "surface_ids": [
-        "c:src/core/test_protocol_core.c:core_append_hex",
-        "c:src/core/test_protocol_core.c:core_append_text",
-        "c:src/core/test_protocol_core.c:core_append_uint",
-        "c:src/core/test_protocol_core.c:core_copy",
-        "c:src/core/test_protocol_core.c:core_copy_reason",
-        "c:src/core/test_protocol_core.c:core_crc32",
-        "c:src/core/test_protocol_core.c:core_emit_case",
-        "c:src/core/test_protocol_core.c:core_emit_event",
-        "c:src/core/test_protocol_core.c:core_emit_simple",
-        "c:src/core/test_protocol_core.c:core_field",
-        "c:src/core/test_protocol_core.c:core_fields_valid",
-        "c:src/core/test_protocol_core.c:core_frame_crc_valid",
-        "c:src/core/test_protocol_core.c:core_handle_frame",
-        "c:src/core/test_protocol_core.c:core_length",
-        "c:src/core/test_protocol_core.c:core_parse_hex",
-        "c:src/core/test_protocol_core.c:core_parse_uint",
-        "c:src/core/test_protocol_core.c:core_prefix_valid",
-        "c:src/core/test_protocol_core.c:core_token_equals",
-        "c:src/core/test_protocol_core.c:core_token_valid",
-        "c:src/core/test_protocol_core.c:core_zero"
-      ],
-      "evidence": "make test-tst2-host aprovado; frames validos, CRC invalido, sequencia invalida, descarte e formatacao"
-    },
-    {
-      "id": "core-protocol-public-host",
-      "domain": "core",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:tst2:protocol-core"
-      ],
-      "surface_ids": [
-        "c:src/core/test_protocol_core.c:test_protocol_core_emit",
-        "c:src/core/test_protocol_core.c:test_protocol_core_feed_byte",
-        "c:src/core/test_protocol_core.c:test_protocol_core_format_event",
-        "c:src/core/test_protocol_core.c:test_protocol_core_init",
-        "c:src/core/test_protocol_core.c:test_protocol_core_is_active",
-        "c:src/core/test_protocol_core.c:test_protocol_core_poll",
-        "c:src/core/test_protocol_core.c:test_protocol_core_set_boot_ready",
-        "c:src/core/test_protocol_core.c:test_protocol_core_set_case_reason",
-        "c:src/core/test_protocol_core.c:test_protocol_core_set_ticks"
-      ],
-      "evidence": "make test-tst2-host aprovado com teste publico de contrato e tratamento de estados"
-    },
-    {
-      "id": "core-string-compress-host",
-      "domain": "core-memory",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:tst3:string-compress"
-      ],
-      "surface_ids": [
-        "api:src/include/core/string.h:kmemcpy",
-        "api:src/include/core/string.h:kmemset",
-        "api:src/include/core/string.h:kstrcmp",
-        "api:src/include/core/string.h:kstrlen",
-        "api:src/include/memory/compress.h:compress_data",
-        "api:src/include/memory/compress.h:compress_disable",
-        "api:src/include/memory/compress.h:compress_enable",
-        "api:src/include/memory/compress.h:compress_get_max_size",
-        "api:src/include/memory/compress.h:compress_init",
-        "api:src/include/memory/compress.h:compress_is_enabled",
-        "api:src/include/memory/compress.h:compress_print_stats",
-        "api:src/include/memory/compress.h:decompress_data",
-        "c:src/core/string.c:kmemcpy",
-        "c:src/core/string.c:kmemset",
-        "c:src/core/string.c:kstrcmp",
-        "c:src/core/string.c:kstrlen",
-        "c:src/memory/compress.c:compress_data",
-        "c:src/memory/compress.c:compress_disable",
-        "c:src/memory/compress.c:compress_enable",
-        "c:src/memory/compress.c:compress_get_max_size",
-        "c:src/memory/compress.c:compress_init",
-        "c:src/memory/compress.c:compress_is_enabled",
-        "c:src/memory/compress.c:compress_print_stats",
-        "c:src/memory/compress.c:decompress_data"
-      ],
-      "evidence": "make test-tst3-host aprovado com strings, round-trip, dados vazios, limites, truncamento, overflow e stub de video_print"
-    },
-    {
-      "id": "crypto-host-dynamic",
-      "domain": "core-crypto",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:core:crypto"
+        "host:core:app-package"
       ],
       "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/crypto-host/coverage.json",
+      "coverage_report": "build/test-results/package-host/coverage.json",
       "coverage_sources": [
-        "src/core/crypto.c",
-        "src/core/crypto_ed25519.c",
+        "src/core/app_package.c",
         "src/core/log.c",
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-crypto-host PASS com SHA-256/SHA-512, limites e erros canonicos no relatorio instrumentado, sem enderecos desconhecidos ou ambiguos"
+      "evidence": "make test-package-host PASS com comparacao de versoes, estados indisponiveis, failpoint e nomes canonicos no relatorio instrumentado"
+    },
+    {
+      "id": "paging-host-dynamic",
+      "domain": "memory-paging",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/paging-host/coverage.json",
+      "coverage_sources": [
+        "src/memory/paging.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-paging-host PASS com fixture estatica de diretorios e tabelas, mapeamentos, VMAs lazy, copias de usuario, limites, cleanup, falha de alocacao e recuperacao sem hardware"
+    },
+    {
+      "id": "paging-qemu-tst4-dynamic",
+      "domain": "memory-paging",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst4:paging-vma"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build-coverage/test-results/cov-tst4-paging/cov-tst4-paging-1/coverage.json",
+      "coverage_sources": [
+        "src/core/app_api.c",
+        "src/core/kernel_tests_paging.c",
+        "src/core/syscall.c",
+        "src/memory/memory.c",
+        "src/memory/paging.c",
+        "src/memory/vma.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "QEMU TST4 paging-vma cov-tst4-paging-1 PASS com fixture ring 3 e coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
+    },
+    {
+      "id": "platform-qemu-tst4-dynamic",
+      "domain": "drivers-platform",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst4:platform"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build-coverage/test-results/cov-tst4-platform/cov-tst4-platform-1/coverage.json",
+      "coverage_sources": [
+        "src/core/clock.c",
+        "src/core/device_manager.c",
+        "src/core/input.c",
+        "src/core/irq_deferred.c",
+        "src/core/kernel_tests_platform.c",
+        "src/core/log.c",
+        "src/core/power.c",
+        "src/core/power_notifier.c",
+        "src/core/usb_manager.c",
+        "src/core/wifi_manager.c",
+        "src/drivers/ac97.c",
+        "src/drivers/acpi.c",
+        "src/drivers/idt.c",
+        "src/drivers/pci.c",
+        "src/drivers/rng.c",
+        "src/drivers/rtc.c",
+        "src/drivers/serial.c",
+        "src/drivers/timer.c",
+        "src/drivers/usb_hid.c",
+        "src/drivers/usb_msc.c",
+        "src/drivers/vesa.c",
+        "src/drivers/video.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "QEMU TST4 platform cov-tst4-platform-1 PASS com estados opcionais coerentes e coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
+    },
+    {
+      "id": "power-host-dynamic",
+      "domain": "core-power",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:power"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/power-host/coverage.json",
+      "coverage_sources": [
+        "src/core/power.c",
+        "src/core/power_notifier.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-power-host PASS com ACPI indisponivel e disponivel, quiescencia, falhas de sync, falha de S5, limpeza e estados publicados no relatorio instrumentado"
+    },
+    {
+      "id": "process-ipc-host-dynamic",
+      "domain": "process-ipc",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:process:ipc"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/process-ipc-host/coverage.json",
+      "coverage_sources": [
+        "src/process/ipc.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-process-ipc-host PASS com mensagens, fila cheia, recebimento, espera, timeout, sinal, foco, fallback e limpeza em fixture estatica"
+    },
+    {
+      "id": "process-signal-host-dynamic",
+      "domain": "process-signals",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:process:signals"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/process-signal-host/coverage.json",
+      "coverage_sources": [
+        "src/process/signal.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-process-signal-host PASS com fixture estatica, mascaras, coalescencia, handlers, sigreturn, notificacao de filho e invariantes sem hardware"
+    },
+    {
+      "id": "processes-qemu-tst5-dynamic",
+      "domain": "process-execution-shell",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst5:processes"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build-coverage/test-results/tst5-processes/cov-tst5-processes-1/coverage.json",
+      "coverage_sources": [
+        "src/process/ipc.c",
+        "src/process/process.c",
+        "src/process/signal.c",
+        "src/thread/thread.c",
+        "src/core/irq_deferred.c",
+        "src/core/wait.c",
+        "src/core/workqueue.c",
+        "src/shell/shell.c",
+        "src/shell/shell_commands_core.c",
+        "src/shell/shell_dispatch.c",
+        "src/shell/shell_input.c",
+        "src/shell/shell_job.c",
+        "src/shell/shell_pipeline.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "QEMU TST5 processes cov-tst5-processes-1 PASS com procs/threads e coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
+    },
+    {
+      "id": "scheduling-host-dynamic",
+      "domain": "core-scheduling",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:scheduling"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/scheduling-host/coverage.json",
+      "coverage_sources": [
+        "src/core/irq_deferred.c",
+        "src/core/log.c",
+        "src/core/string.c",
+        "src/core/wait.c",
+        "src/core/workqueue.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-scheduling-host PASS com autotestes de wait, workqueue e irq_deferred, limites, cancelamento, coalescencia, rerun e invariantes no relatorio instrumentado"
+    },
+    {
+      "id": "shell-dispatch-host-dynamic",
+      "domain": "shell-dispatcher",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/shell-dispatch-host/coverage.json",
+      "coverage_sources": [
+        "src/shell/shell_dispatch.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-shell-dispatch-host PASS com diagnostico de comando desconhecido, normalizacao de entrada, limite de comando, comando conhecido e entrada nula"
+    },
+    {
+      "id": "shell-introspection-host-dynamic",
+      "domain": "shell-introspection",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:shell:introspection"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/shell-introspection-host/coverage.json",
+      "coverage_sources": [
+        "src/shell/shell_introspection.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-shell-introspection-host PASS com valores hexadecimais validos, prefixos, digitos invalidos e overflow de uint32"
     },
     {
       "id": "shell-ui-qemu-tst5-dynamic",
@@ -797,90 +1837,70 @@
       "evidence": "QEMU TST5 shell cov-tst5-shell-1 PASS com coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
     },
     {
-      "id": "input-qemu-tst5-dynamic",
-      "domain": "input-shell",
+      "id": "slab-host-dynamic",
+      "domain": "memory-slab",
       "owner": "quality",
-      "executor": "qemu",
-      "coverage_mode": "integration",
+      "executor": "host",
+      "coverage_mode": "direct",
       "case_ids": [
-        "qemu:tst5:input"
+        "host:memory:slab-metadata"
       ],
       "surface_selector": "coverage_report",
-      "coverage_report": "build-coverage/test-results/tst5-input/cov-tst5-input-1/coverage.json",
+      "coverage_report": "build/test-results/slab-host/coverage.json",
       "coverage_sources": [
-        "src/core/input.c",
-        "src/core/kernel_tests_blackbox.c",
-        "src/drivers/keyboard.c",
-        "src/drivers/mouse.c",
-        "src/shell/shell.c",
-        "src/shell/shell_input.c"
+        "src/memory/slab.c",
+        "src/core/log.c",
+        "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "QEMU TST5 input cov-tst5-input-1 PASS com coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
+      "evidence": "make test-slab-host PASS com validacao de inicializacao, metadados, limites, duplicidade, estatisticas e limpeza do registrador SLAB em fixture host-only"
     },
     {
-      "id": "apps-qemu-tst5-dynamic",
-      "domain": "applications-storage-shell",
+      "id": "storage-host-dynamic",
+      "domain": "storage-block",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:storage:storage"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/storage-host/coverage.json",
+      "coverage_sources": [
+        "src/fs/storage.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-storage-host PASS com imagem FAT12 estatica, MBR/BPB, inventario, mount, cursores, leitura, espaco livre, rejeicao somente-leitura e limpeza no relatorio instrumentado"
+    },
+    {
+      "id": "storage-qemu-tst4-dynamic",
+      "domain": "storage-vfs",
       "owner": "quality",
       "executor": "qemu",
       "coverage_mode": "integration",
       "case_ids": [
-        "qemu:tst5:apps"
+        "qemu:tst4:storage-vfs"
       ],
       "surface_selector": "coverage_report",
-      "coverage_report": "build-coverage/test-results/tst5-apps/cov-tst5-apps-1/coverage.json",
+      "coverage_report": "build-coverage/test-results/cov-tst4-storage/cov-tst4-storage-1/coverage.json",
       "coverage_sources": [
-        "src/appstore/appstore.c",
-        "src/core/app_loader.c",
-        "src/core/input.c",
-        "src/core/kernel_tests_blackbox.c",
-        "src/core/log.c",
-        "src/core/string.c",
-        "src/desktop/desktop.c",
-        "src/drivers/ata.c",
-        "src/drivers/font.c",
-        "src/drivers/keyboard.c",
-        "src/drivers/mouse.c",
-        "src/drivers/vesa.c",
-        "src/drivers/video.c",
-        "src/filemanager/filemanager.c",
+        "src/core/kernel_tests_storage.c",
         "src/fs/block.c",
         "src/fs/block_cache.c",
-        "src/fs/bmp.c",
+        "src/fs/devfs.c",
         "src/fs/fat12.c",
+        "src/fs/fat32.c",
         "src/fs/file_index.c",
         "src/fs/fs.c",
         "src/fs/procfs.c",
         "src/fs/storage.c",
+        "src/fs/sysfs.c",
         "src/fs/vfs.c",
-        "src/fs/vfs_path.c",
-        "src/gui/display.c",
-        "src/gui/gui.c",
-        "src/icons/icons.c",
-        "src/memory/memory.c",
-        "src/memory/paging.c",
-        "src/memory/slab.c",
-        "src/process/ipc.c",
-        "src/process/process.c",
-        "src/process/signal.c",
-        "src/settings/settings.c",
-        "src/shell/guitest_app.c",
-        "src/shell/shell.c",
-        "src/shell/shell_commands_apps.c",
-        "src/shell/shell_dispatch.c",
-        "src/shell/shell_hosted.c",
-        "src/shell/shell_input.c",
-        "src/shell/shell_introspection.c",
-        "src/shell/shell_job.c",
-        "src/shell/shell_pipeline.c",
-        "src/shell/taskmanager.c",
-        "src/taskbar/taskbar.c",
-        "src/thread/thread.c",
-        "src/updater/updater.c",
-        "src/wm/wm.c"
+        "src/fs/vfs_path.c"
       ],
       "include_public_apis": true,
-      "evidence": "QEMU TST5 apps cov-tst5-apps-1 PASS com settings/taskmgr/explorer e coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
+      "evidence": "QEMU TST4 storage-vfs cov-tst4-storage-1 PASS com backends internos e coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
     },
     {
       "id": "storage-qemu-tst5-dynamic",
@@ -915,136 +1935,6 @@
       "evidence": "QEMU TST5 storage cov-tst5-storage-1 PASS com pwd/mount/ls e coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
     },
     {
-      "id": "processes-qemu-tst5-dynamic",
-      "domain": "process-execution-shell",
-      "owner": "quality",
-      "executor": "qemu",
-      "coverage_mode": "integration",
-      "case_ids": [
-        "qemu:tst5:processes"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build-coverage/test-results/tst5-processes/cov-tst5-processes-1/coverage.json",
-      "coverage_sources": [
-        "src/process/ipc.c",
-        "src/process/process.c",
-        "src/process/signal.c",
-        "src/thread/thread.c",
-        "src/core/irq_deferred.c",
-        "src/core/wait.c",
-        "src/core/workqueue.c",
-        "src/shell/shell.c",
-        "src/shell/shell_commands_core.c",
-        "src/shell/shell_dispatch.c",
-        "src/shell/shell_input.c",
-        "src/shell/shell_job.c",
-        "src/shell/shell_pipeline.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "QEMU TST5 processes cov-tst5-processes-1 PASS com procs/threads e coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
-    },
-    {
-      "id": "network-qemu-tst5-dynamic",
-      "domain": "network-shell",
-      "owner": "quality",
-      "executor": "qemu",
-      "coverage_mode": "integration",
-      "case_ids": [
-        "qemu:tst5:network"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build-coverage/test-results/tst5-network/cov-tst5-network-1/coverage.json",
-      "coverage_sources": [
-        "src/core/ipv4.c",
-        "src/core/network_manager.c",
-        "src/core/route.c",
-        "src/core/socket.c",
-        "src/core/tcp.c",
-        "src/shell/shell.c",
-        "src/shell/shell_command_utils.c",
-        "src/shell/shell_commands_network.c",
-        "src/shell/shell_dispatch.c",
-        "src/shell/shell_input.c",
-        "src/shell/shell_job.c",
-        "src/shell/shell_pipeline.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "QEMU TST5 network cov-tst5-network-1 PASS em modo offline, com netstat/route/sockstat e coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
-    },
-    {
-      "id": "update-recovery-qemu-tst5-dynamic",
-      "domain": "update-recovery-shell",
-      "owner": "quality",
-      "executor": "qemu",
-      "coverage_mode": "integration",
-      "case_ids": [
-        "qemu:tst5:update-recovery"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build-coverage/test-results/tst5-update-recovery/cov-tst5-update-recovery-1/coverage.json",
-      "coverage_sources": [
-        "src/appstore/appstore.c",
-        "src/core/app_loader.c",
-        "src/core/recovery.c",
-        "src/shell/shell.c",
-        "src/shell/shell_command_utils.c",
-        "src/shell/shell_commands_packages.c",
-        "src/shell/shell_dispatch.c",
-        "src/shell/shell_input.c",
-        "src/shell/shell_job.c",
-        "src/shell/shell_pipeline.c",
-        "src/updater/updater.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "QEMU TST5 update-recovery cov-tst5-update-recovery-1 PASS com cancelamento por Esc e retorno ao prompt, coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
-    },
-    {
-      "id": "matrix-baseline-qemu-tst6-dynamic",
-      "domain": "drivers-platform-matrix",
-      "owner": "quality",
-      "executor": "qemu",
-      "coverage_mode": "integration",
-      "case_ids": [
-        "qemu:tst6:matrix:baseline"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build-coverage/test-results/tst6-matrix-baseline/cov-tst6-matrix-baseline-1/coverage.json",
-      "coverage_sources": [
-        "src/core/clock.c",
-        "src/core/device_manager.c",
-        "src/core/input.c",
-        "src/core/irq_deferred.c",
-        "src/core/kernel_tests_platform.c",
-        "src/core/kernel_tests_tst6.c",
-        "src/core/log.c",
-        "src/core/power.c",
-        "src/core/power_notifier.c",
-        "src/core/string.c",
-        "src/core/usb_manager.c",
-        "src/core/wait.c",
-        "src/core/wifi_manager.c",
-        "src/drivers/acpi.c",
-        "src/drivers/ata.c",
-        "src/drivers/idt.c",
-        "src/drivers/pci.c",
-        "src/drivers/rng.c",
-        "src/drivers/rtc.c",
-        "src/drivers/serial.c",
-        "src/drivers/timer.c",
-        "src/drivers/usb_hid.c",
-        "src/drivers/usb_msc.c",
-        "src/drivers/vesa.c",
-        "src/drivers/video.c",
-        "src/memory/paging.c",
-        "src/memory/slab.c",
-        "src/process/process.c",
-        "src/process/signal.c",
-        "src/thread/thread.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "QEMU TST6 matrix baseline cov-tst6-matrix-baseline-1 PASS com perfil allowlisted e coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
-    },
-    {
       "id": "stress-kernel-qemu-tst6-dynamic",
       "domain": "memory-process-execution-stress",
       "owner": "quality",
@@ -1071,45 +1961,6 @@
       ],
       "include_public_apis": true,
       "evidence": "QEMU TST6 stress kernel cov-tst6-stress-kernel-1 PASS com 8 ciclos declarados, seed 7 e coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
-    },
-    {
-      "id": "stress-storage-qemu-tst6-dynamic",
-      "domain": "storage-vfs-stress",
-      "owner": "quality",
-      "executor": "qemu",
-      "coverage_mode": "integration",
-      "case_ids": [
-        "qemu:tst6:stress:storage"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build-coverage/test-results/tst6-stress-storage/cov-tst6-stress-storage-1/coverage.json",
-      "coverage_sources": [
-        "src/core/kernel_tests_storage.c",
-        "src/core/kernel_tests_tst6.c",
-        "src/core/network_manager.c",
-        "src/core/power.c",
-        "src/drivers/ata.c",
-        "src/drivers/speaker.c",
-        "src/fs/block.c",
-        "src/fs/block_cache.c",
-        "src/fs/devfs.c",
-        "src/fs/file_index.c",
-        "src/fs/fs.c",
-        "src/fs/procfs.c",
-        "src/fs/storage.c",
-        "src/fs/sysfs.c",
-        "src/fs/vfs.c",
-        "src/fs/vfs_path.c",
-        "src/memory/memory.c",
-        "src/memory/paging.c",
-        "src/memory/slab.c",
-        "src/process/ipc.c",
-        "src/process/process.c",
-        "src/process/signal.c",
-        "src/thread/thread.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "QEMU TST6 stress storage cov-tst6-stress-storage-1 PASS com 8 ciclos declarados, seed 7 e coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
     },
     {
       "id": "stress-network-qemu-tst6-dynamic",
@@ -1153,532 +2004,146 @@
       "evidence": "QEMU TST6 stress network cov-tst6-stress-network-2 PASS com 8 ciclos, seed 7 e NIC E1000 isolada, coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
     },
     {
-      "id": "fault-memory-qemu-tst6-dynamic",
-      "domain": "memory-fault-recovery",
+      "id": "stress-storage-qemu-tst6-dynamic",
+      "domain": "storage-vfs-stress",
       "owner": "quality",
       "executor": "qemu",
       "coverage_mode": "integration",
       "case_ids": [
-        "qemu:tst6:fault:memory"
+        "qemu:tst6:stress:storage"
       ],
       "surface_selector": "coverage_report",
-      "coverage_report": "build-coverage/test-results/tst6-fault-memory/cov-tst6-fault-memory-1/coverage.json",
-      "coverage_sources": [
-        "src/core/kernel_tests_tst6.c",
-        "src/memory/memory.c",
-        "src/memory/paging.c",
-        "src/memory/slab.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "QEMU TST6 fault memory cov-tst6-fault-memory-1 PASS com failpoint one-shot, recuperacao e coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
-    },
-    {
-      "id": "fault-package-qemu-tst6-dynamic",
-      "domain": "packages-fault-recovery",
-      "owner": "quality",
-      "executor": "qemu",
-      "coverage_mode": "integration",
-      "case_ids": [
-        "qemu:tst6:fault:package"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build-coverage/test-results/tst6-fault-package/cov-tst6-fault-package-1/coverage.json",
-      "coverage_sources": [
-        "src/core/app_package.c",
-        "src/core/kernel_tests_tst6.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "QEMU TST6 fault package cov-tst6-fault-package-1 PASS com pacote corrompido, recuperacao e coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
-    },
-    {
-      "id": "fault-update-qemu-tst6-dynamic",
-      "domain": "update-fault-recovery",
-      "owner": "quality",
-      "executor": "qemu",
-      "coverage_mode": "integration",
-      "case_ids": [
-        "qemu:tst6:fault:update"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build-coverage/test-results/tst6-fault-update/cov-tst6-fault-update-1/coverage.json",
-      "coverage_sources": [
-        "src/core/update_remote_runtime.c",
-        "src/core/update_runtime.c",
-        "src/core/kernel_tests_tst6.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "QEMU TST6 fault update cov-tst6-fault-update-1 PASS com cancelamento e retorno ao estado anterior, coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
-    },
-    {
-      "id": "matrix-usb-hid-qemu-tst6-dynamic",
-      "domain": "usb-hid-platform",
-      "owner": "quality",
-      "executor": "qemu",
-      "coverage_mode": "integration",
-      "case_ids": [
-        "qemu:tst6:matrix:usb-hid"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build-coverage/test-results/tst6-matrix-usb-hid/cov-tst6-matrix-usb-hid-1/coverage.json",
-      "coverage_sources": [
-        "src/core/usb_manager.c",
-        "src/drivers/uhci.c",
-        "src/drivers/usb_hid.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "QEMU TST6 matrix usb-hid cov-tst6-matrix-usb-hid-1 PASS com perfil allowlisted e coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
-    },
-    {
-      "id": "execution-qemu-tst4-dynamic",
-      "domain": "process-execution",
-      "owner": "quality",
-      "executor": "qemu",
-      "coverage_mode": "integration",
-      "case_ids": [
-        "qemu:tst4:execution"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build-coverage/test-results/cov-tst4-execution/cov-tst4-execution-1/coverage.json",
-      "coverage_sources": [
-        "src/core/kernel_tests_execution.c",
-        "src/core/irq_deferred.c",
-        "src/core/wait.c",
-        "src/core/workqueue.c",
-        "src/process/process.c",
-        "src/process/signal.c",
-        "src/thread/thread.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "QEMU TST4 execution cov-tst4-execution-1 PASS com coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
-    },
-    {
-      "id": "paging-qemu-tst4-dynamic",
-      "domain": "memory-paging",
-      "owner": "quality",
-      "executor": "qemu",
-      "coverage_mode": "integration",
-      "case_ids": [
-        "qemu:tst4:paging-vma"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build-coverage/test-results/cov-tst4-paging/cov-tst4-paging-1/coverage.json",
-      "coverage_sources": [
-        "src/core/app_api.c",
-        "src/core/kernel_tests_paging.c",
-        "src/core/syscall.c",
-        "src/memory/memory.c",
-        "src/memory/paging.c",
-        "src/memory/vma.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "QEMU TST4 paging-vma cov-tst4-paging-1 PASS com fixture ring 3 e coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
-    },
-    {
-      "id": "storage-qemu-tst4-dynamic",
-      "domain": "storage-vfs",
-      "owner": "quality",
-      "executor": "qemu",
-      "coverage_mode": "integration",
-      "case_ids": [
-        "qemu:tst4:storage-vfs"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build-coverage/test-results/cov-tst4-storage/cov-tst4-storage-1/coverage.json",
+      "coverage_report": "build-coverage/test-results/tst6-stress-storage/cov-tst6-stress-storage-1/coverage.json",
       "coverage_sources": [
         "src/core/kernel_tests_storage.c",
+        "src/core/kernel_tests_tst6.c",
+        "src/core/network_manager.c",
+        "src/core/power.c",
+        "src/drivers/ata.c",
+        "src/drivers/speaker.c",
         "src/fs/block.c",
         "src/fs/block_cache.c",
         "src/fs/devfs.c",
-        "src/fs/fat12.c",
-        "src/fs/fat32.c",
         "src/fs/file_index.c",
         "src/fs/fs.c",
         "src/fs/procfs.c",
         "src/fs/storage.c",
         "src/fs/sysfs.c",
         "src/fs/vfs.c",
-        "src/fs/vfs_path.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "QEMU TST4 storage-vfs cov-tst4-storage-1 PASS com backends internos e coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
-    },
-    {
-      "id": "scheduling-host-dynamic",
-      "domain": "core-scheduling",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:core:scheduling"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/scheduling-host/coverage.json",
-      "coverage_sources": [
-        "src/core/irq_deferred.c",
-        "src/core/log.c",
-        "src/core/string.c",
-        "src/core/wait.c",
-        "src/core/workqueue.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-scheduling-host PASS com autotestes de wait, workqueue e irq_deferred, limites, cancelamento, coalescencia, rerun e invariantes no relatorio instrumentado"
-    },
-    {
-      "id": "platform-qemu-tst4-dynamic",
-      "domain": "drivers-platform",
-      "owner": "quality",
-      "executor": "qemu",
-      "coverage_mode": "integration",
-      "case_ids": [
-        "qemu:tst4:platform"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build-coverage/test-results/cov-tst4-platform/cov-tst4-platform-1/coverage.json",
-      "coverage_sources": [
-        "src/core/clock.c",
-        "src/core/device_manager.c",
-        "src/core/input.c",
-        "src/core/irq_deferred.c",
-        "src/core/kernel_tests_platform.c",
-        "src/core/log.c",
-        "src/core/power.c",
-        "src/core/power_notifier.c",
-        "src/core/usb_manager.c",
-        "src/core/wifi_manager.c",
-        "src/drivers/ac97.c",
-        "src/drivers/acpi.c",
-        "src/drivers/idt.c",
-        "src/drivers/pci.c",
-        "src/drivers/rng.c",
-        "src/drivers/rtc.c",
-        "src/drivers/serial.c",
-        "src/drivers/timer.c",
-        "src/drivers/usb_hid.c",
-        "src/drivers/usb_msc.c",
-        "src/drivers/vesa.c",
-        "src/drivers/video.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "QEMU TST4 platform cov-tst4-platform-1 PASS com estados opcionais coerentes e coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
-    },
-    {
-      "id": "package-host-dynamic",
-      "domain": "core-packages",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:core:app-package"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/package-host/coverage.json",
-      "coverage_sources": [
-        "src/core/app_package.c",
-        "src/core/log.c",
-        "src/core/string.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-package-host PASS com comparacao de versoes, estados indisponiveis, failpoint e nomes canonicos no relatorio instrumentado"
-    },
-    {
-      "id": "core-state-host-dynamic",
-      "domain": "core-state",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:core:state"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/state-host/coverage.json",
-      "coverage_sources": [
-        "src/core/log.c",
-        "src/core/power_notifier.c",
-        "src/core/recovery.c",
-        "src/core/string.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-state-host PASS com estados de recovery, cadeia de notificadores, callbacks opcionais, timeout e falhas canonicas no relatorio instrumentado"
-    },
-    {
-      "id": "device-manager-host-dynamic",
-      "domain": "core-device-manager",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:core:device-manager"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/device-manager-host/coverage.json",
-      "coverage_sources": [
-        "src/core/device_manager.c",
-        "src/core/log.c",
-        "src/core/recovery.c",
-        "src/core/string.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-device-manager-host PASS com inventario PCI/ATA/AC97 simulado, aliases, estados indisponiveis, falha de backend e overflow no relatorio instrumentado"
-    },
-    {
-      "id": "app-api-host-dynamic",
-      "domain": "core-app-api",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:core:app-api"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/app-api-host/coverage.json",
-      "coverage_sources": [
-        "src/core/app_api.c",
-        "src/core/log.c",
-        "src/core/string.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-app-api-host PASS com fachada de arquivos, memoria, IPC, VMA, limites, estados e erros canonicos no relatorio instrumentado"
-    },
-    {
-      "id": "harness-execution-qemu-observed",
-      "domain": "test-harness",
-      "owner": "quality",
-      "executor": "qemu",
-      "coverage_mode": "integration",
-      "case_ids": [
-        "qemu:tst4:execution"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build-coverage/test-results/cov-tst4-execution/cov-tst4-execution-1/coverage.json",
-      "coverage_sources": [
-        "src/core/kernel_tests.c",
-        "src/core/test_protocol.c"
-      ],
-      "include_public_apis": false,
-      "evidence": "relatorio QEMU PASS do caso execution observou diretamente o executor de fases e o adaptador ZTEST"
-    },
-    {
-      "id": "harness-paging-qemu-observed",
-      "domain": "test-harness",
-      "owner": "quality",
-      "executor": "qemu",
-      "coverage_mode": "integration",
-      "case_ids": [
-        "qemu:tst4:paging-vma"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build-coverage/test-results/cov-tst4-paging/cov-tst4-paging-1/coverage.json",
-      "coverage_sources": [
-        "src/core/kernel_tests.c",
-        "src/core/test_protocol.c",
-        "src/core/wait.c",
-        "src/drivers/idt.c",
-        "src/drivers/tss.c",
-        "src/kernel/kernel.c",
+        "src/fs/vfs_path.c",
+        "src/memory/memory.c",
+        "src/memory/paging.c",
+        "src/memory/slab.c",
+        "src/process/ipc.c",
         "src/process/process.c",
-        "src/process/signal.c"
+        "src/process/signal.c",
+        "src/thread/thread.c"
       ],
-      "include_public_apis": false,
-      "evidence": "relatorio QEMU PASS do caso paging-vma observou o fluxo ring 3, terminacao e o protocolo de teste"
+      "include_public_apis": true,
+      "evidence": "QEMU TST6 stress storage cov-tst6-stress-storage-1 PASS com 8 ciclos declarados, seed 7 e coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
     },
     {
-      "id": "harness-memory-qemu-observed",
-      "domain": "test-harness",
-      "owner": "quality",
-      "executor": "qemu",
-      "coverage_mode": "integration",
-      "case_ids": [
-        "qemu:tst4:memory-slab"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build-coverage/test-results/tst4-memory-slab/cov-tst4-memory-3/coverage.json",
-      "coverage_sources": [
-        "src/core/kernel_tests.c",
-        "src/core/test_protocol.c"
-      ],
-      "include_public_apis": false,
-      "evidence": "relatorio QEMU PASS do caso memory-slab observou captura, comparacao, progresso e encerramento do harness"
-    },
-    {
-      "id": "harness-storage-qemu-observed",
-      "domain": "test-harness",
-      "owner": "quality",
-      "executor": "qemu",
-      "coverage_mode": "integration",
-      "case_ids": [
-        "qemu:tst4:storage-vfs"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build-coverage/test-results/cov-tst4-storage/cov-tst4-storage-1/coverage.json",
-      "coverage_sources": [
-        "src/core/kernel_tests.c",
-        "src/core/test_protocol.c",
-        "src/core/log.c",
-        "src/core/wait.c",
-        "src/drivers/timer.c"
-      ],
-      "include_public_apis": false,
-      "evidence": "relatorio QEMU PASS do caso storage-vfs observou diagnosticos de log, wait, timer e protocolo durante o fluxo real"
-    },
-    {
-      "id": "harness-network-qemu-observed",
-      "domain": "test-harness",
-      "owner": "quality",
-      "executor": "qemu",
-      "coverage_mode": "integration",
-      "case_ids": [
-        "qemu:tst4:network"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build-coverage/test-results/tst4-network/cov-tst4-network-2/coverage.json",
-      "coverage_sources": [
-        "src/core/kernel_tests.c",
-        "src/core/test_protocol.c",
-        "src/drivers/timer.c"
-      ],
-      "include_public_apis": false,
-      "evidence": "relatorio QEMU PASS do caso network observou progresso do harness, protocolo e informacao de timer"
-    },
-    {
-      "id": "harness-apps-qemu-observed",
-      "domain": "test-harness",
-      "owner": "quality",
-      "executor": "qemu",
-      "coverage_mode": "integration",
-      "case_ids": [
-        "qemu:tst5:apps"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build-coverage/test-results/tst5-apps/cov-tst5-apps-1/coverage.json",
-      "coverage_sources": [
-        "src/core/kernel_tests.c",
-        "src/core/test_protocol.c",
-        "src/core/usb_manager.c",
-        "src/drivers/tss.c",
-        "src/kernel/kernel.c"
-      ],
-      "include_public_apis": false,
-      "evidence": "relatorio QEMU PASS do caso apps observou o executor black-box e a integracao com filas e processos"
-    },
-    {
-      "id": "app-catalog-host-dynamic",
-      "domain": "core-app-catalog",
+      "id": "tcp-host-dynamic",
+      "domain": "network-tcp",
       "owner": "quality",
       "executor": "host",
       "coverage_mode": "direct",
       "case_ids": [
-        "host:core:app-catalog"
+        "host:network:tcp"
       ],
       "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/app-catalog-host/coverage.json",
+      "coverage_report": "build/test-results/tcp-host/coverage.json",
       "coverage_sources": [
-        "src/core/app_catalog.c",
+        "src/core/tcp.c",
         "src/core/log.c",
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-app-catalog-host PASS com fontes validas e invalidas, aliases, dependencias, planos, limites, estados indisponiveis e erros de leitura no relatorio instrumentado"
+      "evidence": "make test-tcp-host PASS com IPv4 e timer falsos, handshake, dados, ACK, FIN, RST, retransmissao, timeout, callbacks recusados, limites e limpeza sem rede externa"
     },
     {
-      "id": "input-host-dynamic",
-      "domain": "core-input",
+      "id": "timer-host-dynamic",
+      "domain": "core-timer",
       "owner": "quality",
       "executor": "host",
       "coverage_mode": "direct",
       "case_ids": [
-        "host:core:input"
+        "host:core:timer"
       ],
       "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/input-host/coverage.json",
+      "coverage_report": "build/test-results/timer-host/coverage.json",
       "coverage_sources": [
-        "src/core/input.c",
+        "src/drivers/timer.c",
         "src/core/log.c",
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-input-host PASS com filas de teclado e ponteiro, coalescencia, limites, erro de sink e validacao de estado no relatorio instrumentado"
+      "evidence": "make test-timer-host PASS com timers one-shot e periodicos, notifier, dispatch, cancelamento, handles invalidos e limpeza em fixture host-only"
     },
     {
-      "id": "harness-input-qemu-observed",
-      "domain": "test-harness",
+      "id": "tls-host-dynamic",
+      "domain": "security-tls",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:security:tls"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/tls-host/coverage.json",
+      "coverage_sources": [
+        "src/core/tls.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-tls-host PASS com relogio, RNG e cliente TLS falsos, estados disponiveis e indisponiveis, politicas, validade, cadeia, SAN, pinning, rotacao, revogacao e autoteste sem rede externa"
+    },
+    {
+      "id": "udp-host-dynamic",
+      "domain": "network-udp",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:network:udp"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/udp-host/coverage.json",
+      "coverage_sources": [
+        "src/core/udp.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-udp-host PASS com envio, reinjecao, checksum, listeners, broadcast, erros de protocolo, limites e limpeza usando IPv4 falso"
+    },
+    {
+      "id": "update-recovery-qemu-tst5-dynamic",
+      "domain": "update-recovery-shell",
       "owner": "quality",
       "executor": "qemu",
       "coverage_mode": "integration",
       "case_ids": [
-        "qemu:tst5:input"
+        "qemu:tst5:update-recovery"
       ],
       "surface_selector": "coverage_report",
-      "coverage_report": "build-coverage/test-results/tst5-input/cov-tst5-input-1/coverage.json",
+      "coverage_report": "build-coverage/test-results/tst5-update-recovery/cov-tst5-update-recovery-1/coverage.json",
       "coverage_sources": [
-        "src/core/kernel_tests.c",
-        "src/core/test_protocol.c",
-        "src/core/usb_manager.c",
-        "src/drivers/tss.c",
-        "src/drivers/video.c",
-        "src/kernel/kernel.c"
-      ],
-      "include_public_apis": false,
-      "evidence": "relatorio QEMU PASS do caso input observou entrada, video, filas e protocolo no fluxo black-box"
-    },
-    {
-      "id": "power-host-dynamic",
-      "domain": "core-power",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:core:power"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/power-host/coverage.json",
-      "coverage_sources": [
-        "src/core/power.c",
-        "src/core/power_notifier.c",
-        "src/core/log.c",
-        "src/core/string.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-power-host PASS com ACPI indisponivel e disponivel, quiescencia, falhas de sync, falha de S5, limpeza e estados publicados no relatorio instrumentado"
-    },
-    {
-      "id": "network-manager-host-dynamic",
-      "domain": "core-network-manager",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:core:network-manager"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/network-manager-host/coverage.json",
-      "coverage_sources": [
-        "src/core/network_manager.c",
+        "src/appstore/appstore.c",
+        "src/core/app_loader.c",
         "src/core/recovery.c",
-        "src/core/log.c",
-        "src/core/string.c"
+        "src/shell/shell.c",
+        "src/shell/shell_command_utils.c",
+        "src/shell/shell_commands_packages.c",
+        "src/shell/shell_dispatch.c",
+        "src/shell/shell_input.c",
+        "src/shell/shell_job.c",
+        "src/shell/shell_pipeline.c",
+        "src/updater/updater.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-network-manager-host PASS com inventario PCI simulado, driver indisponivel, estado offline, contratos negativos, formatacao e limpeza no relatorio instrumentado"
-    },
-    {
-      "id": "core-contracts-observed-dynamic",
-      "domain": "core",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:core:contracts"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/core-host/coverage.json",
-      "coverage_sources": [
-        "src/core/clock.c",
-        "src/core/log.c",
-        "src/core/string.c",
-        "src/core/test_protocol_core.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-core-host PASS com caminho UTC indisponivel e disponivel, rollover, limites de log, protocolo ZTEST e relatorio instrumentado atualizado"
+      "evidence": "QEMU TST5 update-recovery cov-tst5-update-recovery-1 PASS com cancelamento por Esc e retorno ao prompt, coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
     },
     {
       "id": "vfs-host-dynamic",
@@ -1717,348 +2182,6 @@
       "evidence": "make test-vfs-path-host PASS com aliases, normalizacao, mounts virtuais, cwd, listagens, referencias, limites e quiescencia sobre backends estaticos no relatorio instrumentado"
     },
     {
-      "id": "file-index-host-dynamic",
-      "domain": "storage-file-index",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:storage:file-index"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/file-index-host/coverage.json",
-      "coverage_sources": [
-        "src/fs/file_index.c",
-        "src/core/string.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-file-index-host PASS com rebuild cooperativo, cancelamento, pesquisa, classificacao stale/missing, cursores boot/storage e recuperacao de corrupcao no relatorio instrumentado"
-    },
-    {
-      "id": "fs-host-dynamic",
-      "domain": "storage-fs",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:storage:fs"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/fs-host/coverage.json",
-      "coverage_sources": [
-        "src/fs/fs.c",
-        "src/core/string.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-fs-host PASS com fixture FAT32, paths legacy e storage, cursores, operacoes atomicas, streaming e erros canonicos no relatorio instrumentado"
-    },
-    {
-      "id": "storage-host-dynamic",
-      "domain": "storage-block",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:storage:storage"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/storage-host/coverage.json",
-      "coverage_sources": [
-        "src/fs/storage.c",
-        "src/core/string.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-storage-host PASS com imagem FAT12 estatica, MBR/BPB, inventario, mount, cursores, leitura, espaco livre, rejeicao somente-leitura e limpeza no relatorio instrumentado"
-    },
-    {
-      "id": "block-host-dynamic",
-      "domain": "storage-block",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:storage:block"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/block-host/coverage.json",
-      "coverage_sources": [
-        "src/fs/block.c",
-        "src/fs/block_cache.c",
-        "src/core/string.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-block-host PASS com autotestes de BIO e cache, limites, cancelamento, failpoints, eviction, writeback, sync e restauracao do inventario no relatorio instrumentado"
-    },
-    {
-      "id": "fat12-host-dynamic",
-      "domain": "storage-fat12",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:storage:fat12"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/fat12-host/coverage.json",
-      "coverage_sources": [
-        "src/fs/fat12.c",
-        "src/core/string.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-fat12-host PASS com imagem FAT12 estatica, leitura, paths, metadados, operacoes atomicas, streaming, cancelamento e erros canonicos no relatorio instrumentado"
-    },
-    {
-      "id": "fat32-host-dynamic",
-      "domain": "storage-fat32",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:storage:fat32"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/fat32-host/coverage.json",
-      "coverage_sources": [
-        "src/fs/fat32.c",
-        "src/core/string.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-fat32-host PASS com imagem FAT32 compacta, classificacao de clusters, leitura, paths, metadados, criacao, escrita e remocao em fixture estatica no relatorio instrumentado"
-    },
-    {
-      "id": "slab-host-dynamic",
-      "domain": "memory-slab",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:memory:slab-metadata"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/slab-host/coverage.json",
-      "coverage_sources": [
-        "src/memory/slab.c",
-        "src/core/log.c",
-        "src/core/string.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-slab-host PASS com validacao de inicializacao, metadados, limites, duplicidade, estatisticas e limpeza do registrador SLAB em fixture host-only"
-    },
-    {
-      "id": "timer-host-dynamic",
-      "domain": "core-timer",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:core:timer"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/timer-host/coverage.json",
-      "coverage_sources": [
-        "src/drivers/timer.c",
-        "src/core/log.c",
-        "src/core/string.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-timer-host PASS com timers one-shot e periodicos, notifier, dispatch, cancelamento, handles invalidos e limpeza em fixture host-only"
-    },
-    {
-      "id": "udp-host-dynamic",
-      "domain": "network-udp",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:network:udp"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/udp-host/coverage.json",
-      "coverage_sources": [
-        "src/core/udp.c",
-        "src/core/log.c",
-        "src/core/string.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-udp-host PASS com envio, reinjecao, checksum, listeners, broadcast, erros de protocolo, limites e limpeza usando IPv4 falso"
-    },
-    {
-      "id": "arp-host-dynamic",
-      "domain": "network-arp",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:network:arp"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/arp-host/coverage.json",
-      "coverage_sources": [
-        "src/core/arp.c",
-        "src/core/log.c",
-        "src/core/string.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-arp-host PASS com Ethernet falsa, retries ate timeout, requests e replies, entradas invalidas e limpeza do cache"
-    },
-    {
-      "id": "icmp-host-dynamic",
-      "domain": "network-icmp",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:network:icmp"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/icmp-host/coverage.json",
-      "coverage_sources": [
-        "src/core/icmp.c",
-        "src/core/log.c",
-        "src/core/string.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-icmp-host PASS com IPv4 e timer falsos, checksum, echo request/reply, timeout, mudanca de configuracao, fila pendente, pacotes invalidos e falhas de transporte"
-    },
-    {
-      "id": "dns-host-dynamic",
-      "domain": "network-dns",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:network:dns"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/dns-host/coverage.json",
-      "coverage_sources": [
-        "src/core/dns.c",
-        "src/core/log.c",
-        "src/core/string.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-dns-host PASS com consultas, cache, CNAME, timeout, respostas invalidas e falhas de transporte usando UDP e timer falsos"
-    },
-    {
-      "id": "dhcp-host-dynamic",
-      "domain": "network-dhcp",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:network:dhcp"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/dhcp-host/coverage.json",
-      "coverage_sources": [
-        "src/core/dhcp.c",
-        "src/core/log.c",
-        "src/core/string.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-dhcp-host PASS com descoberta, oferta, lease, renovacao, rebinding, expiracao, mensagens invalidas e falhas de transporte usando UDP e timer falsos"
-    },
-    {
-      "id": "ethernet-host-dynamic",
-      "domain": "network-ethernet",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:network:ethernet"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/ethernet-host/coverage.json",
-      "coverage_sources": [
-        "src/core/ethernet.c",
-        "src/core/sk_buff.c",
-        "src/core/net_buffer.c",
-        "src/memory/slab.c",
-        "src/core/log.c",
-        "src/core/string.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-ethernet-host PASS com interfaces falsas, handlers, polling, frames validos e invalidos, transmissao, quiescencia, sk_buff e limpeza sem hardware real"
-    },
-    {
-      "id": "tcp-host-dynamic",
-      "domain": "network-tcp",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:network:tcp"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/tcp-host/coverage.json",
-      "coverage_sources": [
-        "src/core/tcp.c",
-        "src/core/log.c",
-        "src/core/string.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-tcp-host PASS com IPv4 e timer falsos, handshake, dados, ACK, FIN, RST, retransmissao, timeout, callbacks recusados, limites e limpeza sem rede externa"
-    },
-    {
-      "id": "tls-host-dynamic",
-      "domain": "security-tls",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:security:tls"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/tls-host/coverage.json",
-      "coverage_sources": [
-        "src/core/tls.c",
-        "src/core/log.c",
-        "src/core/string.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-tls-host PASS com relogio, RNG e cliente TLS falsos, estados disponiveis e indisponiveis, politicas, validade, cadeia, SAN, pinning, rotacao, revogacao e autoteste sem rede externa"
-    },
-    {
-      "id": "http-host-dynamic",
-      "domain": "network-http",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:network:http"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/http-host/coverage.json",
-      "coverage_sources": [
-        "src/core/http.c",
-        "src/core/log.c",
-        "src/core/string.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-http-host PASS com DNS, socket, TLS e timer falsos, URLs, headers, corpos Content-Length/chunked/EOF, streaming, redirects, limites, timeouts e falhas sem rede externa"
-    },
-    {
-      "id": "net-socket-host-dynamic",
-      "domain": "network-socket",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:network:socket"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/net-socket-host/coverage.json",
-      "coverage_sources": [
-        "src/core/net_socket.c",
-        "src/core/wait.c",
-        "src/core/net_buffer.c",
-        "src/core/log.c",
-        "src/core/string.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-net-socket-host PASS com handles geracionais, conexao, filas RX/TX, eventos, EOF, timeout, cancelamento, limites, reset e limpeza usando TCP, timer e VFS falsos"
-    },
-    {
       "id": "vma-host-dynamic",
       "domain": "memory-vma",
       "owner": "quality",
@@ -2078,78 +2201,6 @@
       "evidence": "make test-vma-host PASS com VMAs fixas e anonimas, materializacao lazy, faults validos e invalidos, mmap, munmap, limites, estatisticas e limpeza usando paging e PMM falsos"
     },
     {
-      "id": "paging-host-dynamic",
-      "domain": "memory-paging",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:memory:paging"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/paging-host/coverage.json",
-      "coverage_sources": [
-        "src/memory/paging.c",
-        "src/core/log.c",
-        "src/core/string.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-paging-host PASS com fixture estatica de diretorios e tabelas, mapeamentos, VMAs lazy, copias de usuario, limites, cleanup, falha de alocacao e recuperacao sem hardware"
-    },
-    {
-      "id": "memory-host-dynamic",
-      "domain": "memory-pmm-heap",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:memory:memory"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/memory-host/coverage.json",
-      "coverage_sources": [
-        "src/memory/memory.c",
-        "src/core/log.c",
-        "src/core/string.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-memory-host PASS com mapa E820, PMM por zona, heap, alinhamento, limites, erros canonicos, cleanup e estatisticas restauradas sem hardware"
-    },
-    {
-      "id": "process-signal-host-dynamic",
-      "domain": "process-signals",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:process:signals"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/process-signal-host/coverage.json",
-      "coverage_sources": [
-        "src/process/signal.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-process-signal-host PASS com fixture estatica, mascaras, coalescencia, handlers, sigreturn, notificacao de filho e invariantes sem hardware"
-    },
-    {
-      "id": "process-ipc-host-dynamic",
-      "domain": "process-ipc",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:process:ipc"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/process-ipc-host/coverage.json",
-      "coverage_sources": [
-        "src/process/ipc.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-process-ipc-host PASS com mensagens, fila cheia, recebimento, espera, timeout, sinal, foco, fallback e limpeza em fixture estatica"
-    },
-    {
       "id": "workqueue-host-dynamic",
       "domain": "core-workqueue",
       "owner": "quality",
@@ -2165,40 +2216,6 @@
       ],
       "include_public_apis": true,
       "evidence": "make test-workqueue-host PASS com autoteste interno, prioridades, FIFO, atrasos, coalescencia, rerun, cancelamento, fallback, quiescencia e worker limitado no host"
-    },
-    {
-      "id": "bearssl-compat-host-dynamic",
-      "domain": "core-bearssl-compat",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:core:bearssl-compat"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/bearssl-compat-host/coverage.json",
-      "coverage_sources": [
-        "src/core/bearssl_compat.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-bearssl-compat-host PASS com copia, movimento sobreposto, preenchimento, comparacao e comprimentos nulos e validos"
-    },
-    {
-      "id": "shell-dispatch-host-dynamic",
-      "domain": "shell-dispatcher",
-      "owner": "quality",
-      "executor": "host",
-      "coverage_mode": "direct",
-      "case_ids": [
-        "host:shell:dispatch"
-      ],
-      "surface_selector": "coverage_report",
-      "coverage_report": "build/test-results/shell-dispatch-host/coverage.json",
-      "coverage_sources": [
-        "src/shell/shell_dispatch.c"
-      ],
-      "include_public_apis": true,
-      "evidence": "make test-shell-dispatch-host PASS com diagnostico de comando desconhecido, normalizacao de entrada, limite de comando, comando conhecido e entrada nula"
     }
   ]
 }

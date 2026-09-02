@@ -265,6 +265,15 @@ o erro canonico para entrada nula. O relatorio fica em
 make test-shell-dispatch-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-shell-introspection-host` exercita diretamente o parser hexadecimal
+da introspeccao do Shell, incluindo digitos numericos, minusculos e maiusculos,
+prefixos invalidos, digito invalido, entrada nula e overflow de `uint32_t`. O
+relatorio fica em `build/test-results/shell-introspection-host/`:
+
+```text
+make test-shell-introspection-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O registro em `tests/coverage/registry.json` somente seleciona enderecos de
 relatorios `PASS` existentes e filtra as fontes declaradas. Um relatorio
 ausente, com endereco desconhecido ou ambiguo bloqueia o gate estrito; nao ha

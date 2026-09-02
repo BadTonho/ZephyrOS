@@ -363,6 +363,13 @@ SHELL_DISPATCH_SOURCE_FILES = (
     ROOT / "src" / "shell" / "shell_dispatch.c",
     ROOT / "src" / "core" / "string.c",
 )
+SHELL_INTROSPECTION_RESULT_DIR = ROOT / "build" / "test-results" / "shell-introspection-host"
+SHELL_INTROSPECTION_BINARY = ROOT / "build" / "tests" / "test_shell_introspection_host.exe"
+SHELL_INTROSPECTION_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_shell_introspection_host.c",
+    ROOT / "src" / "shell" / "shell_introspection.c",
+    ROOT / "src" / "core" / "string.c",
+)
 SOURCE_FILES = CORE_SOURCE_FILES
 
 
@@ -461,6 +468,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
     if case_id == "host:shell:dispatch":
         return (SHELL_DISPATCH_RESULT_DIR, SHELL_DISPATCH_BINARY,
                 SHELL_DISPATCH_SOURCE_FILES, "shell-dispatch-host")
+    if case_id == "host:shell:introspection":
+        return (SHELL_INTROSPECTION_RESULT_DIR, SHELL_INTROSPECTION_BINARY,
+                SHELL_INTROSPECTION_SOURCE_FILES, "shell-introspection-host")
     raise ValueError(f"caso_host_invalido:{case_id}")
 
 
@@ -625,7 +635,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:memory:paging", "host:memory:memory",
                                  "host:process:signals", "host:process:ipc",
                                  "host:core:workqueue", "host:core:bearssl-compat",
-                                 "host:shell:dispatch"))
+                                 "host:shell:dispatch", "host:shell:introspection"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
     return parser.parse_args()
