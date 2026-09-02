@@ -306,6 +306,17 @@ teclado e logs falsos; nao acessa hardware. O relatorio fica em
 make test-shell-input-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-shell-command-utils-host` exercita os utilitarios de comandos do
+Shell com parsing de tokens e argumentos, comparacao de subcomandos,
+normalizacao para maiusculas, conversao numerica, limites, entradas invalidas
+e formatacao decimal/hexadecimal. A fixture usa somente buffers de entrada,
+saida e logs falsos. O relatorio fica em
+`build/test-results/shell-command-utils-host/`:
+
+```text
+make test-shell-command-utils-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O registro em `tests/coverage/registry.json` somente seleciona enderecos de
 relatorios `PASS` existentes e filtra as fontes declaradas. Um relatorio
 ausente, com endereco desconhecido ou ambiguo bloqueia o gate estrito; nao ha

@@ -1911,6 +1911,75 @@
       "evidence": "make test-shell-input-host PASS com historico, navegacao, scroll, edicao, cancelamento e limite do buffer no relatorio instrumentado"
     },
     {
+      "id": "shell-command-utils-host-dynamic",
+      "domain": "shell-command-utils",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:shell:command-utils"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/shell-command-utils-host/coverage.json",
+      "coverage_sources": [
+        "src/shell/shell_command_utils.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:shell:command-utils",
+        "scenario": "Contrato host-only dos utilitarios de comandos do Shell",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "executar parsing, validacao de argumentos, normalizacao e formatacao",
+        "expected": "utilitarios aceitam entradas validas, rejeitam limites e formatam valores corretamente",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente buffers estaticos de entrada, saida e logs falsos no processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": [
+          "api:src/include/apps/shell_command_utils.h:shell_command_args_equal",
+          "api:src/include/apps/shell_command_utils.h:shell_command_match_subcommand",
+          "api:src/include/apps/shell_command_utils.h:shell_command_parse_number",
+          "api:src/include/apps/shell_command_utils.h:shell_command_print_hex",
+          "api:src/include/apps/shell_command_utils.h:shell_command_print_num",
+          "api:src/include/apps/shell_command_utils.h:shell_command_read_four_args",
+          "api:src/include/apps/shell_command_utils.h:shell_command_read_single_arg",
+          "api:src/include/apps/shell_command_utils.h:shell_command_read_token",
+          "api:src/include/apps/shell_command_utils.h:shell_command_read_two_args",
+          "api:src/include/apps/shell_command_utils.h:shell_command_uppercase",
+          "c:src/shell/shell_command_utils.c:shell_command_args_equal",
+          "c:src/shell/shell_command_utils.c:shell_command_match_subcommand",
+          "c:src/shell/shell_command_utils.c:shell_command_parse_number",
+          "c:src/shell/shell_command_utils.c:shell_command_print_hex",
+          "c:src/shell/shell_command_utils.c:shell_command_print_num",
+          "c:src/shell/shell_command_utils.c:shell_command_read_four_args",
+          "c:src/shell/shell_command_utils.c:shell_command_read_single_arg",
+          "c:src/shell/shell_command_utils.c:shell_command_read_token",
+          "c:src/shell/shell_command_utils.c:shell_command_read_two_args",
+          "c:src/shell/shell_command_utils.c:shell_command_uppercase"
+        ],
+        "tags": [
+          "host",
+          "shell",
+          "parsing",
+          "limits",
+          "coverage"
+        ]
+      },
+      "evidence": "make test-shell-command-utils-host PASS com parsing, limites, argumentos invalidos e formatacao no relatorio instrumentado"
+    },
+    {
       "id": "shell-ui-qemu-tst5-dynamic",
       "domain": "shell-ui-apps",
       "owner": "quality",
