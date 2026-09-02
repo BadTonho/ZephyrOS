@@ -1258,3 +1258,14 @@ estatica, seguido de remocao e verificacao de limpeza. O alvo
 desconhecidos ou ambiguos. O catalogo registra 7.197 superficies, 3.892
 `COVERED`, 3.305 `PENDING` e 85 casos; o fechamento integral continua
 pendente.
+
+- Incremento Storage/BIO concluido em 2026-09-02: o caso existente
+  `host:storage:block` passou a exercitar os callbacks ATA publicados pelo
+  inventario, o despacho assincrono de BIO, a leitura fisica usada no
+  writeback parcial e os caminhos de espera do block-cache. A reentrada
+  durante leitura retorna `ERR_TIMEOUT` de forma deterministica, sem espera
+  real ou hardware. `make test-block-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` terminou `PASS`; a evidencia
+  foi sincronizada sem enderecos desconhecidos ou ambiguos. O catalogo registra
+  7.197 superficies, 3.898 `COVERED`, 3.299 `PENDING` e 85 casos. O fechamento
+  integral, o gate estrito e a validacao TST7 completa continuam pendentes.

@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 3892 |
+| `COVERED` | 3898 |
 | `MANUAL` | 0 |
-| `PENDING` | 3305 |
+| `PENDING` | 3299 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -4770,9 +4770,9 @@
 | `c:src/filemanager/filemanager.c:str_equal` | `src/filemanager/filemanager.c` | `str_equal` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:str_len` | `src/filemanager/filemanager.c` | `str_len` | `filemanager` | `COVERED` | 1 |
 | `c:src/fs/block.c:block_ata_descriptor` | `src/fs/block.c` | `block_ata_descriptor` | `fs` | `COVERED` | 1 |
-| `c:src/fs/block.c:block_ata_read` | `src/fs/block.c` | `block_ata_read` | `fs` | `PENDING` | 0 |
+| `c:src/fs/block.c:block_ata_read` | `src/fs/block.c` | `block_ata_read` | `fs` | `COVERED` | 1 |
 | `c:src/fs/block.c:block_ata_submit` | `src/fs/block.c` | `block_ata_submit` | `fs` | `COVERED` | 4 |
-| `c:src/fs/block.c:block_ata_write` | `src/fs/block.c` | `block_ata_write` | `fs` | `PENDING` | 0 |
+| `c:src/fs/block.c:block_ata_write` | `src/fs/block.c` | `block_ata_write` | `fs` | `COVERED` | 1 |
 | `c:src/fs/block.c:block_bio_pending_locked` | `src/fs/block.c` | `block_bio_pending_locked` | `fs` | `COVERED` | 4 |
 | `c:src/fs/block.c:block_can_merge` | `src/fs/block.c` | `block_can_merge` | `fs` | `COVERED` | 3 |
 | `c:src/fs/block.c:block_cancel` | `src/fs/block.c` | `block_cancel` | `fs` | `COVERED` | 3 |
@@ -4817,7 +4817,7 @@
 | `c:src/fs/block.c:block_unregister` | `src/fs/block.c` | `block_unregister` | `fs` | `COVERED` | 3 |
 | `c:src/fs/block.c:block_validate_bio` | `src/fs/block.c` | `block_validate_bio` | `fs` | `COVERED` | 4 |
 | `c:src/fs/block.c:block_validate_state` | `src/fs/block.c` | `block_validate_state` | `fs` | `COVERED` | 3 |
-| `c:src/fs/block.c:block_work_callback` | `src/fs/block.c` | `block_work_callback` | `fs` | `PENDING` | 0 |
+| `c:src/fs/block.c:block_work_callback` | `src/fs/block.c` | `block_work_callback` | `fs` | `COVERED` | 1 |
 | `c:src/fs/block.c:block_write` | `src/fs/block.c` | `block_write` | `fs` | `COVERED` | 4 |
 | `c:src/fs/block.c:block_writeback_work_callback` | `src/fs/block.c` | `block_writeback_work_callback` | `fs` | `COVERED` | 1 |
 | `c:src/fs/block_cache.c:block_cache_choose_victim_locked` | `src/fs/block_cache.c` | `block_cache_choose_victim_locked` | `fs` | `COVERED` | 4 |
@@ -4850,7 +4850,7 @@
 | `c:src/fs/block_cache.c:block_cache_mark_dirty_locked` | `src/fs/block_cache.c` | `block_cache_mark_dirty_locked` | `fs` | `COVERED` | 4 |
 | `c:src/fs/block_cache.c:block_cache_next_generation` | `src/fs/block_cache.c` | `block_cache_next_generation` | `fs` | `COVERED` | 4 |
 | `c:src/fs/block_cache.c:block_cache_percent` | `src/fs/block_cache.c` | `block_cache_percent` | `fs` | `COVERED` | 4 |
-| `c:src/fs/block_cache.c:block_cache_physical_read` | `src/fs/block_cache.c` | `block_cache_physical_read` | `fs` | `PENDING` | 0 |
+| `c:src/fs/block_cache.c:block_cache_physical_read` | `src/fs/block_cache.c` | `block_cache_physical_read` | `fs` | `COVERED` | 1 |
 | `c:src/fs/block_cache.c:block_cache_publish_durability_locked` | `src/fs/block_cache.c` | `block_cache_publish_durability_locked` | `fs` | `COVERED` | 3 |
 | `c:src/fs/block_cache.c:block_cache_range_has_blocker_locked` | `src/fs/block_cache.c` | `block_cache_range_has_blocker_locked` | `fs` | `COVERED` | 3 |
 | `c:src/fs/block_cache.c:block_cache_range_valid` | `src/fs/block_cache.c` | `block_cache_range_valid` | `fs` | `COVERED` | 3 |
@@ -4873,8 +4873,8 @@
 | `c:src/fs/block_cache.c:block_cache_validate_identifier` | `src/fs/block_cache.c` | `block_cache_validate_identifier` | `fs` | `COVERED` | 3 |
 | `c:src/fs/block_cache.c:block_cache_validate_state` | `src/fs/block_cache.c` | `block_cache_validate_state` | `fs` | `COVERED` | 3 |
 | `c:src/fs/block_cache.c:block_cache_validate_write_device` | `src/fs/block_cache.c` | `block_cache_validate_write_device` | `fs` | `COVERED` | 4 |
-| `c:src/fs/block_cache.c:block_cache_wait_condition` | `src/fs/block_cache.c` | `block_cache_wait_condition` | `fs` | `PENDING` | 0 |
-| `c:src/fs/block_cache.c:block_cache_wait_for_entry` | `src/fs/block_cache.c` | `block_cache_wait_for_entry` | `fs` | `PENDING` | 0 |
+| `c:src/fs/block_cache.c:block_cache_wait_condition` | `src/fs/block_cache.c` | `block_cache_wait_condition` | `fs` | `COVERED` | 1 |
+| `c:src/fs/block_cache.c:block_cache_wait_for_entry` | `src/fs/block_cache.c` | `block_cache_wait_for_entry` | `fs` | `COVERED` | 1 |
 | `c:src/fs/block_cache.c:block_cache_wake_entry` | `src/fs/block_cache.c` | `block_cache_wake_entry` | `fs` | `COVERED` | 4 |
 | `c:src/fs/block_cache.c:block_cache_write` | `src/fs/block_cache.c` | `block_cache_write` | `fs` | `COVERED` | 4 |
 | `c:src/fs/block_cache.c:block_cache_writeback_step` | `src/fs/block_cache.c` | `block_cache_writeback_step` | `fs` | `COVERED` | 4 |
@@ -9270,12 +9270,6 @@
 - `c:src/filemanager/filemanager.c:fm_select_mode`
 - `c:src/filemanager/filemanager.c:fm_update`
 - `c:src/filemanager/filemanager.c:fm_visible_side_items`
-- `c:src/fs/block.c:block_ata_read`
-- `c:src/fs/block.c:block_ata_write`
-- `c:src/fs/block.c:block_work_callback`
-- `c:src/fs/block_cache.c:block_cache_physical_read`
-- `c:src/fs/block_cache.c:block_cache_wait_condition`
-- `c:src/fs/block_cache.c:block_cache_wait_for_entry`
 - `c:src/fs/bmp.c:bmp_draw`
 - `c:src/fs/bmp.c:bmp_draw_scaled`
 - `c:src/fs/bmp.c:bmp_draw_transparent`
