@@ -4260,3 +4260,13 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   desconhecidos ou ambiguos, e a sincronizacao vinculou as tres superficies por
   chamada real. O catalogo registra 7.197 superficies, 3.884 `COVERED`, 3.313
   `PENDING` e 85 casos.
+
+- Incremento de acessores Core, memoria, paging, rede e fonte concluido em:
+  2026-09-02 16:24 (America/Sao_Paulo): `make test-font-host`,
+  `make test-memory-host`, `make test-paging-host` e `make test-tst3-host`,
+  todos com `HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`, terminaram `PASS`.
+  As fixtures verificaram `font_get_glyph`, `pmm_alloc_page`,
+  `paging_get_page`, `ipv4_protocol_name` e `compress_get_stats`. Os relatorios
+  instrumentados foram sincronizados sem enderecos desconhecidos ou ambiguos,
+  com vinculos C diretos no catalogo. O catalogo registra 7.197 superficies,
+  3.890 `COVERED`, 3.307 `PENDING` e 85 casos.

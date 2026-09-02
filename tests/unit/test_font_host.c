@@ -66,6 +66,16 @@ static int check_dimensions(void) {
     return 0;
 }
 
+static int check_glyph_lookup(void) {
+    const uint8_t* glyph;
+
+    glyph = font_get_glyph('A');
+    if (!glyph) return 1;
+    glyph = font_get_glyph((char)0xFF);
+    if (!glyph) return 2;
+    return 0;
+}
+
 static int check_initialization(void) {
     font_init();
     font_init();
@@ -78,6 +88,7 @@ int main(void) {
     coverage_active = 1U;
     result = check_initialization();
     if (result == 0) result = check_dimensions();
+    if (result == 0) result = check_glyph_lookup();
     coverage_active = 0U;
     coverage_emit(result);
     return result;

@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 3884 |
+| `COVERED` | 3890 |
 | `MANUAL` | 0 |
-| `PENDING` | 3313 |
+| `PENDING` | 3307 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -1312,7 +1312,7 @@
 | `api:src/include/memory/compress.h:compress_disable` | `src/include/memory/compress.h` | `compress_disable` | `memory` | `COVERED` | 1 |
 | `api:src/include/memory/compress.h:compress_enable` | `src/include/memory/compress.h` | `compress_enable` | `memory` | `COVERED` | 1 |
 | `api:src/include/memory/compress.h:compress_get_max_size` | `src/include/memory/compress.h` | `compress_get_max_size` | `memory` | `COVERED` | 1 |
-| `api:src/include/memory/compress.h:compress_get_stats` | `src/include/memory/compress.h` | `compress_get_stats` | `memory` | `PENDING` | 0 |
+| `api:src/include/memory/compress.h:compress_get_stats` | `src/include/memory/compress.h` | `compress_get_stats` | `memory` | `COVERED` | 1 |
 | `api:src/include/memory/compress.h:compress_init` | `src/include/memory/compress.h` | `compress_init` | `memory` | `COVERED` | 1 |
 | `api:src/include/memory/compress.h:compress_is_enabled` | `src/include/memory/compress.h` | `compress_is_enabled` | `memory` | `COVERED` | 1 |
 | `api:src/include/memory/compress.h:compress_print_stats` | `src/include/memory/compress.h` | `compress_print_stats` | `memory` | `COVERED` | 1 |
@@ -2623,7 +2623,7 @@
 | `c:src/core/ipv4.c:ipv4_mac_is_equal` | `src/core/ipv4.c` | `ipv4_mac_is_equal` | `core` | `COVERED` | 1 |
 | `c:src/core/ipv4.c:ipv4_mac_is_valid` | `src/core/ipv4.c` | `ipv4_mac_is_valid` | `core` | `COVERED` | 1 |
 | `c:src/core/ipv4.c:ipv4_mask_is_valid` | `src/core/ipv4.c` | `ipv4_mask_is_valid` | `core` | `COVERED` | 3 |
-| `c:src/core/ipv4.c:ipv4_protocol_name` | `src/core/ipv4.c` | `ipv4_protocol_name` | `core` | `PENDING` | 0 |
+| `c:src/core/ipv4.c:ipv4_protocol_name` | `src/core/ipv4.c` | `ipv4_protocol_name` | `core` | `COVERED` | 1 |
 | `c:src/core/ipv4.c:ipv4_read_u16` | `src/core/ipv4.c` | `ipv4_read_u16` | `core` | `COVERED` | 3 |
 | `c:src/core/ipv4.c:ipv4_read_u32` | `src/core/ipv4.c` | `ipv4_read_u32` | `core` | `COVERED` | 1 |
 | `c:src/core/ipv4.c:ipv4_register_handler` | `src/core/ipv4.c` | `ipv4_register_handler` | `core` | `COVERED` | 1 |
@@ -4181,7 +4181,7 @@
 | `c:src/drivers/ehci.c:ehci_write` | `src/drivers/ehci.c` | `ehci_write` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/font.c:font_get_face` | `src/drivers/font.c` | `font_get_face` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/font.c:font_get_face_glyph` | `src/drivers/font.c` | `font_get_face_glyph` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/font.c:font_get_glyph` | `src/drivers/font.c` | `font_get_glyph` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/font.c:font_get_glyph` | `src/drivers/font.c` | `font_get_glyph` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/font.c:font_get_height` | `src/drivers/font.c` | `font_get_height` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/font.c:font_get_width` | `src/drivers/font.c` | `font_get_width` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/font.c:font_init` | `src/drivers/font.c` | `font_init` | `drivers` | `COVERED` | 1 |
@@ -5564,7 +5564,7 @@
 | `c:src/memory/compress.c:compress_disable` | `src/memory/compress.c` | `compress_disable` | `memory` | `COVERED` | 1 |
 | `c:src/memory/compress.c:compress_enable` | `src/memory/compress.c` | `compress_enable` | `memory` | `COVERED` | 1 |
 | `c:src/memory/compress.c:compress_get_max_size` | `src/memory/compress.c` | `compress_get_max_size` | `memory` | `COVERED` | 1 |
-| `c:src/memory/compress.c:compress_get_stats` | `src/memory/compress.c` | `compress_get_stats` | `memory` | `PENDING` | 0 |
+| `c:src/memory/compress.c:compress_get_stats` | `src/memory/compress.c` | `compress_get_stats` | `memory` | `COVERED` | 1 |
 | `c:src/memory/compress.c:compress_init` | `src/memory/compress.c` | `compress_init` | `memory` | `COVERED` | 1 |
 | `c:src/memory/compress.c:compress_is_enabled` | `src/memory/compress.c` | `compress_is_enabled` | `memory` | `COVERED` | 1 |
 | `c:src/memory/compress.c:compress_print_stats` | `src/memory/compress.c` | `compress_print_stats` | `memory` | `COVERED` | 1 |
@@ -5604,7 +5604,7 @@
 | `c:src/memory/memory.c:memory_record_free_run` | `src/memory/memory.c` | `memory_record_free_run` | `memory` | `COVERED` | 3 |
 | `c:src/memory/memory.c:memory_recount` | `src/memory/memory.c` | `memory_recount` | `memory` | `COVERED` | 1 |
 | `c:src/memory/memory.c:memory_reserve_range` | `src/memory/memory.c` | `memory_reserve_range` | `memory` | `COVERED` | 1 |
-| `c:src/memory/memory.c:pmm_alloc_page` | `src/memory/memory.c` | `pmm_alloc_page` | `memory` | `PENDING` | 0 |
+| `c:src/memory/memory.c:pmm_alloc_page` | `src/memory/memory.c` | `pmm_alloc_page` | `memory` | `COVERED` | 1 |
 | `c:src/memory/memory.c:pmm_alloc_page_in_zone` | `src/memory/memory.c` | `pmm_alloc_page_in_zone` | `memory` | `COVERED` | 1 |
 | `c:src/memory/memory.c:pmm_alloc_pages` | `src/memory/memory.c` | `pmm_alloc_pages` | `memory` | `COVERED` | 1 |
 | `c:src/memory/memory.c:pmm_alloc_pages_in_zone` | `src/memory/memory.c` | `pmm_alloc_pages_in_zone` | `memory` | `COVERED` | 1 |
@@ -5632,7 +5632,7 @@
 | `c:src/memory/paging.c:paging_free_user_directory` | `src/memory/paging.c` | `paging_free_user_directory` | `memory` | `COVERED` | 2 |
 | `c:src/memory/paging.c:paging_get_boot_stats` | `src/memory/paging.c` | `paging_get_boot_stats` | `memory` | `COVERED` | 1 |
 | `c:src/memory/paging.c:paging_get_current_directory` | `src/memory/paging.c` | `paging_get_current_directory` | `memory` | `COVERED` | 1 |
-| `c:src/memory/paging.c:paging_get_page` | `src/memory/paging.c` | `paging_get_page` | `memory` | `PENDING` | 0 |
+| `c:src/memory/paging.c:paging_get_page` | `src/memory/paging.c` | `paging_get_page` | `memory` | `COVERED` | 1 |
 | `c:src/memory/paging.c:paging_get_page_in_directory` | `src/memory/paging.c` | `paging_get_page_in_directory` | `memory` | `COVERED` | 1 |
 | `c:src/memory/paging.c:paging_get_user_page_count` | `src/memory/paging.c` | `paging_get_user_page_count` | `memory` | `COVERED` | 2 |
 | `c:src/memory/paging.c:paging_get_user_stats` | `src/memory/paging.c` | `paging_get_user_stats` | `memory` | `COVERED` | 2 |
@@ -7549,7 +7549,6 @@
 - `api:src/include/fs/wav.h:wav_init`
 - `api:src/include/fs/wav.h:wav_load`
 - `api:src/include/fs/wav.h:wav_play`
-- `api:src/include/memory/compress.h:compress_get_stats`
 - `api:src/include/process/process.h:process_context_switch`
 - `api:src/include/process/process.h:process_user_enter`
 - `api:src/include/process/process.h:process_user_termination_enter`
@@ -8075,7 +8074,6 @@
 - `c:src/core/app_remote.c:app_remote_write_record`
 - `c:src/core/app_remote.c:app_remote_write_u16`
 - `c:src/core/app_remote.c:app_remote_write_u32`
-- `c:src/core/ipv4.c:ipv4_protocol_name`
 - `c:src/core/kernel_tests_blackbox.c:blackbox_marker`
 - `c:src/core/network_manager.c:network_apply_dhcp_lease`
 - `c:src/core/network_manager.c:network_cancel_dynamic_clients`
@@ -8927,7 +8925,6 @@
 - `c:src/drivers/ehci.c:ehci_validate_state`
 - `c:src/drivers/ehci.c:ehci_wait_qtds`
 - `c:src/drivers/ehci.c:ehci_write`
-- `c:src/drivers/font.c:font_get_glyph`
 - `c:src/drivers/idt.c:idt_enable_user_syscall`
 - `c:src/drivers/idt.c:idt_get_irq_status`
 - `c:src/drivers/idt.c:idt_get_shared_irq_handler_count`
@@ -9447,9 +9444,6 @@
 - `c:src/kernel/panic.c:panic_memory`
 - `c:src/kernel/panic.c:panic_print_metric`
 - `c:src/kernel/panic.c:panic_print_number`
-- `c:src/memory/compress.c:compress_get_stats`
-- `c:src/memory/memory.c:pmm_alloc_page`
-- `c:src/memory/paging.c:paging_get_page`
 - `c:src/process/process.c:process_apply_pending_cancel`
 - `c:src/process/process.c:process_bootstrap_idle`
 - `c:src/process/process.c:process_cancel_focused_user`

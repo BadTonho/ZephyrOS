@@ -264,6 +264,8 @@ static int test_paging(void) {
 
     kernel_dir = paging_get_current_directory();
     if (check(kernel_dir != NULL, "current directory") != OK) return ERR_STATE;
+    if (check(paging_get_page(0U, 0) != NULL,
+              "current page lookup") != OK) return ERR_STATE;
     if (check(paging_get_page_in_directory(NULL, 0U, 0) == NULL,
               "page null directory") != OK) return ERR_STATE;
     if (check(paging_get_page_in_directory(kernel_dir, 0U, 2) == NULL,
