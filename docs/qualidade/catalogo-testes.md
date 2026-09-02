@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **6820**
-- Casos de teste: **69**
+- Casos de teste: **70**
 - Superfícies aposentadas: **20**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 2920 |
+| `COVERED` | 2931 |
 | `MANUAL` | 0 |
-| `PENDING` | 3900 |
+| `PENDING` | 3889 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 69 |
+| `AUTOMATED` | 70 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -424,8 +424,8 @@
 | `api:src/include/core/log.h:log_get_console_level` | `src/include/core/log.h` | `log_get_console_level` | `core` | `COVERED` | 1 |
 | `api:src/include/core/log.h:log_get_level` | `src/include/core/log.h` | `log_get_level` | `core` | `COVERED` | 1 |
 | `api:src/include/core/log.h:log_get_stats` | `src/include/core/log.h` | `log_get_stats` | `core` | `COVERED` | 2 |
-| `api:src/include/core/log.h:log_init` | `src/include/core/log.h` | `log_init` | `core` | `COVERED` | 20 |
-| `api:src/include/core/log.h:log_print` | `src/include/core/log.h` | `log_print` | `core` | `COVERED` | 23 |
+| `api:src/include/core/log.h:log_init` | `src/include/core/log.h` | `log_init` | `core` | `COVERED` | 21 |
+| `api:src/include/core/log.h:log_print` | `src/include/core/log.h` | `log_print` | `core` | `COVERED` | 24 |
 | `api:src/include/core/log.h:log_print_code` | `src/include/core/log.h` | `log_print_code` | `core` | `COVERED` | 6 |
 | `api:src/include/core/log.h:log_self_test` | `src/include/core/log.h` | `log_self_test` | `core` | `COVERED` | 3 |
 | `api:src/include/core/log.h:log_set_buffer_level` | `src/include/core/log.h` | `log_set_buffer_level` | `core` | `COVERED` | 1 |
@@ -555,10 +555,10 @@
 | `api:src/include/core/spinlock.h:spinlock_acquire` | `src/include/core/spinlock.h` | `spinlock_acquire` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_init` | `src/include/core/spinlock.h` | `spinlock_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_release` | `src/include/core/spinlock.h` | `spinlock_release` | `core` | `PENDING` | 0 |
-| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 31 |
-| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 31 |
-| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 24 |
-| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 28 |
+| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 32 |
+| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 32 |
+| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 25 |
+| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 29 |
 | `api:src/include/core/syscall.h:syscall_enable_user_mode` | `src/include/core/syscall.h` | `syscall_enable_user_mode` | `core` | `PENDING` | 0 |
 | `api:src/include/core/syscall.h:syscall_handler` | `src/include/core/syscall.h` | `syscall_handler` | `core` | `COVERED` | 1 |
 | `api:src/include/core/syscall.h:syscall_init` | `src/include/core/syscall.h` | `syscall_init` | `core` | `PENDING` | 0 |
@@ -600,13 +600,13 @@
 | `api:src/include/core/timer.h:timer_start_once` | `src/include/core/timer.h` | `timer_start_once` | `core` | `PENDING` | 0 |
 | `api:src/include/core/timer.h:timer_start_periodic` | `src/include/core/timer.h` | `timer_start_periodic` | `core` | `PENDING` | 0 |
 | `api:src/include/core/timer.h:timer_validate_state` | `src/include/core/timer.h` | `timer_validate_state` | `core` | `PENDING` | 0 |
-| `api:src/include/core/tls.h:tls_capability_available` | `src/include/core/tls.h` | `tls_capability_available` | `core` | `PENDING` | 0 |
-| `api:src/include/core/tls.h:tls_get_policy` | `src/include/core/tls.h` | `tls_get_policy` | `core` | `PENDING` | 0 |
-| `api:src/include/core/tls.h:tls_get_status` | `src/include/core/tls.h` | `tls_get_status` | `core` | `PENDING` | 0 |
-| `api:src/include/core/tls.h:tls_init` | `src/include/core/tls.h` | `tls_init` | `core` | `PENDING` | 0 |
-| `api:src/include/core/tls.h:tls_policy_validate` | `src/include/core/tls.h` | `tls_policy_validate` | `core` | `PENDING` | 0 |
-| `api:src/include/core/tls.h:tls_self_test` | `src/include/core/tls.h` | `tls_self_test` | `core` | `COVERED` | 2 |
-| `api:src/include/core/tls.h:tls_validate_state` | `src/include/core/tls.h` | `tls_validate_state` | `core` | `COVERED` | 2 |
+| `api:src/include/core/tls.h:tls_capability_available` | `src/include/core/tls.h` | `tls_capability_available` | `core` | `COVERED` | 1 |
+| `api:src/include/core/tls.h:tls_get_policy` | `src/include/core/tls.h` | `tls_get_policy` | `core` | `COVERED` | 1 |
+| `api:src/include/core/tls.h:tls_get_status` | `src/include/core/tls.h` | `tls_get_status` | `core` | `COVERED` | 1 |
+| `api:src/include/core/tls.h:tls_init` | `src/include/core/tls.h` | `tls_init` | `core` | `COVERED` | 1 |
+| `api:src/include/core/tls.h:tls_policy_validate` | `src/include/core/tls.h` | `tls_policy_validate` | `core` | `COVERED` | 1 |
+| `api:src/include/core/tls.h:tls_self_test` | `src/include/core/tls.h` | `tls_self_test` | `core` | `COVERED` | 3 |
+| `api:src/include/core/tls.h:tls_validate_state` | `src/include/core/tls.h` | `tls_validate_state` | `core` | `COVERED` | 3 |
 | `api:src/include/core/tls_client.h:tls_client_close` | `src/include/core/tls_client.h` | `tls_client_close` | `core` | `PENDING` | 0 |
 | `api:src/include/core/tls_client.h:tls_client_get_status` | `src/include/core/tls_client.h` | `tls_client_get_status` | `core` | `COVERED` | 2 |
 | `api:src/include/core/tls_client.h:tls_client_init` | `src/include/core/tls_client.h` | `tls_client_init` | `core` | `PENDING` | 0 |
@@ -2567,36 +2567,36 @@
 | `c:src/core/log.c:log_append_char` | `src/core/log.c` | `log_append_char` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_append_text` | `src/core/log.c` | `log_append_text` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_clear_buffer` | `src/core/log.c` | `log_clear_buffer` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_console_print_number` | `src/core/log.c` | `log_console_print_number` | `core` | `COVERED` | 24 |
+| `c:src/core/log.c:log_console_print_number` | `src/core/log.c` | `log_console_print_number` | `core` | `COVERED` | 25 |
 | `c:src/core/log.c:log_copy_recent` | `src/core/log.c` | `log_copy_recent` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_copy_text` | `src/core/log.c` | `log_copy_text` | `core` | `COVERED` | 24 |
+| `c:src/core/log.c:log_copy_text` | `src/core/log.c` | `log_copy_text` | `core` | `COVERED` | 25 |
 | `c:src/core/log.c:log_get_buffer` | `src/core/log.c` | `log_get_buffer` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_get_buffer_level` | `src/core/log.c` | `log_get_buffer_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_get_console_level` | `src/core/log.c` | `log_get_console_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_get_level` | `src/core/log.c` | `log_get_level` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_get_stats` | `src/core/log.c` | `log_get_stats` | `core` | `COVERED` | 2 |
-| `c:src/core/log.c:log_init` | `src/core/log.c` | `log_init` | `core` | `COVERED` | 20 |
-| `c:src/core/log.c:log_is_power_of_two` | `src/core/log.c` | `log_is_power_of_two` | `core` | `COVERED` | 24 |
-| `c:src/core/log.c:log_level_is_valid` | `src/core/log.c` | `log_level_is_valid` | `core` | `COVERED` | 24 |
+| `c:src/core/log.c:log_init` | `src/core/log.c` | `log_init` | `core` | `COVERED` | 21 |
+| `c:src/core/log.c:log_is_power_of_two` | `src/core/log.c` | `log_is_power_of_two` | `core` | `COVERED` | 25 |
+| `c:src/core/log.c:log_level_is_valid` | `src/core/log.c` | `log_level_is_valid` | `core` | `COVERED` | 25 |
 | `c:src/core/log.c:log_note_dropped_event` | `src/core/log.c` | `log_note_dropped_event` | `core` | `COVERED` | 2 |
-| `c:src/core/log.c:log_print` | `src/core/log.c` | `log_print` | `core` | `COVERED` | 24 |
+| `c:src/core/log.c:log_print` | `src/core/log.c` | `log_print` | `core` | `COVERED` | 25 |
 | `c:src/core/log.c:log_print_code` | `src/core/log.c` | `log_print_code` | `core` | `COVERED` | 6 |
-| `c:src/core/log.c:log_print_colored` | `src/core/log.c` | `log_print_colored` | `core` | `COVERED` | 24 |
-| `c:src/core/log.c:log_records_match` | `src/core/log.c` | `log_records_match` | `core` | `COVERED` | 24 |
-| `c:src/core/log.c:log_restore_interrupts` | `src/core/log.c` | `log_restore_interrupts` | `core` | `COVERED` | 24 |
+| `c:src/core/log.c:log_print_colored` | `src/core/log.c` | `log_print_colored` | `core` | `COVERED` | 25 |
+| `c:src/core/log.c:log_records_match` | `src/core/log.c` | `log_records_match` | `core` | `COVERED` | 25 |
+| `c:src/core/log.c:log_restore_interrupts` | `src/core/log.c` | `log_restore_interrupts` | `core` | `COVERED` | 25 |
 | `c:src/core/log.c:log_ring_clear` | `src/core/log.c` | `log_ring_clear` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_ring_copy_recent` | `src/core/log.c` | `log_ring_copy_recent` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_ring_initialize` | `src/core/log.c` | `log_ring_initialize` | `core` | `COVERED` | 22 |
-| `c:src/core/log.c:log_ring_latest_index` | `src/core/log.c` | `log_ring_latest_index` | `core` | `COVERED` | 24 |
-| `c:src/core/log.c:log_ring_store` | `src/core/log.c` | `log_ring_store` | `core` | `COVERED` | 24 |
+| `c:src/core/log.c:log_ring_initialize` | `src/core/log.c` | `log_ring_initialize` | `core` | `COVERED` | 23 |
+| `c:src/core/log.c:log_ring_latest_index` | `src/core/log.c` | `log_ring_latest_index` | `core` | `COVERED` | 25 |
+| `c:src/core/log.c:log_ring_store` | `src/core/log.c` | `log_ring_store` | `core` | `COVERED` | 25 |
 | `c:src/core/log.c:log_self_test` | `src/core/log.c` | `log_self_test` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_self_test_mark` | `src/core/log.c` | `log_self_test_mark` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_serialize_records` | `src/core/log.c` | `log_serialize_records` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_set_buffer_level` | `src/core/log.c` | `log_set_buffer_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_set_console_level` | `src/core/log.c` | `log_set_console_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_set_level` | `src/core/log.c` | `log_set_level` | `core` | `COVERED` | 2 |
-| `c:src/core/log.c:log_submit` | `src/core/log.c` | `log_submit` | `core` | `COVERED` | 24 |
-| `c:src/core/log.c:log_suspend_interrupts` | `src/core/log.c` | `log_suspend_interrupts` | `core` | `COVERED` | 24 |
+| `c:src/core/log.c:log_submit` | `src/core/log.c` | `log_submit` | `core` | `COVERED` | 25 |
+| `c:src/core/log.c:log_suspend_interrupts` | `src/core/log.c` | `log_suspend_interrupts` | `core` | `COVERED` | 25 |
 | `c:src/core/log.c:log_test_clear_behavior` | `src/core/log.c` | `log_test_clear_behavior` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_test_level_filtering` | `src/core/log.c` | `log_test_level_filtering` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_test_optional_error_code` | `src/core/log.c` | `log_test_optional_error_code` | `core` | `COVERED` | 3 |
@@ -2606,7 +2606,7 @@
 | `c:src/core/log.c:log_test_text_serialization` | `src/core/log.c` | `log_test_text_serialization` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_test_wrap_and_overwrite` | `src/core/log.c` | `log_test_wrap_and_overwrite` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_to_buffer` | `src/core/log.c` | `log_to_buffer` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_write_serial` | `src/core/log.c` | `log_write_serial` | `core` | `COVERED` | 24 |
+| `c:src/core/log.c:log_write_serial` | `src/core/log.c` | `log_write_serial` | `core` | `COVERED` | 25 |
 | `c:src/core/net_buffer.c:net_buffer_alignment_valid` | `src/core/net_buffer.c` | `net_buffer_alignment_valid` | `core` | `COVERED` | 4 |
 | `c:src/core/net_buffer.c:net_buffer_begin` | `src/core/net_buffer.c` | `net_buffer_begin` | `core` | `COVERED` | 4 |
 | `c:src/core/net_buffer.c:net_buffer_check_active_locked` | `src/core/net_buffer.c` | `net_buffer_check_active_locked` | `core` | `COVERED` | 4 |
@@ -2882,10 +2882,10 @@
 | `c:src/core/socket.c:socket_wait_local` | `src/core/socket.c` | `socket_wait_local` | `core` | `PENDING` | 0 |
 | `c:src/core/socket.c:socket_wait_owner` | `src/core/socket.c` | `socket_wait_owner` | `core` | `COVERED` | 2 |
 | `c:src/core/socket.c:socket_wake` | `src/core/socket.c` | `socket_wake` | `core` | `COVERED` | 2 |
-| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 31 |
-| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 31 |
-| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 24 |
-| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 28 |
+| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 32 |
+| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 32 |
+| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 25 |
+| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 29 |
 | `c:src/core/syscall.c:syscall_copy_user_string` | `src/core/syscall.c` | `syscall_copy_user_string` | `core` | `PENDING` | 0 |
 | `c:src/core/syscall.c:syscall_dispatch` | `src/core/syscall.c` | `syscall_dispatch` | `core` | `COVERED` | 1 |
 | `c:src/core/syscall.c:syscall_dispatch_user` | `src/core/syscall.c` | `syscall_dispatch_user` | `core` | `COVERED` | 1 |
@@ -3027,17 +3027,17 @@
 | `c:src/core/test_protocol_core.c:test_protocol_core_set_boot_ready` | `src/core/test_protocol_core.c` | `test_protocol_core_set_boot_ready` | `core` | `COVERED` | 2 |
 | `c:src/core/test_protocol_core.c:test_protocol_core_set_case_reason` | `src/core/test_protocol_core.c` | `test_protocol_core_set_case_reason` | `core` | `COVERED` | 2 |
 | `c:src/core/test_protocol_core.c:test_protocol_core_set_ticks` | `src/core/test_protocol_core.c` | `test_protocol_core_set_ticks` | `core` | `COVERED` | 2 |
-| `c:src/core/tls.c:tls_capability_available` | `src/core/tls.c` | `tls_capability_available` | `core` | `PENDING` | 0 |
-| `c:src/core/tls.c:tls_get_policy` | `src/core/tls.c` | `tls_get_policy` | `core` | `PENDING` | 0 |
-| `c:src/core/tls.c:tls_get_status` | `src/core/tls.c` | `tls_get_status` | `core` | `PENDING` | 0 |
-| `c:src/core/tls.c:tls_init` | `src/core/tls.c` | `tls_init` | `core` | `PENDING` | 0 |
-| `c:src/core/tls.c:tls_policy_failure` | `src/core/tls.c` | `tls_policy_failure` | `core` | `COVERED` | 2 |
-| `c:src/core/tls.c:tls_policy_validate` | `src/core/tls.c` | `tls_policy_validate` | `core` | `PENDING` | 0 |
-| `c:src/core/tls.c:tls_policy_validate_at` | `src/core/tls.c` | `tls_policy_validate_at` | `core` | `COVERED` | 2 |
-| `c:src/core/tls.c:tls_reject` | `src/core/tls.c` | `tls_reject` | `core` | `PENDING` | 0 |
-| `c:src/core/tls.c:tls_self_test` | `src/core/tls.c` | `tls_self_test` | `core` | `COVERED` | 2 |
-| `c:src/core/tls.c:tls_self_test_case` | `src/core/tls.c` | `tls_self_test_case` | `core` | `COVERED` | 2 |
-| `c:src/core/tls.c:tls_validate_state` | `src/core/tls.c` | `tls_validate_state` | `core` | `COVERED` | 2 |
+| `c:src/core/tls.c:tls_capability_available` | `src/core/tls.c` | `tls_capability_available` | `core` | `COVERED` | 1 |
+| `c:src/core/tls.c:tls_get_policy` | `src/core/tls.c` | `tls_get_policy` | `core` | `COVERED` | 1 |
+| `c:src/core/tls.c:tls_get_status` | `src/core/tls.c` | `tls_get_status` | `core` | `COVERED` | 1 |
+| `c:src/core/tls.c:tls_init` | `src/core/tls.c` | `tls_init` | `core` | `COVERED` | 1 |
+| `c:src/core/tls.c:tls_policy_failure` | `src/core/tls.c` | `tls_policy_failure` | `core` | `COVERED` | 3 |
+| `c:src/core/tls.c:tls_policy_validate` | `src/core/tls.c` | `tls_policy_validate` | `core` | `COVERED` | 1 |
+| `c:src/core/tls.c:tls_policy_validate_at` | `src/core/tls.c` | `tls_policy_validate_at` | `core` | `COVERED` | 3 |
+| `c:src/core/tls.c:tls_reject` | `src/core/tls.c` | `tls_reject` | `core` | `COVERED` | 1 |
+| `c:src/core/tls.c:tls_self_test` | `src/core/tls.c` | `tls_self_test` | `core` | `COVERED` | 3 |
+| `c:src/core/tls.c:tls_self_test_case` | `src/core/tls.c` | `tls_self_test_case` | `core` | `COVERED` | 3 |
+| `c:src/core/tls.c:tls_validate_state` | `src/core/tls.c` | `tls_validate_state` | `core` | `COVERED` | 3 |
 | `c:src/core/tls_client.c:tls_client_close` | `src/core/tls_client.c` | `tls_client_close` | `core` | `PENDING` | 0 |
 | `c:src/core/tls_client.c:tls_client_configure` | `src/core/tls_client.c` | `tls_client_configure` | `core` | `PENDING` | 0 |
 | `c:src/core/tls_client.c:tls_client_divide_u64` | `src/core/tls_client.c` | `tls_client_divide_u64` | `core` | `PENDING` | 0 |
@@ -6925,10 +6925,11 @@
 | `host:network:dns` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar consultas DNS, cache, CNAME, timeout e pacotes invalidos com UDP e timer simulados | nomes validos sao resolvidos, respostas invalidas falham com codigo canonico e o estado retorna ao baseline | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado DNS, buffers estaticos e transporte UDP falso no processo host | cache e consulta DNS reiniciados e artefatos preservados |
 | `host:network:ethernet` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar registro de interfaces, handlers, polling, frames, transmissao, quiescencia e limpeza com drivers falsos | frames validos sao entregues, entradas invalidas sao rejeitadas e nenhum buffer de rede permanece ativo | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado Ethernet, sk_buff, net_buffer, SLAB e drivers falsos no processo host | buffers, interfaces, handlers e estado temporario encerrados e artefatos preservados |
 | `host:network:icmp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar checksum, echo, timeout, mudanca de configuracao, fila de reply e pacotes ICMP invalidos com IPv4 e timer simulados | echo valido e reply pendente sao processados, timeout e falhas de transporte retornam erros canonicos e o estado e restaurado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado ICMP, buffers estaticos e transportes IPv4 e timer falsos no processo host | estado ICMP, timer e transporte falso retornam ao estado inicial e os artefatos sao preservados |
-| `host:network:ipv4` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar configuraÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o, envio, broadcast, recepÃƒÆ’Ã‚Â§ÃƒÆ’Ã‚Â£o, checksum e handlers IPv4 | datagramas validos sÃƒÆ’Ã‚Â£o entregues, entradas invÃƒÆ’Ã‚Â¡lidas sÃƒÆ’Ã‚Â£o recusadas e o estado ÃƒÆ’Ã‚Â© restaurado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado IPv4, tabela de rotas e buffers falsos de ARP/Ethernet | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:network:ipv4` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar configuraÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o, envio, broadcast, recepÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o, checksum e handlers IPv4 | datagramas validos sÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o entregues, entradas invÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡lidas sÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o recusadas e o estado ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â© restaurado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado IPv4, tabela de rotas e buffers falsos de ARP/Ethernet | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:network:route` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar rotas base, lookup, limites, overflow e restauracao | rotas validas e invalidas respeitam o contrato, sem residuos globais | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabela estatica de rotas no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:network:tcp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar handshake, dados, ACK, FIN, RST, retransmissao, timeout e limpeza usando IPv4 e timer falsos | conexoes validas avancam no protocolo, segmentos invalidos falham com codigo canonico e nenhum estado residual permanece | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado TCP, callbacks, buffers estaticos e transporte IPv4 falso no processo host | conexoes, callbacks e estado TCP reiniciados e artefatos preservados |
 | `host:network:udp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar envio, reinjecao, checksum, listeners, broadcast e erros UDP com IPv4 simulado | datagramas validos sao entregues, entradas corrompidas sao rejeitadas e endpoints sao liberados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos, endpoints UDP e transporte IPv4 falso no processo host | todos os endpoints sao desvinculados e os artefatos sao preservados |
+| `host:security:tls` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar politica, estados, validade, cadeia, SAN, pinning, rotacao, revogacao e autoteste TLS com relogio e RNG falsos | identidades validas sao aceitas, rejeicoes retornam motivo canonico e capacidades indisponiveis permanecem explicitas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado TLS, politica e dependencias falsas no processo host | estado TLS e dependencias falsas reiniciados e artefatos preservados |
 | `host:storage:block` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar block_self_test e block_cache_self_test com providers estaticos | filas BIO, limites, cancelamento, failpoints, cache, writeback e sync passam e o inventario retorna ao estado inicial | compilador ausente, warning, cobertura incompleta, failpoint residual, falha de assercao ou timeout | somente estruturas globais do processo host e buffers estaticos de provider | autotestes removem dispositivos temporarios, limpam cache e deixam fila sem pendencias |
 | `host:storage:fat12` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar FAT12 sobre imagem estatica com raiz, subdiretorio e provider ATA falso | leitura, caminhos, metadados, operacoes atomicas, streaming, cancelamento e erros preservam a imagem fixture | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente imagem FAT12 e heap estatico do processo host | streaming encerrado, cadeias liberadas e processo host finalizado com artefatos preservados |
 | `host:storage:fat32` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar FAT32 sobre imagem estatica grande o suficiente para a classificacao FAT32 | leitura, paths, metadados, criacao, escrita, remocao e classificacao de clusters preservam a fixture | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente imagem FAT32 estatica e heap estatico do processo host | fixture encerrada e processo host finalizado com manifesto, logs e cobertura preservados |
@@ -7251,11 +7252,6 @@
 - `api:src/include/core/timer.h:timer_start_once`
 - `api:src/include/core/timer.h:timer_start_periodic`
 - `api:src/include/core/timer.h:timer_validate_state`
-- `api:src/include/core/tls.h:tls_capability_available`
-- `api:src/include/core/tls.h:tls_get_policy`
-- `api:src/include/core/tls.h:tls_get_status`
-- `api:src/include/core/tls.h:tls_init`
-- `api:src/include/core/tls.h:tls_policy_validate`
 - `api:src/include/core/tls_client.h:tls_client_close`
 - `api:src/include/core/tls_client.h:tls_client_init`
 - `api:src/include/core/tls_client.h:tls_client_maintain`
@@ -8416,12 +8412,6 @@
 - `c:src/core/test_protocol.c:test_protocol_poll`
 - `c:src/core/test_protocol.c:test_protocol_set_boot_ready`
 - `c:src/core/test_protocol.c:test_protocol_timeout`
-- `c:src/core/tls.c:tls_capability_available`
-- `c:src/core/tls.c:tls_get_policy`
-- `c:src/core/tls.c:tls_get_status`
-- `c:src/core/tls.c:tls_init`
-- `c:src/core/tls.c:tls_policy_validate`
-- `c:src/core/tls.c:tls_reject`
 - `c:src/core/tls_client.c:tls_client_close`
 - `c:src/core/tls_client.c:tls_client_configure`
 - `c:src/core/tls_client.c:tls_client_divide_u64`
