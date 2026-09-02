@@ -139,7 +139,7 @@ static int test_protocol_core_contract(void) {
     test_protocol_core_callbacks_t callbacks = {
         protocol_emit, protocol_run_case, &test
     };
-    test_protocol_core_t core;
+    test_protocol_core_t core = {0};
     char frame[256];
     uint32_t length;
     test_protocol_event_t formatted_event;
@@ -227,9 +227,12 @@ void video_newline(void) {
 
 int main(void) {
     log_self_test_result_t log_result;
+    log_record_t log_records[4];
+    log_stats_t log_stats;
     clock_self_test_result_t clock_result;
     clock_status_t clock_status;
     uint64_t monotonic_ticks;
+    uint32_t log_record_count;
     char log_buffer[256];
     int result = 0;
 
@@ -247,20 +250,61 @@ int main(void) {
     if (!result && log_get_buffer(log_buffer, sizeof(log_buffer)) < 0) {
         result = 5;
     }
-
-    if (!result && clock_init() != ERR_UNAVAILABLE) result = 6;
-    if (!result && (clock_get_status(&clock_status) != OK ||
-        !clock_status.initialized || !clock_status.monotonic_available ||
-        clock_status.utc_available)) result = 7;
-    if (!result && clock_get_utc(&monotonic_ticks) != ERR_UNAVAILABLE) {
+    if (!result && (log_get_level() != LOG_LEVEL_INFO ||
+        log_get_buffer_level() != LOG_LEVEL_INFO ||
+        log_get_console_level() != LOG_LEVEL_INFO)) result = 6;
+    if (!result) {
+        log_set_level(LOG_LEVEL_DEBUG);
+        if (log_get_level() != LOG_LEVEL_DEBUG ||
+            log_get_buffer_level() != LOG_LEVEL_DEBUG ||
+            log_get_console_level() != LOG_LEVEL_DEBUG ||
+            log_set_console_level(LOG_LEVEL_INFO) != OK ||
+            log_set_buffer_level(LOG_LEVEL_INFO) != OK) {
+            result = 7;
+        }
+    }
+    if (!result && log_set_console_level(LOG_LEVEL_DEBUG) != ERR_INVALID) {
         result = 8;
     }
-    if (!result && clock_get_monotonic_ticks(&monotonic_ticks) != OK) {
+    if (!result && log_set_buffer_level(LOG_LEVEL_ERROR) != ERR_INVALID) {
         result = 9;
     }
+    if (!result) {
+        log_print_code(LOG_LEVEL_ERROR, "HOST", ERR_DISK, "com codigo");
+        log_to_buffer(LOG_LEVEL_WARN, "HOST", "somente buffer");
+        if (log_copy_recent(log_records, 4U, &log_record_count) != OK ||
+            log_record_count < 2U ||
+            log_records[log_record_count - 2U].error_code != ERR_DISK ||
+            log_copy_recent(NULL, 4U, &log_record_count) != ERR_NULL ||
+            log_copy_recent(log_records, 0U, &log_record_count) != ERR_NULL ||
+            log_copy_recent(log_records, 4U, NULL) != ERR_NULL) {
+            result = 10;
+        }
+    }
+    if (!result) {
+        log_clear_buffer();
+        if (log_get_stats(&log_stats) != OK || log_stats.occupancy != 0U ||
+            log_stats.clear_count == 0U ||
+            log_get_buffer(log_buffer, sizeof(log_buffer)) != 0) {
+            result = 11;
+        }
+    }
+    if (!result && (strcmp(log_level_str(LOG_LEVEL_ERROR), "ERR") != 0 ||
+        strcmp(log_level_str((log_level_t)99), "???") != 0)) result = 12;
+
+    if (!result && clock_init() != ERR_UNAVAILABLE) result = 13;
+    if (!result && (clock_get_status(&clock_status) != OK ||
+        !clock_status.initialized || !clock_status.monotonic_available ||
+        clock_status.utc_available)) result = 14;
+    if (!result && clock_get_utc(&monotonic_ticks) != ERR_UNAVAILABLE) {
+        result = 15;
+    }
+    if (!result && clock_get_monotonic_ticks(&monotonic_ticks) != OK) {
+        result = 16;
+    }
     if (!result && (clock_self_test(&clock_result) != OK ||
-        clock_result.failed != 0U || clock_result.passed != 5U)) result = 10;
-    if (!result && clock_validate_state() != OK) result = 11;
+        clock_result.failed != 0U || clock_result.passed != 5U)) result = 17;
+    if (!result && clock_validate_state() != OK) result = 18;
     if (!result) {
         uint64_t unix_seconds = 1U;
 
@@ -274,7 +318,7 @@ int main(void) {
         fake_tick = 500U;
         if (clock_init() != OK || clock_get_utc(&unix_seconds) != OK ||
             unix_seconds != 0U || clock_validate_state() != OK) {
-            result = 12;
+            result = 19;
         }
     }
     if (!result) result = test_protocol_core_contract();

@@ -52,7 +52,7 @@ static int fat12_validate_bpb(void) {
     return OK;
 }
 
-static int strncmp(const char* a, const char* b, uint32_t n) {
+static int fat12_strncmp(const char* a, const char* b, uint32_t n) {
     for (uint32_t i = 0; i < n; i++) {
         if (a[i] != b[i]) return a[i] - b[i];
         if (a[i] == '\0') return 0;
@@ -276,7 +276,7 @@ static int fat12_find_root_index(const char encoded[11],
         if (entry->name[0] == 0x00) break;
         if ((uint8_t)entry->name[0] == 0xE5 ||
             (entry->attributes & 0x08U)) continue;
-        if (strncmp(entry->name, encoded, 11U) == 0) {
+        if (fat12_strncmp(entry->name, encoded, 11U) == 0) {
             if (index_out) *index_out = index;
             return OK;
         }
@@ -422,7 +422,7 @@ static fat12_dir_entry_t* fat12_find_entry(const char* filename) {
         if ((uint8_t)fs.root_dir[idx].name[0] == 0xE5U) continue;
         if (fs.root_dir[idx].attributes & 0x08) continue;
 
-        if (strncmp(fs.root_dir[idx].name, fat12_name, 11) == 0) {
+        if (fat12_strncmp(fs.root_dir[idx].name, fat12_name, 11) == 0) {
             return &fs.root_dir[idx];
         }
     }
@@ -798,7 +798,7 @@ static fat12_dir_entry_t* fat12_find_in_dir(uint16_t dir_cluster, const char* fa
             if ((uint8_t)entry->name[0] == 0xE5U) continue;
             if (entry->attributes & 0x08) continue;
 
-            if (strncmp(entry->name, fat12_name, 11) == 0) {
+            if (fat12_strncmp(entry->name, fat12_name, 11) == 0) {
                 kmemcpy(&found, entry, sizeof(fat12_dir_entry_t));
                 kfree(cluster_buf);
                 cluster_buf = 0;
@@ -865,7 +865,7 @@ uint16_t fat12_resolve_path(const char* path) {
                 if (fs.root_dir[idx].name[0] == 0x00) break;
                 if ((uint8_t)fs.root_dir[idx].name[0] == 0xE5U) continue;
                 if (fs.root_dir[idx].attributes & 0x08) continue;
-                if (strncmp(fs.root_dir[idx].name, fat12_name, 11) == 0) {
+                if (fat12_strncmp(fs.root_dir[idx].name, fat12_name, 11) == 0) {
                     entry = &fs.root_dir[idx];
                     break;
                 }
@@ -1314,7 +1314,7 @@ int fat12_delete_file_in_dir(uint16_t dir_cluster, const char* filename) {
             if (candidate->name[0] == 0x00) break;
             if ((uint8_t)candidate->name[0] == 0xE5U) continue;
             if (candidate->attributes & 0x08) continue;
-            if (strncmp(candidate->name, fat12_name, 11) == 0) {
+            if (fat12_strncmp(candidate->name, fat12_name, 11) == 0) {
                 entry = candidate;
                 break;
             }
@@ -1384,7 +1384,7 @@ int fat12_delete_file_in_dir(uint16_t dir_cluster, const char* filename) {
             if ((uint8_t)entry->name[0] == 0xE5U) continue;
             if (entry->attributes & 0x08) continue;
 
-            if (strncmp(entry->name, fat12_name, 11) == 0) {
+            if (fat12_strncmp(entry->name, fat12_name, 11) == 0) {
                 uint16_t cluster = entry->cluster_low;
                 uint32_t file_chain_steps = 0;
                 while (cluster >= 2 && cluster < 0xFF8 &&
@@ -1761,7 +1761,7 @@ static int fat12_find_dir_slot(uint16_t dir_cluster, const char encoded[11],
                 continue;
             }
             if ((entry->attributes & 0x08U) == 0U &&
-                strncmp(entry->name, encoded, 11U) == 0) {
+                fat12_strncmp(entry->name, encoded, 11U) == 0) {
                 *cluster_out = cluster;
                 *offset_out = index * sizeof(fat12_dir_entry_t);
                 *existing_out = 1;
@@ -1830,7 +1830,7 @@ int fat12_rename_file_in_dir(uint16_t dir_cluster, const char* old_name,
     if (result != OK) return result;
     result = fat12_encode_root_name(new_name, new_encoded);
     if (result != OK) return result;
-    if (strncmp(old_encoded, new_encoded, 11U) == 0) return OK;
+    if (fat12_strncmp(old_encoded, new_encoded, 11U) == 0) return OK;
 
     if (dir_cluster == 0U) {
         fat12_dir_entry_t previous;

@@ -607,6 +607,7 @@ static int block_cache_validate_device(const block_device_t* device,
                                        uint32_t lba, uint8_t count,
                                        uint32_t buffer_bytes) {
     uint32_t required;
+    uint64_t required_size;
 
     if (!device) {
         LOG_ERROR("BLKCACHE", "Dispositivo nulo na validacao do cache");
@@ -634,7 +635,8 @@ static int block_cache_validate_device(const block_device_t* device,
         LOG_ERROR("BLKCACHE", "Quantidade excede limite do cache");
         return ERR_OVERFLOW;
     }
-    if (count > 0xFFFFFFFFU / BLOCK_CACHE_BLOCK_SIZE) {
+    required_size = (uint64_t)count * BLOCK_CACHE_BLOCK_SIZE;
+    if (required_size > 0xFFFFFFFFULL) {
         LOG_ERROR("BLKCACHE", "Tamanho excede limite do cache");
         return ERR_OVERFLOW;
     }

@@ -1699,6 +1699,39 @@ test-vfs-path-host: tools\core_host_runner.py tools\coverage_collector.py tests\
 test-file-index-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_file_index_host.c tests\catalog.json src\fs\file_index.c src\include\fs\file_index.h
 	python tools\core_host_runner.py --case host:storage:file-index --cc "$(HOST_CC)"
 
+test-fs-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_fs_host.c tests\catalog.json src\fs\fs.c src\include\fs\fs.h
+	python tools\core_host_runner.py --case host:storage:fs --cc "$(HOST_CC)"
+
+test-storage-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_storage_host.c tests\catalog.json src\fs\storage.c src\include\fs\storage.h
+	python tools\core_host_runner.py --case host:storage:storage --cc "$(HOST_CC)"
+
+test-block-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_block_host.c tests\catalog.json src\fs\block.c src\fs\block_cache.c src\include\fs\block.h src\include\fs\block_cache.h
+	python tools\core_host_runner.py --case host:storage:block --cc "$(HOST_CC)"
+
+test-fat12-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_fat12_host.c tests\catalog.json src\fs\fat12.c src\include\fs\fat12.h
+	python tools\core_host_runner.py --case host:storage:fat12 --cc "$(HOST_CC)"
+
+test-fat32-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_fat32_host.c tests\catalog.json src\fs\fat32.c src\include\fs\fat32.h
+	python tools\core_host_runner.py --case host:storage:fat32 --cc "$(HOST_CC)"
+
+test-vfs-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_vfs_host.c tests\catalog.json src\fs\vfs.c src\include\fs\vfs.h
+	python tools\core_host_runner.py --case host:storage:vfs --cc "$(HOST_CC)"
+
+test-slab-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_slab_metadata_host.c tests\catalog.json src\memory\slab.c src\include\memory\slab.h
+	python tools\core_host_runner.py --case host:memory:slab-metadata --cc "$(HOST_CC)"
+
+test-timer-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_timer_host.c tests\catalog.json src\drivers\timer.c src\include\core\timer.h
+	python tools\core_host_runner.py --case host:core:timer --cc "$(HOST_CC)"
+
+test-udp-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_udp_host.c tests\catalog.json src\core\udp.c src\include\core\udp.h
+	python tools\core_host_runner.py --case host:network:udp --cc "$(HOST_CC)"
+
+test-arp-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_arp_host.c tests\catalog.json src\core\arp.c src\include\core\arp.h
+	python tools\core_host_runner.py --case host:network:arp --cc "$(HOST_CC)"
+
+test-icmp-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_icmp_host.c tests\catalog.json src\core\icmp.c src\include\core\icmp.h
+	python tools\core_host_runner.py --case host:network:icmp --cc "$(HOST_CC)"
+
 test-tst2-host: tools\tst2_host_runner.py tests\unit\test_protocol_core.c tests\unit\test_qemu_test_runner.py src\core\test_protocol_core.c src\core\test_protocol_core.h
 	python tools\tst2_host_runner.py --cc "$(HOST_CC)"
 
@@ -1785,5 +1818,5 @@ clean:
 .PHONY: test-tst6-host test-tst6-qemu-matrix-baseline test-tst6-qemu-matrix-minimal test-tst6-qemu-matrix-network test-tst6-qemu-matrix-usb-hid test-tst6-qemu-matrix-usb-storage test-tst6-qemu-matrix-audio test-tst6-qemu-matrix-display test-tst6-qemu-matrix-pci test-tst6-qemu-stress-kernel test-tst6-qemu-stress-storage test-tst6-qemu-stress-network test-tst6-qemu-stress-apps test-tst6-qemu-fault-memory test-tst6-qemu-fault-block test-tst6-qemu-fault-block-cache test-tst6-qemu-fault-package test-tst6-qemu-fault-update test-tst6-qemu-fault-network test-tst6-qemu-fault-process test-tst6-qemu-fault-recovery
 .PHONY: test-tst7-host test-tst7-quick test-tst7-full
 .PHONY: test-tst7-continuous-host test-tst7-continuous
-.PHONY: test-network-host test-network-manager-host test-route-host test-ipv4-host test-crypto-host test-scheduling-host test-package-host test-state-host test-device-manager-host test-app-api-host test-app-catalog-host test-input-host test-power-host test-vfs-path-host test-file-index-host
+.PHONY: test-network-host test-network-manager-host test-route-host test-ipv4-host test-crypto-host test-scheduling-host test-package-host test-state-host test-device-manager-host test-app-api-host test-app-catalog-host test-input-host test-power-host test-vfs-path-host test-file-index-host test-fs-host test-storage-host test-block-host test-fat12-host test-fat32-host test-vfs-host test-slab-host test-timer-host test-udp-host test-arp-host test-icmp-host
 .PHONY: catalog-test-strict

@@ -53,6 +53,28 @@ VFS_PATH_RESULT_DIR = ROOT / "build" / "test-results" / "vfs-path-host"
 VFS_PATH_BINARY = ROOT / "build" / "tests" / "test_vfs_path_host.exe"
 FILE_INDEX_RESULT_DIR = ROOT / "build" / "test-results" / "file-index-host"
 FILE_INDEX_BINARY = ROOT / "build" / "tests" / "test_file_index_host.exe"
+FS_RESULT_DIR = ROOT / "build" / "test-results" / "fs-host"
+FS_BINARY = ROOT / "build" / "tests" / "test_fs_host.exe"
+STORAGE_RESULT_DIR = ROOT / "build" / "test-results" / "storage-host"
+STORAGE_BINARY = ROOT / "build" / "tests" / "test_storage_host.exe"
+BLOCK_RESULT_DIR = ROOT / "build" / "test-results" / "block-host"
+BLOCK_BINARY = ROOT / "build" / "tests" / "test_block_host.exe"
+FAT12_RESULT_DIR = ROOT / "build" / "test-results" / "fat12-host"
+FAT12_BINARY = ROOT / "build" / "tests" / "test_fat12_host.exe"
+FAT32_RESULT_DIR = ROOT / "build" / "test-results" / "fat32-host"
+FAT32_BINARY = ROOT / "build" / "tests" / "test_fat32_host.exe"
+VFS_RESULT_DIR = ROOT / "build" / "test-results" / "vfs-host"
+VFS_BINARY = ROOT / "build" / "tests" / "test_vfs_host.exe"
+SLAB_RESULT_DIR = ROOT / "build" / "test-results" / "slab-host"
+SLAB_BINARY = ROOT / "build" / "tests" / "test_slab_metadata_host.exe"
+TIMER_RESULT_DIR = ROOT / "build" / "test-results" / "timer-host"
+TIMER_BINARY = ROOT / "build" / "tests" / "test_timer_host.exe"
+UDP_RESULT_DIR = ROOT / "build" / "test-results" / "udp-host"
+UDP_BINARY = ROOT / "build" / "tests" / "test_udp_host.exe"
+ARP_RESULT_DIR = ROOT / "build" / "test-results" / "arp-host"
+ARP_BINARY = ROOT / "build" / "tests" / "test_arp_host.exe"
+ICMP_RESULT_DIR = ROOT / "build" / "test-results" / "icmp-host"
+ICMP_BINARY = ROOT / "build" / "tests" / "test_icmp_host.exe"
 DEFAULT_TIMEOUT = 120.0
 CORE_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_core_contracts.c",
@@ -158,6 +180,67 @@ FILE_INDEX_SOURCE_FILES = (
     ROOT / "src" / "fs" / "file_index.c",
     ROOT / "src" / "core" / "string.c",
 )
+FS_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_fs_host.c",
+    ROOT / "src" / "fs" / "fs.c",
+    ROOT / "src" / "core" / "string.c",
+)
+STORAGE_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_storage_host.c",
+    ROOT / "src" / "fs" / "storage.c",
+    ROOT / "src" / "core" / "string.c",
+)
+BLOCK_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_block_host.c",
+    ROOT / "src" / "fs" / "block.c",
+    ROOT / "src" / "fs" / "block_cache.c",
+    ROOT / "src" / "core" / "string.c",
+)
+FAT12_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_fat12_host.c",
+    ROOT / "src" / "fs" / "fat12.c",
+    ROOT / "src" / "core" / "string.c",
+)
+FAT32_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_fat32_host.c",
+    ROOT / "src" / "fs" / "fat32.c",
+    ROOT / "src" / "core" / "string.c",
+)
+VFS_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_vfs_host.c",
+    ROOT / "src" / "fs" / "vfs.c",
+    ROOT / "src" / "core" / "string.c",
+)
+SLAB_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_slab_metadata_host.c",
+    ROOT / "src" / "memory" / "slab.c",
+    ROOT / "src" / "core" / "log.c",
+    ROOT / "src" / "core" / "string.c",
+)
+TIMER_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_timer_host.c",
+    ROOT / "src" / "drivers" / "timer.c",
+    ROOT / "src" / "core" / "log.c",
+    ROOT / "src" / "core" / "string.c",
+)
+UDP_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_udp_host.c",
+    ROOT / "src" / "core" / "udp.c",
+    ROOT / "src" / "core" / "log.c",
+    ROOT / "src" / "core" / "string.c",
+)
+ARP_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_arp_host.c",
+    ROOT / "src" / "core" / "arp.c",
+    ROOT / "src" / "core" / "log.c",
+    ROOT / "src" / "core" / "string.c",
+)
+ICMP_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_icmp_host.c",
+    ROOT / "src" / "core" / "icmp.c",
+    ROOT / "src" / "core" / "log.c",
+    ROOT / "src" / "core" / "string.c",
+)
 SOURCE_FILES = CORE_SOURCE_FILES
 
 
@@ -200,6 +283,28 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
     if case_id == "host:storage:file-index":
         return (FILE_INDEX_RESULT_DIR, FILE_INDEX_BINARY,
                 FILE_INDEX_SOURCE_FILES, "file-index-host")
+    if case_id == "host:storage:fs":
+        return FS_RESULT_DIR, FS_BINARY, FS_SOURCE_FILES, "fs-host"
+    if case_id == "host:storage:storage":
+        return STORAGE_RESULT_DIR, STORAGE_BINARY, STORAGE_SOURCE_FILES, "storage-host"
+    if case_id == "host:storage:block":
+        return BLOCK_RESULT_DIR, BLOCK_BINARY, BLOCK_SOURCE_FILES, "block-host"
+    if case_id == "host:storage:fat12":
+        return FAT12_RESULT_DIR, FAT12_BINARY, FAT12_SOURCE_FILES, "fat12-host"
+    if case_id == "host:storage:fat32":
+        return FAT32_RESULT_DIR, FAT32_BINARY, FAT32_SOURCE_FILES, "fat32-host"
+    if case_id == "host:storage:vfs":
+        return VFS_RESULT_DIR, VFS_BINARY, VFS_SOURCE_FILES, "vfs-host"
+    if case_id == "host:memory:slab-metadata":
+        return SLAB_RESULT_DIR, SLAB_BINARY, SLAB_SOURCE_FILES, "slab-host"
+    if case_id == "host:core:timer":
+        return TIMER_RESULT_DIR, TIMER_BINARY, TIMER_SOURCE_FILES, "timer-host"
+    if case_id == "host:network:udp":
+        return UDP_RESULT_DIR, UDP_BINARY, UDP_SOURCE_FILES, "udp-host"
+    if case_id == "host:network:arp":
+        return ARP_RESULT_DIR, ARP_BINARY, ARP_SOURCE_FILES, "arp-host"
+    if case_id == "host:network:icmp":
+        return ICMP_RESULT_DIR, ICMP_BINARY, ICMP_SOURCE_FILES, "icmp-host"
     raise ValueError(f"caso_host_invalido:{case_id}")
 
 
@@ -348,7 +453,13 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:core:device-manager", "host:core:app-api",
                                  "host:core:app-catalog", "host:core:input",
                                  "host:core:power", "host:storage:vfs-path",
-                                 "host:storage:file-index"))
+                                 "host:storage:file-index", "host:storage:fs",
+                                 "host:storage:storage", "host:storage:block",
+                                 "host:storage:fat12", "host:storage:fat32",
+                                 "host:storage:vfs",
+                                 "host:memory:slab-metadata",
+                                 "host:core:timer", "host:network:udp",
+                                 "host:network:arp", "host:network:icmp"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
     return parser.parse_args()

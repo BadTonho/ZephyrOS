@@ -1027,7 +1027,9 @@ int vfs_stream_read(file_t* file, void* buffer, uint32_t size,
             continue;
         }
         if (*bytes_read > 0U) return OK;
+#if !defined(ZEPHYROS_HOST_TEST)
         asm volatile("sti" : : : "memory");
+#endif
         result = ipc_wait(WAIT_TIMEOUT_INFINITE, &reason);
         if (result != OK) return result;
         if (reason == WAIT_REASON_SIGNAL) return OK;

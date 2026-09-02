@@ -20,7 +20,7 @@ static uint32_t fat32_max_cluster_steps(void) {
 
 #define FAT32_CHAIN_LIMIT 0x01000000u
 
-static int strncmp(const char* a, const char* b, uint32_t n) {
+static int fat32_strncmp(const char* a, const char* b, uint32_t n) {
     for (uint32_t i = 0; i < n; i++) {
         if (a[i] != b[i]) return a[i] - b[i];
         if (a[i] == '\0') return 0;
@@ -138,7 +138,7 @@ static int fat32_find_in_dir(uint32_t dir_cluster, const char* filename,
             if ((uint8_t)entry->name[0] == 0xE5) continue;
             if (entry->attributes == 0x0F) continue;
 
-            if (strncmp(entry->name, filename, 11) == 0) {
+            if (fat32_strncmp(entry->name, filename, 11) == 0) {
                 kmemcpy(output, entry, sizeof(fat32_dir_entry_t));
                 kfree(cluster_buf);
                 cluster_buf = 0;
@@ -392,7 +392,7 @@ int fat32_delete_file(const char* filename) {
             if ((uint8_t)entry->name[0] == 0xE5) continue;
             if (entry->attributes == 0x0F) continue;
 
-            if (strncmp(entry->name, filename, 11) == 0) {
+            if (fat32_strncmp(entry->name, filename, 11) == 0) {
                 uint32_t file_cluster = ((uint32_t)entry->cluster_high << 16) | entry->cluster_low;
 
                 uint32_t c = file_cluster;
@@ -1121,7 +1121,7 @@ int fat32_write_file_in_dir(uint32_t dir_cluster, const char* filename, const ui
             uint32_t entries_per_cluster = cluster_size / 32;
             for (uint32_t i = 0; i < entries_per_cluster; i++) {
                 fat32_dir_entry_t* entry = (fat32_dir_entry_t*)(cluster_buf + i * 32);
-                if (strncmp(entry->name, fat12_name, 11) == 0) {
+                if (fat32_strncmp(entry->name, fat12_name, 11) == 0) {
                     entry->file_size = size;
                     entry->cluster_high = (first_cluster >> 16) & 0xFFFF;
                     entry->cluster_low = first_cluster & 0xFFFF;
@@ -1174,7 +1174,7 @@ int fat32_delete_file_in_dir(uint32_t dir_cluster, const char* filename) {
             if ((uint8_t)entry->name[0] == 0xE5) continue;
             if (entry->attributes == 0x0F) continue;
 
-            if (strncmp(entry->name, fat12_name, 11) == 0) {
+            if (fat32_strncmp(entry->name, fat12_name, 11) == 0) {
                 uint32_t file_cluster = ((uint32_t)entry->cluster_high << 16) | entry->cluster_low;
 
                 uint32_t c = file_cluster;

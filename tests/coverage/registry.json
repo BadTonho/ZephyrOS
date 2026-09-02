@@ -1681,6 +1681,24 @@
       "evidence": "make test-core-host PASS com caminho UTC indisponivel e disponivel, rollover, limites de log, protocolo ZTEST e relatorio instrumentado atualizado"
     },
     {
+      "id": "vfs-host-dynamic",
+      "domain": "storage-vfs",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:storage:vfs"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/vfs-host/coverage.json",
+      "coverage_sources": [
+        "src/fs/vfs.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-vfs-host PASS com tabelas de descritores, arquivos, pipes, poll/select, dispositivo, socket, quiescencia e validacao de invariantes em fixture host-only instrumentada"
+    },
+    {
       "id": "vfs-path-host-dynamic",
       "domain": "storage-vfs-path",
       "owner": "quality",
@@ -1715,6 +1733,192 @@
       ],
       "include_public_apis": true,
       "evidence": "make test-file-index-host PASS com rebuild cooperativo, cancelamento, pesquisa, classificacao stale/missing, cursores boot/storage e recuperacao de corrupcao no relatorio instrumentado"
+    },
+    {
+      "id": "fs-host-dynamic",
+      "domain": "storage-fs",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:storage:fs"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/fs-host/coverage.json",
+      "coverage_sources": [
+        "src/fs/fs.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-fs-host PASS com fixture FAT32, paths legacy e storage, cursores, operacoes atomicas, streaming e erros canonicos no relatorio instrumentado"
+    },
+    {
+      "id": "storage-host-dynamic",
+      "domain": "storage-block",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:storage:storage"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/storage-host/coverage.json",
+      "coverage_sources": [
+        "src/fs/storage.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-storage-host PASS com imagem FAT12 estatica, MBR/BPB, inventario, mount, cursores, leitura, espaco livre, rejeicao somente-leitura e limpeza no relatorio instrumentado"
+    },
+    {
+      "id": "block-host-dynamic",
+      "domain": "storage-block",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:storage:block"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/block-host/coverage.json",
+      "coverage_sources": [
+        "src/fs/block.c",
+        "src/fs/block_cache.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-block-host PASS com autotestes de BIO e cache, limites, cancelamento, failpoints, eviction, writeback, sync e restauracao do inventario no relatorio instrumentado"
+    },
+    {
+      "id": "fat12-host-dynamic",
+      "domain": "storage-fat12",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:storage:fat12"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/fat12-host/coverage.json",
+      "coverage_sources": [
+        "src/fs/fat12.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-fat12-host PASS com imagem FAT12 estatica, leitura, paths, metadados, operacoes atomicas, streaming, cancelamento e erros canonicos no relatorio instrumentado"
+    },
+    {
+      "id": "fat32-host-dynamic",
+      "domain": "storage-fat32",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:storage:fat32"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/fat32-host/coverage.json",
+      "coverage_sources": [
+        "src/fs/fat32.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-fat32-host PASS com imagem FAT32 compacta, classificacao de clusters, leitura, paths, metadados, criacao, escrita e remocao em fixture estatica no relatorio instrumentado"
+    },
+    {
+      "id": "slab-host-dynamic",
+      "domain": "memory-slab",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:memory:slab-metadata"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/slab-host/coverage.json",
+      "coverage_sources": [
+        "src/memory/slab.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-slab-host PASS com validacao de inicializacao, metadados, limites, duplicidade, estatisticas e limpeza do registrador SLAB em fixture host-only"
+    },
+    {
+      "id": "timer-host-dynamic",
+      "domain": "core-timer",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:timer"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/timer-host/coverage.json",
+      "coverage_sources": [
+        "src/drivers/timer.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-timer-host PASS com timers one-shot e periodicos, notifier, dispatch, cancelamento, handles invalidos e limpeza em fixture host-only"
+    },
+    {
+      "id": "udp-host-dynamic",
+      "domain": "network-udp",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:network:udp"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/udp-host/coverage.json",
+      "coverage_sources": [
+        "src/core/udp.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-udp-host PASS com envio, reinjecao, checksum, listeners, broadcast, erros de protocolo, limites e limpeza usando IPv4 falso"
+    },
+    {
+      "id": "arp-host-dynamic",
+      "domain": "network-arp",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:network:arp"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/arp-host/coverage.json",
+      "coverage_sources": [
+        "src/core/arp.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-arp-host PASS com Ethernet falsa, retries ate timeout, requests e replies, entradas invalidas e limpeza do cache"
+    },
+    {
+      "id": "icmp-host-dynamic",
+      "domain": "network-icmp",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:network:icmp"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/icmp-host/coverage.json",
+      "coverage_sources": [
+        "src/core/icmp.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "pendente ate make test-icmp-host passar com IPv4 e timer falsos"
     }
   ]
 }

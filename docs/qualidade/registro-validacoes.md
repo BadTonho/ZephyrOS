@@ -3822,3 +3822,143 @@ Os horários dessas entradas não estavam documentados e não foram inferidos.
   validacao monotona. O relatorio dinamico atualizado cobriu tambem os seis
   contratos publicos e as rotinas privadas antes pendentes. A sincronizacao
   ficou em 6.820 superficies, 2.312 `COVERED`, 4.508 `PENDING` e 52 casos.
+- Incremento Storage/VFS em 2026-09-01 21:33 (America/Sao_Paulo):
+  `make test-vfs-path-host` e `make test-file-index-host` passaram com
+  `HOST_CC` configurado. Os casos exercitaram paths, aliases, mounts, cwd,
+  listagens, quiescencia, pesquisa, rebuild cooperativo, cancelamento,
+  resultados stale/missing, corrupcao de candidato e corrupcao da tabela
+  ativa com recuperacao. Os relatorios instrumentados
+  `build/test-results/vfs-path-host/coverage.json` e
+  `build/test-results/file-index-host/coverage.json` terminaram `PASS`, sem
+  enderecos desconhecidos ou ambiguos. A sincronizacao deixou 6.820
+  superficies, 2.334 `COVERED`, 4.486 `PENDING` e 54 casos; `make
+  catalog-test` passou e `catalog-test-strict` continua pendente pelas
+  superficies de outros lotes ainda sem executor real.
+- Incremento Memoria/SLAB em 2026-09-01 22:49 (America/Sao_Paulo):
+  `make test-slab-host` passou com `HOST_CC` configurado e warnings tratados
+  como erro. A fixture host-only exercitou inicializacao idempotente, limites
+  de criacao, duplicidade, metadados por indice, estatisticas, ownership
+  nulo, validacao e destruicao sem alocar paginas reais. O teste revelou e
+  corrigiu truncamento de ponteiros para `uint32_t` em hosts 64-bit; a
+  aritmetica interna passou a usar `uint64_t`, preservando o caminho
+  freestanding. O relatorio `build/test-results/slab-host/coverage.json`
+  terminou `PASS`, sem enderecos desconhecidos ou ambiguos. A sincronizacao
+  deixou 6.820 superficies, 2.638 `COVERED`, 4.182 `PENDING` e 61 casos;
+  `make catalog-test` passou. `catalog-test-strict` continua pendente pelas
+  superficies de outros lotes ainda sem executor real.
+- Incremento Core/scheduling em 2026-09-01:
+  `make test-core-host` e `make test-scheduling-host` passaram com
+  `HOST_CC` configurado. O caso de scheduling passou a exercitar o notifier
+  de IRQ deferred, cancelamento e snapshot de trabalhos, quiescencia com
+  deadline do relogio falso e restauracao da fila. O fixture do protocolo
+  tambem passou a inicializar explicitamente seu estado, removendo dependencia
+  de conteudo residual da stack. O relatorio
+  `build/test-results/scheduling-host/coverage.json` terminou `PASS`, sem
+  enderecos desconhecidos ou ambiguos. A sincronizacao deixou 6.820
+  superficies, 2.632 `COVERED`, 4.188 `PENDING` e 60 casos; `make
+  catalog-test` passou. O gate estrito continua pendente pelas superficies de
+  outros lotes ainda sem executor real.
+- Incremento Storage/FS em 2026-09-01 21:33 (America/Sao_Paulo):
+  `make test-fs-host` passou com `HOST_CC` configurado. A suite exercitou
+  paths legacy e de storage em fixtures FAT12/FAT32, cursores com cadeia FAT,
+  leitura por faixa, mutacoes, operacoes atomicas, streaming, selecao do
+  volume de sistema, geracao e erros canonicos. O relatorio instrumentado
+  `build/test-results/fs-host/coverage.json` terminou `PASS`, sem enderecos
+  desconhecidos ou ambiguos. A sincronizacao deixou 6.820 superficies,
+  2.395 `COVERED`, 4.425 `PENDING` e 55 casos; `make catalog-test` passou e
+  `catalog-test-strict` continua pendente pelas superficies de outros lotes
+  ainda sem executor real.
+- Incremento Storage/backend em 2026-09-01 22:03 (America/Sao_Paulo):
+  `make test-storage-host` passou com `HOST_CC` configurado. A suite usou uma
+  imagem FAT12 estatica e um provider de bloco falso para exercitar MBR/BPB,
+  inventario, mount, aliases, cursores, leitura, espaco livre, estados
+  somente-leitura e limpeza, sem escrita real. O relatorio
+  `build/test-results/storage-host/coverage.json` terminou `PASS`, sem
+  enderecos desconhecidos ou ambiguos. A sincronizacao deixou 6.820
+  superficies, 2.473 `COVERED`, 4.347 `PENDING` e 56 casos; `make
+  catalog-test` passou.
+- Incremento Storage/BIO em 2026-09-01 22:03 (America/Sao_Paulo):
+  `make test-block-host` passou com `HOST_CC` configurado. O caso executou os
+  autotestes reais de BIO e block-cache, incluindo limites, cancelamento,
+  failpoints, fusao/FIFO, eviction, dirty/writeback, sync e restauracao do
+  inventario. Durante a compilacao foram corrigidos um warning de variavel
+  residual em `block.c` e uma checagem de overflow impossivel para `uint8_t`
+  em `block_cache.c`, mantendo a validacao em aritmetica de 64 bits. O
+  relatorio `build/test-results/block-host/coverage.json` terminou `PASS`, sem
+  enderecos desconhecidos ou ambiguos. A sincronizacao deixou 6.820
+  superficies, 2.479 `COVERED`, 4.341 `PENDING` e 57 casos; `make
+  catalog-test` passou e `catalog-test-strict` continua pendente pelas
+  superficies de outros lotes ainda sem executor real.
+- Incremento Storage/FAT12 em 2026-09-01 22:09 (America/Sao_Paulo):
+  `make test-fat12-host` passou com `HOST_CC` configurado. A suite usou uma
+  imagem FAT12 estatica com raiz e subdiretorio para exercitar leitura, paths,
+  metadados, listagem, operacoes atomicas, streaming, cancelamento e erros de
+  nome/tamanho. A compilacao revelou a colisao do helper privado `strncmp`
+  com o builtin da libc sob `-Werror`; ele foi renomeado para
+  `fat12_strncmp`, sem alterar a API publica. O relatorio
+  `build/test-results/fat12-host/coverage.json` terminou `PASS`, sem
+  enderecos desconhecidos ou ambiguos. A sincronizacao deixou 6.820
+  superficies, 2.543 `COVERED`, 4.277 `PENDING` e 58 casos; `make
+  catalog-test` passou e `catalog-test-strict` continua pendente pelas
+  superficies de outros lotes ainda sem executor real.
+- Incremento Storage/FAT32 em 2026-09-01 22:09 (America/Sao_Paulo):
+  `make test-fat32-host` passou com `HOST_CC` configurado. A suite usou uma
+  imagem FAT32 estatica com mais de 4.085 clusters para exercitar classificacao
+  de clusters, leitura, paths, metadados, criacao, escrita, remocao e limites.
+  A compilacao revelou a mesma colisao de helper privado `strncmp` com o
+  builtin da libc sob `-Werror`; ele foi renomeado para `fat32_strncmp`, sem
+  alterar a API publica. O relatorio
+  `build/test-results/fat32-host/coverage.json` terminou `PASS`, sem enderecos
+  desconhecidos ou ambiguos. A sincronizacao deixou 6.820 superficies,
+  2.584 `COVERED`, 4.236 `PENDING` e 59 casos; `make catalog-test` passou.
+- Incremento Storage/VFS em 2026-09-01 22:09 (America/Sao_Paulo):
+  `make test-vfs-host` passou com `HOST_CC` configurado. A fixture exercitou
+  tabelas de descritores, arquivos regulares, dispositivos, pipes, sockets,
+  poll/select, fsync/sync, quiescencia, limites e validacao de invariantes sem
+  hardware ou armazenamento real. O build host recebeu apenas a protecao do
+  `sti` legado durante `ZEPHYROS_HOST_TEST`, preservando o caminho freestanding.
+  O relatorio `build/test-results/vfs-host/coverage.json` terminou `PASS`, sem
+  enderecos desconhecidos ou ambiguos. A sincronizacao deixou 6.820
+  superficies, 2.608 `COVERED`, 4.212 `PENDING` e 60 casos; `make
+  catalog-test` passou e `catalog-test-strict` continua pendente pelas
+  superficies de outros lotes ainda sem executor real.
+- Incremento Memoria/SLAB e Core/scheduling em 2026-09-01:
+  `make test-slab-host` e `make test-scheduling-host` passaram com `HOST_CC`
+  configurado e warnings tratados como erro. A fixture SLAB cobriu
+  inicializacao, metadados, limites, duplicidade, estatisticas e limpeza sem
+  paginas reais. A fixture de scheduling passou a cobrir `wait_event`,
+  snapshots de filas e waiters e a prova controlada da kworker, incluindo os
+  callbacks de condicao e execucao; `workqueue_worker_main` permanece
+  pendente por ser um loop de servico infinito. Os relatorios instrumentados
+  terminaram `PASS`, sem enderecos desconhecidos ou ambiguos. A sincronizacao
+  atual registra 6.820 superficies, 2.654 `COVERED`, 4.166 `PENDING` e 61
+  casos; `make catalog-test` e `make q3check` passaram.
+- Incremento Core/timer em 2026-09-01:
+  `make test-timer-host` passou com `HOST_CC` configurado e warnings tratados
+  como erro. A fixture usa stubs de IDT, PIC e scheduler para exercitar
+  inicializacao idempotente, conversao de milissegundos, handles, timers
+  one-shot e periodicos, notifier, dispatch, cancelamento, callbacks com
+  erro, snapshots, limites e destruicao de proprietarios. O caminho host nao
+  executa instrucoes privilegiadas e o caminho freestanding permanece
+  inalterado. O relatorio `build/test-results/timer-host/coverage.json`
+  terminou `PASS`, sem enderecos desconhecidos ou ambiguos. A sincronizacao
+  deixou 6.820 superficies, 2.667 `COVERED`, 4.153 `PENDING` e 62 casos;
+  `make catalog-test` passou. Nenhuma superficie de timer permanece pendente.
+- Incremento Rede/UDP em 2026-09-01:
+  `make test-udp-host` passou com `HOST_CC` configurado e warnings tratados
+  como erro. A fixture usa um transporte IPv4 falso para exercitar envio,
+  reinjecao, checksum, listeners, broadcast, callback recusado, comprimentos
+  invalidos, payload fora do limite e limpeza de endpoints, sem conexao
+  externa. O relatorio `build/test-results/udp-host/coverage.json` terminou
+  `PASS`, sem enderecos desconhecidos ou ambiguos. A sincronizacao deixou
+  6.820 superficies, 2.682 `COVERED`, 4.138 `PENDING` e 63 casos; `make
+  catalog-test` passou. Nenhuma superficie de `udp.c` permanece pendente.
+- Incremento Rede/ARP em 2026-09-02:
+  `make test-arp-host` passou com `HOST_CC` configurado e warnings tratados
+  como erro. A fixture usa Ethernet falsa e relogio deterministico para
+  exercitar configuracao, validacao de IPv4 e MAC, cache, retries ate timeout,
+  requests, replies, pacotes invalidos e limpeza. O relatorio
+  `build/test-results/arp-host/coverage.json` terminou `PASS`, sem enderecos
+  desconhecidos ou ambiguos. A sincronizacao registra 6.820 superficies,
+  2.724 `COVERED`, 4.096 `PENDING` e 64 casos; `make catalog-test` passou.
+  Nenhuma superficie de `arp.c` permanece pendente.
