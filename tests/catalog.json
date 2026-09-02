@@ -99366,9 +99366,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:block"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/block.c:block_ata_submit",
@@ -99408,9 +99411,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:block"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/block.c:block_bio_pending_locked",
@@ -100458,9 +100464,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:block"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/block.c:block_write",
@@ -101234,9 +101243,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:block"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/block_cache.c:block_cache_publish_durability_locked",
@@ -101770,9 +101782,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:block"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/block_cache.c:block_cache_wait_for_entry",
@@ -101788,9 +101803,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:block"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/block_cache.c:block_cache_wake_entry",
@@ -153540,7 +153558,9 @@
         "c:src/core/string.c:kmemcpy",
         "c:src/core/string.c:kmemset",
         "c:src/fs/block.c:block_ata_descriptor",
+        "c:src/fs/block.c:block_ata_read",
         "c:src/fs/block.c:block_ata_submit",
+        "c:src/fs/block.c:block_ata_write",
         "c:src/fs/block.c:block_bio_pending_locked",
         "c:src/fs/block.c:block_can_merge",
         "c:src/fs/block.c:block_cancel",
@@ -153585,6 +153605,7 @@
         "c:src/fs/block.c:block_unregister",
         "c:src/fs/block.c:block_validate_bio",
         "c:src/fs/block.c:block_validate_state",
+        "c:src/fs/block.c:block_work_callback",
         "c:src/fs/block.c:block_write",
         "c:src/fs/block_cache.c:block_cache_choose_victim_locked",
         "c:src/fs/block_cache.c:block_cache_clear",
@@ -153616,6 +153637,7 @@
         "c:src/fs/block_cache.c:block_cache_mark_dirty_locked",
         "c:src/fs/block_cache.c:block_cache_next_generation",
         "c:src/fs/block_cache.c:block_cache_percent",
+        "c:src/fs/block_cache.c:block_cache_physical_read",
         "c:src/fs/block_cache.c:block_cache_publish_durability_locked",
         "c:src/fs/block_cache.c:block_cache_range_has_blocker_locked",
         "c:src/fs/block_cache.c:block_cache_range_valid",
@@ -153638,6 +153660,8 @@
         "c:src/fs/block_cache.c:block_cache_validate_identifier",
         "c:src/fs/block_cache.c:block_cache_validate_state",
         "c:src/fs/block_cache.c:block_cache_validate_write_device",
+        "c:src/fs/block_cache.c:block_cache_wait_condition",
+        "c:src/fs/block_cache.c:block_cache_wait_for_entry",
         "c:src/fs/block_cache.c:block_cache_wake_entry",
         "c:src/fs/block_cache.c:block_cache_write",
         "c:src/fs/block_cache.c:block_cache_writeback_step",

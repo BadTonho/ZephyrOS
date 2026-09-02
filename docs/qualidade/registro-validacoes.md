@@ -4280,3 +4280,13 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   O catalogo agora registra 7.197 superficies, 3.892 `COVERED`, 3.305
   `PENDING` e 85 casos. O fechamento integral, o gate estrito e a validacao
   TST7 completa continuam pendentes.
+
+- Incremento Storage/BIO concluido em 2026-09-02: `make test-block-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` terminou `PASS`. A fixture
+  exercitou por contrato real os callbacks ATA do inventario, o despacho
+  assincrono de BIO, a leitura fisica usada no writeback parcial e os caminhos
+  de espera do block-cache, incluindo retorno deterministico `ERR_TIMEOUT`
+  para reentrada durante leitura. A cobertura instrumentada foi sincronizada
+  sem enderecos desconhecidos ou ambiguos. O catalogo registra 7.197
+  superficies, 3.898 `COVERED`, 3.299 `PENDING` e 85 casos; o fechamento
+  integral e o gate estrito continuam pendentes.

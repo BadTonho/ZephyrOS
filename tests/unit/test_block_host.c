@@ -23,6 +23,11 @@ static uint32_t fake_ticks;
 static uint32_t fake_log_count;
 static uint8_t fake_disk[HOST_FAKE_SECTOR_COUNT][BLOCK_SECTOR_SIZE];
 static ata_device_t fake_ata;
+static const block_device_t* nested_device;
+static uint8_t nested_read_buffer[BLOCK_CACHE_BLOCK_SIZE];
+static int nested_read_result;
+static uint8_t nested_read_active;
+static uint8_t execute_scheduled_work;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -188,7 +193,9 @@ int work_init(work_struct_t* work, const char* owner,
 }
 
 int schedule_work(work_struct_t* work) {
-    return work && work->initialized ? OK : ERR_STATE;
+    if (!work || !work->initialized || !work->callback) return ERR_STATE;
+    if (!execute_scheduled_work) return OK;
+    return work->callback(work->context);
 }
 
 int schedule_delayed_work(work_struct_t* work, uint32_t delay_ticks) {
@@ -249,14 +256,37 @@ static void prepare_fixture(void) {
     memcpy(fake_ata.model, "host-block", 11U);
     fake_ticks = 100U;
     fake_log_count = 0U;
+    nested_device = 0;
+    memset(nested_read_buffer, 0, sizeof(nested_read_buffer));
+    nested_read_result = ERR_STATE;
+    nested_read_active = 0U;
+    execute_scheduled_work = 0U;
+}
+
+static int nested_read_backend(const char* device_id, uint32_t lba,
+                               uint8_t count, uint8_t* buffer) {
+    (void)device_id;
+    if (!buffer || count != 1U) return ERR_INVALID;
+    if (!nested_read_active) {
+        nested_read_active = 1U;
+        nested_read_result = block_cache_read(
+            nested_device, lba, 1U, nested_read_buffer,
+            sizeof(nested_read_buffer), nested_read_backend);
+        nested_read_active = 0U;
+    }
+    memset(buffer, 0x5AU, BLOCK_CACHE_BLOCK_SIZE);
+    return OK;
 }
 
 int main(void) {
     block_queue_stats_t block_stats;
     block_cache_stats_t cache_stats;
     block_durability_status_t durability;
+    block_device_t device;
+    bio_request_t asynchronous_request;
     uint32_t device_count;
     uint8_t buffer[BLOCK_SECTOR_SIZE];
+    uint8_t partial_payload[2] = {0xA5U, 0x5AU};
 
     prepare_fixture();
     coverage_active = 1U;
@@ -265,6 +295,10 @@ int main(void) {
     EXPECT(block_init() == OK);
     EXPECT(block_get_count(&device_count) == OK);
     EXPECT(device_count == 1U);
+    EXPECT(block_get_at(0U, &device) == OK);
+    EXPECT(device.ops.read != 0 && device.ops.write != 0);
+    EXPECT(device.ops.read(device.ops.context, 1U, 1U, buffer) == OK);
+    EXPECT(device.ops.write(device.ops.context, 1U, 1U, buffer) == OK);
     EXPECT(block_validate_state() == OK);
     EXPECT(block_cache_get_stats(&cache_stats) == OK);
     EXPECT(cache_stats.capacity == BLOCK_CACHE_CAPACITY);
@@ -274,6 +308,25 @@ int main(void) {
     EXPECT(block_stats.queue_depth == 0U);
     EXPECT(block_read("ata0", 0U, 1U, buffer) == OK);
     EXPECT(block_write("ata0", 0U, 1U, buffer) == OK);
+    memset(&asynchronous_request, 0, sizeof(asynchronous_request));
+    asynchronous_request.device_id = "ata0";
+    asynchronous_request.lba = 2U;
+    asynchronous_request.sector_count = 1U;
+    asynchronous_request.buffer = buffer;
+    asynchronous_request.buffer_bytes = sizeof(buffer);
+    asynchronous_request.operation = BLOCK_OPERATION_READ;
+    execute_scheduled_work = 1U;
+    EXPECT(block_submit(&asynchronous_request) == OK);
+    execute_scheduled_work = 0U;
+    EXPECT(asynchronous_request.state == BLOCK_REQUEST_COMPLETED);
+    EXPECT(block_cache_write(&device, 3U, 1U, partial_payload,
+                             sizeof(partial_payload)) == OK);
+    EXPECT(block_cache_sync_device("ata0") == OK);
+    nested_device = &device;
+    EXPECT(block_cache_read(&device, 4U, 1U, buffer, sizeof(buffer),
+                            nested_read_backend) == OK);
+    EXPECT(nested_read_result == ERR_TIMEOUT);
+    EXPECT(buffer[0] == 0x5AU && buffer[BLOCK_SECTOR_SIZE - 1U] == 0x5AU);
     EXPECT(block_cache_validate_state() == OK);
     EXPECT(block_self_test() == OK);
     EXPECT(block_validate_state() == OK);

@@ -131,8 +131,11 @@ FAT12 estatica, cobrindo MBR/BPB, inventario, montagem, aliases, cursores,
 leitura, espaco livre, rejeicao de mutacoes e limpeza. O caso
 `test-block-host` executa os autotestes reais de BIO e block-cache, incluindo
 limites, cancelamento, failpoints, eviction, writeback, sync e restauracao do
-inventario. Os relatorios ficam em `build/test-results/storage-host/` e
-`build/test-results/block-host/`.
+inventario. A fixture tambem invoca os callbacks ATA publicados pelo
+inventario, despacha uma requisicao assincrona, cobre escrita parcial com
+leitura fisica e força a espera de uma entrada em leitura a retornar
+`ERR_TIMEOUT`, sem aguardar indefinidamente. Os relatorios ficam em
+`build/test-results/storage-host/` e `build/test-results/block-host/`.
 
 O caso `test-fat12-host` exercita o driver legado sobre uma imagem FAT12
 estatica, incluindo leitura, paths de subdiretorio, metadados, operacoes
