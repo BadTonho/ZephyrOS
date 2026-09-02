@@ -60,6 +60,7 @@ QUICK_COMMANDS = (
     ("test-tls-host", "tls-host"),
     ("test-http-host", "http-host"),
     ("test-net-socket-host", "net-socket-host"),
+    ("test-vma-host", "vma-host"),
     ("test-qemu-selftest", "qemu-selftest"),
     ("test-tst2-host", "tst2-host"),
     ("test-tst3-host", "tst3-host"),
@@ -103,6 +104,7 @@ HOST_CASE_TARGETS = {
     "host:security:tls": "test-tls-host",
     "host:network:http": "test-http-host",
     "host:network:socket": "test-net-socket-host",
+    "host:memory:vma": "test-vma-host",
     "host:tst2:protocol-core": "test-tst2-host",
     "host:tst3:string-compress": "test-tst3-host",
 }

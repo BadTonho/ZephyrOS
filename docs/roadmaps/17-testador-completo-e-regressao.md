@@ -1031,3 +1031,15 @@ limites, reset e limpeza sem rede externa. O relatorio instrumentado terminou
 ambiguos. A sincronizacao atual registra 6.820 superficies, 3.018 `COVERED`,
 3.802 `PENDING` e 72 casos; o fechamento integral do catalogo, o gate estrito
 e a validacao TST7 completa continuam pendentes.
+
+Incremento Memoria/VMA concluido em 2026-09-02 12:26: o caso host-only
+`host:memory:vma` e o alvo `make test-vma-host` foram adicionados. A fixture
+passou com processo ring 3, paging, PMM e VFS falsos, cobrindo VMAs fixas e
+anonimas, materializacao lazy, page faults validos e invalidos, `mmap`,
+`munmap`, limites, estatisticas e limpeza. O relatorio instrumentado terminou
+`PASS` com 34 superficies resolvidas, sem enderecos desconhecidos ou
+ambiguos. `make catalog-test`, `make q3check`, `make clean` seguido de `make`
+e `git diff --check` passaram. A sincronizacao atual registra 6.820
+superficies, 3.021 `COVERED`, 3.799 `PENDING` e 73 casos; o fechamento
+integral do catalogo, o gate estrito e a validacao TST7 completa continuam
+pendentes.

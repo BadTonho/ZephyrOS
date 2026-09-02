@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **6820**
-- Casos de teste: **72**
+- Casos de teste: **73**
 - Superfícies aposentadas: **20**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 3018 |
+| `COVERED` | 3021 |
 | `MANUAL` | 0 |
-| `PENDING` | 3802 |
+| `PENDING` | 3799 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 72 |
+| `AUTOMATED` | 73 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -425,7 +425,7 @@
 | `api:src/include/core/log.h:log_get_level` | `src/include/core/log.h` | `log_get_level` | `core` | `COVERED` | 1 |
 | `api:src/include/core/log.h:log_get_stats` | `src/include/core/log.h` | `log_get_stats` | `core` | `COVERED` | 2 |
 | `api:src/include/core/log.h:log_init` | `src/include/core/log.h` | `log_init` | `core` | `COVERED` | 22 |
-| `api:src/include/core/log.h:log_print` | `src/include/core/log.h` | `log_print` | `core` | `COVERED` | 26 |
+| `api:src/include/core/log.h:log_print` | `src/include/core/log.h` | `log_print` | `core` | `COVERED` | 27 |
 | `api:src/include/core/log.h:log_print_code` | `src/include/core/log.h` | `log_print_code` | `core` | `COVERED` | 7 |
 | `api:src/include/core/log.h:log_self_test` | `src/include/core/log.h` | `log_self_test` | `core` | `COVERED` | 3 |
 | `api:src/include/core/log.h:log_set_buffer_level` | `src/include/core/log.h` | `log_set_buffer_level` | `core` | `COVERED` | 1 |
@@ -555,10 +555,10 @@
 | `api:src/include/core/spinlock.h:spinlock_acquire` | `src/include/core/spinlock.h` | `spinlock_acquire` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_init` | `src/include/core/spinlock.h` | `spinlock_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_release` | `src/include/core/spinlock.h` | `spinlock_release` | `core` | `PENDING` | 0 |
-| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 34 |
-| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 34 |
-| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 27 |
-| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 31 |
+| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 35 |
+| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 35 |
+| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 28 |
+| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 32 |
 | `api:src/include/core/syscall.h:syscall_enable_user_mode` | `src/include/core/syscall.h` | `syscall_enable_user_mode` | `core` | `PENDING` | 0 |
 | `api:src/include/core/syscall.h:syscall_handler` | `src/include/core/syscall.h` | `syscall_handler` | `core` | `COVERED` | 1 |
 | `api:src/include/core/syscall.h:syscall_init` | `src/include/core/syscall.h` | `syscall_init` | `core` | `PENDING` | 0 |
@@ -1238,14 +1238,14 @@
 | `api:src/include/memory/slab.h:kmem_cache_owns` | `src/include/memory/slab.h` | `kmem_cache_owns` | `memory` | `COVERED` | 7 |
 | `api:src/include/memory/slab.h:kmem_cache_self_test` | `src/include/memory/slab.h` | `kmem_cache_self_test` | `memory` | `COVERED` | 3 |
 | `api:src/include/memory/slab.h:kmem_cache_validate` | `src/include/memory/slab.h` | `kmem_cache_validate` | `memory` | `COVERED` | 6 |
-| `api:src/include/memory/vma.h:process_vma_copy` | `src/include/memory/vma.h` | `process_vma_copy` | `memory` | `PENDING` | 0 |
-| `api:src/include/memory/vma.h:process_vma_ensure_page` | `src/include/memory/vma.h` | `process_vma_ensure_page` | `memory` | `COVERED` | 1 |
-| `api:src/include/memory/vma.h:process_vma_get_page_fault_stats` | `src/include/memory/vma.h` | `process_vma_get_page_fault_stats` | `memory` | `COVERED` | 1 |
-| `api:src/include/memory/vma.h:process_vma_handle_page_fault` | `src/include/memory/vma.h` | `process_vma_handle_page_fault` | `memory` | `COVERED` | 1 |
-| `api:src/include/memory/vma.h:process_vma_mmap` | `src/include/memory/vma.h` | `process_vma_mmap` | `memory` | `COVERED` | 1 |
-| `api:src/include/memory/vma.h:process_vma_munmap` | `src/include/memory/vma.h` | `process_vma_munmap` | `memory` | `COVERED` | 1 |
-| `api:src/include/memory/vma.h:process_vma_register_image` | `src/include/memory/vma.h` | `process_vma_register_image` | `memory` | `COVERED` | 1 |
-| `api:src/include/memory/vma.h:process_vma_release` | `src/include/memory/vma.h` | `process_vma_release` | `memory` | `COVERED` | 1 |
+| `api:src/include/memory/vma.h:process_vma_copy` | `src/include/memory/vma.h` | `process_vma_copy` | `memory` | `COVERED` | 1 |
+| `api:src/include/memory/vma.h:process_vma_ensure_page` | `src/include/memory/vma.h` | `process_vma_ensure_page` | `memory` | `COVERED` | 2 |
+| `api:src/include/memory/vma.h:process_vma_get_page_fault_stats` | `src/include/memory/vma.h` | `process_vma_get_page_fault_stats` | `memory` | `COVERED` | 2 |
+| `api:src/include/memory/vma.h:process_vma_handle_page_fault` | `src/include/memory/vma.h` | `process_vma_handle_page_fault` | `memory` | `COVERED` | 2 |
+| `api:src/include/memory/vma.h:process_vma_mmap` | `src/include/memory/vma.h` | `process_vma_mmap` | `memory` | `COVERED` | 2 |
+| `api:src/include/memory/vma.h:process_vma_munmap` | `src/include/memory/vma.h` | `process_vma_munmap` | `memory` | `COVERED` | 2 |
+| `api:src/include/memory/vma.h:process_vma_register_image` | `src/include/memory/vma.h` | `process_vma_register_image` | `memory` | `COVERED` | 2 |
+| `api:src/include/memory/vma.h:process_vma_release` | `src/include/memory/vma.h` | `process_vma_release` | `memory` | `COVERED` | 2 |
 | `api:src/include/process/process.h:ipc_current_has_pending` | `src/include/process/process.h` | `ipc_current_has_pending` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:ipc_get_pending_count` | `src/include/process/process.h` | `ipc_get_pending_count` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:ipc_get_stats` | `src/include/process/process.h` | `ipc_get_stats` | `process` | `PENDING` | 0 |
@@ -2567,36 +2567,36 @@
 | `c:src/core/log.c:log_append_char` | `src/core/log.c` | `log_append_char` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_append_text` | `src/core/log.c` | `log_append_text` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_clear_buffer` | `src/core/log.c` | `log_clear_buffer` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_console_print_number` | `src/core/log.c` | `log_console_print_number` | `core` | `COVERED` | 27 |
+| `c:src/core/log.c:log_console_print_number` | `src/core/log.c` | `log_console_print_number` | `core` | `COVERED` | 28 |
 | `c:src/core/log.c:log_copy_recent` | `src/core/log.c` | `log_copy_recent` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_copy_text` | `src/core/log.c` | `log_copy_text` | `core` | `COVERED` | 27 |
+| `c:src/core/log.c:log_copy_text` | `src/core/log.c` | `log_copy_text` | `core` | `COVERED` | 28 |
 | `c:src/core/log.c:log_get_buffer` | `src/core/log.c` | `log_get_buffer` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_get_buffer_level` | `src/core/log.c` | `log_get_buffer_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_get_console_level` | `src/core/log.c` | `log_get_console_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_get_level` | `src/core/log.c` | `log_get_level` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_get_stats` | `src/core/log.c` | `log_get_stats` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_init` | `src/core/log.c` | `log_init` | `core` | `COVERED` | 22 |
-| `c:src/core/log.c:log_is_power_of_two` | `src/core/log.c` | `log_is_power_of_two` | `core` | `COVERED` | 27 |
-| `c:src/core/log.c:log_level_is_valid` | `src/core/log.c` | `log_level_is_valid` | `core` | `COVERED` | 27 |
+| `c:src/core/log.c:log_is_power_of_two` | `src/core/log.c` | `log_is_power_of_two` | `core` | `COVERED` | 28 |
+| `c:src/core/log.c:log_level_is_valid` | `src/core/log.c` | `log_level_is_valid` | `core` | `COVERED` | 28 |
 | `c:src/core/log.c:log_note_dropped_event` | `src/core/log.c` | `log_note_dropped_event` | `core` | `COVERED` | 2 |
-| `c:src/core/log.c:log_print` | `src/core/log.c` | `log_print` | `core` | `COVERED` | 27 |
+| `c:src/core/log.c:log_print` | `src/core/log.c` | `log_print` | `core` | `COVERED` | 28 |
 | `c:src/core/log.c:log_print_code` | `src/core/log.c` | `log_print_code` | `core` | `COVERED` | 7 |
-| `c:src/core/log.c:log_print_colored` | `src/core/log.c` | `log_print_colored` | `core` | `COVERED` | 27 |
-| `c:src/core/log.c:log_records_match` | `src/core/log.c` | `log_records_match` | `core` | `COVERED` | 27 |
-| `c:src/core/log.c:log_restore_interrupts` | `src/core/log.c` | `log_restore_interrupts` | `core` | `COVERED` | 27 |
+| `c:src/core/log.c:log_print_colored` | `src/core/log.c` | `log_print_colored` | `core` | `COVERED` | 28 |
+| `c:src/core/log.c:log_records_match` | `src/core/log.c` | `log_records_match` | `core` | `COVERED` | 28 |
+| `c:src/core/log.c:log_restore_interrupts` | `src/core/log.c` | `log_restore_interrupts` | `core` | `COVERED` | 28 |
 | `c:src/core/log.c:log_ring_clear` | `src/core/log.c` | `log_ring_clear` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_ring_copy_recent` | `src/core/log.c` | `log_ring_copy_recent` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_ring_initialize` | `src/core/log.c` | `log_ring_initialize` | `core` | `COVERED` | 24 |
-| `c:src/core/log.c:log_ring_latest_index` | `src/core/log.c` | `log_ring_latest_index` | `core` | `COVERED` | 27 |
-| `c:src/core/log.c:log_ring_store` | `src/core/log.c` | `log_ring_store` | `core` | `COVERED` | 27 |
+| `c:src/core/log.c:log_ring_latest_index` | `src/core/log.c` | `log_ring_latest_index` | `core` | `COVERED` | 28 |
+| `c:src/core/log.c:log_ring_store` | `src/core/log.c` | `log_ring_store` | `core` | `COVERED` | 28 |
 | `c:src/core/log.c:log_self_test` | `src/core/log.c` | `log_self_test` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_self_test_mark` | `src/core/log.c` | `log_self_test_mark` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_serialize_records` | `src/core/log.c` | `log_serialize_records` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_set_buffer_level` | `src/core/log.c` | `log_set_buffer_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_set_console_level` | `src/core/log.c` | `log_set_console_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_set_level` | `src/core/log.c` | `log_set_level` | `core` | `COVERED` | 2 |
-| `c:src/core/log.c:log_submit` | `src/core/log.c` | `log_submit` | `core` | `COVERED` | 27 |
-| `c:src/core/log.c:log_suspend_interrupts` | `src/core/log.c` | `log_suspend_interrupts` | `core` | `COVERED` | 27 |
+| `c:src/core/log.c:log_submit` | `src/core/log.c` | `log_submit` | `core` | `COVERED` | 28 |
+| `c:src/core/log.c:log_suspend_interrupts` | `src/core/log.c` | `log_suspend_interrupts` | `core` | `COVERED` | 28 |
 | `c:src/core/log.c:log_test_clear_behavior` | `src/core/log.c` | `log_test_clear_behavior` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_test_level_filtering` | `src/core/log.c` | `log_test_level_filtering` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_test_optional_error_code` | `src/core/log.c` | `log_test_optional_error_code` | `core` | `COVERED` | 3 |
@@ -2606,7 +2606,7 @@
 | `c:src/core/log.c:log_test_text_serialization` | `src/core/log.c` | `log_test_text_serialization` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_test_wrap_and_overwrite` | `src/core/log.c` | `log_test_wrap_and_overwrite` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_to_buffer` | `src/core/log.c` | `log_to_buffer` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_write_serial` | `src/core/log.c` | `log_write_serial` | `core` | `COVERED` | 27 |
+| `c:src/core/log.c:log_write_serial` | `src/core/log.c` | `log_write_serial` | `core` | `COVERED` | 28 |
 | `c:src/core/net_buffer.c:net_buffer_alignment_valid` | `src/core/net_buffer.c` | `net_buffer_alignment_valid` | `core` | `COVERED` | 4 |
 | `c:src/core/net_buffer.c:net_buffer_begin` | `src/core/net_buffer.c` | `net_buffer_begin` | `core` | `COVERED` | 4 |
 | `c:src/core/net_buffer.c:net_buffer_check_active_locked` | `src/core/net_buffer.c` | `net_buffer_check_active_locked` | `core` | `COVERED` | 4 |
@@ -2882,10 +2882,10 @@
 | `c:src/core/socket.c:socket_wait_local` | `src/core/socket.c` | `socket_wait_local` | `core` | `PENDING` | 0 |
 | `c:src/core/socket.c:socket_wait_owner` | `src/core/socket.c` | `socket_wait_owner` | `core` | `COVERED` | 2 |
 | `c:src/core/socket.c:socket_wake` | `src/core/socket.c` | `socket_wake` | `core` | `COVERED` | 2 |
-| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 34 |
-| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 34 |
-| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 27 |
-| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 31 |
+| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 35 |
+| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 35 |
+| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 28 |
+| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 32 |
 | `c:src/core/syscall.c:syscall_copy_user_string` | `src/core/syscall.c` | `syscall_copy_user_string` | `core` | `PENDING` | 0 |
 | `c:src/core/syscall.c:syscall_dispatch` | `src/core/syscall.c` | `syscall_dispatch` | `core` | `COVERED` | 1 |
 | `c:src/core/syscall.c:syscall_dispatch_user` | `src/core/syscall.c` | `syscall_dispatch_user` | `core` | `COVERED` | 1 |
@@ -5359,23 +5359,23 @@
 | `c:src/memory/slab.c:slab_test_progress` | `src/memory/slab.c` | `slab_test_progress` | `memory` | `COVERED` | 2 |
 | `c:src/memory/slab.c:slab_validate_list` | `src/memory/slab.c` | `slab_validate_list` | `memory` | `COVERED` | 5 |
 | `c:src/memory/slab.c:slab_validate_slab` | `src/memory/slab.c` | `slab_validate_slab` | `memory` | `COVERED` | 4 |
-| `c:src/memory/vma.c:process_vma_access_allowed` | `src/memory/vma.c` | `process_vma_access_allowed` | `memory` | `COVERED` | 1 |
-| `c:src/memory/vma.c:process_vma_copy` | `src/memory/vma.c` | `process_vma_copy` | `memory` | `PENDING` | 0 |
-| `c:src/memory/vma.c:process_vma_ensure_page` | `src/memory/vma.c` | `process_vma_ensure_page` | `memory` | `COVERED` | 1 |
-| `c:src/memory/vma.c:process_vma_find_gap` | `src/memory/vma.c` | `process_vma_find_gap` | `memory` | `COVERED` | 1 |
-| `c:src/memory/vma.c:process_vma_get_page_fault_stats` | `src/memory/vma.c` | `process_vma_get_page_fault_stats` | `memory` | `COVERED` | 1 |
-| `c:src/memory/vma.c:process_vma_handle_page_fault` | `src/memory/vma.c` | `process_vma_handle_page_fault` | `memory` | `COVERED` | 1 |
-| `c:src/memory/vma.c:process_vma_insert_sorted` | `src/memory/vma.c` | `process_vma_insert_sorted` | `memory` | `COVERED` | 1 |
-| `c:src/memory/vma.c:process_vma_is_current_user` | `src/memory/vma.c` | `process_vma_is_current_user` | `memory` | `COVERED` | 1 |
-| `c:src/memory/vma.c:process_vma_materialize_page` | `src/memory/vma.c` | `process_vma_materialize_page` | `memory` | `COVERED` | 1 |
-| `c:src/memory/vma.c:process_vma_mmap` | `src/memory/vma.c` | `process_vma_mmap` | `memory` | `COVERED` | 1 |
-| `c:src/memory/vma.c:process_vma_munmap` | `src/memory/vma.c` | `process_vma_munmap` | `memory` | `COVERED` | 1 |
-| `c:src/memory/vma.c:process_vma_page_fault_failure` | `src/memory/vma.c` | `process_vma_page_fault_failure` | `memory` | `PENDING` | 0 |
-| `c:src/memory/vma.c:process_vma_populate_page` | `src/memory/vma.c` | `process_vma_populate_page` | `memory` | `COVERED` | 1 |
-| `c:src/memory/vma.c:process_vma_register_image` | `src/memory/vma.c` | `process_vma_register_image` | `memory` | `COVERED` | 1 |
-| `c:src/memory/vma.c:process_vma_release` | `src/memory/vma.c` | `process_vma_release` | `memory` | `COVERED` | 1 |
-| `c:src/memory/vma.c:process_vma_unmap_pages` | `src/memory/vma.c` | `process_vma_unmap_pages` | `memory` | `COVERED` | 1 |
-| `c:src/memory/vma.c:process_vma_validate_length` | `src/memory/vma.c` | `process_vma_validate_length` | `memory` | `COVERED` | 1 |
+| `c:src/memory/vma.c:process_vma_access_allowed` | `src/memory/vma.c` | `process_vma_access_allowed` | `memory` | `COVERED` | 2 |
+| `c:src/memory/vma.c:process_vma_copy` | `src/memory/vma.c` | `process_vma_copy` | `memory` | `COVERED` | 1 |
+| `c:src/memory/vma.c:process_vma_ensure_page` | `src/memory/vma.c` | `process_vma_ensure_page` | `memory` | `COVERED` | 2 |
+| `c:src/memory/vma.c:process_vma_find_gap` | `src/memory/vma.c` | `process_vma_find_gap` | `memory` | `COVERED` | 2 |
+| `c:src/memory/vma.c:process_vma_get_page_fault_stats` | `src/memory/vma.c` | `process_vma_get_page_fault_stats` | `memory` | `COVERED` | 2 |
+| `c:src/memory/vma.c:process_vma_handle_page_fault` | `src/memory/vma.c` | `process_vma_handle_page_fault` | `memory` | `COVERED` | 2 |
+| `c:src/memory/vma.c:process_vma_insert_sorted` | `src/memory/vma.c` | `process_vma_insert_sorted` | `memory` | `COVERED` | 2 |
+| `c:src/memory/vma.c:process_vma_is_current_user` | `src/memory/vma.c` | `process_vma_is_current_user` | `memory` | `COVERED` | 2 |
+| `c:src/memory/vma.c:process_vma_materialize_page` | `src/memory/vma.c` | `process_vma_materialize_page` | `memory` | `COVERED` | 2 |
+| `c:src/memory/vma.c:process_vma_mmap` | `src/memory/vma.c` | `process_vma_mmap` | `memory` | `COVERED` | 2 |
+| `c:src/memory/vma.c:process_vma_munmap` | `src/memory/vma.c` | `process_vma_munmap` | `memory` | `COVERED` | 2 |
+| `c:src/memory/vma.c:process_vma_page_fault_failure` | `src/memory/vma.c` | `process_vma_page_fault_failure` | `memory` | `COVERED` | 1 |
+| `c:src/memory/vma.c:process_vma_populate_page` | `src/memory/vma.c` | `process_vma_populate_page` | `memory` | `COVERED` | 2 |
+| `c:src/memory/vma.c:process_vma_register_image` | `src/memory/vma.c` | `process_vma_register_image` | `memory` | `COVERED` | 2 |
+| `c:src/memory/vma.c:process_vma_release` | `src/memory/vma.c` | `process_vma_release` | `memory` | `COVERED` | 2 |
+| `c:src/memory/vma.c:process_vma_unmap_pages` | `src/memory/vma.c` | `process_vma_unmap_pages` | `memory` | `COVERED` | 2 |
+| `c:src/memory/vma.c:process_vma_validate_length` | `src/memory/vma.c` | `process_vma_validate_length` | `memory` | `COVERED` | 2 |
 | `c:src/process/ipc.c:ipc_current_has_pending` | `src/process/ipc.c` | `ipc_current_has_pending` | `process` | `COVERED` | 1 |
 | `c:src/process/ipc.c:ipc_get_pending_count` | `src/process/ipc.c` | `ipc_get_pending_count` | `process` | `COVERED` | 1 |
 | `c:src/process/ipc.c:ipc_get_stats` | `src/process/ipc.c` | `ipc_get_stats` | `process` | `PENDING` | 0 |
@@ -6920,6 +6920,7 @@
 | `host:core:state` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar contratos de recovery e notificadores de energia | estados, capacidades opcionais, timeouts, ordem e erros canonicos sao observados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico dos servicos e artefatos host-only | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:timer` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar timers one-shot e periodicos com IDT, PIC e scheduler simulados | handles, prazos, cancelamento, dispatch, callbacks, notifier e limpeza respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas estaticas do servico de timers no processo host | todos os timers e proprietarios sao destruidos e os artefatos sao preservados |
 | `host:memory:slab-metadata` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar inicializacao, limites, metadados, estatisticas e limpeza do registrador SLAB sem alocar paginas reais | estado publicado, informacoes por indice, duplicidade e limpeza respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas de metadados no processo host; nenhuma pagina real e alocada | cache temporario destruido e manifesto, logs e cobertura preservados |
+| `host:memory:vma` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar VMAs fixas e anonimas, materializacao lazy, faults validos e invalidos, mmap, munmap, limites, estatisticas e limpeza com paging e PMM falsos | VMAs respeitam protecao e intervalos, faults retornam codigos canonicos e nenhum metadado ou page fixture permanece apos a limpeza | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente processo, diretorio, paginas e metadados VMA estaticos no processo host | VMAs, paginas mapeadas, pool de metadados e estado de faults reiniciados e artefatos preservados |
 | `host:network:arp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar configuracao, resolucao, cache, retries e recepcao ARP com Ethernet simulada | enderecos validos sao resolvidos, pacotes invalidos sao rejeitados e o cache retorna ao estado inicial | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente cache ARP, buffers estaticos e transporte Ethernet falso no processo host | cache desconfigurado e artefatos preservados |
 | `host:network:dhcp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar descoberta, oferta, lease, renovacao, rebinding e expiracao DHCP com UDP e timer simulados | leases validos percorrem eventos canonicos, mensagens invalidas falham e o estado retorna ao baseline | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado DHCP, buffers estaticos e transporte UDP falso no processo host | sessao e eventos DHCP reiniciados e artefatos preservados |
 | `host:network:dns` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar consultas DNS, cache, CNAME, timeout e pacotes invalidos com UDP e timer simulados | nomes validos sao resolvidos, respostas invalidas falham com codigo canonico e o estado retorna ao baseline | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado DNS, buffers estaticos e transporte UDP falso no processo host | cache e consulta DNS reiniciados e artefatos preservados |
@@ -7536,7 +7537,6 @@
 - `api:src/include/memory/paging.h:paging_get_boot_stats`
 - `api:src/include/memory/paging.h:paging_init`
 - `api:src/include/memory/paging.h:paging_map_page`
-- `api:src/include/memory/vma.h:process_vma_copy`
 - `api:src/include/process/process.h:ipc_current_has_pending`
 - `api:src/include/process/process.h:ipc_get_pending_count`
 - `api:src/include/process/process.h:ipc_get_stats`
@@ -9560,8 +9560,6 @@
 - `c:src/memory/paging.c:paging_map_framebuffer`
 - `c:src/memory/paging.c:paging_map_identity_range_fast`
 - `c:src/memory/paging.c:paging_map_page`
-- `c:src/memory/vma.c:process_vma_copy`
-- `c:src/memory/vma.c:process_vma_page_fault_failure`
 - `c:src/process/ipc.c:ipc_get_stats`
 - `c:src/process/ipc.c:ipc_init`
 - `c:src/process/ipc.c:process_focus_target_is_valid`

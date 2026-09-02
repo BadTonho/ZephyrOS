@@ -2057,6 +2057,25 @@
       ],
       "include_public_apis": true,
       "evidence": "make test-net-socket-host PASS com handles geracionais, conexao, filas RX/TX, eventos, EOF, timeout, cancelamento, limites, reset e limpeza usando TCP, timer e VFS falsos"
+    },
+    {
+      "id": "vma-host-dynamic",
+      "domain": "memory-vma",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:memory:vma"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/vma-host/coverage.json",
+      "coverage_sources": [
+        "src/memory/vma.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-vma-host PASS com VMAs fixas e anonimas, materializacao lazy, faults validos e invalidos, mmap, munmap, limites, estatisticas e limpeza usando paging e PMM falsos"
     }
   ]
 }

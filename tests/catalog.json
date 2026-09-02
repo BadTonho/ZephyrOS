@@ -7170,6 +7170,7 @@
         "host:core:state",
         "host:core:timer",
         "host:memory:slab-metadata",
+        "host:memory:vma",
         "host:network:arp",
         "host:network:dhcp",
         "host:network:dns",
@@ -9999,6 +10000,7 @@
         "host:core:state",
         "host:core:timer",
         "host:memory:slab-metadata",
+        "host:memory:vma",
         "host:network:arp",
         "host:network:dhcp",
         "host:network:dns",
@@ -10053,6 +10055,7 @@
         "host:core:state",
         "host:core:timer",
         "host:memory:slab-metadata",
+        "host:memory:vma",
         "host:network:arp",
         "host:network:dhcp",
         "host:network:dns",
@@ -10107,6 +10110,7 @@
         "host:core:state",
         "host:core:timer",
         "host:memory:slab-metadata",
+        "host:memory:vma",
         "host:network:arp",
         "host:network:dhcp",
         "host:network:dns",
@@ -10154,6 +10158,7 @@
         "host:core:state",
         "host:core:timer",
         "host:memory:slab-metadata",
+        "host:memory:vma",
         "host:network:arp",
         "host:network:dhcp",
         "host:network:dns",
@@ -23817,9 +23822,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:vma"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/memory/vma.h:process_vma_ensure_page",
@@ -23837,10 +23845,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:vma",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/memory/vma.h:process_vma_get_page_fault_stats",
@@ -23858,10 +23867,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:vma",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/memory/vma.h:process_vma_handle_page_fault",
@@ -23879,10 +23889,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:vma",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/memory/vma.h:process_vma_mmap",
@@ -23900,10 +23911,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:vma",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/memory/vma.h:process_vma_munmap",
@@ -23921,10 +23933,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:vma",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/memory/vma.h:process_vma_register_image",
@@ -23942,10 +23955,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:vma",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/memory/vma.h:process_vma_release",
@@ -23963,10 +23977,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:vma",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:ipc_current_has_pending",
@@ -49946,6 +49961,7 @@
         "host:core:state",
         "host:core:timer",
         "host:memory:slab-metadata",
+        "host:memory:vma",
         "host:network:arp",
         "host:network:dhcp",
         "host:network:dns",
@@ -50014,6 +50030,7 @@
         "host:core:state",
         "host:core:timer",
         "host:memory:slab-metadata",
+        "host:memory:vma",
         "host:network:arp",
         "host:network:dhcp",
         "host:network:dns",
@@ -50211,6 +50228,7 @@
         "host:core:state",
         "host:core:timer",
         "host:memory:slab-metadata",
+        "host:memory:vma",
         "host:network:arp",
         "host:network:dhcp",
         "host:network:dns",
@@ -50258,6 +50276,7 @@
         "host:core:state",
         "host:core:timer",
         "host:memory:slab-metadata",
+        "host:memory:vma",
         "host:network:arp",
         "host:network:dhcp",
         "host:network:dns",
@@ -50327,6 +50346,7 @@
         "host:core:state",
         "host:core:timer",
         "host:memory:slab-metadata",
+        "host:memory:vma",
         "host:network:arp",
         "host:network:dhcp",
         "host:network:dns",
@@ -50401,6 +50421,7 @@
         "host:core:state",
         "host:core:timer",
         "host:memory:slab-metadata",
+        "host:memory:vma",
         "host:network:arp",
         "host:network:dhcp",
         "host:network:dns",
@@ -50448,6 +50469,7 @@
         "host:core:state",
         "host:core:timer",
         "host:memory:slab-metadata",
+        "host:memory:vma",
         "host:network:arp",
         "host:network:dhcp",
         "host:network:dns",
@@ -50495,6 +50517,7 @@
         "host:core:state",
         "host:core:timer",
         "host:memory:slab-metadata",
+        "host:memory:vma",
         "host:network:arp",
         "host:network:dhcp",
         "host:network:dns",
@@ -50630,6 +50653,7 @@
         "host:core:state",
         "host:core:timer",
         "host:memory:slab-metadata",
+        "host:memory:vma",
         "host:network:arp",
         "host:network:dhcp",
         "host:network:dns",
@@ -50677,6 +50701,7 @@
         "host:core:state",
         "host:core:timer",
         "host:memory:slab-metadata",
+        "host:memory:vma",
         "host:network:arp",
         "host:network:dhcp",
         "host:network:dns",
@@ -50859,6 +50884,7 @@
         "host:core:state",
         "host:core:timer",
         "host:memory:slab-metadata",
+        "host:memory:vma",
         "host:network:arp",
         "host:network:dhcp",
         "host:network:dns",
@@ -50906,6 +50932,7 @@
         "host:core:state",
         "host:core:timer",
         "host:memory:slab-metadata",
+        "host:memory:vma",
         "host:network:arp",
         "host:network:dhcp",
         "host:network:dns",
@@ -51158,6 +51185,7 @@
         "host:core:state",
         "host:core:timer",
         "host:memory:slab-metadata",
+        "host:memory:vma",
         "host:network:arp",
         "host:network:dhcp",
         "host:network:dns",
@@ -57123,6 +57151,7 @@
         "host:core:state",
         "host:core:timer",
         "host:memory:slab-metadata",
+        "host:memory:vma",
         "host:network:arp",
         "host:network:dhcp",
         "host:network:dns",
@@ -57177,6 +57206,7 @@
         "host:core:state",
         "host:core:timer",
         "host:memory:slab-metadata",
+        "host:memory:vma",
         "host:network:arp",
         "host:network:dhcp",
         "host:network:dns",
@@ -57231,6 +57261,7 @@
         "host:core:state",
         "host:core:timer",
         "host:memory:slab-metadata",
+        "host:memory:vma",
         "host:network:arp",
         "host:network:dhcp",
         "host:network:dns",
@@ -57278,6 +57309,7 @@
         "host:core:state",
         "host:core:timer",
         "host:memory:slab-metadata",
+        "host:memory:vma",
         "host:network:arp",
         "host:network:dhcp",
         "host:network:dns",
@@ -107160,10 +107192,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:vma",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/vma.c:process_vma_copy",
@@ -107179,9 +107212,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:vma"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/vma.c:process_vma_ensure_page",
@@ -107199,10 +107235,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:vma",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/vma.c:process_vma_find_gap",
@@ -107220,10 +107257,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:vma",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/vma.c:process_vma_get_page_fault_stats",
@@ -107241,10 +107279,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:vma",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/vma.c:process_vma_handle_page_fault",
@@ -107262,10 +107301,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:vma",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/vma.c:process_vma_insert_sorted",
@@ -107283,10 +107323,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:vma",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/vma.c:process_vma_is_current_user",
@@ -107304,10 +107345,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:vma",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/vma.c:process_vma_materialize_page",
@@ -107325,10 +107367,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:vma",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/vma.c:process_vma_mmap",
@@ -107346,10 +107389,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:vma",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/vma.c:process_vma_munmap",
@@ -107367,10 +107411,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:vma",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/vma.c:process_vma_page_fault_failure",
@@ -107386,9 +107431,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:vma"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/vma.c:process_vma_populate_page",
@@ -107406,10 +107454,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:vma",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/vma.c:process_vma_register_image",
@@ -107427,10 +107476,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:vma",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/vma.c:process_vma_release",
@@ -107448,10 +107498,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:vma",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/vma.c:process_vma_unmap_pages",
@@ -107469,10 +107520,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:vma",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/vma.c:process_vma_validate_length",
@@ -107490,10 +107542,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:vma",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/ipc.c:ipc_current_has_pending",
@@ -137771,6 +137824,85 @@
         "host",
         "memory",
         "slab",
+        "coverage"
+      ]
+    },
+    {
+      "id": "host:memory:vma",
+      "scenario": "Contrato host-only das VMA e page faults com fixtures estaticas",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "compilar e executar VMAs fixas e anonimas, materializacao lazy, faults validos e invalidos, mmap, munmap, limites, estatisticas e limpeza com paging e PMM falsos",
+      "expected": "VMAs respeitam protecao e intervalos, faults retornam codigos canonicos e nenhum metadado ou page fixture permanece apos a limpeza",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente processo, diretorio, paginas e metadados VMA estaticos no processo host",
+      "cleanup": "VMAs, paginas mapeadas, pool de metadados e estado de faults reiniciados e artefatos preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/log.h:log_print",
+        "api:src/include/core/string.h:kmemcpy",
+        "api:src/include/core/string.h:kmemset",
+        "api:src/include/core/string.h:kstrcmp",
+        "api:src/include/core/string.h:kstrlen",
+        "api:src/include/memory/vma.h:process_vma_copy",
+        "api:src/include/memory/vma.h:process_vma_ensure_page",
+        "api:src/include/memory/vma.h:process_vma_get_page_fault_stats",
+        "api:src/include/memory/vma.h:process_vma_handle_page_fault",
+        "api:src/include/memory/vma.h:process_vma_mmap",
+        "api:src/include/memory/vma.h:process_vma_munmap",
+        "api:src/include/memory/vma.h:process_vma_register_image",
+        "api:src/include/memory/vma.h:process_vma_release",
+        "c:src/core/log.c:log_console_print_number",
+        "c:src/core/log.c:log_copy_text",
+        "c:src/core/log.c:log_is_power_of_two",
+        "c:src/core/log.c:log_level_is_valid",
+        "c:src/core/log.c:log_print",
+        "c:src/core/log.c:log_print_colored",
+        "c:src/core/log.c:log_records_match",
+        "c:src/core/log.c:log_restore_interrupts",
+        "c:src/core/log.c:log_ring_latest_index",
+        "c:src/core/log.c:log_ring_store",
+        "c:src/core/log.c:log_submit",
+        "c:src/core/log.c:log_suspend_interrupts",
+        "c:src/core/log.c:log_write_serial",
+        "c:src/core/string.c:kmemcpy",
+        "c:src/core/string.c:kmemset",
+        "c:src/core/string.c:kstrcmp",
+        "c:src/core/string.c:kstrlen",
+        "c:src/memory/vma.c:process_vma_access_allowed",
+        "c:src/memory/vma.c:process_vma_copy",
+        "c:src/memory/vma.c:process_vma_ensure_page",
+        "c:src/memory/vma.c:process_vma_find_gap",
+        "c:src/memory/vma.c:process_vma_get_page_fault_stats",
+        "c:src/memory/vma.c:process_vma_handle_page_fault",
+        "c:src/memory/vma.c:process_vma_insert_sorted",
+        "c:src/memory/vma.c:process_vma_is_current_user",
+        "c:src/memory/vma.c:process_vma_materialize_page",
+        "c:src/memory/vma.c:process_vma_mmap",
+        "c:src/memory/vma.c:process_vma_munmap",
+        "c:src/memory/vma.c:process_vma_page_fault_failure",
+        "c:src/memory/vma.c:process_vma_populate_page",
+        "c:src/memory/vma.c:process_vma_register_image",
+        "c:src/memory/vma.c:process_vma_release",
+        "c:src/memory/vma.c:process_vma_unmap_pages",
+        "c:src/memory/vma.c:process_vma_validate_length"
+      ],
+      "tags": [
+        "host",
+        "memory",
+        "vma",
+        "paging",
         "coverage"
       ]
     },
