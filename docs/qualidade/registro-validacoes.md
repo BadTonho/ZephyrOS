@@ -4332,3 +4332,17 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   sucesso. O catalogo registra 7.196 superficies, 3.953 `COVERED`, 3.243
   `PENDING` e 86 casos. O fechamento integral, o gate estrito e o baseline TST7
   continuam pendentes.
+
+- Incremento Core/app_builtin concluido em 2026-09-02: o novo caso
+  `host:core:app-builtin` e o alvo `make test-app-builtin-host` usam loader
+  falso para validar cabecalhos, limites e entradas das imagens ZAPP de Echo,
+  ArgTest, Uptime, Mem, PathTest, DevTest e OutputTest. A fixture tambem
+  exercita pre-condicoes do loader, propagacao de erros, codigo reservado de
+  cancelamento e saidas nulas. A execucao instrumentada terminou `PASS` e o
+  relatorio `build/test-results/app-builtin-host/coverage.json` resolveu 61
+  superficies reais, incluindo todas as funcoes de `src/core/app_builtin.c`.
+  `make test-tst7-quick HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` confirmou
+  `PASS` em todos os casos host-only, inclusive o novo caso; `tst3-sanitize`
+  permaneceu `BLOCKED` pela permissao do runtime LLVM. O catalogo registra
+  7.196 superficies, 4.002 `COVERED`, 3.194 `PENDING` e 87 casos. O fechamento
+  integral, o gate estrito e o baseline TST7 continuam pendentes.

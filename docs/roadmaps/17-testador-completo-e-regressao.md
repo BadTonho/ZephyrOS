@@ -1307,3 +1307,29 @@ pendente.
   `make catalog-test`; todos terminaram com sucesso. O catalogo registra
   7.196 superficies, 3.953 `COVERED`, 3.243 `PENDING` e 86 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
+
+- Incremento Core/app_builtin concluido em 2026-09-02: foi criado o caso
+  host-only `host:core:app-builtin` com loader falso, validando cabecalhos,
+  limites e entradas das imagens ZAPP de Echo, ArgTest, Uptime, Mem, PathTest,
+  DevTest e OutputTest. A fixture tambem cobriu pre-condicoes do loader,
+  propagacao de erros, codigo reservado de cancelamento e saidas nulas. A
+  execucao instrumentada terminou `PASS` e resolveu 61 superficies reais,
+  incluindo todas as funcoes de `src/core/app_builtin.c`. Foram executados
+  `make test-tst7-quick HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` e
+  `make catalog-test`; todos os testes host-only, incluindo o novo caso,
+  passaram; `tst3-sanitize` permaneceu `BLOCKED` pela permissao do runtime
+  LLVM. O catalogo registra 7.196 superficies, 4.002 `COVERED`, 3.194
+  `PENDING` e 87 casos. O fechamento integral, o gate estrito e a validacao
+  TST7 completa continuam pendentes.
+
+- Incremento Core/app_files concluido em 2026-09-02: foi criado o caso
+  host-only `host:core:app-files` com VFS falsa, cobrindo pre-condicoes antes
+  da inicializacao, inicializacao idempotente, encaminhamento das operacoes de
+  arquivo, validacao de saidas, limites e propagacao de erros canonicos. A
+  fixture instrumentada terminou `PASS` e resolveu 33 superficies reais no
+  relatorio dinamico, incluindo todas as funcoes de `src/core/app_files.c`.
+  Foram executados `make q3check`, `make clean`, `make`,
+  `make test-app-files-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` e
+  `make catalog-test`; todos terminaram com sucesso. O catalogo registra
+  7.196 superficies, 3.953 `COVERED`, 3.243 `PENDING` e 86 casos. O fechamento
+  integral, o gate estrito e a validacao TST7 completa continuam pendentes.
