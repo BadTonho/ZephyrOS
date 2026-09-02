@@ -2131,6 +2131,23 @@
       ],
       "include_public_apis": true,
       "evidence": "make test-process-signal-host PASS com fixture estatica, mascaras, coalescencia, handlers, sigreturn, notificacao de filho e invariantes sem hardware"
+    },
+    {
+      "id": "process-ipc-host-dynamic",
+      "domain": "process-ipc",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:process:ipc"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/process-ipc-host/coverage.json",
+      "coverage_sources": [
+        "src/process/ipc.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-process-ipc-host PASS com mensagens, fila cheia, recebimento, espera, timeout, sinal, foco, fallback e limpeza em fixture estatica"
     }
   ]
 }

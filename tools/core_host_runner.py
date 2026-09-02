@@ -97,6 +97,8 @@ MEMORY_RESULT_DIR = ROOT / "build" / "test-results" / "memory-host"
 MEMORY_BINARY = ROOT / "build" / "tests" / "test_memory_host.exe"
 SIGNAL_RESULT_DIR = ROOT / "build" / "test-results" / "process-signal-host"
 SIGNAL_BINARY = ROOT / "build" / "tests" / "test_process_signal_host.exe"
+IPC_RESULT_DIR = ROOT / "build" / "test-results" / "process-ipc-host"
+IPC_BINARY = ROOT / "build" / "tests" / "test_process_ipc_host.exe"
 DEFAULT_TIMEOUT = 120.0
 CORE_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_core_contracts.c",
@@ -334,6 +336,12 @@ SIGNAL_SOURCE_FILES = (
     ROOT / "src" / "core" / "log.c",
     ROOT / "src" / "core" / "string.c",
 )
+IPC_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_process_ipc_host.c",
+    ROOT / "src" / "process" / "ipc.c",
+    ROOT / "src" / "core" / "log.c",
+    ROOT / "src" / "core" / "string.c",
+)
 SOURCE_FILES = CORE_SOURCE_FILES
 
 
@@ -422,6 +430,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return MEMORY_RESULT_DIR, MEMORY_BINARY, MEMORY_SOURCE_FILES, "memory-host"
     if case_id == "host:process:signals":
         return SIGNAL_RESULT_DIR, SIGNAL_BINARY, SIGNAL_SOURCE_FILES, "process-signal-host"
+    if case_id == "host:process:ipc":
+        return IPC_RESULT_DIR, IPC_BINARY, IPC_SOURCE_FILES, "process-ipc-host"
     raise ValueError(f"caso_host_invalido:{case_id}")
 
 
@@ -582,7 +592,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:security:tls", "host:network:http",
                                  "host:network:socket", "host:memory:vma",
                                  "host:memory:paging", "host:memory:memory",
-                                 "host:process:signals"))
+                                 "host:process:signals", "host:process:ipc"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
     return parser.parse_args()
