@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4093 |
+| `COVERED` | 4104 |
 | `MANUAL` | 0 |
-| `PENDING` | 3103 |
+| `PENDING` | 3092 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -2845,26 +2845,26 @@
 | `c:src/core/network_manager.c:network_append_char` | `src/core/network_manager.c` | `network_append_char` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_append_hex` | `src/core/network_manager.c` | `network_append_hex` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_append_text` | `src/core/network_manager.c` | `network_append_text` | `core` | `COVERED` | 1 |
-| `c:src/core/network_manager.c:network_apply_dhcp_lease` | `src/core/network_manager.c` | `network_apply_dhcp_lease` | `core` | `PENDING` | 0 |
+| `c:src/core/network_manager.c:network_apply_dhcp_lease` | `src/core/network_manager.c` | `network_apply_dhcp_lease` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_apply_ethernet_status` | `src/core/network_manager.c` | `network_apply_ethernet_status` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_apply_interface_roles` | `src/core/network_manager.c` | `network_apply_interface_roles` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_apply_protocol_status` | `src/core/network_manager.c` | `network_apply_protocol_status` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_ascii_upper` | `src/core/network_manager.c` | `network_ascii_upper` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_build_snapshot` | `src/core/network_manager.c` | `network_build_snapshot` | `core` | `COVERED` | 1 |
-| `c:src/core/network_manager.c:network_cancel_dynamic_clients` | `src/core/network_manager.c` | `network_cancel_dynamic_clients` | `core` | `PENDING` | 0 |
+| `c:src/core/network_manager.c:network_cancel_dynamic_clients` | `src/core/network_manager.c` | `network_cancel_dynamic_clients` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_collect_interfaces` | `src/core/network_manager.c` | `network_collect_interfaces` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_copy_bars` | `src/core/network_manager.c` | `network_copy_bars` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_copy_interface` | `src/core/network_manager.c` | `network_copy_interface` | `core` | `COVERED` | 1 |
-| `c:src/core/network_manager.c:network_copy_usb_interface` | `src/core/network_manager.c` | `network_copy_usb_interface` | `core` | `PENDING` | 0 |
+| `c:src/core/network_manager.c:network_copy_usb_interface` | `src/core/network_manager.c` | `network_copy_usb_interface` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_detect_model` | `src/core/network_manager.c` | `network_detect_model` | `core` | `COVERED` | 1 |
-| `c:src/core/network_manager.c:network_dns_reachable` | `src/core/network_manager.c` | `network_dns_reachable` | `core` | `PENDING` | 0 |
-| `c:src/core/network_manager.c:network_drop_dhcp_configuration` | `src/core/network_manager.c` | `network_drop_dhcp_configuration` | `core` | `PENDING` | 0 |
+| `c:src/core/network_manager.c:network_dns_reachable` | `src/core/network_manager.c` | `network_dns_reachable` | `core` | `COVERED` | 1 |
+| `c:src/core/network_manager.c:network_drop_dhcp_configuration` | `src/core/network_manager.c` | `network_drop_dhcp_configuration` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_find_driver_record` | `src/core/network_manager.c` | `network_find_driver_record` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_find_pci_device` | `src/core/network_manager.c` | `network_find_pci_device` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_get_protocol_status` | `src/core/network_manager.c` | `network_get_protocol_status` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_id_matches` | `src/core/network_manager.c` | `network_id_matches` | `core` | `COVERED` | 1 |
-| `c:src/core/network_manager.c:network_ipv4_changed` | `src/core/network_manager.c` | `network_ipv4_changed` | `core` | `PENDING` | 0 |
-| `c:src/core/network_manager.c:network_ipv4_parameters_valid` | `src/core/network_manager.c` | `network_ipv4_parameters_valid` | `core` | `PENDING` | 0 |
+| `c:src/core/network_manager.c:network_ipv4_changed` | `src/core/network_manager.c` | `network_ipv4_changed` | `core` | `COVERED` | 1 |
+| `c:src/core/network_manager.c:network_ipv4_parameters_valid` | `src/core/network_manager.c` | `network_ipv4_parameters_valid` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_manager_acquire_dhcp` | `src/core/network_manager.c` | `network_manager_acquire_dhcp` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_manager_configure_arp` | `src/core/network_manager.c` | `network_manager_configure_arp` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_manager_configure_dns` | `src/core/network_manager.c` | `network_manager_configure_dns` | `core` | `COVERED` | 1 |
@@ -2888,11 +2888,11 @@
 | `c:src/core/network_manager.c:network_manager_send_diagnostic` | `src/core/network_manager.c` | `network_manager_send_diagnostic` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_manager_set_quiescing` | `src/core/network_manager.c` | `network_manager_set_quiescing` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_probe_drivers` | `src/core/network_manager.c` | `network_probe_drivers` | `core` | `COVERED` | 1 |
-| `c:src/core/network_manager.c:network_process_dhcp_event` | `src/core/network_manager.c` | `network_process_dhcp_event` | `core` | `PENDING` | 0 |
+| `c:src/core/network_manager.c:network_process_dhcp_event` | `src/core/network_manager.c` | `network_process_dhcp_event` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_record_driver_result` | `src/core/network_manager.c` | `network_record_driver_result` | `core` | `COVERED` | 1 |
-| `c:src/core/network_manager.c:network_refresh_dynamic_status` | `src/core/network_manager.c` | `network_refresh_dynamic_status` | `core` | `PENDING` | 0 |
-| `c:src/core/network_manager.c:network_reset_remote_clients` | `src/core/network_manager.c` | `network_reset_remote_clients` | `core` | `PENDING` | 0 |
-| `c:src/core/network_manager.c:network_restore_configuration` | `src/core/network_manager.c` | `network_restore_configuration` | `core` | `PENDING` | 0 |
+| `c:src/core/network_manager.c:network_refresh_dynamic_status` | `src/core/network_manager.c` | `network_refresh_dynamic_status` | `core` | `COVERED` | 1 |
+| `c:src/core/network_manager.c:network_reset_remote_clients` | `src/core/network_manager.c` | `network_reset_remote_clients` | `core` | `COVERED` | 1 |
+| `c:src/core/network_manager.c:network_restore_configuration` | `src/core/network_manager.c` | `network_restore_configuration` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_set_text` | `src/core/network_manager.c` | `network_set_text` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_start_arp` | `src/core/network_manager.c` | `network_start_arp` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_start_dhcp` | `src/core/network_manager.c` | `network_start_dhcp` | `core` | `COVERED` | 1 |
@@ -2960,7 +2960,7 @@
 | `c:src/core/recovery.c:recovery_is_enabled` | `src/core/recovery.c` | `recovery_is_enabled` | `core` | `COVERED` | 1 |
 | `c:src/core/recovery.c:recovery_mark_degraded` | `src/core/recovery.c` | `recovery_mark_degraded` | `core` | `COVERED` | 2 |
 | `c:src/core/recovery.c:recovery_mark_disabled` | `src/core/recovery.c` | `recovery_mark_disabled` | `core` | `COVERED` | 1 |
-| `c:src/core/recovery.c:recovery_mark_ready` | `src/core/recovery.c` | `recovery_mark_ready` | `core` | `COVERED` | 2 |
+| `c:src/core/recovery.c:recovery_mark_ready` | `src/core/recovery.c` | `recovery_mark_ready` | `core` | `COVERED` | 3 |
 | `c:src/core/recovery.c:recovery_set_state` | `src/core/recovery.c` | `recovery_set_state` | `core` | `COVERED` | 3 |
 | `c:src/core/recovery.c:recovery_state_name` | `src/core/recovery.c` | `recovery_state_name` | `core` | `COVERED` | 1 |
 | `c:src/core/recovery.c:recovery_valid_component` | `src/core/recovery.c` | `recovery_valid_component` | `core` | `COVERED` | 3 |
@@ -7904,17 +7904,6 @@
 - `c:src/core/app_remote.c:app_remote_write_u16`
 - `c:src/core/app_remote.c:app_remote_write_u32`
 - `c:src/core/kernel_tests_blackbox.c:blackbox_marker`
-- `c:src/core/network_manager.c:network_apply_dhcp_lease`
-- `c:src/core/network_manager.c:network_cancel_dynamic_clients`
-- `c:src/core/network_manager.c:network_copy_usb_interface`
-- `c:src/core/network_manager.c:network_dns_reachable`
-- `c:src/core/network_manager.c:network_drop_dhcp_configuration`
-- `c:src/core/network_manager.c:network_ipv4_changed`
-- `c:src/core/network_manager.c:network_ipv4_parameters_valid`
-- `c:src/core/network_manager.c:network_process_dhcp_event`
-- `c:src/core/network_manager.c:network_refresh_dynamic_status`
-- `c:src/core/network_manager.c:network_reset_remote_clients`
-- `c:src/core/network_manager.c:network_restore_configuration`
 - `c:src/core/power.c:power_reboot_commit`
 - `c:src/core/power.c:power_terminal_halt`
 - `c:src/core/power.c:power_trigger_triple_fault`

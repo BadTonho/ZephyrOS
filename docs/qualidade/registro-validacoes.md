@@ -4358,3 +4358,14 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   sincronizacao resultou em 7.196 superficies, 4.093 `COVERED`, 3.103
   `PENDING` e 87 casos; o fechamento integral, o gate estrito e a validacao
   TST7 completa continuam pendentes.
+- 2026-09-02 — Incremento Core/network_manager: `make test-network-manager-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` terminou `PASS` com NIC PCI e USB
+  simuladas, configuracao estatica, validacao de parametros e rotas, DHCP,
+  aplicacao e remocao de lease, clientes remotos, restauracao atomica apos
+  erro e limpeza de IPv4/ARP/DNS. O relatorio
+  `build/test-results/network-manager-host/coverage.json` terminou `PASS`,
+  observou 89 enderecos sem desconhecidos ou ambiguos e resolveu todas as
+  superficies de `src/core/network_manager.c`. O catalogo foi sincronizado e
+  validado com 7.196 superficies, 4.103 `COVERED`, 3.093 `PENDING` e 87 casos;
+  o fechamento integral, o gate estrito e a validacao TST7 completa continuam
+  pendentes.

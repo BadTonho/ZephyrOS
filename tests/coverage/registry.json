@@ -1204,7 +1204,7 @@
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-network-manager-host PASS com inventario PCI simulado, driver indisponivel, estado offline, contratos negativos, formatacao e limpeza no relatorio instrumentado"
+      "evidence": "make test-network-manager-host PASS com NIC PCI e USB simuladas, configuracao estatica, DHCP, lease aplicado e removido, restauracao atomica apos erro, clientes remotos, validacao de rotas, contratos negativos e limpeza; 89 enderecos observados sem desconhecidos ou ambiguos"
     },
     {
       "id": "network-qemu-tst4-dynamic",
