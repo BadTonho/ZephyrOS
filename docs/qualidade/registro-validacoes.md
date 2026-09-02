@@ -4290,3 +4290,14 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   sem enderecos desconhecidos ou ambiguos. O catalogo registra 7.197
   superficies, 3.898 `COVERED`, 3.299 `PENDING` e 85 casos; o fechamento
   integral e o gate estrito continuam pendentes.
+
+- Incremento Storage/FAT12 concluido em 2026-09-02: `make test-fat12-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` terminou `PASS`. A fixture
+  exercitou as APIs legadas de escrita e remocao na raiz, escrita e remocao
+  em subdiretorio e criacao de entradas de diretorio sobre a imagem FAT12
+  falsa. O teste detectou e corrigiu a gravacao inconsistente de nomes 8.3
+  em `fat12_write_file`; o helper privado `to_upper`, que nao possuia
+  chamadores, foi removido. A evidencia instrumentada foi sincronizada sem
+  enderecos desconhecidos ou ambiguos. O catalogo agora registra 7.196
+  superficies, 3.903 `COVERED`, 3.293 `PENDING` e 85 casos; o fechamento
+  integral e o gate estrito continuam pendentes.

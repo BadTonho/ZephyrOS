@@ -4,24 +4,24 @@
 
 ## Resumo
 
-- Superfícies ativas: **7197**
+- Superfícies ativas: **7196**
 - Casos de teste: **85**
-- Superfícies aposentadas: **21**
+- Superfícies aposentadas: **22**
 
 | Tipo | Quantidade |
 |---|---:|
 | `api_function` | 1541 |
 | `asm_entry` | 101 |
-| `c_function` | 5435 |
+| `c_function` | 5434 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 3898 |
+| `COVERED` | 3903 |
 | `MANUAL` | 0 |
-| `PENDING` | 3299 |
+| `PENDING` | 3293 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -41,7 +41,7 @@
 | `desktop` | 40 |
 | `drivers` | 915 |
 | `filemanager` | 92 |
-| `fs` | 958 |
+| `fs` | 957 |
 | `gui` | 30 |
 | `icons` | 18 |
 | `kernel` | 40 |
@@ -4927,13 +4927,13 @@
 | `c:src/fs/fat12.c:fat12_atomic_delete_root` | `src/fs/fat12.c` | `fat12_atomic_delete_root` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_atomic_write_file_in_dir` | `src/fs/fat12.c` | `fat12_atomic_write_file_in_dir` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_atomic_write_root` | `src/fs/fat12.c` | `fat12_atomic_write_root` | `fs` | `COVERED` | 1 |
-| `c:src/fs/fat12.c:fat12_create_dir_entry` | `src/fs/fat12.c` | `fat12_create_dir_entry` | `fs` | `PENDING` | 0 |
-| `c:src/fs/fat12.c:fat12_delete_file` | `src/fs/fat12.c` | `fat12_delete_file` | `fs` | `PENDING` | 0 |
+| `c:src/fs/fat12.c:fat12_create_dir_entry` | `src/fs/fat12.c` | `fat12_create_dir_entry` | `fs` | `COVERED` | 1 |
+| `c:src/fs/fat12.c:fat12_delete_file` | `src/fs/fat12.c` | `fat12_delete_file` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_delete_file_in_dir` | `src/fs/fat12.c` | `fat12_delete_file_in_dir` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_encode_root_name` | `src/fs/fat12.c` | `fat12_encode_root_name` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_find_dir_slot` | `src/fs/fat12.c` | `fat12_find_dir_slot` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_find_entry` | `src/fs/fat12.c` | `fat12_find_entry` | `fs` | `COVERED` | 1 |
-| `c:src/fs/fat12.c:fat12_find_free_cluster` | `src/fs/fat12.c` | `fat12_find_free_cluster` | `fs` | `PENDING` | 0 |
+| `c:src/fs/fat12.c:fat12_find_free_cluster` | `src/fs/fat12.c` | `fat12_find_free_cluster` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_find_in_dir` | `src/fs/fat12.c` | `fat12_find_in_dir` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_find_path_entry` | `src/fs/fat12.c` | `fat12_find_path_entry` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_find_root_index` | `src/fs/fat12.c` | `fat12_find_root_index` | `fs` | `COVERED` | 1 |
@@ -4975,9 +4975,8 @@
 | `c:src/fs/fat12.c:fat12_validate_bpb` | `src/fs/fat12.c` | `fat12_validate_bpb` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_write_atomic_clusters` | `src/fs/fat12.c` | `fat12_write_atomic_clusters` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_write_dir_cluster` | `src/fs/fat12.c` | `fat12_write_dir_cluster` | `fs` | `COVERED` | 1 |
-| `c:src/fs/fat12.c:fat12_write_file` | `src/fs/fat12.c` | `fat12_write_file` | `fs` | `PENDING` | 0 |
-| `c:src/fs/fat12.c:fat12_write_file_in_dir` | `src/fs/fat12.c` | `fat12_write_file_in_dir` | `fs` | `PENDING` | 0 |
-| `c:src/fs/fat12.c:to_upper` | `src/fs/fat12.c` | `to_upper` | `fs` | `PENDING` | 0 |
+| `c:src/fs/fat12.c:fat12_write_file` | `src/fs/fat12.c` | `fat12_write_file` | `fs` | `COVERED` | 1 |
+| `c:src/fs/fat12.c:fat12_write_file_in_dir` | `src/fs/fat12.c` | `fat12_write_file_in_dir` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat32.c:cluster_to_lba` | `src/fs/fat32.c` | `cluster_to_lba` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat32.c:fat32_create_dir_entry` | `src/fs/fat32.c` | `fat32_create_dir_entry` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat32.c:fat32_delete_file` | `src/fs/fat32.c` | `fat32_delete_file` | `fs` | `COVERED` | 1 |
@@ -9286,12 +9285,6 @@
 - `c:src/fs/devfs.c:devfs_unavailable_lseek`
 - `c:src/fs/devfs.c:devfs_unavailable_read`
 - `c:src/fs/devfs.c:devfs_unavailable_write`
-- `c:src/fs/fat12.c:fat12_create_dir_entry`
-- `c:src/fs/fat12.c:fat12_delete_file`
-- `c:src/fs/fat12.c:fat12_find_free_cluster`
-- `c:src/fs/fat12.c:fat12_write_file`
-- `c:src/fs/fat12.c:fat12_write_file_in_dir`
-- `c:src/fs/fat12.c:to_upper`
 - `c:src/fs/procfs.c:procfs_append_hex`
 - `c:src/fs/procfs.c:procfs_append_line_hex`
 - `c:src/fs/procfs.c:procfs_init`
@@ -10693,4 +10686,5 @@
 - `c:src/core/test_protocol.c:protocol_prefix_valid` — surface ausente na fonte atual; confirmar remocao ou renomeacao
 - `c:src/core/test_protocol.c:protocol_token_valid` — surface ausente na fonte atual; confirmar remocao ou renomeacao
 - `c:src/fs/fat12.c:strncmp` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/fs/fat12.c:to_upper` — surface ausente na fonte atual; confirmar remocao ou renomeacao
 - `c:src/fs/fat32.c:strncmp` — surface ausente na fonte atual; confirmar remocao ou renomeacao
