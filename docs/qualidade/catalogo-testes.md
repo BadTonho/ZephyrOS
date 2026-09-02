@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **6820**
-- Casos de teste: **64**
+- Casos de teste: **65**
 - Superfícies aposentadas: **20**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 2724 |
+| `COVERED` | 2748 |
 | `MANUAL` | 0 |
-| `PENDING` | 4096 |
+| `PENDING` | 4072 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 64 |
+| `AUTOMATED` | 65 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -374,12 +374,12 @@
 | `api:src/include/core/http.h:http_maintain` | `src/include/core/http.h` | `http_maintain` | `core` | `PENDING` | 0 |
 | `api:src/include/core/http.h:http_reset` | `src/include/core/http.h` | `http_reset` | `core` | `PENDING` | 0 |
 | `api:src/include/core/http.h:http_validate_state` | `src/include/core/http.h` | `http_validate_state` | `core` | `COVERED` | 2 |
-| `api:src/include/core/icmp.h:icmp_get_status` | `src/include/core/icmp.h` | `icmp_get_status` | `core` | `PENDING` | 0 |
-| `api:src/include/core/icmp.h:icmp_init` | `src/include/core/icmp.h` | `icmp_init` | `core` | `PENDING` | 0 |
-| `api:src/include/core/icmp.h:icmp_maintain` | `src/include/core/icmp.h` | `icmp_maintain` | `core` | `PENDING` | 0 |
-| `api:src/include/core/icmp.h:icmp_ping_start` | `src/include/core/icmp.h` | `icmp_ping_start` | `core` | `PENDING` | 0 |
-| `api:src/include/core/icmp.h:icmp_reset` | `src/include/core/icmp.h` | `icmp_reset` | `core` | `PENDING` | 0 |
-| `api:src/include/core/icmp.h:icmp_validate_state` | `src/include/core/icmp.h` | `icmp_validate_state` | `core` | `COVERED` | 2 |
+| `api:src/include/core/icmp.h:icmp_get_status` | `src/include/core/icmp.h` | `icmp_get_status` | `core` | `COVERED` | 1 |
+| `api:src/include/core/icmp.h:icmp_init` | `src/include/core/icmp.h` | `icmp_init` | `core` | `COVERED` | 1 |
+| `api:src/include/core/icmp.h:icmp_maintain` | `src/include/core/icmp.h` | `icmp_maintain` | `core` | `COVERED` | 1 |
+| `api:src/include/core/icmp.h:icmp_ping_start` | `src/include/core/icmp.h` | `icmp_ping_start` | `core` | `COVERED` | 1 |
+| `api:src/include/core/icmp.h:icmp_reset` | `src/include/core/icmp.h` | `icmp_reset` | `core` | `COVERED` | 1 |
+| `api:src/include/core/icmp.h:icmp_validate_state` | `src/include/core/icmp.h` | `icmp_validate_state` | `core` | `COVERED` | 3 |
 | `api:src/include/core/input.h:input_dispatch` | `src/include/core/input.h` | `input_dispatch` | `core` | `COVERED` | 4 |
 | `api:src/include/core/input.h:input_get_metrics` | `src/include/core/input.h` | `input_get_metrics` | `core` | `COVERED` | 6 |
 | `api:src/include/core/input.h:input_init` | `src/include/core/input.h` | `input_init` | `core` | `COVERED` | 1 |
@@ -424,9 +424,9 @@
 | `api:src/include/core/log.h:log_get_console_level` | `src/include/core/log.h` | `log_get_console_level` | `core` | `COVERED` | 1 |
 | `api:src/include/core/log.h:log_get_level` | `src/include/core/log.h` | `log_get_level` | `core` | `COVERED` | 1 |
 | `api:src/include/core/log.h:log_get_stats` | `src/include/core/log.h` | `log_get_stats` | `core` | `COVERED` | 2 |
-| `api:src/include/core/log.h:log_init` | `src/include/core/log.h` | `log_init` | `core` | `COVERED` | 15 |
-| `api:src/include/core/log.h:log_print` | `src/include/core/log.h` | `log_print` | `core` | `COVERED` | 18 |
-| `api:src/include/core/log.h:log_print_code` | `src/include/core/log.h` | `log_print_code` | `core` | `COVERED` | 4 |
+| `api:src/include/core/log.h:log_init` | `src/include/core/log.h` | `log_init` | `core` | `COVERED` | 16 |
+| `api:src/include/core/log.h:log_print` | `src/include/core/log.h` | `log_print` | `core` | `COVERED` | 19 |
+| `api:src/include/core/log.h:log_print_code` | `src/include/core/log.h` | `log_print_code` | `core` | `COVERED` | 5 |
 | `api:src/include/core/log.h:log_self_test` | `src/include/core/log.h` | `log_self_test` | `core` | `COVERED` | 3 |
 | `api:src/include/core/log.h:log_set_buffer_level` | `src/include/core/log.h` | `log_set_buffer_level` | `core` | `COVERED` | 1 |
 | `api:src/include/core/log.h:log_set_console_level` | `src/include/core/log.h` | `log_set_console_level` | `core` | `COVERED` | 1 |
@@ -555,10 +555,10 @@
 | `api:src/include/core/spinlock.h:spinlock_acquire` | `src/include/core/spinlock.h` | `spinlock_acquire` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_init` | `src/include/core/spinlock.h` | `spinlock_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_release` | `src/include/core/spinlock.h` | `spinlock_release` | `core` | `PENDING` | 0 |
-| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 26 |
-| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 26 |
-| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 19 |
-| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 23 |
+| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 27 |
+| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 27 |
+| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 20 |
+| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 24 |
 | `api:src/include/core/syscall.h:syscall_enable_user_mode` | `src/include/core/syscall.h` | `syscall_enable_user_mode` | `core` | `PENDING` | 0 |
 | `api:src/include/core/syscall.h:syscall_handler` | `src/include/core/syscall.h` | `syscall_handler` | `core` | `COVERED` | 1 |
 | `api:src/include/core/syscall.h:syscall_init` | `src/include/core/syscall.h` | `syscall_init` | `core` | `PENDING` | 0 |
@@ -2401,30 +2401,30 @@
 | `c:src/core/http.c:http_validate_host` | `src/core/http.c` | `http_validate_host` | `core` | `COVERED` | 2 |
 | `c:src/core/http.c:http_validate_state` | `src/core/http.c` | `http_validate_state` | `core` | `COVERED` | 2 |
 | `c:src/core/http.c:http_validate_url_vector` | `src/core/http.c` | `http_validate_url_vector` | `core` | `COVERED` | 2 |
-| `c:src/core/icmp.c:icmp_build_ping_message` | `src/core/icmp.c` | `icmp_build_ping_message` | `core` | `PENDING` | 0 |
-| `c:src/core/icmp.c:icmp_cancel_ping_timer` | `src/core/icmp.c` | `icmp_cancel_ping_timer` | `core` | `PENDING` | 0 |
-| `c:src/core/icmp.c:icmp_checksum` | `src/core/icmp.c` | `icmp_checksum` | `core` | `COVERED` | 2 |
-| `c:src/core/icmp.c:icmp_data_is_equal` | `src/core/icmp.c` | `icmp_data_is_equal` | `core` | `PENDING` | 0 |
-| `c:src/core/icmp.c:icmp_finish_sequence` | `src/core/icmp.c` | `icmp_finish_sequence` | `core` | `PENDING` | 0 |
-| `c:src/core/icmp.c:icmp_get_status` | `src/core/icmp.c` | `icmp_get_status` | `core` | `PENDING` | 0 |
-| `c:src/core/icmp.c:icmp_handle_echo_reply` | `src/core/icmp.c` | `icmp_handle_echo_reply` | `core` | `PENDING` | 0 |
-| `c:src/core/icmp.c:icmp_handle_packet` | `src/core/icmp.c` | `icmp_handle_packet` | `core` | `PENDING` | 0 |
-| `c:src/core/icmp.c:icmp_init` | `src/core/icmp.c` | `icmp_init` | `core` | `PENDING` | 0 |
-| `c:src/core/icmp.c:icmp_maintain` | `src/core/icmp.c` | `icmp_maintain` | `core` | `PENDING` | 0 |
-| `c:src/core/icmp.c:icmp_ping_start` | `src/core/icmp.c` | `icmp_ping_start` | `core` | `PENDING` | 0 |
-| `c:src/core/icmp.c:icmp_ping_timeout_callback` | `src/core/icmp.c` | `icmp_ping_timeout_callback` | `core` | `PENDING` | 0 |
-| `c:src/core/icmp.c:icmp_preserve_module_counters` | `src/core/icmp.c` | `icmp_preserve_module_counters` | `core` | `PENDING` | 0 |
-| `c:src/core/icmp.c:icmp_queue_reply` | `src/core/icmp.c` | `icmp_queue_reply` | `core` | `PENDING` | 0 |
-| `c:src/core/icmp.c:icmp_read_u16` | `src/core/icmp.c` | `icmp_read_u16` | `core` | `COVERED` | 2 |
-| `c:src/core/icmp.c:icmp_reply_matches_ping` | `src/core/icmp.c` | `icmp_reply_matches_ping` | `core` | `PENDING` | 0 |
-| `c:src/core/icmp.c:icmp_reset` | `src/core/icmp.c` | `icmp_reset` | `core` | `PENDING` | 0 |
-| `c:src/core/icmp.c:icmp_restore_module_counters` | `src/core/icmp.c` | `icmp_restore_module_counters` | `core` | `PENDING` | 0 |
-| `c:src/core/icmp.c:icmp_send_current_ping` | `src/core/icmp.c` | `icmp_send_current_ping` | `core` | `PENDING` | 0 |
-| `c:src/core/icmp.c:icmp_try_pending_reply` | `src/core/icmp.c` | `icmp_try_pending_reply` | `core` | `PENDING` | 0 |
-| `c:src/core/icmp.c:icmp_validate_active_configuration` | `src/core/icmp.c` | `icmp_validate_active_configuration` | `core` | `PENDING` | 0 |
-| `c:src/core/icmp.c:icmp_validate_checksum_vector` | `src/core/icmp.c` | `icmp_validate_checksum_vector` | `core` | `COVERED` | 2 |
-| `c:src/core/icmp.c:icmp_validate_state` | `src/core/icmp.c` | `icmp_validate_state` | `core` | `COVERED` | 2 |
-| `c:src/core/icmp.c:icmp_write_u16` | `src/core/icmp.c` | `icmp_write_u16` | `core` | `COVERED` | 2 |
+| `c:src/core/icmp.c:icmp_build_ping_message` | `src/core/icmp.c` | `icmp_build_ping_message` | `core` | `COVERED` | 1 |
+| `c:src/core/icmp.c:icmp_cancel_ping_timer` | `src/core/icmp.c` | `icmp_cancel_ping_timer` | `core` | `COVERED` | 1 |
+| `c:src/core/icmp.c:icmp_checksum` | `src/core/icmp.c` | `icmp_checksum` | `core` | `COVERED` | 3 |
+| `c:src/core/icmp.c:icmp_data_is_equal` | `src/core/icmp.c` | `icmp_data_is_equal` | `core` | `COVERED` | 1 |
+| `c:src/core/icmp.c:icmp_finish_sequence` | `src/core/icmp.c` | `icmp_finish_sequence` | `core` | `COVERED` | 1 |
+| `c:src/core/icmp.c:icmp_get_status` | `src/core/icmp.c` | `icmp_get_status` | `core` | `COVERED` | 1 |
+| `c:src/core/icmp.c:icmp_handle_echo_reply` | `src/core/icmp.c` | `icmp_handle_echo_reply` | `core` | `COVERED` | 1 |
+| `c:src/core/icmp.c:icmp_handle_packet` | `src/core/icmp.c` | `icmp_handle_packet` | `core` | `COVERED` | 1 |
+| `c:src/core/icmp.c:icmp_init` | `src/core/icmp.c` | `icmp_init` | `core` | `COVERED` | 1 |
+| `c:src/core/icmp.c:icmp_maintain` | `src/core/icmp.c` | `icmp_maintain` | `core` | `COVERED` | 1 |
+| `c:src/core/icmp.c:icmp_ping_start` | `src/core/icmp.c` | `icmp_ping_start` | `core` | `COVERED` | 1 |
+| `c:src/core/icmp.c:icmp_ping_timeout_callback` | `src/core/icmp.c` | `icmp_ping_timeout_callback` | `core` | `COVERED` | 1 |
+| `c:src/core/icmp.c:icmp_preserve_module_counters` | `src/core/icmp.c` | `icmp_preserve_module_counters` | `core` | `COVERED` | 1 |
+| `c:src/core/icmp.c:icmp_queue_reply` | `src/core/icmp.c` | `icmp_queue_reply` | `core` | `COVERED` | 1 |
+| `c:src/core/icmp.c:icmp_read_u16` | `src/core/icmp.c` | `icmp_read_u16` | `core` | `COVERED` | 3 |
+| `c:src/core/icmp.c:icmp_reply_matches_ping` | `src/core/icmp.c` | `icmp_reply_matches_ping` | `core` | `COVERED` | 1 |
+| `c:src/core/icmp.c:icmp_reset` | `src/core/icmp.c` | `icmp_reset` | `core` | `COVERED` | 1 |
+| `c:src/core/icmp.c:icmp_restore_module_counters` | `src/core/icmp.c` | `icmp_restore_module_counters` | `core` | `COVERED` | 1 |
+| `c:src/core/icmp.c:icmp_send_current_ping` | `src/core/icmp.c` | `icmp_send_current_ping` | `core` | `COVERED` | 1 |
+| `c:src/core/icmp.c:icmp_try_pending_reply` | `src/core/icmp.c` | `icmp_try_pending_reply` | `core` | `COVERED` | 1 |
+| `c:src/core/icmp.c:icmp_validate_active_configuration` | `src/core/icmp.c` | `icmp_validate_active_configuration` | `core` | `COVERED` | 1 |
+| `c:src/core/icmp.c:icmp_validate_checksum_vector` | `src/core/icmp.c` | `icmp_validate_checksum_vector` | `core` | `COVERED` | 3 |
+| `c:src/core/icmp.c:icmp_validate_state` | `src/core/icmp.c` | `icmp_validate_state` | `core` | `COVERED` | 3 |
+| `c:src/core/icmp.c:icmp_write_u16` | `src/core/icmp.c` | `icmp_write_u16` | `core` | `COVERED` | 3 |
 | `c:src/core/input.c:input_dispatch` | `src/core/input.c` | `input_dispatch` | `core` | `COVERED` | 4 |
 | `c:src/core/input.c:input_dispatch_key` | `src/core/input.c` | `input_dispatch_key` | `core` | `COVERED` | 4 |
 | `c:src/core/input.c:input_dispatch_pointer` | `src/core/input.c` | `input_dispatch_pointer` | `core` | `COVERED` | 4 |
@@ -2567,36 +2567,36 @@
 | `c:src/core/log.c:log_append_char` | `src/core/log.c` | `log_append_char` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_append_text` | `src/core/log.c` | `log_append_text` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_clear_buffer` | `src/core/log.c` | `log_clear_buffer` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_console_print_number` | `src/core/log.c` | `log_console_print_number` | `core` | `COVERED` | 19 |
+| `c:src/core/log.c:log_console_print_number` | `src/core/log.c` | `log_console_print_number` | `core` | `COVERED` | 20 |
 | `c:src/core/log.c:log_copy_recent` | `src/core/log.c` | `log_copy_recent` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_copy_text` | `src/core/log.c` | `log_copy_text` | `core` | `COVERED` | 19 |
+| `c:src/core/log.c:log_copy_text` | `src/core/log.c` | `log_copy_text` | `core` | `COVERED` | 20 |
 | `c:src/core/log.c:log_get_buffer` | `src/core/log.c` | `log_get_buffer` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_get_buffer_level` | `src/core/log.c` | `log_get_buffer_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_get_console_level` | `src/core/log.c` | `log_get_console_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_get_level` | `src/core/log.c` | `log_get_level` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_get_stats` | `src/core/log.c` | `log_get_stats` | `core` | `COVERED` | 2 |
-| `c:src/core/log.c:log_init` | `src/core/log.c` | `log_init` | `core` | `COVERED` | 15 |
-| `c:src/core/log.c:log_is_power_of_two` | `src/core/log.c` | `log_is_power_of_two` | `core` | `COVERED` | 19 |
-| `c:src/core/log.c:log_level_is_valid` | `src/core/log.c` | `log_level_is_valid` | `core` | `COVERED` | 19 |
+| `c:src/core/log.c:log_init` | `src/core/log.c` | `log_init` | `core` | `COVERED` | 16 |
+| `c:src/core/log.c:log_is_power_of_two` | `src/core/log.c` | `log_is_power_of_two` | `core` | `COVERED` | 20 |
+| `c:src/core/log.c:log_level_is_valid` | `src/core/log.c` | `log_level_is_valid` | `core` | `COVERED` | 20 |
 | `c:src/core/log.c:log_note_dropped_event` | `src/core/log.c` | `log_note_dropped_event` | `core` | `COVERED` | 2 |
-| `c:src/core/log.c:log_print` | `src/core/log.c` | `log_print` | `core` | `COVERED` | 19 |
-| `c:src/core/log.c:log_print_code` | `src/core/log.c` | `log_print_code` | `core` | `COVERED` | 4 |
-| `c:src/core/log.c:log_print_colored` | `src/core/log.c` | `log_print_colored` | `core` | `COVERED` | 19 |
-| `c:src/core/log.c:log_records_match` | `src/core/log.c` | `log_records_match` | `core` | `COVERED` | 19 |
-| `c:src/core/log.c:log_restore_interrupts` | `src/core/log.c` | `log_restore_interrupts` | `core` | `COVERED` | 19 |
+| `c:src/core/log.c:log_print` | `src/core/log.c` | `log_print` | `core` | `COVERED` | 20 |
+| `c:src/core/log.c:log_print_code` | `src/core/log.c` | `log_print_code` | `core` | `COVERED` | 5 |
+| `c:src/core/log.c:log_print_colored` | `src/core/log.c` | `log_print_colored` | `core` | `COVERED` | 20 |
+| `c:src/core/log.c:log_records_match` | `src/core/log.c` | `log_records_match` | `core` | `COVERED` | 20 |
+| `c:src/core/log.c:log_restore_interrupts` | `src/core/log.c` | `log_restore_interrupts` | `core` | `COVERED` | 20 |
 | `c:src/core/log.c:log_ring_clear` | `src/core/log.c` | `log_ring_clear` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_ring_copy_recent` | `src/core/log.c` | `log_ring_copy_recent` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_ring_initialize` | `src/core/log.c` | `log_ring_initialize` | `core` | `COVERED` | 17 |
-| `c:src/core/log.c:log_ring_latest_index` | `src/core/log.c` | `log_ring_latest_index` | `core` | `COVERED` | 19 |
-| `c:src/core/log.c:log_ring_store` | `src/core/log.c` | `log_ring_store` | `core` | `COVERED` | 19 |
+| `c:src/core/log.c:log_ring_initialize` | `src/core/log.c` | `log_ring_initialize` | `core` | `COVERED` | 18 |
+| `c:src/core/log.c:log_ring_latest_index` | `src/core/log.c` | `log_ring_latest_index` | `core` | `COVERED` | 20 |
+| `c:src/core/log.c:log_ring_store` | `src/core/log.c` | `log_ring_store` | `core` | `COVERED` | 20 |
 | `c:src/core/log.c:log_self_test` | `src/core/log.c` | `log_self_test` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_self_test_mark` | `src/core/log.c` | `log_self_test_mark` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_serialize_records` | `src/core/log.c` | `log_serialize_records` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_set_buffer_level` | `src/core/log.c` | `log_set_buffer_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_set_console_level` | `src/core/log.c` | `log_set_console_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_set_level` | `src/core/log.c` | `log_set_level` | `core` | `COVERED` | 2 |
-| `c:src/core/log.c:log_submit` | `src/core/log.c` | `log_submit` | `core` | `COVERED` | 19 |
-| `c:src/core/log.c:log_suspend_interrupts` | `src/core/log.c` | `log_suspend_interrupts` | `core` | `COVERED` | 19 |
+| `c:src/core/log.c:log_submit` | `src/core/log.c` | `log_submit` | `core` | `COVERED` | 20 |
+| `c:src/core/log.c:log_suspend_interrupts` | `src/core/log.c` | `log_suspend_interrupts` | `core` | `COVERED` | 20 |
 | `c:src/core/log.c:log_test_clear_behavior` | `src/core/log.c` | `log_test_clear_behavior` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_test_level_filtering` | `src/core/log.c` | `log_test_level_filtering` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_test_optional_error_code` | `src/core/log.c` | `log_test_optional_error_code` | `core` | `COVERED` | 3 |
@@ -2606,7 +2606,7 @@
 | `c:src/core/log.c:log_test_text_serialization` | `src/core/log.c` | `log_test_text_serialization` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_test_wrap_and_overwrite` | `src/core/log.c` | `log_test_wrap_and_overwrite` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_to_buffer` | `src/core/log.c` | `log_to_buffer` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_write_serial` | `src/core/log.c` | `log_write_serial` | `core` | `COVERED` | 19 |
+| `c:src/core/log.c:log_write_serial` | `src/core/log.c` | `log_write_serial` | `core` | `COVERED` | 20 |
 | `c:src/core/net_buffer.c:net_buffer_alignment_valid` | `src/core/net_buffer.c` | `net_buffer_alignment_valid` | `core` | `COVERED` | 3 |
 | `c:src/core/net_buffer.c:net_buffer_begin` | `src/core/net_buffer.c` | `net_buffer_begin` | `core` | `COVERED` | 3 |
 | `c:src/core/net_buffer.c:net_buffer_check_active_locked` | `src/core/net_buffer.c` | `net_buffer_check_active_locked` | `core` | `COVERED` | 3 |
@@ -2882,10 +2882,10 @@
 | `c:src/core/socket.c:socket_wait_local` | `src/core/socket.c` | `socket_wait_local` | `core` | `PENDING` | 0 |
 | `c:src/core/socket.c:socket_wait_owner` | `src/core/socket.c` | `socket_wait_owner` | `core` | `COVERED` | 2 |
 | `c:src/core/socket.c:socket_wake` | `src/core/socket.c` | `socket_wake` | `core` | `COVERED` | 2 |
-| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 26 |
-| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 26 |
-| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 19 |
-| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 23 |
+| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 27 |
+| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 27 |
+| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 20 |
+| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 24 |
 | `c:src/core/syscall.c:syscall_copy_user_string` | `src/core/syscall.c` | `syscall_copy_user_string` | `core` | `PENDING` | 0 |
 | `c:src/core/syscall.c:syscall_dispatch` | `src/core/syscall.c` | `syscall_dispatch` | `core` | `COVERED` | 1 |
 | `c:src/core/syscall.c:syscall_dispatch_user` | `src/core/syscall.c` | `syscall_dispatch_user` | `core` | `COVERED` | 1 |
@@ -6921,6 +6921,7 @@
 | `host:core:timer` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar timers one-shot e periodicos com IDT, PIC e scheduler simulados | handles, prazos, cancelamento, dispatch, callbacks, notifier e limpeza respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas estaticas do servico de timers no processo host | todos os timers e proprietarios sao destruidos e os artefatos sao preservados |
 | `host:memory:slab-metadata` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar inicializacao, limites, metadados, estatisticas e limpeza do registrador SLAB sem alocar paginas reais | estado publicado, informacoes por indice, duplicidade e limpeza respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas de metadados no processo host; nenhuma pagina real e alocada | cache temporario destruido e manifesto, logs e cobertura preservados |
 | `host:network:arp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar configuracao, resolucao, cache, retries e recepcao ARP com Ethernet simulada | enderecos validos sao resolvidos, pacotes invalidos sao rejeitados e o cache retorna ao estado inicial | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente cache ARP, buffers estaticos e transporte Ethernet falso no processo host | cache desconfigurado e artefatos preservados |
+| `host:network:icmp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar checksum, echo, timeout, mudanca de configuracao, fila de reply e pacotes ICMP invalidos com IPv4 e timer simulados | echo valido e reply pendente sao processados, timeout e falhas de transporte retornam erros canonicos e o estado e restaurado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado ICMP, buffers estaticos e transportes IPv4 e timer falsos no processo host | estado ICMP, timer e transporte falso retornam ao estado inicial e os artefatos sao preservados |
 | `host:network:ipv4` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar configuração, envio, broadcast, recepção, checksum e handlers IPv4 | datagramas validos são entregues, entradas inválidas são recusadas e o estado é restaurado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado IPv4, tabela de rotas e buffers falsos de ARP/Ethernet | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:network:route` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar rotas base, lookup, limites, overflow e restauracao | rotas validas e invalidas respeitam o contrato, sem residuos globais | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabela estatica de rotas no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:network:udp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar envio, reinjecao, checksum, listeners, broadcast e erros UDP com IPv4 simulado | datagramas validos sao entregues, entradas corrompidas sao rejeitadas e endpoints sao liberados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos, endpoints UDP e transporte IPv4 falso no processo host | todos os endpoints sao desvinculados e os artefatos sao preservados |
@@ -7208,11 +7209,6 @@
 - `api:src/include/core/http.h:http_init`
 - `api:src/include/core/http.h:http_maintain`
 - `api:src/include/core/http.h:http_reset`
-- `api:src/include/core/icmp.h:icmp_get_status`
-- `api:src/include/core/icmp.h:icmp_init`
-- `api:src/include/core/icmp.h:icmp_maintain`
-- `api:src/include/core/icmp.h:icmp_ping_start`
-- `api:src/include/core/icmp.h:icmp_reset`
 - `api:src/include/core/keyboard.h:keyboard_controller_reset`
 - `api:src/include/core/keyboard.h:keyboard_controller_reset_available`
 - `api:src/include/core/keyboard.h:keyboard_get_metrics`
@@ -8445,25 +8441,6 @@
 - `c:src/core/http.c:http_socket_exists`
 - `c:src/core/http.c:http_start_socket`
 - `c:src/core/http.c:http_validate_header_value`
-- `c:src/core/icmp.c:icmp_build_ping_message`
-- `c:src/core/icmp.c:icmp_cancel_ping_timer`
-- `c:src/core/icmp.c:icmp_data_is_equal`
-- `c:src/core/icmp.c:icmp_finish_sequence`
-- `c:src/core/icmp.c:icmp_get_status`
-- `c:src/core/icmp.c:icmp_handle_echo_reply`
-- `c:src/core/icmp.c:icmp_handle_packet`
-- `c:src/core/icmp.c:icmp_init`
-- `c:src/core/icmp.c:icmp_maintain`
-- `c:src/core/icmp.c:icmp_ping_start`
-- `c:src/core/icmp.c:icmp_ping_timeout_callback`
-- `c:src/core/icmp.c:icmp_preserve_module_counters`
-- `c:src/core/icmp.c:icmp_queue_reply`
-- `c:src/core/icmp.c:icmp_reply_matches_ping`
-- `c:src/core/icmp.c:icmp_reset`
-- `c:src/core/icmp.c:icmp_restore_module_counters`
-- `c:src/core/icmp.c:icmp_send_current_ping`
-- `c:src/core/icmp.c:icmp_try_pending_reply`
-- `c:src/core/icmp.c:icmp_validate_active_configuration`
 - `c:src/core/net_socket.c:net_socket_abort`
 - `c:src/core/net_socket.c:net_socket_allocate_port`
 - `c:src/core/net_socket.c:net_socket_close`

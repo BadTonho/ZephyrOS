@@ -1918,7 +1918,7 @@
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "pendente ate make test-icmp-host passar com IPv4 e timer falsos"
+      "evidence": "make test-icmp-host PASS com IPv4 e timer falsos, checksum, echo request/reply, timeout, mudanca de configuracao, fila pendente, pacotes invalidos e falhas de transporte"
     }
   ]
 }

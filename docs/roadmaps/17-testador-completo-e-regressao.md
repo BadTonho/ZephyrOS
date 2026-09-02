@@ -957,3 +957,12 @@ com `HOST_CC` configurado e warnings tratados como erro; o relatorio
 desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
 2.724 `COVERED`, 4.096 `PENDING` e 64 casos; `make catalog-test` passou.
 Nenhuma superficie de `arp.c` permanece pendente.
+
+Incremento Rede/ICMP concluido em 2026-09-02: o caso host-only
+`host:network:icmp` e o alvo `make test-icmp-host` foram adicionados. A
+fixture passou com IPv4 e timer falsos, cobrindo configuracao, checksum, echo
+request/reply, RTT, timeout, mudanca de configuracao, fila pendente, pacotes
+invalidos e falhas de transporte. A cobertura real foi sincronizada no
+catalogo: 6.820 superficies, 2.748 `COVERED`, 4.072 `PENDING` e 65 casos.
+`make catalog-test` e `make q3check` passaram. O fechamento integral do
+catalogo, o gate estrito e a validacao TST7 completa continuam pendentes.

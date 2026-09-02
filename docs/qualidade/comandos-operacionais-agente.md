@@ -67,6 +67,7 @@ make test-slab-host
 make test-timer-host
 make test-udp-host
 make test-arp-host
+make test-icmp-host
 ```
 
 O caso de scheduling cobre `wait`, `workqueue` e `irq_deferred` em processo
@@ -151,6 +152,10 @@ endpoints. Os relatorios ficam em `build/test-results/timer-host/` e
 configuracao, validacao de enderecos, cache, retries, timeout, requests,
 replies, entradas invalidas e limpeza; seu relatorio fica em
 `build/test-results/arp-host/`.
+O caso `test-icmp-host` usa IPv4 e timer falsos para exercitar configuracao,
+checksum, echo request/reply, RTT, timeout, mudanca de configuracao, fila
+pendente, pacotes invalidos e falhas de transporte; seu relatorio fica em
+`build/test-results/icmp-host/`.
 
 Para reconstruir a imagem instrumentada separada e gerar o mapa de simbolos:
 
