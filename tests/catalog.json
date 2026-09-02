@@ -16380,9 +16380,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtc-status"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/rtc.h:rtc_init",
@@ -79775,9 +79778,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtc-status"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_inb",
@@ -138422,6 +138428,39 @@
         "host",
         "drivers",
         "font",
+        "coverage"
+      ]
+    },
+    {
+      "id": "host:drivers:rtc-status",
+      "scenario": "Contrato host-only do estado publicado pelo RTC",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "consultar o estado inicial do RTC com destinos valido e nulo",
+      "expected": "rtc_get_status rejeita destino nulo e publica snapshot inicial estavel",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente estado estatico do RTC e processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/drivers/rtc.h:rtc_get_status",
+        "c:src/drivers/rtc.c:rtc_get_status"
+      ],
+      "tags": [
+        "host",
+        "drivers",
+        "rtc",
         "coverage"
       ]
     },

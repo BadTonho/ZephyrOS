@@ -39,13 +39,13 @@ typedef struct {
 static rtc_status_t rtc_status;
 
 static void rtc_outb(uint16_t port, uint8_t value) {
-    asm volatile("outb %0, %1" : : "a"(value), "Nd"(port));
+    __asm__ volatile("outb %0, %1" : : "a"(value), "Nd"(port));
 }
 
 static uint8_t rtc_inb(uint16_t port) {
     uint8_t value;
 
-    asm volatile("inb %1, %0" : "=a"(value) : "Nd"(port));
+    __asm__ volatile("inb %1, %0" : "=a"(value) : "Nd"(port));
     return value;
 }
 

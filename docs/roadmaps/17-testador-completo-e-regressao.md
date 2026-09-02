@@ -1185,3 +1185,13 @@ que gerava `-Werror=type-limits`, sem alterar o comportamento para valores
 validos. A sincronizacao atual registra 6.826 superficies, 3.095 `COVERED`,
 3.731 `PENDING`, 82 casos e 21 superficies aposentadas; o fechamento integral
 do catalogo, o gate estrito e a validacao TST7 completa continuam pendentes.
+
+Incremento Drivers/RTC concluido em 2026-09-02 15:30: o novo caso host-only
+`host:drivers:rtc-status` e o alvo `make test-rtc-status-host` foram
+adicionados. A fixture exercita diretamente `rtc_get_status`, cobrindo destino
+nulo, estado inicial zerado e leitura repetida sem mutacao, com cobertura
+instrumentada. As rotinas CMOS privilegiadas permanecem fora deste caso e
+continuam pendentes para uma fixture QEMU segura. A sincronizacao atual
+registra 6.826 superficies, 3.097 `COVERED`, 3.729 `PENDING`, 83 casos e
+nenhuma superficie `RETIRED`; o fechamento integral do catalogo, o gate estrito
+e a validacao TST7 completa continuam pendentes.

@@ -4211,3 +4211,17 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `tst3-sanitize`, pela ausencia de Clang/runtime sanitizador, e os demais
   alvos passaram. A sincronizacao atual registra 6.826 superficies, 3.095
   `COVERED`, 3.731 `PENDING`, 82 casos e 21 superficies aposentadas.
+
+- Incremento Drivers/RTC concluido em 2026-09-02 15:30
+  (America/Sao_Paulo): o novo caso host-only `host:drivers:rtc-status` e o
+  alvo `make test-rtc-status-host` foram adicionados. A fixture exercita
+  `rtc_get_status` com destino nulo, estado inicial zerado e leituras repetidas
+  sem mutacao; o relatorio instrumentado
+  `build/test-results/rtc-status-host/coverage.json` terminou `PASS`, sem
+  enderecos desconhecidos ou ambiguos. A compilacao host revelou que `asm`
+  desnudo nao e aceito com `-std=c11`; a forma GNU equivalente `__asm__` foi
+  usada em `rtc.c`, preservando a instrucao e a ABI. A alteracao do sincronizador
+  passou a reaplicar definicoes declarativas de casos do registro antes de
+  vincular a cobertura, mantendo o catalogo reproduzivel. As rotinas CMOS
+  privilegiadas nao foram marcadas como cobertas. A sincronizacao atual registra
+  6.826 superficies, 3.097 `COVERED`, 3.729 `PENDING` e 83 casos.

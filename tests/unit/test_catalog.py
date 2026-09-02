@@ -133,6 +133,28 @@ class CatalogContractTests(unittest.TestCase):
         self.assertEqual(catalog["surfaces"][0]["status"], "PENDING")
         self.assertNotIn("coverage_mode", catalog["surfaces"][0])
 
+    def test_registry_case_definition_is_added_to_catalog(self):
+        catalog = sample_catalog()
+        definition = sample_case()
+        definition["id"] = "host:coverage:defined"
+        definition["surface_ids"] = ["c:src/core/sample.c:sample"]
+        registry = {
+            "schema": test_catalog.COVERAGE_REGISTRY_SCHEMA,
+            "entries": [{
+                "id": "sample-definition",
+                "domain": "core",
+                "owner": "quality",
+                "executor": "host",
+                "coverage_mode": "direct",
+                "case_ids": ["host:coverage:defined"],
+                "surface_ids": ["c:src/core/sample.c:sample"],
+                "case_definition": definition,
+                "evidence": "unit",
+            }],
+        }
+        test_catalog.apply_registry_case_definitions(catalog, registry)
+        self.assertEqual(catalog["cases"][-1], definition)
+
     def test_strict_rejects_pending_surface(self):
         catalog = sample_catalog()
         catalog["surfaces"][0]["status"] = "PENDING"
