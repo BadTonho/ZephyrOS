@@ -966,3 +966,12 @@ invalidos e falhas de transporte. A cobertura real foi sincronizada no
 catalogo: 6.820 superficies, 2.748 `COVERED`, 4.072 `PENDING` e 65 casos.
 `make catalog-test` e `make q3check` passaram. O fechamento integral do
 catalogo, o gate estrito e a validacao TST7 completa continuam pendentes.
+
+Incremento Rede/DNS concluido em 2026-09-02: o caso host-only
+`host:network:dns` e o alvo `make test-dns-host` foram adicionados. A fixture
+passou com UDP, IPv4 e timer falsos, cobrindo consultas, normalizacao de
+nomes, cache e expiracao, CNAME, timeout, respostas invalidas e falhas de
+transporte sem conexao externa. A cobertura real foi sincronizada no
+catalogo: 6.820 superficies, 2.785 `COVERED`, 4.035 `PENDING` e 66 casos.
+O gate `make catalog-test` permanece valido; a cobertura integral, o gate
+estrito e a validacao TST7 completa continuam pendentes.

@@ -1919,6 +1919,25 @@
       ],
       "include_public_apis": true,
       "evidence": "make test-icmp-host PASS com IPv4 e timer falsos, checksum, echo request/reply, timeout, mudanca de configuracao, fila pendente, pacotes invalidos e falhas de transporte"
+    },
+    {
+      "id": "dns-host-dynamic",
+      "domain": "network-dns",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:network:dns"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/dns-host/coverage.json",
+      "coverage_sources": [
+        "src/core/dns.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-dns-host PASS com consultas, cache, CNAME, timeout, respostas invalidas e falhas de transporte usando UDP e timer falsos"
     }
   ]
 }

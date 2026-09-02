@@ -53,6 +53,7 @@ QUICK_COMMANDS = (
     ("test-udp-host", "udp-host"),
     ("test-arp-host", "arp-host"),
     ("test-icmp-host", "icmp-host"),
+    ("test-dns-host", "dns-host"),
     ("test-qemu-selftest", "qemu-selftest"),
     ("test-tst2-host", "tst2-host"),
     ("test-tst3-host", "tst3-host"),
@@ -89,6 +90,7 @@ HOST_CASE_TARGETS = {
     "host:network:udp": "test-udp-host",
     "host:network:arp": "test-arp-host",
     "host:network:icmp": "test-icmp-host",
+    "host:network:dns": "test-dns-host",
     "host:tst2:protocol-core": "test-tst2-host",
     "host:tst3:string-compress": "test-tst3-host",
 }

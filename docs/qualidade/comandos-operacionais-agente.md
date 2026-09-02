@@ -68,6 +68,7 @@ make test-timer-host
 make test-udp-host
 make test-arp-host
 make test-icmp-host
+make test-dns-host
 ```
 
 O caso de scheduling cobre `wait`, `workqueue` e `irq_deferred` em processo
@@ -156,6 +157,9 @@ O caso `test-icmp-host` usa IPv4 e timer falsos para exercitar configuracao,
 checksum, echo request/reply, RTT, timeout, mudanca de configuracao, fila
 pendente, pacotes invalidos e falhas de transporte; seu relatorio fica em
 `build/test-results/icmp-host/`.
+O caso `test-dns-host` usa UDP, IPv4 e timer falsos para exercitar consultas,
+cache, CNAME, timeout, respostas invalidas e falhas de transporte; seu
+relatorio fica em `build/test-results/dns-host/`.
 
 Para reconstruir a imagem instrumentada separada e gerar o mapa de simbolos:
 
