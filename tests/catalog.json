@@ -39854,9 +39854,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:bearssl-compat"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/bearssl_compat.c:strlen",
@@ -39872,9 +39875,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:bearssl-compat"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/clock.c:clock_datetime_to_unix",
@@ -137043,6 +137049,39 @@
         "host",
         "core",
         "packages",
+        "negative"
+      ]
+    },
+    {
+      "id": "host:core:bearssl-compat",
+      "scenario": "Compatibilidade host-only das rotinas exigidas pelo BearSSL",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "compilar e executar compatibilidade de memoria e string para BearSSL",
+      "expected": "memcpy, memmove, memset, memcmp e strlen preservam seus contratos",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente buffers estaticos e artefatos host-only",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "c:src/core/bearssl_compat.c:memcmp",
+        "c:src/core/bearssl_compat.c:strlen"
+      ],
+      "tags": [
+        "host",
+        "core",
+        "compatibility",
         "negative"
       ]
     },
