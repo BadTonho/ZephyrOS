@@ -55,6 +55,18 @@ make test-app-catalog-host
 make test-input-host
 make test-power-host
 make test-network-manager-host
+make test-vfs-path-host
+make test-file-index-host
+make test-fs-host
+make test-storage-host
+make test-block-host
+make test-fat12-host
+make test-fat32-host
+make test-vfs-host
+make test-slab-host
+make test-timer-host
+make test-udp-host
+make test-arp-host
 ```
 
 O caso de scheduling cobre `wait`, `workqueue` e `irq_deferred` em processo
@@ -89,6 +101,56 @@ fixtures estaticos, os estados ACPI e a limpeza de energia apos falhas, alem
 do inventario PCI, drivers ausentes, estado offline e recusas de operacoes que
 exigem uma interface ativa. Os relatorios instrumentados ficam em
 `build/test-results/power-host/` e `build/test-results/network-manager-host/`.
+
+Os casos `test-vfs-path-host` e `test-file-index-host` exercitam VFS/path e
+file index com volumes, mounts, cursores e alocacao estaticos. O primeiro cobre
+normalizacao, aliases, cwd, listagens, quiescencia e limites; o segundo cobre
+pesquisa, rebuild cooperativo, cancelamento, resultados stale/missing,
+corrupcao de candidato e tabela ativa e recuperacao. Os relatorios ficam em
+`build/test-results/vfs-path-host/` e `build/test-results/file-index-host/`.
+
+O caso `test-fs-host` valida a interface unificada com fixtures FAT12/FAT32 e
+storage, cobrindo paths legacy e de volume, cursores, leitura por faixa,
+mutacoes, operacoes atomicas, streaming, geracao e erros canonicos. O relatorio
+fica em `build/test-results/fs-host/`.
+
+O caso `test-storage-host` valida o backend de armazenamento com uma imagem
+FAT12 estatica, cobrindo MBR/BPB, inventario, montagem, aliases, cursores,
+leitura, espaco livre, rejeicao de mutacoes e limpeza. O caso
+`test-block-host` executa os autotestes reais de BIO e block-cache, incluindo
+limites, cancelamento, failpoints, eviction, writeback, sync e restauracao do
+inventario. Os relatorios ficam em `build/test-results/storage-host/` e
+`build/test-results/block-host/`.
+
+O caso `test-fat12-host` exercita o driver legado sobre uma imagem FAT12
+estatica, incluindo leitura, paths de subdiretorio, metadados, operacoes
+atomicas, streaming, cancelamento e erros de nome/tamanho. O relatorio fica
+em `build/test-results/fat12-host/`.
+
+O caso `test-fat32-host` exercita o driver FAT32 sobre uma imagem estatica com
+cadeia de clusters, leitura, paths, metadados, criacao, escrita, remocao e
+limites. O caso `test-vfs-host` valida o nucleo de descritores e I/O da VFS,
+incluindo arquivos regulares, dispositivos, pipes, sockets, poll/select,
+quiescencia e invariantes. Os relatorios ficam em
+`build/test-results/fat32-host/` e `build/test-results/vfs-host/`.
+
+O caso `test-slab-host` valida o ciclo de vida e os metadados do registrador
+SLAB sem alocar paginas reais: inicializacao idempotente, limites, duplicidade,
+informacoes por indice, estatisticas, ownership nulo e limpeza. O relatorio
+instrumentado fica em `build/test-results/slab-host/`; a alocacao real e os
+testes de paginas continuam cobertos pelo caso QEMU TST4.
+
+O caso `test-timer-host` usa stubs de IDT, PIC e scheduler para exercitar
+inicializacao, conversao de intervalos, one-shot, periodicos, notifier,
+dispatch, cancelamento, callbacks com erro, snapshots e limpeza. O caso
+`test-udp-host` usa um transporte IPv4 falso para exercitar envio, reinjecao,
+checksum, listeners, broadcast, callbacks recusados, limites e limpeza de
+endpoints. Os relatorios ficam em `build/test-results/timer-host/` e
+`build/test-results/udp-host/`, sem hardware ou conexao externa. O caso
+`test-arp-host` usa Ethernet falsa e relogio controlado para exercitar
+configuracao, validacao de enderecos, cache, retries, timeout, requests,
+replies, entradas invalidas e limpeza; seu relatorio fica em
+`build/test-results/arp-host/`.
 
 Para reconstruir a imagem instrumentada separada e gerar o mapa de simbolos:
 

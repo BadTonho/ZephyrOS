@@ -90,22 +90,43 @@ static uint32_t timer_generations[TIMER_CAPACITY];
 static timer_service_t timer_service;
 static timer_pending_notifier_t timer_pending_notifier;
 static void* timer_pending_notifier_context;
+#if defined(ZEPHYROS_HOST_TEST)
+static uint8_t timer_host_interrupts_enabled = 1U;
+#endif
 
 static void outb(uint16_t port, uint8_t value) {
+#if defined(ZEPHYROS_HOST_TEST)
+    (void)port;
+    (void)value;
+#else
     asm volatile("outb %0, %1" : : "a"(value), "Nd"(port));
+#endif
 }
 
 static uint32_t timer_suspend_interrupts(void) {
+#if defined(ZEPHYROS_HOST_TEST)
+    uint32_t flags = timer_host_interrupts_enabled ?
+                     TIMER_EFLAGS_INTERRUPT_ENABLE : 0U;
+
+    timer_host_interrupts_enabled = 0U;
+    return flags;
+#else
     uint32_t flags;
 
     asm volatile("pushf\n\tpop %0\n\tcli" : "=r"(flags) : : "memory");
     return flags;
+#endif
 }
 
 static void timer_restore_interrupts(uint32_t flags) {
+#if defined(ZEPHYROS_HOST_TEST)
+    timer_host_interrupts_enabled =
+        (flags & TIMER_EFLAGS_INTERRUPT_ENABLE) ? 1U : 0U;
+#else
     if (flags & TIMER_EFLAGS_INTERRUPT_ENABLE) {
         asm volatile("sti" : : : "memory");
     }
+#endif
 }
 
 static int timer_name_is_valid(const char* name) {

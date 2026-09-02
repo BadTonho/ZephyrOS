@@ -796,6 +796,31 @@ estrito continua pendente, pois os lotes de memoria/paging, processos,
 storage/VFS, rede restante, drivers/plataforma e Shell/UI ainda precisam de
 executores e evidencia especificos.
 
+O lote Storage/VFS adicionou os casos host-only `host:storage:vfs-path`,
+`host:storage:file-index` e `host:storage:fs`, com os alvos
+`make test-vfs-path-host`, `make test-file-index-host` e `make test-fs-host`.
+As suites usam fixtures estaticas e instrumentacao dinamica para exercitar
+normalizacao de caminhos, mounts, cwd, cursores FAT12/FAT32, pesquisa, rebuild,
+cancelamento, streaming, operacoes atomicas, estados stale/missing, corrupcao
+e recuperacao. Os relatorios dos tres casos terminaram `PASS` sem enderecos
+desconhecidos ou ambiguos. As superficies de `src/fs/vfs_path.c`,
+`src/fs/file_index.c` e `src/fs/fs.c` agora estao cobertas; a sincronizacao
+deixou 6.820 superficies, 2.395 `COVERED`, 4.425 `PENDING` e 55 casos.
+`make catalog-test` permanece valido, enquanto `catalog-test-strict` continua
+reprovando pelas superficies de outros lotes ainda sem executor real.
+
+O lote Storage/VFS adicionou os casos host-only `host:storage:vfs-path` e
+`host:storage:file-index`, com os alvos `make test-vfs-path-host` e
+`make test-file-index-host`. Os dois testes usam fixtures estaticas e
+instrumentacao dinamica; cobrem normalizacao de caminhos, mounts, cwd,
+quiescencia, pesquisa, rebuild cooperativo, cancelamento, estados stale e
+missing, corrupcao de tabelas e recuperacao. Ambos passaram e seus relatorios
+foram sincronizados somente a partir dos enderecos observados. `src/fs/vfs_path.c`
+e `src/fs/file_index.c` nao possuem mais superficies `PENDING`; o catalogo
+agora registra 6.820 superficies, 2.334 `COVERED`, 4.486 `PENDING` e 54 casos.
+`make catalog-test` permanece valido, enquanto `catalog-test-strict` continua
+reprovando pelas superficies de outros lotes ainda sem executor real.
+
 ## Fora do escopo
 
 - vincular o testador à versão 1.0.0 ou a uma release específica;
@@ -835,3 +860,100 @@ dinamica e foram sincronizados somente a partir dos enderecos observados. O
 catalogo agora registra 6.820 superficies, 2.312 `COVERED`, 4.508 `PENDING` e
 52 casos; `make catalog-test` permanece valido e `catalog-test-strict` continua
 reprovando corretamente pelas superficies ainda sem executor real.
+
+O lote Storage/backend adicionou `host:storage:storage` e o alvo
+`make test-storage-host`. O caso usa uma imagem FAT12 e um provider de bloco
+falsos, cobrindo MBR/BPB, inventario, mount, aliases, cursores, leitura,
+espaco livre, estados somente-leitura e limpeza. O lote Storage/BIO adicionou
+`host:storage:block` e `make test-block-host`, executando os autotestes reais
+de BIO e block-cache, com limites, cancelamento, failpoints, fusao/FIFO,
+eviction, writeback, sync e restauracao do inventario. Ambos passaram com
+instrumentacao dinamica e sem enderecos desconhecidos ou ambiguos. A rodada
+atual registra 6.820 superficies, 2.479 `COVERED`, 4.341 `PENDING` e 57 casos;
+`make catalog-test` passou e o gate estrito continua pendente pelas superficies
+de outros lotes ainda sem executor real.
+
+O lote Storage/FAT12 adicionou `host:storage:fat12` e `make test-fat12-host`.
+O caso usa uma imagem FAT12 estatica com raiz e subdiretorio para exercitar
+leitura, paths, metadados, listagem, operacoes atomicas, streaming,
+cancelamento e erros canonicos. O relatorio instrumentado passou sem
+enderecos desconhecidos ou ambiguos; o helper privado `strncmp` foi renomeado
+para `fat12_strncmp` para permitir `-Werror` no host, sem alteracao da API
+publica. A rodada atual registra 6.820 superficies, 2.543 `COVERED`, 4.277
+`PENDING` e 58 casos. `make catalog-test` passou e o gate estrito continua
+pendente pelas superficies de outros lotes ainda sem executor real.
+
+O lote Storage/FAT32 adicionou `host:storage:fat32` e `make test-fat32-host`.
+O caso usa imagem FAT32 estatica com cadeia de clusters suficiente para
+exercitar classificacao, leitura, paths, metadados, criacao, escrita, remocao
+e limites. O relatorio instrumentado passou sem enderecos desconhecidos ou
+ambiguos; o helper privado `strncmp` foi renomeado para `fat32_strncmp` para
+permitir `-Werror` no host, sem alteracao da API publica.
+
+O lote Storage/VFS adicionou `host:storage:vfs` e `make test-vfs-host`. A
+fixture host-only exercita descritores, arquivos regulares, dispositivos,
+pipes, sockets, poll/select, fsync/sync, quiescencia, limites e invariantes,
+sem hardware ou armazenamento real. O relatorio instrumentado passou sem
+enderecos desconhecidos ou ambiguos. A rodada atual registra 6.820
+superficies, 2.608 `COVERED`, 4.212 `PENDING` e 60 casos; `make catalog-test`
+passou e `catalog-test-strict` continua pendente pelos lotes ainda sem
+executor real.
+
+O lote Core/scheduling foi reforçado no caso existente
+`host:core:scheduling`, sem criar associação por arquivo. A fixture passou a
+validar o notifier de IRQ deferred, cancelamento e snapshot de trabalhos,
+quiescência com deadline do relógio falso e restauração da fila. O teste
+também eliminou uma dependência de stack não inicializada no fixture do
+protocolo Core. `make test-scheduling-host` passou com warnings tratados como
+erro, e o relatório instrumentado não apresentou endereços desconhecidos ou
+ambíguos. A sincronização atual registra 6.820 superfícies, 2.632
+`COVERED`, 4.188 `PENDING` e 60 casos; `make catalog-test` passou.
+
+O lote Memoria/SLAB adicionou `host:memory:slab-metadata` e o alvo
+`make test-slab-host`. A fixture host-only valida inicializacao idempotente,
+limites de criacao, duplicidade, metadados por indice, estatisticas,
+ownership nulo, validacao e destruicao sem alocar paginas reais. A aritmetica
+interna de enderecos do SLAB passou a usar `uint64_t`, evitando truncamento de
+ponteiros em hosts 64-bit sem alterar o layout freestanding. O relatorio
+instrumentado terminou `PASS`, sem enderecos desconhecidos ou ambiguos. A
+sincronizacao atual registra 6.820 superficies, 2.638 `COVERED`, 4.182
+`PENDING` e 61 casos; `make catalog-test` passou. A cobertura real de alocacao
+de paginas e dos testes negativos de objetos permanece no caso QEMU TST4.
+
+O caso `host:core:scheduling` tambem passou a exercitar `wait_event`,
+snapshots de filas e waiters e a prova controlada da kworker, alcançando os
+callbacks internos de condicao e execucao sem iniciar o worker infinito. A
+sincronizacao atual registra 6.820 superficies, 2.654 `COVERED`, 4.166
+`PENDING` e 61 casos; `make catalog-test` e `make q3check` passaram.
+`workqueue_worker_main` permanece pendente por ser um loop de servico que
+deve ser validado em um cenario QEMU com encerramento controlado.
+
+O lote Core/timer adicionou `host:core:timer` e o alvo `make test-timer-host`.
+A fixture usa stubs de IDT, PIC e scheduler para exercitar inicializacao
+idempotente, conversao de milissegundos, handles, timers one-shot e
+periodicos, notifier, dispatch, cancelamento, callbacks com erro, snapshots,
+limites e destruicao de proprietarios. O caminho host nao executa instrucoes
+privilegiadas; o caminho freestanding permanece inalterado. O relatorio
+instrumentado terminou `PASS`, sem enderecos desconhecidos ou ambiguos. A
+sincronizacao atual registra 6.820 superficies, 2.667 `COVERED`, 4.153
+`PENDING` e 62 casos; `make catalog-test` passou. Nenhuma superficie de timer
+permanece pendente.
+
+O lote Rede/UDP adicionou `host:network:udp` e o alvo `make test-udp-host`.
+A fixture usa um transporte IPv4 falso para exercitar envio, reinjecao,
+checksum, listeners, broadcast, callback recusado, comprimentos invalidos,
+payload fora do limite e limpeza de endpoints, sem conexao externa. O
+relatorio instrumentado terminou `PASS`, sem enderecos desconhecidos ou
+ambiguos. A sincronizacao atual registra 6.820 superficies, 2.682 `COVERED`,
+4.138 `PENDING` e 63 casos; `make catalog-test` passou. Nenhuma superficie de
+`udp.c` permanece pendente.
+
+O lote Rede/ARP adicionou `host:network:arp` e o alvo `make test-arp-host`.
+A fixture usa Ethernet falsa e relogio deterministico para validar enderecos
+IPv4 e MAC, configuracao, cache resolvido e incompleto, retries, timeout,
+requests, replies, pacotes invalidos e limpeza. `make test-arp-host` passou
+com `HOST_CC` configurado e warnings tratados como erro; o relatorio
+`build/test-results/arp-host/coverage.json` terminou `PASS`, sem enderecos
+desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
+2.724 `COVERED`, 4.096 `PENDING` e 64 casos; `make catalog-test` passou.
+Nenhuma superficie de `arp.c` permanece pendente.

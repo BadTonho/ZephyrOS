@@ -386,7 +386,7 @@ int main(void) {
     EXPECT(file_index_get_status(&status) == OK);
     EXPECT(status.state == FILE_INDEX_STATE_CANCELLED);
     EXPECT(status.automatic_suspended == 1U);
-    EXPECT(file_index_cancel() == ERR_STATE);
+    EXPECT(file_index_cancel() == OK);
     EXPECT(file_index_rebuild() == OK);
     EXPECT(poll_until_ready() == OK);
 

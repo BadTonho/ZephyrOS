@@ -1101,7 +1101,7 @@ def validate_arguments(arguments: argparse.Namespace) -> None:
         raise RunnerError("timeout_excede_teto", "catalog_error", True)
     if arguments.seed is not None and not 0 <= arguments.seed <= 0xFFFFFFFF:
         raise RunnerError("seed_invalida", "catalog_error", True)
-    validate_fixture(arguments.fixture)
+    validate_fixture(getattr(arguments, "fixture", None))
     if arguments.command != "stress":
         return
     iterations = getattr(arguments, "iterations", None)

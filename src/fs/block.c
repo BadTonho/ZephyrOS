@@ -543,7 +543,6 @@ static int block_dispatch_one(uint8_t* out_had_work) {
     uint32_t batch_count = 0U;
     int forced_result = OK;
     uint8_t fail_execute = 0U;
-    uint8_t fail_complete = 0U;
     uint8_t fail_flush = 0U;
     int result;
 

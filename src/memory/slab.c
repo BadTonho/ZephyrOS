@@ -15,6 +15,11 @@
     ((KMEM_SLAB_MAX_OBJECTS + 31U) / 32U)
 #define KMEM_SLAB_TEST_OBJECTS 256U
 #define KMEM_SLAB_TEST_PROGRESS_INTERVAL 16U
+#if defined(ZEPHYROS_HOST_TEST)
+typedef uint64_t slab_address_t;
+#else
+typedef uint32_t slab_address_t;
+#endif
 
 typedef struct {
     kmem_cache_t* owner;
@@ -209,17 +214,17 @@ static int slab_prepare_record(kmem_cache_t* cache) {
 static int slab_object_location(const kmem_cache_t* cache, const void* object,
                                 int* slab_index_out, uint32_t* object_index) {
     uint32_t index;
-    uint32_t address;
-    uint32_t start;
-    uint32_t end;
+    slab_address_t address;
+    slab_address_t start;
+    slab_address_t end;
     uint32_t offset;
 
     if (!cache || !object || !slab_index_out || !object_index) return 0;
-    address = (uint32_t)object;
+    address = (slab_address_t)object;
     for (index = 0U; index < KMEM_SLAB_MAX; index++) {
         kmem_slab_t* slab = &slab_table[index];
         if (!slab->used || slab->owner != cache) continue;
-        start = (uint32_t)slab->memory;
+        start = (slab_address_t)slab->memory;
         end = start + cache->object_stride * slab->object_count;
         if (address < start || address >= end) continue;
         offset = address - start;
@@ -684,7 +689,7 @@ int kmem_cache_self_test(void) {
         objects[index] = kmem_cache_alloc(cache);
         if (!objects[index]) break;
         allocated++;
-        if (((uint32_t)objects[index] & 15U) != 0U) external = 1U;
+        if (((slab_address_t)objects[index] & 15U) != 0U) external = 1U;
         if (index % KMEM_SLAB_TEST_PROGRESS_INTERVAL == 0U) {
             if (progress_result == OK) progress_result = slab_test_progress();
         }
