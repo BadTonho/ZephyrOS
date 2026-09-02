@@ -3973,3 +3973,13 @@ warnings tratados como erro; o relatorio instrumentado
 desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
 2.748 `COVERED`, 4.072 `PENDING` e 65 casos; `make catalog-test` e
 `make q3check` passaram. Nenhuma superficie de `icmp.c` permanece pendente.
+
+- Incremento Rede/DNS em 2026-09-02 10:57 (America/Sao_Paulo):
+  `make test-dns-host` passou com `HOST_CC` configurado e warnings tratados
+  como erro. A fixture usa UDP, IPv4 e timer falsos para exercitar consultas,
+  normalizacao de nomes, cache e expiracao, CNAME, timeout, respostas
+  invalidas e falhas de transporte, sem conexao externa. O relatorio
+  `build/test-results/dns-host/coverage.json` terminou `PASS`, com 58
+  superficies resolvidas, sem enderecos desconhecidos ou ambiguos. A
+  sincronizacao atual registra 6.820 superficies, 2.785 `COVERED`, 4.035
+  `PENDING` e 66 casos.

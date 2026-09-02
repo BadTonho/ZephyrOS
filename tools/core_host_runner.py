@@ -75,6 +75,8 @@ ARP_RESULT_DIR = ROOT / "build" / "test-results" / "arp-host"
 ARP_BINARY = ROOT / "build" / "tests" / "test_arp_host.exe"
 ICMP_RESULT_DIR = ROOT / "build" / "test-results" / "icmp-host"
 ICMP_BINARY = ROOT / "build" / "tests" / "test_icmp_host.exe"
+DNS_RESULT_DIR = ROOT / "build" / "test-results" / "dns-host"
+DNS_BINARY = ROOT / "build" / "tests" / "test_dns_host.exe"
 DEFAULT_TIMEOUT = 120.0
 CORE_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_core_contracts.c",
@@ -241,6 +243,12 @@ ICMP_SOURCE_FILES = (
     ROOT / "src" / "core" / "log.c",
     ROOT / "src" / "core" / "string.c",
 )
+DNS_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_dns_host.c",
+    ROOT / "src" / "core" / "dns.c",
+    ROOT / "src" / "core" / "log.c",
+    ROOT / "src" / "core" / "string.c",
+)
 SOURCE_FILES = CORE_SOURCE_FILES
 
 
@@ -305,6 +313,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return ARP_RESULT_DIR, ARP_BINARY, ARP_SOURCE_FILES, "arp-host"
     if case_id == "host:network:icmp":
         return ICMP_RESULT_DIR, ICMP_BINARY, ICMP_SOURCE_FILES, "icmp-host"
+    if case_id == "host:network:dns":
+        return DNS_RESULT_DIR, DNS_BINARY, DNS_SOURCE_FILES, "dns-host"
     raise ValueError(f"caso_host_invalido:{case_id}")
 
 
@@ -459,7 +469,8 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:storage:vfs",
                                  "host:memory:slab-metadata",
                                  "host:core:timer", "host:network:udp",
-                                 "host:network:arp", "host:network:icmp"))
+                                 "host:network:arp", "host:network:icmp",
+                                 "host:network:dns"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
     return parser.parse_args()

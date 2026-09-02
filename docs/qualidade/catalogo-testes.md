@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **6820**
-- Casos de teste: **65**
+- Casos de teste: **66**
 - Superfícies aposentadas: **20**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 2748 |
+| `COVERED` | 2785 |
 | `MANUAL` | 0 |
-| `PENDING` | 4072 |
+| `PENDING` | 4035 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 65 |
+| `AUTOMATED` | 66 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -344,16 +344,16 @@
 | `api:src/include/core/dhcp.h:dhcp_reset` | `src/include/core/dhcp.h` | `dhcp_reset` | `core` | `PENDING` | 0 |
 | `api:src/include/core/dhcp.h:dhcp_take_event` | `src/include/core/dhcp.h` | `dhcp_take_event` | `core` | `PENDING` | 0 |
 | `api:src/include/core/dhcp.h:dhcp_validate_state` | `src/include/core/dhcp.h` | `dhcp_validate_state` | `core` | `COVERED` | 2 |
-| `api:src/include/core/dns.h:dns_clear` | `src/include/core/dns.h` | `dns_clear` | `core` | `PENDING` | 0 |
-| `api:src/include/core/dns.h:dns_configure` | `src/include/core/dns.h` | `dns_configure` | `core` | `PENDING` | 0 |
-| `api:src/include/core/dns.h:dns_get_cache_entry` | `src/include/core/dns.h` | `dns_get_cache_entry` | `core` | `PENDING` | 0 |
-| `api:src/include/core/dns.h:dns_get_status` | `src/include/core/dns.h` | `dns_get_status` | `core` | `PENDING` | 0 |
-| `api:src/include/core/dns.h:dns_init` | `src/include/core/dns.h` | `dns_init` | `core` | `PENDING` | 0 |
-| `api:src/include/core/dns.h:dns_maintain` | `src/include/core/dns.h` | `dns_maintain` | `core` | `PENDING` | 0 |
-| `api:src/include/core/dns.h:dns_reset` | `src/include/core/dns.h` | `dns_reset` | `core` | `PENDING` | 0 |
-| `api:src/include/core/dns.h:dns_resolve` | `src/include/core/dns.h` | `dns_resolve` | `core` | `PENDING` | 0 |
-| `api:src/include/core/dns.h:dns_unconfigure` | `src/include/core/dns.h` | `dns_unconfigure` | `core` | `PENDING` | 0 |
-| `api:src/include/core/dns.h:dns_validate_state` | `src/include/core/dns.h` | `dns_validate_state` | `core` | `COVERED` | 2 |
+| `api:src/include/core/dns.h:dns_clear` | `src/include/core/dns.h` | `dns_clear` | `core` | `COVERED` | 1 |
+| `api:src/include/core/dns.h:dns_configure` | `src/include/core/dns.h` | `dns_configure` | `core` | `COVERED` | 1 |
+| `api:src/include/core/dns.h:dns_get_cache_entry` | `src/include/core/dns.h` | `dns_get_cache_entry` | `core` | `COVERED` | 1 |
+| `api:src/include/core/dns.h:dns_get_status` | `src/include/core/dns.h` | `dns_get_status` | `core` | `COVERED` | 1 |
+| `api:src/include/core/dns.h:dns_init` | `src/include/core/dns.h` | `dns_init` | `core` | `COVERED` | 1 |
+| `api:src/include/core/dns.h:dns_maintain` | `src/include/core/dns.h` | `dns_maintain` | `core` | `COVERED` | 1 |
+| `api:src/include/core/dns.h:dns_reset` | `src/include/core/dns.h` | `dns_reset` | `core` | `COVERED` | 1 |
+| `api:src/include/core/dns.h:dns_resolve` | `src/include/core/dns.h` | `dns_resolve` | `core` | `COVERED` | 1 |
+| `api:src/include/core/dns.h:dns_unconfigure` | `src/include/core/dns.h` | `dns_unconfigure` | `core` | `COVERED` | 1 |
+| `api:src/include/core/dns.h:dns_validate_state` | `src/include/core/dns.h` | `dns_validate_state` | `core` | `COVERED` | 3 |
 | `api:src/include/core/ethernet.h:ethernet_attach_interface` | `src/include/core/ethernet.h` | `ethernet_attach_interface` | `core` | `PENDING` | 0 |
 | `api:src/include/core/ethernet.h:ethernet_get_interface_status` | `src/include/core/ethernet.h` | `ethernet_get_interface_status` | `core` | `PENDING` | 0 |
 | `api:src/include/core/ethernet.h:ethernet_get_status` | `src/include/core/ethernet.h` | `ethernet_get_status` | `core` | `PENDING` | 0 |
@@ -424,8 +424,8 @@
 | `api:src/include/core/log.h:log_get_console_level` | `src/include/core/log.h` | `log_get_console_level` | `core` | `COVERED` | 1 |
 | `api:src/include/core/log.h:log_get_level` | `src/include/core/log.h` | `log_get_level` | `core` | `COVERED` | 1 |
 | `api:src/include/core/log.h:log_get_stats` | `src/include/core/log.h` | `log_get_stats` | `core` | `COVERED` | 2 |
-| `api:src/include/core/log.h:log_init` | `src/include/core/log.h` | `log_init` | `core` | `COVERED` | 16 |
-| `api:src/include/core/log.h:log_print` | `src/include/core/log.h` | `log_print` | `core` | `COVERED` | 19 |
+| `api:src/include/core/log.h:log_init` | `src/include/core/log.h` | `log_init` | `core` | `COVERED` | 17 |
+| `api:src/include/core/log.h:log_print` | `src/include/core/log.h` | `log_print` | `core` | `COVERED` | 20 |
 | `api:src/include/core/log.h:log_print_code` | `src/include/core/log.h` | `log_print_code` | `core` | `COVERED` | 5 |
 | `api:src/include/core/log.h:log_self_test` | `src/include/core/log.h` | `log_self_test` | `core` | `COVERED` | 3 |
 | `api:src/include/core/log.h:log_set_buffer_level` | `src/include/core/log.h` | `log_set_buffer_level` | `core` | `COVERED` | 1 |
@@ -555,10 +555,10 @@
 | `api:src/include/core/spinlock.h:spinlock_acquire` | `src/include/core/spinlock.h` | `spinlock_acquire` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_init` | `src/include/core/spinlock.h` | `spinlock_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_release` | `src/include/core/spinlock.h` | `spinlock_release` | `core` | `PENDING` | 0 |
-| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 27 |
-| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 27 |
-| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 20 |
-| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 24 |
+| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 28 |
+| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 28 |
+| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 21 |
+| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 25 |
 | `api:src/include/core/syscall.h:syscall_enable_user_mode` | `src/include/core/syscall.h` | `syscall_enable_user_mode` | `core` | `PENDING` | 0 |
 | `api:src/include/core/syscall.h:syscall_handler` | `src/include/core/syscall.h` | `syscall_handler` | `core` | `COVERED` | 1 |
 | `api:src/include/core/syscall.h:syscall_init` | `src/include/core/syscall.h` | `syscall_init` | `core` | `PENDING` | 0 |
@@ -2281,45 +2281,45 @@
 | `c:src/core/dhcp.c:dhcp_validate_state` | `src/core/dhcp.c` | `dhcp_validate_state` | `core` | `COVERED` | 2 |
 | `c:src/core/dhcp.c:dhcp_write_u16` | `src/core/dhcp.c` | `dhcp_write_u16` | `core` | `PENDING` | 0 |
 | `c:src/core/dhcp.c:dhcp_write_u32` | `src/core/dhcp.c` | `dhcp_write_u32` | `core` | `PENDING` | 0 |
-| `c:src/core/dns.c:dns_ascii_lower` | `src/core/dns.c` | `dns_ascii_lower` | `core` | `COVERED` | 2 |
-| `c:src/core/dns.c:dns_build_query` | `src/core/dns.c` | `dns_build_query` | `core` | `PENDING` | 0 |
-| `c:src/core/dns.c:dns_cache_expired` | `src/core/dns.c` | `dns_cache_expired` | `core` | `PENDING` | 0 |
-| `c:src/core/dns.c:dns_cache_store` | `src/core/dns.c` | `dns_cache_store` | `core` | `PENDING` | 0 |
-| `c:src/core/dns.c:dns_clear` | `src/core/dns.c` | `dns_clear` | `core` | `PENDING` | 0 |
-| `c:src/core/dns.c:dns_configure` | `src/core/dns.c` | `dns_configure` | `core` | `PENDING` | 0 |
-| `c:src/core/dns.c:dns_copy_name` | `src/core/dns.c` | `dns_copy_name` | `core` | `PENDING` | 0 |
-| `c:src/core/dns.c:dns_encode_name` | `src/core/dns.c` | `dns_encode_name` | `core` | `PENDING` | 0 |
-| `c:src/core/dns.c:dns_fail` | `src/core/dns.c` | `dns_fail` | `core` | `PENDING` | 0 |
-| `c:src/core/dns.c:dns_find_answer` | `src/core/dns.c` | `dns_find_answer` | `core` | `PENDING` | 0 |
-| `c:src/core/dns.c:dns_find_cache` | `src/core/dns.c` | `dns_find_cache` | `core` | `PENDING` | 0 |
-| `c:src/core/dns.c:dns_follow_cname` | `src/core/dns.c` | `dns_follow_cname` | `core` | `PENDING` | 0 |
-| `c:src/core/dns.c:dns_get_cache_entry` | `src/core/dns.c` | `dns_get_cache_entry` | `core` | `PENDING` | 0 |
-| `c:src/core/dns.c:dns_get_status` | `src/core/dns.c` | `dns_get_status` | `core` | `PENDING` | 0 |
-| `c:src/core/dns.c:dns_handle_datagram` | `src/core/dns.c` | `dns_handle_datagram` | `core` | `PENDING` | 0 |
-| `c:src/core/dns.c:dns_init` | `src/core/dns.c` | `dns_init` | `core` | `PENDING` | 0 |
-| `c:src/core/dns.c:dns_label_character` | `src/core/dns.c` | `dns_label_character` | `core` | `COVERED` | 2 |
-| `c:src/core/dns.c:dns_maintain` | `src/core/dns.c` | `dns_maintain` | `core` | `PENDING` | 0 |
-| `c:src/core/dns.c:dns_name_equal` | `src/core/dns.c` | `dns_name_equal` | `core` | `COVERED` | 2 |
-| `c:src/core/dns.c:dns_next_transaction_id` | `src/core/dns.c` | `dns_next_transaction_id` | `core` | `PENDING` | 0 |
-| `c:src/core/dns.c:dns_normalize_name` | `src/core/dns.c` | `dns_normalize_name` | `core` | `PENDING` | 0 |
-| `c:src/core/dns.c:dns_parse_question` | `src/core/dns.c` | `dns_parse_question` | `core` | `PENDING` | 0 |
-| `c:src/core/dns.c:dns_parse_response` | `src/core/dns.c` | `dns_parse_response` | `core` | `PENDING` | 0 |
-| `c:src/core/dns.c:dns_read_name` | `src/core/dns.c` | `dns_read_name` | `core` | `COVERED` | 2 |
-| `c:src/core/dns.c:dns_read_u16` | `src/core/dns.c` | `dns_read_u16` | `core` | `COVERED` | 2 |
-| `c:src/core/dns.c:dns_read_u32` | `src/core/dns.c` | `dns_read_u32` | `core` | `COVERED` | 2 |
-| `c:src/core/dns.c:dns_reset` | `src/core/dns.c` | `dns_reset` | `core` | `PENDING` | 0 |
-| `c:src/core/dns.c:dns_reset_query` | `src/core/dns.c` | `dns_reset_query` | `core` | `PENDING` | 0 |
-| `c:src/core/dns.c:dns_resolve` | `src/core/dns.c` | `dns_resolve` | `core` | `PENDING` | 0 |
-| `c:src/core/dns.c:dns_scan_records` | `src/core/dns.c` | `dns_scan_records` | `core` | `COVERED` | 2 |
-| `c:src/core/dns.c:dns_seconds_to_ticks` | `src/core/dns.c` | `dns_seconds_to_ticks` | `core` | `PENDING` | 0 |
-| `c:src/core/dns.c:dns_select_cache` | `src/core/dns.c` | `dns_select_cache` | `core` | `PENDING` | 0 |
-| `c:src/core/dns.c:dns_send_query` | `src/core/dns.c` | `dns_send_query` | `core` | `PENDING` | 0 |
-| `c:src/core/dns.c:dns_ttl_min` | `src/core/dns.c` | `dns_ttl_min` | `core` | `PENDING` | 0 |
-| `c:src/core/dns.c:dns_unconfigure` | `src/core/dns.c` | `dns_unconfigure` | `core` | `PENDING` | 0 |
-| `c:src/core/dns.c:dns_validate_name_vectors` | `src/core/dns.c` | `dns_validate_name_vectors` | `core` | `COVERED` | 2 |
-| `c:src/core/dns.c:dns_validate_record_vectors` | `src/core/dns.c` | `dns_validate_record_vectors` | `core` | `COVERED` | 2 |
-| `c:src/core/dns.c:dns_validate_state` | `src/core/dns.c` | `dns_validate_state` | `core` | `COVERED` | 2 |
-| `c:src/core/dns.c:dns_write_u16` | `src/core/dns.c` | `dns_write_u16` | `core` | `COVERED` | 2 |
+| `c:src/core/dns.c:dns_ascii_lower` | `src/core/dns.c` | `dns_ascii_lower` | `core` | `COVERED` | 3 |
+| `c:src/core/dns.c:dns_build_query` | `src/core/dns.c` | `dns_build_query` | `core` | `COVERED` | 1 |
+| `c:src/core/dns.c:dns_cache_expired` | `src/core/dns.c` | `dns_cache_expired` | `core` | `COVERED` | 1 |
+| `c:src/core/dns.c:dns_cache_store` | `src/core/dns.c` | `dns_cache_store` | `core` | `COVERED` | 1 |
+| `c:src/core/dns.c:dns_clear` | `src/core/dns.c` | `dns_clear` | `core` | `COVERED` | 1 |
+| `c:src/core/dns.c:dns_configure` | `src/core/dns.c` | `dns_configure` | `core` | `COVERED` | 1 |
+| `c:src/core/dns.c:dns_copy_name` | `src/core/dns.c` | `dns_copy_name` | `core` | `COVERED` | 1 |
+| `c:src/core/dns.c:dns_encode_name` | `src/core/dns.c` | `dns_encode_name` | `core` | `COVERED` | 1 |
+| `c:src/core/dns.c:dns_fail` | `src/core/dns.c` | `dns_fail` | `core` | `COVERED` | 1 |
+| `c:src/core/dns.c:dns_find_answer` | `src/core/dns.c` | `dns_find_answer` | `core` | `COVERED` | 1 |
+| `c:src/core/dns.c:dns_find_cache` | `src/core/dns.c` | `dns_find_cache` | `core` | `COVERED` | 1 |
+| `c:src/core/dns.c:dns_follow_cname` | `src/core/dns.c` | `dns_follow_cname` | `core` | `COVERED` | 1 |
+| `c:src/core/dns.c:dns_get_cache_entry` | `src/core/dns.c` | `dns_get_cache_entry` | `core` | `COVERED` | 1 |
+| `c:src/core/dns.c:dns_get_status` | `src/core/dns.c` | `dns_get_status` | `core` | `COVERED` | 1 |
+| `c:src/core/dns.c:dns_handle_datagram` | `src/core/dns.c` | `dns_handle_datagram` | `core` | `COVERED` | 1 |
+| `c:src/core/dns.c:dns_init` | `src/core/dns.c` | `dns_init` | `core` | `COVERED` | 1 |
+| `c:src/core/dns.c:dns_label_character` | `src/core/dns.c` | `dns_label_character` | `core` | `COVERED` | 3 |
+| `c:src/core/dns.c:dns_maintain` | `src/core/dns.c` | `dns_maintain` | `core` | `COVERED` | 1 |
+| `c:src/core/dns.c:dns_name_equal` | `src/core/dns.c` | `dns_name_equal` | `core` | `COVERED` | 3 |
+| `c:src/core/dns.c:dns_next_transaction_id` | `src/core/dns.c` | `dns_next_transaction_id` | `core` | `COVERED` | 1 |
+| `c:src/core/dns.c:dns_normalize_name` | `src/core/dns.c` | `dns_normalize_name` | `core` | `COVERED` | 1 |
+| `c:src/core/dns.c:dns_parse_question` | `src/core/dns.c` | `dns_parse_question` | `core` | `COVERED` | 1 |
+| `c:src/core/dns.c:dns_parse_response` | `src/core/dns.c` | `dns_parse_response` | `core` | `COVERED` | 1 |
+| `c:src/core/dns.c:dns_read_name` | `src/core/dns.c` | `dns_read_name` | `core` | `COVERED` | 3 |
+| `c:src/core/dns.c:dns_read_u16` | `src/core/dns.c` | `dns_read_u16` | `core` | `COVERED` | 3 |
+| `c:src/core/dns.c:dns_read_u32` | `src/core/dns.c` | `dns_read_u32` | `core` | `COVERED` | 3 |
+| `c:src/core/dns.c:dns_reset` | `src/core/dns.c` | `dns_reset` | `core` | `COVERED` | 1 |
+| `c:src/core/dns.c:dns_reset_query` | `src/core/dns.c` | `dns_reset_query` | `core` | `COVERED` | 1 |
+| `c:src/core/dns.c:dns_resolve` | `src/core/dns.c` | `dns_resolve` | `core` | `COVERED` | 1 |
+| `c:src/core/dns.c:dns_scan_records` | `src/core/dns.c` | `dns_scan_records` | `core` | `COVERED` | 3 |
+| `c:src/core/dns.c:dns_seconds_to_ticks` | `src/core/dns.c` | `dns_seconds_to_ticks` | `core` | `COVERED` | 1 |
+| `c:src/core/dns.c:dns_select_cache` | `src/core/dns.c` | `dns_select_cache` | `core` | `COVERED` | 1 |
+| `c:src/core/dns.c:dns_send_query` | `src/core/dns.c` | `dns_send_query` | `core` | `COVERED` | 1 |
+| `c:src/core/dns.c:dns_ttl_min` | `src/core/dns.c` | `dns_ttl_min` | `core` | `COVERED` | 1 |
+| `c:src/core/dns.c:dns_unconfigure` | `src/core/dns.c` | `dns_unconfigure` | `core` | `COVERED` | 1 |
+| `c:src/core/dns.c:dns_validate_name_vectors` | `src/core/dns.c` | `dns_validate_name_vectors` | `core` | `COVERED` | 3 |
+| `c:src/core/dns.c:dns_validate_record_vectors` | `src/core/dns.c` | `dns_validate_record_vectors` | `core` | `COVERED` | 3 |
+| `c:src/core/dns.c:dns_validate_state` | `src/core/dns.c` | `dns_validate_state` | `core` | `COVERED` | 3 |
+| `c:src/core/dns.c:dns_write_u16` | `src/core/dns.c` | `dns_write_u16` | `core` | `COVERED` | 3 |
 | `c:src/core/ethernet.c:ethernet_attach_interface` | `src/core/ethernet.c` | `ethernet_attach_interface` | `core` | `PENDING` | 0 |
 | `c:src/core/ethernet.c:ethernet_build_frame` | `src/core/ethernet.c` | `ethernet_build_frame` | `core` | `PENDING` | 0 |
 | `c:src/core/ethernet.c:ethernet_classify_destination` | `src/core/ethernet.c` | `ethernet_classify_destination` | `core` | `PENDING` | 0 |
@@ -2567,36 +2567,36 @@
 | `c:src/core/log.c:log_append_char` | `src/core/log.c` | `log_append_char` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_append_text` | `src/core/log.c` | `log_append_text` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_clear_buffer` | `src/core/log.c` | `log_clear_buffer` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_console_print_number` | `src/core/log.c` | `log_console_print_number` | `core` | `COVERED` | 20 |
+| `c:src/core/log.c:log_console_print_number` | `src/core/log.c` | `log_console_print_number` | `core` | `COVERED` | 21 |
 | `c:src/core/log.c:log_copy_recent` | `src/core/log.c` | `log_copy_recent` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_copy_text` | `src/core/log.c` | `log_copy_text` | `core` | `COVERED` | 20 |
+| `c:src/core/log.c:log_copy_text` | `src/core/log.c` | `log_copy_text` | `core` | `COVERED` | 21 |
 | `c:src/core/log.c:log_get_buffer` | `src/core/log.c` | `log_get_buffer` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_get_buffer_level` | `src/core/log.c` | `log_get_buffer_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_get_console_level` | `src/core/log.c` | `log_get_console_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_get_level` | `src/core/log.c` | `log_get_level` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_get_stats` | `src/core/log.c` | `log_get_stats` | `core` | `COVERED` | 2 |
-| `c:src/core/log.c:log_init` | `src/core/log.c` | `log_init` | `core` | `COVERED` | 16 |
-| `c:src/core/log.c:log_is_power_of_two` | `src/core/log.c` | `log_is_power_of_two` | `core` | `COVERED` | 20 |
-| `c:src/core/log.c:log_level_is_valid` | `src/core/log.c` | `log_level_is_valid` | `core` | `COVERED` | 20 |
+| `c:src/core/log.c:log_init` | `src/core/log.c` | `log_init` | `core` | `COVERED` | 17 |
+| `c:src/core/log.c:log_is_power_of_two` | `src/core/log.c` | `log_is_power_of_two` | `core` | `COVERED` | 21 |
+| `c:src/core/log.c:log_level_is_valid` | `src/core/log.c` | `log_level_is_valid` | `core` | `COVERED` | 21 |
 | `c:src/core/log.c:log_note_dropped_event` | `src/core/log.c` | `log_note_dropped_event` | `core` | `COVERED` | 2 |
-| `c:src/core/log.c:log_print` | `src/core/log.c` | `log_print` | `core` | `COVERED` | 20 |
+| `c:src/core/log.c:log_print` | `src/core/log.c` | `log_print` | `core` | `COVERED` | 21 |
 | `c:src/core/log.c:log_print_code` | `src/core/log.c` | `log_print_code` | `core` | `COVERED` | 5 |
-| `c:src/core/log.c:log_print_colored` | `src/core/log.c` | `log_print_colored` | `core` | `COVERED` | 20 |
-| `c:src/core/log.c:log_records_match` | `src/core/log.c` | `log_records_match` | `core` | `COVERED` | 20 |
-| `c:src/core/log.c:log_restore_interrupts` | `src/core/log.c` | `log_restore_interrupts` | `core` | `COVERED` | 20 |
+| `c:src/core/log.c:log_print_colored` | `src/core/log.c` | `log_print_colored` | `core` | `COVERED` | 21 |
+| `c:src/core/log.c:log_records_match` | `src/core/log.c` | `log_records_match` | `core` | `COVERED` | 21 |
+| `c:src/core/log.c:log_restore_interrupts` | `src/core/log.c` | `log_restore_interrupts` | `core` | `COVERED` | 21 |
 | `c:src/core/log.c:log_ring_clear` | `src/core/log.c` | `log_ring_clear` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_ring_copy_recent` | `src/core/log.c` | `log_ring_copy_recent` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_ring_initialize` | `src/core/log.c` | `log_ring_initialize` | `core` | `COVERED` | 18 |
-| `c:src/core/log.c:log_ring_latest_index` | `src/core/log.c` | `log_ring_latest_index` | `core` | `COVERED` | 20 |
-| `c:src/core/log.c:log_ring_store` | `src/core/log.c` | `log_ring_store` | `core` | `COVERED` | 20 |
+| `c:src/core/log.c:log_ring_initialize` | `src/core/log.c` | `log_ring_initialize` | `core` | `COVERED` | 19 |
+| `c:src/core/log.c:log_ring_latest_index` | `src/core/log.c` | `log_ring_latest_index` | `core` | `COVERED` | 21 |
+| `c:src/core/log.c:log_ring_store` | `src/core/log.c` | `log_ring_store` | `core` | `COVERED` | 21 |
 | `c:src/core/log.c:log_self_test` | `src/core/log.c` | `log_self_test` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_self_test_mark` | `src/core/log.c` | `log_self_test_mark` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_serialize_records` | `src/core/log.c` | `log_serialize_records` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_set_buffer_level` | `src/core/log.c` | `log_set_buffer_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_set_console_level` | `src/core/log.c` | `log_set_console_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_set_level` | `src/core/log.c` | `log_set_level` | `core` | `COVERED` | 2 |
-| `c:src/core/log.c:log_submit` | `src/core/log.c` | `log_submit` | `core` | `COVERED` | 20 |
-| `c:src/core/log.c:log_suspend_interrupts` | `src/core/log.c` | `log_suspend_interrupts` | `core` | `COVERED` | 20 |
+| `c:src/core/log.c:log_submit` | `src/core/log.c` | `log_submit` | `core` | `COVERED` | 21 |
+| `c:src/core/log.c:log_suspend_interrupts` | `src/core/log.c` | `log_suspend_interrupts` | `core` | `COVERED` | 21 |
 | `c:src/core/log.c:log_test_clear_behavior` | `src/core/log.c` | `log_test_clear_behavior` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_test_level_filtering` | `src/core/log.c` | `log_test_level_filtering` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_test_optional_error_code` | `src/core/log.c` | `log_test_optional_error_code` | `core` | `COVERED` | 3 |
@@ -2606,7 +2606,7 @@
 | `c:src/core/log.c:log_test_text_serialization` | `src/core/log.c` | `log_test_text_serialization` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_test_wrap_and_overwrite` | `src/core/log.c` | `log_test_wrap_and_overwrite` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_to_buffer` | `src/core/log.c` | `log_to_buffer` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_write_serial` | `src/core/log.c` | `log_write_serial` | `core` | `COVERED` | 20 |
+| `c:src/core/log.c:log_write_serial` | `src/core/log.c` | `log_write_serial` | `core` | `COVERED` | 21 |
 | `c:src/core/net_buffer.c:net_buffer_alignment_valid` | `src/core/net_buffer.c` | `net_buffer_alignment_valid` | `core` | `COVERED` | 3 |
 | `c:src/core/net_buffer.c:net_buffer_begin` | `src/core/net_buffer.c` | `net_buffer_begin` | `core` | `COVERED` | 3 |
 | `c:src/core/net_buffer.c:net_buffer_check_active_locked` | `src/core/net_buffer.c` | `net_buffer_check_active_locked` | `core` | `COVERED` | 3 |
@@ -2882,10 +2882,10 @@
 | `c:src/core/socket.c:socket_wait_local` | `src/core/socket.c` | `socket_wait_local` | `core` | `PENDING` | 0 |
 | `c:src/core/socket.c:socket_wait_owner` | `src/core/socket.c` | `socket_wait_owner` | `core` | `COVERED` | 2 |
 | `c:src/core/socket.c:socket_wake` | `src/core/socket.c` | `socket_wake` | `core` | `COVERED` | 2 |
-| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 27 |
-| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 27 |
-| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 20 |
-| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 24 |
+| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 28 |
+| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 28 |
+| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 21 |
+| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 25 |
 | `c:src/core/syscall.c:syscall_copy_user_string` | `src/core/syscall.c` | `syscall_copy_user_string` | `core` | `PENDING` | 0 |
 | `c:src/core/syscall.c:syscall_dispatch` | `src/core/syscall.c` | `syscall_dispatch` | `core` | `COVERED` | 1 |
 | `c:src/core/syscall.c:syscall_dispatch_user` | `src/core/syscall.c` | `syscall_dispatch_user` | `core` | `COVERED` | 1 |
@@ -6921,6 +6921,7 @@
 | `host:core:timer` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar timers one-shot e periodicos com IDT, PIC e scheduler simulados | handles, prazos, cancelamento, dispatch, callbacks, notifier e limpeza respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas estaticas do servico de timers no processo host | todos os timers e proprietarios sao destruidos e os artefatos sao preservados |
 | `host:memory:slab-metadata` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar inicializacao, limites, metadados, estatisticas e limpeza do registrador SLAB sem alocar paginas reais | estado publicado, informacoes por indice, duplicidade e limpeza respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas de metadados no processo host; nenhuma pagina real e alocada | cache temporario destruido e manifesto, logs e cobertura preservados |
 | `host:network:arp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar configuracao, resolucao, cache, retries e recepcao ARP com Ethernet simulada | enderecos validos sao resolvidos, pacotes invalidos sao rejeitados e o cache retorna ao estado inicial | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente cache ARP, buffers estaticos e transporte Ethernet falso no processo host | cache desconfigurado e artefatos preservados |
+| `host:network:dns` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar consultas DNS, cache, CNAME, timeout e pacotes invalidos com UDP e timer simulados | nomes validos sao resolvidos, respostas invalidas falham com codigo canonico e o estado retorna ao baseline | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado DNS, buffers estaticos e transporte UDP falso no processo host | cache e consulta DNS reiniciados e artefatos preservados |
 | `host:network:icmp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar checksum, echo, timeout, mudanca de configuracao, fila de reply e pacotes ICMP invalidos com IPv4 e timer simulados | echo valido e reply pendente sao processados, timeout e falhas de transporte retornam erros canonicos e o estado e restaurado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado ICMP, buffers estaticos e transportes IPv4 e timer falsos no processo host | estado ICMP, timer e transporte falso retornam ao estado inicial e os artefatos sao preservados |
 | `host:network:ipv4` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar configuração, envio, broadcast, recepção, checksum e handlers IPv4 | datagramas validos são entregues, entradas inválidas são recusadas e o estado é restaurado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado IPv4, tabela de rotas e buffers falsos de ARP/Ethernet | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:network:route` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar rotas base, lookup, limites, overflow e restauracao | rotas validas e invalidas respeitam o contrato, sem residuos globais | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabela estatica de rotas no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7182,15 +7183,6 @@
 - `api:src/include/core/dhcp.h:dhcp_renew`
 - `api:src/include/core/dhcp.h:dhcp_reset`
 - `api:src/include/core/dhcp.h:dhcp_take_event`
-- `api:src/include/core/dns.h:dns_clear`
-- `api:src/include/core/dns.h:dns_configure`
-- `api:src/include/core/dns.h:dns_get_cache_entry`
-- `api:src/include/core/dns.h:dns_get_status`
-- `api:src/include/core/dns.h:dns_init`
-- `api:src/include/core/dns.h:dns_maintain`
-- `api:src/include/core/dns.h:dns_reset`
-- `api:src/include/core/dns.h:dns_resolve`
-- `api:src/include/core/dns.h:dns_unconfigure`
 - `api:src/include/core/ethernet.h:ethernet_attach_interface`
 - `api:src/include/core/ethernet.h:ethernet_get_interface_status`
 - `api:src/include/core/ethernet.h:ethernet_get_status`
@@ -8352,34 +8344,6 @@
 - `c:src/core/dhcp.c:dhcp_text_is_equal`
 - `c:src/core/dhcp.c:dhcp_write_u16`
 - `c:src/core/dhcp.c:dhcp_write_u32`
-- `c:src/core/dns.c:dns_build_query`
-- `c:src/core/dns.c:dns_cache_expired`
-- `c:src/core/dns.c:dns_cache_store`
-- `c:src/core/dns.c:dns_clear`
-- `c:src/core/dns.c:dns_configure`
-- `c:src/core/dns.c:dns_copy_name`
-- `c:src/core/dns.c:dns_encode_name`
-- `c:src/core/dns.c:dns_fail`
-- `c:src/core/dns.c:dns_find_answer`
-- `c:src/core/dns.c:dns_find_cache`
-- `c:src/core/dns.c:dns_follow_cname`
-- `c:src/core/dns.c:dns_get_cache_entry`
-- `c:src/core/dns.c:dns_get_status`
-- `c:src/core/dns.c:dns_handle_datagram`
-- `c:src/core/dns.c:dns_init`
-- `c:src/core/dns.c:dns_maintain`
-- `c:src/core/dns.c:dns_next_transaction_id`
-- `c:src/core/dns.c:dns_normalize_name`
-- `c:src/core/dns.c:dns_parse_question`
-- `c:src/core/dns.c:dns_parse_response`
-- `c:src/core/dns.c:dns_reset`
-- `c:src/core/dns.c:dns_reset_query`
-- `c:src/core/dns.c:dns_resolve`
-- `c:src/core/dns.c:dns_seconds_to_ticks`
-- `c:src/core/dns.c:dns_select_cache`
-- `c:src/core/dns.c:dns_send_query`
-- `c:src/core/dns.c:dns_ttl_min`
-- `c:src/core/dns.c:dns_unconfigure`
 - `c:src/core/ethernet.c:ethernet_attach_interface`
 - `c:src/core/ethernet.c:ethernet_build_frame`
 - `c:src/core/ethernet.c:ethernet_classify_destination`
