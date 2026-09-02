@@ -280,6 +280,42 @@ class CatalogContractTests(unittest.TestCase):
                 {item["id"]: item for item in catalog["surfaces"]}, root),
                 ["c:src/core/sample.c:sample"])
 
+    def test_registry_coverage_report_links_public_api_by_observed_symbol(self):
+        catalog = sample_catalog()
+        api = sample_surface(["host:coverage:sample"])
+        api["id"] = "api:src/include/apps/sample.h:sample"
+        api["kind"] = "api_function"
+        api["source"] = "src/include/apps/sample.h"
+        api["linkage"] = "public"
+        catalog["surfaces"].append(api)
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            report = root / "coverage.json"
+            report.write_text(json.dumps({
+                "status": "PASS",
+                "covered_surface_ids": ["c:src/core/sample.c:sample"],
+                "unknown_addresses": [],
+                "ambiguous_addresses": [],
+            }), encoding="utf-8")
+            entry = {
+                "id": "sample-public-api-report",
+                "domain": "core",
+                "owner": "quality",
+                "executor": "host",
+                "coverage_mode": "direct",
+                "case_ids": ["host:coverage:sample"],
+                "surface_selector": "coverage_report",
+                "coverage_report": "coverage.json",
+                "include_public_apis": True,
+                "evidence": "coverage.json",
+            }
+            self.assertEqual(test_catalog.registry_surface_ids(
+                entry, {"host:coverage:sample": catalog["cases"][0]},
+                {item["id"]: item for item in catalog["surfaces"]}, root), [
+                    "api:src/include/apps/sample.h:sample",
+                    "c:src/core/sample.c:sample",
+                ])
+
     def test_registry_checks_each_explicit_surface_link(self):
         catalog = sample_catalog()
         second_id = "c:src/core/second.c:second"

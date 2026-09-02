@@ -383,6 +383,13 @@ RTC_SOURCE_FILES = (
     ROOT / "src" / "drivers" / "rtc.c",
     ROOT / "src" / "core" / "string.c",
 )
+SHELL_INPUT_RESULT_DIR = ROOT / "build" / "test-results" / "shell-input-host"
+SHELL_INPUT_BINARY = ROOT / "build" / "tests" / "test_shell_input_host.exe"
+SHELL_INPUT_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_shell_input_host.c",
+    ROOT / "src" / "shell" / "shell_input.c",
+    ROOT / "src" / "core" / "string.c",
+)
 SOURCE_FILES = CORE_SOURCE_FILES
 
 
@@ -488,6 +495,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return FONT_RESULT_DIR, FONT_BINARY, FONT_SOURCE_FILES, "font-host"
     if case_id == "host:drivers:rtc-status":
         return RTC_RESULT_DIR, RTC_BINARY, RTC_SOURCE_FILES, "rtc-status-host"
+    if case_id == "host:shell:input":
+        return (SHELL_INPUT_RESULT_DIR, SHELL_INPUT_BINARY,
+                SHELL_INPUT_SOURCE_FILES, "shell-input-host")
     raise ValueError(f"caso_host_invalido:{case_id}")
 
 
@@ -653,7 +663,8 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:process:signals", "host:process:ipc",
                                  "host:core:workqueue", "host:core:bearssl-compat",
                                  "host:shell:dispatch", "host:shell:introspection",
-                                 "host:drivers:font", "host:drivers:rtc-status"))
+                                 "host:drivers:font", "host:drivers:rtc-status",
+                                 "host:shell:input"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
     return parser.parse_args()

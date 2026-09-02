@@ -1858,6 +1858,59 @@
       "evidence": "make test-shell-introspection-host PASS com valores hexadecimais validos, prefixos, digitos invalidos e overflow de uint32"
     },
     {
+      "id": "shell-input-host-dynamic",
+      "domain": "shell-input",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:shell:input"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/shell-input-host/coverage.json",
+      "coverage_sources": [
+        "src/shell/shell_input.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:shell:input",
+        "scenario": "Contrato host-only de entrada, historico e navegacao do Shell",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "enviar scancodes falsos para comandos, historico, scroll, edicao, cancelamento e limite",
+        "expected": "entrada, historico e terminal preservam o contrato e nao ultrapassam o buffer",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente buffers estaticos do Shell e stubs de terminal no processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": [
+          "api:src/include/apps/shell_input.h:shell_input_init",
+          "c:src/shell/shell_input.c:shell_input_handle_terminal_scroll_key",
+          "c:src/shell/shell_input.c:shell_input_history_navigate",
+          "c:src/shell/shell_input.c:shell_input_history_replace_input"
+        ],
+        "tags": [
+          "host",
+          "shell",
+          "input",
+          "history",
+          "coverage"
+        ]
+      },
+      "evidence": "make test-shell-input-host PASS com historico, navegacao, scroll, edicao, cancelamento e limite do buffer no relatorio instrumentado"
+    },
+    {
       "id": "shell-ui-qemu-tst5-dynamic",
       "domain": "shell-ui-apps",
       "owner": "quality",

@@ -1120,6 +1120,21 @@ ambiguos. A sincronizacao atual registra 6.820 superficies, 3.018 `COVERED`,
 3.802 `PENDING` e 72 casos; o fechamento integral do catalogo, o gate estrito
 e a validacao TST7 completa continuam pendentes.
 
+- Incremento Shell/entrada concluido em 2026-09-02 15:45
+  (America/Sao_Paulo): o novo caso host-only `host:shell:input` e o alvo
+  `make test-shell-input-host` foram adicionados. A fixture exercita o fluxo
+  real de entrada com terminal, historico, navegacao, edicao, rolagem,
+  cancelamento, bloqueio, modificadores e limite do buffer, usando somente
+  video, teclado e logs falsos. O relatorio instrumentado
+  `build/test-results/shell-input-host/coverage.json` terminou `PASS`, com as
+  superficies de `src/shell/shell_input.c` observadas sem enderecos
+  desconhecidos ou ambiguos. O sincronizador passou a resolver APIs publicas
+  quando o simbolo observado possui uma unica implementacao C em outro
+  subdiretorio, preservando o vinculo por evidencia e evitando associacoes por
+  arquivo. A sincronizacao atual registra 6.826 superficies, 3.679
+  `COVERED`, 3.147 `PENDING` e 84 casos. O fechamento integral do catalogo,
+  o gate estrito e a validacao TST7 completa continuam pendentes.
+
 Incremento Memoria/VMA concluido em 2026-09-02 12:26: o caso host-only
 `host:memory:vma` e o alvo `make test-vma-host` foram adicionados. A fixture
 passou com processo ring 3, paging, PMM e VFS falsos, cobrindo VMAs fixas e

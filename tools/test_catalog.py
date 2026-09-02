@@ -122,6 +122,14 @@ def registry_surface_ids(entry: dict[str, Any],
                 for surface in [surfaces.get(surface_id)]
                 if surface is not None
             }
+            implementation_sources_by_symbol: dict[str, set[str]] = {}
+            for surface in surfaces.values():
+                if surface.get("kind") != "c_function":
+                    continue
+                symbol = surface.get("symbol")
+                source = surface.get("source")
+                if isinstance(symbol, str) and isinstance(source, str):
+                    implementation_sources_by_symbol.setdefault(symbol, set()).add(source)
             for surface in surfaces.values():
                 if surface.get("kind") != "api_function":
                     continue
@@ -130,7 +138,14 @@ def registry_surface_ids(entry: dict[str, Any],
                     continue
                 implementation_source = source.replace(
                     "src/include/", "src/", 1).replace(".h", ".c")
-                if (implementation_source, surface.get("symbol")) in implementation_keys:
+                symbol = surface.get("symbol")
+                same_symbol_sources = implementation_sources_by_symbol.get(symbol, set()) \
+                    if isinstance(symbol, str) else set()
+                if ((implementation_source, symbol) in implementation_keys or
+                        (len(same_symbol_sources) == 1 and
+                         next(iter(same_symbol_sources)) in {
+                             item[0] for item in implementation_keys
+                         })):
                     selected.append(surface["id"])
         return sorted(set(selected))
     if selector not in REGISTRY_SURFACE_SELECTORS:

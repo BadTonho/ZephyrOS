@@ -296,6 +296,16 @@ snapshot inicial zerado e leituras repetidas sem mutacao. O relatorio fica em
 make test-rtc-status-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-shell-input-host` exercita a entrada do Shell com terminal,
+historico, navegacao para cima/baixo, edicao, teclas de rolagem, cancelamento,
+bloqueio, modificadores e limite do buffer. A fixture usa apenas video,
+teclado e logs falsos; nao acessa hardware. O relatorio fica em
+`build/test-results/shell-input-host/`:
+
+```text
+make test-shell-input-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O registro em `tests/coverage/registry.json` somente seleciona enderecos de
 relatorios `PASS` existentes e filtra as fontes declaradas. Um relatorio
 ausente, com endereco desconhecido ou ambiguo bloqueia o gate estrito; nao ha
