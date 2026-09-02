@@ -2182,6 +2182,23 @@
       ],
       "include_public_apis": true,
       "evidence": "make test-bearssl-compat-host PASS com copia, movimento sobreposto, preenchimento, comparacao e comprimentos nulos e validos"
+    },
+    {
+      "id": "shell-dispatch-host-dynamic",
+      "domain": "shell-dispatcher",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/shell-dispatch-host/coverage.json",
+      "coverage_sources": [
+        "src/shell/shell_dispatch.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-shell-dispatch-host PASS com diagnostico de comando desconhecido, normalizacao de entrada, limite de comando, comando conhecido e entrada nula"
     }
   ]
 }

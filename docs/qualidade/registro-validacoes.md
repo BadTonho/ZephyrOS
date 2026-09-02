@@ -4143,6 +4143,20 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   fechamento integral do catalogo, o gate estrito e a validacao TST7 completa
   continuam pendentes.
 
+- Incremento Shell/dispatcher concluido em 2026-09-02
+  (America/Sao_Paulo): o novo caso host-only `host:shell:dispatch` e o alvo
+  `make test-shell-dispatch-host` foram adicionados. A fixture exercita o
+  caminho real de `shell_dispatch_execute()` para diagnostico de comando
+  desconhecido, entrada com espacos e escape, limite de 31 caracteres,
+  encaminhamento de comando conhecido e entrada nula. O relatorio instrumentado
+  `build/test-results/shell-dispatch-host/coverage.json` terminou `PASS` e
+  resolveu a superficie estatica `shell_dispatch_print_unknown`, sem enderecos
+  desconhecidos ou ambiguos. `make test-shell-dispatch-host`, a regeneracao dos
+  relatorios host-only, `make catalog-test` e `git diff --check` passaram. A
+  sincronizacao atual registra 6.827 superficies, 3.086 `COVERED`, 3.741
+  `PENDING` e 80 casos; o fechamento integral do catalogo, o gate estrito e a
+  validacao TST7 completa continuam pendentes.
+
 - Incremento Processos/IPC concluido em 2026-09-02 13:52
   (America/Sao_Paulo): o caso host-only `host:process:ipc` e o alvo
   `make test-process-ipc-host` foram adicionados. A fixture usa processos,
