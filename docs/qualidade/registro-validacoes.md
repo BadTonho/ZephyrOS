@@ -4381,3 +4381,15 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `src/drivers/rtc.c`. O catalogo foi sincronizado e validado com 7.196
   superficies, 4.113 `COVERED`, 3.083 `PENDING` e 87 casos; o fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
+
+- 2026-09-02 — Incremento Core/wifi_manager: o caso host-only
+  `host:core:wifi-manager` passou a usar fixtures estaticos de PCI, USB e
+  RTL8811CU. A execucao cobriu IDs, inventario, estados READY/UNSUPPORTED/ERROR,
+  scan, conexao aberta, limites, metadados invalidos, erros do driver,
+  indisponibilidade e recuperacao. `make test-wifi-manager-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` terminou `PASS`; o relatorio
+  `build/test-results/wifi-manager-host/coverage.json` observou 44 enderecos,
+  sem desconhecidos ou ambiguos, e resolveu as 25 superficies do modulo. O
+  catalogo foi sincronizado e validado com 7.196 superficies, 4.131 `COVERED`,
+  3.065 `PENDING` e 88 casos. O fechamento integral, o gate estrito e a
+  validacao TST7 completa continuam pendentes.

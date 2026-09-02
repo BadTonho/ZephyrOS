@@ -336,6 +336,16 @@ relatorio fica em `build/test-results/rtc-status-host/`:
 make test-rtc-status-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-wifi-manager-host` exercita o inventario de candidatos PCI e USB
+com fixtures estaticos, incluindo formatacao e busca de identificadores,
+contadores, estados READY/UNSUPPORTED/ERROR, scan, conexao aberta, metadados
+invalidos, indisponibilidade do backend e recuperacao. O relatorio fica em
+`build/test-results/wifi-manager-host/`:
+
+```text
+make test-wifi-manager-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O caso `test-shell-input-host` exercita a entrada do Shell com terminal,
 historico, navegacao para cima/baixo, edicao, teclas de rolagem, cancelamento,
 bloqueio, modificadores e limite do buffer. A fixture usa apenas video,

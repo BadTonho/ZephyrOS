@@ -65,6 +65,17 @@ class CoreHostRunnerTests(unittest.TestCase):
         self.assertIn(core_host_runner.ROOT / "src" / "core" / "app_package.c",
                       sources)
 
+    def test_wifi_manager_case_has_pci_and_usb_fixture_sources(self):
+        result_dir, binary, sources, suite = core_host_runner.case_configuration(
+            "host:core:wifi-manager")
+        self.assertEqual(suite, "wifi-manager-host")
+        self.assertEqual(result_dir, core_host_runner.WIFI_MANAGER_RESULT_DIR)
+        self.assertEqual(binary, core_host_runner.WIFI_MANAGER_BINARY)
+        self.assertIn(core_host_runner.ROOT / "src" / "core" / "wifi_manager.c",
+                      sources)
+        self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
+                      "test_wifi_manager_host.c", sources)
+
 
 if __name__ == "__main__":
     unittest.main()

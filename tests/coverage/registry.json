@@ -1930,6 +1930,53 @@
       "evidence": "make test-rtc-status-host PASS com CMOS simulado, inicializacao invalida e valida, leituras BCD/binaria e 12/24 horas, calendario invalido, leituras estaveis, autoteste, timeout de atualizacao e estado restaurado; 26 enderecos observados sem desconhecidos ou ambiguos"
     },
     {
+      "id": "wifi-manager-host-dynamic",
+      "domain": "core-wifi-manager",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:wifi-manager"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/wifi-manager-host/coverage.json",
+      "coverage_sources": [
+        "src/core/wifi_manager.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:core:wifi-manager",
+        "scenario": "Inventario host-only de interfaces Wi-Fi PCI e USB",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "inventariar candidatos PCI e USB, consultar interfaces, executar scan e conexao aberta com backends falsos",
+        "expected": "identificadores, estados, contadores, limites, indisponibilidade e recuperacao preservam o contrato",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente fixtures estaticos PCI, USB e RTL8811CU no processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "core",
+          "wifi",
+          "coverage"
+        ]
+      },
+      "evidence": "make test-wifi-manager-host PASS com inventario PCI, USB, scan, conexao aberta, estados indisponiveis, erros do driver, metadados invalidos e recuperacao; relatorio instrumentado sem enderecos desconhecidos ou ambiguos"
+    },
+    {
       "id": "shell-introspection-host-dynamic",
       "domain": "shell-introspection",
       "owner": "quality",

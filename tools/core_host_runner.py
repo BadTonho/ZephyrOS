@@ -399,6 +399,13 @@ RTC_SOURCE_FILES = (
     ROOT / "src" / "drivers" / "rtc.c",
     ROOT / "src" / "core" / "string.c",
 )
+WIFI_MANAGER_RESULT_DIR = ROOT / "build" / "test-results" / "wifi-manager-host"
+WIFI_MANAGER_BINARY = ROOT / "build" / "tests" / "test_wifi_manager_host.exe"
+WIFI_MANAGER_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_wifi_manager_host.c",
+    ROOT / "src" / "core" / "wifi_manager.c",
+    ROOT / "src" / "core" / "string.c",
+)
 SHELL_INPUT_RESULT_DIR = ROOT / "build" / "test-results" / "shell-input-host"
 SHELL_INPUT_BINARY = ROOT / "build" / "tests" / "test_shell_input_host.exe"
 SHELL_INPUT_SOURCE_FILES = (
@@ -522,6 +529,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return FONT_RESULT_DIR, FONT_BINARY, FONT_SOURCE_FILES, "font-host"
     if case_id == "host:drivers:rtc-status":
         return RTC_RESULT_DIR, RTC_BINARY, RTC_SOURCE_FILES, "rtc-status-host"
+    if case_id == "host:core:wifi-manager":
+        return (WIFI_MANAGER_RESULT_DIR, WIFI_MANAGER_BINARY,
+                WIFI_MANAGER_SOURCE_FILES, "wifi-manager-host")
     if case_id == "host:shell:input":
         return (SHELL_INPUT_RESULT_DIR, SHELL_INPUT_BINARY,
                 SHELL_INPUT_SOURCE_FILES, "shell-input-host")
@@ -696,6 +706,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:core:workqueue", "host:core:bearssl-compat",
                                  "host:shell:dispatch", "host:shell:introspection",
                                  "host:drivers:font", "host:drivers:rtc-status",
+                                 "host:core:wifi-manager",
                                  "host:shell:input", "host:shell:command-utils"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)

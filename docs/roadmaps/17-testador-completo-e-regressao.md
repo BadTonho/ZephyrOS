@@ -1281,6 +1281,19 @@ pendente.
   7.197 superficies, 3.898 `COVERED`, 3.299 `PENDING` e 85 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Core/wifi_manager concluido em 2026-09-02: foi criado o caso
+  host-only `host:core:wifi-manager` com fixtures estaticos de PCI, USB e
+  RTL8811CU. A fixture exercitou formatacao e busca case-insensitive de IDs,
+  inventario PCI, candidatos USB, estados READY/UNSUPPORTED/ERROR, scan,
+  conexao aberta, limites, metadados PCI invalidos, backend indisponivel,
+  falha do driver, validacao e recuperacao. `make test-wifi-manager-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` terminou `PASS`; o relatorio
+  instrumentado resolveu todas as 25 superficies de `src/core/wifi_manager.c`
+  sem enderecos desconhecidos ou ambiguos. O catalogo foi sincronizado e
+  validado com 7.196 superficies, 4.131 `COVERED`, 3.065 `PENDING` e 88
+  casos; o fechamento integral, o gate estrito e a validacao TST7 completa
+  continuam pendentes.
+
 - Incremento Core/app_package concluido em 2026-09-02: a fixture host-only
   `host:core:app-package` foi ampliada com filesystem FAT12/FAT32 simulado,
   pacotes ZPKG/ZAPP validos, parsing, CRC, instalacao, atualizacao, failpoint
