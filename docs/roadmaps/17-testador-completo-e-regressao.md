@@ -1070,3 +1070,20 @@ build completo manteve somente warnings preexistentes em outros modulos. A
 sincronizacao atual registra 6.827 superficies, 3.050 `COVERED`, 3.777
 `PENDING` e 75 casos; o fechamento integral do catalogo, o gate estrito e a
 validacao TST7 completa continuam pendentes.
+
+Incremento Processos/sinais concluido em 2026-09-02 13:42: o caso host-only
+`host:process:signals` e o alvo `make test-process-signal-host` foram
+adicionados. A fixture usa processos estaticos e exercita inicializacao,
+nomes, acoes, mascaras, coalescencia, entrega a handler, `sigreturn`,
+terminacao padrao, notificacao `SIGCHLD`, snapshots, estatisticas e invariantes
+finais. O caminho de IRQ foi substituido somente no build host por um stub
+controlado. O relatorio instrumentado
+`build/test-results/process-signal-host/coverage.json` terminou `PASS`, com as
+28 superficies de `src/process/signal.c` resolvidas, sem enderecos
+desconhecidos ou ambiguos. `make test-process-signal-host`, `make q3check`,
+`make clean` seguido de `make`, `make catalog-test`, `make test-tst7-host` e
+`git diff --check` passaram. O build completo manteve somente warnings
+preexistentes em outros modulos. A sincronizacao atual registra 6.827
+superficies, 3.074 `COVERED`, 3.753 `PENDING` e 76 casos; o fechamento
+integral do catalogo, o gate estrito e a validacao TST7 completa continuam
+pendentes.

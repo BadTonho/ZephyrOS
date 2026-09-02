@@ -2114,6 +2114,23 @@
       ],
       "include_public_apis": true,
       "evidence": "make test-memory-host PASS com mapa E820, PMM por zona, heap, alinhamento, limites, erros canonicos, cleanup e estatisticas restauradas sem hardware"
+    },
+    {
+      "id": "process-signal-host-dynamic",
+      "domain": "process-signals",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:process:signals"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/process-signal-host/coverage.json",
+      "coverage_sources": [
+        "src/process/signal.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-process-signal-host PASS com fixture estatica, mascaras, coalescencia, handlers, sigreturn, notificacao de filho e invariantes sem hardware"
     }
   ]
 }

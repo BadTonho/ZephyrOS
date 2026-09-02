@@ -220,6 +220,16 @@ compilador C nativo:
 make test-memory-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-process-signal-host` exercita o ciclo de sinais com processos
+estaticos: nomes, inicializacao, mascaras, acoes, coalescencia, entrega a
+handler, `sigreturn`, terminacao padrao, notificacao `SIGCHLD`, snapshots e
+validacao de invariantes. O caminho de IRQ e substituido por um stub somente
+no build host; o relatorio fica em `build/test-results/process-signal-host/`:
+
+```text
+make test-process-signal-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O registro em `tests/coverage/registry.json` somente seleciona enderecos de
 relatorios `PASS` existentes e filtra as fontes declaradas. Um relatorio
 ausente, com endereco desconhecido ou ambiguo bloqueia o gate estrito; nao ha
