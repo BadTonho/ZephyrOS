@@ -1021,3 +1021,13 @@ simultaneas e limpeza sem rede externa. A cobertura real foi sincronizada no
 catalogo: 6.820 superficies, 2.920 `COVERED`, 3.900 `PENDING` e 69 casos. O
 fechamento integral do catalogo, o gate estrito e a validacao TST7 completa
 continuam pendentes.
+
+Incremento Rede/sockets concluido em 2026-09-02 12:10: o caso host-only
+`host:network:socket` e o alvo `make test-net-socket-host` foram adicionados.
+A fixture passou com TCP, timer, filas de espera e VFS falsos, cobrindo handles
+geracionais, conexao, filas RX/TX, eventos, EOF, timeout, cancelamento,
+limites, reset e limpeza sem rede externa. O relatorio instrumentado terminou
+`PASS` com 86 superficies resolvidas, sem enderecos desconhecidos ou
+ambiguos. A sincronizacao atual registra 6.820 superficies, 3.018 `COVERED`,
+3.802 `PENDING` e 72 casos; o fechamento integral do catalogo, o gate estrito
+e a validacao TST7 completa continuam pendentes.

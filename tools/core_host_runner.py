@@ -87,6 +87,8 @@ TLS_RESULT_DIR = ROOT / "build" / "test-results" / "tls-host"
 TLS_BINARY = ROOT / "build" / "tests" / "test_tls_host.exe"
 HTTP_RESULT_DIR = ROOT / "build" / "test-results" / "http-host"
 HTTP_BINARY = ROOT / "build" / "tests" / "test_http_host.exe"
+NET_SOCKET_RESULT_DIR = ROOT / "build" / "test-results" / "net-socket-host"
+NET_SOCKET_BINARY = ROOT / "build" / "tests" / "test_net_socket_host.exe"
 DEFAULT_TIMEOUT = 120.0
 CORE_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_core_contracts.c",
@@ -292,6 +294,14 @@ HTTP_SOURCE_FILES = (
     ROOT / "src" / "core" / "log.c",
     ROOT / "src" / "core" / "string.c",
 )
+NET_SOCKET_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_net_socket_host.c",
+    ROOT / "src" / "core" / "net_socket.c",
+    ROOT / "src" / "core" / "wait.c",
+    ROOT / "src" / "core" / "net_buffer.c",
+    ROOT / "src" / "core" / "log.c",
+    ROOT / "src" / "core" / "string.c",
+)
 SOURCE_FILES = CORE_SOURCE_FILES
 
 
@@ -369,6 +379,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return TLS_RESULT_DIR, TLS_BINARY, TLS_SOURCE_FILES, "tls-host"
     if case_id == "host:network:http":
         return HTTP_RESULT_DIR, HTTP_BINARY, HTTP_SOURCE_FILES, "http-host"
+    if case_id == "host:network:socket":
+        return (NET_SOCKET_RESULT_DIR, NET_SOCKET_BINARY,
+                NET_SOCKET_SOURCE_FILES, "net-socket-host")
     raise ValueError(f"caso_host_invalido:{case_id}")
 
 
@@ -526,7 +539,8 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:network:arp", "host:network:icmp",
                                  "host:network:dns", "host:network:dhcp",
                                  "host:network:ethernet", "host:network:tcp",
-                                 "host:security:tls", "host:network:http"))
+                                 "host:security:tls", "host:network:http",
+                                 "host:network:socket"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
     return parser.parse_args()

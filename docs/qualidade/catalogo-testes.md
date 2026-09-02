@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **6820**
-- Casos de teste: **71**
+- Casos de teste: **72**
 - Superfícies aposentadas: **20**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 2979 |
+| `COVERED` | 3018 |
 | `MANUAL` | 0 |
-| `PENDING` | 3841 |
+| `PENDING` | 3802 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 71 |
+| `AUTOMATED` | 72 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -425,7 +425,7 @@
 | `api:src/include/core/log.h:log_get_level` | `src/include/core/log.h` | `log_get_level` | `core` | `COVERED` | 1 |
 | `api:src/include/core/log.h:log_get_stats` | `src/include/core/log.h` | `log_get_stats` | `core` | `COVERED` | 2 |
 | `api:src/include/core/log.h:log_init` | `src/include/core/log.h` | `log_init` | `core` | `COVERED` | 22 |
-| `api:src/include/core/log.h:log_print` | `src/include/core/log.h` | `log_print` | `core` | `COVERED` | 25 |
+| `api:src/include/core/log.h:log_print` | `src/include/core/log.h` | `log_print` | `core` | `COVERED` | 26 |
 | `api:src/include/core/log.h:log_print_code` | `src/include/core/log.h` | `log_print_code` | `core` | `COVERED` | 7 |
 | `api:src/include/core/log.h:log_self_test` | `src/include/core/log.h` | `log_self_test` | `core` | `COVERED` | 3 |
 | `api:src/include/core/log.h:log_set_buffer_level` | `src/include/core/log.h` | `log_set_buffer_level` | `core` | `COVERED` | 1 |
@@ -448,9 +448,9 @@
 | `api:src/include/core/net_buffer.h:net_buffer_begin` | `src/include/core/net_buffer.h` | `net_buffer_begin` | `core` | `COVERED` | 4 |
 | `api:src/include/core/net_buffer.h:net_buffer_complete` | `src/include/core/net_buffer.h` | `net_buffer_complete` | `core` | `COVERED` | 4 |
 | `api:src/include/core/net_buffer.h:net_buffer_get_stats` | `src/include/core/net_buffer.h` | `net_buffer_get_stats` | `core` | `COVERED` | 4 |
-| `api:src/include/core/net_buffer.h:net_buffer_init` | `src/include/core/net_buffer.h` | `net_buffer_init` | `core` | `COVERED` | 2 |
+| `api:src/include/core/net_buffer.h:net_buffer_init` | `src/include/core/net_buffer.h` | `net_buffer_init` | `core` | `COVERED` | 3 |
 | `api:src/include/core/net_buffer.h:net_buffer_note_clone` | `src/include/core/net_buffer.h` | `net_buffer_note_clone` | `core` | `COVERED` | 3 |
-| `api:src/include/core/net_buffer.h:net_buffer_note_copy` | `src/include/core/net_buffer.h` | `net_buffer_note_copy` | `core` | `COVERED` | 4 |
+| `api:src/include/core/net_buffer.h:net_buffer_note_copy` | `src/include/core/net_buffer.h` | `net_buffer_note_copy` | `core` | `COVERED` | 5 |
 | `api:src/include/core/net_buffer.h:net_buffer_note_fragment` | `src/include/core/net_buffer.h` | `net_buffer_note_fragment` | `core` | `COVERED` | 3 |
 | `api:src/include/core/net_buffer.h:net_buffer_release` | `src/include/core/net_buffer.h` | `net_buffer_release` | `core` | `COVERED` | 4 |
 | `api:src/include/core/net_buffer.h:net_buffer_restore_stats` | `src/include/core/net_buffer.h` | `net_buffer_restore_stats` | `core` | `COVERED` | 4 |
@@ -459,22 +459,22 @@
 | `api:src/include/core/net_buffer.h:net_buffer_set_layout` | `src/include/core/net_buffer.h` | `net_buffer_set_layout` | `core` | `COVERED` | 4 |
 | `api:src/include/core/net_buffer.h:net_buffer_set_length` | `src/include/core/net_buffer.h` | `net_buffer_set_length` | `core` | `COVERED` | 3 |
 | `api:src/include/core/net_buffer.h:net_buffer_transition` | `src/include/core/net_buffer.h` | `net_buffer_transition` | `core` | `COVERED` | 4 |
-| `api:src/include/core/net_buffer.h:net_buffer_validate_state` | `src/include/core/net_buffer.h` | `net_buffer_validate_state` | `core` | `COVERED` | 4 |
-| `api:src/include/core/net_socket.h:net_socket_abort` | `src/include/core/net_socket.h` | `net_socket_abort` | `core` | `PENDING` | 0 |
-| `api:src/include/core/net_socket.h:net_socket_close` | `src/include/core/net_socket.h` | `net_socket_close` | `core` | `PENDING` | 0 |
-| `api:src/include/core/net_socket.h:net_socket_connect` | `src/include/core/net_socket.h` | `net_socket_connect` | `core` | `PENDING` | 0 |
-| `api:src/include/core/net_socket.h:net_socket_get_handle_info` | `src/include/core/net_socket.h` | `net_socket_get_handle_info` | `core` | `PENDING` | 0 |
-| `api:src/include/core/net_socket.h:net_socket_get_info` | `src/include/core/net_socket.h` | `net_socket_get_info` | `core` | `PENDING` | 0 |
-| `api:src/include/core/net_socket.h:net_socket_get_status` | `src/include/core/net_socket.h` | `net_socket_get_status` | `core` | `COVERED` | 2 |
-| `api:src/include/core/net_socket.h:net_socket_init` | `src/include/core/net_socket.h` | `net_socket_init` | `core` | `PENDING` | 0 |
-| `api:src/include/core/net_socket.h:net_socket_maintain` | `src/include/core/net_socket.h` | `net_socket_maintain` | `core` | `PENDING` | 0 |
-| `api:src/include/core/net_socket.h:net_socket_open` | `src/include/core/net_socket.h` | `net_socket_open` | `core` | `PENDING` | 0 |
-| `api:src/include/core/net_socket.h:net_socket_receive` | `src/include/core/net_socket.h` | `net_socket_receive` | `core` | `PENDING` | 0 |
-| `api:src/include/core/net_socket.h:net_socket_reset` | `src/include/core/net_socket.h` | `net_socket_reset` | `core` | `PENDING` | 0 |
-| `api:src/include/core/net_socket.h:net_socket_self_test` | `src/include/core/net_socket.h` | `net_socket_self_test` | `core` | `COVERED` | 2 |
-| `api:src/include/core/net_socket.h:net_socket_send` | `src/include/core/net_socket.h` | `net_socket_send` | `core` | `PENDING` | 0 |
-| `api:src/include/core/net_socket.h:net_socket_validate_state` | `src/include/core/net_socket.h` | `net_socket_validate_state` | `core` | `COVERED` | 2 |
-| `api:src/include/core/net_socket.h:net_socket_wait` | `src/include/core/net_socket.h` | `net_socket_wait` | `core` | `PENDING` | 0 |
+| `api:src/include/core/net_buffer.h:net_buffer_validate_state` | `src/include/core/net_buffer.h` | `net_buffer_validate_state` | `core` | `COVERED` | 5 |
+| `api:src/include/core/net_socket.h:net_socket_abort` | `src/include/core/net_socket.h` | `net_socket_abort` | `core` | `COVERED` | 1 |
+| `api:src/include/core/net_socket.h:net_socket_close` | `src/include/core/net_socket.h` | `net_socket_close` | `core` | `COVERED` | 1 |
+| `api:src/include/core/net_socket.h:net_socket_connect` | `src/include/core/net_socket.h` | `net_socket_connect` | `core` | `COVERED` | 1 |
+| `api:src/include/core/net_socket.h:net_socket_get_handle_info` | `src/include/core/net_socket.h` | `net_socket_get_handle_info` | `core` | `COVERED` | 1 |
+| `api:src/include/core/net_socket.h:net_socket_get_info` | `src/include/core/net_socket.h` | `net_socket_get_info` | `core` | `COVERED` | 1 |
+| `api:src/include/core/net_socket.h:net_socket_get_status` | `src/include/core/net_socket.h` | `net_socket_get_status` | `core` | `COVERED` | 3 |
+| `api:src/include/core/net_socket.h:net_socket_init` | `src/include/core/net_socket.h` | `net_socket_init` | `core` | `COVERED` | 1 |
+| `api:src/include/core/net_socket.h:net_socket_maintain` | `src/include/core/net_socket.h` | `net_socket_maintain` | `core` | `COVERED` | 1 |
+| `api:src/include/core/net_socket.h:net_socket_open` | `src/include/core/net_socket.h` | `net_socket_open` | `core` | `COVERED` | 1 |
+| `api:src/include/core/net_socket.h:net_socket_receive` | `src/include/core/net_socket.h` | `net_socket_receive` | `core` | `COVERED` | 1 |
+| `api:src/include/core/net_socket.h:net_socket_reset` | `src/include/core/net_socket.h` | `net_socket_reset` | `core` | `COVERED` | 1 |
+| `api:src/include/core/net_socket.h:net_socket_self_test` | `src/include/core/net_socket.h` | `net_socket_self_test` | `core` | `COVERED` | 3 |
+| `api:src/include/core/net_socket.h:net_socket_send` | `src/include/core/net_socket.h` | `net_socket_send` | `core` | `COVERED` | 1 |
+| `api:src/include/core/net_socket.h:net_socket_validate_state` | `src/include/core/net_socket.h` | `net_socket_validate_state` | `core` | `COVERED` | 3 |
+| `api:src/include/core/net_socket.h:net_socket_wait` | `src/include/core/net_socket.h` | `net_socket_wait` | `core` | `COVERED` | 1 |
 | `api:src/include/core/network_manager.h:network_manager_acquire_dhcp` | `src/include/core/network_manager.h` | `network_manager_acquire_dhcp` | `core` | `COVERED` | 1 |
 | `api:src/include/core/network_manager.h:network_manager_configure_arp` | `src/include/core/network_manager.h` | `network_manager_configure_arp` | `core` | `COVERED` | 1 |
 | `api:src/include/core/network_manager.h:network_manager_configure_dns` | `src/include/core/network_manager.h` | `network_manager_configure_dns` | `core` | `COVERED` | 1 |
@@ -555,10 +555,10 @@
 | `api:src/include/core/spinlock.h:spinlock_acquire` | `src/include/core/spinlock.h` | `spinlock_acquire` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_init` | `src/include/core/spinlock.h` | `spinlock_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_release` | `src/include/core/spinlock.h` | `spinlock_release` | `core` | `PENDING` | 0 |
-| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 33 |
-| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 33 |
-| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 26 |
-| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 30 |
+| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 34 |
+| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 34 |
+| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 27 |
+| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 31 |
 | `api:src/include/core/syscall.h:syscall_enable_user_mode` | `src/include/core/syscall.h` | `syscall_enable_user_mode` | `core` | `PENDING` | 0 |
 | `api:src/include/core/syscall.h:syscall_handler` | `src/include/core/syscall.h` | `syscall_handler` | `core` | `COVERED` | 1 |
 | `api:src/include/core/syscall.h:syscall_init` | `src/include/core/syscall.h` | `syscall_init` | `core` | `PENDING` | 0 |
@@ -744,31 +744,31 @@
 | `api:src/include/core/video.h:video_terminal_set_hosted` | `src/include/core/video.h` | `video_terminal_set_hosted` | `core` | `PENDING` | 0 |
 | `api:src/include/core/video.h:video_terminal_suspend` | `src/include/core/video.h` | `video_terminal_suspend` | `core` | `PENDING` | 0 |
 | `api:src/include/core/video.h:video_terminal_take_hosted_dirty` | `src/include/core/video.h` | `video_terminal_take_hosted_dirty` | `core` | `PENDING` | 0 |
-| `api:src/include/core/wait.h:init_waitqueue_head` | `src/include/core/wait.h` | `init_waitqueue_head` | `core` | `COVERED` | 3 |
+| `api:src/include/core/wait.h:init_waitqueue_head` | `src/include/core/wait.h` | `init_waitqueue_head` | `core` | `COVERED` | 4 |
 | `api:src/include/core/wait.h:wait_channel_get_condition` | `src/include/core/wait.h` | `wait_channel_get_condition` | `core` | `COVERED` | 4 |
 | `api:src/include/core/wait.h:wait_channel_init` | `src/include/core/wait.h` | `wait_channel_init` | `core` | `COVERED` | 1 |
 | `api:src/include/core/wait.h:wait_channel_is_available` | `src/include/core/wait.h` | `wait_channel_is_available` | `core` | `COVERED` | 1 |
-| `api:src/include/core/wait.h:wait_channel_reset` | `src/include/core/wait.h` | `wait_channel_reset` | `core` | `COVERED` | 3 |
-| `api:src/include/core/wait.h:wait_channel_set_available` | `src/include/core/wait.h` | `wait_channel_set_available` | `core` | `COVERED` | 3 |
+| `api:src/include/core/wait.h:wait_channel_reset` | `src/include/core/wait.h` | `wait_channel_reset` | `core` | `COVERED` | 4 |
+| `api:src/include/core/wait.h:wait_channel_set_available` | `src/include/core/wait.h` | `wait_channel_set_available` | `core` | `COVERED` | 4 |
 | `api:src/include/core/wait.h:wait_channel_signal` | `src/include/core/wait.h` | `wait_channel_signal` | `core` | `COVERED` | 4 |
 | `api:src/include/core/wait.h:wait_deadline_remaining` | `src/include/core/wait.h` | `wait_deadline_remaining` | `core` | `COVERED` | 1 |
 | `api:src/include/core/wait.h:wait_deadline_remaining_active` | `src/include/core/wait.h` | `wait_deadline_remaining_active` | `core` | `COVERED` | 1 |
 | `api:src/include/core/wait.h:wait_event` | `src/include/core/wait.h` | `wait_event` | `core` | `COVERED` | 1 |
-| `api:src/include/core/wait.h:wait_event_timeout` | `src/include/core/wait.h` | `wait_event_timeout` | `core` | `COVERED` | 4 |
+| `api:src/include/core/wait.h:wait_event_timeout` | `src/include/core/wait.h` | `wait_event_timeout` | `core` | `COVERED` | 5 |
 | `api:src/include/core/wait.h:wait_get_stats` | `src/include/core/wait.h` | `wait_get_stats` | `core` | `COVERED` | 1 |
-| `api:src/include/core/wait.h:wait_init` | `src/include/core/wait.h` | `wait_init` | `core` | `COVERED` | 1 |
+| `api:src/include/core/wait.h:wait_init` | `src/include/core/wait.h` | `wait_init` | `core` | `COVERED` | 2 |
 | `api:src/include/core/wait.h:wait_note_waiter` | `src/include/core/wait.h` | `wait_note_waiter` | `core` | `COVERED` | 1 |
 | `api:src/include/core/wait.h:wait_note_wake` | `src/include/core/wait.h` | `wait_note_wake` | `core` | `COVERED` | 1 |
-| `api:src/include/core/wait.h:wait_queue_block` | `src/include/core/wait.h` | `wait_queue_block` | `core` | `COVERED` | 4 |
+| `api:src/include/core/wait.h:wait_queue_block` | `src/include/core/wait.h` | `wait_queue_block` | `core` | `COVERED` | 5 |
 | `api:src/include/core/wait.h:wait_queue_copy_info` | `src/include/core/wait.h` | `wait_queue_copy_info` | `core` | `COVERED` | 1 |
 | `api:src/include/core/wait.h:wait_queue_copy_waiters` | `src/include/core/wait.h` | `wait_queue_copy_waiters` | `core` | `COVERED` | 1 |
-| `api:src/include/core/wait.h:wait_queue_entry_init` | `src/include/core/wait.h` | `wait_queue_entry_init` | `core` | `COVERED` | 4 |
-| `api:src/include/core/wait.h:wait_queue_remove` | `src/include/core/wait.h` | `wait_queue_remove` | `core` | `COVERED` | 5 |
-| `api:src/include/core/wait.h:wait_queue_wake_target` | `src/include/core/wait.h` | `wait_queue_wake_target` | `core` | `COVERED` | 4 |
+| `api:src/include/core/wait.h:wait_queue_entry_init` | `src/include/core/wait.h` | `wait_queue_entry_init` | `core` | `COVERED` | 5 |
+| `api:src/include/core/wait.h:wait_queue_remove` | `src/include/core/wait.h` | `wait_queue_remove` | `core` | `COVERED` | 6 |
+| `api:src/include/core/wait.h:wait_queue_wake_target` | `src/include/core/wait.h` | `wait_queue_wake_target` | `core` | `COVERED` | 5 |
 | `api:src/include/core/wait.h:wait_self_test` | `src/include/core/wait.h` | `wait_self_test` | `core` | `COVERED` | 3 |
-| `api:src/include/core/wait.h:wait_validate_state` | `src/include/core/wait.h` | `wait_validate_state` | `core` | `COVERED` | 3 |
-| `api:src/include/core/wait.h:wake_up` | `src/include/core/wait.h` | `wake_up` | `core` | `COVERED` | 4 |
-| `api:src/include/core/wait.h:wake_up_all` | `src/include/core/wait.h` | `wake_up_all` | `core` | `COVERED` | 4 |
+| `api:src/include/core/wait.h:wait_validate_state` | `src/include/core/wait.h` | `wait_validate_state` | `core` | `COVERED` | 4 |
+| `api:src/include/core/wait.h:wake_up` | `src/include/core/wait.h` | `wake_up` | `core` | `COVERED` | 5 |
+| `api:src/include/core/wait.h:wake_up_all` | `src/include/core/wait.h` | `wake_up_all` | `core` | `COVERED` | 5 |
 | `api:src/include/core/wifi_manager.h:wifi_manager_connect_open` | `src/include/core/wifi_manager.h` | `wifi_manager_connect_open` | `core` | `PENDING` | 0 |
 | `api:src/include/core/wifi_manager.h:wifi_manager_find` | `src/include/core/wifi_manager.h` | `wifi_manager_find` | `core` | `PENDING` | 0 |
 | `api:src/include/core/wifi_manager.h:wifi_manager_get_count` | `src/include/core/wifi_manager.h` | `wifi_manager_get_count` | `core` | `PENDING` | 0 |
@@ -2567,36 +2567,36 @@
 | `c:src/core/log.c:log_append_char` | `src/core/log.c` | `log_append_char` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_append_text` | `src/core/log.c` | `log_append_text` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_clear_buffer` | `src/core/log.c` | `log_clear_buffer` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_console_print_number` | `src/core/log.c` | `log_console_print_number` | `core` | `COVERED` | 26 |
+| `c:src/core/log.c:log_console_print_number` | `src/core/log.c` | `log_console_print_number` | `core` | `COVERED` | 27 |
 | `c:src/core/log.c:log_copy_recent` | `src/core/log.c` | `log_copy_recent` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_copy_text` | `src/core/log.c` | `log_copy_text` | `core` | `COVERED` | 26 |
+| `c:src/core/log.c:log_copy_text` | `src/core/log.c` | `log_copy_text` | `core` | `COVERED` | 27 |
 | `c:src/core/log.c:log_get_buffer` | `src/core/log.c` | `log_get_buffer` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_get_buffer_level` | `src/core/log.c` | `log_get_buffer_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_get_console_level` | `src/core/log.c` | `log_get_console_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_get_level` | `src/core/log.c` | `log_get_level` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_get_stats` | `src/core/log.c` | `log_get_stats` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_init` | `src/core/log.c` | `log_init` | `core` | `COVERED` | 22 |
-| `c:src/core/log.c:log_is_power_of_two` | `src/core/log.c` | `log_is_power_of_two` | `core` | `COVERED` | 26 |
-| `c:src/core/log.c:log_level_is_valid` | `src/core/log.c` | `log_level_is_valid` | `core` | `COVERED` | 26 |
+| `c:src/core/log.c:log_is_power_of_two` | `src/core/log.c` | `log_is_power_of_two` | `core` | `COVERED` | 27 |
+| `c:src/core/log.c:log_level_is_valid` | `src/core/log.c` | `log_level_is_valid` | `core` | `COVERED` | 27 |
 | `c:src/core/log.c:log_note_dropped_event` | `src/core/log.c` | `log_note_dropped_event` | `core` | `COVERED` | 2 |
-| `c:src/core/log.c:log_print` | `src/core/log.c` | `log_print` | `core` | `COVERED` | 26 |
+| `c:src/core/log.c:log_print` | `src/core/log.c` | `log_print` | `core` | `COVERED` | 27 |
 | `c:src/core/log.c:log_print_code` | `src/core/log.c` | `log_print_code` | `core` | `COVERED` | 7 |
-| `c:src/core/log.c:log_print_colored` | `src/core/log.c` | `log_print_colored` | `core` | `COVERED` | 26 |
-| `c:src/core/log.c:log_records_match` | `src/core/log.c` | `log_records_match` | `core` | `COVERED` | 26 |
-| `c:src/core/log.c:log_restore_interrupts` | `src/core/log.c` | `log_restore_interrupts` | `core` | `COVERED` | 26 |
+| `c:src/core/log.c:log_print_colored` | `src/core/log.c` | `log_print_colored` | `core` | `COVERED` | 27 |
+| `c:src/core/log.c:log_records_match` | `src/core/log.c` | `log_records_match` | `core` | `COVERED` | 27 |
+| `c:src/core/log.c:log_restore_interrupts` | `src/core/log.c` | `log_restore_interrupts` | `core` | `COVERED` | 27 |
 | `c:src/core/log.c:log_ring_clear` | `src/core/log.c` | `log_ring_clear` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_ring_copy_recent` | `src/core/log.c` | `log_ring_copy_recent` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_ring_initialize` | `src/core/log.c` | `log_ring_initialize` | `core` | `COVERED` | 24 |
-| `c:src/core/log.c:log_ring_latest_index` | `src/core/log.c` | `log_ring_latest_index` | `core` | `COVERED` | 26 |
-| `c:src/core/log.c:log_ring_store` | `src/core/log.c` | `log_ring_store` | `core` | `COVERED` | 26 |
+| `c:src/core/log.c:log_ring_latest_index` | `src/core/log.c` | `log_ring_latest_index` | `core` | `COVERED` | 27 |
+| `c:src/core/log.c:log_ring_store` | `src/core/log.c` | `log_ring_store` | `core` | `COVERED` | 27 |
 | `c:src/core/log.c:log_self_test` | `src/core/log.c` | `log_self_test` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_self_test_mark` | `src/core/log.c` | `log_self_test_mark` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_serialize_records` | `src/core/log.c` | `log_serialize_records` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_set_buffer_level` | `src/core/log.c` | `log_set_buffer_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_set_console_level` | `src/core/log.c` | `log_set_console_level` | `core` | `COVERED` | 2 |
 | `c:src/core/log.c:log_set_level` | `src/core/log.c` | `log_set_level` | `core` | `COVERED` | 2 |
-| `c:src/core/log.c:log_submit` | `src/core/log.c` | `log_submit` | `core` | `COVERED` | 26 |
-| `c:src/core/log.c:log_suspend_interrupts` | `src/core/log.c` | `log_suspend_interrupts` | `core` | `COVERED` | 26 |
+| `c:src/core/log.c:log_submit` | `src/core/log.c` | `log_submit` | `core` | `COVERED` | 27 |
+| `c:src/core/log.c:log_suspend_interrupts` | `src/core/log.c` | `log_suspend_interrupts` | `core` | `COVERED` | 27 |
 | `c:src/core/log.c:log_test_clear_behavior` | `src/core/log.c` | `log_test_clear_behavior` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_test_level_filtering` | `src/core/log.c` | `log_test_level_filtering` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_test_optional_error_code` | `src/core/log.c` | `log_test_optional_error_code` | `core` | `COVERED` | 3 |
@@ -2606,7 +2606,7 @@
 | `c:src/core/log.c:log_test_text_serialization` | `src/core/log.c` | `log_test_text_serialization` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_test_wrap_and_overwrite` | `src/core/log.c` | `log_test_wrap_and_overwrite` | `core` | `COVERED` | 3 |
 | `c:src/core/log.c:log_to_buffer` | `src/core/log.c` | `log_to_buffer` | `core` | `COVERED` | 1 |
-| `c:src/core/log.c:log_write_serial` | `src/core/log.c` | `log_write_serial` | `core` | `COVERED` | 26 |
+| `c:src/core/log.c:log_write_serial` | `src/core/log.c` | `log_write_serial` | `core` | `COVERED` | 27 |
 | `c:src/core/net_buffer.c:net_buffer_alignment_valid` | `src/core/net_buffer.c` | `net_buffer_alignment_valid` | `core` | `COVERED` | 4 |
 | `c:src/core/net_buffer.c:net_buffer_begin` | `src/core/net_buffer.c` | `net_buffer_begin` | `core` | `COVERED` | 4 |
 | `c:src/core/net_buffer.c:net_buffer_check_active_locked` | `src/core/net_buffer.c` | `net_buffer_check_active_locked` | `core` | `COVERED` | 4 |
@@ -2616,10 +2616,10 @@
 | `c:src/core/net_buffer.c:net_buffer_find_locked` | `src/core/net_buffer.c` | `net_buffer_find_locked` | `core` | `COVERED` | 4 |
 | `c:src/core/net_buffer.c:net_buffer_free_slot_locked` | `src/core/net_buffer.c` | `net_buffer_free_slot_locked` | `core` | `COVERED` | 4 |
 | `c:src/core/net_buffer.c:net_buffer_get_stats` | `src/core/net_buffer.c` | `net_buffer_get_stats` | `core` | `COVERED` | 4 |
-| `c:src/core/net_buffer.c:net_buffer_init` | `src/core/net_buffer.c` | `net_buffer_init` | `core` | `COVERED` | 2 |
+| `c:src/core/net_buffer.c:net_buffer_init` | `src/core/net_buffer.c` | `net_buffer_init` | `core` | `COVERED` | 3 |
 | `c:src/core/net_buffer.c:net_buffer_log_failure` | `src/core/net_buffer.c` | `net_buffer_log_failure` | `core` | `COVERED` | 4 |
 | `c:src/core/net_buffer.c:net_buffer_note_clone` | `src/core/net_buffer.c` | `net_buffer_note_clone` | `core` | `COVERED` | 3 |
-| `c:src/core/net_buffer.c:net_buffer_note_copy` | `src/core/net_buffer.c` | `net_buffer_note_copy` | `core` | `COVERED` | 4 |
+| `c:src/core/net_buffer.c:net_buffer_note_copy` | `src/core/net_buffer.c` | `net_buffer_note_copy` | `core` | `COVERED` | 5 |
 | `c:src/core/net_buffer.c:net_buffer_note_fragment` | `src/core/net_buffer.c` | `net_buffer_note_fragment` | `core` | `COVERED` | 3 |
 | `c:src/core/net_buffer.c:net_buffer_owner_valid` | `src/core/net_buffer.c` | `net_buffer_owner_valid` | `core` | `COVERED` | 4 |
 | `c:src/core/net_buffer.c:net_buffer_release` | `src/core/net_buffer.c` | `net_buffer_release` | `core` | `COVERED` | 4 |
@@ -2635,42 +2635,42 @@
 | `c:src/core/net_buffer.c:net_buffer_transition` | `src/core/net_buffer.c` | `net_buffer_transition` | `core` | `COVERED` | 4 |
 | `c:src/core/net_buffer.c:net_buffer_transition_allowed` | `src/core/net_buffer.c` | `net_buffer_transition_allowed` | `core` | `COVERED` | 4 |
 | `c:src/core/net_buffer.c:net_buffer_validate_entry_locked` | `src/core/net_buffer.c` | `net_buffer_validate_entry_locked` | `core` | `COVERED` | 4 |
-| `c:src/core/net_buffer.c:net_buffer_validate_state` | `src/core/net_buffer.c` | `net_buffer_validate_state` | `core` | `COVERED` | 4 |
-| `c:src/core/net_socket.c:net_socket_abort` | `src/core/net_socket.c` | `net_socket_abort` | `core` | `PENDING` | 0 |
-| `c:src/core/net_socket.c:net_socket_allocate_port` | `src/core/net_socket.c` | `net_socket_allocate_port` | `core` | `PENDING` | 0 |
-| `c:src/core/net_socket.c:net_socket_close` | `src/core/net_socket.c` | `net_socket_close` | `core` | `PENDING` | 0 |
-| `c:src/core/net_socket.c:net_socket_connect` | `src/core/net_socket.c` | `net_socket_connect` | `core` | `PENDING` | 0 |
-| `c:src/core/net_socket.c:net_socket_drain` | `src/core/net_socket.c` | `net_socket_drain` | `core` | `PENDING` | 0 |
-| `c:src/core/net_socket.c:net_socket_entry_events` | `src/core/net_socket.c` | `net_socket_entry_events` | `core` | `COVERED` | 2 |
-| `c:src/core/net_socket.c:net_socket_fill_info` | `src/core/net_socket.c` | `net_socket_fill_info` | `core` | `PENDING` | 0 |
-| `c:src/core/net_socket.c:net_socket_find_handle` | `src/core/net_socket.c` | `net_socket_find_handle` | `core` | `PENDING` | 0 |
-| `c:src/core/net_socket.c:net_socket_find_tcp` | `src/core/net_socket.c` | `net_socket_find_tcp` | `core` | `PENDING` | 0 |
-| `c:src/core/net_socket.c:net_socket_get_handle_info` | `src/core/net_socket.c` | `net_socket_get_handle_info` | `core` | `PENDING` | 0 |
-| `c:src/core/net_socket.c:net_socket_get_info` | `src/core/net_socket.c` | `net_socket_get_info` | `core` | `PENDING` | 0 |
-| `c:src/core/net_socket.c:net_socket_get_status` | `src/core/net_socket.c` | `net_socket_get_status` | `core` | `COVERED` | 2 |
-| `c:src/core/net_socket.c:net_socket_init` | `src/core/net_socket.c` | `net_socket_init` | `core` | `PENDING` | 0 |
-| `c:src/core/net_socket.c:net_socket_maintain` | `src/core/net_socket.c` | `net_socket_maintain` | `core` | `PENDING` | 0 |
-| `c:src/core/net_socket.c:net_socket_make_handle` | `src/core/net_socket.c` | `net_socket_make_handle` | `core` | `PENDING` | 0 |
-| `c:src/core/net_socket.c:net_socket_open` | `src/core/net_socket.c` | `net_socket_open` | `core` | `PENDING` | 0 |
-| `c:src/core/net_socket.c:net_socket_port_used` | `src/core/net_socket.c` | `net_socket_port_used` | `core` | `PENDING` | 0 |
-| `c:src/core/net_socket.c:net_socket_receive` | `src/core/net_socket.c` | `net_socket_receive` | `core` | `PENDING` | 0 |
-| `c:src/core/net_socket.c:net_socket_release` | `src/core/net_socket.c` | `net_socket_release` | `core` | `PENDING` | 0 |
-| `c:src/core/net_socket.c:net_socket_reset` | `src/core/net_socket.c` | `net_socket_reset` | `core` | `PENDING` | 0 |
-| `c:src/core/net_socket.c:net_socket_ring_read` | `src/core/net_socket.c` | `net_socket_ring_read` | `core` | `PENDING` | 0 |
-| `c:src/core/net_socket.c:net_socket_ring_write` | `src/core/net_socket.c` | `net_socket_ring_write` | `core` | `PENDING` | 0 |
-| `c:src/core/net_socket.c:net_socket_self_test` | `src/core/net_socket.c` | `net_socket_self_test` | `core` | `COVERED` | 2 |
-| `c:src/core/net_socket.c:net_socket_send` | `src/core/net_socket.c` | `net_socket_send` | `core` | `PENDING` | 0 |
-| `c:src/core/net_socket.c:net_socket_start_close` | `src/core/net_socket.c` | `net_socket_start_close` | `core` | `PENDING` | 0 |
-| `c:src/core/net_socket.c:net_socket_tcp_event` | `src/core/net_socket.c` | `net_socket_tcp_event` | `core` | `PENDING` | 0 |
-| `c:src/core/net_socket.c:net_socket_test_block` | `src/core/net_socket.c` | `net_socket_test_block` | `core` | `COVERED` | 2 |
-| `c:src/core/net_socket.c:net_socket_test_count` | `src/core/net_socket.c` | `net_socket_test_count` | `core` | `COVERED` | 2 |
-| `c:src/core/net_socket.c:net_socket_test_wake` | `src/core/net_socket.c` | `net_socket_test_wake` | `core` | `COVERED` | 2 |
-| `c:src/core/net_socket.c:net_socket_test_yield` | `src/core/net_socket.c` | `net_socket_test_yield` | `core` | `COVERED` | 2 |
-| `c:src/core/net_socket.c:net_socket_validate_state` | `src/core/net_socket.c` | `net_socket_validate_state` | `core` | `COVERED` | 2 |
-| `c:src/core/net_socket.c:net_socket_wait` | `src/core/net_socket.c` | `net_socket_wait` | `core` | `PENDING` | 0 |
-| `c:src/core/net_socket.c:net_socket_wait_condition` | `src/core/net_socket.c` | `net_socket_wait_condition` | `core` | `PENDING` | 0 |
-| `c:src/core/net_socket.c:net_socket_wait_owner` | `src/core/net_socket.c` | `net_socket_wait_owner` | `core` | `PENDING` | 0 |
-| `c:src/core/net_socket.c:net_socket_wake` | `src/core/net_socket.c` | `net_socket_wake` | `core` | `PENDING` | 0 |
+| `c:src/core/net_buffer.c:net_buffer_validate_state` | `src/core/net_buffer.c` | `net_buffer_validate_state` | `core` | `COVERED` | 5 |
+| `c:src/core/net_socket.c:net_socket_abort` | `src/core/net_socket.c` | `net_socket_abort` | `core` | `COVERED` | 1 |
+| `c:src/core/net_socket.c:net_socket_allocate_port` | `src/core/net_socket.c` | `net_socket_allocate_port` | `core` | `COVERED` | 1 |
+| `c:src/core/net_socket.c:net_socket_close` | `src/core/net_socket.c` | `net_socket_close` | `core` | `COVERED` | 1 |
+| `c:src/core/net_socket.c:net_socket_connect` | `src/core/net_socket.c` | `net_socket_connect` | `core` | `COVERED` | 1 |
+| `c:src/core/net_socket.c:net_socket_drain` | `src/core/net_socket.c` | `net_socket_drain` | `core` | `COVERED` | 1 |
+| `c:src/core/net_socket.c:net_socket_entry_events` | `src/core/net_socket.c` | `net_socket_entry_events` | `core` | `COVERED` | 3 |
+| `c:src/core/net_socket.c:net_socket_fill_info` | `src/core/net_socket.c` | `net_socket_fill_info` | `core` | `COVERED` | 1 |
+| `c:src/core/net_socket.c:net_socket_find_handle` | `src/core/net_socket.c` | `net_socket_find_handle` | `core` | `COVERED` | 1 |
+| `c:src/core/net_socket.c:net_socket_find_tcp` | `src/core/net_socket.c` | `net_socket_find_tcp` | `core` | `COVERED` | 1 |
+| `c:src/core/net_socket.c:net_socket_get_handle_info` | `src/core/net_socket.c` | `net_socket_get_handle_info` | `core` | `COVERED` | 1 |
+| `c:src/core/net_socket.c:net_socket_get_info` | `src/core/net_socket.c` | `net_socket_get_info` | `core` | `COVERED` | 1 |
+| `c:src/core/net_socket.c:net_socket_get_status` | `src/core/net_socket.c` | `net_socket_get_status` | `core` | `COVERED` | 3 |
+| `c:src/core/net_socket.c:net_socket_init` | `src/core/net_socket.c` | `net_socket_init` | `core` | `COVERED` | 1 |
+| `c:src/core/net_socket.c:net_socket_maintain` | `src/core/net_socket.c` | `net_socket_maintain` | `core` | `COVERED` | 1 |
+| `c:src/core/net_socket.c:net_socket_make_handle` | `src/core/net_socket.c` | `net_socket_make_handle` | `core` | `COVERED` | 1 |
+| `c:src/core/net_socket.c:net_socket_open` | `src/core/net_socket.c` | `net_socket_open` | `core` | `COVERED` | 1 |
+| `c:src/core/net_socket.c:net_socket_port_used` | `src/core/net_socket.c` | `net_socket_port_used` | `core` | `COVERED` | 1 |
+| `c:src/core/net_socket.c:net_socket_receive` | `src/core/net_socket.c` | `net_socket_receive` | `core` | `COVERED` | 1 |
+| `c:src/core/net_socket.c:net_socket_release` | `src/core/net_socket.c` | `net_socket_release` | `core` | `COVERED` | 1 |
+| `c:src/core/net_socket.c:net_socket_reset` | `src/core/net_socket.c` | `net_socket_reset` | `core` | `COVERED` | 1 |
+| `c:src/core/net_socket.c:net_socket_ring_read` | `src/core/net_socket.c` | `net_socket_ring_read` | `core` | `COVERED` | 1 |
+| `c:src/core/net_socket.c:net_socket_ring_write` | `src/core/net_socket.c` | `net_socket_ring_write` | `core` | `COVERED` | 1 |
+| `c:src/core/net_socket.c:net_socket_self_test` | `src/core/net_socket.c` | `net_socket_self_test` | `core` | `COVERED` | 3 |
+| `c:src/core/net_socket.c:net_socket_send` | `src/core/net_socket.c` | `net_socket_send` | `core` | `COVERED` | 1 |
+| `c:src/core/net_socket.c:net_socket_start_close` | `src/core/net_socket.c` | `net_socket_start_close` | `core` | `COVERED` | 1 |
+| `c:src/core/net_socket.c:net_socket_tcp_event` | `src/core/net_socket.c` | `net_socket_tcp_event` | `core` | `COVERED` | 1 |
+| `c:src/core/net_socket.c:net_socket_test_block` | `src/core/net_socket.c` | `net_socket_test_block` | `core` | `COVERED` | 3 |
+| `c:src/core/net_socket.c:net_socket_test_count` | `src/core/net_socket.c` | `net_socket_test_count` | `core` | `COVERED` | 3 |
+| `c:src/core/net_socket.c:net_socket_test_wake` | `src/core/net_socket.c` | `net_socket_test_wake` | `core` | `COVERED` | 3 |
+| `c:src/core/net_socket.c:net_socket_test_yield` | `src/core/net_socket.c` | `net_socket_test_yield` | `core` | `COVERED` | 3 |
+| `c:src/core/net_socket.c:net_socket_validate_state` | `src/core/net_socket.c` | `net_socket_validate_state` | `core` | `COVERED` | 3 |
+| `c:src/core/net_socket.c:net_socket_wait` | `src/core/net_socket.c` | `net_socket_wait` | `core` | `COVERED` | 1 |
+| `c:src/core/net_socket.c:net_socket_wait_condition` | `src/core/net_socket.c` | `net_socket_wait_condition` | `core` | `COVERED` | 1 |
+| `c:src/core/net_socket.c:net_socket_wait_owner` | `src/core/net_socket.c` | `net_socket_wait_owner` | `core` | `COVERED` | 1 |
+| `c:src/core/net_socket.c:net_socket_wake` | `src/core/net_socket.c` | `net_socket_wake` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_append_char` | `src/core/network_manager.c` | `network_append_char` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_append_hex` | `src/core/network_manager.c` | `network_append_hex` | `core` | `COVERED` | 1 |
 | `c:src/core/network_manager.c:network_append_text` | `src/core/network_manager.c` | `network_append_text` | `core` | `COVERED` | 1 |
@@ -2882,10 +2882,10 @@
 | `c:src/core/socket.c:socket_wait_local` | `src/core/socket.c` | `socket_wait_local` | `core` | `PENDING` | 0 |
 | `c:src/core/socket.c:socket_wait_owner` | `src/core/socket.c` | `socket_wait_owner` | `core` | `COVERED` | 2 |
 | `c:src/core/socket.c:socket_wake` | `src/core/socket.c` | `socket_wake` | `core` | `COVERED` | 2 |
-| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 33 |
-| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 33 |
-| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 26 |
-| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 30 |
+| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 34 |
+| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 34 |
+| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 27 |
+| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 31 |
 | `c:src/core/syscall.c:syscall_copy_user_string` | `src/core/syscall.c` | `syscall_copy_user_string` | `core` | `PENDING` | 0 |
 | `c:src/core/syscall.c:syscall_dispatch` | `src/core/syscall.c` | `syscall_dispatch` | `core` | `COVERED` | 1 |
 | `c:src/core/syscall.c:syscall_dispatch_user` | `src/core/syscall.c` | `syscall_dispatch_user` | `core` | `COVERED` | 1 |
@@ -3589,47 +3589,47 @@
 | `c:src/core/usb_transport.c:usb_transport_is_ehci` | `src/core/usb_transport.c` | `usb_transport_is_ehci` | `core` | `PENDING` | 0 |
 | `c:src/core/usb_transport.c:usb_transport_is_uhci` | `src/core/usb_transport.c` | `usb_transport_is_uhci` | `core` | `PENDING` | 0 |
 | `c:src/core/usb_transport.c:usb_transport_reset_bulk_toggles` | `src/core/usb_transport.c` | `usb_transport_reset_bulk_toggles` | `core` | `PENDING` | 0 |
-| `c:src/core/wait.c:init_waitqueue_head` | `src/core/wait.c` | `init_waitqueue_head` | `core` | `COVERED` | 5 |
+| `c:src/core/wait.c:init_waitqueue_head` | `src/core/wait.c` | `init_waitqueue_head` | `core` | `COVERED` | 6 |
 | `c:src/core/wait.c:wait_channel_get_condition` | `src/core/wait.c` | `wait_channel_get_condition` | `core` | `COVERED` | 4 |
 | `c:src/core/wait.c:wait_channel_init` | `src/core/wait.c` | `wait_channel_init` | `core` | `COVERED` | 3 |
 | `c:src/core/wait.c:wait_channel_is_available` | `src/core/wait.c` | `wait_channel_is_available` | `core` | `COVERED` | 1 |
-| `c:src/core/wait.c:wait_channel_reset` | `src/core/wait.c` | `wait_channel_reset` | `core` | `COVERED` | 5 |
-| `c:src/core/wait.c:wait_channel_set_available` | `src/core/wait.c` | `wait_channel_set_available` | `core` | `COVERED` | 3 |
+| `c:src/core/wait.c:wait_channel_reset` | `src/core/wait.c` | `wait_channel_reset` | `core` | `COVERED` | 6 |
+| `c:src/core/wait.c:wait_channel_set_available` | `src/core/wait.c` | `wait_channel_set_available` | `core` | `COVERED` | 4 |
 | `c:src/core/wait.c:wait_channel_signal` | `src/core/wait.c` | `wait_channel_signal` | `core` | `COVERED` | 6 |
-| `c:src/core/wait.c:wait_condition_snapshot` | `src/core/wait.c` | `wait_condition_snapshot` | `core` | `COVERED` | 5 |
-| `c:src/core/wait.c:wait_copy_text` | `src/core/wait.c` | `wait_copy_text` | `core` | `COVERED` | 5 |
-| `c:src/core/wait.c:wait_current_task` | `src/core/wait.c` | `wait_current_task` | `core` | `COVERED` | 3 |
+| `c:src/core/wait.c:wait_condition_snapshot` | `src/core/wait.c` | `wait_condition_snapshot` | `core` | `COVERED` | 6 |
+| `c:src/core/wait.c:wait_copy_text` | `src/core/wait.c` | `wait_copy_text` | `core` | `COVERED` | 6 |
+| `c:src/core/wait.c:wait_current_task` | `src/core/wait.c` | `wait_current_task` | `core` | `COVERED` | 4 |
 | `c:src/core/wait.c:wait_deadline_remaining` | `src/core/wait.c` | `wait_deadline_remaining` | `core` | `COVERED` | 1 |
 | `c:src/core/wait.c:wait_deadline_remaining_active` | `src/core/wait.c` | `wait_deadline_remaining_active` | `core` | `COVERED` | 1 |
 | `c:src/core/wait.c:wait_event` | `src/core/wait.c` | `wait_event` | `core` | `COVERED` | 1 |
-| `c:src/core/wait.c:wait_event_timeout` | `src/core/wait.c` | `wait_event_timeout` | `core` | `COVERED` | 5 |
+| `c:src/core/wait.c:wait_event_timeout` | `src/core/wait.c` | `wait_event_timeout` | `core` | `COVERED` | 6 |
 | `c:src/core/wait.c:wait_fill_waiter_info` | `src/core/wait.c` | `wait_fill_waiter_info` | `core` | `COVERED` | 1 |
 | `c:src/core/wait.c:wait_get_stats` | `src/core/wait.c` | `wait_get_stats` | `core` | `COVERED` | 1 |
-| `c:src/core/wait.c:wait_init` | `src/core/wait.c` | `wait_init` | `core` | `COVERED` | 1 |
-| `c:src/core/wait.c:wait_interrupts_enabled` | `src/core/wait.c` | `wait_interrupts_enabled` | `core` | `COVERED` | 5 |
-| `c:src/core/wait.c:wait_irq_restore` | `src/core/wait.c` | `wait_irq_restore` | `core` | `COVERED` | 7 |
-| `c:src/core/wait.c:wait_irq_save` | `src/core/wait.c` | `wait_irq_save` | `core` | `COVERED` | 7 |
-| `c:src/core/wait.c:wait_name_length` | `src/core/wait.c` | `wait_name_length` | `core` | `COVERED` | 5 |
-| `c:src/core/wait.c:wait_note_reason_locked` | `src/core/wait.c` | `wait_note_reason_locked` | `core` | `COVERED` | 6 |
+| `c:src/core/wait.c:wait_init` | `src/core/wait.c` | `wait_init` | `core` | `COVERED` | 2 |
+| `c:src/core/wait.c:wait_interrupts_enabled` | `src/core/wait.c` | `wait_interrupts_enabled` | `core` | `COVERED` | 6 |
+| `c:src/core/wait.c:wait_irq_restore` | `src/core/wait.c` | `wait_irq_restore` | `core` | `COVERED` | 8 |
+| `c:src/core/wait.c:wait_irq_save` | `src/core/wait.c` | `wait_irq_save` | `core` | `COVERED` | 8 |
+| `c:src/core/wait.c:wait_name_length` | `src/core/wait.c` | `wait_name_length` | `core` | `COVERED` | 6 |
+| `c:src/core/wait.c:wait_note_reason_locked` | `src/core/wait.c` | `wait_note_reason_locked` | `core` | `COVERED` | 7 |
 | `c:src/core/wait.c:wait_note_waiter` | `src/core/wait.c` | `wait_note_waiter` | `core` | `COVERED` | 1 |
 | `c:src/core/wait.c:wait_note_wake` | `src/core/wait.c` | `wait_note_wake` | `core` | `COVERED` | 1 |
-| `c:src/core/wait.c:wait_queue_append_locked` | `src/core/wait.c` | `wait_queue_append_locked` | `core` | `COVERED` | 5 |
-| `c:src/core/wait.c:wait_queue_block` | `src/core/wait.c` | `wait_queue_block` | `core` | `COVERED` | 5 |
+| `c:src/core/wait.c:wait_queue_append_locked` | `src/core/wait.c` | `wait_queue_append_locked` | `core` | `COVERED` | 6 |
+| `c:src/core/wait.c:wait_queue_block` | `src/core/wait.c` | `wait_queue_block` | `core` | `COVERED` | 6 |
 | `c:src/core/wait.c:wait_queue_copy_info` | `src/core/wait.c` | `wait_queue_copy_info` | `core` | `COVERED` | 1 |
 | `c:src/core/wait.c:wait_queue_copy_waiters` | `src/core/wait.c` | `wait_queue_copy_waiters` | `core` | `COVERED` | 1 |
-| `c:src/core/wait.c:wait_queue_deadline_reached` | `src/core/wait.c` | `wait_queue_deadline_reached` | `core` | `COVERED` | 3 |
-| `c:src/core/wait.c:wait_queue_entry_init` | `src/core/wait.c` | `wait_queue_entry_init` | `core` | `COVERED` | 5 |
-| `c:src/core/wait.c:wait_queue_make_id` | `src/core/wait.c` | `wait_queue_make_id` | `core` | `COVERED` | 5 |
-| `c:src/core/wait.c:wait_queue_register_locked` | `src/core/wait.c` | `wait_queue_register_locked` | `core` | `COVERED` | 5 |
-| `c:src/core/wait.c:wait_queue_remove` | `src/core/wait.c` | `wait_queue_remove` | `core` | `COVERED` | 6 |
-| `c:src/core/wait.c:wait_queue_reset_locked` | `src/core/wait.c` | `wait_queue_reset_locked` | `core` | `COVERED` | 5 |
-| `c:src/core/wait.c:wait_queue_unlink_locked` | `src/core/wait.c` | `wait_queue_unlink_locked` | `core` | `COVERED` | 6 |
-| `c:src/core/wait.c:wait_queue_unregister_locked` | `src/core/wait.c` | `wait_queue_unregister_locked` | `core` | `COVERED` | 5 |
-| `c:src/core/wait.c:wait_queue_valid` | `src/core/wait.c` | `wait_queue_valid` | `core` | `COVERED` | 6 |
-| `c:src/core/wait.c:wait_queue_wake_target` | `src/core/wait.c` | `wait_queue_wake_target` | `core` | `COVERED` | 6 |
-| `c:src/core/wait.c:wait_reason_valid` | `src/core/wait.c` | `wait_reason_valid` | `core` | `COVERED` | 7 |
+| `c:src/core/wait.c:wait_queue_deadline_reached` | `src/core/wait.c` | `wait_queue_deadline_reached` | `core` | `COVERED` | 4 |
+| `c:src/core/wait.c:wait_queue_entry_init` | `src/core/wait.c` | `wait_queue_entry_init` | `core` | `COVERED` | 6 |
+| `c:src/core/wait.c:wait_queue_make_id` | `src/core/wait.c` | `wait_queue_make_id` | `core` | `COVERED` | 6 |
+| `c:src/core/wait.c:wait_queue_register_locked` | `src/core/wait.c` | `wait_queue_register_locked` | `core` | `COVERED` | 6 |
+| `c:src/core/wait.c:wait_queue_remove` | `src/core/wait.c` | `wait_queue_remove` | `core` | `COVERED` | 7 |
+| `c:src/core/wait.c:wait_queue_reset_locked` | `src/core/wait.c` | `wait_queue_reset_locked` | `core` | `COVERED` | 6 |
+| `c:src/core/wait.c:wait_queue_unlink_locked` | `src/core/wait.c` | `wait_queue_unlink_locked` | `core` | `COVERED` | 7 |
+| `c:src/core/wait.c:wait_queue_unregister_locked` | `src/core/wait.c` | `wait_queue_unregister_locked` | `core` | `COVERED` | 6 |
+| `c:src/core/wait.c:wait_queue_valid` | `src/core/wait.c` | `wait_queue_valid` | `core` | `COVERED` | 7 |
+| `c:src/core/wait.c:wait_queue_wake_target` | `src/core/wait.c` | `wait_queue_wake_target` | `core` | `COVERED` | 7 |
+| `c:src/core/wait.c:wait_reason_valid` | `src/core/wait.c` | `wait_reason_valid` | `core` | `COVERED` | 8 |
 | `c:src/core/wait.c:wait_self_test` | `src/core/wait.c` | `wait_self_test` | `core` | `COVERED` | 3 |
-| `c:src/core/wait.c:wait_target_valid` | `src/core/wait.c` | `wait_target_valid` | `core` | `COVERED` | 6 |
+| `c:src/core/wait.c:wait_target_valid` | `src/core/wait.c` | `wait_target_valid` | `core` | `COVERED` | 7 |
 | `c:src/core/wait.c:wait_test_block` | `src/core/wait.c` | `wait_test_block` | `core` | `COVERED` | 3 |
 | `c:src/core/wait.c:wait_test_cleanup` | `src/core/wait.c` | `wait_test_cleanup` | `core` | `COVERED` | 3 |
 | `c:src/core/wait.c:wait_test_condition` | `src/core/wait.c` | `wait_test_condition` | `core` | `COVERED` | 3 |
@@ -3638,10 +3638,10 @@
 | `c:src/core/wait.c:wait_test_registry_capacity` | `src/core/wait.c` | `wait_test_registry_capacity` | `core` | `COVERED` | 3 |
 | `c:src/core/wait.c:wait_test_wake` | `src/core/wait.c` | `wait_test_wake` | `core` | `COVERED` | 3 |
 | `c:src/core/wait.c:wait_test_yield` | `src/core/wait.c` | `wait_test_yield` | `core` | `COVERED` | 3 |
-| `c:src/core/wait.c:wait_validate_queue_locked` | `src/core/wait.c` | `wait_validate_queue_locked` | `core` | `COVERED` | 3 |
-| `c:src/core/wait.c:wait_validate_state` | `src/core/wait.c` | `wait_validate_state` | `core` | `COVERED` | 3 |
-| `c:src/core/wait.c:wake_up` | `src/core/wait.c` | `wake_up` | `core` | `COVERED` | 6 |
-| `c:src/core/wait.c:wake_up_all` | `src/core/wait.c` | `wake_up_all` | `core` | `COVERED` | 5 |
+| `c:src/core/wait.c:wait_validate_queue_locked` | `src/core/wait.c` | `wait_validate_queue_locked` | `core` | `COVERED` | 4 |
+| `c:src/core/wait.c:wait_validate_state` | `src/core/wait.c` | `wait_validate_state` | `core` | `COVERED` | 4 |
+| `c:src/core/wait.c:wake_up` | `src/core/wait.c` | `wake_up` | `core` | `COVERED` | 7 |
+| `c:src/core/wait.c:wake_up_all` | `src/core/wait.c` | `wake_up_all` | `core` | `COVERED` | 6 |
 | `c:src/core/wifi_manager.c:wifi_append_char` | `src/core/wifi_manager.c` | `wifi_append_char` | `core` | `PENDING` | 0 |
 | `c:src/core/wifi_manager.c:wifi_append_decimal` | `src/core/wifi_manager.c` | `wifi_append_decimal` | `core` | `PENDING` | 0 |
 | `c:src/core/wifi_manager.c:wifi_append_hex` | `src/core/wifi_manager.c` | `wifi_append_hex` | `core` | `PENDING` | 0 |
@@ -6928,6 +6928,7 @@
 | `host:network:icmp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar checksum, echo, timeout, mudanca de configuracao, fila de reply e pacotes ICMP invalidos com IPv4 e timer simulados | echo valido e reply pendente sao processados, timeout e falhas de transporte retornam erros canonicos e o estado e restaurado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado ICMP, buffers estaticos e transportes IPv4 e timer falsos no processo host | estado ICMP, timer e transporte falso retornam ao estado inicial e os artefatos sao preservados |
 | `host:network:ipv4` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar configuraÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o, envio, broadcast, recepÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o, checksum e handlers IPv4 | datagramas validos sÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o entregues, entradas invÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡lidas sÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o recusadas e o estado ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â© restaurado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado IPv4, tabela de rotas e buffers falsos de ARP/Ethernet | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:network:route` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar rotas base, lookup, limites, overflow e restauracao | rotas validas e invalidas respeitam o contrato, sem residuos globais | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabela estatica de rotas no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:network:socket` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar handles geracionais, conexao, filas RX/TX, eventos, EOF, timeout, cancelamento, limites, reset e limpeza com TCP, timer e VFS falsos | operacoes validas preservam os eventos observaveis, entradas e transportes invalidos retornam codigos canonicos e nenhum socket residual permanece | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado dos sockets, filas de espera, buffers estaticos e transporte TCP falso no processo host | sockets, filas, callbacks TCP e estado de buffers reiniciados e artefatos preservados |
 | `host:network:tcp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar handshake, dados, ACK, FIN, RST, retransmissao, timeout e limpeza usando IPv4 e timer falsos | conexoes validas avancam no protocolo, segmentos invalidos falham com codigo canonico e nenhum estado residual permanece | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado TCP, callbacks, buffers estaticos e transporte IPv4 falso no processo host | conexoes, callbacks e estado TCP reiniciados e artefatos preservados |
 | `host:network:udp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar envio, reinjecao, checksum, listeners, broadcast e erros UDP com IPv4 simulado | datagramas validos sao entregues, entradas corrompidas sao rejeitadas e endpoints sao liberados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos, endpoints UDP e transporte IPv4 falso no processo host | todos os endpoints sao desvinculados e os artefatos sao preservados |
 | `host:security:tls` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar politica, estados, validade, cadeia, SAN, pinning, rotacao, revogacao e autoteste TLS com relogio e RNG falsos | identidades validas sao aceitas, rejeicoes retornam motivo canonico e capacidades indisponiveis permanecem explicitas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado TLS, politica e dependencias falsas no processo host | estado TLS e dependencias falsas reiniciados e artefatos preservados |
@@ -7197,18 +7198,6 @@
 - `api:src/include/core/memory.h:memory_init`
 - `api:src/include/core/memory.h:pmm_free_page`
 - `api:src/include/core/memory.h:pmm_free_pages`
-- `api:src/include/core/net_socket.h:net_socket_abort`
-- `api:src/include/core/net_socket.h:net_socket_close`
-- `api:src/include/core/net_socket.h:net_socket_connect`
-- `api:src/include/core/net_socket.h:net_socket_get_handle_info`
-- `api:src/include/core/net_socket.h:net_socket_get_info`
-- `api:src/include/core/net_socket.h:net_socket_init`
-- `api:src/include/core/net_socket.h:net_socket_maintain`
-- `api:src/include/core/net_socket.h:net_socket_open`
-- `api:src/include/core/net_socket.h:net_socket_receive`
-- `api:src/include/core/net_socket.h:net_socket_reset`
-- `api:src/include/core/net_socket.h:net_socket_send`
-- `api:src/include/core/net_socket.h:net_socket_wait`
 - `api:src/include/core/panic.h:panic`
 - `api:src/include/core/panic.h:panic_halt`
 - `api:src/include/core/panic.h:panic_memory`
@@ -8260,33 +8249,6 @@
 - `c:src/core/crypto_ed25519.c:crypto_eddsa_trim_scalar`
 - `c:src/core/crypto_ed25519.c:fe_cswap`
 - `c:src/core/dhcp.c:dhcp_invalid_option_length`
-- `c:src/core/net_socket.c:net_socket_abort`
-- `c:src/core/net_socket.c:net_socket_allocate_port`
-- `c:src/core/net_socket.c:net_socket_close`
-- `c:src/core/net_socket.c:net_socket_connect`
-- `c:src/core/net_socket.c:net_socket_drain`
-- `c:src/core/net_socket.c:net_socket_fill_info`
-- `c:src/core/net_socket.c:net_socket_find_handle`
-- `c:src/core/net_socket.c:net_socket_find_tcp`
-- `c:src/core/net_socket.c:net_socket_get_handle_info`
-- `c:src/core/net_socket.c:net_socket_get_info`
-- `c:src/core/net_socket.c:net_socket_init`
-- `c:src/core/net_socket.c:net_socket_maintain`
-- `c:src/core/net_socket.c:net_socket_make_handle`
-- `c:src/core/net_socket.c:net_socket_open`
-- `c:src/core/net_socket.c:net_socket_port_used`
-- `c:src/core/net_socket.c:net_socket_receive`
-- `c:src/core/net_socket.c:net_socket_release`
-- `c:src/core/net_socket.c:net_socket_reset`
-- `c:src/core/net_socket.c:net_socket_ring_read`
-- `c:src/core/net_socket.c:net_socket_ring_write`
-- `c:src/core/net_socket.c:net_socket_send`
-- `c:src/core/net_socket.c:net_socket_start_close`
-- `c:src/core/net_socket.c:net_socket_tcp_event`
-- `c:src/core/net_socket.c:net_socket_wait`
-- `c:src/core/net_socket.c:net_socket_wait_condition`
-- `c:src/core/net_socket.c:net_socket_wait_owner`
-- `c:src/core/net_socket.c:net_socket_wake`
 - `c:src/core/network_manager.c:network_apply_dhcp_lease`
 - `c:src/core/network_manager.c:network_cancel_dynamic_clients`
 - `c:src/core/network_manager.c:network_copy_usb_interface`

@@ -2036,6 +2036,27 @@
       ],
       "include_public_apis": true,
       "evidence": "make test-http-host PASS com DNS, socket, TLS e timer falsos, URLs, headers, corpos Content-Length/chunked/EOF, streaming, redirects, limites, timeouts e falhas sem rede externa"
+    },
+    {
+      "id": "net-socket-host-dynamic",
+      "domain": "network-socket",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/net-socket-host/coverage.json",
+      "coverage_sources": [
+        "src/core/net_socket.c",
+        "src/core/wait.c",
+        "src/core/net_buffer.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-net-socket-host PASS com handles geracionais, conexao, filas RX/TX, eventos, EOF, timeout, cancelamento, limites, reset e limpeza usando TCP, timer e VFS falsos"
     }
   ]
 }
