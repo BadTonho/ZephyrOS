@@ -305,6 +305,11 @@ int main(void) {
     if (!result && (clock_self_test(&clock_result) != OK ||
         clock_result.failed != 0U || clock_result.passed != 5U)) result = 17;
     if (!result && clock_validate_state() != OK) result = 18;
+    if (!result && (strcmp(clock_source_name(CLOCK_SOURCE_RTC), "RTC") != 0 ||
+        strcmp(clock_source_name(CLOCK_SOURCE_NONE), "NONE") != 0 ||
+        strcmp(clock_source_name((clock_source_t)99), "NONE") != 0)) {
+        result = 20;
+    }
     if (!result) {
         uint64_t unix_seconds = 1U;
 

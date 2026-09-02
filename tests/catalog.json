@@ -42698,9 +42698,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-catalog"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_catalog.c:app_catalog_find_entry",
@@ -42737,9 +42740,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-catalog"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_catalog.c:app_catalog_find_source_index",
@@ -43049,9 +43055,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-catalog"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_catalog.c:app_catalog_reason_priority",
@@ -43172,9 +43181,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-catalog"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_files.c:app_files_chdir",
@@ -43959,9 +43971,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-package"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_package.c:app_package_action_reset",
@@ -44812,9 +44827,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-package"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_package.c:app_package_history_outcome_name",
@@ -44830,9 +44848,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-package"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_package.c:app_package_id_is_valid",
@@ -45078,9 +45099,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-package"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_package.c:app_package_plan_contains_before",
@@ -47482,9 +47506,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:arp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/arp.c:arp_find_entry",
@@ -48134,9 +48161,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:bearssl-compat"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/bearssl_compat.c:memmove",
@@ -48152,9 +48182,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:bearssl-compat"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/bearssl_compat.c:memset",
@@ -48170,9 +48203,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:bearssl-compat"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/bearssl_compat.c:strlen",
@@ -48450,9 +48486,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:contracts"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/clock.c:clock_update_monotonic",
@@ -50467,9 +50506,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:device-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/device_manager.c:device_add_ac97",
@@ -50952,9 +50994,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:device-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/device_manager.c:device_pci_class_name",
@@ -50970,9 +51015,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:device-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/device_manager.c:device_set_text",
@@ -52002,9 +52050,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_take_event",
@@ -52857,9 +52908,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dns"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dns.c:dns_ttl_min",
@@ -53135,9 +53189,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:ethernet"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/ethernet.c:ethernet_get_interface_status",
@@ -54632,9 +54689,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_text_prefix_equal",
@@ -55019,9 +55079,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:icmp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/icmp.c:icmp_ping_timeout_callback",
@@ -58909,9 +58972,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:contracts"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/log.c:log_note_dropped_event",
@@ -61077,9 +61143,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_tcp_event",
@@ -61657,9 +61726,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:network-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/network_manager.c:network_find_pci_device",
@@ -62007,9 +62079,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:network-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/network_manager.c:network_manager_ipv4_source_name",
@@ -62025,9 +62100,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:network-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/network_manager.c:network_manager_link_state_name",
@@ -62043,9 +62121,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:network-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/network_manager.c:network_manager_model_name",
@@ -62061,9 +62142,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:network-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/network_manager.c:network_manager_poll",
@@ -62613,9 +62697,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:power"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/power.c:power_deadline_expired",
@@ -63018,9 +63105,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:power"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/power.c:power_reboot",
@@ -63159,9 +63249,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:power"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/power.c:power_shutdown",
@@ -63300,9 +63393,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:power"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/power.c:power_transaction_target_name",
@@ -63318,9 +63414,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:power"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/power.c:power_trigger_triple_fault",
@@ -63597,9 +63696,14 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:device-manager",
+        "host:core:network-manager",
+        "host:core:state"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/recovery.c:recovery_get_count",
@@ -63789,9 +63893,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:state"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/recovery.c:recovery_valid_component",
@@ -64285,9 +64392,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:ethernet"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/sk_buff.c:free_skb",
@@ -64370,9 +64480,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:ethernet"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/sk_buff.c:skb_find_locked",
@@ -64501,9 +64614,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:ethernet"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/sk_buff.c:skb_push",
@@ -64519,9 +64635,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:ethernet"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/sk_buff.c:skb_put",
@@ -64537,9 +64656,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:ethernet"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/sk_buff.c:skb_record_failure_locked",
@@ -67980,9 +68102,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:tcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/tcp.c:tcp_transmit",
@@ -68953,9 +69078,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:contracts"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/test_protocol_core.c:core_field",
@@ -69562,9 +69690,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:security:tls"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/tls.c:tls_reject",
@@ -69647,9 +69778,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:security:tls"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/tls.c:tls_validate_state",
@@ -81180,9 +81314,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:scheduling"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/wait.c:wait_reason_valid",
@@ -81508,9 +81645,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:scheduling"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/wait.c:wake_up",
@@ -82215,9 +82355,13 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:scheduling",
+        "host:core:workqueue"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/workqueue.c:workqueue_copy_info",
@@ -82757,9 +82901,13 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:scheduling",
+        "host:core:workqueue"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/workqueue.c:workqueue_probe_callback",
@@ -83007,9 +83155,13 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:scheduling",
+        "host:core:workqueue"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/workqueue.c:workqueue_take_ready",
@@ -83025,9 +83177,13 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:scheduling",
+        "host:core:workqueue"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/workqueue.c:workqueue_test_callback",
@@ -91808,9 +91964,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:timer"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/timer.c:timer_name_is_valid",
@@ -92390,9 +92549,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:timer"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/timer.c:timer_suspend_interrupts",
@@ -102817,9 +102979,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:fat12"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/fat12.c:fat12_find_free_cluster",
@@ -102853,9 +103018,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:fat12"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/fat12.c:fat12_find_path_entry",
@@ -102871,9 +103039,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:fat12"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/fat12.c:fat12_find_root_index",
@@ -103099,9 +103270,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:fat12"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/fat12.c:fat12_get_root_file_info",
@@ -103201,9 +103375,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:fat12"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/fat12.c:fat12_read_dir_cluster_buffer",
@@ -104030,9 +104207,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/fat32.c:fat32_init",
@@ -105338,9 +105518,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:file-index"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/file_index.c:file_index_table_valid",
@@ -106036,9 +106219,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:fs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/fs.c:fs_list_dir",
@@ -107748,9 +107934,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_alias_is_used",
@@ -108599,9 +108788,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_fs_name",
@@ -108617,9 +108809,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_generate_alias",
@@ -109264,9 +109459,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_name_to_fat",
@@ -110409,9 +110607,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_walk_directory",
@@ -112388,9 +112589,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:vfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/vfs.c:vfs_pipe_lseek",
@@ -116292,9 +116496,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:memory"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/memory.c:heap_block_is_consistent",
@@ -116507,9 +116714,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:memory"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/memory.c:kmalloc_aligned",
@@ -116525,9 +116735,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:memory"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/memory.c:kmalloc_internal",
@@ -116543,9 +116756,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:memory"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/memory.c:memory_find_total",
@@ -116791,9 +117007,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:memory"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/memory.c:memory_host_init",
@@ -116893,9 +117112,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:memory"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/memory.c:memory_pointer_address",
@@ -117036,9 +117258,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:memory"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/memory.c:pmm_alloc_pages",
@@ -117054,9 +117279,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:memory"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/memory.c:pmm_alloc_pages_in_zone",
@@ -117072,9 +117300,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:memory"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/memory.c:pmm_claim_pages",
@@ -117425,9 +117656,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_copy_from_user",
@@ -117486,9 +117720,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_create_user_directory",
@@ -117504,9 +117741,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_free_directory",
@@ -117607,9 +117847,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_get_page",
@@ -117643,9 +117886,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_get_user_page_count",
@@ -117747,9 +117993,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_host_table_from_entry",
@@ -117765,9 +118014,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_host_table_token",
@@ -117982,9 +118234,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_pointer_address",
@@ -118175,9 +118430,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:ethernet"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/slab.c:kmem_cache_create",
@@ -118193,9 +118451,13 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:slab-metadata",
+        "host:network:ethernet"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/slab.c:kmem_cache_destroy",
@@ -118882,9 +119144,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:vma"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/vma.c:process_vma_ensure_page",
@@ -118922,9 +119187,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:vma"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/vma.c:process_vma_find_gap",
@@ -118962,9 +119230,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:vma"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/vma.c:process_vma_get_page_fault_stats",
@@ -121959,9 +122230,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:signals"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/signal.c:process_signal_prepare_user_return",
@@ -138646,9 +138920,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:input"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_handle_key",
@@ -149147,7 +149424,9 @@
         "c:src/core/app_catalog.c:app_catalog_collect_sources",
         "c:src/core/app_catalog.c:app_catalog_compare_versions",
         "c:src/core/app_catalog.c:app_catalog_copy_text",
+        "c:src/core/app_catalog.c:app_catalog_entry_key",
         "c:src/core/app_catalog.c:app_catalog_find_entry",
+        "c:src/core/app_catalog.c:app_catalog_find_installed",
         "c:src/core/app_catalog.c:app_catalog_find_source_index",
         "c:src/core/app_catalog.c:app_catalog_get_count",
         "c:src/core/app_catalog.c:app_catalog_get_entry",
@@ -149162,11 +149441,13 @@
         "c:src/core/app_catalog.c:app_catalog_plan_append",
         "c:src/core/app_catalog.c:app_catalog_plan_sort_dependencies",
         "c:src/core/app_catalog.c:app_catalog_plan_visit",
+        "c:src/core/app_catalog.c:app_catalog_reason_name",
         "c:src/core/app_catalog.c:app_catalog_reason_priority",
         "c:src/core/app_catalog.c:app_catalog_record_problem",
         "c:src/core/app_catalog.c:app_catalog_refresh",
         "c:src/core/app_catalog.c:app_catalog_refresh_recovery",
         "c:src/core/app_catalog.c:app_catalog_sort_entries",
+        "c:src/core/app_catalog.c:app_catalog_state_name",
         "c:src/core/log.c:log_console_print_number",
         "c:src/core/log.c:log_copy_text",
         "c:src/core/log.c:log_init",
@@ -149267,12 +149548,16 @@
         "api:src/include/core/string.h:kmemset",
         "api:src/include/core/string.h:kstrcmp",
         "api:src/include/core/string.h:kstrlen",
+        "c:src/core/app_package.c:app_package_action_reason_name",
         "c:src/core/app_package.c:app_package_compare_versions",
         "c:src/core/app_package.c:app_package_get_history_count",
         "c:src/core/app_package.c:app_package_get_history_entry",
         "c:src/core/app_package.c:app_package_get_status",
+        "c:src/core/app_package.c:app_package_history_operation_name",
+        "c:src/core/app_package.c:app_package_history_outcome_name",
         "c:src/core/app_package.c:app_package_is_mutation_active",
         "c:src/core/app_package.c:app_package_is_ready",
+        "c:src/core/app_package.c:app_package_plan_action_name",
         "c:src/core/app_package.c:app_package_test_fail_after",
         "c:src/core/app_package.c:app_package_version_is_valid",
         "c:src/core/log.c:log_console_print_number",
@@ -149326,6 +149611,9 @@
       "status": "AUTOMATED",
       "surface_ids": [
         "c:src/core/bearssl_compat.c:memcmp",
+        "c:src/core/bearssl_compat.c:memcpy",
+        "c:src/core/bearssl_compat.c:memmove",
+        "c:src/core/bearssl_compat.c:memset",
         "c:src/core/bearssl_compat.c:strlen"
       ],
       "tags": [
@@ -149396,6 +149684,7 @@
         "c:src/core/clock.c:clock_init",
         "c:src/core/clock.c:clock_is_leap_year",
         "c:src/core/clock.c:clock_self_test",
+        "c:src/core/clock.c:clock_source_name",
         "c:src/core/clock.c:clock_update_monotonic",
         "c:src/core/clock.c:clock_validate_state",
         "c:src/core/log.c:log_append_char",
@@ -149412,6 +149701,7 @@
         "c:src/core/log.c:log_init",
         "c:src/core/log.c:log_is_power_of_two",
         "c:src/core/log.c:log_level_is_valid",
+        "c:src/core/log.c:log_level_str",
         "c:src/core/log.c:log_note_dropped_event",
         "c:src/core/log.c:log_print",
         "c:src/core/log.c:log_print_code",
@@ -149454,6 +149744,7 @@
         "c:src/core/test_protocol_core.c:core_emit_case",
         "c:src/core/test_protocol_core.c:core_emit_event",
         "c:src/core/test_protocol_core.c:core_emit_simple",
+        "c:src/core/test_protocol_core.c:core_event_name",
         "c:src/core/test_protocol_core.c:core_field",
         "c:src/core/test_protocol_core.c:core_fields_valid",
         "c:src/core/test_protocol_core.c:core_frame_crc_valid",
@@ -149707,6 +149998,7 @@
         "api:src/include/core/string.h:kmemset",
         "api:src/include/core/string.h:kstrcmp",
         "api:src/include/core/string.h:kstrlen",
+        "c:src/core/device_manager.c:device_add",
         "c:src/core/device_manager.c:device_add_ac97",
         "c:src/core/device_manager.c:device_add_ata",
         "c:src/core/device_manager.c:device_add_builtin_entries",
@@ -149728,6 +150020,8 @@
         "c:src/core/device_manager.c:device_manager_get_info",
         "c:src/core/device_manager.c:device_manager_init",
         "c:src/core/device_manager.c:device_manager_refresh",
+        "c:src/core/device_manager.c:device_manager_status_name",
+        "c:src/core/device_manager.c:device_pci_class_name",
         "c:src/core/device_manager.c:device_set_text",
         "c:src/core/device_manager.c:device_status_from_recovery",
         "c:src/core/log.c:log_console_print_number",
@@ -149745,6 +150039,7 @@
         "c:src/core/log.c:log_submit",
         "c:src/core/log.c:log_suspend_interrupts",
         "c:src/core/log.c:log_write_serial",
+        "c:src/core/recovery.c:recovery_get",
         "c:src/core/recovery.c:recovery_init",
         "c:src/core/recovery.c:recovery_mark_ready",
         "c:src/core/recovery.c:recovery_set_state",
@@ -150032,6 +150327,7 @@
         "c:src/core/network_manager.c:network_copy_bars",
         "c:src/core/network_manager.c:network_copy_interface",
         "c:src/core/network_manager.c:network_detect_model",
+        "c:src/core/network_manager.c:network_find_driver_record",
         "c:src/core/network_manager.c:network_find_pci_device",
         "c:src/core/network_manager.c:network_get_protocol_status",
         "c:src/core/network_manager.c:network_id_matches",
@@ -150046,6 +150342,10 @@
         "c:src/core/network_manager.c:network_manager_get_interface",
         "c:src/core/network_manager.c:network_manager_get_status",
         "c:src/core/network_manager.c:network_manager_init",
+        "c:src/core/network_manager.c:network_manager_interface_state_name",
+        "c:src/core/network_manager.c:network_manager_ipv4_source_name",
+        "c:src/core/network_manager.c:network_manager_link_state_name",
+        "c:src/core/network_manager.c:network_manager_model_name",
         "c:src/core/network_manager.c:network_manager_poll",
         "c:src/core/network_manager.c:network_manager_quiesce",
         "c:src/core/network_manager.c:network_manager_refresh",
@@ -150068,6 +150368,7 @@
         "c:src/core/network_manager.c:network_start_tcp",
         "c:src/core/network_manager.c:network_start_udp",
         "c:src/core/network_manager.c:network_sync_recovery",
+        "c:src/core/recovery.c:recovery_get",
         "c:src/core/recovery.c:recovery_init",
         "c:src/core/recovery.c:recovery_mark_degraded",
         "c:src/core/recovery.c:recovery_set_state",
@@ -150162,6 +150463,7 @@
         "c:src/core/log.c:log_submit",
         "c:src/core/log.c:log_suspend_interrupts",
         "c:src/core/log.c:log_write_serial",
+        "c:src/core/power.c:power_capability_name",
         "c:src/core/power.c:power_deadline_expired",
         "c:src/core/power.c:power_get_status",
         "c:src/core/power.c:power_init",
@@ -150180,16 +150482,20 @@
         "c:src/core/power.c:power_quiesce_vfs",
         "c:src/core/power.c:power_quiesce_video",
         "c:src/core/power.c:power_quiesce_workqueue",
+        "c:src/core/power.c:power_quiescence_state_name",
         "c:src/core/power.c:power_reboot",
         "c:src/core/power.c:power_record_admission_error",
         "c:src/core/power.c:power_record_failure",
         "c:src/core/power.c:power_register_notifiers",
         "c:src/core/power.c:power_run_precommit",
+        "c:src/core/power.c:power_service_state_name",
         "c:src/core/power.c:power_shutdown",
         "c:src/core/power.c:power_shutdown_prepare",
         "c:src/core/power.c:power_shutdown_request",
         "c:src/core/power.c:power_transaction_begin",
         "c:src/core/power.c:power_transaction_hardware_phase",
+        "c:src/core/power.c:power_transaction_phase_name",
+        "c:src/core/power.c:power_transaction_target_name",
         "c:src/core/power.c:system_reboot",
         "c:src/core/power_notifier.c:power_notifier_copy_name",
         "c:src/core/power_notifier.c:power_notifier_finalize",
@@ -150392,6 +150698,7 @@
         "c:src/core/wait.c:wait_queue_unregister_locked",
         "c:src/core/wait.c:wait_queue_valid",
         "c:src/core/wait.c:wait_queue_wake_target",
+        "c:src/core/wait.c:wait_reason_name",
         "c:src/core/wait.c:wait_reason_valid",
         "c:src/core/wait.c:wait_self_test",
         "c:src/core/wait.c:wait_target_valid",
@@ -150405,6 +150712,7 @@
         "c:src/core/wait.c:wait_test_yield",
         "c:src/core/wait.c:wait_validate_queue_locked",
         "c:src/core/wait.c:wait_validate_state",
+        "c:src/core/wait.c:wait_wake_mode_name",
         "c:src/core/wait.c:wake_up",
         "c:src/core/wait.c:wake_up_all",
         "c:src/core/workqueue.c:cancel_work",
@@ -150414,6 +150722,7 @@
         "c:src/core/workqueue.c:work_init",
         "c:src/core/workqueue.c:workqueue_bind_worker",
         "c:src/core/workqueue.c:workqueue_cancel_on",
+        "c:src/core/workqueue.c:workqueue_context_name",
         "c:src/core/workqueue.c:workqueue_copy_info",
         "c:src/core/workqueue.c:workqueue_copy_owner",
         "c:src/core/workqueue.c:workqueue_deadline_reached",
@@ -150435,6 +150744,7 @@
         "c:src/core/workqueue.c:workqueue_pending_count",
         "c:src/core/workqueue.c:workqueue_power_quiesce_until",
         "c:src/core/workqueue.c:workqueue_power_set_quiescing",
+        "c:src/core/workqueue.c:workqueue_priority_name",
         "c:src/core/workqueue.c:workqueue_probe_callback",
         "c:src/core/workqueue.c:workqueue_probe_condition",
         "c:src/core/workqueue.c:workqueue_probe_worker",
@@ -150445,6 +150755,8 @@
         "c:src/core/workqueue.c:workqueue_self_test",
         "c:src/core/workqueue.c:workqueue_service_clear",
         "c:src/core/workqueue.c:workqueue_set_fallback",
+        "c:src/core/workqueue.c:workqueue_state_name",
+        "c:src/core/workqueue.c:workqueue_take_ready",
         "c:src/core/workqueue.c:workqueue_test_callback",
         "c:src/core/workqueue.c:workqueue_test_prepare",
         "c:src/core/workqueue.c:workqueue_update_peak",
@@ -150543,6 +150855,7 @@
         "c:src/core/power_notifier.c:power_notifier_register",
         "c:src/core/power_notifier.c:power_notifier_run",
         "c:src/core/power_notifier.c:power_notifier_validate_state",
+        "c:src/core/recovery.c:recovery_get",
         "c:src/core/recovery.c:recovery_get_count",
         "c:src/core/recovery.c:recovery_init",
         "c:src/core/recovery.c:recovery_is_available",
@@ -150551,6 +150864,7 @@
         "c:src/core/recovery.c:recovery_mark_disabled",
         "c:src/core/recovery.c:recovery_mark_ready",
         "c:src/core/recovery.c:recovery_set_state",
+        "c:src/core/recovery.c:recovery_state_name",
         "c:src/core/recovery.c:recovery_valid_component",
         "c:src/core/string.c:kmemcpy",
         "c:src/core/string.c:kmemset",
@@ -150667,6 +150981,7 @@
         "c:src/drivers/timer.c:timer_init",
         "c:src/drivers/timer.c:timer_make_handle",
         "c:src/drivers/timer.c:timer_milliseconds_to_ticks",
+        "c:src/drivers/timer.c:timer_mode_name",
         "c:src/drivers/timer.c:timer_name_is_valid",
         "c:src/drivers/timer.c:timer_next_generation",
         "c:src/drivers/timer.c:timer_note_invalid_operation",
@@ -150689,6 +151004,7 @@
         "c:src/drivers/timer.c:timer_set_pending_notifier",
         "c:src/drivers/timer.c:timer_start_once",
         "c:src/drivers/timer.c:timer_start_periodic",
+        "c:src/drivers/timer.c:timer_state_name",
         "c:src/drivers/timer.c:timer_suspend_interrupts",
         "c:src/drivers/timer.c:timer_validate_state"
       ],
@@ -150751,6 +151067,7 @@
         "c:src/core/workqueue.c:work_init",
         "c:src/core/workqueue.c:workqueue_bind_worker",
         "c:src/core/workqueue.c:workqueue_cancel_on",
+        "c:src/core/workqueue.c:workqueue_context_name",
         "c:src/core/workqueue.c:workqueue_copy_info",
         "c:src/core/workqueue.c:workqueue_copy_owner",
         "c:src/core/workqueue.c:workqueue_deadline_reached",
@@ -150773,6 +151090,7 @@
         "c:src/core/workqueue.c:workqueue_pending_count",
         "c:src/core/workqueue.c:workqueue_power_quiesce_until",
         "c:src/core/workqueue.c:workqueue_power_set_quiescing",
+        "c:src/core/workqueue.c:workqueue_priority_name",
         "c:src/core/workqueue.c:workqueue_promote_due",
         "c:src/core/workqueue.c:workqueue_ready_append",
         "c:src/core/workqueue.c:workqueue_register_on",
@@ -150780,6 +151098,8 @@
         "c:src/core/workqueue.c:workqueue_self_test",
         "c:src/core/workqueue.c:workqueue_service_clear",
         "c:src/core/workqueue.c:workqueue_set_fallback",
+        "c:src/core/workqueue.c:workqueue_state_name",
+        "c:src/core/workqueue.c:workqueue_take_ready",
         "c:src/core/workqueue.c:workqueue_test_callback",
         "c:src/core/workqueue.c:workqueue_test_prepare",
         "c:src/core/workqueue.c:workqueue_update_peak",
@@ -150953,6 +151273,7 @@
         "c:src/core/string.c:kstrcmp",
         "c:src/memory/memory.c:align_up",
         "c:src/memory/memory.c:heap_align_size",
+        "c:src/memory/memory.c:heap_block_from_pointer",
         "c:src/memory/memory.c:heap_block_is_consistent",
         "c:src/memory/memory.c:heap_block_matches",
         "c:src/memory/memory.c:heap_initialize",
@@ -150961,6 +151282,9 @@
         "c:src/memory/memory.c:heap_pointer_was_freed",
         "c:src/memory/memory.c:heap_range_contains",
         "c:src/memory/memory.c:kfree",
+        "c:src/memory/memory.c:kmalloc",
+        "c:src/memory/memory.c:kmalloc_aligned",
+        "c:src/memory/memory.c:kmalloc_internal",
         "c:src/memory/memory.c:memory_find_total",
         "c:src/memory/memory.c:memory_get_detailed_stats",
         "c:src/memory/memory.c:memory_get_free",
@@ -150971,15 +151295,20 @@
         "c:src/memory/memory.c:memory_get_total",
         "c:src/memory/memory.c:memory_get_total_pages",
         "c:src/memory/memory.c:memory_get_used",
+        "c:src/memory/memory.c:memory_heap_pointer",
         "c:src/memory/memory.c:memory_host_init",
         "c:src/memory/memory.c:memory_init",
         "c:src/memory/memory.c:memory_initialize_page_zones",
         "c:src/memory/memory.c:memory_mark_usable",
+        "c:src/memory/memory.c:memory_physical_pointer",
         "c:src/memory/memory.c:memory_pointer_address",
         "c:src/memory/memory.c:memory_range_is_usable",
         "c:src/memory/memory.c:memory_record_free_run",
         "c:src/memory/memory.c:memory_recount",
         "c:src/memory/memory.c:memory_reserve_range",
+        "c:src/memory/memory.c:pmm_alloc_page_in_zone",
+        "c:src/memory/memory.c:pmm_alloc_pages",
+        "c:src/memory/memory.c:pmm_alloc_pages_in_zone",
         "c:src/memory/memory.c:pmm_claim_pages",
         "c:src/memory/memory.c:pmm_free_page",
         "c:src/memory/memory.c:pmm_free_pages",
@@ -151080,16 +151409,23 @@
         "c:src/core/string.c:kstrcmp",
         "c:src/core/string.c:kstrlen",
         "c:src/memory/paging.c:paging_abort_init",
+        "c:src/memory/paging.c:paging_bootstrap_get_table",
         "c:src/memory/paging.c:paging_copy_from_user",
         "c:src/memory/paging.c:paging_copy_to_user",
+        "c:src/memory/paging.c:paging_create_directory",
+        "c:src/memory/paging.c:paging_create_user_directory",
         "c:src/memory/paging.c:paging_free_directory",
         "c:src/memory/paging.c:paging_free_table_entry",
         "c:src/memory/paging.c:paging_free_user_directory",
         "c:src/memory/paging.c:paging_get_boot_stats",
+        "c:src/memory/paging.c:paging_get_current_directory",
+        "c:src/memory/paging.c:paging_get_page_in_directory",
         "c:src/memory/paging.c:paging_get_user_page_count",
         "c:src/memory/paging.c:paging_get_user_stats",
         "c:src/memory/paging.c:paging_host_register_user_buffer",
         "c:src/memory/paging.c:paging_host_release_table",
+        "c:src/memory/paging.c:paging_host_resolve_user_pointer",
+        "c:src/memory/paging.c:paging_host_table_from_entry",
         "c:src/memory/paging.c:paging_host_table_token",
         "c:src/memory/paging.c:paging_init",
         "c:src/memory/paging.c:paging_invalidate",
@@ -151099,6 +151435,7 @@
         "c:src/memory/paging.c:paging_map_identity_range_fast",
         "c:src/memory/paging.c:paging_map_page",
         "c:src/memory/paging.c:paging_map_page_in_directory",
+        "c:src/memory/paging.c:paging_physical_pointer",
         "c:src/memory/paging.c:paging_pointer_address",
         "c:src/memory/paging.c:paging_register_user_directory",
         "c:src/memory/paging.c:paging_switch_directory",
@@ -151189,6 +151526,7 @@
         "c:src/core/string.c:kmemset",
         "c:src/core/string.c:kstrcmp",
         "c:src/core/string.c:kstrlen",
+        "c:src/memory/slab.c:kmem_cache_create",
         "c:src/memory/slab.c:kmem_cache_destroy",
         "c:src/memory/slab.c:kmem_cache_get_count",
         "c:src/memory/slab.c:kmem_cache_get_info",
@@ -151282,8 +151620,11 @@
         "c:src/core/string.c:kstrlen",
         "c:src/memory/vma.c:process_vma_access_allowed",
         "c:src/memory/vma.c:process_vma_copy",
+        "c:src/memory/vma.c:process_vma_create",
         "c:src/memory/vma.c:process_vma_ensure_page",
+        "c:src/memory/vma.c:process_vma_find_containing",
         "c:src/memory/vma.c:process_vma_find_gap",
+        "c:src/memory/vma.c:process_vma_find_page",
         "c:src/memory/vma.c:process_vma_get_page_fault_stats",
         "c:src/memory/vma.c:process_vma_handle_page_fault",
         "c:src/memory/vma.c:process_vma_insert_sorted",
@@ -151366,6 +151707,7 @@
         "c:src/core/arp.c:arp_copy_text",
         "c:src/core/arp.c:arp_count_entries",
         "c:src/core/arp.c:arp_elapsed",
+        "c:src/core/arp.c:arp_entry_state_name",
         "c:src/core/arp.c:arp_find_entry",
         "c:src/core/arp.c:arp_get_cache_entry",
         "c:src/core/arp.c:arp_get_status",
@@ -151523,6 +151865,7 @@
         "c:src/core/dhcp.c:dhcp_send_discover",
         "c:src/core/dhcp.c:dhcp_send_selecting_request",
         "c:src/core/dhcp.c:dhcp_set_default_timers",
+        "c:src/core/dhcp.c:dhcp_state_name",
         "c:src/core/dhcp.c:dhcp_take_event",
         "c:src/core/dhcp.c:dhcp_text_is_equal",
         "c:src/core/dhcp.c:dhcp_validate_option_vectors",
@@ -151644,6 +151987,7 @@
         "c:src/core/dns.c:dns_seconds_to_ticks",
         "c:src/core/dns.c:dns_select_cache",
         "c:src/core/dns.c:dns_send_query",
+        "c:src/core/dns.c:dns_state_name",
         "c:src/core/dns.c:dns_ttl_min",
         "c:src/core/dns.c:dns_unconfigure",
         "c:src/core/dns.c:dns_validate_name_vectors",
@@ -151777,6 +152121,7 @@
         "c:src/core/ethernet.c:ethernet_copy_id",
         "c:src/core/ethernet.c:ethernet_dispatch_frame",
         "c:src/core/ethernet.c:ethernet_find_handler",
+        "c:src/core/ethernet.c:ethernet_find_slot",
         "c:src/core/ethernet.c:ethernet_get_interface_status",
         "c:src/core/ethernet.c:ethernet_get_status",
         "c:src/core/ethernet.c:ethernet_init",
@@ -151833,14 +152178,19 @@
         "c:src/core/net_buffer.c:net_buffer_transition_allowed",
         "c:src/core/net_buffer.c:net_buffer_validate_entry_locked",
         "c:src/core/net_buffer.c:net_buffer_validate_state",
+        "c:src/core/sk_buff.c:alloc_skb",
         "c:src/core/sk_buff.c:free_skb",
         "c:src/core/sk_buff.c:skb_check_geometry",
         "c:src/core/sk_buff.c:skb_complete",
+        "c:src/core/sk_buff.c:skb_entry_from_pointer",
         "c:src/core/sk_buff.c:skb_find_locked",
         "c:src/core/sk_buff.c:skb_free_slot_locked",
         "c:src/core/sk_buff.c:skb_get_stats",
         "c:src/core/sk_buff.c:skb_init",
         "c:src/core/sk_buff.c:skb_log_failure",
+        "c:src/core/sk_buff.c:skb_pull",
+        "c:src/core/sk_buff.c:skb_push",
+        "c:src/core/sk_buff.c:skb_put",
         "c:src/core/sk_buff.c:skb_record_failure_locked",
         "c:src/core/sk_buff.c:skb_registry_count_locked",
         "c:src/core/sk_buff.c:skb_release",
@@ -151858,6 +152208,8 @@
         "c:src/core/string.c:kmemset",
         "c:src/core/string.c:kstrcmp",
         "c:src/core/string.c:kstrlen",
+        "c:src/memory/slab.c:kmem_cache_alloc",
+        "c:src/memory/slab.c:kmem_cache_create",
         "c:src/memory/slab.c:kmem_cache_free",
         "c:src/memory/slab.c:kmem_cache_get_info",
         "c:src/memory/slab.c:kmem_cache_init",
@@ -151991,6 +152343,7 @@
         "c:src/core/http.c:http_reset",
         "c:src/core/http.c:http_socket_exists",
         "c:src/core/http.c:http_start_socket",
+        "c:src/core/http.c:http_state_name",
         "c:src/core/http.c:http_text_prefix_equal",
         "c:src/core/http.c:http_validate_header_value",
         "c:src/core/http.c:http_validate_header_vectors",
@@ -152087,6 +152440,7 @@
         "c:src/core/icmp.c:icmp_init",
         "c:src/core/icmp.c:icmp_maintain",
         "c:src/core/icmp.c:icmp_ping_start",
+        "c:src/core/icmp.c:icmp_ping_state_name",
         "c:src/core/icmp.c:icmp_ping_timeout_callback",
         "c:src/core/icmp.c:icmp_preserve_module_counters",
         "c:src/core/icmp.c:icmp_queue_reply",
@@ -152405,6 +152759,7 @@
         "c:src/core/net_socket.c:net_socket_self_test",
         "c:src/core/net_socket.c:net_socket_send",
         "c:src/core/net_socket.c:net_socket_start_close",
+        "c:src/core/net_socket.c:net_socket_state_name",
         "c:src/core/net_socket.c:net_socket_tcp_event",
         "c:src/core/net_socket.c:net_socket_test_block",
         "c:src/core/net_socket.c:net_socket_test_count",
@@ -152576,6 +152931,7 @@
         "c:src/core/tcp.c:tcp_sequence_between",
         "c:src/core/tcp.c:tcp_sequence_less",
         "c:src/core/tcp.c:tcp_set_receive_window",
+        "c:src/core/tcp.c:tcp_state_name",
         "c:src/core/tcp.c:tcp_transmit",
         "c:src/core/tcp.c:tcp_try_send_pending",
         "c:src/core/tcp.c:tcp_update_rto",
@@ -152789,6 +153145,7 @@
         "c:src/process/signal.c:process_signal_get_stats",
         "c:src/process/signal.c:process_signal_init",
         "c:src/process/signal.c:process_signal_mask",
+        "c:src/process/signal.c:process_signal_name",
         "c:src/process/signal.c:process_signal_prepare_user_return",
         "c:src/process/signal.c:process_signal_process_created",
         "c:src/process/signal.c:process_signal_process_destroyed",
@@ -152898,9 +153255,11 @@
         "c:src/core/tls.c:tls_policy_failure",
         "c:src/core/tls.c:tls_policy_validate",
         "c:src/core/tls.c:tls_policy_validate_at",
+        "c:src/core/tls.c:tls_reason_name",
         "c:src/core/tls.c:tls_reject",
         "c:src/core/tls.c:tls_self_test",
         "c:src/core/tls.c:tls_self_test_case",
+        "c:src/core/tls.c:tls_state_name",
         "c:src/core/tls.c:tls_validate_state"
       ],
       "tags": [
@@ -152908,6 +153267,58 @@
         "security",
         "tls",
         "negative",
+        "coverage"
+      ]
+    },
+    {
+      "id": "host:shell:command-utils",
+      "scenario": "Contrato host-only dos utilitarios de comandos do Shell",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "executar parsing, validacao de argumentos, normalizacao e formatacao",
+      "expected": "utilitarios aceitam entradas validas, rejeitam limites e formatam valores corretamente",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente buffers estaticos de entrada, saida e logs falsos no processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/apps/shell_command_utils.h:shell_command_args_equal",
+        "api:src/include/apps/shell_command_utils.h:shell_command_match_subcommand",
+        "api:src/include/apps/shell_command_utils.h:shell_command_parse_number",
+        "api:src/include/apps/shell_command_utils.h:shell_command_print_hex",
+        "api:src/include/apps/shell_command_utils.h:shell_command_print_num",
+        "api:src/include/apps/shell_command_utils.h:shell_command_read_four_args",
+        "api:src/include/apps/shell_command_utils.h:shell_command_read_single_arg",
+        "api:src/include/apps/shell_command_utils.h:shell_command_read_token",
+        "api:src/include/apps/shell_command_utils.h:shell_command_read_two_args",
+        "api:src/include/apps/shell_command_utils.h:shell_command_uppercase",
+        "c:src/shell/shell_command_utils.c:shell_command_args_equal",
+        "c:src/shell/shell_command_utils.c:shell_command_match_subcommand",
+        "c:src/shell/shell_command_utils.c:shell_command_parse_number",
+        "c:src/shell/shell_command_utils.c:shell_command_print_hex",
+        "c:src/shell/shell_command_utils.c:shell_command_print_num",
+        "c:src/shell/shell_command_utils.c:shell_command_read_four_args",
+        "c:src/shell/shell_command_utils.c:shell_command_read_single_arg",
+        "c:src/shell/shell_command_utils.c:shell_command_read_token",
+        "c:src/shell/shell_command_utils.c:shell_command_read_two_args",
+        "c:src/shell/shell_command_utils.c:shell_command_uppercase"
+      ],
+      "tags": [
+        "host",
+        "shell",
+        "parsing",
+        "limits",
         "coverage"
       ]
     },
@@ -152977,6 +153388,7 @@
         "api:src/include/apps/shell_input.h:shell_input_reset_modifiers",
         "api:src/include/apps/shell_input.h:shell_input_resume_terminal",
         "c:src/shell/shell_input.c:shell_input_cancel_extended",
+        "c:src/shell/shell_input.c:shell_input_get_buffer",
         "c:src/shell/shell_input.c:shell_input_handle_key",
         "c:src/shell/shell_input.c:shell_input_handle_terminal_scroll_key",
         "c:src/shell/shell_input.c:shell_input_history_copy",
@@ -153270,6 +153682,9 @@
         "c:src/fs/fat12.c:fat12_delete_file_in_dir",
         "c:src/fs/fat12.c:fat12_encode_root_name",
         "c:src/fs/fat12.c:fat12_find_dir_slot",
+        "c:src/fs/fat12.c:fat12_find_entry",
+        "c:src/fs/fat12.c:fat12_find_in_dir",
+        "c:src/fs/fat12.c:fat12_find_path_entry",
         "c:src/fs/fat12.c:fat12_find_root_index",
         "c:src/fs/fat12.c:fat12_find_root_slot",
         "c:src/fs/fat12.c:fat12_flush_fats",
@@ -153280,10 +153695,12 @@
         "c:src/fs/fat12.c:fat12_get_file_info",
         "c:src/fs/fat12.c:fat12_get_file_info_at",
         "c:src/fs/fat12.c:fat12_get_free_clusters",
+        "c:src/fs/fat12.c:fat12_get_fs",
         "c:src/fs/fat12.c:fat12_get_root_file_info",
         "c:src/fs/fat12.c:fat12_init",
         "c:src/fs/fat12.c:fat12_list_dir",
         "c:src/fs/fat12.c:fat12_name_to_str",
+        "c:src/fs/fat12.c:fat12_read_dir_cluster",
         "c:src/fs/fat12.c:fat12_read_dir_cluster_buffer",
         "c:src/fs/fat12.c:fat12_read_entry_range",
         "c:src/fs/fat12.c:fat12_read_file",
@@ -153372,6 +153789,7 @@
         "c:src/fs/fat32.c:fat32_get_file_info",
         "c:src/fs/fat32.c:fat32_get_file_info_at",
         "c:src/fs/fat32.c:fat32_get_free_clusters",
+        "c:src/fs/fat32.c:fat32_get_fs",
         "c:src/fs/fat32.c:fat32_init",
         "c:src/fs/fat32.c:fat32_list_dir",
         "c:src/fs/fat32.c:fat32_max_cluster_steps",
@@ -153474,6 +153892,7 @@
         "c:src/fs/file_index.c:file_index_source_structure_valid",
         "c:src/fs/file_index.c:file_index_sources_equal",
         "c:src/fs/file_index.c:file_index_start_rebuild_unlocked",
+        "c:src/fs/file_index.c:file_index_state_name",
         "c:src/fs/file_index.c:file_index_table_valid",
         "c:src/fs/file_index.c:file_index_text_equal",
         "c:src/fs/file_index.c:file_index_text_terminated",
@@ -153575,6 +153994,7 @@
         "c:src/fs/fs.c:fs_has_system_volume",
         "c:src/fs/fs.c:fs_init",
         "c:src/fs/fs.c:fs_is_legacy_path",
+        "c:src/fs/fs.c:fs_legacy_relative_path",
         "c:src/fs/fs.c:fs_list_dir",
         "c:src/fs/fs.c:fs_read_file",
         "c:src/fs/fs.c:fs_read_file_at",
@@ -153683,6 +154103,7 @@
         "c:src/core/string.c:kmemset",
         "c:src/core/string.c:kstrlen",
         "c:src/fs/storage.c:storage_add_disk",
+        "c:src/fs/storage.c:storage_add_volume",
         "c:src/fs/storage.c:storage_append_text",
         "c:src/fs/storage.c:storage_atomic_write_file",
         "c:src/fs/storage.c:storage_auto_mount_system",
@@ -153708,6 +154129,8 @@
         "c:src/fs/storage.c:storage_find_file",
         "c:src/fs/storage.c:storage_find_long_visitor",
         "c:src/fs/storage.c:storage_find_volume",
+        "c:src/fs/storage.c:storage_free_mount",
+        "c:src/fs/storage.c:storage_fs_name",
         "c:src/fs/storage.c:storage_get_disk_at",
         "c:src/fs/storage.c:storage_get_file_info",
         "c:src/fs/storage.c:storage_get_free_space",
@@ -153731,6 +154154,7 @@
         "c:src/fs/storage.c:storage_lower",
         "c:src/fs/storage.c:storage_mark_overlaps",
         "c:src/fs/storage.c:storage_mount",
+        "c:src/fs/storage.c:storage_mount_for_volume",
         "c:src/fs/storage.c:storage_name_to_fat",
         "c:src/fs/storage.c:storage_next_cluster",
         "c:src/fs/storage.c:storage_next_component",
@@ -153771,6 +154195,7 @@
         "c:src/fs/storage.c:storage_visit_long_sector",
         "c:src/fs/storage.c:storage_visit_sector",
         "c:src/fs/storage.c:storage_volume_index",
+        "c:src/fs/storage.c:storage_volume_state_name",
         "c:src/fs/storage.c:storage_walk_directory",
         "c:src/fs/storage.c:storage_walk_directory_long",
         "c:src/fs/storage.c:storage_write_fat32_file_unlocked",
@@ -153870,6 +154295,7 @@
         "c:src/fs/vfs.c:vfs_pipe_close",
         "c:src/fs/vfs.c:vfs_pipe_copy_in",
         "c:src/fs/vfs.c:vfs_pipe_copy_out",
+        "c:src/fs/vfs.c:vfs_pipe_from_file",
         "c:src/fs/vfs.c:vfs_pipe_open",
         "c:src/fs/vfs.c:vfs_pipe_poll",
         "c:src/fs/vfs.c:vfs_pipe_read",
@@ -163767,58 +164193,6 @@
         "tst6",
         "stress",
         "storage"
-      ]
-    },
-    {
-      "id": "host:shell:command-utils",
-      "scenario": "Contrato host-only dos utilitarios de comandos do Shell",
-      "owner": "quality",
-      "layer": "host",
-      "executor": "host",
-      "profile": "host-only",
-      "timeout_seconds": 120,
-      "heartbeat_timeout_seconds": 1,
-      "isolation": "fixture",
-      "parameters": {
-        "compiler": "HOST_CC",
-        "instrumentation": "-finstrument-functions",
-        "warnings": "error"
-      },
-      "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "executar parsing, validacao de argumentos, normalizacao e formatacao",
-      "expected": "utilitarios aceitam entradas validas, rejeitam limites e formatam valores corretamente",
-      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
-      "effects": "somente buffers estaticos de entrada, saida e logs falsos no processo host",
-      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
-      "status": "AUTOMATED",
-      "surface_ids": [
-        "api:src/include/apps/shell_command_utils.h:shell_command_args_equal",
-        "api:src/include/apps/shell_command_utils.h:shell_command_match_subcommand",
-        "api:src/include/apps/shell_command_utils.h:shell_command_parse_number",
-        "api:src/include/apps/shell_command_utils.h:shell_command_print_hex",
-        "api:src/include/apps/shell_command_utils.h:shell_command_print_num",
-        "api:src/include/apps/shell_command_utils.h:shell_command_read_four_args",
-        "api:src/include/apps/shell_command_utils.h:shell_command_read_single_arg",
-        "api:src/include/apps/shell_command_utils.h:shell_command_read_token",
-        "api:src/include/apps/shell_command_utils.h:shell_command_read_two_args",
-        "api:src/include/apps/shell_command_utils.h:shell_command_uppercase",
-        "c:src/shell/shell_command_utils.c:shell_command_args_equal",
-        "c:src/shell/shell_command_utils.c:shell_command_match_subcommand",
-        "c:src/shell/shell_command_utils.c:shell_command_parse_number",
-        "c:src/shell/shell_command_utils.c:shell_command_print_hex",
-        "c:src/shell/shell_command_utils.c:shell_command_print_num",
-        "c:src/shell/shell_command_utils.c:shell_command_read_four_args",
-        "c:src/shell/shell_command_utils.c:shell_command_read_single_arg",
-        "c:src/shell/shell_command_utils.c:shell_command_read_token",
-        "c:src/shell/shell_command_utils.c:shell_command_read_two_args",
-        "c:src/shell/shell_command_utils.c:shell_command_uppercase"
-      ],
-      "tags": [
-        "host",
-        "shell",
-        "parsing",
-        "limits",
-        "coverage"
       ]
     }
   ],
