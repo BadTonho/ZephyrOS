@@ -994,6 +994,19 @@ superficies, 2.931 `COVERED`, 3.889 `PENDING` e 70 casos. O fechamento
 integral do catalogo, o gate estrito e a validacao TST7 completa continuam
 pendentes.
 
+Incremento Processos/IPC concluido em 2026-09-02 13:52: o caso host-only
+`host:process:ipc` e o alvo `make test-process-ipc-host` foram adicionados. A
+fixture usa processos, filas e wait falsos para exercitar inicializacao,
+mensagens validas e invalidas, fila cheia, recebimento, espera com timeout e
+sinal, foco, fallback, restauracao e limpeza. O relatorio instrumentado
+`build/test-results/process-ipc-host/coverage.json` terminou `PASS`, com as 14
+superficies de `src/process/ipc.c` resolvidas, sem enderecos desconhecidos ou
+ambiguos. `make test-process-ipc-host`, `make test-tst7-host`,
+`make catalog-test` e `git diff --check` passaram. A sincronizacao atual
+registra 6.827 superficies, 3.080 `COVERED`, 3.747 `PENDING` e 77 casos; o
+fechamento integral do catalogo, o gate estrito e a validacao TST7 completa
+continuam pendentes.
+
 Incremento Rede/HTTP concluido em 2026-09-02: o caso host-only
 `host:network:http` e o alvo `make test-http-host` foram adicionados. A
 fixture usa DNS, socket, TLS, timer e stack falsos, cobrindo URLs, opcoes,

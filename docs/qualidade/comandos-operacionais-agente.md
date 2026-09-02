@@ -230,6 +230,15 @@ no build host; o relatorio fica em `build/test-results/process-signal-host/`:
 make test-process-signal-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-process-ipc-host` exercita IPC e foco com processos estaticos:
+mensagens validas e invalidas, fila cheia, recebimento, espera com timeout e
+sinal, foco, fallback, restauracao e limpeza. O relatorio fica em
+`build/test-results/process-ipc-host/`:
+
+```text
+make test-process-ipc-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O registro em `tests/coverage/registry.json` somente seleciona enderecos de
 relatorios `PASS` existentes e filtra as fontes declaradas. Um relatorio
 ausente, com endereco desconhecido ou ambiguo bloqueia o gate estrito; nao ha
