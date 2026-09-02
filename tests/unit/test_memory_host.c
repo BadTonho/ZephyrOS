@@ -170,6 +170,7 @@ static int test_pmm_operations(void) {
     memory_pmm_stats_t pmm;
     void* pages[MEMORY_TEST_PAGE_COUNT] = {0};
     void* range;
+    void* single_page;
     uint32_t invalid_before;
     uint32_t failures_before;
 
@@ -189,6 +190,9 @@ static int test_pmm_operations(void) {
     if (check(pmm.allocation_failures >= failures_before + 4U,
               "allocation failures counted") != OK) return ERR_STATE;
 
+    single_page = pmm_alloc_page();
+    if (check(single_page != 0, "single page allocated") != OK) return ERR_STATE;
+    pmm_free_page(single_page);
     pages[0] = pmm_alloc_page_in_zone(MEMORY_ZONE_KERNEL);
     pages[1] = pmm_alloc_page_in_zone(MEMORY_ZONE_SLAB);
     pages[2] = pmm_alloc_page_in_zone(MEMORY_ZONE_PROCESS);

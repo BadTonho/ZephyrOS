@@ -29031,9 +29031,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst3:string-compress"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/memory/compress.h:compress_init",
@@ -56083,9 +56086,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:ipv4"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/ipv4.c:ipv4_read_u16",
@@ -87691,9 +87697,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:font"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/font.c:font_get_height",
@@ -116351,9 +116360,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst3:string-compress"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/compress.c:compress_init",
@@ -117243,9 +117255,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:memory"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/memory.c:pmm_alloc_page_in_zone",
@@ -117871,9 +117886,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/paging.c:paging_get_page_in_directory",
@@ -151148,6 +151166,7 @@
         "api:src/include/drivers/font.h:font_get_height",
         "api:src/include/drivers/font.h:font_get_width",
         "api:src/include/drivers/font.h:font_init",
+        "c:src/drivers/font.c:font_get_glyph",
         "c:src/drivers/font.c:font_get_height",
         "c:src/drivers/font.c:font_get_width",
         "c:src/drivers/font.c:font_init"
@@ -151310,6 +151329,7 @@
         "c:src/memory/memory.c:memory_record_free_run",
         "c:src/memory/memory.c:memory_recount",
         "c:src/memory/memory.c:memory_reserve_range",
+        "c:src/memory/memory.c:pmm_alloc_page",
         "c:src/memory/memory.c:pmm_alloc_page_in_zone",
         "c:src/memory/memory.c:pmm_alloc_pages",
         "c:src/memory/memory.c:pmm_alloc_pages_in_zone",
@@ -151423,6 +151443,7 @@
         "c:src/memory/paging.c:paging_free_user_directory",
         "c:src/memory/paging.c:paging_get_boot_stats",
         "c:src/memory/paging.c:paging_get_current_directory",
+        "c:src/memory/paging.c:paging_get_page",
         "c:src/memory/paging.c:paging_get_page_in_directory",
         "c:src/memory/paging.c:paging_get_user_page_count",
         "c:src/memory/paging.c:paging_get_user_stats",
@@ -152535,6 +152556,7 @@
         "c:src/core/ipv4.c:ipv4_mac_is_equal",
         "c:src/core/ipv4.c:ipv4_mac_is_valid",
         "c:src/core/ipv4.c:ipv4_mask_is_valid",
+        "c:src/core/ipv4.c:ipv4_protocol_name",
         "c:src/core/ipv4.c:ipv4_read_u16",
         "c:src/core/ipv4.c:ipv4_read_u32",
         "c:src/core/ipv4.c:ipv4_register_handler",
@@ -154518,6 +154540,7 @@
         "api:src/include/memory/compress.h:compress_disable",
         "api:src/include/memory/compress.h:compress_enable",
         "api:src/include/memory/compress.h:compress_get_max_size",
+        "api:src/include/memory/compress.h:compress_get_stats",
         "api:src/include/memory/compress.h:compress_init",
         "api:src/include/memory/compress.h:compress_is_enabled",
         "api:src/include/memory/compress.h:compress_print_stats",
@@ -154530,6 +154553,7 @@
         "c:src/memory/compress.c:compress_disable",
         "c:src/memory/compress.c:compress_enable",
         "c:src/memory/compress.c:compress_get_max_size",
+        "c:src/memory/compress.c:compress_get_stats",
         "c:src/memory/compress.c:compress_init",
         "c:src/memory/compress.c:compress_is_enabled",
         "c:src/memory/compress.c:compress_print_stats",

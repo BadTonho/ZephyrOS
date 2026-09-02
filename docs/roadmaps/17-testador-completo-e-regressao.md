@@ -1238,3 +1238,13 @@ e a validacao TST7 completa continuam pendentes.
   7.197 superficies, 3.884 `COVERED`, 3.313 `PENDING` e 85 casos. O fechamento
   integral do catalogo, o gate estrito e a validacao TST7 completa continuam
   pendentes.
+
+- Incremento de acessores Core, memoria, paging, rede e fonte concluido em:
+  2026-09-02 16:24 (America/Sao_Paulo): os fixtures existentes de TST3,
+  memoria, paging, IPv4 e font passaram a verificar `compress_get_stats`,
+  `pmm_alloc_page`, `paging_get_page`, `ipv4_protocol_name` e
+  `font_get_glyph`, incluindo seus vinculos C diretos no registro de cobertura.
+  As execucoes host-only terminaram `PASS` com instrumentacao, limites e
+  limpeza preservados. A sincronizacao atual registra 7.197 superficies, 3.890
+  `COVERED`, 3.307 `PENDING` e 85 casos. O fechamento integral do catalogo, o
+  gate estrito e a validacao TST7 completa continuam pendentes.

@@ -204,8 +204,9 @@ invalidos, `mmap`, `munmap`, limites, estatisticas e limpeza; seu relatorio fica
 em `build/test-results/vma-host/`.
 O caso `test-paging-host` exercita diretamente o diretorio de paginas, tabelas,
 mapas de kernel e usuario, framebuffer, copia entre espacos, materializacao
-lazy, limites, overflow, paginas ausentes e limpeza. A fixture usa PMM, VESA e
-processo falsos com buffers estaticos, sem instrucoes privilegiadas ou hardware;
+lazy, consulta do diretorio atual, limites, overflow, paginas ausentes e
+limpeza. A fixture usa PMM, VESA e processo falsos com buffers estaticos, sem
+instrucoes privilegiadas ou hardware;
 seu relatorio fica em `build/test-results/paging-host/`. Execute-o com
 `HOST_CC` apontando para um compilador C nativo:
 
@@ -222,8 +223,9 @@ make coverage-map
 
 O caso `test-memory-host` exercita diretamente o mapa E820, inicializacao do
 PMM por zona, alocacao contigua, heap estatico, alinhamento, limites, erros
-canonicos, coalescencia e restauracao das estatisticas. A fixture nao acessa
-enderecos fisicos nem hardware; seu relatorio fica em
+canonicos, alocacao de pagina individual, coalescencia e restauracao das
+estatisticas. A fixture nao acessa enderecos fisicos nem hardware; seu
+relatorio fica em
 `build/test-results/memory-host/`. Execute-o com `HOST_CC` apontando para um
 compilador C nativo:
 
@@ -280,8 +282,9 @@ make test-shell-introspection-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
 O caso `test-font-host` exercita o driver de fonte sem hardware, verificando
-inicializacao idempotente e as dimensoes publicadas de 8x16. O relatorio fica
-em `build/test-results/font-host/`:
+inicializacao idempotente, as dimensoes publicadas de 8x16 e a consulta de
+glyphs validos e fora da faixa com fallback seguro. O relatorio fica em
+`build/test-results/font-host/`:
 
 ```text
 make test-font-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
@@ -718,7 +721,8 @@ make update-test
 ```
 
 `test-tst3-host` compila strings e compressao com `-std=c11 -Wall -Wextra
--Werror`, executa os testes Python formais de packager/updater e roda os
+-Werror`, consulta as estatisticas publicadas da compressao, executa os testes
+Python formais de packager/updater e roda os
 self-tests existentes. `test-tst3-sanitize` usa Clang/LLVM com ASan/UBSan e
 nao faz fallback para outro compilador. O resultado fica em
 `build/test-results/tst3-host/manifest.json` e `result.json`, com logs dos
