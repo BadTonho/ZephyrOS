@@ -4102,6 +4102,22 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   integral do catalogo, o gate estrito e a validacao TST7 completa continuam
   pendentes.
 
+- Incremento Core/workqueue concluido em 2026-09-02 14:04
+  (America/Sao_Paulo): o caso host-only `host:core:workqueue` e o alvo
+  `make test-workqueue-host` foram adicionados. A fixture executa o autoteste
+  interno e exercita callbacks, prioridades, FIFO, atrasos, coalescencia,
+  rerun, cancelamento, fallback, quiescencia, worker e validacao de
+  invariantes. O worker usa quatro iteracoes somente no build host para
+  impedir espera indefinida. O relatorio
+  `build/test-results/workqueue-host/coverage.json` terminou `PASS`, com as 59
+  funcoes de `src/core/workqueue.c` resolvidas, sem enderecos desconhecidos ou
+  ambiguos. `make test-workqueue-host`, `make test-tst7-host`, `make q3check`,
+  `make clean`, `make`, `make catalog-test` e `git diff --check` passaram. A
+  sincronizacao atual
+  registra 6.827 superficies, 3.082 `COVERED`, 3.745 `PENDING` e 78 casos; o
+  fechamento integral do catalogo, o gate estrito e a validacao TST7 completa
+  continuam pendentes.
+
 - Incremento Processos/IPC concluido em 2026-09-02 13:52
   (America/Sao_Paulo): o caso host-only `host:process:ipc` e o alvo
   `make test-process-ipc-host` foram adicionados. A fixture usa processos,
