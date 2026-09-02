@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 3050 |
+| `COVERED` | 3052 |
 | `MANUAL` | 0 |
-| `PENDING` | 3777 |
+| `PENDING` | 3775 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -5290,11 +5290,11 @@
 | `c:src/memory/memory.c:memory_get_total` | `src/memory/memory.c` | `memory_get_total` | `memory` | `COVERED` | 3 |
 | `c:src/memory/memory.c:memory_get_total_pages` | `src/memory/memory.c` | `memory_get_total_pages` | `memory` | `COVERED` | 1 |
 | `c:src/memory/memory.c:memory_get_used` | `src/memory/memory.c` | `memory_get_used` | `memory` | `COVERED` | 3 |
-| `c:src/memory/memory.c:memory_host_init` | `src/memory/memory.c` | `memory_host_init` | `memory` | `PENDING` | 0 |
+| `c:src/memory/memory.c:memory_host_init` | `src/memory/memory.c` | `memory_host_init` | `memory` | `COVERED` | 1 |
 | `c:src/memory/memory.c:memory_init` | `src/memory/memory.c` | `memory_init` | `memory` | `COVERED` | 1 |
 | `c:src/memory/memory.c:memory_initialize_page_zones` | `src/memory/memory.c` | `memory_initialize_page_zones` | `memory` | `COVERED` | 1 |
 | `c:src/memory/memory.c:memory_mark_usable` | `src/memory/memory.c` | `memory_mark_usable` | `memory` | `COVERED` | 1 |
-| `c:src/memory/memory.c:memory_pointer_address` | `src/memory/memory.c` | `memory_pointer_address` | `memory` | `PENDING` | 0 |
+| `c:src/memory/memory.c:memory_pointer_address` | `src/memory/memory.c` | `memory_pointer_address` | `memory` | `COVERED` | 1 |
 | `c:src/memory/memory.c:memory_range_is_usable` | `src/memory/memory.c` | `memory_range_is_usable` | `memory` | `COVERED` | 1 |
 | `c:src/memory/memory.c:memory_record_free_run` | `src/memory/memory.c` | `memory_record_free_run` | `memory` | `COVERED` | 3 |
 | `c:src/memory/memory.c:memory_recount` | `src/memory/memory.c` | `memory_recount` | `memory` | `COVERED` | 1 |
@@ -9545,8 +9545,6 @@
 - `c:src/kernel/panic.c:panic_memory`
 - `c:src/kernel/panic.c:panic_print_metric`
 - `c:src/kernel/panic.c:panic_print_number`
-- `c:src/memory/memory.c:memory_host_init`
-- `c:src/memory/memory.c:memory_pointer_address`
 - `c:src/process/ipc.c:ipc_get_stats`
 - `c:src/process/ipc.c:ipc_init`
 - `c:src/process/ipc.c:process_focus_target_is_valid`

@@ -105763,9 +105763,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:memory"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/memory.c:memory_init",
@@ -105844,9 +105847,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:memory"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/memory.c:memory_range_is_usable",
@@ -138123,9 +138129,11 @@
         "c:src/memory/memory.c:memory_get_total",
         "c:src/memory/memory.c:memory_get_total_pages",
         "c:src/memory/memory.c:memory_get_used",
+        "c:src/memory/memory.c:memory_host_init",
         "c:src/memory/memory.c:memory_init",
         "c:src/memory/memory.c:memory_initialize_page_zones",
         "c:src/memory/memory.c:memory_mark_usable",
+        "c:src/memory/memory.c:memory_pointer_address",
         "c:src/memory/memory.c:memory_range_is_usable",
         "c:src/memory/memory.c:memory_record_free_run",
         "c:src/memory/memory.c:memory_recount",
