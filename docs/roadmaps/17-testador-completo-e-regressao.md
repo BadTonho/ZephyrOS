@@ -1318,6 +1318,17 @@ pendente.
   7.196 superficies, 3.953 `COVERED`, 3.243 `PENDING` e 86 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Core/network_manager concluido em 2026-09-02: o caso existente
+  `host:core:network-manager` passou a usar NIC PCI e USB simuladas e a
+  exercitar configuracao estatica, validacao de parametros e rotas, DHCP,
+  aplicacao e remocao de lease, clientes remotos, restauracao atomica apos
+  erro e limpeza de IPv4/ARP/DNS. O relatorio instrumentado
+  `build/test-results/network-manager-host/coverage.json` terminou `PASS`,
+  observou 89 enderecos sem desconhecidos ou ambiguos e resolveu todas as
+  superficies de `src/core/network_manager.c`. O catalogo registra 7.196
+  superficies, 4.103 `COVERED` e 3.093 `PENDING`; o fechamento integral, o
+  gate estrito e a validacao TST7 completa continuam pendentes.
+
 - Incremento Core/app_builtin concluido em 2026-09-02: foi criado o caso
   host-only `host:core:app-builtin` com loader falso, validando cabecalhos,
   limites e entradas das imagens ZAPP de Echo, ArgTest, Uptime, Mem, PathTest,

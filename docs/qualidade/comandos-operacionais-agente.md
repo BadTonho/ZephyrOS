@@ -118,9 +118,10 @@ consumidor. O relatorio fica em `build/test-results/input-host/`.
 
 Os casos `test-power-host` e `test-network-manager-host` exercitam, com
 fixtures estaticos, os estados ACPI e a limpeza de energia apos falhas, alem
-do inventario PCI, drivers ausentes, estado offline e recusas de operacoes que
-exigem uma interface ativa. Os relatorios instrumentados ficam em
-`build/test-results/power-host/` e `build/test-results/network-manager-host/`.
+do inventario PCI/USB, drivers ausentes e ativos, estado offline, configuracao
+estatica, DHCP, lease aplicado/removido, restauracao atomica apos erro,
+validacao de rotas e recusas de operacoes. Os relatorios instrumentados ficam
+em `build/test-results/power-host/` e `build/test-results/network-manager-host/`.
 
 Os casos `test-vfs-path-host` e `test-file-index-host` exercitam VFS/path e
 file index com volumes, mounts, cursores e alocacao estaticos. O primeiro cobre

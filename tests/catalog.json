@@ -62045,9 +62045,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:network-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/network_manager.c:network_apply_ethernet_status",
@@ -62168,9 +62171,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:network-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/network_manager.c:network_collect_interfaces",
@@ -62249,9 +62255,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:network-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/network_manager.c:network_detect_model",
@@ -62288,9 +62297,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:network-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/network_manager.c:network_drop_dhcp_configuration",
@@ -62306,9 +62318,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:network-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/network_manager.c:network_find_driver_record",
@@ -62408,9 +62423,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:network-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/network_manager.c:network_ipv4_parameters_valid",
@@ -62426,9 +62444,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:network-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/network_manager.c:network_manager_acquire_dhcp",
@@ -62929,9 +62950,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:network-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/network_manager.c:network_record_driver_result",
@@ -62968,9 +62992,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:network-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/network_manager.c:network_reset_remote_clients",
@@ -62986,9 +63013,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:network-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/network_manager.c:network_restore_configuration",
@@ -63004,9 +63034,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:network-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/network_manager.c:network_set_text",
@@ -64449,6 +64482,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:device-manager",
+        "host:core:network-manager",
         "host:core:state"
       ],
       "tags": [],
@@ -151328,19 +151362,26 @@
         "c:src/core/network_manager.c:network_append_char",
         "c:src/core/network_manager.c:network_append_hex",
         "c:src/core/network_manager.c:network_append_text",
+        "c:src/core/network_manager.c:network_apply_dhcp_lease",
         "c:src/core/network_manager.c:network_apply_ethernet_status",
         "c:src/core/network_manager.c:network_apply_interface_roles",
         "c:src/core/network_manager.c:network_apply_protocol_status",
         "c:src/core/network_manager.c:network_ascii_upper",
         "c:src/core/network_manager.c:network_build_snapshot",
+        "c:src/core/network_manager.c:network_cancel_dynamic_clients",
         "c:src/core/network_manager.c:network_collect_interfaces",
         "c:src/core/network_manager.c:network_copy_bars",
         "c:src/core/network_manager.c:network_copy_interface",
+        "c:src/core/network_manager.c:network_copy_usb_interface",
         "c:src/core/network_manager.c:network_detect_model",
+        "c:src/core/network_manager.c:network_dns_reachable",
+        "c:src/core/network_manager.c:network_drop_dhcp_configuration",
         "c:src/core/network_manager.c:network_find_driver_record",
         "c:src/core/network_manager.c:network_find_pci_device",
         "c:src/core/network_manager.c:network_get_protocol_status",
         "c:src/core/network_manager.c:network_id_matches",
+        "c:src/core/network_manager.c:network_ipv4_changed",
+        "c:src/core/network_manager.c:network_ipv4_parameters_valid",
         "c:src/core/network_manager.c:network_manager_acquire_dhcp",
         "c:src/core/network_manager.c:network_manager_configure_arp",
         "c:src/core/network_manager.c:network_manager_configure_dns",
@@ -151364,7 +151405,11 @@
         "c:src/core/network_manager.c:network_manager_send_diagnostic",
         "c:src/core/network_manager.c:network_manager_set_quiescing",
         "c:src/core/network_manager.c:network_probe_drivers",
+        "c:src/core/network_manager.c:network_process_dhcp_event",
         "c:src/core/network_manager.c:network_record_driver_result",
+        "c:src/core/network_manager.c:network_refresh_dynamic_status",
+        "c:src/core/network_manager.c:network_reset_remote_clients",
+        "c:src/core/network_manager.c:network_restore_configuration",
         "c:src/core/network_manager.c:network_set_text",
         "c:src/core/network_manager.c:network_start_arp",
         "c:src/core/network_manager.c:network_start_dhcp",
@@ -151381,6 +151426,7 @@
         "c:src/core/recovery.c:recovery_get",
         "c:src/core/recovery.c:recovery_init",
         "c:src/core/recovery.c:recovery_mark_degraded",
+        "c:src/core/recovery.c:recovery_mark_ready",
         "c:src/core/recovery.c:recovery_set_state",
         "c:src/core/recovery.c:recovery_valid_component",
         "c:src/core/string.c:kmemcpy",
