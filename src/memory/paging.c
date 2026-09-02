@@ -29,6 +29,160 @@ static page_directory_t* user_directories[PAGING_MAX_USER_DIRECTORIES];
 static paging_user_stats_t user_paging_stats;
 static paging_boot_stats_t paging_boot_stats;
 
+#if defined(ZEPHYROS_HOST_TEST)
+#define PAGING_HOST_MAX_TABLES 128U
+#define PAGING_HOST_TABLE_TOKEN_BASE 0xE0000000U
+#define PAGING_HOST_MAX_USER_BUFFERS 8U
+
+static page_table_t* paging_host_tables[PAGING_HOST_MAX_TABLES];
+
+typedef struct {
+    uint32_t address;
+    uint32_t size;
+    void* pointer;
+} paging_host_user_buffer_t;
+
+static paging_host_user_buffer_t paging_host_user_buffers[
+    PAGING_HOST_MAX_USER_BUFFERS];
+
+static uint32_t paging_host_table_token(page_table_t* table) {
+    for (uint32_t index = 0U; index < PAGING_HOST_MAX_TABLES; index++) {
+        if (paging_host_tables[index] == table) {
+            return PAGING_HOST_TABLE_TOKEN_BASE + index * PAGE_SIZE;
+        }
+    }
+    for (uint32_t index = 0U; index < PAGING_HOST_MAX_TABLES; index++) {
+        if (!paging_host_tables[index]) {
+            paging_host_tables[index] = table;
+            return PAGING_HOST_TABLE_TOKEN_BASE + index * PAGE_SIZE;
+        }
+    }
+    return 0U;
+}
+#endif
+
+static page_table_t* paging_host_table_from_entry(uint32_t entry) {
+#if defined(ZEPHYROS_HOST_TEST)
+    uint32_t token = entry & 0xFFFFF000U;
+    uint32_t offset;
+
+    if (token < PAGING_HOST_TABLE_TOKEN_BASE) return 0;
+    offset = token - PAGING_HOST_TABLE_TOKEN_BASE;
+    if ((offset % PAGE_SIZE) != 0U || offset / PAGE_SIZE >= PAGING_HOST_MAX_TABLES) {
+        return 0;
+    }
+    return paging_host_tables[offset / PAGE_SIZE];
+#else
+    return (page_table_t*)(entry & 0xFFFFF000U);
+#endif
+}
+
+static void paging_host_release_table(uint32_t entry) {
+#if defined(ZEPHYROS_HOST_TEST)
+    uint32_t token = entry & 0xFFFFF000U;
+    uint32_t offset;
+
+    if (token < PAGING_HOST_TABLE_TOKEN_BASE) return;
+    offset = token - PAGING_HOST_TABLE_TOKEN_BASE;
+    if ((offset % PAGE_SIZE) != 0U || offset / PAGE_SIZE >= PAGING_HOST_MAX_TABLES) {
+        return;
+    }
+    paging_host_tables[offset / PAGE_SIZE] = 0;
+#else
+    (void)entry;
+#endif
+}
+
+static void* paging_physical_pointer(uint32_t physical) {
+#if defined(ZEPHYROS_HOST_TEST)
+    union {
+        uint32_t address;
+        void* pointer;
+    } value;
+
+    value.address = physical;
+    return value.pointer;
+#else
+    return (void*)physical;
+#endif
+}
+
+static uint32_t paging_pointer_address(const void* pointer) {
+#if defined(ZEPHYROS_HOST_TEST)
+    for (uint32_t index = 0U; index < PAGING_HOST_MAX_USER_BUFFERS; index++) {
+        if (paging_host_user_buffers[index].pointer == pointer) {
+            return paging_host_user_buffers[index].address;
+        }
+    }
+    union {
+        const void* pointer;
+        uint32_t address;
+    } value;
+
+    value.pointer = pointer;
+    return value.address;
+#else
+    union {
+        const void* pointer;
+        uint32_t address;
+    } value;
+
+    value.pointer = pointer;
+    return value.address;
+#endif
+}
+
+#if defined(ZEPHYROS_HOST_TEST)
+static void* paging_host_resolve_user_pointer(uint32_t address) {
+    for (uint32_t index = 0U; index < PAGING_HOST_MAX_USER_BUFFERS; index++) {
+        paging_host_user_buffer_t* buffer = &paging_host_user_buffers[index];
+        if (buffer->pointer && address >= buffer->address &&
+            address - buffer->address < buffer->size) {
+            return (uint8_t*)buffer->pointer + (address - buffer->address);
+        }
+    }
+    return 0;
+}
+
+int paging_host_register_user_buffer(uint32_t address, void* pointer,
+                                     uint32_t size) {
+    if (!pointer || !address || !size ||
+        address < USER_SPACE_START || size > USER_SPACE_END - address) {
+        LOG_WARN("MEM", "Fixture host de usuario invalida");
+        return ERR_INVALID;
+    }
+    for (uint32_t index = 0U; index < PAGING_HOST_MAX_USER_BUFFERS; index++) {
+        if (!paging_host_user_buffers[index].pointer) {
+            paging_host_user_buffers[index].address = address;
+            paging_host_user_buffers[index].size = size;
+            paging_host_user_buffers[index].pointer = pointer;
+            return OK;
+        }
+    }
+    LOG_WARN("MEM", "Limite de fixtures host de usuario atingido");
+    return ERR_OVERFLOW;
+}
+#endif
+
+static void paging_free_table_entry(uint32_t entry) {
+#if defined(ZEPHYROS_HOST_TEST)
+    page_table_t* table = paging_host_table_from_entry(entry);
+
+    paging_host_release_table(entry);
+    if (table) pmm_free_page(table);
+#else
+    pmm_free_page(paging_physical_pointer(entry & 0xFFFFF000U));
+#endif
+}
+
+#if defined(ZEPHYROS_HOST_TEST)
+#define PAGING_TABLE_ENTRY(table) \
+    (paging_host_table_token(table) | PAGING_FLAG_PRESENT | PAGING_FLAG_WRITE)
+#else
+#define PAGING_TABLE_ENTRY(table) \
+    ((uint32_t)(table) | PAGING_FLAG_PRESENT | PAGING_FLAG_WRITE)
+#endif
+
 static int paging_map_identity_range_fast(uint32_t start, uint32_t end);
 static void paging_invalidate(uint32_t virtual_addr);
 
@@ -105,7 +259,11 @@ page_entry_t* paging_get_page_in_directory(page_directory_t* dir,
     uint32_t directory_entry = dir->entries[table_idx];
 
     if (directory_entry & 0x01) {
-        page_table_t* table = (page_table_t*)(directory_entry & 0xFFFFF000);
+        page_table_t* table = paging_host_table_from_entry(directory_entry);
+        if (!table) {
+            LOG_ERROR("MEM", "Tabela de paginas invalida");
+            return 0;
+        }
         return &table->entries[page_idx];
     }
 
@@ -120,7 +278,12 @@ page_entry_t* paging_get_page_in_directory(page_directory_t* dir,
     }
     kmemset(table, 0, sizeof(page_table_t));
 
-    dir->entries[table_idx] = (uint32_t)table | 0x03;
+    dir->entries[table_idx] = PAGING_TABLE_ENTRY(table);
+    if (!dir->entries[table_idx]) {
+        pmm_free_page(table);
+        LOG_ERROR("MEM", "Limite de tabelas de paginas atingido");
+        return 0;
+    }
 
     return &table->entries[page_idx];
 }
@@ -204,7 +367,11 @@ int paging_map_page(uint32_t virtual, uint32_t physical, uint32_t flags) {
 }
 
 static void paging_invalidate(uint32_t virtual_addr) {
+#if defined(ZEPHYROS_HOST_TEST)
+    (void)virtual_addr;
+#else
     asm volatile("invlpg (%0)" : : "r"(virtual_addr) : "memory");
+#endif
 }
 
 static int paging_table_is_empty(const page_table_t* table) {
@@ -245,7 +412,11 @@ int paging_unmap_user_page_in_directory(page_directory_t* dir,
         LOG_ERROR("MEM", "Tabela de usuario ausente no desmapeamento");
         return ERR_NOT_FOUND;
     }
-    table = (page_table_t*)(directory_entry & 0xFFFFF000U);
+    table = paging_host_table_from_entry(directory_entry);
+    if (!table) {
+        LOG_ERROR("MEM", "Tabela de paginas invalida no desmapeamento");
+        return ERR_STATE;
+    }
     page = &table->entries[(virtual_addr / PAGE_SIZE) % PAGING_TABLE_ENTRIES];
     if (!page->present || !page->user) {
         LOG_ERROR("MEM", "Pagina de usuario ausente no desmapeamento");
@@ -255,7 +426,7 @@ int paging_unmap_user_page_in_directory(page_directory_t* dir,
     physical = page->frame * PAGE_SIZE;
     kmemset(page, 0, sizeof(*page));
     if (dir == current_directory) paging_invalidate(virtual_addr);
-    pmm_free_page((void*)physical);
+    pmm_free_page(paging_physical_pointer(physical));
     if (user_paging_stats.active_pages == 0) {
         LOG_ERROR("MEM", "Contagem de paginas ativa inconsistente");
     } else {
@@ -266,6 +437,7 @@ int paging_unmap_user_page_in_directory(page_directory_t* dir,
     if ((directory_entry & 0xFFFFF000U) !=
         (shared_entry & 0xFFFFF000U) && paging_table_is_empty(table)) {
         dir->entries[table_idx] = 0;
+        paging_host_release_table(directory_entry);
         pmm_free_page(table);
     }
     return OK;
@@ -277,6 +449,10 @@ static int paging_map_framebuffer(vesa_mode_t* mode) {
     uint32_t fb_end;
     uint32_t map_start;
     uint32_t map_end;
+    union {
+        uint32_t address;
+        uint32_t* pointer;
+    } framebuffer_address;
 
     if (!mode || !mode->initialized) return ERR_NOT_FOUND;
     if (mode->height != 0 &&
@@ -285,7 +461,8 @@ static int paging_map_framebuffer(vesa_mode_t* mode) {
         return ERR_OVERFLOW;
     }
 
-    fb_phys = (uint32_t)mode->framebuffer;
+    framebuffer_address.pointer = mode->framebuffer;
+    fb_phys = framebuffer_address.address;
     fb_size = mode->pitch * mode->height;
     if (fb_size == 0 || fb_phys > 0xFFFFFFFFU - fb_size) {
         LOG_ERROR("MEM", "Intervalo do framebuffer invalido");
@@ -317,12 +494,14 @@ void paging_switch_directory(page_directory_t* dir) {
     }
 
     current_directory = dir;
+#if !defined(ZEPHYROS_HOST_TEST)
     asm volatile("mov %0, %%cr3" : : "r"(dir) : "memory");
 
     uint32_t cr0;
     asm volatile("mov %%cr0, %0" : "=r"(cr0));
     cr0 |= 0x80000000;
     asm volatile("mov %0, %%cr0" : : "r"(cr0));
+#endif
     paging_initialized = 1;
 }
 
@@ -340,7 +519,7 @@ static page_table_t* paging_bootstrap_get_table(uint32_t table_index) {
             LOG_ERROR("MEM", "Tabela de usuario conflita com bootstrap");
             return 0;
         }
-        return (page_table_t*)(entry & 0xFFFFF000U);
+        return paging_host_table_from_entry(entry);
     }
 
     table = (page_table_t*)pmm_alloc_page();
@@ -349,8 +528,12 @@ static page_table_t* paging_bootstrap_get_table(uint32_t table_index) {
         return 0;
     }
     kmemset(table, 0, sizeof(*table));
-    kernel_directory->entries[table_index] =
-        (uint32_t)table | PAGING_FLAG_PRESENT | PAGING_FLAG_WRITE;
+    kernel_directory->entries[table_index] = PAGING_TABLE_ENTRY(table);
+    if (!kernel_directory->entries[table_index]) {
+        pmm_free_page(table);
+        LOG_ERROR("MEM", "Limite de tabelas do bootstrap atingido");
+        return 0;
+    }
     paging_boot_stats.page_tables_created++;
     return table;
 }
@@ -409,6 +592,10 @@ int paging_init(void) {
     kmemset(user_directories, 0, sizeof(user_directories));
     kmemset(&user_paging_stats, 0, sizeof(user_paging_stats));
     kmemset(&paging_boot_stats, 0, sizeof(paging_boot_stats));
+#if defined(ZEPHYROS_HOST_TEST)
+    kmemset(paging_host_tables, 0, sizeof(paging_host_tables));
+    kmemset(paging_host_user_buffers, 0, sizeof(paging_host_user_buffers));
+#endif
     user_paging_stats.initialized = 1;
     page_directory_t* dir = paging_create_directory();
     if (!dir) {
@@ -508,8 +695,11 @@ int paging_get_user_page_count(page_directory_t* dir, uint32_t* out_count) {
             continue;
         }
         if (!(directory_entry & PAGING_FLAG_USER)) continue;
-        page_table_t* table =
-            (page_table_t*)(directory_entry & 0xFFFFF000U);
+        page_table_t* table = paging_host_table_from_entry(directory_entry);
+        if (!table) {
+            LOG_ERROR("MEM", "Tabela invalida ao contar paginas de usuario");
+            return ERR_STATE;
+        }
 
         for (uint32_t page_index = 0U; page_index < PAGING_TABLE_ENTRIES;
              page_index++) {
@@ -584,14 +774,19 @@ void paging_free_user_directory(page_directory_t* dir) {
             continue;
         }
 
-        page_table_t* table = (page_table_t*)(entry & 0xFFFFF000U);
+        page_table_t* table = paging_host_table_from_entry(entry);
+        if (!table) {
+            LOG_ERROR("MEM", "Tabela invalida ao liberar diretorio de usuario");
+            continue;
+        }
         for (uint32_t j = 0; j < 1024; j++) {
             if (table->entries[j].present && table->entries[j].user) {
-                pmm_free_page((void*)(table->entries[j].frame * PAGE_SIZE));
+                pmm_free_page(paging_physical_pointer(
+                    table->entries[j].frame * PAGE_SIZE));
                 released_pages++;
             }
         }
-        pmm_free_page((void*)(entry & 0xFFFFF000U));
+        paging_free_table_entry(entry);
     }
     pmm_free_page(dir);
     if (released_pages > user_paging_stats.active_pages) {
@@ -669,28 +864,44 @@ int paging_validate_user_range(uint32_t address, uint32_t size, int write) {
 int paging_copy_from_user(void* destination, const void* source,
                           uint32_t size) {
     int result;
+    uint32_t source_address;
+    const void* resolved_source;
 
     if (!destination || !source) {
         LOG_ERROR("MEM", "Copia de usuario com ponteiro nulo");
         return ERR_NULL;
     }
-    result = paging_validate_user_range((uint32_t)source, size, 0);
+    source_address = paging_pointer_address(source);
+    result = paging_validate_user_range(source_address, size, 0);
     if (result != OK) return result;
-    kmemcpy(destination, source, size);
+    resolved_source = source;
+#if defined(ZEPHYROS_HOST_TEST)
+    resolved_source = paging_host_resolve_user_pointer(source_address);
+    if (!resolved_source) return ERR_UNAVAILABLE;
+#endif
+    kmemcpy(destination, resolved_source, size);
     return OK;
 }
 
 int paging_copy_to_user(void* destination, const void* source,
                         uint32_t size) {
     int result;
+    uint32_t destination_address;
+    void* resolved_destination;
 
     if (!destination || !source) {
         LOG_ERROR("MEM", "Copia para usuario com ponteiro nulo");
         return ERR_NULL;
     }
-    result = paging_validate_user_range((uint32_t)destination, size, 1);
+    destination_address = paging_pointer_address(destination);
+    result = paging_validate_user_range(destination_address, size, 1);
     if (result != OK) return result;
-    kmemcpy(destination, source, size);
+    resolved_destination = destination;
+#if defined(ZEPHYROS_HOST_TEST)
+    resolved_destination = paging_host_resolve_user_pointer(destination_address);
+    if (!resolved_destination) return ERR_UNAVAILABLE;
+#endif
+    kmemcpy(resolved_destination, source, size);
     return OK;
 }
 
@@ -711,7 +922,7 @@ void paging_free_directory(page_directory_t* dir) {
 
     for (int i = 0; i < 1024; i++) {
         if (dir->entries[i] & 0x01) {
-            pmm_free_page((void*)(dir->entries[i] & 0xFFFFF000));
+            paging_free_table_entry(dir->entries[i]);
         }
     }
     pmm_free_page(dir);

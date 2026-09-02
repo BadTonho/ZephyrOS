@@ -1043,3 +1043,16 @@ e `git diff --check` passaram. A sincronizacao atual registra 6.820
 superficies, 3.021 `COVERED`, 3.799 `PENDING` e 73 casos; o fechamento
 integral do catalogo, o gate estrito e a validacao TST7 completa continuam
 pendentes.
+
+Incremento Memoria/paging concluido em 2026-09-02 12:56: o caso host-only
+`host:memory:paging` e o alvo `make test-paging-host` foram adicionados. A
+fixture usa PMM, VESA, processo e timer falsos com buffers estaticos para
+exercitar tabelas, diretorios, mapas de kernel e usuario, framebuffer, copia
+entre espacos, materializacao lazy, limites, overflow, paginas ausentes,
+fallback de framebuffer e limpeza completa. O relatorio instrumentado terminou
+`PASS` com as superficies declaradas resolvidas, sem enderecos desconhecidos ou
+ambiguos. `make test-paging-host`, `make q3check`, `make clean` seguido de
+`make`, `make catalog-test`, `make test-tst7-host` e `git diff --check` passaram.
+A sincronizacao atual registra 6.825 superficies, 3.039 `COVERED`, 3.786
+`PENDING` e 74 casos; o fechamento integral do catalogo, o gate estrito e a
+validacao TST7 completa continuam pendentes.
