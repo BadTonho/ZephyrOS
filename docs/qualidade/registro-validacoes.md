@@ -4044,3 +4044,15 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   superficies resolvidas, sem enderecos desconhecidos ou ambiguos. A
   sincronizacao atual registra 6.820 superficies, 3.018 `COVERED`, 3.802
   `PENDING` e 72 casos; `make catalog-test` passou.
+
+- Incremento Memoria/VMA concluido em 2026-09-02 12:26 (America/Sao_Paulo):
+  `make test-vma-host` passou com `HOST_CC` configurado e warnings tratados
+  como erro. A fixture usa processo ring 3, diretorio, paging, PMM e VFS
+  falsos para exercitar VMAs fixas e anonimas, materializacao lazy, page
+  faults validos e invalidos, `mmap`, `munmap`, limites, estatisticas e
+  limpeza. O relatorio `build/test-results/vma-host/coverage.json` terminou
+  `PASS`, com 34 superficies resolvidas, sem enderecos desconhecidos ou
+  ambiguos. `make catalog-test`, `make q3check`, `make clean` seguido de
+  `make` e `git diff --check` passaram. A sincronizacao atual registra 6.820
+  superficies, 3.021 `COVERED`, 3.799 `PENDING` e 73 casos; o gate estrito e
+  a validacao TST7 completa continuam pendentes.

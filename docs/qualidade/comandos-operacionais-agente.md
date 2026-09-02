@@ -187,6 +187,10 @@ O caso `test-net-socket-host` usa TCP, timer, filas de espera e VFS falsos para
 exercitar handles geracionais, conexao, filas RX/TX, eventos, EOF, timeout,
 cancelamento, limites, reset e limpeza sem rede externa; seu relatorio fica em
 `build/test-results/net-socket-host/`.
+O caso `test-vma-host` usa processo ring 3, paging, PMM e VFS falsos para
+exercitar VMAs fixas e anonimas, materializacao lazy, page faults validos e
+invalidos, `mmap`, `munmap`, limites, estatisticas e limpeza; seu relatorio fica
+em `build/test-results/vma-host/`.
 
 Para reconstruir a imagem instrumentada separada e gerar o mapa de simbolos:
 

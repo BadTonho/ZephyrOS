@@ -246,6 +246,10 @@ static int process_vma_materialize_page(process_t* proc,
                                         int instruction) {
     page_entry_t* page;
     void* physical;
+    union {
+        void* pointer;
+        uint32_t address;
+    } physical_address;
     uint32_t paging_flags;
     int result;
 
@@ -271,8 +275,9 @@ static int process_vma_materialize_page(process_t* proc,
 
     paging_flags = PAGING_FLAG_PRESENT | PAGING_FLAG_USER;
     if (area->flags & VM_WRITE) paging_flags |= PAGING_FLAG_WRITE;
+    physical_address.pointer = physical;
     result = paging_map_page_in_directory(proc->page_directory, page_addr,
-                                           (uint32_t)physical,
+                                           physical_address.address,
                                            paging_flags);
     if (result != OK) {
         pmm_free_page(physical);
