@@ -2095,6 +2095,25 @@
       ],
       "include_public_apis": true,
       "evidence": "make test-paging-host PASS com fixture estatica de diretorios e tabelas, mapeamentos, VMAs lazy, copias de usuario, limites, cleanup, falha de alocacao e recuperacao sem hardware"
+    },
+    {
+      "id": "memory-host-dynamic",
+      "domain": "memory-pmm-heap",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:memory:memory"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/memory-host/coverage.json",
+      "coverage_sources": [
+        "src/memory/memory.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-memory-host PASS com mapa E820, PMM por zona, heap, alinhamento, limites, erros canonicos, cleanup e estatisticas restauradas sem hardware"
     }
   ]
 }

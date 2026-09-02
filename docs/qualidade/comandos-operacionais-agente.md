@@ -209,6 +209,17 @@ make coverage-image
 make coverage-map
 ```
 
+O caso `test-memory-host` exercita diretamente o mapa E820, inicializacao do
+PMM por zona, alocacao contigua, heap estatico, alinhamento, limites, erros
+canonicos, coalescencia e restauracao das estatisticas. A fixture nao acessa
+enderecos fisicos nem hardware; seu relatorio fica em
+`build/test-results/memory-host/`. Execute-o com `HOST_CC` apontando para um
+compilador C nativo:
+
+```text
+make test-memory-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O registro em `tests/coverage/registry.json` somente seleciona enderecos de
 relatorios `PASS` existentes e filtra as fontes declaradas. Um relatorio
 ausente, com endereco desconhecido ou ambiguo bloqueia o gate estrito; nao ha

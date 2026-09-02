@@ -35,6 +35,16 @@ static uint32_t heap_double_frees = 0;
 #define PMM_ZONE_STORAGE_CAPACITY \
     (PMM_BITMAP_STORAGE_END - PMM_BITMAP_STORAGE_START)
 
+#if defined(ZEPHYROS_HOST_TEST)
+#define MEMORY_HOST_MMAP_TOKEN 0xD0000001U
+
+static mmap_entry_t* memory_host_mmap;
+static uint32_t memory_host_mmap_count;
+static uint8_t memory_host_bitmap_storage[PMM_ZONE_STORAGE_CAPACITY];
+static uint8_t memory_host_heap_storage[HEAP_SIZE]
+    __attribute__((aligned(PAGE_SIZE)));
+#endif
+
 /* O E820 pode retirar ate 128 KiB do topo dos 32 MiB para firmware/ACPI. */
 #define FIRMWARE_TOP_RESERVE 0x00020000U
 #define MIN_USABLE_MEMORY_END (MIN_PHYSICAL_MEMORY - FIRMWARE_TOP_RESERVE)
@@ -68,6 +78,41 @@ static uint32_t heap_double_frees = 0;
 
 static uint32_t align_up(uint32_t value, uint32_t alignment) {
     return (value + alignment - 1) & ~(alignment - 1);
+}
+
+static void* memory_physical_pointer(uint32_t address) {
+#if defined(ZEPHYROS_HOST_TEST)
+    union {
+        uint32_t address;
+        void* pointer;
+    } value;
+
+    value.address = address;
+    return value.pointer;
+#else
+    return (void*)address;
+#endif
+}
+
+static uint32_t memory_pointer_address(const void* pointer) {
+#if defined(ZEPHYROS_HOST_TEST)
+    uintptr_t pointer_value = (uintptr_t)pointer;
+    uintptr_t heap_start = (uintptr_t)memory_host_heap_storage;
+
+    if (pointer_value >= heap_start &&
+        pointer_value < heap_start + HEAP_SIZE) {
+        return HEAP_START + (uint32_t)(pointer_value - heap_start);
+    }
+    union {
+        const void* pointer;
+        uint32_t address;
+    } value;
+
+    value.pointer = pointer;
+    return value.address;
+#else
+    return (uint32_t)pointer;
+#endif
 }
 
 static uint8_t pmm_get_page_tag(uint32_t page) {
@@ -246,9 +291,22 @@ void memory_init(uint32_t mmap_addr) {
         return;
     }
 
+#if defined(ZEPHYROS_HOST_TEST)
+    if (mmap_addr != MEMORY_HOST_MMAP_TOKEN || !memory_host_mmap) {
+        LOG_ERROR("MEM", "Fixture host E820 invalida");
+        panic_memory("Fixture E820 invalida", 0, 0, 0, 0);
+        return;
+    }
+    mmap_count = memory_host_mmap_count;
+#else
     mmap_count = *(uint32_t*)(mmap_addr - 4);
+#endif
     kmemset(&mem_info, 0, sizeof(mem_info));
+#if defined(ZEPHYROS_HOST_TEST)
+    mem_info.mmap = memory_host_mmap;
+#else
     mem_info.mmap = (mmap_entry_t*)mmap_addr;
+#endif
     mem_info.mmap_entries = mmap_count;
     if (mmap_count == 0) {
         LOG_ERROR("MEM", "Mapa E820 sem entradas");
@@ -287,7 +345,11 @@ void memory_init(uint32_t mmap_addr) {
         return;
     }
 
+#if defined(ZEPHYROS_HOST_TEST)
+    mem_info.bitmap = memory_host_bitmap_storage;
+#else
     mem_info.bitmap = (uint8_t*)PMM_BITMAP_STORAGE_START;
+#endif
     pmm_owner_bitmap = mem_info.bitmap + mem_info.bitmap_size;
     pmm_owner_bitmap_size = zone_storage_size;
     kmemset(mem_info.bitmap, 0xFF, mem_info.bitmap_size);
@@ -316,6 +378,19 @@ static int pmm_is_ready(void) {
     return mem_info.bitmap != 0 && pmm_owner_bitmap != 0 &&
            pmm_owner_bitmap_size != 0;
 }
+
+#if defined(ZEPHYROS_HOST_TEST)
+int memory_host_init(mmap_entry_t* mmap, uint32_t mmap_count) {
+    if (!mmap || mmap_count == 0U) {
+        LOG_ERROR("MEM", "Fixture host E820 nula ou vazia");
+        return ERR_INVALID;
+    }
+    memory_host_mmap = mmap;
+    memory_host_mmap_count = mmap_count;
+    memory_init(MEMORY_HOST_MMAP_TOKEN);
+    return pmm_is_ready() ? OK : ERR_STATE;
+}
+#endif
 
 static int pmm_page_is_free(uint32_t page) {
     return !(mem_info.bitmap[page / 8] & (1U << (page % 8)));
@@ -349,7 +424,7 @@ static int pmm_validate_release(void* addr, uint32_t count) {
         return 0;
     }
 
-    address = (uint32_t)addr;
+    address = memory_pointer_address(addr);
     if ((address & (PAGE_SIZE - 1U)) != 0) {
         LOG_ERROR("MEM", "Liberacao de pagina desalinhada");
         pmm_invalid_frees++;
@@ -415,7 +490,7 @@ void* pmm_alloc_pages_in_zone(uint32_t count, memory_zone_t zone) {
         if (found) {
             tag = pmm_zone_to_tag(zone);
             pmm_claim_pages(i, count, tag);
-            return (void*)(i * PAGE_SIZE);
+            return memory_physical_pointer(i * PAGE_SIZE);
         }
     }
 
@@ -440,7 +515,7 @@ void pmm_free_page(void* addr) {
     uint32_t page;
 
     if (!pmm_validate_release(addr, 1)) return;
-    page = (uint32_t)addr / PAGE_SIZE;
+    page = memory_pointer_address(addr) / PAGE_SIZE;
     pmm_release_pages(page, 1);
 }
 
@@ -448,7 +523,7 @@ void pmm_free_pages(void* addr, uint32_t count) {
     uint32_t page;
 
     if (!pmm_validate_release(addr, count)) return;
-    page = (uint32_t)addr / PAGE_SIZE;
+    page = memory_pointer_address(addr) / PAGE_SIZE;
     pmm_release_pages(page, count);
 }
 
@@ -458,6 +533,15 @@ void pmm_free_pages(void* addr, uint32_t count) {
 #define HEAP_ALIGNMENT     8U
 #define HEAP_MIN_SPLIT     16
 #define HEAP_END           (HEAP_START + HEAP_SIZE)
+
+static void* memory_heap_pointer(uint32_t address) {
+#if defined(ZEPHYROS_HOST_TEST)
+    if (address >= HEAP_START && address < HEAP_END) {
+        return memory_host_heap_storage + (address - HEAP_START);
+    }
+#endif
+    return memory_physical_pointer(address);
+}
 
 typedef struct heap_block {
     uint32_t magic;
@@ -483,7 +567,7 @@ static int heap_block_is_consistent(heap_block_t* block,
     uint32_t payload_address;
     uint32_t next_address;
 
-    if (!block || !heap_range_contains((uint32_t)block,
+    if (!block || !heap_range_contains(memory_pointer_address(block),
                                       sizeof(heap_block_t))) {
         return 0;
     }
@@ -493,21 +577,23 @@ static int heap_block_is_consistent(heap_block_t* block,
         return 0;
     }
 
-    block_address = (uint32_t)block;
+    block_address = memory_pointer_address(block);
     payload_address = block_address + sizeof(heap_block_t);
     if (!heap_range_contains(payload_address, block->size)) return 0;
     if (block->free && block->user_ptr) return 0;
     if (!block->free && (!block->user_ptr ||
-        (uint32_t)block->user_ptr < payload_address ||
-        (uint32_t)block->user_ptr >= payload_address + block->size)) {
+        memory_pointer_address(block->user_ptr) < payload_address ||
+        memory_pointer_address(block->user_ptr) >=
+            payload_address + block->size)) {
         return 0;
     }
 
     next_address = payload_address + block->size;
     if (!block->next) return next_address == HEAP_END;
     return next_address < HEAP_END &&
-           (uint32_t)block->next == next_address &&
-           heap_range_contains((uint32_t)block->next, sizeof(heap_block_t));
+           memory_pointer_address(block->next) == next_address &&
+           heap_range_contains(memory_pointer_address(block->next),
+                               sizeof(heap_block_t));
 }
 
 static int heap_measure(memory_heap_stats_t* stats) {
@@ -572,7 +658,7 @@ static int heap_range_contains(uint32_t address, uint32_t size) {
 static void heap_initialize(void) {
     if (heap_base) return;
 
-    heap_base = (heap_block_t*)HEAP_START;
+    heap_base = (heap_block_t*)memory_heap_pointer(HEAP_START);
     heap_base->magic = HEAP_MAGIC;
     heap_base->size = HEAP_SIZE - sizeof(heap_block_t);
     heap_base->free = 1;
@@ -588,14 +674,14 @@ static int heap_block_matches(heap_block_t* block, void* user_ptr) {
 
     if (!block || !user_ptr) return 0;
 
-    block_address = (uint32_t)block;
+    block_address = memory_pointer_address(block);
     if (!heap_range_contains(block_address, sizeof(heap_block_t))) return 0;
     if (block->magic != HEAP_MAGIC || block->user_ptr != user_ptr) return 0;
 
     payload_address = block_address + sizeof(heap_block_t);
     if (!heap_range_contains(payload_address, block->size)) return 0;
 
-    user_address = (uint32_t)user_ptr;
+    user_address = memory_pointer_address(user_ptr);
     return user_address >= payload_address &&
            user_address < payload_address + block->size;
 }
@@ -689,7 +775,7 @@ void* kmalloc_aligned(uint32_t size) {
         return 0;
     }
 
-    raw_address = (uint32_t)raw_ptr;
+    raw_address = memory_pointer_address(raw_ptr);
     aligned_address = align_up(raw_address + sizeof(heap_aligned_header_t), PAGE_SIZE);
     if (!aligned_address || !heap_range_contains(aligned_address, size)) {
         kfree(raw_ptr);
@@ -699,13 +785,15 @@ void* kmalloc_aligned(uint32_t size) {
         return 0;
     }
 
-    block = (heap_block_t*)(raw_address - sizeof(heap_block_t));
-    header = (heap_aligned_header_t*)(aligned_address - sizeof(heap_aligned_header_t));
+    block = (heap_block_t*)memory_heap_pointer(
+        raw_address - sizeof(heap_block_t));
+    header = (heap_aligned_header_t*)memory_heap_pointer(
+        aligned_address - sizeof(heap_aligned_header_t));
     header->magic = HEAP_MAGIC_ALIGNED;
     header->block = block;
-    block->user_ptr = (void*)aligned_address;
+    block->user_ptr = memory_heap_pointer(aligned_address);
 
-    return (void*)aligned_address;
+    return memory_heap_pointer(aligned_address);
 }
 
 static heap_block_t* heap_block_from_pointer(void* ptr) {
@@ -715,12 +803,13 @@ static heap_block_t* heap_block_from_pointer(void* ptr) {
 
     if (!ptr) return 0;
 
-    address = (uint32_t)ptr;
+    address = memory_pointer_address(ptr);
     if (!heap_range_contains(address, 1)) return 0;
 
     if ((address & (PAGE_SIZE - 1)) == 0 &&
         address >= HEAP_START + sizeof(heap_aligned_header_t)) {
-        aligned_header = (heap_aligned_header_t*)(address - sizeof(heap_aligned_header_t));
+        aligned_header = (heap_aligned_header_t*)memory_heap_pointer(
+            address - sizeof(heap_aligned_header_t));
         if (aligned_header->magic == HEAP_MAGIC_ALIGNED &&
             heap_block_matches(aligned_header->block, ptr)) {
             return aligned_header->block;
@@ -728,7 +817,8 @@ static heap_block_t* heap_block_from_pointer(void* ptr) {
     }
 
     if (address < HEAP_START + sizeof(heap_block_t)) return 0;
-    block = (heap_block_t*)(address - sizeof(heap_block_t));
+    block = (heap_block_t*)memory_heap_pointer(
+        address - sizeof(heap_block_t));
     if (heap_block_matches(block, ptr)) return block;
     return 0;
 }
@@ -739,23 +829,25 @@ static int heap_pointer_was_freed(void* ptr) {
     heap_block_t* block;
 
     if (!ptr) return 0;
-    address = (uint32_t)ptr;
+    address = memory_pointer_address(ptr);
     if (!heap_range_contains(address, 1)) return 0;
 
     if ((address & (PAGE_SIZE - 1U)) == 0 &&
         address >= HEAP_START + sizeof(heap_aligned_header_t)) {
-        aligned_header = (heap_aligned_header_t*)(address -
-                                                  sizeof(heap_aligned_header_t));
+        aligned_header = (heap_aligned_header_t*)memory_heap_pointer(
+            address - sizeof(heap_aligned_header_t));
         if (aligned_header->magic == HEAP_MAGIC_ALIGNED &&
-            heap_range_contains((uint32_t)aligned_header->block,
+            heap_range_contains(memory_pointer_address(aligned_header->block),
                                 sizeof(heap_block_t)) &&
             aligned_header->block->magic == HEAP_MAGIC_FREED) {
             return 1;
         }
     }
     if (address < HEAP_START + sizeof(heap_block_t)) return 0;
-    block = (heap_block_t*)(address - sizeof(heap_block_t));
-    return heap_range_contains((uint32_t)block, sizeof(heap_block_t)) &&
+    block = (heap_block_t*)memory_heap_pointer(
+        address - sizeof(heap_block_t));
+    return heap_range_contains(memory_pointer_address(block),
+                               sizeof(heap_block_t)) &&
            block->magic == HEAP_MAGIC_FREED;
 }
 

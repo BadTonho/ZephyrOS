@@ -4069,3 +4069,18 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `make test-tst7-host` e `git diff --check` passaram. A sincronizacao atual
   registra 6.825 superficies, 3.039 `COVERED`, 3.786 `PENDING` e 74 casos;
   o gate estrito e a validacao TST7 completa continuam pendentes.
+
+- Incremento Memoria/PMM/heap concluido em 2026-09-02 13:17 (America/Sao_Paulo):
+  o caso host-only `host:memory:memory` e o alvo `make test-memory-host` foram
+  adicionados. A fixture usa um mapa E820 estatico e memoria de heap estatica
+  para exercitar inicializacao, estatisticas, zonas, alocacoes contiguas,
+  alinhamento, limites, ponteiros invalidos, double free, coalescencia,
+  reutilizacao e restauracao do estado. O relatorio instrumentado
+  `build/test-results/memory-host/coverage.json` terminou `PASS`, com as
+  superficies de `src/memory/memory.c` resolvidas e sem enderecos desconhecidos
+  ou ambiguos. `make test-memory-host`, `make q3check`, `make clean` seguido de
+  `make`, `make catalog-test`, `make test-tst7-host` e `git diff --check`
+  passaram. O build completo manteve somente warnings preexistentes em outros
+  modulos. A sincronizacao atual registra 6.827 superficies, 3.050 `COVERED`,
+  3.777 `PENDING` e 75 casos; o fechamento integral do catalogo, o gate estrito
+  e a validacao TST7 completa continuam pendentes.
