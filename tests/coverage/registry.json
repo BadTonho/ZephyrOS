@@ -2017,6 +2017,25 @@
       ],
       "include_public_apis": true,
       "evidence": "make test-tls-host PASS com relogio, RNG e cliente TLS falsos, estados disponiveis e indisponiveis, politicas, validade, cadeia, SAN, pinning, rotacao, revogacao e autoteste sem rede externa"
+    },
+    {
+      "id": "http-host-dynamic",
+      "domain": "network-http",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/http-host/coverage.json",
+      "coverage_sources": [
+        "src/core/http.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-http-host PASS com DNS, socket, TLS e timer falsos, URLs, headers, corpos Content-Length/chunked/EOF, streaming, redirects, limites, timeouts e falhas sem rede externa"
     }
   ]
 }

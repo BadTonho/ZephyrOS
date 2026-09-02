@@ -5844,9 +5844,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/http.h:http_get_start",
@@ -5862,9 +5865,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/http.h:http_get_start_ex",
@@ -5880,9 +5886,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/http.h:http_get_status",
@@ -5898,9 +5907,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/http.h:http_get_stream_start",
@@ -5916,9 +5928,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/http.h:http_get_stream_start_ex",
@@ -5934,9 +5949,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/http.h:http_init",
@@ -5952,9 +5970,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/http.h:http_maintain",
@@ -5970,9 +5991,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/http.h:http_reset",
@@ -5988,9 +6012,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/http.h:http_validate_state",
@@ -6008,11 +6035,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:http",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/icmp.h:icmp_get_status",
@@ -7104,6 +7132,7 @@
         "host:network:dhcp",
         "host:network:dns",
         "host:network:ethernet",
+        "host:network:http",
         "host:network:icmp",
         "host:network:tcp",
         "host:network:udp",
@@ -7145,6 +7174,7 @@
         "host:network:dhcp",
         "host:network:dns",
         "host:network:ethernet",
+        "host:network:http",
         "host:network:icmp",
         "host:network:tcp",
         "host:network:udp",
@@ -7177,6 +7207,7 @@
         "host:core:state",
         "host:core:timer",
         "host:network:ethernet",
+        "host:network:http",
         "host:network:icmp"
       ],
       "tags": [],
@@ -9929,6 +9960,7 @@
         "host:network:dhcp",
         "host:network:dns",
         "host:network:ethernet",
+        "host:network:http",
         "host:network:icmp",
         "host:network:tcp",
         "host:network:udp",
@@ -9981,6 +10013,7 @@
         "host:network:dhcp",
         "host:network:dns",
         "host:network:ethernet",
+        "host:network:http",
         "host:network:icmp",
         "host:network:tcp",
         "host:network:udp",
@@ -10033,6 +10066,7 @@
         "host:network:dhcp",
         "host:network:dns",
         "host:network:ethernet",
+        "host:network:http",
         "host:network:icmp",
         "host:network:tcp",
         "host:network:udp",
@@ -10078,6 +10112,7 @@
         "host:network:dhcp",
         "host:network:dns",
         "host:network:ethernet",
+        "host:network:http",
         "host:network:icmp",
         "host:network:tcp",
         "host:network:udp",
@@ -44882,9 +44917,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_append_port",
@@ -44900,9 +44938,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_append_text",
@@ -44918,9 +44959,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_ascii_lower",
@@ -44938,11 +44982,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:http",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_build_request",
@@ -44958,9 +45003,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_cancel_resolution",
@@ -44976,9 +45024,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_chunk_error",
@@ -44994,9 +45045,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_clear_session",
@@ -45012,9 +45066,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_complete",
@@ -45030,9 +45087,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_consume_body",
@@ -45048,9 +45108,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_consume_bytes",
@@ -45066,9 +45129,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_consume_chunked",
@@ -45084,9 +45150,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_copy_text",
@@ -45104,11 +45173,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:http",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_enforce_worker_stack_margin",
@@ -45124,9 +45194,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_fail",
@@ -45142,9 +45215,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_find_crlf",
@@ -45162,11 +45238,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:http",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_finish_headers",
@@ -45182,9 +45259,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_follow_redirect",
@@ -45200,9 +45280,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_get_body",
@@ -45218,9 +45301,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_get_start",
@@ -45236,9 +45322,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_get_start_ex",
@@ -45254,9 +45343,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_get_start_internal",
@@ -45272,9 +45364,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_get_status",
@@ -45290,9 +45385,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_get_stream_start",
@@ -45308,9 +45406,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_get_stream_start_ex",
@@ -45326,9 +45427,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_header_value_equal",
@@ -45346,11 +45450,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:http",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_headers_complete",
@@ -45366,9 +45471,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_host_is_numeric",
@@ -45386,11 +45494,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:http",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_init",
@@ -45406,9 +45515,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_is_redirect_status",
@@ -45424,9 +45536,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_is_token_character",
@@ -45444,11 +45559,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:http",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_maintain",
@@ -45464,9 +45580,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_maintain_connecting",
@@ -45482,9 +45601,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_maintain_receiving",
@@ -45500,9 +45622,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_maintain_resolving",
@@ -45518,9 +45643,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_maintain_sending",
@@ -45536,9 +45664,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_maintain_tls",
@@ -45554,9 +45685,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_parse_decimal",
@@ -45574,11 +45708,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:http",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_parse_header_line",
@@ -45596,11 +45731,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:http",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_parse_headers",
@@ -45618,11 +45754,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:http",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_parse_ipv4",
@@ -45638,9 +45775,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_parse_port",
@@ -45658,11 +45798,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:http",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_parse_status_line",
@@ -45680,11 +45821,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:http",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_parse_url",
@@ -45702,11 +45844,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:http",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_parse_url_ex",
@@ -45724,11 +45867,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:http",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_prepare_options",
@@ -45744,9 +45888,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_range_equal",
@@ -45764,11 +45911,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:http",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_reject_unavailable_tls",
@@ -45784,9 +45932,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_release_socket",
@@ -45802,9 +45953,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_reset",
@@ -45820,9 +45974,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_socket_exists",
@@ -45838,9 +45995,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_start_socket",
@@ -45856,9 +46016,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_text_prefix_equal",
@@ -45876,11 +46039,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:http",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_validate_header_value",
@@ -45896,9 +46060,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:http"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_validate_header_vectors",
@@ -45916,11 +46083,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:http",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_validate_host",
@@ -45938,11 +46106,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:http",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_validate_state",
@@ -45960,11 +46129,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:http",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/http.c:http_validate_url_vector",
@@ -45982,11 +46152,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:http",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/icmp.c:icmp_build_ping_message",
@@ -49720,6 +49891,7 @@
         "host:network:dhcp",
         "host:network:dns",
         "host:network:ethernet",
+        "host:network:http",
         "host:network:icmp",
         "host:network:tcp",
         "host:network:udp",
@@ -49786,6 +49958,7 @@
         "host:network:dhcp",
         "host:network:dns",
         "host:network:ethernet",
+        "host:network:http",
         "host:network:icmp",
         "host:network:tcp",
         "host:network:udp",
@@ -49939,6 +50112,7 @@
         "host:network:dhcp",
         "host:network:dns",
         "host:network:ethernet",
+        "host:network:http",
         "host:network:icmp",
         "host:network:tcp",
         "host:network:udp",
@@ -49980,6 +50154,7 @@
         "host:network:dhcp",
         "host:network:dns",
         "host:network:ethernet",
+        "host:network:http",
         "host:network:icmp",
         "host:network:tcp",
         "host:network:udp",
@@ -50025,6 +50200,7 @@
         "host:network:dhcp",
         "host:network:dns",
         "host:network:ethernet",
+        "host:network:http",
         "host:network:icmp",
         "host:network:tcp",
         "host:network:udp",
@@ -50092,6 +50268,7 @@
         "host:network:dhcp",
         "host:network:dns",
         "host:network:ethernet",
+        "host:network:http",
         "host:network:icmp",
         "host:network:tcp",
         "host:network:udp",
@@ -50125,6 +50302,7 @@
         "host:core:state",
         "host:core:timer",
         "host:network:ethernet",
+        "host:network:http",
         "host:network:icmp"
       ],
       "tags": [],
@@ -50163,6 +50341,7 @@
         "host:network:dhcp",
         "host:network:dns",
         "host:network:ethernet",
+        "host:network:http",
         "host:network:icmp",
         "host:network:tcp",
         "host:network:udp",
@@ -50208,6 +50387,7 @@
         "host:network:dhcp",
         "host:network:dns",
         "host:network:ethernet",
+        "host:network:http",
         "host:network:icmp",
         "host:network:tcp",
         "host:network:udp",
@@ -50253,6 +50433,7 @@
         "host:network:dhcp",
         "host:network:dns",
         "host:network:ethernet",
+        "host:network:http",
         "host:network:icmp",
         "host:network:tcp",
         "host:network:udp",
@@ -50342,6 +50523,7 @@
         "host:network:dhcp",
         "host:network:dns",
         "host:network:ethernet",
+        "host:network:http",
         "host:network:icmp",
         "host:network:tcp",
         "host:network:udp",
@@ -50385,6 +50567,7 @@
         "host:network:dhcp",
         "host:network:dns",
         "host:network:ethernet",
+        "host:network:http",
         "host:network:icmp",
         "host:network:tcp",
         "host:network:udp",
@@ -50430,6 +50613,7 @@
         "host:network:dhcp",
         "host:network:dns",
         "host:network:ethernet",
+        "host:network:http",
         "host:network:icmp",
         "host:network:tcp",
         "host:network:udp",
@@ -50610,6 +50794,7 @@
         "host:network:dhcp",
         "host:network:dns",
         "host:network:ethernet",
+        "host:network:http",
         "host:network:icmp",
         "host:network:tcp",
         "host:network:udp",
@@ -50655,6 +50840,7 @@
         "host:network:dhcp",
         "host:network:dns",
         "host:network:ethernet",
+        "host:network:http",
         "host:network:icmp",
         "host:network:tcp",
         "host:network:udp",
@@ -50905,6 +51091,7 @@
         "host:network:dhcp",
         "host:network:dns",
         "host:network:ethernet",
+        "host:network:http",
         "host:network:icmp",
         "host:network:tcp",
         "host:network:udp",
@@ -56776,6 +56963,7 @@
         "host:network:dhcp",
         "host:network:dns",
         "host:network:ethernet",
+        "host:network:http",
         "host:network:icmp",
         "host:network:tcp",
         "host:network:udp",
@@ -56828,6 +57016,7 @@
         "host:network:dhcp",
         "host:network:dns",
         "host:network:ethernet",
+        "host:network:http",
         "host:network:icmp",
         "host:network:tcp",
         "host:network:udp",
@@ -56880,6 +57069,7 @@
         "host:network:dhcp",
         "host:network:dns",
         "host:network:ethernet",
+        "host:network:http",
         "host:network:icmp",
         "host:network:tcp",
         "host:network:udp",
@@ -56925,6 +57115,7 @@
         "host:network:dhcp",
         "host:network:dns",
         "host:network:ethernet",
+        "host:network:http",
         "host:network:icmp",
         "host:network:tcp",
         "host:network:udp",
@@ -137884,6 +138075,133 @@
         "network",
         "ethernet",
         "sk_buff",
+        "negative",
+        "coverage"
+      ]
+    },
+    {
+      "id": "host:network:http",
+      "scenario": "Contrato host-only do cliente HTTP com transportes falsos",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "compilar e executar URLs, headers, corpos, streaming, redirects, HTTPS, limites e falhas com DNS, socket, TLS e timer falsos",
+      "expected": "respostas validas concluem, entradas e transportes invalidos falham com codigo canonico e nenhum estado HTTP residual permanece",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente estado HTTP, buffers estaticos e transportes falsos no processo host",
+      "cleanup": "socket, DNS, cliente TLS e sessao HTTP reiniciados e artefatos preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/http.h:http_get_body",
+        "api:src/include/core/http.h:http_get_start",
+        "api:src/include/core/http.h:http_get_start_ex",
+        "api:src/include/core/http.h:http_get_status",
+        "api:src/include/core/http.h:http_get_stream_start",
+        "api:src/include/core/http.h:http_get_stream_start_ex",
+        "api:src/include/core/http.h:http_init",
+        "api:src/include/core/http.h:http_maintain",
+        "api:src/include/core/http.h:http_reset",
+        "api:src/include/core/http.h:http_validate_state",
+        "api:src/include/core/log.h:log_init",
+        "api:src/include/core/log.h:log_print",
+        "api:src/include/core/log.h:log_print_code",
+        "api:src/include/core/string.h:kmemcpy",
+        "api:src/include/core/string.h:kmemset",
+        "api:src/include/core/string.h:kstrcmp",
+        "api:src/include/core/string.h:kstrlen",
+        "c:src/core/http.c:http_append_bytes",
+        "c:src/core/http.c:http_append_port",
+        "c:src/core/http.c:http_append_text",
+        "c:src/core/http.c:http_ascii_lower",
+        "c:src/core/http.c:http_build_request",
+        "c:src/core/http.c:http_cancel_resolution",
+        "c:src/core/http.c:http_chunk_error",
+        "c:src/core/http.c:http_clear_session",
+        "c:src/core/http.c:http_complete",
+        "c:src/core/http.c:http_consume_body",
+        "c:src/core/http.c:http_consume_bytes",
+        "c:src/core/http.c:http_consume_chunked",
+        "c:src/core/http.c:http_copy_text",
+        "c:src/core/http.c:http_enforce_worker_stack_margin",
+        "c:src/core/http.c:http_fail",
+        "c:src/core/http.c:http_find_crlf",
+        "c:src/core/http.c:http_finish_headers",
+        "c:src/core/http.c:http_follow_redirect",
+        "c:src/core/http.c:http_get_body",
+        "c:src/core/http.c:http_get_start",
+        "c:src/core/http.c:http_get_start_ex",
+        "c:src/core/http.c:http_get_start_internal",
+        "c:src/core/http.c:http_get_status",
+        "c:src/core/http.c:http_get_stream_start",
+        "c:src/core/http.c:http_get_stream_start_ex",
+        "c:src/core/http.c:http_header_value_equal",
+        "c:src/core/http.c:http_headers_complete",
+        "c:src/core/http.c:http_host_is_numeric",
+        "c:src/core/http.c:http_init",
+        "c:src/core/http.c:http_is_redirect_status",
+        "c:src/core/http.c:http_is_token_character",
+        "c:src/core/http.c:http_maintain",
+        "c:src/core/http.c:http_maintain_connecting",
+        "c:src/core/http.c:http_maintain_receiving",
+        "c:src/core/http.c:http_maintain_resolving",
+        "c:src/core/http.c:http_maintain_sending",
+        "c:src/core/http.c:http_maintain_tls",
+        "c:src/core/http.c:http_parse_decimal",
+        "c:src/core/http.c:http_parse_header_line",
+        "c:src/core/http.c:http_parse_headers",
+        "c:src/core/http.c:http_parse_ipv4",
+        "c:src/core/http.c:http_parse_port",
+        "c:src/core/http.c:http_parse_status_line",
+        "c:src/core/http.c:http_parse_url",
+        "c:src/core/http.c:http_parse_url_ex",
+        "c:src/core/http.c:http_prepare_options",
+        "c:src/core/http.c:http_range_equal",
+        "c:src/core/http.c:http_reject_unavailable_tls",
+        "c:src/core/http.c:http_release_socket",
+        "c:src/core/http.c:http_reset",
+        "c:src/core/http.c:http_socket_exists",
+        "c:src/core/http.c:http_start_socket",
+        "c:src/core/http.c:http_text_prefix_equal",
+        "c:src/core/http.c:http_validate_header_value",
+        "c:src/core/http.c:http_validate_header_vectors",
+        "c:src/core/http.c:http_validate_host",
+        "c:src/core/http.c:http_validate_state",
+        "c:src/core/http.c:http_validate_url_vector",
+        "c:src/core/log.c:log_console_print_number",
+        "c:src/core/log.c:log_copy_text",
+        "c:src/core/log.c:log_init",
+        "c:src/core/log.c:log_is_power_of_two",
+        "c:src/core/log.c:log_level_is_valid",
+        "c:src/core/log.c:log_print",
+        "c:src/core/log.c:log_print_code",
+        "c:src/core/log.c:log_print_colored",
+        "c:src/core/log.c:log_records_match",
+        "c:src/core/log.c:log_restore_interrupts",
+        "c:src/core/log.c:log_ring_initialize",
+        "c:src/core/log.c:log_ring_latest_index",
+        "c:src/core/log.c:log_ring_store",
+        "c:src/core/log.c:log_submit",
+        "c:src/core/log.c:log_suspend_interrupts",
+        "c:src/core/log.c:log_write_serial",
+        "c:src/core/string.c:kmemcpy",
+        "c:src/core/string.c:kmemset",
+        "c:src/core/string.c:kstrcmp",
+        "c:src/core/string.c:kstrlen"
+      ],
+      "tags": [
+        "host",
+        "network",
+        "http",
         "negative",
         "coverage"
       ]

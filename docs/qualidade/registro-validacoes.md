@@ -4024,3 +4024,13 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   superficies resolvidas, sem enderecos desconhecidos ou ambiguos. A
   sincronizacao atual registra 6.820 superficies, 2.931 `COVERED`, 3.889
   `PENDING` e 70 casos; `make catalog-test` passou.
+
+- Incremento Rede/HTTP concluido em 2026-09-02 11:57 (America/Sao_Paulo):
+  `make test-http-host` passou com `HOST_CC` configurado e warnings tratados
+  como erro. A fixture usa DNS, socket, TLS, timer e stack falsos para
+  exercitar URLs e opcoes, headers, corpos Content-Length/chunked/EOF,
+  streaming, redirects, HTTPS, limites, timeouts e falhas sem rede externa.
+  O relatorio `build/test-results/http-host/coverage.json` terminou `PASS`,
+  sem enderecos desconhecidos ou ambiguos. A sincronizacao atual registra
+  6.820 superficies, 2.979 `COVERED`, 3.841 `PENDING` e 71 casos; os gates
+  de catalogo e a validacao TST7 completa permanecem pendentes.

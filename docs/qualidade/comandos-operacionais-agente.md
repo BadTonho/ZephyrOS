@@ -179,6 +179,10 @@ O caso `test-tls-host` usa relogio, RNG e cliente TLS falsos para exercitar
 politica, validade, cadeia, SAN, pinning, rotacao, revogacao, estados
 indisponiveis e autoteste sem rede externa; seu relatorio fica em
 `build/test-results/tls-host/`.
+O caso `test-http-host` usa DNS, socket, TLS, timer e stack falsos para
+exercitar URLs, opcoes, headers, respostas com tamanho/chunked/EOF,
+streaming, redirects, HTTPS, limites, timeouts e falhas sem rede externa; seu
+relatorio fica em `build/test-results/http-host/`.
 
 Para reconstruir a imagem instrumentada separada e gerar o mapa de simbolos:
 

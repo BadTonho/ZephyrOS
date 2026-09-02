@@ -994,6 +994,15 @@ superficies, 2.931 `COVERED`, 3.889 `PENDING` e 70 casos. O fechamento
 integral do catalogo, o gate estrito e a validacao TST7 completa continuam
 pendentes.
 
+Incremento Rede/HTTP concluido em 2026-09-02: o caso host-only
+`host:network:http` e o alvo `make test-http-host` foram adicionados. A
+fixture usa DNS, socket, TLS, timer e stack falsos, cobrindo URLs, opcoes,
+headers, corpos Content-Length/chunked/EOF, streaming, redirects, HTTPS,
+limites, timeouts e falhas sem rede externa. A cobertura real foi sincronizada
+no catalogo: 6.820 superficies, 2.979 `COVERED`, 3.841 `PENDING` e 71 casos.
+O fechamento integral do catalogo, o gate estrito e a validacao TST7 completa
+continuam pendentes.
+
 Incremento Rede/Ethernet concluido em 2026-09-02: o caso host-only
 `host:network:ethernet` e o alvo `make test-ethernet-host` foram adicionados.
 A fixture passou com quatro interfaces, drivers, handlers e frames falsos,
