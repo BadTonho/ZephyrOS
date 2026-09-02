@@ -71,6 +71,7 @@ make test-icmp-host
 make test-dns-host
 make test-dhcp-host
 make test-ethernet-host
+make test-tcp-host
 ```
 
 O caso de scheduling cobre `wait`, `workqueue` e `irq_deferred` em processo
@@ -169,6 +170,10 @@ O caso `test-ethernet-host` usa drivers, interfaces e frames falsos para
 exercitar handlers, polling, filtragem, transmissao, quiescencia, sk_buff,
 net_buffer e limpeza sem hardware real; seu relatorio fica em
 `build/test-results/ethernet-host/`.
+O caso `test-tcp-host` usa IPv4 e timer falsos para exercitar handshake,
+dados, ACK, FIN, RST, retransmissao, timeout, callbacks recusados, janelas,
+limites e limpeza sem rede externa; seu relatorio fica em
+`build/test-results/tcp-host/`.
 
 Para reconstruir a imagem instrumentada separada e gerar o mapa de simbolos:
 

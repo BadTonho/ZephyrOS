@@ -81,6 +81,8 @@ DHCP_RESULT_DIR = ROOT / "build" / "test-results" / "dhcp-host"
 DHCP_BINARY = ROOT / "build" / "tests" / "test_dhcp_host.exe"
 ETHERNET_RESULT_DIR = ROOT / "build" / "test-results" / "ethernet-host"
 ETHERNET_BINARY = ROOT / "build" / "tests" / "test_ethernet_host.exe"
+TCP_RESULT_DIR = ROOT / "build" / "test-results" / "tcp-host"
+TCP_BINARY = ROOT / "build" / "tests" / "test_tcp_host.exe"
 DEFAULT_TIMEOUT = 120.0
 CORE_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_core_contracts.c",
@@ -268,6 +270,12 @@ ETHERNET_SOURCE_FILES = (
     ROOT / "src" / "core" / "log.c",
     ROOT / "src" / "core" / "string.c",
 )
+TCP_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_tcp_host.c",
+    ROOT / "src" / "core" / "tcp.c",
+    ROOT / "src" / "core" / "log.c",
+    ROOT / "src" / "core" / "string.c",
+)
 SOURCE_FILES = CORE_SOURCE_FILES
 
 
@@ -339,6 +347,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
     if case_id == "host:network:ethernet":
         return (ETHERNET_RESULT_DIR, ETHERNET_BINARY,
                 ETHERNET_SOURCE_FILES, "ethernet-host")
+    if case_id == "host:network:tcp":
+        return TCP_RESULT_DIR, TCP_BINARY, TCP_SOURCE_FILES, "tcp-host"
     raise ValueError(f"caso_host_invalido:{case_id}")
 
 
@@ -495,7 +505,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:core:timer", "host:network:udp",
                                  "host:network:arp", "host:network:icmp",
                                  "host:network:dns", "host:network:dhcp",
-                                 "host:network:ethernet"))
+                                 "host:network:ethernet", "host:network:tcp"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
     return parser.parse_args()

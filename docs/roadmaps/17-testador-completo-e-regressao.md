@@ -994,3 +994,12 @@ hardware real. A cobertura real foi sincronizada no catalogo: 6.820
 superficies, 2.876 `COVERED`, 3.944 `PENDING` e 68 casos. O fechamento
 integral do catalogo, o gate estrito e a validacao TST7 completa continuam
 pendentes.
+
+Incremento Rede/TCP concluido em 2026-09-02: o caso host-only
+`host:network:tcp` e o alvo `make test-tcp-host` foram adicionados. A fixture
+passou com IPv4 e timer falsos, cobrindo handshake, dados, ACK, FIN, RST,
+retransmissao, timeout, callbacks recusados, janelas, limites, conexoes
+simultaneas e limpeza sem rede externa. A cobertura real foi sincronizada no
+catalogo: 6.820 superficies, 2.920 `COVERED`, 3.900 `PENDING` e 69 casos. O
+fechamento integral do catalogo, o gate estrito e a validacao TST7 completa
+continuam pendentes.
