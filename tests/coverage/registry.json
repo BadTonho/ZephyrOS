@@ -1660,7 +1660,7 @@
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-package-host PASS com comparacao de versoes, estados indisponiveis, failpoint e nomes canonicos no relatorio instrumentado"
+      "evidence": "make test-package-host PASS com fixture FAT12/FAT32 falsa, pacote ZPKG/ZAPP valido, parsing e CRC, instalacao, atualizacao, recuperacao por failpoint, rollback, remocao e caminhos invalidos; 111 superficies de src/core/app_package.c cobertas no relatorio instrumentado"
     },
     {
       "id": "paging-host-dynamic",

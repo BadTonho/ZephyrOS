@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4002 |
+| `COVERED` | 4093 |
 | `MANUAL` | 0 |
-| `PENDING` | 3194 |
+| `PENDING` | 3103 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -2038,117 +2038,117 @@
 | `c:src/core/app_loader.c:app_loader_validate_image` | `src/core/app_loader.c` | `app_loader_validate_image` | `core` | `PENDING` | 0 |
 | `c:src/core/app_loader.c:app_loader_validate_launch_info` | `src/core/app_loader.c` | `app_loader_validate_launch_info` | `core` | `PENDING` | 0 |
 | `c:src/core/app_loader.c:app_loader_validate_layout` | `src/core/app_loader.c` | `app_loader_validate_layout` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_action_fail` | `src/core/app_package.c` | `app_package_action_fail` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_action_fail` | `src/core/app_package.c` | `app_package_action_fail` | `core` | `COVERED` | 2 |
 | `c:src/core/app_package.c:app_package_action_reason_name` | `src/core/app_package.c` | `app_package_action_reason_name` | `core` | `COVERED` | 1 |
-| `c:src/core/app_package.c:app_package_action_reset` | `src/core/app_package.c` | `app_package_action_reset` | `core` | `COVERED` | 1 |
-| `c:src/core/app_package.c:app_package_add_blocker` | `src/core/app_package.c` | `app_package_add_blocker` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_alias_is_valid` | `src/core/app_package.c` | `app_package_alias_is_valid` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_apply_file` | `src/core/app_package.c` | `app_package_apply_file` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_apply_plan_confirmed` | `src/core/app_package.c` | `app_package_apply_plan_confirmed` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_apply_plan_entry` | `src/core/app_package.c` | `app_package_apply_plan_entry` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_apply_plan_from_directory_confirmed` | `src/core/app_package.c` | `app_package_apply_plan_from_directory_confirmed` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_apply_plan_from_directory_internal` | `src/core/app_package.c` | `app_package_apply_plan_from_directory_internal` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_apply_staged_plan` | `src/core/app_package.c` | `app_package_apply_staged_plan` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_backup_path` | `src/core/app_package.c` | `app_package_backup_path` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_build_directory` | `src/core/app_package.c` | `app_package_build_directory` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_build_entry_path` | `src/core/app_package.c` | `app_package_build_entry_path` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_build_single_install_plan` | `src/core/app_package.c` | `app_package_build_single_install_plan` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_build_source_path` | `src/core/app_package.c` | `app_package_build_source_path` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_check_action_ready` | `src/core/app_package.c` | `app_package_check_action_ready` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_check_install_constraints` | `src/core/app_package.c` | `app_package_check_install_constraints` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_check_space` | `src/core/app_package.c` | `app_package_check_space` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_check_transaction_for_mutation` | `src/core/app_package.c` | `app_package_check_transaction_for_mutation` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_cleanup_backup_files` | `src/core/app_package.c` | `app_package_cleanup_backup_files` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_cleanup_partial` | `src/core/app_package.c` | `app_package_cleanup_partial` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_cleanup_stage_files` | `src/core/app_package.c` | `app_package_cleanup_stage_files` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_collect_dependents` | `src/core/app_package.c` | `app_package_collect_dependents` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_collect_missing` | `src/core/app_package.c` | `app_package_collect_missing` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_commit_install` | `src/core/app_package.c` | `app_package_commit_install` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_commit_remove` | `src/core/app_package.c` | `app_package_commit_remove` | `core` | `PENDING` | 0 |
+| `c:src/core/app_package.c:app_package_action_reset` | `src/core/app_package.c` | `app_package_action_reset` | `core` | `COVERED` | 2 |
+| `c:src/core/app_package.c:app_package_add_blocker` | `src/core/app_package.c` | `app_package_add_blocker` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_alias_is_valid` | `src/core/app_package.c` | `app_package_alias_is_valid` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_apply_file` | `src/core/app_package.c` | `app_package_apply_file` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_apply_plan_confirmed` | `src/core/app_package.c` | `app_package_apply_plan_confirmed` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_apply_plan_entry` | `src/core/app_package.c` | `app_package_apply_plan_entry` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_apply_plan_from_directory_confirmed` | `src/core/app_package.c` | `app_package_apply_plan_from_directory_confirmed` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_apply_plan_from_directory_internal` | `src/core/app_package.c` | `app_package_apply_plan_from_directory_internal` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_apply_staged_plan` | `src/core/app_package.c` | `app_package_apply_staged_plan` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_backup_path` | `src/core/app_package.c` | `app_package_backup_path` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_build_directory` | `src/core/app_package.c` | `app_package_build_directory` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_build_entry_path` | `src/core/app_package.c` | `app_package_build_entry_path` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_build_single_install_plan` | `src/core/app_package.c` | `app_package_build_single_install_plan` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_build_source_path` | `src/core/app_package.c` | `app_package_build_source_path` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_check_action_ready` | `src/core/app_package.c` | `app_package_check_action_ready` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_check_install_constraints` | `src/core/app_package.c` | `app_package_check_install_constraints` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_check_space` | `src/core/app_package.c` | `app_package_check_space` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_check_transaction_for_mutation` | `src/core/app_package.c` | `app_package_check_transaction_for_mutation` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_cleanup_backup_files` | `src/core/app_package.c` | `app_package_cleanup_backup_files` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_cleanup_partial` | `src/core/app_package.c` | `app_package_cleanup_partial` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_cleanup_stage_files` | `src/core/app_package.c` | `app_package_cleanup_stage_files` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_collect_dependents` | `src/core/app_package.c` | `app_package_collect_dependents` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_collect_missing` | `src/core/app_package.c` | `app_package_collect_missing` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_commit_install` | `src/core/app_package.c` | `app_package_commit_install` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_commit_remove` | `src/core/app_package.c` | `app_package_commit_remove` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_compare_versions` | `src/core/app_package.c` | `app_package_compare_versions` | `core` | `COVERED` | 1 |
-| `c:src/core/app_package.c:app_package_copy_string` | `src/core/app_package.c` | `app_package_copy_string` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_copy_text` | `src/core/app_package.c` | `app_package_copy_text` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_crc32` | `src/core/app_package.c` | `app_package_crc32` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_decode` | `src/core/app_package.c` | `app_package_decode` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_delete_installed_file` | `src/core/app_package.c` | `app_package_delete_installed_file` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_discard_rollback` | `src/core/app_package.c` | `app_package_discard_rollback` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_ensure_directory` | `src/core/app_package.c` | `app_package_ensure_directory` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_evaluate_space` | `src/core/app_package.c` | `app_package_evaluate_space` | `core` | `COVERED` | 1 |
-| `c:src/core/app_package.c:app_package_finalize_committed_journal` | `src/core/app_package.c` | `app_package_finalize_committed_journal` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_find_entry` | `src/core/app_package.c` | `app_package_find_entry` | `core` | `PENDING` | 0 |
+| `c:src/core/app_package.c:app_package_copy_string` | `src/core/app_package.c` | `app_package_copy_string` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_copy_text` | `src/core/app_package.c` | `app_package_copy_text` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_crc32` | `src/core/app_package.c` | `app_package_crc32` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_decode` | `src/core/app_package.c` | `app_package_decode` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_delete_installed_file` | `src/core/app_package.c` | `app_package_delete_installed_file` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_discard_rollback` | `src/core/app_package.c` | `app_package_discard_rollback` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_ensure_directory` | `src/core/app_package.c` | `app_package_ensure_directory` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_evaluate_space` | `src/core/app_package.c` | `app_package_evaluate_space` | `core` | `COVERED` | 2 |
+| `c:src/core/app_package.c:app_package_finalize_committed_journal` | `src/core/app_package.c` | `app_package_finalize_committed_journal` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_find_entry` | `src/core/app_package.c` | `app_package_find_entry` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_get_history_count` | `src/core/app_package.c` | `app_package_get_history_count` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_get_history_entry` | `src/core/app_package.c` | `app_package_get_history_entry` | `core` | `COVERED` | 1 |
-| `c:src/core/app_package.c:app_package_get_installed_count` | `src/core/app_package.c` | `app_package_get_installed_count` | `core` | `COVERED` | 1 |
-| `c:src/core/app_package.c:app_package_get_installed_info` | `src/core/app_package.c` | `app_package_get_installed_info` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_get_installed_info_by_id` | `src/core/app_package.c` | `app_package_get_installed_info_by_id` | `core` | `PENDING` | 0 |
+| `c:src/core/app_package.c:app_package_get_installed_count` | `src/core/app_package.c` | `app_package_get_installed_count` | `core` | `COVERED` | 2 |
+| `c:src/core/app_package.c:app_package_get_installed_info` | `src/core/app_package.c` | `app_package_get_installed_info` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_get_installed_info_by_id` | `src/core/app_package.c` | `app_package_get_installed_info_by_id` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_get_status` | `src/core/app_package.c` | `app_package_get_status` | `core` | `COVERED` | 2 |
-| `c:src/core/app_package.c:app_package_header_is_valid` | `src/core/app_package.c` | `app_package_header_is_valid` | `core` | `COVERED` | 1 |
-| `c:src/core/app_package.c:app_package_history_append` | `src/core/app_package.c` | `app_package_history_append` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_history_is_valid` | `src/core/app_package.c` | `app_package_history_is_valid` | `core` | `PENDING` | 0 |
+| `c:src/core/app_package.c:app_package_header_is_valid` | `src/core/app_package.c` | `app_package_header_is_valid` | `core` | `COVERED` | 2 |
+| `c:src/core/app_package.c:app_package_history_append` | `src/core/app_package.c` | `app_package_history_append` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_history_is_valid` | `src/core/app_package.c` | `app_package_history_is_valid` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_history_operation_name` | `src/core/app_package.c` | `app_package_history_operation_name` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_history_outcome_name` | `src/core/app_package.c` | `app_package_history_outcome_name` | `core` | `COVERED` | 1 |
-| `c:src/core/app_package.c:app_package_id_is_valid` | `src/core/app_package.c` | `app_package_id_is_valid` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_init` | `src/core/app_package.c` | `app_package_init` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_install_confirmed` | `src/core/app_package.c` | `app_package_install_confirmed` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_install_file` | `src/core/app_package.c` | `app_package_install_file` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_is_installed` | `src/core/app_package.c` | `app_package_is_installed` | `core` | `PENDING` | 0 |
+| `c:src/core/app_package.c:app_package_id_is_valid` | `src/core/app_package.c` | `app_package_id_is_valid` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_init` | `src/core/app_package.c` | `app_package_init` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_install_confirmed` | `src/core/app_package.c` | `app_package_install_confirmed` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_install_file` | `src/core/app_package.c` | `app_package_install_file` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_is_installed` | `src/core/app_package.c` | `app_package_is_installed` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_is_mutation_active` | `src/core/app_package.c` | `app_package_is_mutation_active` | `core` | `COVERED` | 2 |
 | `c:src/core/app_package.c:app_package_is_ready` | `src/core/app_package.c` | `app_package_is_ready` | `core` | `COVERED` | 2 |
-| `c:src/core/app_package.c:app_package_journal_is_valid` | `src/core/app_package.c` | `app_package_journal_is_valid` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_mutation_begin` | `src/core/app_package.c` | `app_package_mutation_begin` | `core` | `COVERED` | 1 |
-| `c:src/core/app_package.c:app_package_mutation_end` | `src/core/app_package.c` | `app_package_mutation_end` | `core` | `COVERED` | 1 |
-| `c:src/core/app_package.c:app_package_parse_dependencies` | `src/core/app_package.c` | `app_package_parse_dependencies` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_parse_manifest` | `src/core/app_package.c` | `app_package_parse_manifest` | `core` | `PENDING` | 0 |
+| `c:src/core/app_package.c:app_package_journal_is_valid` | `src/core/app_package.c` | `app_package_journal_is_valid` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_mutation_begin` | `src/core/app_package.c` | `app_package_mutation_begin` | `core` | `COVERED` | 2 |
+| `c:src/core/app_package.c:app_package_mutation_end` | `src/core/app_package.c` | `app_package_mutation_end` | `core` | `COVERED` | 2 |
+| `c:src/core/app_package.c:app_package_parse_dependencies` | `src/core/app_package.c` | `app_package_parse_dependencies` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_parse_manifest` | `src/core/app_package.c` | `app_package_parse_manifest` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_plan_action_name` | `src/core/app_package.c` | `app_package_plan_action_name` | `core` | `COVERED` | 1 |
-| `c:src/core/app_package.c:app_package_plan_contains_before` | `src/core/app_package.c` | `app_package_plan_contains_before` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_preflight_install` | `src/core/app_package.c` | `app_package_preflight_install` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_preflight_plan` | `src/core/app_package.c` | `app_package_preflight_plan` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_preflight_plan_from_directory` | `src/core/app_package.c` | `app_package_preflight_plan_from_directory` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_preflight_plan_internal` | `src/core/app_package.c` | `app_package_preflight_plan_internal` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_preflight_remove` | `src/core/app_package.c` | `app_package_preflight_remove` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_preflight_rollback` | `src/core/app_package.c` | `app_package_preflight_rollback` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_prepare_install` | `src/core/app_package.c` | `app_package_prepare_install` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_prepare_plan_journal` | `src/core/app_package.c` | `app_package_prepare_plan_journal` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_prepare_remove` | `src/core/app_package.c` | `app_package_prepare_remove` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_prepare_rollback_internal` | `src/core/app_package.c` | `app_package_prepare_rollback_internal` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_read_backup_files` | `src/core/app_package.c` | `app_package_read_backup_files` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_read_control` | `src/core/app_package.c` | `app_package_read_control` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_read_file` | `src/core/app_package.c` | `app_package_read_file` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_read_install_source` | `src/core/app_package.c` | `app_package_read_install_source` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_read_installed_files` | `src/core/app_package.c` | `app_package_read_installed_files` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_read_metadata` | `src/core/app_package.c` | `app_package_read_metadata` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_read_root_file` | `src/core/app_package.c` | `app_package_read_root_file` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_record_checksum` | `src/core/app_package.c` | `app_package_record_checksum` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_record_progress` | `src/core/app_package.c` | `app_package_record_progress` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_recover_pending_journal` | `src/core/app_package.c` | `app_package_recover_pending_journal` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_release_install` | `src/core/app_package.c` | `app_package_release_install` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_remove` | `src/core/app_package.c` | `app_package_remove` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_remove_confirmed` | `src/core/app_package.c` | `app_package_remove_confirmed` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_remove_root_if_present` | `src/core/app_package.c` | `app_package_remove_root_if_present` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_restore_backup` | `src/core/app_package.c` | `app_package_restore_backup` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_rollback_confirmed` | `src/core/app_package.c` | `app_package_rollback_confirmed` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_run_diagnostics` | `src/core/app_package.c` | `app_package_run_diagnostics` | `core` | `COVERED` | 1 |
-| `c:src/core/app_package.c:app_package_run_installed` | `src/core/app_package.c` | `app_package_run_installed` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_stage_entry` | `src/core/app_package.c` | `app_package_stage_entry` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_stage_path` | `src/core/app_package.c` | `app_package_stage_path` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_stage_plan` | `src/core/app_package.c` | `app_package_stage_plan` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_stage_rollback` | `src/core/app_package.c` | `app_package_stage_rollback` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_state_find_free_slot` | `src/core/app_package.c` | `app_package_state_find_free_slot` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_state_find_rollback` | `src/core/app_package.c` | `app_package_state_find_rollback` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_state_is_valid` | `src/core/app_package.c` | `app_package_state_is_valid` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_state_remove_rollback` | `src/core/app_package.c` | `app_package_state_remove_rollback` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_state_store_rollback` | `src/core/app_package.c` | `app_package_state_store_rollback` | `core` | `PENDING` | 0 |
+| `c:src/core/app_package.c:app_package_plan_contains_before` | `src/core/app_package.c` | `app_package_plan_contains_before` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_preflight_install` | `src/core/app_package.c` | `app_package_preflight_install` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_preflight_plan` | `src/core/app_package.c` | `app_package_preflight_plan` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_preflight_plan_from_directory` | `src/core/app_package.c` | `app_package_preflight_plan_from_directory` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_preflight_plan_internal` | `src/core/app_package.c` | `app_package_preflight_plan_internal` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_preflight_remove` | `src/core/app_package.c` | `app_package_preflight_remove` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_preflight_rollback` | `src/core/app_package.c` | `app_package_preflight_rollback` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_prepare_install` | `src/core/app_package.c` | `app_package_prepare_install` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_prepare_plan_journal` | `src/core/app_package.c` | `app_package_prepare_plan_journal` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_prepare_remove` | `src/core/app_package.c` | `app_package_prepare_remove` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_prepare_rollback_internal` | `src/core/app_package.c` | `app_package_prepare_rollback_internal` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_read_backup_files` | `src/core/app_package.c` | `app_package_read_backup_files` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_read_control` | `src/core/app_package.c` | `app_package_read_control` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_read_file` | `src/core/app_package.c` | `app_package_read_file` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_read_install_source` | `src/core/app_package.c` | `app_package_read_install_source` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_read_installed_files` | `src/core/app_package.c` | `app_package_read_installed_files` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_read_metadata` | `src/core/app_package.c` | `app_package_read_metadata` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_read_root_file` | `src/core/app_package.c` | `app_package_read_root_file` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_record_checksum` | `src/core/app_package.c` | `app_package_record_checksum` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_record_progress` | `src/core/app_package.c` | `app_package_record_progress` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_recover_pending_journal` | `src/core/app_package.c` | `app_package_recover_pending_journal` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_release_install` | `src/core/app_package.c` | `app_package_release_install` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_remove` | `src/core/app_package.c` | `app_package_remove` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_remove_confirmed` | `src/core/app_package.c` | `app_package_remove_confirmed` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_remove_root_if_present` | `src/core/app_package.c` | `app_package_remove_root_if_present` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_restore_backup` | `src/core/app_package.c` | `app_package_restore_backup` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_rollback_confirmed` | `src/core/app_package.c` | `app_package_rollback_confirmed` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_run_diagnostics` | `src/core/app_package.c` | `app_package_run_diagnostics` | `core` | `COVERED` | 2 |
+| `c:src/core/app_package.c:app_package_run_installed` | `src/core/app_package.c` | `app_package_run_installed` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_stage_entry` | `src/core/app_package.c` | `app_package_stage_entry` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_stage_path` | `src/core/app_package.c` | `app_package_stage_path` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_stage_plan` | `src/core/app_package.c` | `app_package_stage_plan` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_stage_rollback` | `src/core/app_package.c` | `app_package_stage_rollback` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_state_find_free_slot` | `src/core/app_package.c` | `app_package_state_find_free_slot` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_state_find_rollback` | `src/core/app_package.c` | `app_package_state_find_rollback` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_state_is_valid` | `src/core/app_package.c` | `app_package_state_is_valid` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_state_remove_rollback` | `src/core/app_package.c` | `app_package_state_remove_rollback` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_state_store_rollback` | `src/core/app_package.c` | `app_package_state_store_rollback` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_test_fail_after` | `src/core/app_package.c` | `app_package_test_fail_after` | `core` | `COVERED` | 2 |
-| `c:src/core/app_package.c:app_package_text_equals` | `src/core/app_package.c` | `app_package_text_equals` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_transaction_init` | `src/core/app_package.c` | `app_package_transaction_init` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_transaction_load_records` | `src/core/app_package.c` | `app_package_transaction_load_records` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_validate_plan_entry` | `src/core/app_package.c` | `app_package_validate_plan_entry` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_verify_file` | `src/core/app_package.c` | `app_package_verify_file` | `core` | `PENDING` | 0 |
+| `c:src/core/app_package.c:app_package_text_equals` | `src/core/app_package.c` | `app_package_text_equals` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_transaction_init` | `src/core/app_package.c` | `app_package_transaction_init` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_transaction_load_records` | `src/core/app_package.c` | `app_package_transaction_load_records` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_validate_plan_entry` | `src/core/app_package.c` | `app_package_validate_plan_entry` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_verify_file` | `src/core/app_package.c` | `app_package_verify_file` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_version_is_valid` | `src/core/app_package.c` | `app_package_version_is_valid` | `core` | `COVERED` | 1 |
-| `c:src/core/app_package.c:app_package_write_backup` | `src/core/app_package.c` | `app_package_write_backup` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_write_history` | `src/core/app_package.c` | `app_package_write_history` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_write_journal` | `src/core/app_package.c` | `app_package_write_journal` | `core` | `PENDING` | 0 |
-| `c:src/core/app_package.c:app_package_write_state` | `src/core/app_package.c` | `app_package_write_state` | `core` | `PENDING` | 0 |
+| `c:src/core/app_package.c:app_package_write_backup` | `src/core/app_package.c` | `app_package_write_backup` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_write_history` | `src/core/app_package.c` | `app_package_write_history` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_write_journal` | `src/core/app_package.c` | `app_package_write_journal` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_write_state` | `src/core/app_package.c` | `app_package_write_state` | `core` | `COVERED` | 1 |
 | `c:src/core/app_remote.c:app_remote_alias` | `src/core/app_remote.c` | `app_remote_alias` | `core` | `PENDING` | 0 |
 | `c:src/core/app_remote.c:app_remote_apply_cached` | `src/core/app_remote.c` | `app_remote_apply_cached` | `core` | `PENDING` | 0 |
 | `c:src/core/app_remote.c:app_remote_begin` | `src/core/app_remote.c` | `app_remote_begin` | `core` | `PENDING` | 0 |
@@ -7827,97 +7827,6 @@
 - `c:src/core/app_loader.c:app_loader_validate_image`
 - `c:src/core/app_loader.c:app_loader_validate_launch_info`
 - `c:src/core/app_loader.c:app_loader_validate_layout`
-- `c:src/core/app_package.c:app_package_add_blocker`
-- `c:src/core/app_package.c:app_package_alias_is_valid`
-- `c:src/core/app_package.c:app_package_apply_file`
-- `c:src/core/app_package.c:app_package_apply_plan_confirmed`
-- `c:src/core/app_package.c:app_package_apply_plan_entry`
-- `c:src/core/app_package.c:app_package_apply_plan_from_directory_confirmed`
-- `c:src/core/app_package.c:app_package_apply_plan_from_directory_internal`
-- `c:src/core/app_package.c:app_package_apply_staged_plan`
-- `c:src/core/app_package.c:app_package_backup_path`
-- `c:src/core/app_package.c:app_package_build_directory`
-- `c:src/core/app_package.c:app_package_build_entry_path`
-- `c:src/core/app_package.c:app_package_build_single_install_plan`
-- `c:src/core/app_package.c:app_package_build_source_path`
-- `c:src/core/app_package.c:app_package_check_action_ready`
-- `c:src/core/app_package.c:app_package_check_install_constraints`
-- `c:src/core/app_package.c:app_package_check_space`
-- `c:src/core/app_package.c:app_package_check_transaction_for_mutation`
-- `c:src/core/app_package.c:app_package_cleanup_backup_files`
-- `c:src/core/app_package.c:app_package_cleanup_partial`
-- `c:src/core/app_package.c:app_package_cleanup_stage_files`
-- `c:src/core/app_package.c:app_package_collect_dependents`
-- `c:src/core/app_package.c:app_package_collect_missing`
-- `c:src/core/app_package.c:app_package_commit_install`
-- `c:src/core/app_package.c:app_package_commit_remove`
-- `c:src/core/app_package.c:app_package_copy_string`
-- `c:src/core/app_package.c:app_package_copy_text`
-- `c:src/core/app_package.c:app_package_crc32`
-- `c:src/core/app_package.c:app_package_decode`
-- `c:src/core/app_package.c:app_package_delete_installed_file`
-- `c:src/core/app_package.c:app_package_discard_rollback`
-- `c:src/core/app_package.c:app_package_ensure_directory`
-- `c:src/core/app_package.c:app_package_finalize_committed_journal`
-- `c:src/core/app_package.c:app_package_find_entry`
-- `c:src/core/app_package.c:app_package_get_installed_info`
-- `c:src/core/app_package.c:app_package_get_installed_info_by_id`
-- `c:src/core/app_package.c:app_package_history_append`
-- `c:src/core/app_package.c:app_package_history_is_valid`
-- `c:src/core/app_package.c:app_package_id_is_valid`
-- `c:src/core/app_package.c:app_package_init`
-- `c:src/core/app_package.c:app_package_install_confirmed`
-- `c:src/core/app_package.c:app_package_install_file`
-- `c:src/core/app_package.c:app_package_is_installed`
-- `c:src/core/app_package.c:app_package_journal_is_valid`
-- `c:src/core/app_package.c:app_package_parse_dependencies`
-- `c:src/core/app_package.c:app_package_parse_manifest`
-- `c:src/core/app_package.c:app_package_plan_contains_before`
-- `c:src/core/app_package.c:app_package_preflight_install`
-- `c:src/core/app_package.c:app_package_preflight_plan`
-- `c:src/core/app_package.c:app_package_preflight_plan_from_directory`
-- `c:src/core/app_package.c:app_package_preflight_plan_internal`
-- `c:src/core/app_package.c:app_package_preflight_remove`
-- `c:src/core/app_package.c:app_package_preflight_rollback`
-- `c:src/core/app_package.c:app_package_prepare_install`
-- `c:src/core/app_package.c:app_package_prepare_plan_journal`
-- `c:src/core/app_package.c:app_package_prepare_remove`
-- `c:src/core/app_package.c:app_package_prepare_rollback_internal`
-- `c:src/core/app_package.c:app_package_read_backup_files`
-- `c:src/core/app_package.c:app_package_read_control`
-- `c:src/core/app_package.c:app_package_read_file`
-- `c:src/core/app_package.c:app_package_read_install_source`
-- `c:src/core/app_package.c:app_package_read_installed_files`
-- `c:src/core/app_package.c:app_package_read_metadata`
-- `c:src/core/app_package.c:app_package_read_root_file`
-- `c:src/core/app_package.c:app_package_record_checksum`
-- `c:src/core/app_package.c:app_package_record_progress`
-- `c:src/core/app_package.c:app_package_recover_pending_journal`
-- `c:src/core/app_package.c:app_package_release_install`
-- `c:src/core/app_package.c:app_package_remove`
-- `c:src/core/app_package.c:app_package_remove_confirmed`
-- `c:src/core/app_package.c:app_package_remove_root_if_present`
-- `c:src/core/app_package.c:app_package_restore_backup`
-- `c:src/core/app_package.c:app_package_rollback_confirmed`
-- `c:src/core/app_package.c:app_package_run_installed`
-- `c:src/core/app_package.c:app_package_stage_entry`
-- `c:src/core/app_package.c:app_package_stage_path`
-- `c:src/core/app_package.c:app_package_stage_plan`
-- `c:src/core/app_package.c:app_package_stage_rollback`
-- `c:src/core/app_package.c:app_package_state_find_free_slot`
-- `c:src/core/app_package.c:app_package_state_find_rollback`
-- `c:src/core/app_package.c:app_package_state_is_valid`
-- `c:src/core/app_package.c:app_package_state_remove_rollback`
-- `c:src/core/app_package.c:app_package_state_store_rollback`
-- `c:src/core/app_package.c:app_package_text_equals`
-- `c:src/core/app_package.c:app_package_transaction_init`
-- `c:src/core/app_package.c:app_package_transaction_load_records`
-- `c:src/core/app_package.c:app_package_validate_plan_entry`
-- `c:src/core/app_package.c:app_package_verify_file`
-- `c:src/core/app_package.c:app_package_write_backup`
-- `c:src/core/app_package.c:app_package_write_history`
-- `c:src/core/app_package.c:app_package_write_journal`
-- `c:src/core/app_package.c:app_package_write_state`
 - `c:src/core/app_remote.c:app_remote_alias`
 - `c:src/core/app_remote.c:app_remote_apply_cached`
 - `c:src/core/app_remote.c:app_remote_begin`

@@ -89,9 +89,12 @@ incluindo o ajuste de scalar para `uint32_t` e a rejeicao de entradas invalidas.
 O helper `fe_cswap`, que nao possuia referencias no codigo ativo, foi removido;
 `fe_ccopy` continua sendo o helper utilizado pelo caminho Ed25519.
 
-O caso `test-package-host` cobre contratos puros do servico de pacotes,
-incluindo versoes, motivos canonicos, estados indisponiveis e failpoints sem
-escrever no armazenamento.
+O caso `test-package-host` cobre o servico de pacotes em filesystem simulado,
+incluindo pacotes ZPKG/ZAPP validos e corrompidos, parsing, CRC, versoes,
+instalacao transacional, atualizacao, recuperacao por failpoint, rollback,
+remocao, modo legado FAT32, motivos canonicos, limites e limpeza sem escrever
+em armazenamento real. O relatorio instrumentado fica em
+`build/test-results/package-host/coverage.json`.
 
 O caso `test-state-host` cobre recovery e a cadeia de notificadores de energia
 com callbacks estaticos, incluindo estados opcionais, duplicatas, capacidade,

@@ -1270,6 +1270,16 @@ pendente.
   7.197 superficies, 3.898 `COVERED`, 3.299 `PENDING` e 85 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Core/app_package concluido em 2026-09-02: a fixture host-only
+  `host:core:app-package` foi ampliada com filesystem FAT12/FAT32 simulado,
+  pacotes ZPKG/ZAPP validos, parsing, CRC, instalacao, atualizacao, failpoint
+  com recuperacao, rollback, remocao e modo legado. O relatorio instrumentado
+  `build/test-results/package-host/coverage.json` terminou `PASS` e cobriu as
+  111 superficies de `src/core/app_package.c`, sem escrita em armazenamento
+  real. A sincronizacao registra 7.196 superficies, 4.093 `COVERED` e 3.103
+  `PENDING`; o fechamento integral, o gate estrito e a validacao TST7 completa
+  continuam pendentes.
+
 - Incremento Storage/FAT12 concluido em 2026-09-02: o caso existente
   `host:storage:fat12` passou a exercitar as APIs legadas de escrita e remocao
   na raiz, escrita e remocao em subdiretorio e criacao de entradas de
