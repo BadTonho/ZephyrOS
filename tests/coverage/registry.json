@@ -1938,6 +1938,25 @@
       ],
       "include_public_apis": true,
       "evidence": "make test-dns-host PASS com consultas, cache, CNAME, timeout, respostas invalidas e falhas de transporte usando UDP e timer falsos"
+    },
+    {
+      "id": "dhcp-host-dynamic",
+      "domain": "network-dhcp",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/dhcp-host/coverage.json",
+      "coverage_sources": [
+        "src/core/dhcp.c",
+        "src/core/log.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-dhcp-host PASS com descoberta, oferta, lease, renovacao, rebinding, expiracao, mensagens invalidas e falhas de transporte usando UDP e timer falsos"
     }
   ]
 }

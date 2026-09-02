@@ -975,3 +975,12 @@ transporte sem conexao externa. A cobertura real foi sincronizada no
 catalogo: 6.820 superficies, 2.785 `COVERED`, 4.035 `PENDING` e 66 casos.
 O gate `make catalog-test` permanece valido; a cobertura integral, o gate
 estrito e a validacao TST7 completa continuam pendentes.
+
+Incremento Rede/DHCP concluido em 2026-09-02: o caso host-only
+`host:network:dhcp` e o alvo `make test-dhcp-host` foram adicionados. A
+fixture passou com UDP e timer falsos, cobrindo descoberta, oferta, lease,
+renovacao, rebinding, expiracao, NAK, timeout, mensagens invalidas e falhas de
+transporte sem conexao externa. A cobertura real foi sincronizada no
+catalogo: 6.820 superficies, 2.841 `COVERED`, 3.979 `PENDING` e 67 casos. O
+fechamento integral do catalogo, o gate estrito e a validacao TST7 completa
+continuam pendentes.

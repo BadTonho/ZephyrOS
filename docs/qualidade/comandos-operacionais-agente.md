@@ -69,6 +69,7 @@ make test-udp-host
 make test-arp-host
 make test-icmp-host
 make test-dns-host
+make test-dhcp-host
 ```
 
 O caso de scheduling cobre `wait`, `workqueue` e `irq_deferred` em processo
@@ -160,6 +161,9 @@ pendente, pacotes invalidos e falhas de transporte; seu relatorio fica em
 O caso `test-dns-host` usa UDP, IPv4 e timer falsos para exercitar consultas,
 cache, CNAME, timeout, respostas invalidas e falhas de transporte; seu
 relatorio fica em `build/test-results/dns-host/`.
+O caso `test-dhcp-host` usa UDP e timer falsos para exercitar descoberta,
+oferta, lease, renovacao, rebinding, expiracao, NAK, mensagens invalidas e
+falhas de transporte; seu relatorio fica em `build/test-results/dhcp-host/`.
 
 Para reconstruir a imagem instrumentada separada e gerar o mapa de simbolos:
 

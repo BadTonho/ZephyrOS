@@ -5208,9 +5208,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/dhcp.h:dhcp_complete_event",
@@ -5226,9 +5229,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/dhcp.h:dhcp_get_status",
@@ -5244,9 +5250,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/dhcp.h:dhcp_init",
@@ -5262,9 +5271,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/dhcp.h:dhcp_maintain",
@@ -5280,9 +5292,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/dhcp.h:dhcp_release",
@@ -5298,9 +5313,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/dhcp.h:dhcp_renew",
@@ -5316,9 +5334,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/dhcp.h:dhcp_reset",
@@ -5334,9 +5355,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/dhcp.h:dhcp_take_event",
@@ -5352,9 +5376,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/dhcp.h:dhcp_validate_state",
@@ -5372,11 +5399,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:dhcp",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/dns.h:dns_clear",
@@ -7045,6 +7073,7 @@
         "host:core:timer",
         "host:memory:slab-metadata",
         "host:network:arp",
+        "host:network:dhcp",
         "host:network:dns",
         "host:network:icmp",
         "host:network:udp"
@@ -7082,6 +7111,7 @@
         "host:core:timer",
         "host:memory:slab-metadata",
         "host:network:arp",
+        "host:network:dhcp",
         "host:network:dns",
         "host:network:icmp",
         "host:network:udp",
@@ -9837,6 +9867,7 @@
         "host:core:timer",
         "host:memory:slab-metadata",
         "host:network:arp",
+        "host:network:dhcp",
         "host:network:dns",
         "host:network:icmp",
         "host:network:udp",
@@ -9885,6 +9916,7 @@
         "host:core:timer",
         "host:memory:slab-metadata",
         "host:network:arp",
+        "host:network:dhcp",
         "host:network:dns",
         "host:network:icmp",
         "host:network:udp",
@@ -9933,6 +9965,7 @@
         "host:core:timer",
         "host:memory:slab-metadata",
         "host:network:arp",
+        "host:network:dhcp",
         "host:network:dns",
         "host:network:icmp",
         "host:network:udp",
@@ -9974,6 +10007,7 @@
         "host:core:timer",
         "host:memory:slab-metadata",
         "host:network:arp",
+        "host:network:dhcp",
         "host:network:dns",
         "host:network:icmp",
         "host:network:udp",
@@ -42306,9 +42340,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_acquisition_retry_ticks",
@@ -42324,9 +42361,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_adaptive_retry",
@@ -42342,9 +42382,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_append_identity",
@@ -42360,9 +42403,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_append_option",
@@ -42378,9 +42424,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_append_u32_option",
@@ -42396,9 +42445,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_build_base",
@@ -42414,9 +42466,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_build_discover",
@@ -42432,9 +42487,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_build_release",
@@ -42450,9 +42508,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_build_request",
@@ -42468,9 +42529,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_clear_session",
@@ -42486,9 +42550,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_complete_event",
@@ -42504,9 +42571,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_copy_text",
@@ -42522,9 +42592,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_elapsed",
@@ -42540,9 +42613,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_finish_message",
@@ -42558,9 +42634,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_get_status",
@@ -42576,9 +42655,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_handle_datagram",
@@ -42594,9 +42676,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_init",
@@ -42612,9 +42697,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_invalid_option_length",
@@ -42648,9 +42736,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_lease_valid",
@@ -42666,9 +42757,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_mac_equal",
@@ -42684,9 +42778,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_mac_valid",
@@ -42702,9 +42799,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_maintain",
@@ -42720,9 +42820,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_maintain_acquisition",
@@ -42738,9 +42841,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_maintain_bound",
@@ -42756,9 +42862,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_maintain_renewal",
@@ -42774,9 +42883,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_offer_from_reply",
@@ -42792,9 +42904,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_parse_address_list",
@@ -42810,9 +42925,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_parse_option_value",
@@ -42830,11 +42948,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:dhcp",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_parse_options",
@@ -42850,9 +42969,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_parse_options_internal",
@@ -42870,11 +42992,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:dhcp",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_parse_reply",
@@ -42890,9 +43013,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_queue_apply",
@@ -42908,9 +43034,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_queue_drop",
@@ -42926,9 +43055,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_read_u32",
@@ -42944,9 +43076,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_record_attempt",
@@ -42962,9 +43097,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_release",
@@ -42980,9 +43118,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_remaining",
@@ -42998,9 +43139,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_renew",
@@ -43016,9 +43160,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_reset",
@@ -43034,9 +43181,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_seconds_to_ticks",
@@ -43052,9 +43202,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_send_bound_request",
@@ -43070,9 +43223,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_send_discover",
@@ -43088,9 +43244,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_send_selecting_request",
@@ -43106,9 +43265,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_set_default_timers",
@@ -43124,9 +43286,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_take_event",
@@ -43142,9 +43307,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_text_is_equal",
@@ -43160,9 +43328,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_validate_option_vectors",
@@ -43180,11 +43351,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:dhcp",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_validate_state",
@@ -43202,11 +43374,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:dhcp",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_write_u16",
@@ -43222,9 +43395,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dhcp.c:dhcp_write_u32",
@@ -43240,9 +43416,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:dhcp"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/dns.c:dns_ascii_lower",
@@ -49352,6 +49531,7 @@
         "host:core:timer",
         "host:memory:slab-metadata",
         "host:network:arp",
+        "host:network:dhcp",
         "host:network:dns",
         "host:network:icmp",
         "host:network:udp",
@@ -49414,6 +49594,7 @@
         "host:core:timer",
         "host:memory:slab-metadata",
         "host:network:arp",
+        "host:network:dhcp",
         "host:network:dns",
         "host:network:icmp",
         "host:network:udp",
@@ -49563,6 +49744,7 @@
         "host:core:timer",
         "host:memory:slab-metadata",
         "host:network:arp",
+        "host:network:dhcp",
         "host:network:dns",
         "host:network:icmp",
         "host:network:udp"
@@ -49600,6 +49782,7 @@
         "host:core:timer",
         "host:memory:slab-metadata",
         "host:network:arp",
+        "host:network:dhcp",
         "host:network:dns",
         "host:network:icmp",
         "host:network:udp",
@@ -49641,6 +49824,7 @@
         "host:core:timer",
         "host:memory:slab-metadata",
         "host:network:arp",
+        "host:network:dhcp",
         "host:network:dns",
         "host:network:icmp",
         "host:network:udp",
@@ -49704,6 +49888,7 @@
         "host:core:timer",
         "host:memory:slab-metadata",
         "host:network:arp",
+        "host:network:dhcp",
         "host:network:dns",
         "host:network:icmp",
         "host:network:udp",
@@ -49770,6 +49955,7 @@
         "host:core:timer",
         "host:memory:slab-metadata",
         "host:network:arp",
+        "host:network:dhcp",
         "host:network:dns",
         "host:network:icmp",
         "host:network:udp",
@@ -49811,6 +49997,7 @@
         "host:core:timer",
         "host:memory:slab-metadata",
         "host:network:arp",
+        "host:network:dhcp",
         "host:network:dns",
         "host:network:icmp",
         "host:network:udp",
@@ -49852,6 +50039,7 @@
         "host:core:timer",
         "host:memory:slab-metadata",
         "host:network:arp",
+        "host:network:dhcp",
         "host:network:dns",
         "host:network:icmp",
         "host:network:udp",
@@ -49937,6 +50125,7 @@
         "host:core:timer",
         "host:memory:slab-metadata",
         "host:network:arp",
+        "host:network:dhcp",
         "host:network:dns",
         "host:network:icmp",
         "host:network:udp",
@@ -49976,6 +50165,7 @@
         "host:core:timer",
         "host:memory:slab-metadata",
         "host:network:arp",
+        "host:network:dhcp",
         "host:network:dns",
         "host:network:icmp",
         "host:network:udp",
@@ -50017,6 +50207,7 @@
         "host:core:timer",
         "host:memory:slab-metadata",
         "host:network:arp",
+        "host:network:dhcp",
         "host:network:dns",
         "host:network:icmp",
         "host:network:udp",
@@ -50193,6 +50384,7 @@
         "host:core:timer",
         "host:memory:slab-metadata",
         "host:network:arp",
+        "host:network:dhcp",
         "host:network:dns",
         "host:network:icmp",
         "host:network:udp",
@@ -50234,6 +50426,7 @@
         "host:core:timer",
         "host:memory:slab-metadata",
         "host:network:arp",
+        "host:network:dhcp",
         "host:network:dns",
         "host:network:icmp",
         "host:network:udp",
@@ -50480,6 +50673,7 @@
         "host:core:timer",
         "host:memory:slab-metadata",
         "host:network:arp",
+        "host:network:dhcp",
         "host:network:dns",
         "host:network:icmp",
         "host:network:udp",
@@ -56299,6 +56493,7 @@
         "host:core:timer",
         "host:memory:slab-metadata",
         "host:network:arp",
+        "host:network:dhcp",
         "host:network:dns",
         "host:network:icmp",
         "host:network:udp",
@@ -56347,6 +56542,7 @@
         "host:core:timer",
         "host:memory:slab-metadata",
         "host:network:arp",
+        "host:network:dhcp",
         "host:network:dns",
         "host:network:icmp",
         "host:network:udp",
@@ -56395,6 +56591,7 @@
         "host:core:timer",
         "host:memory:slab-metadata",
         "host:network:arp",
+        "host:network:dhcp",
         "host:network:dns",
         "host:network:icmp",
         "host:network:udp",
@@ -56436,6 +56633,7 @@
         "host:core:timer",
         "host:memory:slab-metadata",
         "host:network:arp",
+        "host:network:dhcp",
         "host:network:dns",
         "host:network:icmp",
         "host:network:udp",
@@ -136833,6 +137031,124 @@
       ]
     },
     {
+      "id": "host:network:dhcp",
+      "scenario": "Contrato host-only do cliente DHCP com UDP e timer falsos",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "compilar e executar descoberta, oferta, lease, renovacao, rebinding e expiracao DHCP com UDP e timer simulados",
+      "expected": "leases validos percorrem eventos canonicos, mensagens invalidas falham e o estado retorna ao baseline",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente estado DHCP, buffers estaticos e transporte UDP falso no processo host",
+      "cleanup": "sessao e eventos DHCP reiniciados e artefatos preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/dhcp.h:dhcp_acquire",
+        "api:src/include/core/dhcp.h:dhcp_complete_event",
+        "api:src/include/core/dhcp.h:dhcp_get_status",
+        "api:src/include/core/dhcp.h:dhcp_init",
+        "api:src/include/core/dhcp.h:dhcp_maintain",
+        "api:src/include/core/dhcp.h:dhcp_release",
+        "api:src/include/core/dhcp.h:dhcp_renew",
+        "api:src/include/core/dhcp.h:dhcp_reset",
+        "api:src/include/core/dhcp.h:dhcp_take_event",
+        "api:src/include/core/dhcp.h:dhcp_validate_state",
+        "api:src/include/core/log.h:log_init",
+        "api:src/include/core/log.h:log_print",
+        "api:src/include/core/string.h:kmemcpy",
+        "api:src/include/core/string.h:kmemset",
+        "api:src/include/core/string.h:kstrcmp",
+        "api:src/include/core/string.h:kstrlen",
+        "c:src/core/dhcp.c:dhcp_acquire",
+        "c:src/core/dhcp.c:dhcp_acquisition_retry_ticks",
+        "c:src/core/dhcp.c:dhcp_adaptive_retry",
+        "c:src/core/dhcp.c:dhcp_append_identity",
+        "c:src/core/dhcp.c:dhcp_append_option",
+        "c:src/core/dhcp.c:dhcp_append_u32_option",
+        "c:src/core/dhcp.c:dhcp_build_base",
+        "c:src/core/dhcp.c:dhcp_build_discover",
+        "c:src/core/dhcp.c:dhcp_build_release",
+        "c:src/core/dhcp.c:dhcp_build_request",
+        "c:src/core/dhcp.c:dhcp_clear_session",
+        "c:src/core/dhcp.c:dhcp_complete_event",
+        "c:src/core/dhcp.c:dhcp_copy_text",
+        "c:src/core/dhcp.c:dhcp_elapsed",
+        "c:src/core/dhcp.c:dhcp_finish_message",
+        "c:src/core/dhcp.c:dhcp_get_status",
+        "c:src/core/dhcp.c:dhcp_handle_datagram",
+        "c:src/core/dhcp.c:dhcp_init",
+        "c:src/core/dhcp.c:dhcp_lease_from_reply",
+        "c:src/core/dhcp.c:dhcp_lease_valid",
+        "c:src/core/dhcp.c:dhcp_mac_equal",
+        "c:src/core/dhcp.c:dhcp_mac_valid",
+        "c:src/core/dhcp.c:dhcp_maintain",
+        "c:src/core/dhcp.c:dhcp_maintain_acquisition",
+        "c:src/core/dhcp.c:dhcp_maintain_bound",
+        "c:src/core/dhcp.c:dhcp_maintain_renewal",
+        "c:src/core/dhcp.c:dhcp_offer_from_reply",
+        "c:src/core/dhcp.c:dhcp_parse_address_list",
+        "c:src/core/dhcp.c:dhcp_parse_option_value",
+        "c:src/core/dhcp.c:dhcp_parse_options",
+        "c:src/core/dhcp.c:dhcp_parse_options_internal",
+        "c:src/core/dhcp.c:dhcp_parse_reply",
+        "c:src/core/dhcp.c:dhcp_queue_apply",
+        "c:src/core/dhcp.c:dhcp_queue_drop",
+        "c:src/core/dhcp.c:dhcp_read_u32",
+        "c:src/core/dhcp.c:dhcp_record_attempt",
+        "c:src/core/dhcp.c:dhcp_release",
+        "c:src/core/dhcp.c:dhcp_remaining",
+        "c:src/core/dhcp.c:dhcp_renew",
+        "c:src/core/dhcp.c:dhcp_reset",
+        "c:src/core/dhcp.c:dhcp_seconds_to_ticks",
+        "c:src/core/dhcp.c:dhcp_send_bound_request",
+        "c:src/core/dhcp.c:dhcp_send_discover",
+        "c:src/core/dhcp.c:dhcp_send_selecting_request",
+        "c:src/core/dhcp.c:dhcp_set_default_timers",
+        "c:src/core/dhcp.c:dhcp_take_event",
+        "c:src/core/dhcp.c:dhcp_text_is_equal",
+        "c:src/core/dhcp.c:dhcp_validate_option_vectors",
+        "c:src/core/dhcp.c:dhcp_validate_state",
+        "c:src/core/dhcp.c:dhcp_write_u16",
+        "c:src/core/dhcp.c:dhcp_write_u32",
+        "c:src/core/log.c:log_console_print_number",
+        "c:src/core/log.c:log_copy_text",
+        "c:src/core/log.c:log_init",
+        "c:src/core/log.c:log_is_power_of_two",
+        "c:src/core/log.c:log_level_is_valid",
+        "c:src/core/log.c:log_print",
+        "c:src/core/log.c:log_print_colored",
+        "c:src/core/log.c:log_records_match",
+        "c:src/core/log.c:log_restore_interrupts",
+        "c:src/core/log.c:log_ring_initialize",
+        "c:src/core/log.c:log_ring_latest_index",
+        "c:src/core/log.c:log_ring_store",
+        "c:src/core/log.c:log_submit",
+        "c:src/core/log.c:log_suspend_interrupts",
+        "c:src/core/log.c:log_write_serial",
+        "c:src/core/string.c:kmemcpy",
+        "c:src/core/string.c:kmemset",
+        "c:src/core/string.c:kstrcmp",
+        "c:src/core/string.c:kstrlen"
+      ],
+      "tags": [
+        "host",
+        "network",
+        "dhcp",
+        "negative",
+        "coverage"
+      ]
+    },
+    {
       "id": "host:network:dns",
       "scenario": "Contrato host-only do cliente DNS com UDP e timer falsos",
       "owner": "quality",
@@ -137043,8 +137359,8 @@
         "warnings": "error"
       },
       "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "compilar e executar configuração, envio, broadcast, recepção, checksum e handlers IPv4",
-      "expected": "datagramas validos são entregues, entradas inválidas são recusadas e o estado é restaurado",
+      "action": "compilar e executar configuraÃ§Ã£o, envio, broadcast, recepÃ§Ã£o, checksum e handlers IPv4",
+      "expected": "datagramas validos sÃ£o entregues, entradas invÃ¡lidas sÃ£o recusadas e o estado Ã© restaurado",
       "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
       "effects": "somente estado IPv4, tabela de rotas e buffers falsos de ARP/Ethernet",
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
