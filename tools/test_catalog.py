@@ -867,6 +867,32 @@ def reset_coverage_links(catalog: dict[str, Any]) -> None:
             surface.pop("coverage_mode", None)
 
 
+def apply_registry_case_definitions(catalog: dict[str, Any],
+                                    registry: dict[str, Any]) -> None:
+    cases = catalog.setdefault("cases", [])
+    case_map = {
+        item.get("id"): item for item in cases
+        if isinstance(item, dict) and isinstance(item.get("id"), str)
+    }
+    for entry in registry.get("entries", []):
+        if not isinstance(entry, dict) or "case_definition" not in entry:
+            continue
+        definition = entry.get("case_definition")
+        if not isinstance(definition, dict):
+            raise CatalogError(f"definicao de caso invalida: {entry.get('id')}")
+        case_id = definition.get("id")
+        if not isinstance(case_id, str) or not case_id:
+            raise CatalogError(f"definicao de caso sem id: {entry.get('id')}")
+        existing = case_map.get(case_id)
+        if existing is None:
+            case = dict(definition)
+            cases.append(case)
+            case_map[case_id] = case
+        else:
+            existing.clear()
+            existing.update(definition)
+
+
 def apply_coverage_registry(catalog: dict[str, Any],
                             registry: dict[str, Any],
                             root: Path = ROOT) -> None:
@@ -1199,6 +1225,7 @@ def command_sync(args: argparse.Namespace, root: Path) -> int:
     if registry_path.is_file():
         registry = load_json(registry_path)
         reset_coverage_links(result)
+        apply_registry_case_definitions(result, registry)
         apply_coverage_registry(result, registry, root)
         registry_errors = validate_coverage_registry(registry, result, root=root)
         if registry_errors:

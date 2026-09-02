@@ -1791,6 +1791,56 @@
       "evidence": "make test-font-host PASS com inicializacao idempotente e dimensoes 8x16 no relatorio instrumentado, sem enderecos desconhecidos ou ambiguos"
     },
     {
+      "id": "rtc-status-host-dynamic",
+      "domain": "drivers-rtc",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:drivers:rtc-status"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/rtc-status-host/coverage.json",
+      "coverage_sources": [
+        "src/drivers/rtc.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:drivers:rtc-status",
+        "scenario": "Contrato host-only do estado publicado pelo RTC",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "consultar o estado inicial do RTC com destinos valido e nulo",
+        "expected": "rtc_get_status rejeita destino nulo e publica snapshot inicial estavel",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente estado estatico do RTC e processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": [
+          "api:src/include/drivers/rtc.h:rtc_get_status",
+          "c:src/drivers/rtc.c:rtc_get_status"
+        ],
+        "tags": [
+          "host",
+          "drivers",
+          "rtc",
+          "coverage"
+        ]
+      },
+      "evidence": "make test-rtc-status-host PASS com snapshot nulo, estado inicial zerado e leitura repetida sem mutacao no relatorio instrumentado"
+    },
+    {
       "id": "shell-introspection-host-dynamic",
       "domain": "shell-introspection",
       "owner": "quality",

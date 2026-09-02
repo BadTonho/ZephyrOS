@@ -287,6 +287,15 @@ em `build/test-results/font-host/`:
 make test-font-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-rtc-status-host` exercita o contrato seguro de consulta do estado
+publicado pelo RTC sem acessar CMOS em modo host. Ele verifica destino nulo,
+snapshot inicial zerado e leituras repetidas sem mutacao. O relatorio fica em
+`build/test-results/rtc-status-host/`:
+
+```text
+make test-rtc-status-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O registro em `tests/coverage/registry.json` somente seleciona enderecos de
 relatorios `PASS` existentes e filtra as fontes declaradas. Um relatorio
 ausente, com endereco desconhecido ou ambiguo bloqueia o gate estrito; nao ha

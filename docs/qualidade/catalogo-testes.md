@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **6826**
-- Casos de teste: **82**
+- Casos de teste: **83**
 - Superfícies aposentadas: **21**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 3095 |
+| `COVERED` | 3097 |
 | `MANUAL` | 0 |
-| `PENDING` | 3731 |
+| `PENDING` | 3729 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 82 |
+| `AUTOMATED` | 83 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -879,7 +879,7 @@
 | `api:src/include/drivers/rng.h:rng_get_status` | `src/include/drivers/rng.h` | `rng_get_status` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/rng.h:rng_init` | `src/include/drivers/rng.h` | `rng_init` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/rng.h:rng_validate_state` | `src/include/drivers/rng.h` | `rng_validate_state` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/rtc.h:rtc_get_status` | `src/include/drivers/rtc.h` | `rtc_get_status` | `drivers` | `PENDING` | 0 |
+| `api:src/include/drivers/rtc.h:rtc_get_status` | `src/include/drivers/rtc.h` | `rtc_get_status` | `drivers` | `COVERED` | 1 |
 | `api:src/include/drivers/rtc.h:rtc_init` | `src/include/drivers/rtc.h` | `rtc_init` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/rtc.h:rtc_read_utc` | `src/include/drivers/rtc.h` | `rtc_read_utc` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/rtc.h:rtc_self_test` | `src/include/drivers/rtc.h` | `rtc_self_test` | `drivers` | `COVERED` | 2 |
@@ -4042,7 +4042,7 @@
 | `c:src/drivers/rtc.c:rtc_days_in_month` | `src/drivers/rtc.c` | `rtc_days_in_month` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/rtc.c:rtc_decode_snapshot` | `src/drivers/rtc.c` | `rtc_decode_snapshot` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/rtc.c:rtc_decode_value` | `src/drivers/rtc.c` | `rtc_decode_value` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/rtc.c:rtc_get_status` | `src/drivers/rtc.c` | `rtc_get_status` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/rtc.c:rtc_get_status` | `src/drivers/rtc.c` | `rtc_get_status` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/rtc.c:rtc_inb` | `src/drivers/rtc.c` | `rtc_inb` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/rtc.c:rtc_init` | `src/drivers/rtc.c` | `rtc_init` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/rtc.c:rtc_is_leap_year` | `src/drivers/rtc.c` | `rtc_is_leap_year` | `drivers` | `COVERED` | 2 |
@@ -6928,6 +6928,7 @@
 | `host:core:timer` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar timers one-shot e periodicos com IDT, PIC e scheduler simulados | handles, prazos, cancelamento, dispatch, callbacks, notifier e limpeza respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas estaticas do servico de timers no processo host | todos os timers e proprietarios sao destruidos e os artefatos sao preservados |
 | `host:core:workqueue` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fixture de workqueue com espera controlada | autoteste, callbacks, filas, prioridades, limites e limpeza validos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico da workqueue e callbacks falsos no processo host | trabalhos destruidos, filas vazias, fallback restaurado e artefatos preservados |
 | `host:drivers:font` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inicializar o driver de fonte e consultar as dimensoes publicadas | font_init e idempotente e as dimensoes publicadas permanecem 8x16 | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabela estatica de fontes e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:drivers:rtc-status` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | consultar o estado inicial do RTC com destinos valido e nulo | rtc_get_status rejeita destino nulo e publica snapshot inicial estavel | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do RTC e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:memory:memory` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar inicializacao E820, alocacao e liberacao PMM por zona, heap, alinhamento e estatisticas | PMM e heap rejeitam limites invalidos, contabilizam falhas e restauram todas as paginas e blocos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente mapa E820, bitmap PMM e heap estaticos no processo host | paginas e blocos liberados, estatisticas restauradas e artefatos preservados |
 | `host:memory:paging` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar init, mapeamento, diretorios de usuario, faults lazy, copias, limites e cleanup com PMM falso | o paging respeita os limites de usuario, rejeita estados invalidos e restaura os recursos da fixture | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente diretorios, tabelas e paginas estaticos no processo host | diretorios e tabelas liberados, pagina de usuario coletada e artefatos preservados |
 | `host:memory:slab-metadata` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar inicializacao, limites, metadados, estatisticas e limpeza do registrador SLAB sem alocar paginas reais | estado publicado, informacoes por indice, duplicidade e limpeza respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas de metadados no processo host; nenhuma pagina real e alocada | cache temporario destruido e manifesto, logs e cobertura preservados |
@@ -7439,7 +7440,6 @@
 - `api:src/include/drivers/pci.h:pci_write`
 - `api:src/include/drivers/rng.h:rng_get_bytes`
 - `api:src/include/drivers/rng.h:rng_init`
-- `api:src/include/drivers/rtc.h:rtc_get_status`
 - `api:src/include/drivers/rtc.h:rtc_init`
 - `api:src/include/drivers/rtc.h:rtc_read_utc`
 - `api:src/include/drivers/rtl8139.h:rtl8139_handler`
@@ -9109,7 +9109,6 @@
 - `c:src/drivers/rng.c:rng_get_bytes`
 - `c:src/drivers/rng.c:rng_init`
 - `c:src/drivers/rng.c:rng_read_word`
-- `c:src/drivers/rtc.c:rtc_get_status`
 - `c:src/drivers/rtc.c:rtc_inb`
 - `c:src/drivers/rtc.c:rtc_init`
 - `c:src/drivers/rtc.c:rtc_outb`
