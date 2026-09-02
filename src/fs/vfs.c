@@ -2358,8 +2358,10 @@ int vfs_self_test(vfs_test_result_t* result) {
     uint32_t bytes = 0U;
     uint32_t filled_count = 0U;
     uint32_t position = 0U;
+    uint32_t ready = 0U;
     uint8_t fill_cleanup = 1U;
     uint8_t capacity_ready = 1U;
+    pollfd_t poll_fd;
     int fd;
     int close_result;
     int result_code;
@@ -2407,7 +2409,7 @@ int vfs_self_test(vfs_test_result_t* result) {
     table->entries[fd] = file;
     vfs_metrics.opens++;
     spinlock_release(&vfs_lock);
-    result->lifecycle = 1U;
+    result->lifecycle = vfs_test_operations.open(vnode, file) == ERR_UNAVAILABLE;
     vfs_test_count(result, result->lifecycle);
     result_code = vfs_read(fd, buffer, sizeof(buffer), &bytes);
     result->sequential_read = result_code == OK && bytes == sizeof(buffer) &&
@@ -2420,8 +2422,25 @@ int vfs_self_test(vfs_test_result_t* result) {
                           ERR_UNAVAILABLE;
     file->mode = VFS_MODE_WRITE;
     result->permissions = result->permissions &&
+        vfs_write(fd, test_data, 1U, &bytes) == OK && bytes == 1U &&
         vfs_lseek(fd, 0, VFS_SEEK_SET, &position) == ERR_UNAVAILABLE;
     file->mode = VFS_MODE_READ;
+    poll_fd.fd = fd;
+    poll_fd.events = POLLIN;
+    poll_fd.revents = 0U;
+    result->permissions = result->permissions &&
+        vfs_poll(&poll_fd, 1U, 0U, &ready) == OK && ready == 1U &&
+        (poll_fd.revents & POLLIN) != 0U;
+    bytes = 1U;
+    result->permissions = result->permissions &&
+        table->standard_files[VFS_FD_STDOUT]->vnode->operations->read(
+            table->standard_files[VFS_FD_STDOUT], buffer, 1U, &bytes) ==
+            ERR_UNAVAILABLE && bytes == 0U;
+    bytes = 1U;
+    result->permissions = result->permissions &&
+        table->standard_files[VFS_FD_STDIN]->vnode->operations->write(
+            table->standard_files[VFS_FD_STDIN], test_data, 1U, &bytes) ==
+            ERR_UNAVAILABLE && bytes == 0U;
     vfs_test_count(result, result->permissions);
     vfs_lseek(fd, 0, VFS_SEEK_END, &position);
     result_code = vfs_read(fd, buffer, sizeof(buffer), &bytes);

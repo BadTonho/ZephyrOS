@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 3903 |
+| `COVERED` | 3921 |
 | `MANUAL` | 0 |
-| `PENDING` | 3293 |
+| `PENDING` | 3275 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -4909,7 +4909,7 @@
 | `c:src/fs/devfs.c:devfs_null_read` | `src/fs/devfs.c` | `devfs_null_read` | `fs` | `COVERED` | 2 |
 | `c:src/fs/devfs.c:devfs_null_write` | `src/fs/devfs.c` | `devfs_null_write` | `fs` | `COVERED` | 2 |
 | `c:src/fs/devfs.c:devfs_open_file` | `src/fs/devfs.c` | `devfs_open_file` | `fs` | `COVERED` | 2 |
-| `c:src/fs/devfs.c:devfs_operations` | `src/fs/devfs.c` | `devfs_operations` | `fs` | `PENDING` | 0 |
+| `c:src/fs/devfs.c:devfs_operations` | `src/fs/devfs.c` | `devfs_operations` | `fs` | `COVERED` | 1 |
 | `c:src/fs/devfs.c:devfs_path_node` | `src/fs/devfs.c` | `devfs_path_node` | `fs` | `COVERED` | 2 |
 | `c:src/fs/devfs.c:devfs_self_test` | `src/fs/devfs.c` | `devfs_self_test` | `fs` | `COVERED` | 2 |
 | `c:src/fs/devfs.c:devfs_speaker_ioctl` | `src/fs/devfs.c` | `devfs_speaker_ioctl` | `fs` | `COVERED` | 2 |
@@ -5133,7 +5133,7 @@
 | `c:src/fs/procfs.c:procfs_is_ready` | `src/fs/procfs.c` | `procfs_is_ready` | `fs` | `PENDING` | 0 |
 | `c:src/fs/procfs.c:procfs_list` | `src/fs/procfs.c` | `procfs_list` | `fs` | `PENDING` | 0 |
 | `c:src/fs/procfs.c:procfs_list_path` | `src/fs/procfs.c` | `procfs_list_path` | `fs` | `COVERED` | 3 |
-| `c:src/fs/procfs.c:procfs_log_level_name` | `src/fs/procfs.c` | `procfs_log_level_name` | `fs` | `PENDING` | 0 |
+| `c:src/fs/procfs.c:procfs_log_level_name` | `src/fs/procfs.c` | `procfs_log_level_name` | `fs` | `COVERED` | 1 |
 | `c:src/fs/procfs.c:procfs_lookup` | `src/fs/procfs.c` | `procfs_lookup` | `fs` | `COVERED` | 3 |
 | `c:src/fs/procfs.c:procfs_lseek` | `src/fs/procfs.c` | `procfs_lseek` | `fs` | `COVERED` | 2 |
 | `c:src/fs/procfs.c:procfs_meminfo_read` | `src/fs/procfs.c` | `procfs_meminfo_read` | `fs` | `COVERED` | 3 |
@@ -5231,7 +5231,7 @@
 | `c:src/fs/storage.c:storage_mark_overlaps` | `src/fs/storage.c` | `storage_mark_overlaps` | `fs` | `COVERED` | 1 |
 | `c:src/fs/storage.c:storage_mark_volume_error` | `src/fs/storage.c` | `storage_mark_volume_error` | `fs` | `PENDING` | 0 |
 | `c:src/fs/storage.c:storage_mount` | `src/fs/storage.c` | `storage_mount` | `fs` | `COVERED` | 1 |
-| `c:src/fs/storage.c:storage_mount_for_volume` | `src/fs/storage.c` | `storage_mount_for_volume` | `fs` | `COVERED` | 1 |
+| `c:src/fs/storage.c:storage_mount_for_volume` | `src/fs/storage.c` | `storage_mount_for_volume` | `fs` | `COVERED` | 2 |
 | `c:src/fs/storage.c:storage_name_to_fat` | `src/fs/storage.c` | `storage_name_to_fat` | `fs` | `COVERED` | 2 |
 | `c:src/fs/storage.c:storage_next_cluster` | `src/fs/storage.c` | `storage_next_cluster` | `fs` | `COVERED` | 2 |
 | `c:src/fs/storage.c:storage_next_component` | `src/fs/storage.c` | `storage_next_component` | `fs` | `COVERED` | 5 |
@@ -5339,7 +5339,7 @@
 | `c:src/fs/sysfs.c:sysfs_path_starts` | `src/fs/sysfs.c` | `sysfs_path_starts` | `fs` | `COVERED` | 2 |
 | `c:src/fs/sysfs.c:sysfs_pci_copy` | `src/fs/sysfs.c` | `sysfs_pci_copy` | `fs` | `COVERED` | 2 |
 | `c:src/fs/sysfs.c:sysfs_poll` | `src/fs/sysfs.c` | `sysfs_poll` | `fs` | `PENDING` | 0 |
-| `c:src/fs/sysfs.c:sysfs_power_capability` | `src/fs/sysfs.c` | `sysfs_power_capability` | `fs` | `PENDING` | 0 |
+| `c:src/fs/sysfs.c:sysfs_power_capability` | `src/fs/sysfs.c` | `sysfs_power_capability` | `fs` | `COVERED` | 1 |
 | `c:src/fs/sysfs.c:sysfs_power_default` | `src/fs/sysfs.c` | `sysfs_power_default` | `fs` | `PENDING` | 0 |
 | `c:src/fs/sysfs.c:sysfs_read` | `src/fs/sysfs.c` | `sysfs_read` | `fs` | `COVERED` | 2 |
 | `c:src/fs/sysfs.c:sysfs_render_block` | `src/fs/sysfs.c` | `sysfs_render_block` | `fs` | `PENDING` | 0 |
@@ -5379,30 +5379,30 @@
 | `c:src/fs/vfs.c:vfs_pipe_close` | `src/fs/vfs.c` | `vfs_pipe_close` | `fs` | `COVERED` | 3 |
 | `c:src/fs/vfs.c:vfs_pipe_copy_in` | `src/fs/vfs.c` | `vfs_pipe_copy_in` | `fs` | `COVERED` | 3 |
 | `c:src/fs/vfs.c:vfs_pipe_copy_out` | `src/fs/vfs.c` | `vfs_pipe_copy_out` | `fs` | `COVERED` | 3 |
-| `c:src/fs/vfs.c:vfs_pipe_from_file` | `src/fs/vfs.c` | `vfs_pipe_from_file` | `fs` | `COVERED` | 1 |
-| `c:src/fs/vfs.c:vfs_pipe_lseek` | `src/fs/vfs.c` | `vfs_pipe_lseek` | `fs` | `PENDING` | 0 |
+| `c:src/fs/vfs.c:vfs_pipe_from_file` | `src/fs/vfs.c` | `vfs_pipe_from_file` | `fs` | `COVERED` | 2 |
+| `c:src/fs/vfs.c:vfs_pipe_lseek` | `src/fs/vfs.c` | `vfs_pipe_lseek` | `fs` | `COVERED` | 1 |
 | `c:src/fs/vfs.c:vfs_pipe_open` | `src/fs/vfs.c` | `vfs_pipe_open` | `fs` | `COVERED` | 3 |
 | `c:src/fs/vfs.c:vfs_pipe_poll` | `src/fs/vfs.c` | `vfs_pipe_poll` | `fs` | `COVERED` | 1 |
 | `c:src/fs/vfs.c:vfs_pipe_read` | `src/fs/vfs.c` | `vfs_pipe_read` | `fs` | `COVERED` | 3 |
-| `c:src/fs/vfs.c:vfs_pipe_read_ready` | `src/fs/vfs.c` | `vfs_pipe_read_ready` | `fs` | `PENDING` | 0 |
+| `c:src/fs/vfs.c:vfs_pipe_read_ready` | `src/fs/vfs.c` | `vfs_pipe_read_ready` | `fs` | `COVERED` | 1 |
 | `c:src/fs/vfs.c:vfs_pipe_release` | `src/fs/vfs.c` | `vfs_pipe_release` | `fs` | `COVERED` | 3 |
 | `c:src/fs/vfs.c:vfs_pipe_wake_readers` | `src/fs/vfs.c` | `vfs_pipe_wake_readers` | `fs` | `COVERED` | 3 |
 | `c:src/fs/vfs.c:vfs_pipe_wake_writers` | `src/fs/vfs.c` | `vfs_pipe_wake_writers` | `fs` | `COVERED` | 3 |
 | `c:src/fs/vfs.c:vfs_pipe_write` | `src/fs/vfs.c` | `vfs_pipe_write` | `fs` | `COVERED` | 3 |
-| `c:src/fs/vfs.c:vfs_pipe_write_ready` | `src/fs/vfs.c` | `vfs_pipe_write_ready` | `fs` | `PENDING` | 0 |
-| `c:src/fs/vfs.c:vfs_poll` | `src/fs/vfs.c` | `vfs_poll` | `fs` | `COVERED` | 1 |
-| `c:src/fs/vfs.c:vfs_poll_begin_operation` | `src/fs/vfs.c` | `vfs_poll_begin_operation` | `fs` | `COVERED` | 1 |
-| `c:src/fs/vfs.c:vfs_poll_default` | `src/fs/vfs.c` | `vfs_poll_default` | `fs` | `PENDING` | 0 |
+| `c:src/fs/vfs.c:vfs_pipe_write_ready` | `src/fs/vfs.c` | `vfs_pipe_write_ready` | `fs` | `COVERED` | 1 |
+| `c:src/fs/vfs.c:vfs_poll` | `src/fs/vfs.c` | `vfs_poll` | `fs` | `COVERED` | 2 |
+| `c:src/fs/vfs.c:vfs_poll_begin_operation` | `src/fs/vfs.c` | `vfs_poll_begin_operation` | `fs` | `COVERED` | 2 |
+| `c:src/fs/vfs.c:vfs_poll_default` | `src/fs/vfs.c` | `vfs_poll_default` | `fs` | `COVERED` | 1 |
 | `c:src/fs/vfs.c:vfs_poll_notify` | `src/fs/vfs.c` | `vfs_poll_notify` | `fs` | `COVERED` | 8 |
-| `c:src/fs/vfs.c:vfs_poll_scan` | `src/fs/vfs.c` | `vfs_poll_scan` | `fs` | `COVERED` | 1 |
-| `c:src/fs/vfs.c:vfs_poll_wait_condition` | `src/fs/vfs.c` | `vfs_poll_wait_condition` | `fs` | `COVERED` | 1 |
+| `c:src/fs/vfs.c:vfs_poll_scan` | `src/fs/vfs.c` | `vfs_poll_scan` | `fs` | `COVERED` | 2 |
+| `c:src/fs/vfs.c:vfs_poll_wait_condition` | `src/fs/vfs.c` | `vfs_poll_wait_condition` | `fs` | `COVERED` | 2 |
 | `c:src/fs/vfs.c:vfs_power_is_quiescing` | `src/fs/vfs.c` | `vfs_power_is_quiescing` | `fs` | `COVERED` | 5 |
 | `c:src/fs/vfs.c:vfs_power_set_quiescing` | `src/fs/vfs.c` | `vfs_power_set_quiescing` | `fs` | `COVERED` | 1 |
 | `c:src/fs/vfs.c:vfs_read` | `src/fs/vfs.c` | `vfs_read` | `fs` | `COVERED` | 4 |
 | `c:src/fs/vfs.c:vfs_regular_close` | `src/fs/vfs.c` | `vfs_regular_close` | `fs` | `COVERED` | 1 |
 | `c:src/fs/vfs.c:vfs_regular_lseek` | `src/fs/vfs.c` | `vfs_regular_lseek` | `fs` | `COVERED` | 3 |
 | `c:src/fs/vfs.c:vfs_regular_open` | `src/fs/vfs.c` | `vfs_regular_open` | `fs` | `COVERED` | 1 |
-| `c:src/fs/vfs.c:vfs_regular_poll` | `src/fs/vfs.c` | `vfs_regular_poll` | `fs` | `COVERED` | 1 |
+| `c:src/fs/vfs.c:vfs_regular_poll` | `src/fs/vfs.c` | `vfs_regular_poll` | `fs` | `COVERED` | 2 |
 | `c:src/fs/vfs.c:vfs_regular_read` | `src/fs/vfs.c` | `vfs_regular_read` | `fs` | `COVERED` | 1 |
 | `c:src/fs/vfs.c:vfs_regular_sync` | `src/fs/vfs.c` | `vfs_regular_sync` | `fs` | `COVERED` | 1 |
 | `c:src/fs/vfs.c:vfs_regular_write` | `src/fs/vfs.c` | `vfs_regular_write` | `fs` | `COVERED` | 1 |
@@ -5411,25 +5411,25 @@
 | `c:src/fs/vfs.c:vfs_select` | `src/fs/vfs.c` | `vfs_select` | `fs` | `COVERED` | 1 |
 | `c:src/fs/vfs.c:vfs_self_test` | `src/fs/vfs.c` | `vfs_self_test` | `fs` | `COVERED` | 2 |
 | `c:src/fs/vfs.c:vfs_stream_poll` | `src/fs/vfs.c` | `vfs_stream_poll` | `fs` | `COVERED` | 1 |
-| `c:src/fs/vfs.c:vfs_stream_read` | `src/fs/vfs.c` | `vfs_stream_read` | `fs` | `PENDING` | 0 |
+| `c:src/fs/vfs.c:vfs_stream_read` | `src/fs/vfs.c` | `vfs_stream_read` | `fs` | `COVERED` | 1 |
 | `c:src/fs/vfs.c:vfs_stream_write` | `src/fs/vfs.c` | `vfs_stream_write` | `fs` | `COVERED` | 1 |
 | `c:src/fs/vfs.c:vfs_sync` | `src/fs/vfs.c` | `vfs_sync` | `fs` | `COVERED` | 1 |
 | `c:src/fs/vfs.c:vfs_test_count` | `src/fs/vfs.c` | `vfs_test_count` | `fs` | `COVERED` | 2 |
 | `c:src/fs/vfs.c:vfs_test_dir_has` | `src/fs/vfs.c` | `vfs_test_dir_has` | `fs` | `COVERED` | 2 |
-| `c:src/fs/vfs.c:vfs_test_poll` | `src/fs/vfs.c` | `vfs_test_poll` | `fs` | `PENDING` | 0 |
+| `c:src/fs/vfs.c:vfs_test_poll` | `src/fs/vfs.c` | `vfs_test_poll` | `fs` | `COVERED` | 1 |
 | `c:src/fs/vfs.c:vfs_test_read` | `src/fs/vfs.c` | `vfs_test_read` | `fs` | `COVERED` | 2 |
-| `c:src/fs/vfs.c:vfs_test_write` | `src/fs/vfs.c` | `vfs_test_write` | `fs` | `PENDING` | 0 |
+| `c:src/fs/vfs.c:vfs_test_write` | `src/fs/vfs.c` | `vfs_test_write` | `fs` | `COVERED` | 1 |
 | `c:src/fs/vfs.c:vfs_unsupported_close` | `src/fs/vfs.c` | `vfs_unsupported_close` | `fs` | `COVERED` | 2 |
-| `c:src/fs/vfs.c:vfs_unsupported_ioctl` | `src/fs/vfs.c` | `vfs_unsupported_ioctl` | `fs` | `PENDING` | 0 |
-| `c:src/fs/vfs.c:vfs_unsupported_lseek` | `src/fs/vfs.c` | `vfs_unsupported_lseek` | `fs` | `PENDING` | 0 |
-| `c:src/fs/vfs.c:vfs_unsupported_open` | `src/fs/vfs.c` | `vfs_unsupported_open` | `fs` | `PENDING` | 0 |
-| `c:src/fs/vfs.c:vfs_unsupported_poll` | `src/fs/vfs.c` | `vfs_unsupported_poll` | `fs` | `PENDING` | 0 |
-| `c:src/fs/vfs.c:vfs_unsupported_read` | `src/fs/vfs.c` | `vfs_unsupported_read` | `fs` | `PENDING` | 0 |
-| `c:src/fs/vfs.c:vfs_unsupported_sync` | `src/fs/vfs.c` | `vfs_unsupported_sync` | `fs` | `PENDING` | 0 |
-| `c:src/fs/vfs.c:vfs_unsupported_write` | `src/fs/vfs.c` | `vfs_unsupported_write` | `fs` | `PENDING` | 0 |
+| `c:src/fs/vfs.c:vfs_unsupported_ioctl` | `src/fs/vfs.c` | `vfs_unsupported_ioctl` | `fs` | `COVERED` | 1 |
+| `c:src/fs/vfs.c:vfs_unsupported_lseek` | `src/fs/vfs.c` | `vfs_unsupported_lseek` | `fs` | `COVERED` | 1 |
+| `c:src/fs/vfs.c:vfs_unsupported_open` | `src/fs/vfs.c` | `vfs_unsupported_open` | `fs` | `COVERED` | 1 |
+| `c:src/fs/vfs.c:vfs_unsupported_poll` | `src/fs/vfs.c` | `vfs_unsupported_poll` | `fs` | `COVERED` | 1 |
+| `c:src/fs/vfs.c:vfs_unsupported_read` | `src/fs/vfs.c` | `vfs_unsupported_read` | `fs` | `COVERED` | 1 |
+| `c:src/fs/vfs.c:vfs_unsupported_sync` | `src/fs/vfs.c` | `vfs_unsupported_sync` | `fs` | `COVERED` | 1 |
+| `c:src/fs/vfs.c:vfs_unsupported_write` | `src/fs/vfs.c` | `vfs_unsupported_write` | `fs` | `COVERED` | 1 |
 | `c:src/fs/vfs.c:vfs_validate_state` | `src/fs/vfs.c` | `vfs_validate_state` | `fs` | `COVERED` | 4 |
 | `c:src/fs/vfs.c:vfs_write` | `src/fs/vfs.c` | `vfs_write` | `fs` | `COVERED` | 3 |
-| `c:src/fs/vfs.c:vfs_write_redirect` | `src/fs/vfs.c` | `vfs_write_redirect` | `fs` | `PENDING` | 0 |
+| `c:src/fs/vfs.c:vfs_write_redirect` | `src/fs/vfs.c` | `vfs_write_redirect` | `fs` | `COVERED` | 1 |
 | `c:src/fs/vfs_path.c:vfs_canonicalize` | `src/fs/vfs_path.c` | `vfs_canonicalize` | `fs` | `COVERED` | 5 |
 | `c:src/fs/vfs_path.c:vfs_chdir` | `src/fs/vfs_path.c` | `vfs_chdir` | `fs` | `COVERED` | 3 |
 | `c:src/fs/vfs_path.c:vfs_copy_mounts` | `src/fs/vfs_path.c` | `vfs_copy_mounts` | `fs` | `COVERED` | 2 |
@@ -9280,7 +9280,6 @@
 - `c:src/fs/bmp.c:read_u32`
 - `c:src/fs/devfs.c:devfs_init`
 - `c:src/fs/devfs.c:devfs_is_ready`
-- `c:src/fs/devfs.c:devfs_operations`
 - `c:src/fs/devfs.c:devfs_unavailable_ioctl`
 - `c:src/fs/devfs.c:devfs_unavailable_lseek`
 - `c:src/fs/devfs.c:devfs_unavailable_read`
@@ -9291,7 +9290,6 @@
 - `c:src/fs/procfs.c:procfs_ioctl`
 - `c:src/fs/procfs.c:procfs_is_ready`
 - `c:src/fs/procfs.c:procfs_list`
-- `c:src/fs/procfs.c:procfs_log_level_name`
 - `c:src/fs/procfs.c:procfs_open`
 - `c:src/fs/procfs.c:procfs_poll`
 - `c:src/fs/procfs.c:procfs_sync`
@@ -9336,28 +9334,12 @@
 - `c:src/fs/sysfs.c:sysfs_network_state`
 - `c:src/fs/sysfs.c:sysfs_open`
 - `c:src/fs/sysfs.c:sysfs_poll`
-- `c:src/fs/sysfs.c:sysfs_power_capability`
 - `c:src/fs/sysfs.c:sysfs_power_default`
 - `c:src/fs/sysfs.c:sysfs_render_block`
 - `c:src/fs/sysfs.c:sysfs_render_network`
 - `c:src/fs/sysfs.c:sysfs_render_pci`
 - `c:src/fs/sysfs.c:sysfs_sync`
 - `c:src/fs/sysfs.c:sysfs_write`
-- `c:src/fs/vfs.c:vfs_pipe_lseek`
-- `c:src/fs/vfs.c:vfs_pipe_read_ready`
-- `c:src/fs/vfs.c:vfs_pipe_write_ready`
-- `c:src/fs/vfs.c:vfs_poll_default`
-- `c:src/fs/vfs.c:vfs_stream_read`
-- `c:src/fs/vfs.c:vfs_test_poll`
-- `c:src/fs/vfs.c:vfs_test_write`
-- `c:src/fs/vfs.c:vfs_unsupported_ioctl`
-- `c:src/fs/vfs.c:vfs_unsupported_lseek`
-- `c:src/fs/vfs.c:vfs_unsupported_open`
-- `c:src/fs/vfs.c:vfs_unsupported_poll`
-- `c:src/fs/vfs.c:vfs_unsupported_read`
-- `c:src/fs/vfs.c:vfs_unsupported_sync`
-- `c:src/fs/vfs.c:vfs_unsupported_write`
-- `c:src/fs/vfs.c:vfs_write_redirect`
 - `c:src/fs/wav.c:memcmp`
 - `c:src/fs/wav.c:read_u16`
 - `c:src/fs/wav.c:read_u32`

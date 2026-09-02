@@ -102538,9 +102538,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst4:storage-vfs"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/fs/devfs.c:devfs_path_node",
@@ -107362,9 +107365,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst4:storage-vfs"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_lookup",
@@ -109494,7 +109500,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "qemu:tst4:storage-vfs"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -111733,9 +111740,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst4:storage-vfs"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/fs/sysfs.c:sysfs_power_default",
@@ -112624,7 +112634,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:vfs"
+        "host:storage:vfs",
+        "qemu:tst4:storage-vfs"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -112643,9 +112654,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:vfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/vfs.c:vfs_pipe_open",
@@ -112728,9 +112742,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:vfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/vfs.c:vfs_pipe_release",
@@ -112838,9 +112855,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:vfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/vfs.c:vfs_poll",
@@ -112858,7 +112878,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:vfs"
+        "host:storage:vfs",
+        "qemu:tst4:storage-vfs"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -112879,7 +112900,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:vfs"
+        "host:storage:vfs",
+        "qemu:tst4:storage-vfs"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -112898,9 +112920,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:vfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/vfs.c:vfs_poll_notify",
@@ -112946,7 +112971,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:vfs"
+        "host:storage:vfs",
+        "qemu:tst4:storage-vfs"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -112967,7 +112993,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:vfs"
+        "host:storage:vfs",
+        "qemu:tst4:storage-vfs"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -113123,7 +113150,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:vfs"
+        "host:storage:vfs",
+        "qemu:tst4:storage-vfs"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -113317,9 +113345,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:vfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/vfs.c:vfs_stream_write",
@@ -113421,9 +113452,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst4:storage-vfs"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/fs/vfs.c:vfs_test_read",
@@ -113461,9 +113495,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst4:storage-vfs"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/fs/vfs.c:vfs_unsupported_close",
@@ -113501,9 +113538,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:vfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/vfs.c:vfs_unsupported_lseek",
@@ -113519,9 +113559,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:vfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/vfs.c:vfs_unsupported_open",
@@ -113537,9 +113580,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst4:storage-vfs"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/fs/vfs.c:vfs_unsupported_poll",
@@ -113555,9 +113601,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:vfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/vfs.c:vfs_unsupported_read",
@@ -113573,9 +113622,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst4:storage-vfs"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/fs/vfs.c:vfs_unsupported_sync",
@@ -113591,9 +113643,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:vfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/vfs.c:vfs_unsupported_write",
@@ -113609,9 +113664,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst4:storage-vfs"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/fs/vfs.c:vfs_validate_state",
@@ -113674,9 +113732,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:vfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/vfs_path.c:vfs_canonicalize",
@@ -154356,15 +154417,19 @@
         "c:src/fs/vfs.c:vfs_pipe_copy_in",
         "c:src/fs/vfs.c:vfs_pipe_copy_out",
         "c:src/fs/vfs.c:vfs_pipe_from_file",
+        "c:src/fs/vfs.c:vfs_pipe_lseek",
         "c:src/fs/vfs.c:vfs_pipe_open",
         "c:src/fs/vfs.c:vfs_pipe_poll",
         "c:src/fs/vfs.c:vfs_pipe_read",
+        "c:src/fs/vfs.c:vfs_pipe_read_ready",
         "c:src/fs/vfs.c:vfs_pipe_release",
         "c:src/fs/vfs.c:vfs_pipe_wake_readers",
         "c:src/fs/vfs.c:vfs_pipe_wake_writers",
         "c:src/fs/vfs.c:vfs_pipe_write",
+        "c:src/fs/vfs.c:vfs_pipe_write_ready",
         "c:src/fs/vfs.c:vfs_poll",
         "c:src/fs/vfs.c:vfs_poll_begin_operation",
+        "c:src/fs/vfs.c:vfs_poll_default",
         "c:src/fs/vfs.c:vfs_poll_notify",
         "c:src/fs/vfs.c:vfs_poll_scan",
         "c:src/fs/vfs.c:vfs_poll_wait_condition",
@@ -154382,10 +154447,16 @@
         "c:src/fs/vfs.c:vfs_seek_base",
         "c:src/fs/vfs.c:vfs_select",
         "c:src/fs/vfs.c:vfs_stream_poll",
+        "c:src/fs/vfs.c:vfs_stream_read",
         "c:src/fs/vfs.c:vfs_stream_write",
         "c:src/fs/vfs.c:vfs_sync",
+        "c:src/fs/vfs.c:vfs_unsupported_ioctl",
+        "c:src/fs/vfs.c:vfs_unsupported_lseek",
+        "c:src/fs/vfs.c:vfs_unsupported_poll",
+        "c:src/fs/vfs.c:vfs_unsupported_sync",
         "c:src/fs/vfs.c:vfs_validate_state",
-        "c:src/fs/vfs.c:vfs_write"
+        "c:src/fs/vfs.c:vfs_write",
+        "c:src/fs/vfs.c:vfs_write_redirect"
       ],
       "tags": [
         "host",
@@ -156534,6 +156605,7 @@
         "c:src/fs/devfs.c:devfs_null_read",
         "c:src/fs/devfs.c:devfs_null_write",
         "c:src/fs/devfs.c:devfs_open_file",
+        "c:src/fs/devfs.c:devfs_operations",
         "c:src/fs/devfs.c:devfs_path_node",
         "c:src/fs/devfs.c:devfs_self_test",
         "c:src/fs/devfs.c:devfs_speaker_ioctl",
@@ -156586,6 +156658,7 @@
         "c:src/fs/procfs.c:procfs_error_callback",
         "c:src/fs/procfs.c:procfs_global_read",
         "c:src/fs/procfs.c:procfs_list_path",
+        "c:src/fs/procfs.c:procfs_log_level_name",
         "c:src/fs/procfs.c:procfs_lookup",
         "c:src/fs/procfs.c:procfs_lseek",
         "c:src/fs/procfs.c:procfs_meminfo_read",
@@ -156627,6 +156700,7 @@
         "c:src/fs/storage.c:storage_long_list_visitor",
         "c:src/fs/storage.c:storage_long_parse_entry",
         "c:src/fs/storage.c:storage_lower",
+        "c:src/fs/storage.c:storage_mount_for_volume",
         "c:src/fs/storage.c:storage_next_component",
         "c:src/fs/storage.c:storage_parse_raw_entry",
         "c:src/fs/storage.c:storage_read_relative",
@@ -156661,6 +156735,7 @@
         "c:src/fs/sysfs.c:sysfs_path_equal",
         "c:src/fs/sysfs.c:sysfs_path_starts",
         "c:src/fs/sysfs.c:sysfs_pci_copy",
+        "c:src/fs/sysfs.c:sysfs_power_capability",
         "c:src/fs/sysfs.c:sysfs_read",
         "c:src/fs/sysfs.c:sysfs_render_power",
         "c:src/fs/sysfs.c:sysfs_render_snapshot",
@@ -156691,23 +156766,34 @@
         "c:src/fs/vfs.c:vfs_pipe_close",
         "c:src/fs/vfs.c:vfs_pipe_copy_in",
         "c:src/fs/vfs.c:vfs_pipe_copy_out",
+        "c:src/fs/vfs.c:vfs_pipe_from_file",
         "c:src/fs/vfs.c:vfs_pipe_open",
         "c:src/fs/vfs.c:vfs_pipe_read",
         "c:src/fs/vfs.c:vfs_pipe_release",
         "c:src/fs/vfs.c:vfs_pipe_wake_readers",
         "c:src/fs/vfs.c:vfs_pipe_wake_writers",
         "c:src/fs/vfs.c:vfs_pipe_write",
+        "c:src/fs/vfs.c:vfs_poll",
+        "c:src/fs/vfs.c:vfs_poll_begin_operation",
         "c:src/fs/vfs.c:vfs_poll_notify",
+        "c:src/fs/vfs.c:vfs_poll_scan",
+        "c:src/fs/vfs.c:vfs_poll_wait_condition",
         "c:src/fs/vfs.c:vfs_power_is_quiescing",
         "c:src/fs/vfs.c:vfs_read",
         "c:src/fs/vfs.c:vfs_regular_lseek",
+        "c:src/fs/vfs.c:vfs_regular_poll",
         "c:src/fs/vfs.c:vfs_release_file",
         "c:src/fs/vfs.c:vfs_seek_base",
         "c:src/fs/vfs.c:vfs_self_test",
         "c:src/fs/vfs.c:vfs_test_count",
         "c:src/fs/vfs.c:vfs_test_dir_has",
+        "c:src/fs/vfs.c:vfs_test_poll",
         "c:src/fs/vfs.c:vfs_test_read",
+        "c:src/fs/vfs.c:vfs_test_write",
         "c:src/fs/vfs.c:vfs_unsupported_close",
+        "c:src/fs/vfs.c:vfs_unsupported_open",
+        "c:src/fs/vfs.c:vfs_unsupported_read",
+        "c:src/fs/vfs.c:vfs_unsupported_write",
         "c:src/fs/vfs.c:vfs_validate_state",
         "c:src/fs/vfs.c:vfs_write",
         "c:src/fs/vfs_path.c:vfs_canonicalize",
