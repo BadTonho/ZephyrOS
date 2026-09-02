@@ -249,7 +249,6 @@ static int check_icmp(void) {
     uint8_t reply[ICMP_PAYLOAD_SIZE];
     icmp_status_t status;
     ipv4_status_t saved_ipv4;
-    int result;
 
     kmemset(&ipv4_fixture_status, 0, sizeof(ipv4_fixture_status));
     ipv4_fixture_status.initialized = 1U;
