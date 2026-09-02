@@ -51,6 +51,7 @@ make test-package-host
 make test-state-host
 make test-device-manager-host
 make test-app-api-host
+make test-app-files-host
 make test-app-catalog-host
 make test-input-host
 make test-power-host
@@ -96,13 +97,15 @@ com callbacks estaticos, incluindo estados opcionais, duplicatas, capacidade,
 falhas canonicas e timeout. Seu relatorio instrumentado fica em
 `build/test-results/state-host/coverage.json`.
 
-Os casos `test-device-manager-host`, `test-app-api-host` e
-`test-app-catalog-host` cobrem, respectivamente, inventario de dispositivos
-com backends simulados, a fachada de aplicativos e o catalogo da App Store.
-Eles exercitam estados indisponiveis, limites, erros canonicos e limpeza em
-processos host instrumentados, sem hardware nem armazenamento real. Os
-relatorios ficam em `build/test-results/device-manager-host/`,
-`build/test-results/app-api-host/` e `build/test-results/app-catalog-host/`.
+Os casos `test-device-manager-host`, `test-app-api-host`,
+`test-app-files-host` e `test-app-catalog-host` cobrem, respectivamente,
+inventario de dispositivos com backends simulados, a fachada geral de
+aplicativos, a fachada de arquivos sobre uma VFS falsa e o catalogo da App
+Store. Eles exercitam estados indisponiveis, limites, erros canonicos e
+limpeza em processos host instrumentados, sem hardware nem armazenamento real.
+Os relatorios ficam em `build/test-results/device-manager-host/`,
+`build/test-results/app-api-host/`, `build/test-results/app-files-host/` e
+`build/test-results/app-catalog-host/`.
 
 O caso `test-input-host` valida as filas estaticas de teclado e ponteiro,
 coalescencia, saturacao de deltas, filas cheias, despacho alternado e erro de

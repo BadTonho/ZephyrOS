@@ -1295,3 +1295,15 @@ pendente.
   3.921 `COVERED`, 3.275 `PENDING` e 85 casos. O fechamento integral continua
   pendente; `tst3-sanitize` segue `BLOCKED` nesta maquina pela permissao do
   runtime LLVM.
+
+- Incremento Core/app_files concluido em 2026-09-02: foi criado o caso
+  host-only `host:core:app-files` com VFS falsa, cobrindo pre-condicoes antes
+  da inicializacao, inicializacao idempotente, encaminhamento das operacoes de
+  arquivo, validacao de saidas, limites e propagacao de erros canonicos. A
+  fixture instrumentada terminou `PASS` e resolveu 33 superficies reais no
+  relatorio dinamico, incluindo todas as funcoes de `src/core/app_files.c`.
+  Foram executados `make q3check`, `make clean`, `make`,
+  `make test-app-files-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` e
+  `make catalog-test`; todos terminaram com sucesso. O catalogo registra
+  7.196 superficies, 3.953 `COVERED`, 3.243 `PENDING` e 86 casos. O fechamento
+  integral, o gate estrito e a validacao TST7 completa continuam pendentes.

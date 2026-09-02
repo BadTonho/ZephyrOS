@@ -43,6 +43,8 @@ DEVICE_RESULT_DIR = ROOT / "build" / "test-results" / "device-manager-host"
 DEVICE_BINARY = ROOT / "build" / "tests" / "test_device_manager_host.exe"
 APP_API_RESULT_DIR = ROOT / "build" / "test-results" / "app-api-host"
 APP_API_BINARY = ROOT / "build" / "tests" / "test_app_api_host.exe"
+APP_FILES_RESULT_DIR = ROOT / "build" / "test-results" / "app-files-host"
+APP_FILES_BINARY = ROOT / "build" / "tests" / "test_app_files_host.exe"
 APP_CATALOG_RESULT_DIR = ROOT / "build" / "test-results" / "app-catalog-host"
 APP_CATALOG_BINARY = ROOT / "build" / "tests" / "test_app_catalog_host.exe"
 INPUT_RESULT_DIR = ROOT / "build" / "test-results" / "input-host"
@@ -178,6 +180,12 @@ DEVICE_SOURCE_FILES = (
 APP_API_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_app_api_host.c",
     ROOT / "src" / "core" / "app_api.c",
+    ROOT / "src" / "core" / "log.c",
+    ROOT / "src" / "core" / "string.c",
+)
+APP_FILES_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_app_files_host.c",
+    ROOT / "src" / "core" / "app_files.c",
     ROOT / "src" / "core" / "log.c",
     ROOT / "src" / "core" / "string.c",
 )
@@ -426,6 +434,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
                 DEVICE_SOURCE_FILES, "device-manager-host")
     if case_id == "host:core:app-api":
         return APP_API_RESULT_DIR, APP_API_BINARY, APP_API_SOURCE_FILES, "app-api-host"
+    if case_id == "host:core:app-files":
+        return APP_FILES_RESULT_DIR, APP_FILES_BINARY, APP_FILES_SOURCE_FILES, "app-files-host"
     if case_id == "host:core:app-catalog":
         return (APP_CATALOG_RESULT_DIR, APP_CATALOG_BINARY,
                 APP_CATALOG_SOURCE_FILES, "app-catalog-host")
@@ -656,7 +666,8 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:core:crypto", "host:core:scheduling",
                                  "host:core:app-package", "host:core:state",
                                  "host:core:device-manager", "host:core:app-api",
-                                 "host:core:app-catalog", "host:core:input",
+                                 "host:core:app-files", "host:core:app-catalog",
+                                 "host:core:input",
                                  "host:core:power", "host:storage:vfs-path",
                                  "host:storage:file-index", "host:storage:fs",
                                  "host:storage:storage", "host:storage:block",
