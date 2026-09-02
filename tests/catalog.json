@@ -40781,9 +40781,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:crypto"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/crypto_ed25519.c:crypto_sha512_digest",
@@ -41060,24 +41063,6 @@
       ],
       "tags": [],
       "coverage_mode": "direct"
-    },
-    {
-      "id": "c:src/core/crypto_ed25519.c:fe_cswap",
-      "kind": "c_function",
-      "source": "src/core/crypto_ed25519.c",
-      "symbol": "fe_cswap",
-      "linkage": "static",
-      "owner": "core",
-      "layer": "kernel-source",
-      "preconditions": "definir no caso de teste associado",
-      "action": "definir no caso de teste associado",
-      "expected": "superficie localizada e contrato observado",
-      "errors": "definir erros canonicos aplicaveis",
-      "effects": "nenhum efeito durante a catalogacao",
-      "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
     },
     {
       "id": "c:src/core/crypto_ed25519.c:fe_frombytes",
@@ -137302,6 +137287,7 @@
         "c:src/core/crypto_ed25519.c:crypto_ed25519_verify_update",
         "c:src/core/crypto_ed25519.c:crypto_eddsa_check_equation",
         "c:src/core/crypto_ed25519.c:crypto_eddsa_reduce",
+        "c:src/core/crypto_ed25519.c:crypto_eddsa_trim_scalar",
         "c:src/core/crypto_ed25519.c:crypto_sha512_digest",
         "c:src/core/crypto_ed25519.c:crypto_sha512_final",
         "c:src/core/crypto_ed25519.c:crypto_sha512_init",
@@ -147421,6 +147407,15 @@
     }
   ],
   "retired": [
+    {
+      "id": "c:src/core/crypto_ed25519.c:fe_cswap",
+      "kind": "c_function",
+      "source": "src/core/crypto_ed25519.c",
+      "symbol": "fe_cswap",
+      "retired_reason": "helper do subconjunto Monocypher sem referencias no codigo ativo; removido para nao manter superficie executavel sem chamador",
+      "retired_evidence": "rg -n fe_cswap src/core src/include nao encontrou nenhum chamador e o build freestanding permaneceu valido apos a remocao",
+      "replacement": "fe_ccopy permanece como helper constante utilizado pelo caminho Ed25519"
+    },
     {
       "id": "c:src/core/test_protocol.c:protocol_append_hex",
       "kind": "c_function",

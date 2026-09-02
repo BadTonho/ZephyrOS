@@ -4,24 +4,24 @@
 
 ## Resumo
 
-- Superfícies ativas: **6827**
+- Superfícies ativas: **6826**
 - Casos de teste: **81**
-- Superfícies aposentadas: **20**
+- Superfícies aposentadas: **21**
 
 | Tipo | Quantidade |
 |---|---:|
 | `api_function` | 1410 |
 | `asm_entry` | 101 |
-| `c_function` | 5196 |
+| `c_function` | 5195 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 3088 |
+| `COVERED` | 3089 |
 | `MANUAL` | 0 |
-| `PENDING` | 3739 |
+| `PENDING` | 3737 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -37,7 +37,7 @@
 | `apps` | 128 |
 | `appstore` | 83 |
 | `boot` | 129 |
-| `core` | 2596 |
+| `core` | 2595 |
 | `desktop` | 39 |
 | `drivers` | 871 |
 | `filemanager` | 92 |
@@ -2146,7 +2146,7 @@
 | `c:src/core/crypto_ed25519.c:crypto_ed25519_verify_update` | `src/core/crypto_ed25519.c` | `crypto_ed25519_verify_update` | `core` | `COVERED` | 3 |
 | `c:src/core/crypto_ed25519.c:crypto_eddsa_check_equation` | `src/core/crypto_ed25519.c` | `crypto_eddsa_check_equation` | `core` | `COVERED` | 3 |
 | `c:src/core/crypto_ed25519.c:crypto_eddsa_reduce` | `src/core/crypto_ed25519.c` | `crypto_eddsa_reduce` | `core` | `COVERED` | 3 |
-| `c:src/core/crypto_ed25519.c:crypto_eddsa_trim_scalar` | `src/core/crypto_ed25519.c` | `crypto_eddsa_trim_scalar` | `core` | `PENDING` | 0 |
+| `c:src/core/crypto_ed25519.c:crypto_eddsa_trim_scalar` | `src/core/crypto_ed25519.c` | `crypto_eddsa_trim_scalar` | `core` | `COVERED` | 1 |
 | `c:src/core/crypto_ed25519.c:crypto_sha512_digest` | `src/core/crypto_ed25519.c` | `crypto_sha512_digest` | `core` | `COVERED` | 3 |
 | `c:src/core/crypto_ed25519.c:crypto_sha512_final` | `src/core/crypto_ed25519.c` | `crypto_sha512_final` | `core` | `COVERED` | 3 |
 | `c:src/core/crypto_ed25519.c:crypto_sha512_init` | `src/core/crypto_ed25519.c` | `crypto_sha512_init` | `core` | `COVERED` | 3 |
@@ -2159,7 +2159,6 @@
 | `c:src/core/crypto_ed25519.c:fe_add` | `src/core/crypto_ed25519.c` | `fe_add` | `core` | `COVERED` | 3 |
 | `c:src/core/crypto_ed25519.c:fe_ccopy` | `src/core/crypto_ed25519.c` | `fe_ccopy` | `core` | `COVERED` | 3 |
 | `c:src/core/crypto_ed25519.c:fe_copy` | `src/core/crypto_ed25519.c` | `fe_copy` | `core` | `COVERED` | 3 |
-| `c:src/core/crypto_ed25519.c:fe_cswap` | `src/core/crypto_ed25519.c` | `fe_cswap` | `core` | `PENDING` | 0 |
 | `c:src/core/crypto_ed25519.c:fe_frombytes` | `src/core/crypto_ed25519.c` | `fe_frombytes` | `core` | `COVERED` | 3 |
 | `c:src/core/crypto_ed25519.c:fe_frombytes_mask` | `src/core/crypto_ed25519.c` | `fe_frombytes_mask` | `core` | `COVERED` | 3 |
 | `c:src/core/crypto_ed25519.c:fe_invert` | `src/core/crypto_ed25519.c` | `fe_invert` | `core` | `COVERED` | 3 |
@@ -8243,8 +8242,6 @@
 - `c:src/core/app_remote.c:app_remote_write_record`
 - `c:src/core/app_remote.c:app_remote_write_u16`
 - `c:src/core/app_remote.c:app_remote_write_u32`
-- `c:src/core/crypto_ed25519.c:crypto_eddsa_trim_scalar`
-- `c:src/core/crypto_ed25519.c:fe_cswap`
 - `c:src/core/network_manager.c:network_apply_dhcp_lease`
 - `c:src/core/network_manager.c:network_cancel_dynamic_clients`
 - `c:src/core/network_manager.c:network_copy_usb_interface`
@@ -10739,6 +10736,7 @@
 
 ## Aposentadas
 
+- `c:src/core/crypto_ed25519.c:fe_cswap` — helper do subconjunto Monocypher sem referencias no codigo ativo; removido para nao manter superficie executavel sem chamador
 - `c:src/core/test_protocol.c:protocol_append_hex` — surface ausente na fonte atual; confirmar remocao ou renomeacao
 - `c:src/core/test_protocol.c:protocol_append_span` — surface ausente na fonte atual; confirmar remocao ou renomeacao
 - `c:src/core/test_protocol.c:protocol_append_text` — surface ausente na fonte atual; confirmar remocao ou renomeacao

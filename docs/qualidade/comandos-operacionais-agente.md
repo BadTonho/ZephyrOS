@@ -82,6 +82,11 @@ no build do kernel. Cada alvo preserva `manifest.json`, `result.json`,
 `coverage.json`, `coverage-symbols.json`, `stdout.log` e `stderr.log` em
 `build/test-results/<suite>/`.
 
+O caso `test-crypto-host` valida os contratos SHA-256, SHA-512 e Ed25519,
+incluindo o ajuste de scalar para `uint32_t` e a rejeicao de entradas invalidas.
+O helper `fe_cswap`, que nao possuia referencias no codigo ativo, foi removido;
+`fe_ccopy` continua sendo o helper utilizado pelo caminho Ed25519.
+
 O caso `test-package-host` cobre contratos puros do servico de pacotes,
 incluindo versoes, motivos canonicos, estados indisponiveis e failpoints sem
 escrever no armazenamento.

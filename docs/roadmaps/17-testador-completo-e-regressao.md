@@ -1045,6 +1045,17 @@ sincronizacao atual registra 6.827 superficies, 3.086 `COVERED`, 3.741
 `PENDING` e 80 casos; o fechamento integral do catalogo, o gate estrito e a
 validacao TST7 completa continuam pendentes.
 
+Incremento Core/Crypto concluido em 2026-09-02: a fixture existente de
+`host:core:crypto` passou a exercitar diretamente `crypto_eddsa_trim_scalar`,
+verificando copia, mascaras de bits e os limites do scalar. A funcao
+`fe_cswap` foi removida e registrada como `RETIRED` porque nao havia referencias
+no codigo ativo; `fe_ccopy` permanece como substituto utilizado pelo caminho
+Ed25519. `make test-crypto-host`, a sincronizacao do catalogo, `make catalog-test`
+e o build limpo passaram. A sincronizacao atual registra 6.826 superficies,
+3.089 `COVERED`, 3.737 `PENDING`, 81 casos e uma superficie aposentada; o
+fechamento integral do catalogo, o gate estrito e a validacao TST7 completa
+continuam pendentes.
+
 Incremento Shell/introspeccao concluido em 2026-09-02: o novo caso host-only
 `host:shell:introspection` e o alvo `make test-shell-introspection-host` foram
 adicionados. A fixture chama o parser hexadecimal real para valores numericos,

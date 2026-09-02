@@ -7,6 +7,8 @@
 #include "core/string.h"
 #include "drivers/serial.h"
 
+void crypto_eddsa_trim_scalar(uint8_t out[32], const uint8_t in[32]);
+
 #define HOST_COVERAGE_CAPACITY 8192U
 #define HOST_COVERAGE_LINE_SIZE 32U
 
@@ -63,6 +65,24 @@ static void __attribute__((no_instrument_function)) coverage_emit(int result) {
     }
     printf("ZCOV_END|case=host:core:crypto|value=0x%08X\n",
            (uint32_t)result);
+}
+
+static int check_trim_scalar(void) {
+    uint8_t input[32];
+    uint8_t output[32];
+
+    for (uint32_t index = 0U; index < sizeof(input); index++) {
+        input[index] = (uint8_t)(index * 7U + 3U);
+        output[index] = 0U;
+    }
+    input[0] = 0xFFU;
+    input[31] = 0xFFU;
+    crypto_eddsa_trim_scalar(output, input);
+    if (output[0] != 0xF8U || output[31] != 0x7FU) return 1;
+    for (uint32_t index = 1U; index < 31U; index++) {
+        if (output[index] != input[index]) return 2;
+    }
+    return 0;
 }
 
 uint32_t timer_get_ticks(void) {
@@ -140,6 +160,7 @@ int main(void) {
     int result = 0;
 
     coverage_active = 1U;
+    if (check_trim_scalar() != 0) result = 28;
     kmemcpy(signature, valid_signature, sizeof(signature));
     signature[0] ^= 1U;
     log_init();
@@ -209,7 +230,7 @@ int main(void) {
         result = 26;
     }
     if (!result && crypto_self_test() != OK) result = 27;
-    if (!result && log_get_stats(&log_stats) != OK) result = 28;
+    if (!result && log_get_stats(&log_stats) != OK) result = 29;
     coverage_active = 0U;
     coverage_emit(result);
     return result;
