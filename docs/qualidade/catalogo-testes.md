@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7196**
-- Casos de teste: **87**
+- Casos de teste: **88**
 - Superfícies aposentadas: **22**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4113 |
+| `COVERED` | 4131 |
 | `MANUAL` | 0 |
-| `PENDING` | 3083 |
+| `PENDING` | 3065 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 87 |
+| `AUTOMATED` | 88 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -851,16 +851,16 @@
 | `api:src/include/core/wait.h:wait_wake_mode_name` | `src/include/core/wait.h` | `wait_wake_mode_name` | `core` | `COVERED` | 6 |
 | `api:src/include/core/wait.h:wake_up` | `src/include/core/wait.h` | `wake_up` | `core` | `COVERED` | 6 |
 | `api:src/include/core/wait.h:wake_up_all` | `src/include/core/wait.h` | `wake_up_all` | `core` | `COVERED` | 6 |
-| `api:src/include/core/wifi_manager.h:wifi_manager_connect_open` | `src/include/core/wifi_manager.h` | `wifi_manager_connect_open` | `core` | `COVERED` | 2 |
-| `api:src/include/core/wifi_manager.h:wifi_manager_find` | `src/include/core/wifi_manager.h` | `wifi_manager_find` | `core` | `COVERED` | 2 |
-| `api:src/include/core/wifi_manager.h:wifi_manager_get_count` | `src/include/core/wifi_manager.h` | `wifi_manager_get_count` | `core` | `COVERED` | 2 |
-| `api:src/include/core/wifi_manager.h:wifi_manager_get_interface` | `src/include/core/wifi_manager.h` | `wifi_manager_get_interface` | `core` | `COVERED` | 2 |
-| `api:src/include/core/wifi_manager.h:wifi_manager_get_status` | `src/include/core/wifi_manager.h` | `wifi_manager_get_status` | `core` | `COVERED` | 2 |
-| `api:src/include/core/wifi_manager.h:wifi_manager_init` | `src/include/core/wifi_manager.h` | `wifi_manager_init` | `core` | `COVERED` | 2 |
-| `api:src/include/core/wifi_manager.h:wifi_manager_refresh` | `src/include/core/wifi_manager.h` | `wifi_manager_refresh` | `core` | `COVERED` | 2 |
-| `api:src/include/core/wifi_manager.h:wifi_manager_scan` | `src/include/core/wifi_manager.h` | `wifi_manager_scan` | `core` | `COVERED` | 2 |
-| `api:src/include/core/wifi_manager.h:wifi_manager_state_name` | `src/include/core/wifi_manager.h` | `wifi_manager_state_name` | `core` | `COVERED` | 2 |
-| `api:src/include/core/wifi_manager.h:wifi_manager_validate_state` | `src/include/core/wifi_manager.h` | `wifi_manager_validate_state` | `core` | `COVERED` | 2 |
+| `api:src/include/core/wifi_manager.h:wifi_manager_connect_open` | `src/include/core/wifi_manager.h` | `wifi_manager_connect_open` | `core` | `COVERED` | 3 |
+| `api:src/include/core/wifi_manager.h:wifi_manager_find` | `src/include/core/wifi_manager.h` | `wifi_manager_find` | `core` | `COVERED` | 3 |
+| `api:src/include/core/wifi_manager.h:wifi_manager_get_count` | `src/include/core/wifi_manager.h` | `wifi_manager_get_count` | `core` | `COVERED` | 3 |
+| `api:src/include/core/wifi_manager.h:wifi_manager_get_interface` | `src/include/core/wifi_manager.h` | `wifi_manager_get_interface` | `core` | `COVERED` | 3 |
+| `api:src/include/core/wifi_manager.h:wifi_manager_get_status` | `src/include/core/wifi_manager.h` | `wifi_manager_get_status` | `core` | `COVERED` | 3 |
+| `api:src/include/core/wifi_manager.h:wifi_manager_init` | `src/include/core/wifi_manager.h` | `wifi_manager_init` | `core` | `COVERED` | 3 |
+| `api:src/include/core/wifi_manager.h:wifi_manager_refresh` | `src/include/core/wifi_manager.h` | `wifi_manager_refresh` | `core` | `COVERED` | 3 |
+| `api:src/include/core/wifi_manager.h:wifi_manager_scan` | `src/include/core/wifi_manager.h` | `wifi_manager_scan` | `core` | `COVERED` | 3 |
+| `api:src/include/core/wifi_manager.h:wifi_manager_state_name` | `src/include/core/wifi_manager.h` | `wifi_manager_state_name` | `core` | `COVERED` | 3 |
+| `api:src/include/core/wifi_manager.h:wifi_manager_validate_state` | `src/include/core/wifi_manager.h` | `wifi_manager_validate_state` | `core` | `COVERED` | 3 |
 | `api:src/include/core/workqueue.h:cancel_work` | `src/include/core/workqueue.h` | `cancel_work` | `core` | `COVERED` | 5 |
 | `api:src/include/core/workqueue.h:schedule_delayed_work` | `src/include/core/workqueue.h` | `schedule_delayed_work` | `core` | `COVERED` | 5 |
 | `api:src/include/core/workqueue.h:schedule_work` | `src/include/core/workqueue.h` | `schedule_work` | `core` | `COVERED` | 5 |
@@ -3873,31 +3873,31 @@
 | `c:src/core/wait.c:wait_wake_mode_name` | `src/core/wait.c` | `wait_wake_mode_name` | `core` | `COVERED` | 1 |
 | `c:src/core/wait.c:wake_up` | `src/core/wait.c` | `wake_up` | `core` | `COVERED` | 7 |
 | `c:src/core/wait.c:wake_up_all` | `src/core/wait.c` | `wake_up_all` | `core` | `COVERED` | 6 |
-| `c:src/core/wifi_manager.c:wifi_append_char` | `src/core/wifi_manager.c` | `wifi_append_char` | `core` | `PENDING` | 0 |
-| `c:src/core/wifi_manager.c:wifi_append_decimal` | `src/core/wifi_manager.c` | `wifi_append_decimal` | `core` | `PENDING` | 0 |
-| `c:src/core/wifi_manager.c:wifi_append_hex` | `src/core/wifi_manager.c` | `wifi_append_hex` | `core` | `PENDING` | 0 |
-| `c:src/core/wifi_manager.c:wifi_append_text` | `src/core/wifi_manager.c` | `wifi_append_text` | `core` | `PENDING` | 0 |
-| `c:src/core/wifi_manager.c:wifi_collect_interfaces` | `src/core/wifi_manager.c` | `wifi_collect_interfaces` | `core` | `COVERED` | 2 |
-| `c:src/core/wifi_manager.c:wifi_collect_usb_interfaces` | `src/core/wifi_manager.c` | `wifi_collect_usb_interfaces` | `core` | `COVERED` | 2 |
-| `c:src/core/wifi_manager.c:wifi_copy_pci` | `src/core/wifi_manager.c` | `wifi_copy_pci` | `core` | `PENDING` | 0 |
-| `c:src/core/wifi_manager.c:wifi_copy_text` | `src/core/wifi_manager.c` | `wifi_copy_text` | `core` | `PENDING` | 0 |
-| `c:src/core/wifi_manager.c:wifi_copy_usb` | `src/core/wifi_manager.c` | `wifi_copy_usb` | `core` | `PENDING` | 0 |
-| `c:src/core/wifi_manager.c:wifi_format_id` | `src/core/wifi_manager.c` | `wifi_format_id` | `core` | `PENDING` | 0 |
-| `c:src/core/wifi_manager.c:wifi_format_usb_id` | `src/core/wifi_manager.c` | `wifi_format_usb_id` | `core` | `PENDING` | 0 |
-| `c:src/core/wifi_manager.c:wifi_id_matches` | `src/core/wifi_manager.c` | `wifi_id_matches` | `core` | `PENDING` | 0 |
-| `c:src/core/wifi_manager.c:wifi_info_is_supported_ethernet` | `src/core/wifi_manager.c` | `wifi_info_is_supported_ethernet` | `core` | `PENDING` | 0 |
-| `c:src/core/wifi_manager.c:wifi_is_supported_ethernet` | `src/core/wifi_manager.c` | `wifi_is_supported_ethernet` | `core` | `PENDING` | 0 |
-| `c:src/core/wifi_manager.c:wifi_manager_connect_open` | `src/core/wifi_manager.c` | `wifi_manager_connect_open` | `core` | `PENDING` | 0 |
-| `c:src/core/wifi_manager.c:wifi_manager_find` | `src/core/wifi_manager.c` | `wifi_manager_find` | `core` | `PENDING` | 0 |
-| `c:src/core/wifi_manager.c:wifi_manager_get_count` | `src/core/wifi_manager.c` | `wifi_manager_get_count` | `core` | `PENDING` | 0 |
-| `c:src/core/wifi_manager.c:wifi_manager_get_interface` | `src/core/wifi_manager.c` | `wifi_manager_get_interface` | `core` | `PENDING` | 0 |
-| `c:src/core/wifi_manager.c:wifi_manager_get_status` | `src/core/wifi_manager.c` | `wifi_manager_get_status` | `core` | `COVERED` | 2 |
-| `c:src/core/wifi_manager.c:wifi_manager_init` | `src/core/wifi_manager.c` | `wifi_manager_init` | `core` | `COVERED` | 2 |
-| `c:src/core/wifi_manager.c:wifi_manager_refresh` | `src/core/wifi_manager.c` | `wifi_manager_refresh` | `core` | `COVERED` | 2 |
-| `c:src/core/wifi_manager.c:wifi_manager_scan` | `src/core/wifi_manager.c` | `wifi_manager_scan` | `core` | `PENDING` | 0 |
-| `c:src/core/wifi_manager.c:wifi_manager_state_name` | `src/core/wifi_manager.c` | `wifi_manager_state_name` | `core` | `PENDING` | 0 |
-| `c:src/core/wifi_manager.c:wifi_manager_validate_state` | `src/core/wifi_manager.c` | `wifi_manager_validate_state` | `core` | `COVERED` | 2 |
-| `c:src/core/wifi_manager.c:wifi_validate_pci_metadata` | `src/core/wifi_manager.c` | `wifi_validate_pci_metadata` | `core` | `COVERED` | 2 |
+| `c:src/core/wifi_manager.c:wifi_append_char` | `src/core/wifi_manager.c` | `wifi_append_char` | `core` | `COVERED` | 1 |
+| `c:src/core/wifi_manager.c:wifi_append_decimal` | `src/core/wifi_manager.c` | `wifi_append_decimal` | `core` | `COVERED` | 1 |
+| `c:src/core/wifi_manager.c:wifi_append_hex` | `src/core/wifi_manager.c` | `wifi_append_hex` | `core` | `COVERED` | 1 |
+| `c:src/core/wifi_manager.c:wifi_append_text` | `src/core/wifi_manager.c` | `wifi_append_text` | `core` | `COVERED` | 1 |
+| `c:src/core/wifi_manager.c:wifi_collect_interfaces` | `src/core/wifi_manager.c` | `wifi_collect_interfaces` | `core` | `COVERED` | 3 |
+| `c:src/core/wifi_manager.c:wifi_collect_usb_interfaces` | `src/core/wifi_manager.c` | `wifi_collect_usb_interfaces` | `core` | `COVERED` | 3 |
+| `c:src/core/wifi_manager.c:wifi_copy_pci` | `src/core/wifi_manager.c` | `wifi_copy_pci` | `core` | `COVERED` | 1 |
+| `c:src/core/wifi_manager.c:wifi_copy_text` | `src/core/wifi_manager.c` | `wifi_copy_text` | `core` | `COVERED` | 1 |
+| `c:src/core/wifi_manager.c:wifi_copy_usb` | `src/core/wifi_manager.c` | `wifi_copy_usb` | `core` | `COVERED` | 1 |
+| `c:src/core/wifi_manager.c:wifi_format_id` | `src/core/wifi_manager.c` | `wifi_format_id` | `core` | `COVERED` | 1 |
+| `c:src/core/wifi_manager.c:wifi_format_usb_id` | `src/core/wifi_manager.c` | `wifi_format_usb_id` | `core` | `COVERED` | 1 |
+| `c:src/core/wifi_manager.c:wifi_id_matches` | `src/core/wifi_manager.c` | `wifi_id_matches` | `core` | `COVERED` | 1 |
+| `c:src/core/wifi_manager.c:wifi_info_is_supported_ethernet` | `src/core/wifi_manager.c` | `wifi_info_is_supported_ethernet` | `core` | `COVERED` | 1 |
+| `c:src/core/wifi_manager.c:wifi_is_supported_ethernet` | `src/core/wifi_manager.c` | `wifi_is_supported_ethernet` | `core` | `COVERED` | 1 |
+| `c:src/core/wifi_manager.c:wifi_manager_connect_open` | `src/core/wifi_manager.c` | `wifi_manager_connect_open` | `core` | `COVERED` | 1 |
+| `c:src/core/wifi_manager.c:wifi_manager_find` | `src/core/wifi_manager.c` | `wifi_manager_find` | `core` | `COVERED` | 1 |
+| `c:src/core/wifi_manager.c:wifi_manager_get_count` | `src/core/wifi_manager.c` | `wifi_manager_get_count` | `core` | `COVERED` | 1 |
+| `c:src/core/wifi_manager.c:wifi_manager_get_interface` | `src/core/wifi_manager.c` | `wifi_manager_get_interface` | `core` | `COVERED` | 1 |
+| `c:src/core/wifi_manager.c:wifi_manager_get_status` | `src/core/wifi_manager.c` | `wifi_manager_get_status` | `core` | `COVERED` | 3 |
+| `c:src/core/wifi_manager.c:wifi_manager_init` | `src/core/wifi_manager.c` | `wifi_manager_init` | `core` | `COVERED` | 3 |
+| `c:src/core/wifi_manager.c:wifi_manager_refresh` | `src/core/wifi_manager.c` | `wifi_manager_refresh` | `core` | `COVERED` | 3 |
+| `c:src/core/wifi_manager.c:wifi_manager_scan` | `src/core/wifi_manager.c` | `wifi_manager_scan` | `core` | `COVERED` | 1 |
+| `c:src/core/wifi_manager.c:wifi_manager_state_name` | `src/core/wifi_manager.c` | `wifi_manager_state_name` | `core` | `COVERED` | 1 |
+| `c:src/core/wifi_manager.c:wifi_manager_validate_state` | `src/core/wifi_manager.c` | `wifi_manager_validate_state` | `core` | `COVERED` | 3 |
+| `c:src/core/wifi_manager.c:wifi_validate_pci_metadata` | `src/core/wifi_manager.c` | `wifi_validate_pci_metadata` | `core` | `COVERED` | 3 |
 | `c:src/core/workqueue.c:cancel_work` | `src/core/workqueue.c` | `cancel_work` | `core` | `COVERED` | 2 |
 | `c:src/core/workqueue.c:schedule_delayed_work` | `src/core/workqueue.c` | `schedule_delayed_work` | `core` | `COVERED` | 3 |
 | `c:src/core/workqueue.c:schedule_work` | `src/core/workqueue.c` | `schedule_work` | `core` | `COVERED` | 3 |
@@ -7298,6 +7298,7 @@
 | `host:core:scheduling` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar os autotestes de wait, workqueue e irq_deferred, alem de limites e estados invalidos | coalescencia, rerun, cancelamento, FIFO, capacidade, disponibilidade e invariantes respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente filas, trabalhos e buffers estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:state` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar contratos de recovery e notificadores de energia | estados, capacidades opcionais, timeouts, ordem e erros canonicos sao observados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico dos servicos e artefatos host-only | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:timer` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar timers one-shot e periodicos com IDT, PIC e scheduler simulados | handles, prazos, cancelamento, dispatch, callbacks, notifier e limpeza respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas estaticas do servico de timers no processo host | todos os timers e proprietarios sao destruidos e os artefatos sao preservados |
+| `host:core:wifi-manager` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inventariar candidatos PCI e USB, consultar interfaces, executar scan e conexao aberta com backends falsos | identificadores, estados, contadores, limites, indisponibilidade e recuperacao preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente fixtures estaticos PCI, USB e RTL8811CU no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:workqueue` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fixture de workqueue com espera controlada | autoteste, callbacks, filas, prioridades, limites e limpeza validos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico da workqueue e callbacks falsos no processo host | trabalhos destruidos, filas vazias, fallback restaurado e artefatos preservados |
 | `host:drivers:font` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inicializar o driver de fonte e consultar as dimensoes publicadas | font_init e idempotente e as dimensoes publicadas permanecem 8x16 | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabela estatica de fontes e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:rtc-status` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | consultar o estado inicial do RTC com destinos valido e nulo | rtc_get_status rejeita destino nulo e publica snapshot inicial estavel | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do RTC e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -8526,24 +8527,6 @@
 - `c:src/core/usb_transport.c:usb_transport_is_ehci`
 - `c:src/core/usb_transport.c:usb_transport_is_uhci`
 - `c:src/core/usb_transport.c:usb_transport_reset_bulk_toggles`
-- `c:src/core/wifi_manager.c:wifi_append_char`
-- `c:src/core/wifi_manager.c:wifi_append_decimal`
-- `c:src/core/wifi_manager.c:wifi_append_hex`
-- `c:src/core/wifi_manager.c:wifi_append_text`
-- `c:src/core/wifi_manager.c:wifi_copy_pci`
-- `c:src/core/wifi_manager.c:wifi_copy_text`
-- `c:src/core/wifi_manager.c:wifi_copy_usb`
-- `c:src/core/wifi_manager.c:wifi_format_id`
-- `c:src/core/wifi_manager.c:wifi_format_usb_id`
-- `c:src/core/wifi_manager.c:wifi_id_matches`
-- `c:src/core/wifi_manager.c:wifi_info_is_supported_ethernet`
-- `c:src/core/wifi_manager.c:wifi_is_supported_ethernet`
-- `c:src/core/wifi_manager.c:wifi_manager_connect_open`
-- `c:src/core/wifi_manager.c:wifi_manager_find`
-- `c:src/core/wifi_manager.c:wifi_manager_get_count`
-- `c:src/core/wifi_manager.c:wifi_manager_get_interface`
-- `c:src/core/wifi_manager.c:wifi_manager_scan`
-- `c:src/core/wifi_manager.c:wifi_manager_state_name`
 - `c:src/desktop/desktop.c:desktop_add_icon`
 - `c:src/desktop/desktop.c:desktop_drag_threshold_reached`
 - `c:src/desktop/desktop.c:desktop_draw`

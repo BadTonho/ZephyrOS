@@ -18323,11 +18323,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:wifi-manager",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/wifi_manager.h:wifi_manager_find",
@@ -18345,11 +18346,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:wifi-manager",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/wifi_manager.h:wifi_manager_get_count",
@@ -18367,11 +18369,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:wifi-manager",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/wifi_manager.h:wifi_manager_get_interface",
@@ -18389,11 +18392,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:wifi-manager",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/wifi_manager.h:wifi_manager_get_status",
@@ -18411,11 +18415,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:wifi-manager",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/wifi_manager.h:wifi_manager_init",
@@ -18433,11 +18438,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:wifi-manager",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/wifi_manager.h:wifi_manager_refresh",
@@ -18455,11 +18461,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:wifi-manager",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/wifi_manager.h:wifi_manager_scan",
@@ -18477,11 +18484,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:wifi-manager",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/wifi_manager.h:wifi_manager_state_name",
@@ -18499,11 +18507,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:wifi-manager",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/wifi_manager.h:wifi_manager_validate_state",
@@ -18521,11 +18530,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:wifi-manager",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/workqueue.h:cancel_work",
@@ -82362,9 +82372,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:wifi-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/wifi_manager.c:wifi_append_decimal",
@@ -82380,9 +82393,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:wifi-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/wifi_manager.c:wifi_append_hex",
@@ -82398,9 +82414,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:wifi-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/wifi_manager.c:wifi_append_text",
@@ -82416,9 +82435,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:wifi-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/wifi_manager.c:wifi_collect_interfaces",
@@ -82436,11 +82458,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:wifi-manager",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/wifi_manager.c:wifi_collect_usb_interfaces",
@@ -82458,11 +82481,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:wifi-manager",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/wifi_manager.c:wifi_copy_pci",
@@ -82478,9 +82502,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:wifi-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/wifi_manager.c:wifi_copy_text",
@@ -82496,9 +82523,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:wifi-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/wifi_manager.c:wifi_copy_usb",
@@ -82514,9 +82544,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:wifi-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/wifi_manager.c:wifi_format_id",
@@ -82532,9 +82565,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:wifi-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/wifi_manager.c:wifi_format_usb_id",
@@ -82550,9 +82586,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:wifi-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/wifi_manager.c:wifi_id_matches",
@@ -82568,9 +82607,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:wifi-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/wifi_manager.c:wifi_info_is_supported_ethernet",
@@ -82586,9 +82628,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:wifi-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/wifi_manager.c:wifi_is_supported_ethernet",
@@ -82604,9 +82649,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:wifi-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/wifi_manager.c:wifi_manager_connect_open",
@@ -82622,9 +82670,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:wifi-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/wifi_manager.c:wifi_manager_find",
@@ -82640,9 +82691,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:wifi-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/wifi_manager.c:wifi_manager_get_count",
@@ -82658,9 +82712,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:wifi-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/wifi_manager.c:wifi_manager_get_interface",
@@ -82676,9 +82733,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:wifi-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/wifi_manager.c:wifi_manager_get_status",
@@ -82696,11 +82756,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:wifi-manager",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/wifi_manager.c:wifi_manager_init",
@@ -82718,11 +82779,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:wifi-manager",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/wifi_manager.c:wifi_manager_refresh",
@@ -82740,11 +82802,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:wifi-manager",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/wifi_manager.c:wifi_manager_scan",
@@ -82760,9 +82823,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:wifi-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/wifi_manager.c:wifi_manager_state_name",
@@ -82778,9 +82844,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:wifi-manager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/wifi_manager.c:wifi_manager_validate_state",
@@ -82798,11 +82867,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:wifi-manager",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/wifi_manager.c:wifi_validate_pci_metadata",
@@ -82820,11 +82890,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:wifi-manager",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/workqueue.c:cancel_work",
@@ -152103,6 +152174,72 @@
         "core",
         "timer",
         "negative"
+      ]
+    },
+    {
+      "id": "host:core:wifi-manager",
+      "scenario": "Inventario host-only de interfaces Wi-Fi PCI e USB",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "inventariar candidatos PCI e USB, consultar interfaces, executar scan e conexao aberta com backends falsos",
+      "expected": "identificadores, estados, contadores, limites, indisponibilidade e recuperacao preservam o contrato",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente fixtures estaticos PCI, USB e RTL8811CU no processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/wifi_manager.h:wifi_manager_connect_open",
+        "api:src/include/core/wifi_manager.h:wifi_manager_find",
+        "api:src/include/core/wifi_manager.h:wifi_manager_get_count",
+        "api:src/include/core/wifi_manager.h:wifi_manager_get_interface",
+        "api:src/include/core/wifi_manager.h:wifi_manager_get_status",
+        "api:src/include/core/wifi_manager.h:wifi_manager_init",
+        "api:src/include/core/wifi_manager.h:wifi_manager_refresh",
+        "api:src/include/core/wifi_manager.h:wifi_manager_scan",
+        "api:src/include/core/wifi_manager.h:wifi_manager_state_name",
+        "api:src/include/core/wifi_manager.h:wifi_manager_validate_state",
+        "c:src/core/wifi_manager.c:wifi_append_char",
+        "c:src/core/wifi_manager.c:wifi_append_decimal",
+        "c:src/core/wifi_manager.c:wifi_append_hex",
+        "c:src/core/wifi_manager.c:wifi_append_text",
+        "c:src/core/wifi_manager.c:wifi_collect_interfaces",
+        "c:src/core/wifi_manager.c:wifi_collect_usb_interfaces",
+        "c:src/core/wifi_manager.c:wifi_copy_pci",
+        "c:src/core/wifi_manager.c:wifi_copy_text",
+        "c:src/core/wifi_manager.c:wifi_copy_usb",
+        "c:src/core/wifi_manager.c:wifi_format_id",
+        "c:src/core/wifi_manager.c:wifi_format_usb_id",
+        "c:src/core/wifi_manager.c:wifi_id_matches",
+        "c:src/core/wifi_manager.c:wifi_info_is_supported_ethernet",
+        "c:src/core/wifi_manager.c:wifi_is_supported_ethernet",
+        "c:src/core/wifi_manager.c:wifi_manager_connect_open",
+        "c:src/core/wifi_manager.c:wifi_manager_find",
+        "c:src/core/wifi_manager.c:wifi_manager_get_count",
+        "c:src/core/wifi_manager.c:wifi_manager_get_interface",
+        "c:src/core/wifi_manager.c:wifi_manager_get_status",
+        "c:src/core/wifi_manager.c:wifi_manager_init",
+        "c:src/core/wifi_manager.c:wifi_manager_refresh",
+        "c:src/core/wifi_manager.c:wifi_manager_scan",
+        "c:src/core/wifi_manager.c:wifi_manager_state_name",
+        "c:src/core/wifi_manager.c:wifi_manager_validate_state",
+        "c:src/core/wifi_manager.c:wifi_validate_pci_metadata"
+      ],
+      "tags": [
+        "host",
+        "core",
+        "wifi",
+        "coverage"
       ]
     },
     {

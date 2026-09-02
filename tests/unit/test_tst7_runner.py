@@ -125,6 +125,9 @@ class Tst7RunnerContractTests(unittest.TestCase):
         self.assertEqual(
             runner.HOST_CASE_TARGETS["host:tst3:string-compress"],
             "test-tst3-host")
+        self.assertEqual(
+            runner.HOST_CASE_TARGETS["host:core:wifi-manager"],
+            "test-wifi-manager-host")
 
     def test_strict_coverage_option_is_parseable(self):
         arguments = runner.parser().parse_args([
