@@ -101,6 +101,8 @@ IPC_RESULT_DIR = ROOT / "build" / "test-results" / "process-ipc-host"
 IPC_BINARY = ROOT / "build" / "tests" / "test_process_ipc_host.exe"
 WORKQUEUE_RESULT_DIR = ROOT / "build" / "test-results" / "workqueue-host"
 WORKQUEUE_BINARY = ROOT / "build" / "tests" / "test_workqueue_host.exe"
+BEARSSL_COMPAT_RESULT_DIR = ROOT / "build" / "test-results" / "bearssl-compat-host"
+BEARSSL_COMPAT_BINARY = ROOT / "build" / "tests" / "test_bearssl_compat_host.exe"
 DEFAULT_TIMEOUT = 120.0
 CORE_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_core_contracts.c",
@@ -350,6 +352,10 @@ WORKQUEUE_SOURCE_FILES = (
     ROOT / "src" / "core" / "log.c",
     ROOT / "src" / "core" / "string.c",
 )
+BEARSSL_COMPAT_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_bearssl_compat_host.c",
+    ROOT / "src" / "core" / "bearssl_compat.c",
+)
 SOURCE_FILES = CORE_SOURCE_FILES
 
 
@@ -442,6 +448,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return IPC_RESULT_DIR, IPC_BINARY, IPC_SOURCE_FILES, "process-ipc-host"
     if case_id == "host:core:workqueue":
         return WORKQUEUE_RESULT_DIR, WORKQUEUE_BINARY, WORKQUEUE_SOURCE_FILES, "workqueue-host"
+    if case_id == "host:core:bearssl-compat":
+        return (BEARSSL_COMPAT_RESULT_DIR, BEARSSL_COMPAT_BINARY,
+                BEARSSL_COMPAT_SOURCE_FILES, "bearssl-compat-host")
     raise ValueError(f"caso_host_invalido:{case_id}")
 
 
@@ -494,6 +503,8 @@ def compiler_command(compiler: str, binary: Path,
     compatibility_flags = []
     if any(source.name == "crypto_ed25519.c" for source in selected_sources):
         compatibility_flags.append("-Wno-unused-const-variable")
+    if any(source.name == "bearssl_compat.c" for source in selected_sources):
+        compatibility_flags.append("-fno-builtin")
     return [
         compiler, "-std=c11", "-O0", "-fno-inline", "-ffunction-sections",
         "-fdata-sections", "-Wall", "-Wextra",
@@ -603,7 +614,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:network:socket", "host:memory:vma",
                                  "host:memory:paging", "host:memory:memory",
                                  "host:process:signals", "host:process:ipc",
-                                 "host:core:workqueue"))
+                                 "host:core:workqueue", "host:core:bearssl-compat"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
     return parser.parse_args()

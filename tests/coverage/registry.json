@@ -2165,6 +2165,23 @@
       ],
       "include_public_apis": true,
       "evidence": "make test-workqueue-host PASS com autoteste interno, prioridades, FIFO, atrasos, coalescencia, rerun, cancelamento, fallback, quiescencia e worker limitado no host"
+    },
+    {
+      "id": "bearssl-compat-host-dynamic",
+      "domain": "core-bearssl-compat",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:bearssl-compat"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/bearssl-compat-host/coverage.json",
+      "coverage_sources": [
+        "src/core/bearssl_compat.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-bearssl-compat-host PASS com copia, movimento sobreposto, preenchimento, comparacao e comprimentos nulos e validos"
     }
   ]
 }

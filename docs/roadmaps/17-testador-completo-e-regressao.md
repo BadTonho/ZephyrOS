@@ -1019,6 +1019,19 @@ desconhecidos ou ambiguos. `make test-dhcp-host`, `make catalog-test` e
 3.083 `COVERED`, 3.744 `PENDING` e 78 casos; o fechamento integral do catalogo,
 o gate estrito e a validacao TST7 completa continuam pendentes.
 
+Incremento Core/BearSSL compat concluido em 2026-09-02 14:15: o novo caso
+host-only `host:core:bearssl-compat` e o alvo `make test-bearssl-compat-host`
+foram adicionados. A fixture exercita diretamente `memcpy`, `memmove`,
+`memset`, `memcmp` e `strlen`, incluindo sobreposicao, comparacao ordenada,
+preenchimento, buffers vazios e entrada nula. O relatorio instrumentado
+`build/test-results/bearssl-compat-host/coverage.json` terminou `PASS` com as
+2 superficies pendentes de `src/core/bearssl_compat.c` resolvidas, sem
+enderecos desconhecidos ou ambiguos. `make test-bearssl-compat-host`,
+`make catalog-test` e `git diff --check` passaram. A sincronizacao atual
+registra 6.827 superficies, 3.085 `COVERED`, 3.742 `PENDING` e 79 casos; o
+fechamento integral do catalogo, o gate estrito e a validacao TST7 completa
+continuam pendentes.
+
 Incremento Processos/IPC concluido em 2026-09-02 13:52: o caso host-only
 `host:process:ipc` e o alvo `make test-process-ipc-host` foram adicionados. A
 fixture usa processos, filas e wait falsos para exercitar inicializacao,

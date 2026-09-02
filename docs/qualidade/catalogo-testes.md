@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **6827**
-- Casos de teste: **78**
+- Casos de teste: **79**
 - Superfícies aposentadas: **20**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 3083 |
+| `COVERED` | 3085 |
 | `MANUAL` | 0 |
-| `PENDING` | 3744 |
+| `PENDING` | 3742 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 78 |
+| `AUTOMATED` | 79 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -2105,8 +2105,8 @@
 | `c:src/core/arp.c:arp_validate_state` | `src/core/arp.c` | `arp_validate_state` | `core` | `COVERED` | 3 |
 | `c:src/core/arp.c:arp_write_u16` | `src/core/arp.c` | `arp_write_u16` | `core` | `COVERED` | 1 |
 | `c:src/core/arp.c:arp_write_u32` | `src/core/arp.c` | `arp_write_u32` | `core` | `COVERED` | 1 |
-| `c:src/core/bearssl_compat.c:memcmp` | `src/core/bearssl_compat.c` | `memcmp` | `core` | `PENDING` | 0 |
-| `c:src/core/bearssl_compat.c:strlen` | `src/core/bearssl_compat.c` | `strlen` | `core` | `PENDING` | 0 |
+| `c:src/core/bearssl_compat.c:memcmp` | `src/core/bearssl_compat.c` | `memcmp` | `core` | `COVERED` | 1 |
+| `c:src/core/bearssl_compat.c:strlen` | `src/core/bearssl_compat.c` | `strlen` | `core` | `COVERED` | 1 |
 | `c:src/core/clock.c:clock_datetime_to_unix` | `src/core/clock.c` | `clock_datetime_to_unix` | `core` | `COVERED` | 3 |
 | `c:src/core/clock.c:clock_days_in_month` | `src/core/clock.c` | `clock_days_in_month` | `core` | `COVERED` | 3 |
 | `c:src/core/clock.c:clock_divide_ticks` | `src/core/clock.c` | `clock_divide_ticks` | `core` | `COVERED` | 1 |
@@ -6916,6 +6916,7 @@
 | `host:core:app-api` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fachada de arquivos, memoria, IPC e VMA com stubs controlados | APIs publicas preservam erros, limites, estados e dados retornados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado da fachada e backends estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:app-catalog` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar catalogo com fontes de pacotes, dependencias, instalados e limites simulados | classificacao, aliases, planos, ciclos, motivos canonicos e indisponibilidade preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do catalogo e backends host simulados | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:app-package` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar contratos de versao, estado, failpoint e motivos de pacote | validacao de argumentos, nomes canonicos, estados indisponiveis e failpoint respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do servico e artefatos host-only | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:core:bearssl-compat` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar compatibilidade de memoria e string para BearSSL | memcpy, memmove, memset, memcmp e strlen preservam seus contratos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e artefatos host-only | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:contracts` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar contratos de strings, log e clock com instrumentacao | contratos validos, erros canonicos e invariantes temporais sao observados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e artefatos host-only | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:crypto` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar SHA-256, SHA-512, comparacao e verificacao Ed25519 | vetores validos, entradas vazias, limites e entradas nulas respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente contextos e buffers estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:device-manager` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar inventario com PCI, ATA e AC97 simulados | formatacao, aliases, estados opcionais, falhas de backend e limites respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do inventario e backends host simulados | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -8240,8 +8241,6 @@
 - `c:src/core/app_remote.c:app_remote_write_record`
 - `c:src/core/app_remote.c:app_remote_write_u16`
 - `c:src/core/app_remote.c:app_remote_write_u32`
-- `c:src/core/bearssl_compat.c:memcmp`
-- `c:src/core/bearssl_compat.c:strlen`
 - `c:src/core/crypto_ed25519.c:crypto_eddsa_trim_scalar`
 - `c:src/core/crypto_ed25519.c:fe_cswap`
 - `c:src/core/network_manager.c:network_apply_dhcp_lease`
