@@ -4225,3 +4225,15 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   vincular a cobertura, mantendo o catalogo reproduzivel. As rotinas CMOS
   privilegiadas nao foram marcadas como cobertas. A sincronizacao atual registra
   6.826 superficies, 3.097 `COVERED`, 3.729 `PENDING` e 83 casos.
+
+- Incremento Shell/entrada concluido em: 2026-09-02 15:45
+  (America/Sao_Paulo): o caso host-only `host:shell:input` e o alvo
+  `make test-shell-input-host` foram adicionados. A fixture passou com terminal
+  hospedado, historico, navegacao, edicao, rolagem, cancelamento, bloqueio,
+  modificadores e limite do buffer, sem hardware real. O relatorio
+  `build/test-results/shell-input-host/coverage.json` terminou `PASS`, sem
+  enderecos desconhecidos ou ambiguos, e resolveu as superficies exercitadas
+  de `src/shell/shell_input.c`. A sincronizacao do catalogo registra 6.826
+  superficies, 3.679 `COVERED`, 3.147 `PENDING` e 84 casos. O teste unitario
+  do sincronizador tambem confirmou o vinculo seguro entre API publica e
+  implementacao C observada em subdiretorio diferente.
