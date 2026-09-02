@@ -19,16 +19,24 @@ static const uint8_t signal_trampoline[USER_SIGNAL_TRAMPOLINE_SIZE] = {
 };
 
 static uint32_t signal_irq_save(void) {
+#if defined(ZEPHYROS_HOST_TEST)
+    return 0U;
+#else
     uint32_t flags;
 
     asm volatile("pushf\n\tpop %0\n\tcli" : "=r"(flags) : : "memory");
     return flags;
+#endif
 }
 
 static void signal_irq_restore(uint32_t flags) {
+#if defined(ZEPHYROS_HOST_TEST)
+    (void)flags;
+#else
     if (flags & SIGNAL_EFLAGS_INTERRUPT_ENABLE) {
         asm volatile("sti" : : : "memory");
     }
+#endif
 }
 
 static int signal_supported(uint32_t signal_number) {
@@ -475,7 +483,12 @@ static int signal_deliver_handler(process_t* current, registers_t* regs,
     }
     frame[0] = USER_SIGNAL_TRAMPOLINE_BASE;
     frame[1] = signal_number;
+#if defined(ZEPHYROS_HOST_TEST)
+    result = paging_copy_to_user((void*)(uintptr_t)new_stack, frame,
+                                 sizeof(frame));
+#else
     result = paging_copy_to_user((void*)new_stack, frame, sizeof(frame));
+#endif
     if (result != OK) {
         LOG_ERROR_CODE("PROC", result, "Falha ao montar frame de sinal");
         return signal_terminate_current(regs, APP_SIGNAL_SEGV, 1);

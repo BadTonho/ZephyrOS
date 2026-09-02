@@ -63,6 +63,7 @@ QUICK_COMMANDS = (
     ("test-vma-host", "vma-host"),
     ("test-paging-host", "paging-host"),
     ("test-memory-host", "memory-host"),
+    ("test-process-signal-host", "process-signal-host"),
     ("test-qemu-selftest", "qemu-selftest"),
     ("test-tst2-host", "tst2-host"),
     ("test-tst3-host", "tst3-host"),
@@ -109,6 +110,7 @@ HOST_CASE_TARGETS = {
     "host:memory:vma": "test-vma-host",
     "host:memory:paging": "test-paging-host",
     "host:memory:memory": "test-memory-host",
+    "host:process:signals": "test-process-signal-host",
     "host:tst2:protocol-core": "test-tst2-host",
     "host:tst3:string-compress": "test-tst3-host",
 }

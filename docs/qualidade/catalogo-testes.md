@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **6827**
-- Casos de teste: **75**
+- Casos de teste: **76**
 - Superfícies aposentadas: **20**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 3052 |
+| `COVERED` | 3074 |
 | `MANUAL` | 0 |
-| `PENDING` | 3775 |
+| `PENDING` | 3753 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 75 |
+| `AUTOMATED` | 76 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -1310,21 +1310,21 @@
 | `api:src/include/process/process.h:scheduler_preempt_user` | `src/include/process/process.h` | `scheduler_preempt_user` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:scheduler_tick` | `src/include/process/process.h` | `scheduler_tick` | `process` | `COVERED` | 7 |
 | `api:src/include/process/process.h:scheduler_validate_invariants` | `src/include/process/process.h` | `scheduler_validate_invariants` | `process` | `COVERED` | 2 |
-| `api:src/include/process/signal.h:process_signal_action` | `src/include/process/signal.h` | `process_signal_action` | `process` | `PENDING` | 0 |
-| `api:src/include/process/signal.h:process_signal_copy_info` | `src/include/process/signal.h` | `process_signal_copy_info` | `process` | `PENDING` | 0 |
-| `api:src/include/process/signal.h:process_signal_get_stats` | `src/include/process/signal.h` | `process_signal_get_stats` | `process` | `PENDING` | 0 |
-| `api:src/include/process/signal.h:process_signal_init` | `src/include/process/signal.h` | `process_signal_init` | `process` | `PENDING` | 0 |
-| `api:src/include/process/signal.h:process_signal_mask` | `src/include/process/signal.h` | `process_signal_mask` | `process` | `PENDING` | 0 |
-| `api:src/include/process/signal.h:process_signal_prepare_user_return` | `src/include/process/signal.h` | `process_signal_prepare_user_return` | `process` | `COVERED` | 7 |
-| `api:src/include/process/signal.h:process_signal_process_created` | `src/include/process/signal.h` | `process_signal_process_created` | `process` | `COVERED` | 1 |
-| `api:src/include/process/signal.h:process_signal_process_destroyed` | `src/include/process/signal.h` | `process_signal_process_destroyed` | `process` | `COVERED` | 1 |
-| `api:src/include/process/signal.h:process_signal_process_exited` | `src/include/process/signal.h` | `process_signal_process_exited` | `process` | `PENDING` | 0 |
-| `api:src/include/process/signal.h:process_signal_raise` | `src/include/process/signal.h` | `process_signal_raise` | `process` | `PENDING` | 0 |
-| `api:src/include/process/signal.h:process_signal_record_user_fault` | `src/include/process/signal.h` | `process_signal_record_user_fault` | `process` | `PENDING` | 0 |
-| `api:src/include/process/signal.h:process_signal_return` | `src/include/process/signal.h` | `process_signal_return` | `process` | `PENDING` | 0 |
-| `api:src/include/process/signal.h:process_signal_self_test` | `src/include/process/signal.h` | `process_signal_self_test` | `process` | `COVERED` | 2 |
-| `api:src/include/process/signal.h:process_signal_send` | `src/include/process/signal.h` | `process_signal_send` | `process` | `PENDING` | 0 |
-| `api:src/include/process/signal.h:process_signal_validate_state` | `src/include/process/signal.h` | `process_signal_validate_state` | `process` | `COVERED` | 2 |
+| `api:src/include/process/signal.h:process_signal_action` | `src/include/process/signal.h` | `process_signal_action` | `process` | `COVERED` | 1 |
+| `api:src/include/process/signal.h:process_signal_copy_info` | `src/include/process/signal.h` | `process_signal_copy_info` | `process` | `COVERED` | 1 |
+| `api:src/include/process/signal.h:process_signal_get_stats` | `src/include/process/signal.h` | `process_signal_get_stats` | `process` | `COVERED` | 1 |
+| `api:src/include/process/signal.h:process_signal_init` | `src/include/process/signal.h` | `process_signal_init` | `process` | `COVERED` | 1 |
+| `api:src/include/process/signal.h:process_signal_mask` | `src/include/process/signal.h` | `process_signal_mask` | `process` | `COVERED` | 1 |
+| `api:src/include/process/signal.h:process_signal_prepare_user_return` | `src/include/process/signal.h` | `process_signal_prepare_user_return` | `process` | `COVERED` | 8 |
+| `api:src/include/process/signal.h:process_signal_process_created` | `src/include/process/signal.h` | `process_signal_process_created` | `process` | `COVERED` | 2 |
+| `api:src/include/process/signal.h:process_signal_process_destroyed` | `src/include/process/signal.h` | `process_signal_process_destroyed` | `process` | `COVERED` | 2 |
+| `api:src/include/process/signal.h:process_signal_process_exited` | `src/include/process/signal.h` | `process_signal_process_exited` | `process` | `COVERED` | 1 |
+| `api:src/include/process/signal.h:process_signal_raise` | `src/include/process/signal.h` | `process_signal_raise` | `process` | `COVERED` | 1 |
+| `api:src/include/process/signal.h:process_signal_record_user_fault` | `src/include/process/signal.h` | `process_signal_record_user_fault` | `process` | `COVERED` | 1 |
+| `api:src/include/process/signal.h:process_signal_return` | `src/include/process/signal.h` | `process_signal_return` | `process` | `COVERED` | 1 |
+| `api:src/include/process/signal.h:process_signal_self_test` | `src/include/process/signal.h` | `process_signal_self_test` | `process` | `COVERED` | 3 |
+| `api:src/include/process/signal.h:process_signal_send` | `src/include/process/signal.h` | `process_signal_send` | `process` | `COVERED` | 1 |
+| `api:src/include/process/signal.h:process_signal_validate_state` | `src/include/process/signal.h` | `process_signal_validate_state` | `process` | `COVERED` | 3 |
 | `api:src/include/process/thread.h:thread_block` | `src/include/process/thread.h` | `thread_block` | `process` | `PENDING` | 0 |
 | `api:src/include/process/thread.h:thread_block_indefinite` | `src/include/process/thread.h` | `thread_block_indefinite` | `process` | `PENDING` | 0 |
 | `api:src/include/process/thread.h:thread_cancel_wait` | `src/include/process/thread.h` | `thread_cancel_wait` | `process` | `PENDING` | 0 |
@@ -5499,34 +5499,34 @@
 | `c:src/process/process.c:scheduler_validate_pid_table` | `src/process/process.c` | `scheduler_validate_pid_table` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:scheduler_validate_states` | `src/process/process.c` | `scheduler_validate_states` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:scheduler_yield_internal` | `src/process/process.c` | `scheduler_yield_internal` | `process` | `COVERED` | 3 |
-| `c:src/process/signal.c:process_signal_action` | `src/process/signal.c` | `process_signal_action` | `process` | `PENDING` | 0 |
-| `c:src/process/signal.c:process_signal_copy_info` | `src/process/signal.c` | `process_signal_copy_info` | `process` | `PENDING` | 0 |
-| `c:src/process/signal.c:process_signal_get_stats` | `src/process/signal.c` | `process_signal_get_stats` | `process` | `PENDING` | 0 |
-| `c:src/process/signal.c:process_signal_init` | `src/process/signal.c` | `process_signal_init` | `process` | `PENDING` | 0 |
-| `c:src/process/signal.c:process_signal_mask` | `src/process/signal.c` | `process_signal_mask` | `process` | `PENDING` | 0 |
-| `c:src/process/signal.c:process_signal_prepare_user_return` | `src/process/signal.c` | `process_signal_prepare_user_return` | `process` | `COVERED` | 8 |
-| `c:src/process/signal.c:process_signal_process_created` | `src/process/signal.c` | `process_signal_process_created` | `process` | `COVERED` | 2 |
-| `c:src/process/signal.c:process_signal_process_destroyed` | `src/process/signal.c` | `process_signal_process_destroyed` | `process` | `COVERED` | 2 |
-| `c:src/process/signal.c:process_signal_process_exited` | `src/process/signal.c` | `process_signal_process_exited` | `process` | `COVERED` | 1 |
-| `c:src/process/signal.c:process_signal_raise` | `src/process/signal.c` | `process_signal_raise` | `process` | `PENDING` | 0 |
-| `c:src/process/signal.c:process_signal_record_user_fault` | `src/process/signal.c` | `process_signal_record_user_fault` | `process` | `PENDING` | 0 |
-| `c:src/process/signal.c:process_signal_return` | `src/process/signal.c` | `process_signal_return` | `process` | `PENDING` | 0 |
-| `c:src/process/signal.c:process_signal_self_test` | `src/process/signal.c` | `process_signal_self_test` | `process` | `COVERED` | 2 |
-| `c:src/process/signal.c:process_signal_send` | `src/process/signal.c` | `process_signal_send` | `process` | `COVERED` | 1 |
-| `c:src/process/signal.c:process_signal_validate_state` | `src/process/signal.c` | `process_signal_validate_state` | `process` | `COVERED` | 2 |
-| `c:src/process/signal.c:signal_context_empty` | `src/process/signal.c` | `signal_context_empty` | `process` | `COVERED` | 2 |
-| `c:src/process/signal.c:signal_deliver_handler` | `src/process/signal.c` | `signal_deliver_handler` | `process` | `PENDING` | 0 |
-| `c:src/process/signal.c:signal_handler_valid` | `src/process/signal.c` | `signal_handler_valid` | `process` | `PENDING` | 0 |
-| `c:src/process/signal.c:signal_ignored_by_action` | `src/process/signal.c` | `signal_ignored_by_action` | `process` | `COVERED` | 1 |
-| `c:src/process/signal.c:signal_irq_restore` | `src/process/signal.c` | `signal_irq_restore` | `process` | `COVERED` | 3 |
-| `c:src/process/signal.c:signal_irq_save` | `src/process/signal.c` | `signal_irq_save` | `process` | `COVERED` | 3 |
-| `c:src/process/signal.c:signal_process_active` | `src/process/signal.c` | `signal_process_active` | `process` | `COVERED` | 1 |
-| `c:src/process/signal.c:signal_select` | `src/process/signal.c` | `signal_select` | `process` | `COVERED` | 1 |
-| `c:src/process/signal.c:signal_supported` | `src/process/signal.c` | `signal_supported` | `process` | `COVERED` | 3 |
-| `c:src/process/signal.c:signal_terminate_current` | `src/process/signal.c` | `signal_terminate_current` | `process` | `PENDING` | 0 |
-| `c:src/process/signal.c:signal_terminating` | `src/process/signal.c` | `signal_terminating` | `process` | `PENDING` | 0 |
-| `c:src/process/signal.c:signal_unblockable` | `src/process/signal.c` | `signal_unblockable` | `process` | `COVERED` | 2 |
-| `c:src/process/signal.c:signal_validate_process` | `src/process/signal.c` | `signal_validate_process` | `process` | `COVERED` | 2 |
+| `c:src/process/signal.c:process_signal_action` | `src/process/signal.c` | `process_signal_action` | `process` | `COVERED` | 1 |
+| `c:src/process/signal.c:process_signal_copy_info` | `src/process/signal.c` | `process_signal_copy_info` | `process` | `COVERED` | 1 |
+| `c:src/process/signal.c:process_signal_get_stats` | `src/process/signal.c` | `process_signal_get_stats` | `process` | `COVERED` | 1 |
+| `c:src/process/signal.c:process_signal_init` | `src/process/signal.c` | `process_signal_init` | `process` | `COVERED` | 1 |
+| `c:src/process/signal.c:process_signal_mask` | `src/process/signal.c` | `process_signal_mask` | `process` | `COVERED` | 1 |
+| `c:src/process/signal.c:process_signal_prepare_user_return` | `src/process/signal.c` | `process_signal_prepare_user_return` | `process` | `COVERED` | 9 |
+| `c:src/process/signal.c:process_signal_process_created` | `src/process/signal.c` | `process_signal_process_created` | `process` | `COVERED` | 3 |
+| `c:src/process/signal.c:process_signal_process_destroyed` | `src/process/signal.c` | `process_signal_process_destroyed` | `process` | `COVERED` | 3 |
+| `c:src/process/signal.c:process_signal_process_exited` | `src/process/signal.c` | `process_signal_process_exited` | `process` | `COVERED` | 2 |
+| `c:src/process/signal.c:process_signal_raise` | `src/process/signal.c` | `process_signal_raise` | `process` | `COVERED` | 1 |
+| `c:src/process/signal.c:process_signal_record_user_fault` | `src/process/signal.c` | `process_signal_record_user_fault` | `process` | `COVERED` | 1 |
+| `c:src/process/signal.c:process_signal_return` | `src/process/signal.c` | `process_signal_return` | `process` | `COVERED` | 1 |
+| `c:src/process/signal.c:process_signal_self_test` | `src/process/signal.c` | `process_signal_self_test` | `process` | `COVERED` | 3 |
+| `c:src/process/signal.c:process_signal_send` | `src/process/signal.c` | `process_signal_send` | `process` | `COVERED` | 2 |
+| `c:src/process/signal.c:process_signal_validate_state` | `src/process/signal.c` | `process_signal_validate_state` | `process` | `COVERED` | 3 |
+| `c:src/process/signal.c:signal_context_empty` | `src/process/signal.c` | `signal_context_empty` | `process` | `COVERED` | 3 |
+| `c:src/process/signal.c:signal_deliver_handler` | `src/process/signal.c` | `signal_deliver_handler` | `process` | `COVERED` | 1 |
+| `c:src/process/signal.c:signal_handler_valid` | `src/process/signal.c` | `signal_handler_valid` | `process` | `COVERED` | 1 |
+| `c:src/process/signal.c:signal_ignored_by_action` | `src/process/signal.c` | `signal_ignored_by_action` | `process` | `COVERED` | 2 |
+| `c:src/process/signal.c:signal_irq_restore` | `src/process/signal.c` | `signal_irq_restore` | `process` | `COVERED` | 4 |
+| `c:src/process/signal.c:signal_irq_save` | `src/process/signal.c` | `signal_irq_save` | `process` | `COVERED` | 4 |
+| `c:src/process/signal.c:signal_process_active` | `src/process/signal.c` | `signal_process_active` | `process` | `COVERED` | 2 |
+| `c:src/process/signal.c:signal_select` | `src/process/signal.c` | `signal_select` | `process` | `COVERED` | 2 |
+| `c:src/process/signal.c:signal_supported` | `src/process/signal.c` | `signal_supported` | `process` | `COVERED` | 4 |
+| `c:src/process/signal.c:signal_terminate_current` | `src/process/signal.c` | `signal_terminate_current` | `process` | `COVERED` | 1 |
+| `c:src/process/signal.c:signal_terminating` | `src/process/signal.c` | `signal_terminating` | `process` | `COVERED` | 1 |
+| `c:src/process/signal.c:signal_unblockable` | `src/process/signal.c` | `signal_unblockable` | `process` | `COVERED` | 3 |
+| `c:src/process/signal.c:signal_validate_process` | `src/process/signal.c` | `signal_validate_process` | `process` | `COVERED` | 3 |
 | `c:src/settings/settings.c:apply_mouse_settings` | `src/settings/settings.c` | `apply_mouse_settings` | `settings` | `PENDING` | 0 |
 | `c:src/settings/settings.c:apply_taskbar_settings` | `src/settings/settings.c` | `apply_taskbar_settings` | `settings` | `PENDING` | 0 |
 | `c:src/settings/settings.c:apply_wm_settings` | `src/settings/settings.c` | `apply_wm_settings` | `settings` | `PENDING` | 0 |
@@ -6941,6 +6941,7 @@
 | `host:network:socket` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar handles geracionais, conexao, filas RX/TX, eventos, EOF, timeout, cancelamento, limites, reset e limpeza com TCP, timer e VFS falsos | operacoes validas preservam os eventos observaveis, entradas e transportes invalidos retornam codigos canonicos e nenhum socket residual permanece | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado dos sockets, filas de espera, buffers estaticos e transporte TCP falso no processo host | sockets, filas, callbacks TCP e estado de buffers reiniciados e artefatos preservados |
 | `host:network:tcp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar handshake, dados, ACK, FIN, RST, retransmissao, timeout e limpeza usando IPv4 e timer falsos | conexoes validas avancam no protocolo, segmentos invalidos falham com codigo canonico e nenhum estado residual permanece | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado TCP, callbacks, buffers estaticos e transporte IPv4 falso no processo host | conexoes, callbacks e estado TCP reiniciados e artefatos preservados |
 | `host:network:udp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar envio, reinjecao, checksum, listeners, broadcast e erros UDP com IPv4 simulado | datagramas validos sao entregues, entradas corrompidas sao rejeitadas e endpoints sao liberados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos, endpoints UDP e transporte IPv4 falso no processo host | todos os endpoints sao desvinculados e os artefatos sao preservados |
+| `host:process:signals` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fixture de sinais com processos estaticos | mascaras, handlers, coalescencia, notificacao e invariantes validas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente processos estaticos e stubs de paging no processo host | estado de sinais restaurado e artefatos preservados |
 | `host:security:tls` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar politica, estados, validade, cadeia, SAN, pinning, rotacao, revogacao e autoteste TLS com relogio e RNG falsos | identidades validas sao aceitas, rejeicoes retornam motivo canonico e capacidades indisponiveis permanecem explicitas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado TLS, politica e dependencias falsas no processo host | estado TLS e dependencias falsas reiniciados e artefatos preservados |
 | `host:storage:block` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar block_self_test e block_cache_self_test com providers estaticos | filas BIO, limites, cancelamento, failpoints, cache, writeback e sync passam e o inventario retorna ao estado inicial | compilador ausente, warning, cobertura incompleta, failpoint residual, falha de assercao ou timeout | somente estruturas globais do processo host e buffers estaticos de provider | autotestes removem dispositivos temporarios, limpam cache e deixam fila sem pendencias |
 | `host:storage:fat12` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar FAT12 sobre imagem estatica com raiz, subdiretorio e provider ATA falso | leitura, caminhos, metadados, operacoes atomicas, streaming, cancelamento e erros preservam a imagem fixture | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente imagem FAT12 e heap estatico do processo host | streaming encerrado, cadeias liberadas e processo host finalizado com artefatos preservados |
@@ -7587,16 +7588,6 @@
 - `api:src/include/process/process.h:scheduler_get_stats`
 - `api:src/include/process/process.h:scheduler_init`
 - `api:src/include/process/process.h:scheduler_preempt_user`
-- `api:src/include/process/signal.h:process_signal_action`
-- `api:src/include/process/signal.h:process_signal_copy_info`
-- `api:src/include/process/signal.h:process_signal_get_stats`
-- `api:src/include/process/signal.h:process_signal_init`
-- `api:src/include/process/signal.h:process_signal_mask`
-- `api:src/include/process/signal.h:process_signal_process_exited`
-- `api:src/include/process/signal.h:process_signal_raise`
-- `api:src/include/process/signal.h:process_signal_record_user_fault`
-- `api:src/include/process/signal.h:process_signal_return`
-- `api:src/include/process/signal.h:process_signal_send`
 - `api:src/include/process/thread.h:thread_block`
 - `api:src/include/process/thread.h:thread_block_indefinite`
 - `api:src/include/process/thread.h:thread_cancel_wait`
@@ -9592,18 +9583,6 @@
 - `c:src/process/process.c:process_wake_channel`
 - `c:src/process/process.c:scheduler_get_stats`
 - `c:src/process/process.c:scheduler_init`
-- `c:src/process/signal.c:process_signal_action`
-- `c:src/process/signal.c:process_signal_copy_info`
-- `c:src/process/signal.c:process_signal_get_stats`
-- `c:src/process/signal.c:process_signal_init`
-- `c:src/process/signal.c:process_signal_mask`
-- `c:src/process/signal.c:process_signal_raise`
-- `c:src/process/signal.c:process_signal_record_user_fault`
-- `c:src/process/signal.c:process_signal_return`
-- `c:src/process/signal.c:signal_deliver_handler`
-- `c:src/process/signal.c:signal_handler_valid`
-- `c:src/process/signal.c:signal_terminate_current`
-- `c:src/process/signal.c:signal_terminating`
 - `c:src/settings/settings.c:apply_mouse_settings`
 - `c:src/settings/settings.c:apply_taskbar_settings`
 - `c:src/settings/settings.c:apply_wm_settings`
