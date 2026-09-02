@@ -183,6 +183,10 @@ O caso `test-http-host` usa DNS, socket, TLS, timer e stack falsos para
 exercitar URLs, opcoes, headers, respostas com tamanho/chunked/EOF,
 streaming, redirects, HTTPS, limites, timeouts e falhas sem rede externa; seu
 relatorio fica em `build/test-results/http-host/`.
+O caso `test-net-socket-host` usa TCP, timer, filas de espera e VFS falsos para
+exercitar handles geracionais, conexao, filas RX/TX, eventos, EOF, timeout,
+cancelamento, limites, reset e limpeza sem rede externa; seu relatorio fica em
+`build/test-results/net-socket-host/`.
 
 Para reconstruir a imagem instrumentada separada e gerar o mapa de simbolos:
 

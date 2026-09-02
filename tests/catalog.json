@@ -7176,6 +7176,7 @@
         "host:network:ethernet",
         "host:network:http",
         "host:network:icmp",
+        "host:network:socket",
         "host:network:tcp",
         "host:network:udp",
         "host:security:tls",
@@ -7655,7 +7656,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:net-buffer",
-        "host:network:ethernet"
+        "host:network:ethernet",
+        "host:network:socket"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -7701,6 +7703,7 @@
       "case_ids": [
         "host:core:net-buffer",
         "host:network:ethernet",
+        "host:network:socket",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
@@ -7914,6 +7917,7 @@
       "case_ids": [
         "host:core:net-buffer",
         "host:network:ethernet",
+        "host:network:socket",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
@@ -7934,9 +7938,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/net_socket.h:net_socket_close",
@@ -7952,9 +7959,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/net_socket.h:net_socket_connect",
@@ -7970,9 +7980,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/net_socket.h:net_socket_get_handle_info",
@@ -7988,9 +8001,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/net_socket.h:net_socket_get_info",
@@ -8006,9 +8022,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/net_socket.h:net_socket_get_status",
@@ -8026,11 +8045,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/net_socket.h:net_socket_init",
@@ -8046,9 +8066,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/net_socket.h:net_socket_maintain",
@@ -8064,9 +8087,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/net_socket.h:net_socket_open",
@@ -8082,9 +8108,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/net_socket.h:net_socket_receive",
@@ -8100,9 +8129,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/net_socket.h:net_socket_reset",
@@ -8118,9 +8150,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/net_socket.h:net_socket_self_test",
@@ -8138,11 +8173,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/net_socket.h:net_socket_send",
@@ -8158,9 +8194,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/net_socket.h:net_socket_validate_state",
@@ -8178,11 +8217,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/net_socket.h:net_socket_wait",
@@ -8198,9 +8238,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/network_manager.h:network_manager_acquire_dhcp",
@@ -9962,6 +10005,7 @@
         "host:network:ethernet",
         "host:network:http",
         "host:network:icmp",
+        "host:network:socket",
         "host:network:tcp",
         "host:network:udp",
         "host:security:tls",
@@ -10015,6 +10059,7 @@
         "host:network:ethernet",
         "host:network:http",
         "host:network:icmp",
+        "host:network:socket",
         "host:network:tcp",
         "host:network:udp",
         "host:security:tls",
@@ -10068,6 +10113,7 @@
         "host:network:ethernet",
         "host:network:http",
         "host:network:icmp",
+        "host:network:socket",
         "host:network:tcp",
         "host:network:udp",
         "host:security:tls",
@@ -10114,6 +10160,7 @@
         "host:network:ethernet",
         "host:network:http",
         "host:network:icmp",
+        "host:network:socket",
         "host:network:tcp",
         "host:network:udp",
         "host:security:tls",
@@ -13605,6 +13652,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst6:stress:kernel"
       ],
@@ -13694,6 +13742,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst6:stress:kernel"
       ],
@@ -13717,6 +13766,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst6:stress:kernel"
       ],
@@ -13827,6 +13877,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst5:processes",
         "qemu:tst6:stress:kernel"
@@ -13871,7 +13922,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:scheduling"
+        "host:core:scheduling",
+        "host:network:socket"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -13935,6 +13987,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst5:processes",
         "qemu:tst6:stress:kernel"
@@ -14001,6 +14054,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst5:processes",
         "qemu:tst6:stress:kernel"
@@ -14025,6 +14079,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst5:processes",
         "qemu:tst6:matrix:baseline",
@@ -14050,6 +14105,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst5:processes",
         "qemu:tst6:stress:kernel"
@@ -14097,6 +14153,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst6:stress:kernel"
       ],
@@ -14120,6 +14177,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst5:processes",
         "qemu:tst6:stress:kernel"
@@ -14144,6 +14202,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst5:processes",
         "qemu:tst6:stress:kernel"
@@ -49893,6 +49952,7 @@
         "host:network:ethernet",
         "host:network:http",
         "host:network:icmp",
+        "host:network:socket",
         "host:network:tcp",
         "host:network:udp",
         "host:security:tls",
@@ -49960,6 +50020,7 @@
         "host:network:ethernet",
         "host:network:http",
         "host:network:icmp",
+        "host:network:socket",
         "host:network:tcp",
         "host:network:udp",
         "host:security:tls",
@@ -50156,6 +50217,7 @@
         "host:network:ethernet",
         "host:network:http",
         "host:network:icmp",
+        "host:network:socket",
         "host:network:tcp",
         "host:network:udp",
         "host:security:tls",
@@ -50202,6 +50264,7 @@
         "host:network:ethernet",
         "host:network:http",
         "host:network:icmp",
+        "host:network:socket",
         "host:network:tcp",
         "host:network:udp",
         "host:security:tls",
@@ -50270,6 +50333,7 @@
         "host:network:ethernet",
         "host:network:http",
         "host:network:icmp",
+        "host:network:socket",
         "host:network:tcp",
         "host:network:udp",
         "host:security:tls",
@@ -50343,6 +50407,7 @@
         "host:network:ethernet",
         "host:network:http",
         "host:network:icmp",
+        "host:network:socket",
         "host:network:tcp",
         "host:network:udp",
         "host:security:tls",
@@ -50389,6 +50454,7 @@
         "host:network:ethernet",
         "host:network:http",
         "host:network:icmp",
+        "host:network:socket",
         "host:network:tcp",
         "host:network:udp",
         "host:security:tls",
@@ -50435,6 +50501,7 @@
         "host:network:ethernet",
         "host:network:http",
         "host:network:icmp",
+        "host:network:socket",
         "host:network:tcp",
         "host:network:udp",
         "host:security:tls",
@@ -50569,6 +50636,7 @@
         "host:network:ethernet",
         "host:network:http",
         "host:network:icmp",
+        "host:network:socket",
         "host:network:tcp",
         "host:network:udp",
         "host:security:tls",
@@ -50615,6 +50683,7 @@
         "host:network:ethernet",
         "host:network:http",
         "host:network:icmp",
+        "host:network:socket",
         "host:network:tcp",
         "host:network:udp",
         "host:security:tls",
@@ -50796,6 +50865,7 @@
         "host:network:ethernet",
         "host:network:http",
         "host:network:icmp",
+        "host:network:socket",
         "host:network:tcp",
         "host:network:udp",
         "host:security:tls",
@@ -50842,6 +50912,7 @@
         "host:network:ethernet",
         "host:network:http",
         "host:network:icmp",
+        "host:network:socket",
         "host:network:tcp",
         "host:network:udp",
         "host:security:tls",
@@ -51093,6 +51164,7 @@
         "host:network:ethernet",
         "host:network:http",
         "host:network:icmp",
+        "host:network:socket",
         "host:network:tcp",
         "host:network:udp",
         "host:security:tls",
@@ -51337,7 +51409,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:net-buffer",
-        "host:network:ethernet"
+        "host:network:ethernet",
+        "host:network:socket"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -51407,6 +51480,7 @@
       "case_ids": [
         "host:core:net-buffer",
         "host:network:ethernet",
+        "host:network:socket",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
@@ -51786,6 +51860,7 @@
       "case_ids": [
         "host:core:net-buffer",
         "host:network:ethernet",
+        "host:network:socket",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
@@ -51806,9 +51881,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_allocate_port",
@@ -51824,9 +51902,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_close",
@@ -51842,9 +51923,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_connect",
@@ -51860,9 +51944,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_drain",
@@ -51878,9 +51965,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_entry_events",
@@ -51898,11 +51988,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_fill_info",
@@ -51918,9 +52009,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_find_handle",
@@ -51936,9 +52030,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_find_tcp",
@@ -51954,9 +52051,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_get_handle_info",
@@ -51972,9 +52072,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_get_info",
@@ -51990,9 +52093,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_get_status",
@@ -52010,11 +52116,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_init",
@@ -52030,9 +52137,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_maintain",
@@ -52048,9 +52158,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_make_handle",
@@ -52066,9 +52179,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_open",
@@ -52084,9 +52200,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_port_used",
@@ -52102,9 +52221,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_receive",
@@ -52120,9 +52242,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_release",
@@ -52138,9 +52263,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_reset",
@@ -52156,9 +52284,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_ring_read",
@@ -52174,9 +52305,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_ring_write",
@@ -52192,9 +52326,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_self_test",
@@ -52212,11 +52349,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_send",
@@ -52232,9 +52370,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_start_close",
@@ -52250,9 +52391,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_tcp_event",
@@ -52268,9 +52412,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_test_block",
@@ -52288,11 +52435,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_test_count",
@@ -52310,11 +52458,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_test_wake",
@@ -52332,11 +52481,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_test_yield",
@@ -52354,11 +52504,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_validate_state",
@@ -52376,11 +52527,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_wait",
@@ -52396,9 +52548,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_wait_condition",
@@ -52414,9 +52569,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_wait_owner",
@@ -52432,9 +52590,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/net_socket.c:net_socket_wake",
@@ -52450,9 +52611,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/network_manager.c:network_append_char",
@@ -56965,6 +57129,7 @@
         "host:network:ethernet",
         "host:network:http",
         "host:network:icmp",
+        "host:network:socket",
         "host:network:tcp",
         "host:network:udp",
         "host:security:tls",
@@ -57018,6 +57183,7 @@
         "host:network:ethernet",
         "host:network:http",
         "host:network:icmp",
+        "host:network:socket",
         "host:network:tcp",
         "host:network:udp",
         "host:security:tls",
@@ -57071,6 +57237,7 @@
         "host:network:ethernet",
         "host:network:http",
         "host:network:icmp",
+        "host:network:socket",
         "host:network:tcp",
         "host:network:udp",
         "host:security:tls",
@@ -57117,6 +57284,7 @@
         "host:network:ethernet",
         "host:network:http",
         "host:network:icmp",
+        "host:network:socket",
         "host:network:tcp",
         "host:network:udp",
         "host:security:tls",
@@ -70345,6 +70513,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst4:storage-vfs",
@@ -70438,6 +70607,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst4:storage-vfs",
@@ -70463,6 +70633,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst6:stress:kernel"
       ],
@@ -70512,6 +70683,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst5:processes",
@@ -70537,6 +70709,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst4:storage-vfs",
@@ -70562,6 +70735,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:paging-vma",
         "qemu:tst5:processes"
       ],
@@ -70648,6 +70822,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst5:processes",
@@ -70714,7 +70889,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:scheduling"
+        "host:core:scheduling",
+        "host:network:socket"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -70736,6 +70912,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst5:processes",
@@ -70761,6 +70938,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst4:storage-vfs",
@@ -70788,6 +70966,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst4:storage-vfs",
@@ -70815,6 +70994,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst4:storage-vfs",
@@ -70840,6 +71020,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst5:processes",
@@ -70908,6 +71089,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst5:processes",
@@ -70933,6 +71115,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst5:processes",
@@ -71000,6 +71183,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:paging-vma",
         "qemu:tst5:processes"
       ],
@@ -71023,6 +71207,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst5:processes",
@@ -71048,6 +71233,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst4:storage-vfs",
@@ -71073,6 +71259,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst4:storage-vfs",
@@ -71098,6 +71285,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst5:processes",
@@ -71124,6 +71312,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst4:storage-vfs",
@@ -71149,6 +71338,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst5:processes",
@@ -71175,6 +71365,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst4:storage-vfs",
@@ -71200,6 +71391,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst4:storage-vfs",
@@ -71226,6 +71418,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst4:storage-vfs",
@@ -71252,6 +71445,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst4:storage-vfs",
@@ -71302,6 +71496,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst4:storage-vfs",
@@ -71512,6 +71707,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst6:stress:kernel"
       ],
@@ -71535,6 +71731,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst6:stress:kernel"
       ],
@@ -71558,6 +71755,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst4:storage-vfs",
@@ -71584,6 +71782,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "host:network:socket",
         "qemu:tst4:execution",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:processes",
@@ -138426,6 +138625,159 @@
         "network",
         "route",
         "ipv4",
+        "coverage"
+      ]
+    },
+    {
+      "id": "host:network:socket",
+      "scenario": "Contrato host-only dos sockets nativos com TCP falso",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "compilar e executar handles geracionais, conexao, filas RX/TX, eventos, EOF, timeout, cancelamento, limites, reset e limpeza com TCP, timer e VFS falsos",
+      "expected": "operacoes validas preservam os eventos observaveis, entradas e transportes invalidos retornam codigos canonicos e nenhum socket residual permanece",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente estado dos sockets, filas de espera, buffers estaticos e transporte TCP falso no processo host",
+      "cleanup": "sockets, filas, callbacks TCP e estado de buffers reiniciados e artefatos preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/log.h:log_print",
+        "api:src/include/core/net_buffer.h:net_buffer_init",
+        "api:src/include/core/net_buffer.h:net_buffer_note_copy",
+        "api:src/include/core/net_buffer.h:net_buffer_validate_state",
+        "api:src/include/core/net_socket.h:net_socket_abort",
+        "api:src/include/core/net_socket.h:net_socket_close",
+        "api:src/include/core/net_socket.h:net_socket_connect",
+        "api:src/include/core/net_socket.h:net_socket_get_handle_info",
+        "api:src/include/core/net_socket.h:net_socket_get_info",
+        "api:src/include/core/net_socket.h:net_socket_get_status",
+        "api:src/include/core/net_socket.h:net_socket_init",
+        "api:src/include/core/net_socket.h:net_socket_maintain",
+        "api:src/include/core/net_socket.h:net_socket_open",
+        "api:src/include/core/net_socket.h:net_socket_receive",
+        "api:src/include/core/net_socket.h:net_socket_reset",
+        "api:src/include/core/net_socket.h:net_socket_self_test",
+        "api:src/include/core/net_socket.h:net_socket_send",
+        "api:src/include/core/net_socket.h:net_socket_validate_state",
+        "api:src/include/core/net_socket.h:net_socket_wait",
+        "api:src/include/core/string.h:kmemcpy",
+        "api:src/include/core/string.h:kmemset",
+        "api:src/include/core/string.h:kstrcmp",
+        "api:src/include/core/string.h:kstrlen",
+        "api:src/include/core/wait.h:init_waitqueue_head",
+        "api:src/include/core/wait.h:wait_channel_reset",
+        "api:src/include/core/wait.h:wait_channel_set_available",
+        "api:src/include/core/wait.h:wait_event_timeout",
+        "api:src/include/core/wait.h:wait_init",
+        "api:src/include/core/wait.h:wait_queue_block",
+        "api:src/include/core/wait.h:wait_queue_entry_init",
+        "api:src/include/core/wait.h:wait_queue_remove",
+        "api:src/include/core/wait.h:wait_queue_wake_target",
+        "api:src/include/core/wait.h:wait_validate_state",
+        "api:src/include/core/wait.h:wake_up",
+        "api:src/include/core/wait.h:wake_up_all",
+        "c:src/core/log.c:log_console_print_number",
+        "c:src/core/log.c:log_copy_text",
+        "c:src/core/log.c:log_is_power_of_two",
+        "c:src/core/log.c:log_level_is_valid",
+        "c:src/core/log.c:log_print",
+        "c:src/core/log.c:log_print_colored",
+        "c:src/core/log.c:log_records_match",
+        "c:src/core/log.c:log_restore_interrupts",
+        "c:src/core/log.c:log_ring_latest_index",
+        "c:src/core/log.c:log_ring_store",
+        "c:src/core/log.c:log_submit",
+        "c:src/core/log.c:log_suspend_interrupts",
+        "c:src/core/log.c:log_write_serial",
+        "c:src/core/net_buffer.c:net_buffer_init",
+        "c:src/core/net_buffer.c:net_buffer_note_copy",
+        "c:src/core/net_buffer.c:net_buffer_validate_state",
+        "c:src/core/net_socket.c:net_socket_abort",
+        "c:src/core/net_socket.c:net_socket_allocate_port",
+        "c:src/core/net_socket.c:net_socket_close",
+        "c:src/core/net_socket.c:net_socket_connect",
+        "c:src/core/net_socket.c:net_socket_drain",
+        "c:src/core/net_socket.c:net_socket_entry_events",
+        "c:src/core/net_socket.c:net_socket_fill_info",
+        "c:src/core/net_socket.c:net_socket_find_handle",
+        "c:src/core/net_socket.c:net_socket_find_tcp",
+        "c:src/core/net_socket.c:net_socket_get_handle_info",
+        "c:src/core/net_socket.c:net_socket_get_info",
+        "c:src/core/net_socket.c:net_socket_get_status",
+        "c:src/core/net_socket.c:net_socket_init",
+        "c:src/core/net_socket.c:net_socket_maintain",
+        "c:src/core/net_socket.c:net_socket_make_handle",
+        "c:src/core/net_socket.c:net_socket_open",
+        "c:src/core/net_socket.c:net_socket_port_used",
+        "c:src/core/net_socket.c:net_socket_receive",
+        "c:src/core/net_socket.c:net_socket_release",
+        "c:src/core/net_socket.c:net_socket_reset",
+        "c:src/core/net_socket.c:net_socket_ring_read",
+        "c:src/core/net_socket.c:net_socket_ring_write",
+        "c:src/core/net_socket.c:net_socket_self_test",
+        "c:src/core/net_socket.c:net_socket_send",
+        "c:src/core/net_socket.c:net_socket_start_close",
+        "c:src/core/net_socket.c:net_socket_tcp_event",
+        "c:src/core/net_socket.c:net_socket_test_block",
+        "c:src/core/net_socket.c:net_socket_test_count",
+        "c:src/core/net_socket.c:net_socket_test_wake",
+        "c:src/core/net_socket.c:net_socket_test_yield",
+        "c:src/core/net_socket.c:net_socket_validate_state",
+        "c:src/core/net_socket.c:net_socket_wait",
+        "c:src/core/net_socket.c:net_socket_wait_condition",
+        "c:src/core/net_socket.c:net_socket_wait_owner",
+        "c:src/core/net_socket.c:net_socket_wake",
+        "c:src/core/string.c:kmemcpy",
+        "c:src/core/string.c:kmemset",
+        "c:src/core/string.c:kstrcmp",
+        "c:src/core/string.c:kstrlen",
+        "c:src/core/wait.c:init_waitqueue_head",
+        "c:src/core/wait.c:wait_channel_reset",
+        "c:src/core/wait.c:wait_channel_set_available",
+        "c:src/core/wait.c:wait_condition_snapshot",
+        "c:src/core/wait.c:wait_copy_text",
+        "c:src/core/wait.c:wait_current_task",
+        "c:src/core/wait.c:wait_event_timeout",
+        "c:src/core/wait.c:wait_init",
+        "c:src/core/wait.c:wait_interrupts_enabled",
+        "c:src/core/wait.c:wait_irq_restore",
+        "c:src/core/wait.c:wait_irq_save",
+        "c:src/core/wait.c:wait_name_length",
+        "c:src/core/wait.c:wait_note_reason_locked",
+        "c:src/core/wait.c:wait_queue_append_locked",
+        "c:src/core/wait.c:wait_queue_block",
+        "c:src/core/wait.c:wait_queue_deadline_reached",
+        "c:src/core/wait.c:wait_queue_entry_init",
+        "c:src/core/wait.c:wait_queue_make_id",
+        "c:src/core/wait.c:wait_queue_register_locked",
+        "c:src/core/wait.c:wait_queue_remove",
+        "c:src/core/wait.c:wait_queue_reset_locked",
+        "c:src/core/wait.c:wait_queue_unlink_locked",
+        "c:src/core/wait.c:wait_queue_unregister_locked",
+        "c:src/core/wait.c:wait_queue_valid",
+        "c:src/core/wait.c:wait_queue_wake_target",
+        "c:src/core/wait.c:wait_reason_valid",
+        "c:src/core/wait.c:wait_target_valid",
+        "c:src/core/wait.c:wait_validate_queue_locked",
+        "c:src/core/wait.c:wait_validate_state",
+        "c:src/core/wait.c:wake_up",
+        "c:src/core/wait.c:wake_up_all"
+      ],
+      "tags": [
+        "host",
+        "network",
+        "socket",
+        "wait",
         "coverage"
       ]
     },

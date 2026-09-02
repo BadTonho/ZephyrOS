@@ -4034,3 +4034,13 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   sem enderecos desconhecidos ou ambiguos. A sincronizacao atual registra
   6.820 superficies, 2.979 `COVERED`, 3.841 `PENDING` e 71 casos; os gates
   de catalogo e a validacao TST7 completa permanecem pendentes.
+
+- Incremento Rede/sockets concluido em 2026-09-02 12:10 (America/Sao_Paulo):
+  `make test-net-socket-host` passou com `HOST_CC` configurado e warnings
+  tratados como erro. A fixture usa TCP, timer, filas de espera e VFS falsos
+  para exercitar handles geracionais, conexao, filas RX/TX, eventos, EOF,
+  timeout, cancelamento, limites, reset e limpeza sem rede externa. O relatorio
+  `build/test-results/net-socket-host/coverage.json` terminou `PASS`, com 86
+  superficies resolvidas, sem enderecos desconhecidos ou ambiguos. A
+  sincronizacao atual registra 6.820 superficies, 3.018 `COVERED`, 3.802
+  `PENDING` e 72 casos; `make catalog-test` passou.
