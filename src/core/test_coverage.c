@@ -195,6 +195,18 @@ void TEST_COVERAGE_NO_INSTRUMENT __cyg_profile_func_exit(
     (void)caller;
 }
 
+void TEST_COVERAGE_NO_INSTRUMENT test_coverage_record_address(
+    uint32_t address) {
+#if defined(ZEPHYROS_HOST_TEST)
+    coverage_record((test_coverage_address_t)(unsigned long long)
+                    &test_coverage_record_address);
+#else
+    coverage_record((test_coverage_address_t)(uint32_t)
+                    &test_coverage_record_address);
+#endif
+    coverage_record((test_coverage_address_t)address);
+}
+
 void TEST_COVERAGE_NO_INSTRUMENT test_coverage_begin_case(
     const char* case_id, uint32_t case_length) {
     uint32_t length = case_length;

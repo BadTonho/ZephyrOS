@@ -140,6 +140,7 @@ static int protocol_dispatch_case(void* context, const char* case_id,
     static const char storage_vfs_case[] = "qemu:tst4:storage-vfs";
     static const char network_case[] = "qemu:tst4:network";
     static const char platform_case[] = "qemu:tst4:platform";
+    static const char assembly_case[] = "qemu:tst7:assembly";
     static const char tst5_prefix[] = "qemu:tst5:";
     static const char tst6_prefix[] = "qemu:tst6:";
     kernel_tests_runtime_t runtime;
@@ -182,6 +183,10 @@ static int protocol_dispatch_case(void* context, const char* case_id,
     if (protocol_token_equals(case_id, case_length, platform_case)) {
         if (!protocol_boot_ready) return ERR_STATE;
         return kernel_tests_run_platform(&runtime);
+    }
+    if (protocol_token_equals(case_id, case_length, assembly_case)) {
+        if (!protocol_boot_ready) return ERR_STATE;
+        return kernel_tests_run_assembly(&runtime);
     }
     if (case_length > protocol_length(tst5_prefix) &&
         protocol_token_equals(case_id, protocol_length(tst5_prefix), tst5_prefix)) {

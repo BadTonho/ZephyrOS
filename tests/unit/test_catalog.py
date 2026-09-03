@@ -252,6 +252,45 @@ class CatalogContractTests(unittest.TestCase):
                 {item["id"]: item for item in catalog["surfaces"]}, root),
                 ["c:src/core/sample.c:sample"])
 
+    def test_registry_coverage_report_selects_observed_assembly_entries(self):
+        catalog = sample_catalog()
+        assembly = sample_surface(["qemu:coverage:assembly"])
+        assembly["id"] = "asm:src/drivers/isr.asm:isr128"
+        assembly["kind"] = "asm_entry"
+        assembly["source"] = "src/drivers/isr.asm"
+        assembly["symbol"] = "isr128"
+        catalog["surfaces"] = [assembly]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            report = root / "coverage.json"
+            report.write_text(json.dumps({
+                "status": "PASS",
+                "covered_surface_ids": [
+                    "asm:src/drivers/isr.asm:isr128",
+                ],
+                "unknown_addresses": [],
+                "ambiguous_addresses": [],
+            }), encoding="utf-8")
+            entry = {
+                "id": "assembly-report",
+                "domain": "drivers-interrupt-assembly",
+                "owner": "quality",
+                "executor": "qemu",
+                "coverage_mode": "integration",
+                "case_ids": ["qemu:coverage:assembly"],
+                "surface_selector": "coverage_report",
+                "coverage_report": "coverage.json",
+                "coverage_sources": ["src/drivers/isr.asm"],
+                "evidence": "coverage.json",
+            }
+            self.assertEqual(test_catalog.registry_surface_ids(
+                entry, {"qemu:coverage:assembly": {
+                    "surface_ids": ["asm:src/drivers/isr.asm:isr128"]
+                }},
+                {item["id"]: item for item in catalog["surfaces"]}, root), [
+                    "asm:src/drivers/isr.asm:isr128",
+                ])
+
     def test_registry_coverage_report_uses_report_when_surface_list_is_empty(self):
         catalog = sample_catalog()
         with tempfile.TemporaryDirectory() as directory:

@@ -1462,6 +1462,25 @@ execucoes anteriores. A entrada Linux equivalente e
 `tools/tst7-continuous`; use `chmod +x tools/tst7-continuous` antes da primeira
 execucao.
 
+## Cobertura Assembly de interrupcoes
+
+O caso QEMU `qemu:tst7:assembly` usa uma imagem de cobertura separada para
+disparar `isr0`--`isr31`, `isr128` e `irq0`--`irq15`. Os stubs Assembly so
+recebem instrumentacao quando `ZEPHYROS_TEST_COVERAGE` e definido no build de
+cobertura; o build normal permanece sem o hook.
+
+```text
+make test-assembly-qemu ASSEMBLY_RUN_ID=tst7-assembly-<id>
+```
+
+O alvo executa uma unica iteracao, sem retry, com timeout por caso, e grava
+`manifest.json`, `serial.log`, logs do QEMU, `qmp-events.log`, screenshot,
+`result.json` e `coverage.json` em
+`build-coverage/test-results/tst7-assembly/<id>/`. Uma execucao aprovada deve
+produzir `READY -> HEARTBEAT -> BEGIN -> PASS`, confirmar as 49 entradas
+Assembly e restaurar handlers, IRQs, ocorrencias e contadores da IDT. Use um
+`ASSEMBLY_RUN_ID` novo em cada repeticao para preservar os artefatos anteriores.
+
 ## Comandos no Shell
 
 Para orientar comandos do sistema, consultar primeiro `comandos.md` e os

@@ -215,7 +215,8 @@ def catalog_surface_map(catalog: dict[str, Any]) -> dict[str, list[dict[str, Any
         if not isinstance(surface, dict):
             continue
         symbol = surface.get("symbol")
-        if isinstance(symbol, str) and surface.get("kind") == "c_function":
+        if isinstance(symbol, str) and surface.get("kind") in {
+                "c_function", "asm_entry"}:
             mapping.setdefault(symbol, []).append(surface)
     return mapping
 
@@ -223,7 +224,8 @@ def catalog_surface_map(catalog: dict[str, Any]) -> dict[str, list[dict[str, Any
 def catalog_source_map(catalog: dict[str, Any]) -> dict[tuple[str, str], list[dict[str, Any]]]:
     mapping: dict[tuple[str, str], list[dict[str, Any]]] = {}
     for surface in catalog.get("surfaces", []):
-        if not isinstance(surface, dict) or surface.get("kind") != "c_function":
+        if not isinstance(surface, dict) or surface.get("kind") not in {
+                "c_function", "asm_entry"}:
             continue
         source = surface.get("source")
         symbol = surface.get("symbol")

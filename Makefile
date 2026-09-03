@@ -37,6 +37,7 @@ TST7_COMMAND_TIMEOUT ?= 300
 TST7_QUICK_TIMEOUT ?= 1800
 TST7_FULL_TIMEOUT ?= 7200
 COVERAGE_BUILD_DIR ?= build-coverage
+ASSEMBLY_RUN_ID ?= tst7-assembly-1
 COVERAGE_CFLAGS ?= -g -DZEPHYROS_TEST_COVERAGE -finstrument-functions
 QEMU_BOOT_DISK_ARGS ?= -drive file=$(OS_IMG),format=raw,if=none,id=bootdisk -device ide-hd,drive=bootdisk,bus=ide.0,unit=0,bootindex=1
 QEMU_STAGE2_LBA_DISK_ARGS ?= -drive file=$(OS_IMG),format=raw,if=none,id=stage2lbadisk -device ide-hd,drive=stage2lbadisk,bootindex=1
@@ -53,6 +54,7 @@ CFLAGS_EXTRA ?=
 CFLAGS = -m32 -O2 -fno-strict-aliasing -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -Wall -Wextra -I src/include -I src/include/core -I src/include/drivers -I src/include/fs -I src/include/memory -I src/include/process -I src/include/apps -I src/include/ui $(CFLAGS_EXTRA)
 LDFLAGS = -m elf_i386 -T src/linker.ld
 NASMFLAGS = -f bin
+NASMFLAGS_EXTRA ?=
 
 # Arquivos - Boot
 BOOT_SRC = src/boot/boot.asm
@@ -106,6 +108,9 @@ TEST_PROTOCOL_CORE_OBJ = $(BUILD_DIR)/test_protocol_core.o
 
 TEST_COVERAGE_C = src/core/test_coverage.c
 TEST_COVERAGE_OBJ = $(BUILD_DIR)/test_coverage.o
+
+KERNEL_TESTS_ASSEMBLY_C = src/core/kernel_tests_assembly.c
+KERNEL_TESTS_ASSEMBLY_OBJ = $(BUILD_DIR)/kernel_tests_assembly.o
 
 KERNEL_TESTS_C = src/core/kernel_tests.c
 KERNEL_TESTS_OBJ = $(BUILD_DIR)/kernel_tests.o
@@ -643,7 +648,7 @@ STORE_AS5_FIXTURES_DIR = docs\fixtures\apps\store-as5
 STORE_AS5_PUBLIC = config\app-store-test-public.json
 
 # Todas as variáveis de objetos
-OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(TEST_PROTOCOL_CORE_OBJ) $(TEST_PROTOCOL_OBJ) $(TEST_COVERAGE_OBJ) $(KERNEL_TESTS_OBJ) $(KERNEL_TESTS_PAGING_OBJ) $(KERNEL_TESTS_EXECUTION_OBJ) $(KERNEL_TESTS_STORAGE_OBJ) $(KERNEL_TESTS_NETWORK_OBJ) $(KERNEL_TESTS_PLATFORM_OBJ) $(KERNEL_TESTS_BLACKBOX_OBJ) $(KERNEL_TESTS_TST6_OBJ) $(INPUT_OBJ) $(IRQ_DEFERRED_OBJ) $(WAIT_OBJ) $(WORKQUEUE_OBJ) $(RECOVERY_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) $(BEARSSL_COMPAT_OBJ) $(BEARSSL_OBJ) $(UPDATE_OBJ) $(UPDATE_SYSTEM_OBJ) $(UPDATE_SYSTEM_SLOTS_OBJ) $(UPDATE_REMOTE_SYSTEM_OBJ) $(UPDATE_REMOTE_OBJ) $(UPDATE_REMOTE_RELEASE_OBJ) $(UPDATE_REMOTE_GITHUB_OBJ) $(UPDATE_RUNTIME_OBJ) $(UPDATE_REMOTE_RUNTIME_OBJ) $(STRING_OBJ) $(APP_API_OBJ) $(SYSCALL_OBJ) $(SWITCH_OBJ) \
+OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(TEST_PROTOCOL_CORE_OBJ) $(TEST_PROTOCOL_OBJ) $(TEST_COVERAGE_OBJ) $(KERNEL_TESTS_OBJ) $(KERNEL_TESTS_PAGING_OBJ) $(KERNEL_TESTS_EXECUTION_OBJ) $(KERNEL_TESTS_STORAGE_OBJ) $(KERNEL_TESTS_NETWORK_OBJ) $(KERNEL_TESTS_PLATFORM_OBJ) $(KERNEL_TESTS_BLACKBOX_OBJ) $(KERNEL_TESTS_TST6_OBJ) $(KERNEL_TESTS_ASSEMBLY_OBJ) $(INPUT_OBJ) $(IRQ_DEFERRED_OBJ) $(WAIT_OBJ) $(WORKQUEUE_OBJ) $(RECOVERY_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) $(BEARSSL_COMPAT_OBJ) $(BEARSSL_OBJ) $(UPDATE_OBJ) $(UPDATE_SYSTEM_OBJ) $(UPDATE_SYSTEM_SLOTS_OBJ) $(UPDATE_REMOTE_SYSTEM_OBJ) $(UPDATE_REMOTE_OBJ) $(UPDATE_REMOTE_RELEASE_OBJ) $(UPDATE_REMOTE_GITHUB_OBJ) $(UPDATE_RUNTIME_OBJ) $(UPDATE_REMOTE_RUNTIME_OBJ) $(STRING_OBJ) $(APP_API_OBJ) $(SYSCALL_OBJ) $(SWITCH_OBJ) \
        $(VIDEO_OBJ) $(VESA_OBJ) $(FONT_OBJ) $(IDT_OBJ) $(SERIAL_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
        $(MOUSE_OBJ) $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(UHCI_OBJ) $(EHCI_OBJ) $(USB_TRANSPORT_OBJ) $(USB_MSC_OBJ) $(USB_HID_OBJ) $(RTL8811CU_OBJ) $(E1000_OBJ) $(RTL8139_OBJ) $(AC97_OBJ) $(ACPI_OBJ) $(RNG_OBJ) \
        $(MEMORY_OBJ) $(PAGING_OBJ) $(VMA_OBJ) $(COMPRESS_OBJ) \
@@ -742,6 +747,10 @@ $(TEST_PROTOCOL_OBJ): $(TEST_PROTOCOL_C) src/core/test_protocol_core.h src/core/
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(TEST_COVERAGE_OBJ): $(TEST_COVERAGE_C) src/core/test_coverage.h src/include/drivers/serial.h
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(KERNEL_TESTS_ASSEMBLY_OBJ): $(KERNEL_TESTS_ASSEMBLY_C) src/core/kernel_tests.h src/drivers/idt_internal.h src/include/core/errors.h src/include/core/log.h src/include/drivers/idt.h
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -1037,11 +1046,11 @@ $(SERIAL_OBJ): $(SERIAL_C) src/include/drivers/serial.h src/include/core/errors.
 
 $(ISR_OBJ): $(ISR_ASM)
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
-	$(NASM) -f elf32 $< -o $@
+	$(NASM) -f elf32 $(NASMFLAGS_EXTRA) $< -o $@
 
 $(IRQ_OBJ): $(IRQ_ASM)
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
-	$(NASM) -f elf32 $< -o $@
+	$(NASM) -f elf32 $(NASMFLAGS_EXTRA) $< -o $@
 
 $(KEYBOARD_OBJ): $(KEYBOARD_C) src/include/core/keyboard.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/errors.h
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
@@ -1489,6 +1498,9 @@ test-qemu: tools\qemu_test_runner.py tests\catalog.json
 test-qemu-selftest: tools\qemu_test_runner.py tests\unit\test_qemu_test_runner.py
 	python tools\qemu_test_runner.py --self-test
 	python -m unittest tests.unit.test_qemu_test_runner
+
+test-assembly-qemu: coverage-map tools\qemu_test_runner.py tests\catalog.json
+	python tools\qemu_test_runner.py stress --case qemu:tst7:assembly --iterations 1 --boot-timeout 60 --case-timeout 120 --heartbeat-timeout 15 --image "$(COVERAGE_BUILD_DIR)\zephyros.img" --results "$(COVERAGE_BUILD_DIR)\test-results\tst7-assembly" --run-id $(ASSEMBLY_RUN_ID) --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none --coverage-symbols "$(COVERAGE_BUILD_DIR)\coverage-symbols.json"
 
 test-tst4-qemu: $(OS_IMG) tools\qemu_test_runner.py tests\catalog.json
 	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
@@ -1993,6 +2005,7 @@ clean:
 
 .PHONY: all coverage-image coverage-map run run-stage2-lba run-stage2-chs run-usb run-usb-msc run-usb-hid run-usb-wifi run-system-fixture run-system-slots-fixture run-system-slots-matrix run-system-update-matrix ep94b-fixtures ep94b-matrix run-ep94b-matrix ep94c-matrix run-ep94c-matrix run-recovery-menu-vga run-storage storage-fixtures storage-fixtures-test storage-fixtures-verify system-fixtures system-slots-fixtures system-slots-matrix debug q3check catalog-test test-qemu test-qemu-selftest test-core-host test-tst2-host test-tst3-host test-tst3-sanitize test-tst4-qemu q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean
 .PHONY: kernel-elf
+.PHONY: test-assembly-qemu
 .PHONY: test-tst4-qemu-paging-vma test-tst4-qemu-execution test-tst4-qemu-storage-vfs test-tst4-qemu-network test-tst4-qemu-platform
 .PHONY: test-tst5-host test-tst5-qemu-shell test-tst5-qemu-input test-tst5-qemu-apps test-tst5-qemu-processes test-tst5-qemu-storage test-tst5-qemu-network test-tst5-qemu-update-recovery test-tst5-qemu-reboot test-tst5-qemu-poweroff
 .PHONY: test-tst6-host test-tst6-qemu-matrix-baseline test-tst6-qemu-matrix-minimal test-tst6-qemu-matrix-network test-tst6-qemu-matrix-usb-hid test-tst6-qemu-matrix-usb-storage test-tst6-qemu-matrix-audio test-tst6-qemu-matrix-display test-tst6-qemu-matrix-pci test-tst6-qemu-stress-kernel test-tst6-qemu-stress-storage test-tst6-qemu-stress-network test-tst6-qemu-stress-apps test-tst6-qemu-fault-memory test-tst6-qemu-fault-block test-tst6-qemu-fault-block-cache test-tst6-qemu-fault-package test-tst6-qemu-fault-update test-tst6-qemu-fault-network test-tst6-qemu-fault-process test-tst6-qemu-fault-recovery

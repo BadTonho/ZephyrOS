@@ -21166,12 +21166,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/rtc.h:rtc_read_utc",
@@ -21189,12 +21188,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/rtc.h:rtc_self_test",
@@ -21212,12 +21210,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/rtc.h:rtc_validate_state",
@@ -21235,12 +21232,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/rtl8139.h:rtl8139_handler",
@@ -37309,9 +37305,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/irq.asm:irq1",
@@ -37327,9 +37326,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/irq.asm:irq10",
@@ -37345,9 +37347,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/irq.asm:irq11",
@@ -37363,9 +37368,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/irq.asm:irq12",
@@ -37381,9 +37389,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/irq.asm:irq13",
@@ -37399,9 +37410,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/irq.asm:irq14",
@@ -37417,9 +37431,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/irq.asm:irq15",
@@ -37435,9 +37452,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/irq.asm:irq2",
@@ -37453,9 +37473,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/irq.asm:irq3",
@@ -37471,9 +37494,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/irq.asm:irq4",
@@ -37489,9 +37515,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/irq.asm:irq5",
@@ -37507,9 +37536,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/irq.asm:irq6",
@@ -37525,9 +37557,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/irq.asm:irq7",
@@ -37543,9 +37578,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/irq.asm:irq8",
@@ -37561,9 +37599,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/irq.asm:irq9",
@@ -37579,9 +37620,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr0",
@@ -37597,9 +37641,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr1",
@@ -37615,9 +37662,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr10",
@@ -37633,9 +37683,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr11",
@@ -37651,9 +37704,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr12",
@@ -37669,9 +37725,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr128",
@@ -37687,9 +37746,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr13",
@@ -37705,9 +37767,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr14",
@@ -37723,9 +37788,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr15",
@@ -37741,9 +37809,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr16",
@@ -37759,9 +37830,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr17",
@@ -37777,9 +37851,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr18",
@@ -37795,9 +37872,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr19",
@@ -37813,9 +37893,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr2",
@@ -37831,9 +37914,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr20",
@@ -37849,9 +37935,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr21",
@@ -37867,9 +37956,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr22",
@@ -37885,9 +37977,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr23",
@@ -37903,9 +37998,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr24",
@@ -37921,9 +38019,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr25",
@@ -37939,9 +38040,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr26",
@@ -37957,9 +38061,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr27",
@@ -37975,9 +38082,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr28",
@@ -37993,9 +38103,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr29",
@@ -38011,9 +38124,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr3",
@@ -38029,9 +38145,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr30",
@@ -38047,9 +38166,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr31",
@@ -38065,9 +38187,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr4",
@@ -38083,9 +38208,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr5",
@@ -38101,9 +38229,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr6",
@@ -38119,9 +38250,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr7",
@@ -38137,9 +38271,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr8",
@@ -38155,9 +38292,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/drivers/isr.asm:isr9",
@@ -38173,9 +38313,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/kernel/entry.asm:_start",
@@ -57938,6 +58081,69 @@
       "coverage_mode": "integration"
     },
     {
+      "id": "c:src/core/kernel_tests_assembly.c:kernel_tests_run_assembly",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_assembly.c",
+      "symbol": "kernel_tests_run_assembly",
+      "linkage": "external",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
+      "id": "c:src/core/kernel_tests_assembly.c:kernel_tests_trigger_vector",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_assembly.c",
+      "symbol": "kernel_tests_trigger_vector",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
+      "id": "c:src/core/kernel_tests_assembly.c:kernel_tests_validate_vectors",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_assembly.c",
+      "symbol": "kernel_tests_validate_vectors",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_contains",
       "kind": "c_function",
       "source": "src/core/kernel_tests_blackbox.c",
@@ -69588,6 +69794,27 @@
       ],
       "tags": [],
       "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/test_coverage.c:test_coverage_record_address",
+      "kind": "c_function",
+      "source": "src/core/test_coverage.c",
+      "symbol": "test_coverage_record_address",
+      "linkage": "external",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/core/test_protocol.c:protocol_copy_text",
@@ -90042,6 +90269,90 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/drivers/idt.c:idt_test_probe_begin",
+      "kind": "c_function",
+      "source": "src/drivers/idt.c",
+      "symbol": "idt_test_probe_begin",
+      "linkage": "external",
+      "owner": "drivers",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
+      "id": "c:src/drivers/idt.c:idt_test_probe_end",
+      "kind": "c_function",
+      "source": "src/drivers/idt.c",
+      "symbol": "idt_test_probe_end",
+      "linkage": "external",
+      "owner": "drivers",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
+      "id": "c:src/drivers/idt.c:idt_test_probe_get_count",
+      "kind": "c_function",
+      "source": "src/drivers/idt.c",
+      "symbol": "idt_test_probe_get_count",
+      "linkage": "external",
+      "owner": "drivers",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
+      "id": "c:src/drivers/idt.c:idt_test_probe_handler",
+      "kind": "c_function",
+      "source": "src/drivers/idt.c",
+      "symbol": "idt_test_probe_handler",
+      "linkage": "static",
+      "owner": "drivers",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
       "id": "c:src/drivers/idt.c:idt_unmask_irq",
       "kind": "c_function",
       "source": "src/drivers/idt.c",
@@ -90146,7 +90457,8 @@
         "host:drivers:idt",
         "qemu:tst4:paging-vma",
         "qemu:tst4:platform",
-        "qemu:tst6:matrix:baseline"
+        "qemu:tst6:matrix:baseline",
+        "qemu:tst7:assembly"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -90168,7 +90480,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:drivers:idt",
-        "qemu:tst4:paging-vma"
+        "qemu:tst4:paging-vma",
+        "qemu:tst7:assembly"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -90192,7 +90505,8 @@
         "host:drivers:idt",
         "qemu:tst4:paging-vma",
         "qemu:tst4:platform",
-        "qemu:tst6:matrix:baseline"
+        "qemu:tst6:matrix:baseline",
+        "qemu:tst7:assembly"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -92131,12 +92445,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_days_in_month",
@@ -92154,12 +92467,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_decode_snapshot",
@@ -92177,12 +92489,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_decode_value",
@@ -92200,12 +92511,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_get_status",
@@ -92242,12 +92552,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_init",
@@ -92263,12 +92570,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_is_leap_year",
@@ -92286,12 +92590,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_outb",
@@ -92307,12 +92610,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_raw_equal",
@@ -92328,12 +92628,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_read_raw",
@@ -92349,12 +92646,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_read_raw_once",
@@ -92370,12 +92664,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_read_register",
@@ -92391,12 +92682,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_read_utc",
@@ -92412,12 +92700,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_self_test",
@@ -92435,12 +92720,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_validate_state",
@@ -92458,12 +92742,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_wait_update_complete",
@@ -92479,12 +92762,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_advance_rx",
@@ -155943,27 +156223,7 @@
       "status": "AUTOMATED",
       "surface_ids": [
         "api:src/include/drivers/rtc.h:rtc_get_status",
-        "api:src/include/drivers/rtc.h:rtc_init",
-        "api:src/include/drivers/rtc.h:rtc_read_utc",
-        "api:src/include/drivers/rtc.h:rtc_self_test",
-        "api:src/include/drivers/rtc.h:rtc_validate_state",
-        "c:src/drivers/rtc.c:rtc_datetime_valid",
-        "c:src/drivers/rtc.c:rtc_days_in_month",
-        "c:src/drivers/rtc.c:rtc_decode_snapshot",
-        "c:src/drivers/rtc.c:rtc_decode_value",
-        "c:src/drivers/rtc.c:rtc_get_status",
-        "c:src/drivers/rtc.c:rtc_inb",
-        "c:src/drivers/rtc.c:rtc_init",
-        "c:src/drivers/rtc.c:rtc_is_leap_year",
-        "c:src/drivers/rtc.c:rtc_outb",
-        "c:src/drivers/rtc.c:rtc_raw_equal",
-        "c:src/drivers/rtc.c:rtc_read_raw",
-        "c:src/drivers/rtc.c:rtc_read_raw_once",
-        "c:src/drivers/rtc.c:rtc_read_register",
-        "c:src/drivers/rtc.c:rtc_read_utc",
-        "c:src/drivers/rtc.c:rtc_self_test",
-        "c:src/drivers/rtc.c:rtc_validate_state",
-        "c:src/drivers/rtc.c:rtc_wait_update_complete"
+        "c:src/drivers/rtc.c:rtc_get_status"
       ],
       "tags": [
         "host",
@@ -170278,6 +170538,105 @@
         "stress",
         "storage"
       ]
+    },
+    {
+      "id": "qemu:tst7:assembly",
+      "scenario": "Execucao QEMU dos stubs Assembly de excecao, IRQ e syscall",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "coverage",
+      "guest_case": "qemu:tst7:assembly",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 15,
+      "isolation": "snapshot",
+      "parameters": {
+        "protocol": "ZTEST/1",
+        "coverage": "ZCOV",
+        "vectors": "isr0-isr31,isr128,irq0-irq15"
+      },
+      "preconditions": "imagem de cobertura QEMU, mapa de simbolos e IDT inicializada",
+      "action": "disparar cada vetor em fixture protegida, observar os stubs e restaurar handlers, IRQs e contadores",
+      "expected": "cada entrada Assembly e executada ao menos uma vez e o estado da IDT permanece restaurado",
+      "errors": "imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout",
+      "effects": "somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN",
+      "cleanup": "restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json",
+      "qemu_profile": "baseline",
+      "required_capabilities": [
+        "pci",
+        "vga"
+      ],
+      "surface_ids": [
+        "asm:src/drivers/irq.asm:irq0",
+        "asm:src/drivers/irq.asm:irq1",
+        "asm:src/drivers/irq.asm:irq10",
+        "asm:src/drivers/irq.asm:irq11",
+        "asm:src/drivers/irq.asm:irq12",
+        "asm:src/drivers/irq.asm:irq13",
+        "asm:src/drivers/irq.asm:irq14",
+        "asm:src/drivers/irq.asm:irq15",
+        "asm:src/drivers/irq.asm:irq2",
+        "asm:src/drivers/irq.asm:irq3",
+        "asm:src/drivers/irq.asm:irq4",
+        "asm:src/drivers/irq.asm:irq5",
+        "asm:src/drivers/irq.asm:irq6",
+        "asm:src/drivers/irq.asm:irq7",
+        "asm:src/drivers/irq.asm:irq8",
+        "asm:src/drivers/irq.asm:irq9",
+        "asm:src/drivers/isr.asm:isr0",
+        "asm:src/drivers/isr.asm:isr1",
+        "asm:src/drivers/isr.asm:isr10",
+        "asm:src/drivers/isr.asm:isr11",
+        "asm:src/drivers/isr.asm:isr12",
+        "asm:src/drivers/isr.asm:isr128",
+        "asm:src/drivers/isr.asm:isr13",
+        "asm:src/drivers/isr.asm:isr14",
+        "asm:src/drivers/isr.asm:isr15",
+        "asm:src/drivers/isr.asm:isr16",
+        "asm:src/drivers/isr.asm:isr17",
+        "asm:src/drivers/isr.asm:isr18",
+        "asm:src/drivers/isr.asm:isr19",
+        "asm:src/drivers/isr.asm:isr2",
+        "asm:src/drivers/isr.asm:isr20",
+        "asm:src/drivers/isr.asm:isr21",
+        "asm:src/drivers/isr.asm:isr22",
+        "asm:src/drivers/isr.asm:isr23",
+        "asm:src/drivers/isr.asm:isr24",
+        "asm:src/drivers/isr.asm:isr25",
+        "asm:src/drivers/isr.asm:isr26",
+        "asm:src/drivers/isr.asm:isr27",
+        "asm:src/drivers/isr.asm:isr28",
+        "asm:src/drivers/isr.asm:isr29",
+        "asm:src/drivers/isr.asm:isr3",
+        "asm:src/drivers/isr.asm:isr30",
+        "asm:src/drivers/isr.asm:isr31",
+        "asm:src/drivers/isr.asm:isr4",
+        "asm:src/drivers/isr.asm:isr5",
+        "asm:src/drivers/isr.asm:isr6",
+        "asm:src/drivers/isr.asm:isr7",
+        "asm:src/drivers/isr.asm:isr8",
+        "asm:src/drivers/isr.asm:isr9",
+        "c:src/core/kernel_tests_assembly.c:kernel_tests_run_assembly",
+        "c:src/core/kernel_tests_assembly.c:kernel_tests_trigger_vector",
+        "c:src/core/kernel_tests_assembly.c:kernel_tests_validate_vectors",
+        "c:src/core/test_coverage.c:test_coverage_record_address",
+        "c:src/drivers/idt.c:idt_test_probe_begin",
+        "c:src/drivers/idt.c:idt_test_probe_end",
+        "c:src/drivers/idt.c:idt_test_probe_get_count",
+        "c:src/drivers/idt.c:idt_test_probe_handler",
+        "c:src/drivers/idt.c:irq_handler",
+        "c:src/drivers/idt.c:isr_handler",
+        "c:src/drivers/idt.c:outb"
+      ],
+      "tags": [
+        "qemu",
+        "tst7",
+        "assembly",
+        "interrupts",
+        "coverage",
+        "snapshot"
+      ],
+      "status": "AUTOMATED"
     }
   ],
   "retired": [

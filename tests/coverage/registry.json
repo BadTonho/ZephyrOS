@@ -4703,6 +4703,65 @@
         "status": "AUTOMATED"
       },
       "evidence": "make test-idt-host PASS com gates, handlers, IRQ compartilhada, PIC, syscall, panic controlado e cobertura instrumentada completa"
+    },
+    {
+      "id": "assembly-qemu-tst7-dynamic",
+      "domain": "drivers-interrupt-assembly",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build-coverage/test-results/tst7-assembly/tst7-assembly-4/coverage.json",
+      "coverage_sources": [
+        "src/core/kernel_tests_assembly.c",
+        "src/core/test_coverage.c",
+        "src/drivers/idt.c",
+        "src/drivers/isr.asm",
+        "src/drivers/irq.asm"
+      ],
+      "include_public_apis": false,
+      "case_definition": {
+        "id": "qemu:tst7:assembly",
+        "scenario": "Execucao QEMU dos stubs Assembly de excecao, IRQ e syscall",
+        "owner": "quality",
+        "layer": "qemu",
+        "executor": "qemu",
+        "profile": "coverage",
+        "guest_case": "qemu:tst7:assembly",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 15,
+        "isolation": "snapshot",
+        "parameters": {
+          "protocol": "ZTEST/1",
+          "coverage": "ZCOV",
+          "vectors": "isr0-isr31,isr128,irq0-irq15"
+        },
+        "preconditions": "imagem de cobertura QEMU, mapa de simbolos e IDT inicializada",
+        "action": "disparar cada vetor em fixture protegida, observar os stubs e restaurar handlers, IRQs e contadores",
+        "expected": "cada entrada Assembly e executada ao menos uma vez e o estado da IDT permanece restaurado",
+        "errors": "imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout",
+        "effects": "somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN",
+        "cleanup": "restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json",
+        "qemu_profile": "baseline",
+        "required_capabilities": [
+          "pci",
+          "vga"
+        ],
+        "surface_ids": [],
+        "tags": [
+          "qemu",
+          "tst7",
+          "assembly",
+          "interrupts",
+          "coverage",
+          "snapshot"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "make test-assembly-qemu ASSEMBLY_RUN_ID=tst7-assembly-4 PASS; ZCOV confirmou 49 entradas Assembly e helpers da fixture, com restauracao da IDT"
     }
   ]
 }

@@ -41,7 +41,9 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     environment = os.environ.copy()
     command = [make, "-B", "BUILD_DIR=" + arguments.build_dir,
-               "CFLAGS_EXTRA=" + arguments.cflags, "all", "kernel-elf"]
+               "CFLAGS_EXTRA=" + arguments.cflags,
+               "NASMFLAGS_EXTRA=-dZEPHYROS_TEST_COVERAGE=1",
+               "all", "kernel-elf"]
     try:
         completed = subprocess.run(command, cwd=ROOT, env=environment,
                                    check=False)
