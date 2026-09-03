@@ -1497,6 +1497,16 @@ pendente.
   7.196 superficies, 3.953 `COVERED`, 3.243 `PENDING` e 86 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Shell/entrada — fechamento de cobertura — concluido em 2026-09-03.
+  O caso host-only existente `host:shell:input` foi executado para registrar
+  tambem os caminhos de inicializacao e consulta do buffer que ainda estavam
+  pendentes. O relatorio `build/test-results/shell-input-host/coverage.json`
+  terminou `PASS`, resolveu as 16 funcoes de `src/shell/shell_input.c` e nao
+  encontrou enderecos desconhecidos ou ambiguos. A sincronizacao e a
+  renderizacao do catalogo passaram; o catalogo registra 7.219 superficies,
+  4.898 `COVERED`, 2.321 `PENDING` e 128 casos. O fechamento integral, o gate
+  estrito e a validacao TST7 completa continuam pendentes.
+
 - Incremento Storage/sysfs concluido em 2026-09-03. Foi criado o caso
   host-only `host:storage:sysfs` com o alvo `make test-sysfs-host`. A fixture
   liga o provider `src/fs/sysfs.c` real a inventarios falsos de PCI, rede,

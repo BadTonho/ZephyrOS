@@ -5010,3 +5010,14 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   build limpo. O catalogo registra 7.219 superficies, 4.895 `COVERED`,
   2.324 `PENDING` e 128 casos. O fechamento integral, o gate estrito e a
   validacao TST7 completa continuam pendentes.
+
+- Incremento Shell/entrada — fechamento de cobertura — concluido em
+  2026-09-03. O caso host-only existente `host:shell:input` foi executado
+  novamente para registrar os caminhos de inicializacao e consulta do buffer
+  que ainda estavam pendentes. O relatorio
+  `build/test-results/shell-input-host/coverage.json` terminou `PASS`,
+  resolveu as 16 funcoes de `src/shell/shell_input.c` e apresentou
+  `unknown_addresses=[]` e `ambiguous_symbols=[]`. A sincronizacao e a
+  renderizacao do catalogo passaram; o catalogo registra 7.219 superficies,
+  4.898 `COVERED`, 2.321 `PENDING` e 128 casos. O fechamento integral, o gate
+  estrito e a validacao TST7 completa continuam pendentes.
