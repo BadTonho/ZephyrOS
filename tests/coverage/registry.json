@@ -4296,7 +4296,7 @@
       "coverage_sources": [
         "src/drivers/ehci.c"
       ],
-      "include_public_apis": false,
+      "include_public_apis": true,
       "case_definition": {
         "id": "host:drivers:ehci",
         "scenario": "Contrato host-only do driver EHCI com PCI, MMIO, DMA, enumeracao e transfers simulados",
@@ -4332,7 +4332,7 @@
         ],
         "status": "AUTOMATED"
       },
-      "evidence": "make test-ehci-host PASS com PCI, MMIO, DMA, enumeracao, descritores, controle, bulk, interrupt, timeout, recuperacao, fixture invalida e cobertura instrumentada completa"
+      "evidence": "make test-ehci-host PASS com PCI, MMIO, DMA, enumeracao, descritores, controle, bulk, interrupt, timeout, recuperacao, fixture invalida, APIs publicas e cobertura instrumentada completa"
     },
     {
       "id": "rtl8139-host-dynamic",

@@ -1295,7 +1295,9 @@ O alvo exige compilador C nativo e `nm`, compila com instrumentacao de
 funcoes e warnings tratados como erro. O relatorio fica em
 `build/test-results/ehci-host/coverage.json`; uma execucao `PASS` deve ter
 status `PASS`, nenhum endereco desconhecido ou ambiguo e deixar o controlador
-falso, paginas DMA e filas restaurados.
+falso, paginas DMA e filas restaurados. As APIs publicas declaradas em
+`src/include/drivers/ehci.h` tambem entram no catalogo somente quando o
+relatorio confirma as implementacoes chamadas pela fixture.
 
 ## Driver RTL8139: teste host-only
 

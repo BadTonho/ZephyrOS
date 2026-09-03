@@ -4950,3 +4950,16 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   contagem de pendencias; todos passaram nesta etapa. O catalogo registra
   7.211 superficies, 4.781 `COVERED`, 2.430 `PENDING` e 125 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
+
+- Incremento Drivers/EHCI concluido em 2026-09-03. O caso host-only existente
+  `host:drivers:ehci` foi executado novamente com PCI, MMIO, DMA e USB falsos;
+  o relatorio `build/test-results/ehci-host/coverage.json` terminou `PASS`,
+  sem enderecos desconhecidos ou ambiguos. O registro de cobertura passou a
+  usar `include_public_apis: true`, e a sincronizacao vinculou as 13 APIs
+  publicas pendentes de `src/include/drivers/ehci.h` as implementacoes reais
+  exercitadas pela fixture. Foram executados `make test-ehci-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`, `python tools/test_catalog.py
+  sync`, `python tools/test_catalog.py render` e `make catalog-test`; todos
+  passaram nesta etapa. O catalogo registra 7.211 superficies, 4.794
+  `COVERED`, 2.417 `PENDING` e 125 casos. O fechamento integral, o gate estrito
+  e a validacao TST7 completa continuam pendentes.
