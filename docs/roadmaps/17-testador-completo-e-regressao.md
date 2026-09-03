@@ -1644,6 +1644,16 @@ pendente.
   4.781 `COVERED`, 2.430 `PENDING` e 125 casos. O fechamento integral, o gate
   estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Drivers/EHCI concluido em 2026-09-03. O caso host-only existente
+  `host:drivers:ehci` foi executado novamente com a fixture PCI/MMIO/DMA/USB
+  falsa. O registro passou a importar as APIs publicas de `ehci.h` somente
+  quando o relatorio dinamico confirmou as implementacoes correspondentes.
+  As 13 APIs pendentes do header foram vinculadas ao caso, sem alterar ABI ou
+  hardware real. O catalogo foi sincronizado, renderizado e validado; agora
+  registra 7.211 superficies, 4.794 `COVERED`, 2.417 `PENDING` e 125 casos.
+  O fechamento integral, o gate estrito e a validacao TST7 completa continuam
+  pendentes.
+
 - Incremento Drivers/video concluido em 2026-09-03: foi criado o caso host-only
   `host:drivers:video` e o alvo `make test-video-host`. A fixture usa
   framebuffer, fonte, VESA, mouse e logs falsos para exercitar inicializacao,

@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4781 |
+| `COVERED` | 4794 |
 | `MANUAL` | 0 |
-| `PENDING` | 2430 |
+| `PENDING` | 2417 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -915,19 +915,19 @@
 | `api:src/include/drivers/ata.h:ata_write_sectors` | `src/include/drivers/ata.h` | `ata_write_sectors` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/e1000.h:e1000_handler` | `src/include/drivers/e1000.h` | `e1000_handler` | `drivers` | `COVERED` | 1 |
 | `api:src/include/drivers/e1000.h:e1000_init` | `src/include/drivers/e1000.h` | `e1000_init` | `drivers` | `COVERED` | 1 |
-| `api:src/include/drivers/ehci.h:ehci_bulk_transfer` | `src/include/drivers/ehci.h` | `ehci_bulk_transfer` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/ehci.h:ehci_control_request` | `src/include/drivers/ehci.h` | `ehci_control_request` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/ehci.h:ehci_get_device` | `src/include/drivers/ehci.h` | `ehci_get_device` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/ehci.h:ehci_get_device_count` | `src/include/drivers/ehci.h` | `ehci_get_device_count` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/ehci.h:ehci_get_port` | `src/include/drivers/ehci.h` | `ehci_get_port` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/ehci.h:ehci_get_port_count` | `src/include/drivers/ehci.h` | `ehci_get_port_count` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/ehci.h:ehci_get_status` | `src/include/drivers/ehci.h` | `ehci_get_status` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/ehci.h:ehci_init` | `src/include/drivers/ehci.h` | `ehci_init` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/ehci.h:ehci_interrupt_cancel` | `src/include/drivers/ehci.h` | `ehci_interrupt_cancel` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/ehci.h:ehci_interrupt_submit` | `src/include/drivers/ehci.h` | `ehci_interrupt_submit` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/ehci.h:ehci_poll` | `src/include/drivers/ehci.h` | `ehci_poll` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/ehci.h:ehci_reset_bulk_toggles` | `src/include/drivers/ehci.h` | `ehci_reset_bulk_toggles` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/ehci.h:ehci_validate_state` | `src/include/drivers/ehci.h` | `ehci_validate_state` | `drivers` | `PENDING` | 0 |
+| `api:src/include/drivers/ehci.h:ehci_bulk_transfer` | `src/include/drivers/ehci.h` | `ehci_bulk_transfer` | `drivers` | `COVERED` | 1 |
+| `api:src/include/drivers/ehci.h:ehci_control_request` | `src/include/drivers/ehci.h` | `ehci_control_request` | `drivers` | `COVERED` | 1 |
+| `api:src/include/drivers/ehci.h:ehci_get_device` | `src/include/drivers/ehci.h` | `ehci_get_device` | `drivers` | `COVERED` | 1 |
+| `api:src/include/drivers/ehci.h:ehci_get_device_count` | `src/include/drivers/ehci.h` | `ehci_get_device_count` | `drivers` | `COVERED` | 1 |
+| `api:src/include/drivers/ehci.h:ehci_get_port` | `src/include/drivers/ehci.h` | `ehci_get_port` | `drivers` | `COVERED` | 1 |
+| `api:src/include/drivers/ehci.h:ehci_get_port_count` | `src/include/drivers/ehci.h` | `ehci_get_port_count` | `drivers` | `COVERED` | 1 |
+| `api:src/include/drivers/ehci.h:ehci_get_status` | `src/include/drivers/ehci.h` | `ehci_get_status` | `drivers` | `COVERED` | 1 |
+| `api:src/include/drivers/ehci.h:ehci_init` | `src/include/drivers/ehci.h` | `ehci_init` | `drivers` | `COVERED` | 1 |
+| `api:src/include/drivers/ehci.h:ehci_interrupt_cancel` | `src/include/drivers/ehci.h` | `ehci_interrupt_cancel` | `drivers` | `COVERED` | 1 |
+| `api:src/include/drivers/ehci.h:ehci_interrupt_submit` | `src/include/drivers/ehci.h` | `ehci_interrupt_submit` | `drivers` | `COVERED` | 1 |
+| `api:src/include/drivers/ehci.h:ehci_poll` | `src/include/drivers/ehci.h` | `ehci_poll` | `drivers` | `COVERED` | 1 |
+| `api:src/include/drivers/ehci.h:ehci_reset_bulk_toggles` | `src/include/drivers/ehci.h` | `ehci_reset_bulk_toggles` | `drivers` | `COVERED` | 1 |
+| `api:src/include/drivers/ehci.h:ehci_validate_state` | `src/include/drivers/ehci.h` | `ehci_validate_state` | `drivers` | `COVERED` | 1 |
 | `api:src/include/drivers/font.h:font_get_face` | `src/include/drivers/font.h` | `font_get_face` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/font.h:font_get_face_glyph` | `src/include/drivers/font.h` | `font_get_face_glyph` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/font.h:font_get_glyph` | `src/include/drivers/font.h` | `font_get_glyph` | `drivers` | `COVERED` | 3 |
@@ -7537,19 +7537,6 @@
 - `api:src/include/core/update_system_slots.h:update_system_slots_reboot_preflight`
 - `api:src/include/core/update_system_slots.h:update_system_slots_stage_file`
 - `api:src/include/core/update_system_slots.h:update_system_slots_state_name`
-- `api:src/include/drivers/ehci.h:ehci_bulk_transfer`
-- `api:src/include/drivers/ehci.h:ehci_control_request`
-- `api:src/include/drivers/ehci.h:ehci_get_device`
-- `api:src/include/drivers/ehci.h:ehci_get_device_count`
-- `api:src/include/drivers/ehci.h:ehci_get_port`
-- `api:src/include/drivers/ehci.h:ehci_get_port_count`
-- `api:src/include/drivers/ehci.h:ehci_get_status`
-- `api:src/include/drivers/ehci.h:ehci_init`
-- `api:src/include/drivers/ehci.h:ehci_interrupt_cancel`
-- `api:src/include/drivers/ehci.h:ehci_interrupt_submit`
-- `api:src/include/drivers/ehci.h:ehci_poll`
-- `api:src/include/drivers/ehci.h:ehci_reset_bulk_toggles`
-- `api:src/include/drivers/ehci.h:ehci_validate_state`
 - `api:src/include/process/process.h:process_context_switch`
 - `api:src/include/process/process.h:process_user_enter`
 - `api:src/include/process/process.h:process_user_termination_enter`

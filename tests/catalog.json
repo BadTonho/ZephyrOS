@@ -19876,9 +19876,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:ehci"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/ehci.h:ehci_control_request",
@@ -19894,9 +19897,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:ehci"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/ehci.h:ehci_get_device",
@@ -19912,9 +19918,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:ehci"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/ehci.h:ehci_get_device_count",
@@ -19930,9 +19939,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:ehci"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/ehci.h:ehci_get_port",
@@ -19948,9 +19960,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:ehci"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/ehci.h:ehci_get_port_count",
@@ -19966,9 +19981,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:ehci"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/ehci.h:ehci_get_status",
@@ -19984,9 +20002,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:ehci"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/ehci.h:ehci_init",
@@ -20002,9 +20023,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:ehci"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/ehci.h:ehci_interrupt_cancel",
@@ -20020,9 +20044,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:ehci"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/ehci.h:ehci_interrupt_submit",
@@ -20038,9 +20065,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:ehci"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/ehci.h:ehci_poll",
@@ -20056,9 +20086,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:ehci"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/ehci.h:ehci_reset_bulk_toggles",
@@ -20074,9 +20107,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:ehci"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/ehci.h:ehci_validate_state",
@@ -20092,9 +20128,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:ehci"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/font.h:font_get_face",
@@ -155467,6 +155506,19 @@
       "effects": "somente PCI, MMIO, memoria DMA, relogio e dispositivos USB falsos no processo host",
       "cleanup": "controlador falso resetado, paginas DMA devolvidas e manifesto, logs e cobertura preservados",
       "surface_ids": [
+        "api:src/include/drivers/ehci.h:ehci_bulk_transfer",
+        "api:src/include/drivers/ehci.h:ehci_control_request",
+        "api:src/include/drivers/ehci.h:ehci_get_device",
+        "api:src/include/drivers/ehci.h:ehci_get_device_count",
+        "api:src/include/drivers/ehci.h:ehci_get_port",
+        "api:src/include/drivers/ehci.h:ehci_get_port_count",
+        "api:src/include/drivers/ehci.h:ehci_get_status",
+        "api:src/include/drivers/ehci.h:ehci_init",
+        "api:src/include/drivers/ehci.h:ehci_interrupt_cancel",
+        "api:src/include/drivers/ehci.h:ehci_interrupt_submit",
+        "api:src/include/drivers/ehci.h:ehci_poll",
+        "api:src/include/drivers/ehci.h:ehci_reset_bulk_toggles",
+        "api:src/include/drivers/ehci.h:ehci_validate_state",
         "c:src/drivers/ehci.c:ehci_allocate_dma",
         "c:src/drivers/ehci.c:ehci_bulk_transfer",
         "c:src/drivers/ehci.c:ehci_bulk_transfer_locked",
