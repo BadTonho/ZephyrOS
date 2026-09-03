@@ -434,6 +434,16 @@ flush sem acessar I/O privilegiado; o relatorio fica em
 make test-serial-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-tss-host` compila o driver TSS real com GDT e `tss_flush()`
+simulados no host. A fixture cobre estado antes da inicializacao, stacks
+invalidas e validas, inicializacao repetida e montagem do descritor sem
+executar `lgdt` ou trocar segmentos; o relatorio fica em
+`build/test-results/tss-host/`:
+
+```text
+make test-tss-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O caso `test-shell-input-host` exercita a entrada do Shell com terminal,
 historico, navegacao para cima/baixo, edicao, teclas de rolagem, cancelamento,
 bloqueio, modificadores e limite do buffer. A fixture usa apenas video,

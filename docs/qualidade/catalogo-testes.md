@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7196**
-- Casos de teste: **97**
+- Casos de teste: **98**
 - Superfícies aposentadas: **22**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4251 |
+| `COVERED` | 4256 |
 | `MANUAL` | 0 |
-| `PENDING` | 2945 |
+| `PENDING` | 2940 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 97 |
+| `AUTOMATED` | 98 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -994,9 +994,9 @@
 | `api:src/include/drivers/speaker.h:speaker_init` | `src/include/drivers/speaker.h` | `speaker_init` | `drivers` | `COVERED` | 1 |
 | `api:src/include/drivers/speaker.h:speaker_off` | `src/include/drivers/speaker.h` | `speaker_off` | `drivers` | `COVERED` | 1 |
 | `api:src/include/drivers/speaker.h:speaker_play_melody` | `src/include/drivers/speaker.h` | `speaker_play_melody` | `drivers` | `COVERED` | 1 |
-| `api:src/include/drivers/tss.h:tss_init` | `src/include/drivers/tss.h` | `tss_init` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/tss.h:tss_is_ready` | `src/include/drivers/tss.h` | `tss_is_ready` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/tss.h:tss_set_kernel_stack` | `src/include/drivers/tss.h` | `tss_set_kernel_stack` | `drivers` | `PENDING` | 0 |
+| `api:src/include/drivers/tss.h:tss_init` | `src/include/drivers/tss.h` | `tss_init` | `drivers` | `COVERED` | 1 |
+| `api:src/include/drivers/tss.h:tss_is_ready` | `src/include/drivers/tss.h` | `tss_is_ready` | `drivers` | `COVERED` | 1 |
+| `api:src/include/drivers/tss.h:tss_set_kernel_stack` | `src/include/drivers/tss.h` | `tss_set_kernel_stack` | `drivers` | `COVERED` | 1 |
 | `api:src/include/drivers/uhci.h:uhci_bulk_transfer` | `src/include/drivers/uhci.h` | `uhci_bulk_transfer` | `drivers` | `COVERED` | 1 |
 | `api:src/include/drivers/uhci.h:uhci_control_request` | `src/include/drivers/uhci.h` | `uhci_control_request` | `drivers` | `COVERED` | 1 |
 | `api:src/include/drivers/uhci.h:uhci_get_device` | `src/include/drivers/uhci.h` | `uhci_get_device` | `drivers` | `COVERED` | 1 |
@@ -4444,10 +4444,10 @@
 | `c:src/drivers/timer.c:timer_test_stale_handles` | `src/drivers/timer.c` | `timer_test_stale_handles` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/timer.c:timer_test_tick_wrap` | `src/drivers/timer.c` | `timer_test_tick_wrap` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/timer.c:timer_validate_state` | `src/drivers/timer.c` | `timer_validate_state` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/tss.c:tss_init` | `src/drivers/tss.c` | `tss_init` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/tss.c:tss_is_ready` | `src/drivers/tss.c` | `tss_is_ready` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/tss.c:tss_load_gdt` | `src/drivers/tss.c` | `tss_load_gdt` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/tss.c:tss_set_kernel_stack` | `src/drivers/tss.c` | `tss_set_kernel_stack` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/tss.c:tss_init` | `src/drivers/tss.c` | `tss_init` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/tss.c:tss_is_ready` | `src/drivers/tss.c` | `tss_is_ready` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/tss.c:tss_load_gdt` | `src/drivers/tss.c` | `tss_load_gdt` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/tss.c:tss_set_kernel_stack` | `src/drivers/tss.c` | `tss_set_kernel_stack` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/uhci.c:uhci_allocate` | `src/drivers/uhci.c` | `uhci_allocate` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/uhci.c:uhci_allocate_dma` | `src/drivers/uhci.c` | `uhci_allocate_dma` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/uhci.c:uhci_bulk_transfer` | `src/drivers/uhci.c` | `uhci_bulk_transfer` | `drivers` | `PENDING` | 0 |
@@ -7305,6 +7305,7 @@
 | `host:drivers:rng` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver RNG real com capacidades e resultados RDRAND simulados | capacidade, estado, bytes gerados, falhas de hardware e codigos de erro preservam o contrato sem executar instrucoes privilegiadas no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado RNG e valores de entropia estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:rtc-status` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | consultar o estado inicial do RTC com destinos valido e nulo | rtc_get_status rejeita destino nulo e publica snapshot inicial estavel | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do RTC e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:serial` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver serial real com registradores UART simulados | inicializacao, leitura, filtragem, enfileiramento e flush respeitam o contrato sem acessar portas I/O reais | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado UART e fila de transmissao do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:drivers:tss` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver TSS real com carregamento GDT e flush simulados | inicializacao, prontidao e atualizacao de stack preservam o contrato sem executar lgdt, troca de segmentos ou flush privilegiado no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente descritor TSS, GDT e contador de flush do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:usb-hid` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enumerar teclados e mouses UHCI, enviar relatorios Boot, publicar eventos de entrada e exercitar refresh, remocao e limites | parsing valido, rejeicao de reports corrompidos, estados, contadores, cancelamento e indisponibilidade preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente dispositivos USB HID e callbacks de entrada estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:usb-msc` | `host` | `host-only-readonly` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enumerar dispositivo MSC UHCI, executar inquiry, TUR, capacity e READ10 simulados, validar block readonly e exercitar recuperacao | protocolo BOT/SCSI, identificadores, capacidade, leituras, estados, limites e falhas preservam o contrato sem escrita | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente transporte USB MSC, registro de bloco e buffers estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:memory:memory` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar inicializacao E820, alocacao e liberacao PMM por zona, heap, alinhamento e estatisticas | PMM e heap rejeitam limites invalidos, contabilizam falhas e restauram todas as paginas e blocos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente mapa E820, bitmap PMM e heap estaticos no processo host | paginas e blocos liberados, estatisticas restauradas e artefatos preservados |
@@ -7529,9 +7530,6 @@
 - `api:src/include/drivers/rtl8811cu.h:rtl8811cu_scan`
 - `api:src/include/drivers/rtl8811cu.h:rtl8811cu_state_name`
 - `api:src/include/drivers/rtl8811cu.h:rtl8811cu_validate_state`
-- `api:src/include/drivers/tss.h:tss_init`
-- `api:src/include/drivers/tss.h:tss_is_ready`
-- `api:src/include/drivers/tss.h:tss_set_kernel_stack`
 - `api:src/include/process/process.h:process_context_switch`
 - `api:src/include/process/process.h:process_user_enter`
 - `api:src/include/process/process.h:process_user_termination_enter`
@@ -8817,8 +8815,6 @@
 - `c:src/drivers/rtl8811cu.c:rtl8811cu_validate_state`
 - `c:src/drivers/speaker.c:speaker_init`
 - `c:src/drivers/speaker.c:speaker_play_melody`
-- `c:src/drivers/tss.c:tss_init`
-- `c:src/drivers/tss.c:tss_load_gdt`
 - `c:src/drivers/uhci.c:uhci_allocate`
 - `c:src/drivers/uhci.c:uhci_allocate_dma`
 - `c:src/drivers/uhci.c:uhci_bulk_transfer`

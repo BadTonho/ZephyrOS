@@ -1343,6 +1343,17 @@ pendente.
   `COVERED`, 2.945 `PENDING` e 97 casos. O fechamento integral, o gate estrito
   e a validacao TST7 completa continuam pendentes.
 
+- Incremento Drivers/TSS concluido em 2026-09-02: foi criado o caso host-only
+  `host:drivers:tss` com fixture de GDT, `tss_flush()` simulado e instrumentacao
+  dinamica. A fixture exercitou estado antes da inicializacao, stacks invalidas
+  e validas, inicializacao repetida e montagem do descritor TSS. `make
+  test-tss-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` terminou `PASS`,
+  cobrindo as duas superficies pendentes de `src/drivers/tss.c`, sem enderecos
+  desconhecidos ou ambiguos. O caminho freestanding preserva `lgdt`, a troca de
+  segmentos e o flush original. O catalogo registra 7.196 superficies, 4.256
+  `COVERED`, 2.940 `PENDING` e 98 casos. O fechamento integral, o gate estrito
+  e a validacao TST7 completa continuam pendentes.
+
 - Incremento Core/wifi_manager concluido em 2026-09-02: foi criado o caso
   host-only `host:core:wifi-manager` com fixtures estaticos de PCI, USB e
   RTL8811CU. A fixture exercitou formatacao e busca case-insensitive de IDs,

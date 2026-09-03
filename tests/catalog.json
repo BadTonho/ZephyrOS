@@ -21495,9 +21495,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:tss"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/tss.h:tss_is_ready",
@@ -21513,9 +21516,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:tss"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/tss.h:tss_set_kernel_stack",
@@ -21531,9 +21537,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:tss"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/uhci.h:uhci_bulk_transfer",
@@ -93971,9 +93980,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:tss"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/tss.c:tss_is_ready",
@@ -93991,10 +94003,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:tss",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/tss.c:tss_load_gdt",
@@ -94010,9 +94023,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:tss"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/tss.c:tss_set_kernel_stack",
@@ -94030,12 +94046,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:tss",
         "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
         "qemu:tst5:input"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/uhci.c:uhci_allocate",
@@ -153160,6 +153177,39 @@
         "c:src/drivers/serial.c:serial_restore_interrupts",
         "c:src/drivers/serial.c:serial_suspend_interrupts",
         "c:src/drivers/serial.c:serial_write_text"
+      ]
+    },
+    {
+      "id": "host:drivers:tss",
+      "scenario": "Contrato host-only do descritor TSS e stack de kernel",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "hardware": "gdt-flush-stub"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "compilar e executar o driver TSS real com carregamento GDT e flush simulados",
+      "expected": "inicializacao, prontidao e atualizacao de stack preservam o contrato sem executar lgdt, troca de segmentos ou flush privilegiado no host",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente descritor TSS, GDT e contador de flush do processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/drivers/tss.h:tss_init",
+        "api:src/include/drivers/tss.h:tss_is_ready",
+        "api:src/include/drivers/tss.h:tss_set_kernel_stack",
+        "c:src/drivers/tss.c:tss_init",
+        "c:src/drivers/tss.c:tss_is_ready",
+        "c:src/drivers/tss.c:tss_load_gdt",
+        "c:src/drivers/tss.c:tss_set_kernel_stack"
       ]
     },
     {

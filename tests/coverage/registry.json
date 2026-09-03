@@ -1034,6 +1034,48 @@
       }
     },
     {
+      "id": "tss-host-dynamic",
+      "domain": "drivers-tss",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:drivers:tss"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/tss-host/coverage.json",
+      "coverage_sources": [
+        "src/drivers/tss.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-tss-host PASS com fixture de TSS/GDT, inicializacao, estado pronto, stack invalida, stack valida e flush Assembly simulado no relatorio instrumentado",
+      "case_definition": {
+        "id": "host:drivers:tss",
+        "scenario": "Contrato host-only do descritor TSS e stack de kernel",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "gdt-flush-stub"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "compilar e executar o driver TSS real com carregamento GDT e flush simulados",
+        "expected": "inicializacao, prontidao e atualizacao de stack preservam o contrato sem executar lgdt, troca de segmentos ou flush privilegiado no host",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente descritor TSS, GDT e contador de flush do processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": []
+      }
+    },
+    {
       "id": "harness-apps-qemu-observed",
       "domain": "test-harness",
       "owner": "quality",

@@ -4382,6 +4382,19 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   superficies, 4.113 `COVERED`, 3.083 `PENDING` e 87 casos; o fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
 
+- Concluida em: 2026-09-02
+
+  Incremento Drivers/TSS: foi criado o caso host-only `host:drivers:tss` e o
+  alvo `make test-tss-host` com fixture de GDT, `tss_flush()` simulado e
+  cobertura dinamica. A fixture exercitou estado antes da inicializacao,
+  stacks invalidas e validas, inicializacao repetida e montagem do descritor
+  TSS. A execucao terminou `PASS`, sem enderecos desconhecidos ou ambiguos,
+  resolvendo as duas superficies pendentes de `src/drivers/tss.c`; o build
+  freestanding preserva `lgdt`, a troca de segmentos e o flush original. O
+  catalogo registra 7.196 superficies, 4.256 `COVERED`, 2.940 `PENDING` e 98
+  casos. O fechamento integral, o gate estrito e a validacao TST7 completa
+  continuam pendentes.
+
 - 2026-09-02 — Incremento Core/wifi_manager: o caso host-only
   `host:core:wifi-manager` passou a usar fixtures estaticos de PCI, USB e
   RTL8811CU. A execucao cobriu IDs, inventario, estados READY/UNSUPPORTED/ERROR,

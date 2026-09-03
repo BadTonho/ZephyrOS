@@ -171,6 +171,17 @@ class CoreHostRunnerTests(unittest.TestCase):
         self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
                       "test_serial_host.c", sources)
 
+    def test_tss_case_has_descriptor_fixture_sources(self):
+        result_dir, binary, sources, suite = core_host_runner.case_configuration(
+            "host:drivers:tss")
+        self.assertEqual(suite, "tss-host")
+        self.assertEqual(result_dir, core_host_runner.TSS_RESULT_DIR)
+        self.assertEqual(binary, core_host_runner.TSS_BINARY)
+        self.assertIn(core_host_runner.ROOT / "src" / "drivers" / "tss.c",
+                      sources)
+        self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
+                      "test_tss_host.c", sources)
+
 
 if __name__ == "__main__":
     unittest.main()
