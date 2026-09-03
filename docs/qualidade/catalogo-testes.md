@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4895 |
+| `COVERED` | 4896 |
 | `MANUAL` | 0 |
-| `PENDING` | 2324 |
+| `PENDING` | 2323 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -3035,7 +3035,7 @@
 | `c:src/core/socket.c:socket_init` | `src/core/socket.c` | `socket_init` | `core` | `COVERED` | 1 |
 | `c:src/core/socket.c:socket_listen` | `src/core/socket.c` | `socket_listen` | `core` | `COVERED` | 3 |
 | `c:src/core/socket.c:socket_pending_pop_locked` | `src/core/socket.c` | `socket_pending_pop_locked` | `core` | `COVERED` | 1 |
-| `c:src/core/socket.c:socket_pending_remove_locked` | `src/core/socket.c` | `socket_pending_remove_locked` | `core` | `PENDING` | 0 |
+| `c:src/core/socket.c:socket_pending_remove_locked` | `src/core/socket.c` | `socket_pending_remove_locked` | `core` | `COVERED` | 1 |
 | `c:src/core/socket.c:socket_poll_revents` | `src/core/socket.c` | `socket_poll_revents` | `core` | `COVERED` | 1 |
 | `c:src/core/socket.c:socket_queue_clear` | `src/core/socket.c` | `socket_queue_clear` | `core` | `COVERED` | 3 |
 | `c:src/core/socket.c:socket_queue_front_locked` | `src/core/socket.c` | `socket_queue_front_locked` | `core` | `COVERED` | 1 |
@@ -7870,7 +7870,6 @@
 - `c:src/core/app_remote.c:app_remote_write_record`
 - `c:src/core/app_remote.c:app_remote_write_u16`
 - `c:src/core/app_remote.c:app_remote_write_u32`
-- `c:src/core/socket.c:socket_pending_remove_locked`
 - `c:src/core/syscall.c:syscall_copy_user_string`
 - `c:src/core/syscall.c:syscall_enable_user_mode`
 - `c:src/core/syscall.c:syscall_init`
