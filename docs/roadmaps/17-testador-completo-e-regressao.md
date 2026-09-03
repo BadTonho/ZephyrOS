@@ -1622,6 +1622,17 @@ pendente.
   O fechamento integral, o gate estrito e a validacao TST7 completa continuam
   pendentes.
 
+- Incremento Drivers/RTC concluido em 2026-09-03. O caso existente
+  `host:drivers:rtc-status` foi executado novamente apos o build limpo, com
+  CMOS falso, leituras BCD/binaria e 12/24 horas, calendario, leituras
+  estaveis, autoteste, timeout de atualizacao e estado publicado apos erro.
+  O relatorio instrumentado terminou `PASS`, resolveu as 17 funcoes de
+  `src/drivers/rtc.c` e a funcao `kmemset` usada pela fixture, sem enderecos
+  desconhecidos ou ambiguos. O catalogo foi sincronizado, renderizado e
+  validado; agora registra 7.209 superficies, 4.766 `COVERED`, 2.443
+  `PENDING` e 124 casos. O fechamento integral, o gate estrito e a validacao
+  TST7 completa continuam pendentes.
+
 - Incremento Drivers/video concluido em 2026-09-03: foi criado o caso host-only
   `host:drivers:video` e o alvo `make test-video-host`. A fixture usa
   framebuffer, fonte, VESA, mouse e logs falsos para exercitar inicializacao,
