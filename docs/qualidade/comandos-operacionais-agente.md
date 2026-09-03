@@ -117,7 +117,8 @@ coalescencia, saturacao de deltas, filas cheias, despacho alternado e erro de
 consumidor. O relatorio fica em `build/test-results/input-host/`.
 
 Os casos `test-power-host` e `test-network-manager-host` exercitam, com
-fixtures estaticos, os estados ACPI e a limpeza de energia apos falhas, alem
+fixtures estaticos, os estados ACPI, as rotas de reboot terminal em seam
+controlado no host e a limpeza de energia apos falhas, alem
 do inventario PCI/USB, drivers ausentes e ativos, estado offline, configuracao
 estatica, DHCP, lease aplicado/removido, restauracao atomica apos erro,
 validacao de rotas e recusas de operacoes. Os relatorios instrumentados ficam
