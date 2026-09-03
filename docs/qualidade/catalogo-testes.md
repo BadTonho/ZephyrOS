@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7196**
-- Casos de teste: **92**
+- Casos de teste: **93**
 - Superfícies aposentadas: **22**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4212 |
+| `COVERED` | 4222 |
 | `MANUAL` | 0 |
-| `PENDING` | 2984 |
+| `PENDING` | 2974 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 92 |
+| `AUTOMATED` | 93 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -604,10 +604,10 @@
 | `api:src/include/core/spinlock.h:spinlock_acquire` | `src/include/core/spinlock.h` | `spinlock_acquire` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_init` | `src/include/core/spinlock.h` | `spinlock_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_release` | `src/include/core/spinlock.h` | `spinlock_release` | `core` | `PENDING` | 0 |
-| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 39 |
-| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 40 |
-| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 33 |
-| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 35 |
+| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 40 |
+| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 41 |
+| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 34 |
+| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 36 |
 | `api:src/include/core/syscall.h:syscall_enable_user_mode` | `src/include/core/syscall.h` | `syscall_enable_user_mode` | `core` | `COVERED` | 1 |
 | `api:src/include/core/syscall.h:syscall_handler` | `src/include/core/syscall.h` | `syscall_handler` | `core` | `COVERED` | 1 |
 | `api:src/include/core/syscall.h:syscall_init` | `src/include/core/syscall.h` | `syscall_init` | `core` | `COVERED` | 1 |
@@ -1193,15 +1193,15 @@
 | `api:src/include/fs/fs.h:fs_write_file` | `src/include/fs/fs.h` | `fs_write_file` | `fs` | `COVERED` | 6 |
 | `api:src/include/fs/fs.h:fs_write_file_at` | `src/include/fs/fs.h` | `fs_write_file_at` | `fs` | `COVERED` | 6 |
 | `api:src/include/fs/fs.h:fs_write_file_in_dir` | `src/include/fs/fs.h` | `fs_write_file_in_dir` | `fs` | `COVERED` | 6 |
-| `api:src/include/fs/procfs.h:procfs_init` | `src/include/fs/procfs.h` | `procfs_init` | `fs` | `COVERED` | 3 |
-| `api:src/include/fs/procfs.h:procfs_is_ready` | `src/include/fs/procfs.h` | `procfs_is_ready` | `fs` | `COVERED` | 3 |
-| `api:src/include/fs/procfs.h:procfs_list` | `src/include/fs/procfs.h` | `procfs_list` | `fs` | `COVERED` | 3 |
-| `api:src/include/fs/procfs.h:procfs_list_path` | `src/include/fs/procfs.h` | `procfs_list_path` | `fs` | `COVERED` | 3 |
-| `api:src/include/fs/procfs.h:procfs_lookup` | `src/include/fs/procfs.h` | `procfs_lookup` | `fs` | `COVERED` | 3 |
-| `api:src/include/fs/procfs.h:procfs_open_file` | `src/include/fs/procfs.h` | `procfs_open_file` | `fs` | `COVERED` | 3 |
-| `api:src/include/fs/procfs.h:procfs_reset_controls` | `src/include/fs/procfs.h` | `procfs_reset_controls` | `fs` | `COVERED` | 3 |
-| `api:src/include/fs/procfs.h:procfs_self_test` | `src/include/fs/procfs.h` | `procfs_self_test` | `fs` | `COVERED` | 3 |
-| `api:src/include/fs/procfs.h:procfs_validate_state` | `src/include/fs/procfs.h` | `procfs_validate_state` | `fs` | `COVERED` | 3 |
+| `api:src/include/fs/procfs.h:procfs_init` | `src/include/fs/procfs.h` | `procfs_init` | `fs` | `COVERED` | 4 |
+| `api:src/include/fs/procfs.h:procfs_is_ready` | `src/include/fs/procfs.h` | `procfs_is_ready` | `fs` | `COVERED` | 4 |
+| `api:src/include/fs/procfs.h:procfs_list` | `src/include/fs/procfs.h` | `procfs_list` | `fs` | `COVERED` | 4 |
+| `api:src/include/fs/procfs.h:procfs_list_path` | `src/include/fs/procfs.h` | `procfs_list_path` | `fs` | `COVERED` | 4 |
+| `api:src/include/fs/procfs.h:procfs_lookup` | `src/include/fs/procfs.h` | `procfs_lookup` | `fs` | `COVERED` | 4 |
+| `api:src/include/fs/procfs.h:procfs_open_file` | `src/include/fs/procfs.h` | `procfs_open_file` | `fs` | `COVERED` | 4 |
+| `api:src/include/fs/procfs.h:procfs_reset_controls` | `src/include/fs/procfs.h` | `procfs_reset_controls` | `fs` | `COVERED` | 4 |
+| `api:src/include/fs/procfs.h:procfs_self_test` | `src/include/fs/procfs.h` | `procfs_self_test` | `fs` | `COVERED` | 4 |
+| `api:src/include/fs/procfs.h:procfs_validate_state` | `src/include/fs/procfs.h` | `procfs_validate_state` | `fs` | `COVERED` | 4 |
 | `api:src/include/fs/storage.h:storage_atomic_write_file` | `src/include/fs/storage.h` | `storage_atomic_write_file` | `fs` | `COVERED` | 6 |
 | `api:src/include/fs/storage.h:storage_check` | `src/include/fs/storage.h` | `storage_check` | `fs` | `COVERED` | 6 |
 | `api:src/include/fs/storage.h:storage_create_dir` | `src/include/fs/storage.h` | `storage_create_dir` | `fs` | `COVERED` | 6 |
@@ -3076,10 +3076,10 @@
 | `c:src/core/socket.c:socket_wait_local` | `src/core/socket.c` | `socket_wait_local` | `core` | `PENDING` | 0 |
 | `c:src/core/socket.c:socket_wait_owner` | `src/core/socket.c` | `socket_wait_owner` | `core` | `COVERED` | 2 |
 | `c:src/core/socket.c:socket_wake` | `src/core/socket.c` | `socket_wake` | `core` | `COVERED` | 2 |
-| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 39 |
-| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 40 |
-| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 33 |
-| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 35 |
+| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 40 |
+| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 41 |
+| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 34 |
+| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 36 |
 | `c:src/core/syscall.c:syscall_copy_user_string` | `src/core/syscall.c` | `syscall_copy_user_string` | `core` | `PENDING` | 0 |
 | `c:src/core/syscall.c:syscall_dispatch` | `src/core/syscall.c` | `syscall_dispatch` | `core` | `COVERED` | 1 |
 | `c:src/core/syscall.c:syscall_dispatch_user` | `src/core/syscall.c` | `syscall_dispatch_user` | `core` | `COVERED` | 1 |
@@ -5104,62 +5104,62 @@
 | `c:src/fs/fs.c:fs_write_file_at_unlocked` | `src/fs/fs.c` | `fs_write_file_at_unlocked` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fs.c:fs_write_file_in_dir` | `src/fs/fs.c` | `fs_write_file_in_dir` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fs.c:fs_write_file_in_dir_unlocked` | `src/fs/fs.c` | `fs_write_file_in_dir_unlocked` | `fs` | `COVERED` | 1 |
-| `c:src/fs/procfs.c:procfs_append_char` | `src/fs/procfs.c` | `procfs_append_char` | `fs` | `COVERED` | 3 |
-| `c:src/fs/procfs.c:procfs_append_decimal` | `src/fs/procfs.c` | `procfs_append_decimal` | `fs` | `COVERED` | 3 |
-| `c:src/fs/procfs.c:procfs_append_hex` | `src/fs/procfs.c` | `procfs_append_hex` | `fs` | `PENDING` | 0 |
-| `c:src/fs/procfs.c:procfs_append_line_decimal` | `src/fs/procfs.c` | `procfs_append_line_decimal` | `fs` | `COVERED` | 3 |
-| `c:src/fs/procfs.c:procfs_append_line_hex` | `src/fs/procfs.c` | `procfs_append_line_hex` | `fs` | `PENDING` | 0 |
-| `c:src/fs/procfs.c:procfs_append_line_text` | `src/fs/procfs.c` | `procfs_append_line_text` | `fs` | `COVERED` | 3 |
-| `c:src/fs/procfs.c:procfs_append_text` | `src/fs/procfs.c` | `procfs_append_text` | `fs` | `COVERED` | 3 |
-| `c:src/fs/procfs.c:procfs_buffer_contains` | `src/fs/procfs.c` | `procfs_buffer_contains` | `fs` | `COVERED` | 2 |
-| `c:src/fs/procfs.c:procfs_buffer_valid` | `src/fs/procfs.c` | `procfs_buffer_valid` | `fs` | `COVERED` | 2 |
-| `c:src/fs/procfs.c:procfs_build_pid_path` | `src/fs/procfs.c` | `procfs_build_pid_path` | `fs` | `COVERED` | 2 |
-| `c:src/fs/procfs.c:procfs_close` | `src/fs/procfs.c` | `procfs_close` | `fs` | `COVERED` | 3 |
-| `c:src/fs/procfs.c:procfs_cmdline_read` | `src/fs/procfs.c` | `procfs_cmdline_read` | `fs` | `COVERED` | 2 |
-| `c:src/fs/procfs.c:procfs_control_get` | `src/fs/procfs.c` | `procfs_control_get` | `fs` | `COVERED` | 2 |
-| `c:src/fs/procfs.c:procfs_control_parse_level` | `src/fs/procfs.c` | `procfs_control_parse_level` | `fs` | `COVERED` | 2 |
-| `c:src/fs/procfs.c:procfs_control_read` | `src/fs/procfs.c` | `procfs_control_read` | `fs` | `COVERED` | 2 |
-| `c:src/fs/procfs.c:procfs_control_set` | `src/fs/procfs.c` | `procfs_control_set` | `fs` | `COVERED` | 2 |
-| `c:src/fs/procfs.c:procfs_control_write` | `src/fs/procfs.c` | `procfs_control_write` | `fs` | `COVERED` | 2 |
-| `c:src/fs/procfs.c:procfs_copy_text` | `src/fs/procfs.c` | `procfs_copy_text` | `fs` | `COVERED` | 3 |
+| `c:src/fs/procfs.c:procfs_append_char` | `src/fs/procfs.c` | `procfs_append_char` | `fs` | `COVERED` | 4 |
+| `c:src/fs/procfs.c:procfs_append_decimal` | `src/fs/procfs.c` | `procfs_append_decimal` | `fs` | `COVERED` | 4 |
+| `c:src/fs/procfs.c:procfs_append_hex` | `src/fs/procfs.c` | `procfs_append_hex` | `fs` | `COVERED` | 1 |
+| `c:src/fs/procfs.c:procfs_append_line_decimal` | `src/fs/procfs.c` | `procfs_append_line_decimal` | `fs` | `COVERED` | 4 |
+| `c:src/fs/procfs.c:procfs_append_line_hex` | `src/fs/procfs.c` | `procfs_append_line_hex` | `fs` | `COVERED` | 1 |
+| `c:src/fs/procfs.c:procfs_append_line_text` | `src/fs/procfs.c` | `procfs_append_line_text` | `fs` | `COVERED` | 4 |
+| `c:src/fs/procfs.c:procfs_append_text` | `src/fs/procfs.c` | `procfs_append_text` | `fs` | `COVERED` | 4 |
+| `c:src/fs/procfs.c:procfs_buffer_contains` | `src/fs/procfs.c` | `procfs_buffer_contains` | `fs` | `COVERED` | 3 |
+| `c:src/fs/procfs.c:procfs_buffer_valid` | `src/fs/procfs.c` | `procfs_buffer_valid` | `fs` | `COVERED` | 3 |
+| `c:src/fs/procfs.c:procfs_build_pid_path` | `src/fs/procfs.c` | `procfs_build_pid_path` | `fs` | `COVERED` | 3 |
+| `c:src/fs/procfs.c:procfs_close` | `src/fs/procfs.c` | `procfs_close` | `fs` | `COVERED` | 4 |
+| `c:src/fs/procfs.c:procfs_cmdline_read` | `src/fs/procfs.c` | `procfs_cmdline_read` | `fs` | `COVERED` | 3 |
+| `c:src/fs/procfs.c:procfs_control_get` | `src/fs/procfs.c` | `procfs_control_get` | `fs` | `COVERED` | 3 |
+| `c:src/fs/procfs.c:procfs_control_parse_level` | `src/fs/procfs.c` | `procfs_control_parse_level` | `fs` | `COVERED` | 3 |
+| `c:src/fs/procfs.c:procfs_control_read` | `src/fs/procfs.c` | `procfs_control_read` | `fs` | `COVERED` | 3 |
+| `c:src/fs/procfs.c:procfs_control_set` | `src/fs/procfs.c` | `procfs_control_set` | `fs` | `COVERED` | 3 |
+| `c:src/fs/procfs.c:procfs_control_write` | `src/fs/procfs.c` | `procfs_control_write` | `fs` | `COVERED` | 3 |
+| `c:src/fs/procfs.c:procfs_copy_text` | `src/fs/procfs.c` | `procfs_copy_text` | `fs` | `COVERED` | 4 |
 | `c:src/fs/procfs.c:procfs_cpuid` | `src/fs/procfs.c` | `procfs_cpuid` | `fs` | `COVERED` | 2 |
-| `c:src/fs/procfs.c:procfs_cpuid_supported` | `src/fs/procfs.c` | `procfs_cpuid_supported` | `fs` | `COVERED` | 2 |
-| `c:src/fs/procfs.c:procfs_cpuinfo_read` | `src/fs/procfs.c` | `procfs_cpuinfo_read` | `fs` | `COVERED` | 2 |
-| `c:src/fs/procfs.c:procfs_entry_find` | `src/fs/procfs.c` | `procfs_entry_find` | `fs` | `COVERED` | 3 |
-| `c:src/fs/procfs.c:procfs_error_callback` | `src/fs/procfs.c` | `procfs_error_callback` | `fs` | `COVERED` | 2 |
-| `c:src/fs/procfs.c:procfs_global_read` | `src/fs/procfs.c` | `procfs_global_read` | `fs` | `COVERED` | 3 |
-| `c:src/fs/procfs.c:procfs_init` | `src/fs/procfs.c` | `procfs_init` | `fs` | `PENDING` | 0 |
-| `c:src/fs/procfs.c:procfs_ioctl` | `src/fs/procfs.c` | `procfs_ioctl` | `fs` | `PENDING` | 0 |
-| `c:src/fs/procfs.c:procfs_is_ready` | `src/fs/procfs.c` | `procfs_is_ready` | `fs` | `PENDING` | 0 |
-| `c:src/fs/procfs.c:procfs_list` | `src/fs/procfs.c` | `procfs_list` | `fs` | `PENDING` | 0 |
-| `c:src/fs/procfs.c:procfs_list_path` | `src/fs/procfs.c` | `procfs_list_path` | `fs` | `COVERED` | 3 |
-| `c:src/fs/procfs.c:procfs_log_level_name` | `src/fs/procfs.c` | `procfs_log_level_name` | `fs` | `COVERED` | 1 |
-| `c:src/fs/procfs.c:procfs_lookup` | `src/fs/procfs.c` | `procfs_lookup` | `fs` | `COVERED` | 3 |
-| `c:src/fs/procfs.c:procfs_lseek` | `src/fs/procfs.c` | `procfs_lseek` | `fs` | `COVERED` | 2 |
-| `c:src/fs/procfs.c:procfs_meminfo_read` | `src/fs/procfs.c` | `procfs_meminfo_read` | `fs` | `COVERED` | 3 |
-| `c:src/fs/procfs.c:procfs_open` | `src/fs/procfs.c` | `procfs_open` | `fs` | `PENDING` | 0 |
-| `c:src/fs/procfs.c:procfs_open_file` | `src/fs/procfs.c` | `procfs_open_file` | `fs` | `COVERED` | 3 |
-| `c:src/fs/procfs.c:procfs_overflow_callback` | `src/fs/procfs.c` | `procfs_overflow_callback` | `fs` | `COVERED` | 2 |
-| `c:src/fs/procfs.c:procfs_parse_path` | `src/fs/procfs.c` | `procfs_parse_path` | `fs` | `COVERED` | 3 |
-| `c:src/fs/procfs.c:procfs_parse_pid` | `src/fs/procfs.c` | `procfs_parse_pid` | `fs` | `COVERED` | 3 |
-| `c:src/fs/procfs.c:procfs_pid_name` | `src/fs/procfs.c` | `procfs_pid_name` | `fs` | `COVERED` | 3 |
-| `c:src/fs/procfs.c:procfs_poll` | `src/fs/procfs.c` | `procfs_poll` | `fs` | `PENDING` | 0 |
-| `c:src/fs/procfs.c:procfs_read` | `src/fs/procfs.c` | `procfs_read` | `fs` | `COVERED` | 3 |
-| `c:src/fs/procfs.c:procfs_render_process` | `src/fs/procfs.c` | `procfs_render_process` | `fs` | `COVERED` | 3 |
-| `c:src/fs/procfs.c:procfs_render_process_status` | `src/fs/procfs.c` | `procfs_render_process_status` | `fs` | `COVERED` | 3 |
-| `c:src/fs/procfs.c:procfs_render_snapshot` | `src/fs/procfs.c` | `procfs_render_snapshot` | `fs` | `COVERED` | 3 |
-| `c:src/fs/procfs.c:procfs_reset_controls` | `src/fs/procfs.c` | `procfs_reset_controls` | `fs` | `COVERED` | 2 |
-| `c:src/fs/procfs.c:procfs_self_test` | `src/fs/procfs.c` | `procfs_self_test` | `fs` | `COVERED` | 2 |
-| `c:src/fs/procfs.c:procfs_sync` | `src/fs/procfs.c` | `procfs_sync` | `fs` | `PENDING` | 0 |
-| `c:src/fs/procfs.c:procfs_test_count` | `src/fs/procfs.c` | `procfs_test_count` | `fs` | `COVERED` | 2 |
-| `c:src/fs/procfs.c:procfs_test_process_entry` | `src/fs/procfs.c` | `procfs_test_process_entry` | `fs` | `PENDING` | 0 |
-| `c:src/fs/procfs.c:procfs_test_read_path` | `src/fs/procfs.c` | `procfs_test_read_path` | `fs` | `COVERED` | 2 |
-| `c:src/fs/procfs.c:procfs_test_write_path` | `src/fs/procfs.c` | `procfs_test_write_path` | `fs` | `COVERED` | 2 |
-| `c:src/fs/procfs.c:procfs_uptime_read` | `src/fs/procfs.c` | `procfs_uptime_read` | `fs` | `COVERED` | 2 |
-| `c:src/fs/procfs.c:procfs_validate_state` | `src/fs/procfs.c` | `procfs_validate_state` | `fs` | `COVERED` | 2 |
-| `c:src/fs/procfs.c:procfs_version_read` | `src/fs/procfs.c` | `procfs_version_read` | `fs` | `COVERED` | 2 |
-| `c:src/fs/procfs.c:procfs_write` | `src/fs/procfs.c` | `procfs_write` | `fs` | `COVERED` | 2 |
-| `c:src/fs/procfs.c:procfs_write_allowed` | `src/fs/procfs.c` | `procfs_write_allowed` | `fs` | `COVERED` | 2 |
+| `c:src/fs/procfs.c:procfs_cpuid_supported` | `src/fs/procfs.c` | `procfs_cpuid_supported` | `fs` | `COVERED` | 3 |
+| `c:src/fs/procfs.c:procfs_cpuinfo_read` | `src/fs/procfs.c` | `procfs_cpuinfo_read` | `fs` | `COVERED` | 3 |
+| `c:src/fs/procfs.c:procfs_entry_find` | `src/fs/procfs.c` | `procfs_entry_find` | `fs` | `COVERED` | 4 |
+| `c:src/fs/procfs.c:procfs_error_callback` | `src/fs/procfs.c` | `procfs_error_callback` | `fs` | `COVERED` | 3 |
+| `c:src/fs/procfs.c:procfs_global_read` | `src/fs/procfs.c` | `procfs_global_read` | `fs` | `COVERED` | 4 |
+| `c:src/fs/procfs.c:procfs_init` | `src/fs/procfs.c` | `procfs_init` | `fs` | `COVERED` | 1 |
+| `c:src/fs/procfs.c:procfs_ioctl` | `src/fs/procfs.c` | `procfs_ioctl` | `fs` | `COVERED` | 1 |
+| `c:src/fs/procfs.c:procfs_is_ready` | `src/fs/procfs.c` | `procfs_is_ready` | `fs` | `COVERED` | 1 |
+| `c:src/fs/procfs.c:procfs_list` | `src/fs/procfs.c` | `procfs_list` | `fs` | `COVERED` | 1 |
+| `c:src/fs/procfs.c:procfs_list_path` | `src/fs/procfs.c` | `procfs_list_path` | `fs` | `COVERED` | 4 |
+| `c:src/fs/procfs.c:procfs_log_level_name` | `src/fs/procfs.c` | `procfs_log_level_name` | `fs` | `COVERED` | 2 |
+| `c:src/fs/procfs.c:procfs_lookup` | `src/fs/procfs.c` | `procfs_lookup` | `fs` | `COVERED` | 4 |
+| `c:src/fs/procfs.c:procfs_lseek` | `src/fs/procfs.c` | `procfs_lseek` | `fs` | `COVERED` | 3 |
+| `c:src/fs/procfs.c:procfs_meminfo_read` | `src/fs/procfs.c` | `procfs_meminfo_read` | `fs` | `COVERED` | 4 |
+| `c:src/fs/procfs.c:procfs_open` | `src/fs/procfs.c` | `procfs_open` | `fs` | `COVERED` | 1 |
+| `c:src/fs/procfs.c:procfs_open_file` | `src/fs/procfs.c` | `procfs_open_file` | `fs` | `COVERED` | 4 |
+| `c:src/fs/procfs.c:procfs_overflow_callback` | `src/fs/procfs.c` | `procfs_overflow_callback` | `fs` | `COVERED` | 3 |
+| `c:src/fs/procfs.c:procfs_parse_path` | `src/fs/procfs.c` | `procfs_parse_path` | `fs` | `COVERED` | 4 |
+| `c:src/fs/procfs.c:procfs_parse_pid` | `src/fs/procfs.c` | `procfs_parse_pid` | `fs` | `COVERED` | 4 |
+| `c:src/fs/procfs.c:procfs_pid_name` | `src/fs/procfs.c` | `procfs_pid_name` | `fs` | `COVERED` | 4 |
+| `c:src/fs/procfs.c:procfs_poll` | `src/fs/procfs.c` | `procfs_poll` | `fs` | `COVERED` | 1 |
+| `c:src/fs/procfs.c:procfs_read` | `src/fs/procfs.c` | `procfs_read` | `fs` | `COVERED` | 4 |
+| `c:src/fs/procfs.c:procfs_render_process` | `src/fs/procfs.c` | `procfs_render_process` | `fs` | `COVERED` | 4 |
+| `c:src/fs/procfs.c:procfs_render_process_status` | `src/fs/procfs.c` | `procfs_render_process_status` | `fs` | `COVERED` | 4 |
+| `c:src/fs/procfs.c:procfs_render_snapshot` | `src/fs/procfs.c` | `procfs_render_snapshot` | `fs` | `COVERED` | 4 |
+| `c:src/fs/procfs.c:procfs_reset_controls` | `src/fs/procfs.c` | `procfs_reset_controls` | `fs` | `COVERED` | 3 |
+| `c:src/fs/procfs.c:procfs_self_test` | `src/fs/procfs.c` | `procfs_self_test` | `fs` | `COVERED` | 3 |
+| `c:src/fs/procfs.c:procfs_sync` | `src/fs/procfs.c` | `procfs_sync` | `fs` | `COVERED` | 1 |
+| `c:src/fs/procfs.c:procfs_test_count` | `src/fs/procfs.c` | `procfs_test_count` | `fs` | `COVERED` | 3 |
+| `c:src/fs/procfs.c:procfs_test_process_entry` | `src/fs/procfs.c` | `procfs_test_process_entry` | `fs` | `COVERED` | 1 |
+| `c:src/fs/procfs.c:procfs_test_read_path` | `src/fs/procfs.c` | `procfs_test_read_path` | `fs` | `COVERED` | 3 |
+| `c:src/fs/procfs.c:procfs_test_write_path` | `src/fs/procfs.c` | `procfs_test_write_path` | `fs` | `COVERED` | 3 |
+| `c:src/fs/procfs.c:procfs_uptime_read` | `src/fs/procfs.c` | `procfs_uptime_read` | `fs` | `COVERED` | 3 |
+| `c:src/fs/procfs.c:procfs_validate_state` | `src/fs/procfs.c` | `procfs_validate_state` | `fs` | `COVERED` | 3 |
+| `c:src/fs/procfs.c:procfs_version_read` | `src/fs/procfs.c` | `procfs_version_read` | `fs` | `COVERED` | 3 |
+| `c:src/fs/procfs.c:procfs_write` | `src/fs/procfs.c` | `procfs_write` | `fs` | `COVERED` | 3 |
+| `c:src/fs/procfs.c:procfs_write_allowed` | `src/fs/procfs.c` | `procfs_write_allowed` | `fs` | `COVERED` | 3 |
 | `c:src/fs/storage.c:storage_add_disk` | `src/fs/storage.c` | `storage_add_disk` | `fs` | `COVERED` | 1 |
 | `c:src/fs/storage.c:storage_add_volume` | `src/fs/storage.c` | `storage_add_volume` | `fs` | `COVERED` | 1 |
 | `c:src/fs/storage.c:storage_alias_is_used` | `src/fs/storage.c` | `storage_alias_is_used` | `fs` | `COVERED` | 1 |
@@ -7328,10 +7328,12 @@
 | `host:shell:input` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enviar scancodes falsos para comandos, historico, scroll, edicao, cancelamento e limite | entrada, historico e terminal preservam o contrato e nao ultrapassam o buffer | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos do Shell e stubs de terminal no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:introspection` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar parser hexadecimal com limites e entradas invalidas | parse_hex_u32 aceita digitos validos e rejeita prefixo, digito e overflow com codigos canonicos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:storage:block` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar block_self_test e block_cache_self_test com providers estaticos | filas BIO, limites, cancelamento, failpoints, cache, writeback e sync passam e o inventario retorna ao estado inicial | compilador ausente, warning, cobertura incompleta, failpoint residual, falha de assercao ou timeout | somente estruturas globais do processo host e buffers estaticos de provider | autotestes removem dispositivos temporarios, limpam cache e deixam fila sem pendencias |
+| `host:storage:devfs` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar dispositivos null, zero, tty, speaker e hda com transporte estatico | registro, permissoes, leituras, seeks, ioctl, indisponibilidade e invariantes preservam o contrato sem hardware real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estruturas devfs e buffers estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:storage:fat12` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar FAT12 sobre imagem estatica com raiz, subdiretorio e provider ATA falso | leitura, caminhos, metadados, operacoes atomicas, streaming, cancelamento e erros preservam a imagem fixture | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente imagem FAT12 e heap estatico do processo host | streaming encerrado, cadeias liberadas e processo host finalizado com artefatos preservados |
 | `host:storage:fat32` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar FAT32 sobre imagem estatica grande o suficiente para a classificacao FAT32 | leitura, paths, metadados, criacao, escrita, remocao e classificacao de clusters preservam a fixture | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente imagem FAT32 estatica e heap estatico do processo host | fixture encerrada e processo host finalizado com manifesto, logs e cobertura preservados |
 | `host:storage:file-index` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar indexacao cooperativa, pesquisa, cancelamento, stale/missing e recuperacao de corrupcao com cursores estaticos | rebuild, publicacao, pesquisa e limpeza restauram a tabela e classificam resultados indisponiveis sem vazamento | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas e cursores estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:storage:fs` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar paths FAT32 de storage e legacy, cursores, operacoes atomicas, streaming e limites | a interface unificada preserva o contrato de leitura, escrita, cursor, streaming, erros e geracao sem hardware real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente fixtures estaticos de FAT32, storage e ATA no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:storage:procfs` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar procfs real com VFS, processos, snapshots e controles de log estaticos | listagem, lookup, leitura, mapas, controles, permissoes, seeks, poll, ioctl, sync, indisponibilidade e invariantes preservam o contrato sem kernel ou hardware real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estruturas procfs, processos falsos e buffers estaticos do processo host | descritores fechados, snapshots liberados, processos falsos destruidos e manifesto, logs e cobertura preservados |
 | `host:storage:storage` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar inventario, MBR/BPB, montagem FAT12, cursores, leitura, espaco livre e rejeicao de mutacoes | o backend identifica e monta a particao, le fixtures sem hardware real e preserva o armazenamento somente-leitura | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente imagem FAT12 estatica e provider de bloco falso no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:storage:vfs` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar descritores, arquivos regulares, dispositivos, pipes, sockets, poll/select e quiescencia com dependencias estaticas | operacoes VFS retornam codigos canonicos, liberam descritores e preservam invariantes sem hardware ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas de descritores, caches estaticos e processo fixture do host | todos os descritores sao fechados, processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:storage:vfs-path` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar normalizacao, aliases, mounts, cwd, listagens e referencias VFS com volumes estaticos | caminhos canonicos, mounts virtuais, referencias, limites e estados de energia preservam o contrato sem disco real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas de mounts e fixtures estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7373,7 +7375,6 @@
 | `qemu:tst6:stress:kernel` | `qemu` | `tst6` | `qemu:tst6:stress:kernel` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | paging, heap, SLAB, processos e threads estao READY | repetir ciclos deterministas de memoria e execucao sob teto obrigatorio | invariantes estaveis permanecem iguais e a primeira falha interrompe a suite | overflow, vazamento, deadlock, timeout, protocolo ou QEMU | alocacoes e objetos temporarios de cada ciclo em snapshot | devolver paginas, destruir objetos e registrar seed e iteracao |
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
-| `host:storage:devfs` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar dispositivos null, zero, tty, speaker e hda com transporte estatico | registro, permissoes, leituras, seeks, ioctl, indisponibilidade e invariantes preservam o contrato sem hardware real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estruturas devfs e buffers estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -9000,16 +9001,6 @@
 - `c:src/fs/bmp.c:read_i32`
 - `c:src/fs/bmp.c:read_u16`
 - `c:src/fs/bmp.c:read_u32`
-- `c:src/fs/procfs.c:procfs_append_hex`
-- `c:src/fs/procfs.c:procfs_append_line_hex`
-- `c:src/fs/procfs.c:procfs_init`
-- `c:src/fs/procfs.c:procfs_ioctl`
-- `c:src/fs/procfs.c:procfs_is_ready`
-- `c:src/fs/procfs.c:procfs_list`
-- `c:src/fs/procfs.c:procfs_open`
-- `c:src/fs/procfs.c:procfs_poll`
-- `c:src/fs/procfs.c:procfs_sync`
-- `c:src/fs/procfs.c:procfs_test_process_entry`
 - `c:src/fs/storage.c:storage_buffers_equal`
 - `c:src/fs/storage.c:storage_check_chain`
 - `c:src/fs/storage.c:storage_check_directory_visitor`

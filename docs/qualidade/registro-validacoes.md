@@ -4458,3 +4458,19 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   superficies, 4.212 `COVERED`, 2.984 `PENDING` e 92 casos. Nenhum hardware,
   VFS real ou armazenamento real foi acessado; o fechamento integral, o gate
   estrito e a validacao TST7 completa continuam pendentes.
+
+- Concluida em: 2026-09-02
+
+  Incremento Storage/procfs: foi criado o caso host-only `host:storage:procfs`
+  e o alvo `make test-procfs-host` com o provider procfs real, VFS, processos,
+  snapshots e controles de log simulados. A fixture exercitou inicializacao,
+  listagem, lookup, leitura global e de processos, mapas, seeks, poll, ioctl,
+  sync, permissoes, controles, limites, callbacks de erro e limpeza. A
+  execucao instrumentada terminou `PASS`, resolveu as 10 superficies pendentes
+  de `src/fs/procfs.c` e nao registrou enderecos desconhecidos ou ambiguos.
+  Foram executados `make test-procfs-host`, `make test-tst7-quick` e
+  `make catalog-test`; os casos host-only passaram. O quick permaneceu
+  `BLOCKED` somente em `test-tst3-sanitize` pela indisponibilidade/permissao
+  do runtime LLVM. O catalogo registra 7.196 superficies, 4.222 `COVERED`,
+  2.974 `PENDING` e 93 casos. O fechamento integral, o gate estrito e a
+  validacao TST7 completa continuam pendentes.

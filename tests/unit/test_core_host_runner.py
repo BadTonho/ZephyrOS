@@ -119,6 +119,16 @@ class CoreHostRunnerTests(unittest.TestCase):
         self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
                       "test_devfs_host.c", sources)
 
+    def test_procfs_case_has_provider_fixture_sources(self):
+        result_dir, binary, sources, suite = core_host_runner.case_configuration(
+            "host:storage:procfs")
+        self.assertEqual(suite, "procfs-host")
+        self.assertEqual(result_dir, core_host_runner.PROCFS_RESULT_DIR)
+        self.assertEqual(binary, core_host_runner.PROCFS_BINARY)
+        self.assertIn(core_host_runner.ROOT / "src" / "fs" / "procfs.c", sources)
+        self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
+                      "test_procfs_host.c", sources)
+
 
 if __name__ == "__main__":
     unittest.main()
