@@ -4658,3 +4658,17 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   runners; todos passaram. O catalogo registra 7.198 superficies, 4.320
   `COVERED`, 2.878 `PENDING` e 107 casos. O fechamento integral, o gate
   estrito e a validacao TST7 completa continuam pendentes.
+
+- Incremento GUI/primitivas concluido em 2026-09-03: foi criado o caso
+  host-only `host:gui:widgets` e o alvo `make test-gui-host`. A fixture usa
+  framebuffer, fonte, metricas de display e VESA falsos para exercitar temas,
+  texto nativo e escalado, medicao, paineis, formas, gradientes, botoes,
+  molduras e limites de tela. O relatorio instrumentado terminou `PASS`, com
+  23 superficies resolvidas e nenhum endereco desconhecido ou ambiguo; as 11
+  superficies C que estavam pendentes em `src/gui/gui.c` foram exercitadas por
+  chamadas reais. Foram executados `make q3check`, `make clean`, `make`, os 67
+  casos host-only do registro, a sincronizacao e renderizacao do catalogo,
+  `make catalog-test`, 55 testes unitarios dos runners e `git diff --check`;
+  todos passaram. O catalogo registra 7.198 superficies, 4.331 `COVERED`,
+  2.867 `PENDING` e 108 casos. O fechamento integral, o gate estrito e a
+  validacao TST7 completa continuam pendentes.

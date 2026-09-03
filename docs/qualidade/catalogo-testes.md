@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7198**
-- Casos de teste: **107**
+- Casos de teste: **108**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4320 |
+| `COVERED` | 4331 |
 | `MANUAL` | 0 |
-| `PENDING` | 2878 |
+| `PENDING` | 2867 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 107 |
+| `AUTOMATED` | 108 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -1498,22 +1498,22 @@
 | `api:src/include/ui/filemanager.h:fm_open` | `src/include/ui/filemanager.h` | `fm_open` | `ui` | `COVERED` | 1 |
 | `api:src/include/ui/filemanager.h:fm_run` | `src/include/ui/filemanager.h` | `fm_run` | `ui` | `COVERED` | 1 |
 | `api:src/include/ui/filemanager.h:fm_update` | `src/include/ui/filemanager.h` | `fm_update` | `ui` | `COVERED` | 1 |
-| `api:src/include/ui/gui.h:gui_draw_button` | `src/include/ui/gui.h` | `gui_draw_button` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/gui.h:gui_draw_flat_border` | `src/include/ui/gui.h` | `gui_draw_flat_border` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/gui.h:gui_draw_modern_button` | `src/include/ui/gui.h` | `gui_draw_modern_button` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/gui.h:gui_draw_panel` | `src/include/ui/gui.h` | `gui_draw_panel` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/gui.h:gui_draw_rounded_rect` | `src/include/ui/gui.h` | `gui_draw_rounded_rect` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/gui.h:gui_draw_scaled_button` | `src/include/ui/gui.h` | `gui_draw_scaled_button` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/gui.h:gui_draw_scaled_text` | `src/include/ui/gui.h` | `gui_draw_scaled_text` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/gui.h:gui_draw_scaled_window_frame` | `src/include/ui/gui.h` | `gui_draw_scaled_window_frame` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/gui.h:gui_draw_text` | `src/include/ui/gui.h` | `gui_draw_text` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/gui.h:gui_draw_vertical_gradient` | `src/include/ui/gui.h` | `gui_draw_vertical_gradient` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/gui.h:gui_draw_window_frame` | `src/include/ui/gui.h` | `gui_draw_window_frame` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/gui.h:gui_get_theme` | `src/include/ui/gui.h` | `gui_get_theme` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/gui.h:gui_init` | `src/include/ui/gui.h` | `gui_init` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/gui.h:gui_measure_scaled_text` | `src/include/ui/gui.h` | `gui_measure_scaled_text` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/gui.h:gui_set_theme` | `src/include/ui/gui.h` | `gui_set_theme` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/gui.h:gui_theme_name` | `src/include/ui/gui.h` | `gui_theme_name` | `ui` | `COVERED` | 2 |
+| `api:src/include/ui/gui.h:gui_draw_button` | `src/include/ui/gui.h` | `gui_draw_button` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/gui.h:gui_draw_flat_border` | `src/include/ui/gui.h` | `gui_draw_flat_border` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/gui.h:gui_draw_modern_button` | `src/include/ui/gui.h` | `gui_draw_modern_button` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/gui.h:gui_draw_panel` | `src/include/ui/gui.h` | `gui_draw_panel` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/gui.h:gui_draw_rounded_rect` | `src/include/ui/gui.h` | `gui_draw_rounded_rect` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/gui.h:gui_draw_scaled_button` | `src/include/ui/gui.h` | `gui_draw_scaled_button` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/gui.h:gui_draw_scaled_text` | `src/include/ui/gui.h` | `gui_draw_scaled_text` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/gui.h:gui_draw_scaled_window_frame` | `src/include/ui/gui.h` | `gui_draw_scaled_window_frame` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/gui.h:gui_draw_text` | `src/include/ui/gui.h` | `gui_draw_text` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/gui.h:gui_draw_vertical_gradient` | `src/include/ui/gui.h` | `gui_draw_vertical_gradient` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/gui.h:gui_draw_window_frame` | `src/include/ui/gui.h` | `gui_draw_window_frame` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/gui.h:gui_get_theme` | `src/include/ui/gui.h` | `gui_get_theme` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/gui.h:gui_init` | `src/include/ui/gui.h` | `gui_init` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/gui.h:gui_measure_scaled_text` | `src/include/ui/gui.h` | `gui_measure_scaled_text` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/gui.h:gui_set_theme` | `src/include/ui/gui.h` | `gui_set_theme` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/gui.h:gui_theme_name` | `src/include/ui/gui.h` | `gui_theme_name` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/icons.h:icons_draw_desktop_bitmap` | `src/include/ui/icons.h` | `icons_draw_desktop_bitmap` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/icons.h:icons_draw_desktop_bitmap_resized` | `src/include/ui/icons.h` | `icons_draw_desktop_bitmap_resized` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/icons.h:icons_get_desktop` | `src/include/ui/icons.h` | `icons_get_desktop` | `ui` | `COVERED` | 2 |
@@ -5487,28 +5487,28 @@
 | `c:src/gui/display.c:display_refresh_scene` | `src/gui/display.c` | `display_refresh_scene` | `gui` | `COVERED` | 1 |
 | `c:src/gui/display.c:display_scale_name` | `src/gui/display.c` | `display_scale_name` | `gui` | `COVERED` | 1 |
 | `c:src/gui/display.c:display_scale_px` | `src/gui/display.c` | `display_scale_px` | `gui` | `COVERED` | 3 |
-| `c:src/gui/gui.c:gui_clamp_to_screen` | `src/gui/gui.c` | `gui_clamp_to_screen` | `gui` | `COVERED` | 2 |
-| `c:src/gui/gui.c:gui_draw_button` | `src/gui/gui.c` | `gui_draw_button` | `gui` | `PENDING` | 0 |
-| `c:src/gui/gui.c:gui_draw_flat_border` | `src/gui/gui.c` | `gui_draw_flat_border` | `gui` | `COVERED` | 2 |
-| `c:src/gui/gui.c:gui_draw_modern_button` | `src/gui/gui.c` | `gui_draw_modern_button` | `gui` | `COVERED` | 2 |
-| `c:src/gui/gui.c:gui_draw_native_glyph` | `src/gui/gui.c` | `gui_draw_native_glyph` | `gui` | `COVERED` | 2 |
-| `c:src/gui/gui.c:gui_draw_panel` | `src/gui/gui.c` | `gui_draw_panel` | `gui` | `PENDING` | 0 |
-| `c:src/gui/gui.c:gui_draw_resampled_glyph` | `src/gui/gui.c` | `gui_draw_resampled_glyph` | `gui` | `PENDING` | 0 |
-| `c:src/gui/gui.c:gui_draw_rounded_rect` | `src/gui/gui.c` | `gui_draw_rounded_rect` | `gui` | `COVERED` | 2 |
-| `c:src/gui/gui.c:gui_draw_rounded_span` | `src/gui/gui.c` | `gui_draw_rounded_span` | `gui` | `COVERED` | 2 |
-| `c:src/gui/gui.c:gui_draw_scaled_button` | `src/gui/gui.c` | `gui_draw_scaled_button` | `gui` | `PENDING` | 0 |
-| `c:src/gui/gui.c:gui_draw_scaled_text` | `src/gui/gui.c` | `gui_draw_scaled_text` | `gui` | `COVERED` | 2 |
-| `c:src/gui/gui.c:gui_draw_scaled_window_frame` | `src/gui/gui.c` | `gui_draw_scaled_window_frame` | `gui` | `PENDING` | 0 |
-| `c:src/gui/gui.c:gui_draw_text` | `src/gui/gui.c` | `gui_draw_text` | `gui` | `PENDING` | 0 |
-| `c:src/gui/gui.c:gui_draw_vertical_gradient` | `src/gui/gui.c` | `gui_draw_vertical_gradient` | `gui` | `COVERED` | 2 |
-| `c:src/gui/gui.c:gui_draw_window_frame` | `src/gui/gui.c` | `gui_draw_window_frame` | `gui` | `PENDING` | 0 |
-| `c:src/gui/gui.c:gui_get_modern_button_colors` | `src/gui/gui.c` | `gui_get_modern_button_colors` | `gui` | `COVERED` | 2 |
-| `c:src/gui/gui.c:gui_get_theme` | `src/gui/gui.c` | `gui_get_theme` | `gui` | `PENDING` | 0 |
-| `c:src/gui/gui.c:gui_init` | `src/gui/gui.c` | `gui_init` | `gui` | `PENDING` | 0 |
-| `c:src/gui/gui.c:gui_measure_scaled_text` | `src/gui/gui.c` | `gui_measure_scaled_text` | `gui` | `COVERED` | 2 |
-| `c:src/gui/gui.c:gui_min_u32` | `src/gui/gui.c` | `gui_min_u32` | `gui` | `COVERED` | 2 |
-| `c:src/gui/gui.c:gui_set_theme` | `src/gui/gui.c` | `gui_set_theme` | `gui` | `PENDING` | 0 |
-| `c:src/gui/gui.c:gui_theme_name` | `src/gui/gui.c` | `gui_theme_name` | `gui` | `PENDING` | 0 |
+| `c:src/gui/gui.c:gui_clamp_to_screen` | `src/gui/gui.c` | `gui_clamp_to_screen` | `gui` | `COVERED` | 3 |
+| `c:src/gui/gui.c:gui_draw_button` | `src/gui/gui.c` | `gui_draw_button` | `gui` | `COVERED` | 1 |
+| `c:src/gui/gui.c:gui_draw_flat_border` | `src/gui/gui.c` | `gui_draw_flat_border` | `gui` | `COVERED` | 3 |
+| `c:src/gui/gui.c:gui_draw_modern_button` | `src/gui/gui.c` | `gui_draw_modern_button` | `gui` | `COVERED` | 3 |
+| `c:src/gui/gui.c:gui_draw_native_glyph` | `src/gui/gui.c` | `gui_draw_native_glyph` | `gui` | `COVERED` | 3 |
+| `c:src/gui/gui.c:gui_draw_panel` | `src/gui/gui.c` | `gui_draw_panel` | `gui` | `COVERED` | 1 |
+| `c:src/gui/gui.c:gui_draw_resampled_glyph` | `src/gui/gui.c` | `gui_draw_resampled_glyph` | `gui` | `COVERED` | 1 |
+| `c:src/gui/gui.c:gui_draw_rounded_rect` | `src/gui/gui.c` | `gui_draw_rounded_rect` | `gui` | `COVERED` | 3 |
+| `c:src/gui/gui.c:gui_draw_rounded_span` | `src/gui/gui.c` | `gui_draw_rounded_span` | `gui` | `COVERED` | 3 |
+| `c:src/gui/gui.c:gui_draw_scaled_button` | `src/gui/gui.c` | `gui_draw_scaled_button` | `gui` | `COVERED` | 1 |
+| `c:src/gui/gui.c:gui_draw_scaled_text` | `src/gui/gui.c` | `gui_draw_scaled_text` | `gui` | `COVERED` | 3 |
+| `c:src/gui/gui.c:gui_draw_scaled_window_frame` | `src/gui/gui.c` | `gui_draw_scaled_window_frame` | `gui` | `COVERED` | 1 |
+| `c:src/gui/gui.c:gui_draw_text` | `src/gui/gui.c` | `gui_draw_text` | `gui` | `COVERED` | 1 |
+| `c:src/gui/gui.c:gui_draw_vertical_gradient` | `src/gui/gui.c` | `gui_draw_vertical_gradient` | `gui` | `COVERED` | 3 |
+| `c:src/gui/gui.c:gui_draw_window_frame` | `src/gui/gui.c` | `gui_draw_window_frame` | `gui` | `COVERED` | 1 |
+| `c:src/gui/gui.c:gui_get_modern_button_colors` | `src/gui/gui.c` | `gui_get_modern_button_colors` | `gui` | `COVERED` | 3 |
+| `c:src/gui/gui.c:gui_get_theme` | `src/gui/gui.c` | `gui_get_theme` | `gui` | `COVERED` | 1 |
+| `c:src/gui/gui.c:gui_init` | `src/gui/gui.c` | `gui_init` | `gui` | `COVERED` | 1 |
+| `c:src/gui/gui.c:gui_measure_scaled_text` | `src/gui/gui.c` | `gui_measure_scaled_text` | `gui` | `COVERED` | 3 |
+| `c:src/gui/gui.c:gui_min_u32` | `src/gui/gui.c` | `gui_min_u32` | `gui` | `COVERED` | 3 |
+| `c:src/gui/gui.c:gui_set_theme` | `src/gui/gui.c` | `gui_set_theme` | `gui` | `COVERED` | 1 |
+| `c:src/gui/gui.c:gui_theme_name` | `src/gui/gui.c` | `gui_theme_name` | `gui` | `COVERED` | 1 |
 | `c:src/icons/icons.c:icons_draw_desktop_bitmap` | `src/icons/icons.c` | `icons_draw_desktop_bitmap` | `icons` | `PENDING` | 0 |
 | `c:src/icons/icons.c:icons_draw_desktop_bitmap_resized` | `src/icons/icons.c` | `icons_draw_desktop_bitmap_resized` | `icons` | `COVERED` | 2 |
 | `c:src/icons/icons.c:icons_get_desktop` | `src/icons/icons.c` | `icons_get_desktop` | `icons` | `PENDING` | 0 |
@@ -7315,6 +7315,7 @@
 | `host:drivers:usb-hid` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enumerar teclados e mouses UHCI, enviar relatorios Boot, publicar eventos de entrada e exercitar refresh, remocao e limites | parsing valido, rejeicao de reports corrompidos, estados, contadores, cancelamento e indisponibilidade preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente dispositivos USB HID e callbacks de entrada estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:usb-msc` | `host` | `host-only-readonly` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enumerar dispositivo MSC UHCI, executar inquiry, TUR, capacity e READ10 simulados, validar block readonly e exercitar recuperacao | protocolo BOT/SCSI, identificadores, capacidade, leituras, estados, limites e falhas preservam o contrato sem escrita | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente transporte USB MSC, registro de bloco e buffers estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:gui:display` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar inicializacao, disponibilidade VESA, parsing de escala, conversao de pixels e refresh das cenas | metricas e escalas validas funcionam, limites retornam erros canonicos e falha de reflow restaura a escala anterior | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do display e callbacks falsos de VESA, desktop, taskbar e Window Manager | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:gui:widgets` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar temas, desenho de texto nativo e escalado, medicao, paineis, formas, gradientes, botoes e molduras em framebuffer falso | temas invalidos e estados indisponiveis retornam ou preservam o contrato, limites nao escapam do framebuffer e as primitivas encaminham o desenho para VESA | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente metricas, fonte, framebuffer e contadores estaticos falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:memory:memory` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar inicializacao E820, alocacao e liberacao PMM por zona, heap, alinhamento e estatisticas | PMM e heap rejeitam limites invalidos, contabilizam falhas e restauram todas as paginas e blocos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente mapa E820, bitmap PMM e heap estaticos no processo host | paginas e blocos liberados, estatisticas restauradas e artefatos preservados |
 | `host:memory:paging` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar init, mapeamento, diretorios de usuario, faults lazy, copias, limites e cleanup com PMM falso | o paging respeita os limites de usuario, rejeita estados invalidos e restaura os recursos da fixture | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente diretorios, tabelas e paginas estaticos no processo host | diretorios e tabelas liberados, pagina de usuario coletada e artefatos preservados |
 | `host:memory:slab-metadata` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar inicializacao, limites, metadados, estatisticas e limpeza do registrador SLAB sem alocar paginas reais | estado publicado, informacoes por indice, duplicidade e limpeza respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas de metadados no processo host; nenhuma pagina real e alocada | cache temporario destruido e manifesto, logs e cobertura preservados |
@@ -8989,17 +8990,6 @@
 - `c:src/fs/sysfs.c:sysfs_render_pci`
 - `c:src/fs/sysfs.c:sysfs_sync`
 - `c:src/fs/sysfs.c:sysfs_write`
-- `c:src/gui/gui.c:gui_draw_button`
-- `c:src/gui/gui.c:gui_draw_panel`
-- `c:src/gui/gui.c:gui_draw_resampled_glyph`
-- `c:src/gui/gui.c:gui_draw_scaled_button`
-- `c:src/gui/gui.c:gui_draw_scaled_window_frame`
-- `c:src/gui/gui.c:gui_draw_text`
-- `c:src/gui/gui.c:gui_draw_window_frame`
-- `c:src/gui/gui.c:gui_get_theme`
-- `c:src/gui/gui.c:gui_init`
-- `c:src/gui/gui.c:gui_set_theme`
-- `c:src/gui/gui.c:gui_theme_name`
 - `c:src/icons/icons.c:icons_draw_desktop_bitmap`
 - `c:src/icons/icons.c:icons_get_desktop`
 - `c:src/icons/icons.c:icons_get_desktop_bitmap_status`
