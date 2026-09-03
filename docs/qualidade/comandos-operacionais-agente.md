@@ -563,6 +563,16 @@ codigo do pipetest. O relatorio fica em
 make test-shell-commands-vfs-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-recovery-runtime-host` exercita os utilitarios freestanding do
+runtime de recuperacao com buffers estaticos. A fixture cobre preenchimento,
+copia, comprimento, comparacao lexicografica e os niveis do ponto de entrada
+de log, sem executar o loader, acessar imagem ou depender de hardware. O
+relatorio fica em `build/test-results/recovery-runtime-host/`:
+
+```text
+make test-recovery-runtime-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O caso `test-shell-command-utils-host` exercita os utilitarios de comandos do
 Shell com parsing de tokens e argumentos, comparacao de subcomandos,
 normalizacao para maiusculas, conversao numerica, limites, entradas invalidas

@@ -4395,6 +4395,19 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   casos. O fechamento integral, o gate estrito e a validacao TST7 completa
   continuam pendentes.
 
+- Incremento Boot/recovery runtime concluido em 2026-09-03: foi criado o caso
+  host-only `host:boot:recovery-runtime` e o alvo
+  `make test-recovery-runtime-host`. A fixture validou diretamente os cinco
+  utilitarios freestanding de memoria, strings e log com buffers estaticos,
+  sem executar o loader de recuperacao nem acessar hardware. O relatorio
+  instrumentado terminou `PASS`, resolveu as cinco superficies de
+  `src/boot/recovery_runtime.c` e nao registrou enderecos desconhecidos ou
+  ambiguos. Foram executados `make test-recovery-runtime-host`, as 69 fixtures
+  host-only do registro e a sincronizacao/renderizacao do catalogo. O catalogo
+  registra 7.198 superficies, 4.342 `COVERED`, 2.856 `PENDING` e 110 casos.
+  O fechamento integral, o gate estrito e a validacao TST7 completa continuam
+  pendentes.
+
 - 2026-09-02 — Incremento Core/wifi_manager: o caso host-only
   `host:core:wifi-manager` passou a usar fixtures estaticos de PCI, USB e
   RTL8811CU. A execucao cobriu IDs, inventario, estados READY/UNSUPPORTED/ERROR,

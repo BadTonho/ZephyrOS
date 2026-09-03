@@ -172,6 +172,7 @@ HOST_CASE_TARGETS = {
     "host:core:usb-transport": "test-usb-transport-host",
     "host:gui:widgets": "test-gui-host",
     "host:shell:commands-vfs": "test-shell-commands-vfs-host",
+    "host:boot:recovery-runtime": "test-recovery-runtime-host",
     "host:tst2:protocol-core": "test-tst2-host",
     "host:tst3:string-compress": "test-tst3-host",
 }

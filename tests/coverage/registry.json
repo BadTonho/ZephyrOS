@@ -2818,6 +2818,63 @@
       "evidence": "make test-shell-commands-vfs-host PASS com grep, pipetest, erros de pipeline e limites no relatorio instrumentado"
     },
     {
+      "id": "recovery-runtime-host-dynamic",
+      "domain": "boot-recovery-runtime",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:boot:recovery-runtime"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/recovery-runtime-host/coverage.json",
+      "coverage_sources": [
+        "src/boot/recovery_runtime.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:boot:recovery-runtime",
+        "scenario": "Contrato host-only dos utilitarios freestanding do runtime de recuperacao",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "none"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "validar preenchimento, copia, comprimento, comparacao e ponto de entrada de log sem executar o loader de recuperacao",
+        "expected": "utilitarios preservam bytes, limites e ordenacao lexicografica e o ponto de log aceita todos os niveis sem estado residual",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente buffers estaticos no processo host; nenhuma imagem ou hardware de boot e acessada",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": [
+          "c:src/boot/recovery_runtime.c:kmemcpy",
+          "c:src/boot/recovery_runtime.c:kmemset",
+          "c:src/boot/recovery_runtime.c:kstrcmp",
+          "c:src/boot/recovery_runtime.c:kstrlen",
+          "c:src/boot/recovery_runtime.c:log_print"
+        ],
+        "tags": [
+          "host",
+          "boot",
+          "recovery",
+          "freestanding",
+          "strings",
+          "limits",
+          "coverage"
+        ]
+      },
+      "evidence": "make test-recovery-runtime-host PASS com primitivas de memoria, strings e log do runtime freestanding no relatorio instrumentado"
+    },
+    {
       "id": "usb-transport-host-dynamic",
       "domain": "core-usb",
       "owner": "quality",

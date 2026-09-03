@@ -291,6 +291,17 @@ class CoreHostRunnerTests(unittest.TestCase):
         self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
                       "test_shell_commands_vfs_host.c", sources)
 
+    def test_recovery_runtime_case_has_freestanding_fixture_sources(self):
+        result_dir, binary, sources, suite = core_host_runner.case_configuration(
+            "host:boot:recovery-runtime")
+        self.assertEqual(suite, "recovery-runtime-host")
+        self.assertEqual(result_dir, core_host_runner.RECOVERY_RUNTIME_RESULT_DIR)
+        self.assertEqual(binary, core_host_runner.RECOVERY_RUNTIME_BINARY)
+        self.assertIn(core_host_runner.ROOT / "src" / "boot" /
+                      "recovery_runtime.c", sources)
+        self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
+                      "test_recovery_runtime_host.c", sources)
+
     def test_shell_core_case_has_shell_fixture_sources(self):
         result_dir, binary, sources, suite = core_host_runner.case_configuration(
             "host:shell:core")
