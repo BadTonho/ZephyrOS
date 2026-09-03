@@ -1254,6 +1254,24 @@ funcoes e warnings tratados como erro. O relatorio fica em
 status `PASS`, nenhum endereco desconhecido ou ambiguo e deixar o controlador
 falso, paginas DMA e filas restaurados.
 
+## Driver EHCI: teste host-only
+
+O caso `host:drivers:ehci` usa PCI, MMIO, DMA, temporizador e dispositivos USB
+falsos no processo host. Ele cobre inicializacao, reset, enumeracao high-speed,
+descritores, transfers de controle e bulk, interrupt, timeout, erro de qTD,
+recuperacao, falhas de hardware e limpeza. Nenhuma instrucao de I/O
+privilegiado ou hardware real e executada pelo teste.
+
+```text
+make test-ehci-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O alvo exige compilador C nativo e `nm`, compila com instrumentacao de
+funcoes e warnings tratados como erro. O relatorio fica em
+`build/test-results/ehci-host/coverage.json`; uma execucao `PASS` deve ter
+status `PASS`, nenhum endereco desconhecido ou ambiguo e deixar o controlador
+falso, paginas DMA e filas restaurados.
+
 ## TST7: regressao continua
 
 O runner TST7 e independente do provedor de CI. O modo `quick` executa as

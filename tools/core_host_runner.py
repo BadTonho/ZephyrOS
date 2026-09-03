@@ -610,6 +610,13 @@ UHCI_SOURCE_FILES = (
     ROOT / "src" / "drivers" / "uhci.c",
     ROOT / "src" / "core" / "string.c",
 )
+EHCI_RESULT_DIR = ROOT / "build" / "test-results" / "ehci-host"
+EHCI_BINARY = ROOT / "build" / "tests" / "test_ehci_host.exe"
+EHCI_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_ehci_host.c",
+    ROOT / "src" / "drivers" / "ehci.c",
+    ROOT / "src" / "core" / "string.c",
+)
 SOURCE_FILES = CORE_SOURCE_FILES
 
 
@@ -793,6 +800,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return ACPI_RESULT_DIR, ACPI_BINARY, ACPI_SOURCE_FILES, "acpi-host"
     if case_id == "host:drivers:uhci":
         return UHCI_RESULT_DIR, UHCI_BINARY, UHCI_SOURCE_FILES, "uhci-host"
+    if case_id == "host:drivers:ehci":
+        return EHCI_RESULT_DIR, EHCI_BINARY, EHCI_SOURCE_FILES, "ehci-host"
     raise ValueError(f"caso_host_invalido:{case_id}")
 
 
@@ -988,7 +997,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:kernel:panic", "host:drivers:pci",
                                  "host:ui:icons", "host:drivers:vesa",
                                  "host:drivers:video", "host:drivers:acpi",
-                                 "host:drivers:uhci"))
+                                 "host:drivers:uhci", "host:drivers:ehci"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
     return parser.parse_args()

@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **7202**
-- Casos de teste: **117**
+- Superfícies ativas: **7203**
+- Casos de teste: **118**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
 |---|---:|
 | `api_function` | 1541 |
 | `asm_entry` | 101 |
-| `c_function` | 5440 |
+| `c_function` | 5441 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4529 |
+| `COVERED` | 4580 |
 | `MANUAL` | 0 |
-| `PENDING` | 2673 |
+| `PENDING` | 2623 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 117 |
+| `AUTOMATED` | 118 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -39,7 +39,7 @@
 | `boot` | 136 |
 | `core` | 2771 |
 | `desktop` | 40 |
-| `drivers` | 919 |
+| `drivers` | 920 |
 | `filemanager` | 92 |
 | `fs` | 957 |
 | `gui` | 30 |
@@ -4132,57 +4132,58 @@
 | `c:src/drivers/e1000.c:e1000_update_link` | `src/drivers/e1000.c` | `e1000_update_link` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/e1000.c:e1000_wait_reset` | `src/drivers/e1000.c` | `e1000_wait_reset` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/e1000.c:e1000_write` | `src/drivers/e1000.c` | `e1000_write` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_allocate_dma` | `src/drivers/ehci.c` | `ehci_allocate_dma` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_bulk_transfer` | `src/drivers/ehci.c` | `ehci_bulk_transfer` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_bulk_transfer_locked` | `src/drivers/ehci.c` | `ehci_bulk_transfer_locked` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_clear_sync` | `src/drivers/ehci.c` | `ehci_clear_sync` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_control_request` | `src/drivers/ehci.c` | `ehci_control_request` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_control_transfer` | `src/drivers/ehci.c` | `ehci_control_transfer` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_copy_status` | `src/drivers/ehci.c` | `ehci_copy_status` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_deadline_expired` | `src/drivers/ehci.c` | `ehci_deadline_expired` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_disable` | `src/drivers/ehci.c` | `ehci_disable` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_enumerate_port` | `src/drivers/ehci.c` | `ehci_enumerate_port` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_find` | `src/drivers/ehci.c` | `ehci_find` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_find_device_record` | `src/drivers/ehci.c` | `ehci_find_device_record` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_find_port_record` | `src/drivers/ehci.c` | `ehci_find_port_record` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_get_device` | `src/drivers/ehci.c` | `ehci_get_device` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_get_device_count` | `src/drivers/ehci.c` | `ehci_get_device_count` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_get_port` | `src/drivers/ehci.c` | `ehci_get_port` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_get_port_count` | `src/drivers/ehci.c` | `ehci_get_port_count` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_get_status` | `src/drivers/ehci.c` | `ehci_get_status` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_init` | `src/drivers/ehci.c` | `ehci_init` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_init_instance` | `src/drivers/ehci.c` | `ehci_init_instance` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_initialize_ports` | `src/drivers/ehci.c` | `ehci_initialize_ports` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_interrupt_arm` | `src/drivers/ehci.c` | `ehci_interrupt_arm` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_interrupt_cancel` | `src/drivers/ehci.c` | `ehci_interrupt_cancel` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_interrupt_poll` | `src/drivers/ehci.c` | `ehci_interrupt_poll` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_interrupt_submit` | `src/drivers/ehci.c` | `ehci_interrupt_submit` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_irq_handler` | `src/drivers/ehci.c` | `ehci_irq_handler` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_link_schedule` | `src/drivers/ehci.c` | `ehci_link_schedule` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_make_device_id` | `src/drivers/ehci.c` | `ehci_make_device_id` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_map_mmio` | `src/drivers/ehci.c` | `ehci_map_mmio` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_parse_configuration` | `src/drivers/ehci.c` | `ehci_parse_configuration` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_poll` | `src/drivers/ehci.c` | `ehci_poll` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_qh_configure` | `src/drivers/ehci.c` | `ehci_qh_configure` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_qtd_actual` | `src/drivers/ehci.c` | `ehci_qtd_actual` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_qtd_error` | `src/drivers/ehci.c` | `ehci_qtd_error` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_qtd_prepare` | `src/drivers/ehci.c` | `ehci_qtd_prepare` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_qtd_set_buffers` | `src/drivers/ehci.c` | `ehci_qtd_set_buffers` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_read` | `src/drivers/ehci.c` | `ehci_read` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_read_descriptor` | `src/drivers/ehci.c` | `ehci_read_descriptor` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_recover_controller` | `src/drivers/ehci.c` | `ehci_recover_controller` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_release_dma` | `src/drivers/ehci.c` | `ehci_release_dma` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_reset_bulk_toggles` | `src/drivers/ehci.c` | `ehci_reset_bulk_toggles` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_reset_controller` | `src/drivers/ehci.c` | `ehci_reset_controller` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_reset_port` | `src/drivers/ehci.c` | `ehci_reset_port` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_set_port_empty` | `src/drivers/ehci.c` | `ehci_set_port_empty` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_start_controller` | `src/drivers/ehci.c` | `ehci_start_controller` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_submit_sync` | `src/drivers/ehci.c` | `ehci_submit_sync` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_timeout_ticks` | `src/drivers/ehci.c` | `ehci_timeout_ticks` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_validate_pci` | `src/drivers/ehci.c` | `ehci_validate_pci` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_validate_state` | `src/drivers/ehci.c` | `ehci_validate_state` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_wait_qtds` | `src/drivers/ehci.c` | `ehci_wait_qtds` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ehci.c:ehci_write` | `src/drivers/ehci.c` | `ehci_write` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/ehci.c:ehci_allocate_dma` | `src/drivers/ehci.c` | `ehci_allocate_dma` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_bulk_transfer` | `src/drivers/ehci.c` | `ehci_bulk_transfer` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_bulk_transfer_locked` | `src/drivers/ehci.c` | `ehci_bulk_transfer_locked` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_clear_sync` | `src/drivers/ehci.c` | `ehci_clear_sync` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_control_request` | `src/drivers/ehci.c` | `ehci_control_request` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_control_transfer` | `src/drivers/ehci.c` | `ehci_control_transfer` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_copy_status` | `src/drivers/ehci.c` | `ehci_copy_status` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_deadline_expired` | `src/drivers/ehci.c` | `ehci_deadline_expired` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_disable` | `src/drivers/ehci.c` | `ehci_disable` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_enumerate_port` | `src/drivers/ehci.c` | `ehci_enumerate_port` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_find` | `src/drivers/ehci.c` | `ehci_find` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_find_device_record` | `src/drivers/ehci.c` | `ehci_find_device_record` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_find_port_record` | `src/drivers/ehci.c` | `ehci_find_port_record` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_get_device` | `src/drivers/ehci.c` | `ehci_get_device` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_get_device_count` | `src/drivers/ehci.c` | `ehci_get_device_count` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_get_port` | `src/drivers/ehci.c` | `ehci_get_port` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_get_port_count` | `src/drivers/ehci.c` | `ehci_get_port_count` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_get_status` | `src/drivers/ehci.c` | `ehci_get_status` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_host_reset` | `src/drivers/ehci.c` | `ehci_host_reset` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/ehci.c:ehci_init` | `src/drivers/ehci.c` | `ehci_init` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_init_instance` | `src/drivers/ehci.c` | `ehci_init_instance` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_initialize_ports` | `src/drivers/ehci.c` | `ehci_initialize_ports` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_interrupt_arm` | `src/drivers/ehci.c` | `ehci_interrupt_arm` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_interrupt_cancel` | `src/drivers/ehci.c` | `ehci_interrupt_cancel` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_interrupt_poll` | `src/drivers/ehci.c` | `ehci_interrupt_poll` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_interrupt_submit` | `src/drivers/ehci.c` | `ehci_interrupt_submit` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_irq_handler` | `src/drivers/ehci.c` | `ehci_irq_handler` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_link_schedule` | `src/drivers/ehci.c` | `ehci_link_schedule` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_make_device_id` | `src/drivers/ehci.c` | `ehci_make_device_id` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_map_mmio` | `src/drivers/ehci.c` | `ehci_map_mmio` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_parse_configuration` | `src/drivers/ehci.c` | `ehci_parse_configuration` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_poll` | `src/drivers/ehci.c` | `ehci_poll` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_qh_configure` | `src/drivers/ehci.c` | `ehci_qh_configure` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_qtd_actual` | `src/drivers/ehci.c` | `ehci_qtd_actual` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_qtd_error` | `src/drivers/ehci.c` | `ehci_qtd_error` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_qtd_prepare` | `src/drivers/ehci.c` | `ehci_qtd_prepare` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_qtd_set_buffers` | `src/drivers/ehci.c` | `ehci_qtd_set_buffers` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_read` | `src/drivers/ehci.c` | `ehci_read` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_read_descriptor` | `src/drivers/ehci.c` | `ehci_read_descriptor` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_recover_controller` | `src/drivers/ehci.c` | `ehci_recover_controller` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_release_dma` | `src/drivers/ehci.c` | `ehci_release_dma` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_reset_bulk_toggles` | `src/drivers/ehci.c` | `ehci_reset_bulk_toggles` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_reset_controller` | `src/drivers/ehci.c` | `ehci_reset_controller` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_reset_port` | `src/drivers/ehci.c` | `ehci_reset_port` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_set_port_empty` | `src/drivers/ehci.c` | `ehci_set_port_empty` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_start_controller` | `src/drivers/ehci.c` | `ehci_start_controller` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_submit_sync` | `src/drivers/ehci.c` | `ehci_submit_sync` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_timeout_ticks` | `src/drivers/ehci.c` | `ehci_timeout_ticks` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_validate_pci` | `src/drivers/ehci.c` | `ehci_validate_pci` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_validate_state` | `src/drivers/ehci.c` | `ehci_validate_state` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_wait_qtds` | `src/drivers/ehci.c` | `ehci_wait_qtds` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_write` | `src/drivers/ehci.c` | `ehci_write` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/font.c:font_get_face` | `src/drivers/font.c` | `font_get_face` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/font.c:font_get_face_glyph` | `src/drivers/font.c` | `font_get_face_glyph` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/font.c:font_get_glyph` | `src/drivers/font.c` | `font_get_glyph` | `drivers` | `COVERED` | 1 |
@@ -7405,6 +7406,7 @@
 | `qemu:tst6:stress:kernel` | `qemu` | `tst6` | `qemu:tst6:stress:kernel` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | paging, heap, SLAB, processos e threads estao READY | repetir ciclos deterministas de memoria e execucao sob teto obrigatorio | invariantes estaveis permanecem iguais e a primeira falha interrompe a suite | overflow, vazamento, deadlock, timeout, protocolo ou QEMU | alocacoes e objetos temporarios de cada ciclo em snapshot | devolver paginas, destruir objetos e registrar seed e iteracao |
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
+| `host:drivers:ehci` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar PCI, MMIO, alinhamento DMA, reset, enumeracao, descritores, controle, bulk, interrupt, timeout, recuperacao e limpeza | operacoes validas preservam invariantes do controlador e fixtures invalidas retornam erros canonicos sem I/O privilegiado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente PCI, MMIO, memoria DMA, relogio e dispositivos USB falsos no processo host | controlador falso resetado, paginas DMA devolvidas e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -8572,57 +8574,7 @@
 - `c:src/drivers/e1000.c:e1000_update_link`
 - `c:src/drivers/e1000.c:e1000_wait_reset`
 - `c:src/drivers/e1000.c:e1000_write`
-- `c:src/drivers/ehci.c:ehci_allocate_dma`
-- `c:src/drivers/ehci.c:ehci_bulk_transfer`
-- `c:src/drivers/ehci.c:ehci_bulk_transfer_locked`
-- `c:src/drivers/ehci.c:ehci_clear_sync`
-- `c:src/drivers/ehci.c:ehci_control_request`
-- `c:src/drivers/ehci.c:ehci_control_transfer`
-- `c:src/drivers/ehci.c:ehci_copy_status`
-- `c:src/drivers/ehci.c:ehci_deadline_expired`
-- `c:src/drivers/ehci.c:ehci_disable`
-- `c:src/drivers/ehci.c:ehci_enumerate_port`
-- `c:src/drivers/ehci.c:ehci_find`
-- `c:src/drivers/ehci.c:ehci_find_device_record`
-- `c:src/drivers/ehci.c:ehci_find_port_record`
-- `c:src/drivers/ehci.c:ehci_get_device`
-- `c:src/drivers/ehci.c:ehci_get_device_count`
-- `c:src/drivers/ehci.c:ehci_get_port`
-- `c:src/drivers/ehci.c:ehci_get_port_count`
-- `c:src/drivers/ehci.c:ehci_get_status`
-- `c:src/drivers/ehci.c:ehci_init`
-- `c:src/drivers/ehci.c:ehci_init_instance`
-- `c:src/drivers/ehci.c:ehci_initialize_ports`
-- `c:src/drivers/ehci.c:ehci_interrupt_arm`
-- `c:src/drivers/ehci.c:ehci_interrupt_cancel`
-- `c:src/drivers/ehci.c:ehci_interrupt_poll`
-- `c:src/drivers/ehci.c:ehci_interrupt_submit`
-- `c:src/drivers/ehci.c:ehci_irq_handler`
-- `c:src/drivers/ehci.c:ehci_link_schedule`
-- `c:src/drivers/ehci.c:ehci_make_device_id`
-- `c:src/drivers/ehci.c:ehci_map_mmio`
-- `c:src/drivers/ehci.c:ehci_parse_configuration`
-- `c:src/drivers/ehci.c:ehci_poll`
-- `c:src/drivers/ehci.c:ehci_qh_configure`
-- `c:src/drivers/ehci.c:ehci_qtd_actual`
-- `c:src/drivers/ehci.c:ehci_qtd_error`
-- `c:src/drivers/ehci.c:ehci_qtd_prepare`
-- `c:src/drivers/ehci.c:ehci_qtd_set_buffers`
-- `c:src/drivers/ehci.c:ehci_read`
-- `c:src/drivers/ehci.c:ehci_read_descriptor`
-- `c:src/drivers/ehci.c:ehci_recover_controller`
-- `c:src/drivers/ehci.c:ehci_release_dma`
-- `c:src/drivers/ehci.c:ehci_reset_bulk_toggles`
-- `c:src/drivers/ehci.c:ehci_reset_controller`
-- `c:src/drivers/ehci.c:ehci_reset_port`
-- `c:src/drivers/ehci.c:ehci_set_port_empty`
-- `c:src/drivers/ehci.c:ehci_start_controller`
-- `c:src/drivers/ehci.c:ehci_submit_sync`
-- `c:src/drivers/ehci.c:ehci_timeout_ticks`
-- `c:src/drivers/ehci.c:ehci_validate_pci`
-- `c:src/drivers/ehci.c:ehci_validate_state`
-- `c:src/drivers/ehci.c:ehci_wait_qtds`
-- `c:src/drivers/ehci.c:ehci_write`
+- `c:src/drivers/ehci.c:ehci_host_reset`
 - `c:src/drivers/idt.c:idt_enable_user_syscall`
 - `c:src/drivers/idt.c:idt_get_irq_status`
 - `c:src/drivers/idt.c:idt_get_shared_irq_handler_count`
