@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7198**
-- Casos de teste: **109**
+- Casos de teste: **110**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4337 |
+| `COVERED` | 4342 |
 | `MANUAL` | 0 |
-| `PENDING` | 2861 |
+| `PENDING` | 2856 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 109 |
+| `AUTOMATED` | 110 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -1886,11 +1886,11 @@
 | `c:src/boot/recovery_menu.c:recovery_menu_render_state` | `src/boot/recovery_menu.c` | `recovery_menu_render_state` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_menu.c:recovery_menu_run` | `src/boot/recovery_menu.c` | `recovery_menu_run` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_menu.c:recovery_menu_wait_f8` | `src/boot/recovery_menu.c` | `recovery_menu_wait_f8` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_runtime.c:kmemcpy` | `src/boot/recovery_runtime.c` | `kmemcpy` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_runtime.c:kmemset` | `src/boot/recovery_runtime.c` | `kmemset` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_runtime.c:kstrcmp` | `src/boot/recovery_runtime.c` | `kstrcmp` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_runtime.c:kstrlen` | `src/boot/recovery_runtime.c` | `kstrlen` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_runtime.c:log_print` | `src/boot/recovery_runtime.c` | `log_print` | `boot` | `PENDING` | 0 |
+| `c:src/boot/recovery_runtime.c:kmemcpy` | `src/boot/recovery_runtime.c` | `kmemcpy` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_runtime.c:kmemset` | `src/boot/recovery_runtime.c` | `kmemset` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_runtime.c:kstrcmp` | `src/boot/recovery_runtime.c` | `kstrcmp` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_runtime.c:kstrlen` | `src/boot/recovery_runtime.c` | `kstrlen` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_runtime.c:log_print` | `src/boot/recovery_runtime.c` | `log_print` | `boot` | `COVERED` | 1 |
 | `c:src/core/app_api.c:app_api_chdir` | `src/core/app_api.c` | `app_api_chdir` | `core` | `COVERED` | 1 |
 | `c:src/core/app_api.c:app_api_console_write` | `src/core/app_api.c` | `app_api_console_write` | `core` | `COVERED` | 1 |
 | `c:src/core/app_api.c:app_api_file_close` | `src/core/app_api.c` | `app_api_file_close` | `core` | `COVERED` | 1 |
@@ -7335,6 +7335,7 @@
 | `host:process:signals` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fixture de sinais com processos estaticos | mascaras, handlers, coalescencia, notificacao e invariantes validas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente processos estaticos e stubs de paging no processo host | estado de sinais restaurado e artefatos preservados |
 | `host:security:tls` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar politica, estados, validade, cadeia, SAN, pinning, rotacao, revogacao e autoteste TLS com relogio e RNG falsos | identidades validas sao aceitas, rejeicoes retornam motivo canonico e capacidades indisponiveis permanecem explicitas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado TLS, politica e dependencias falsas no processo host | estado TLS e dependencias falsas reiniciados e artefatos preservados |
 | `host:shell:command-utils` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar parsing, validacao de argumentos, normalizacao e formatacao | utilitarios aceitam entradas validas, rejeitam limites e formatam valores corretamente | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos de entrada, saida e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:shell:commands-vfs` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar grep com entrada fragmentada, comparacao sem diferenca de maiusculas, limites, erros de pipeline e o autoteste pipetest | linhas correspondentes sao encaminhadas, entradas invalidas e limites exibem diagnostico e pipetest preserva resultado e codigo canonico | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos de entrada, saida e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:core` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inicializar o Shell, encaminhar mouse, suspender terminal, concluir comando e restaurar a cena visual | entradas invalidas e inativas sao rejeitadas, scroll ativo e encaminhado, ciclo de terminal restaura prompt e redraw | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente callbacks estaticos do Shell, terminal, taskbar, desktop e aplicativos falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:dispatch` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar comandos desconhecidos, entrada normalizada, limite e comando conhecido | dispatcher retorna ERR_NULL para entrada nula e apresenta diagnostico deterministico para comando desconhecido | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e handlers falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:hosted` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | abrir, reabrir, desenhar, encaminhar tecla e mouse, fechar e rejeitar registro do Shell Classic hospedado | o Shell hospedado publica visibilidade, encaminha callbacks e restaura o estado quando o registro falha | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do adaptador, callbacks do Window Manager e terminal falso no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7392,7 +7393,7 @@
 | `qemu:tst6:stress:kernel` | `qemu` | `tst6` | `qemu:tst6:stress:kernel` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | paging, heap, SLAB, processos e threads estao READY | repetir ciclos deterministas de memoria e execucao sob teto obrigatorio | invariantes estaveis permanecem iguais e a primeira falha interrompe a suite | overflow, vazamento, deadlock, timeout, protocolo ou QEMU | alocacoes e objetos temporarios de cada ciclo em snapshot | devolver paginas, destruir objetos e registrar seed e iteracao |
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
-| `host:shell:commands-vfs` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar grep com entrada fragmentada, comparacao sem diferenca de maiusculas, limites, erros de pipeline e o autoteste pipetest | linhas correspondentes sao encaminhadas, entradas invalidas e limites exibem diagnostico e pipetest preserva resultado e codigo canonico | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos de entrada, saida e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:boot:recovery-runtime` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar preenchimento, copia, comprimento, comparacao e ponto de entrada de log sem executar o loader de recuperacao | utilitarios preservam bytes, limites e ordenacao lexicografica e o ponto de log aceita todos os niveis sem estado residual | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos no processo host; nenhuma imagem ou hardware de boot e acessada | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -7815,11 +7816,6 @@
 - `c:src/boot/recovery_menu.c:recovery_menu_render_state`
 - `c:src/boot/recovery_menu.c:recovery_menu_run`
 - `c:src/boot/recovery_menu.c:recovery_menu_wait_f8`
-- `c:src/boot/recovery_runtime.c:kmemcpy`
-- `c:src/boot/recovery_runtime.c:kmemset`
-- `c:src/boot/recovery_runtime.c:kstrcmp`
-- `c:src/boot/recovery_runtime.c:kstrlen`
-- `c:src/boot/recovery_runtime.c:log_print`
 - `c:src/core/app_loader.c:app_loader_build_launch_info`
 - `c:src/core/app_loader.c:app_loader_cancel_foreground`
 - `c:src/core/app_loader.c:app_loader_get_foreground_pid`

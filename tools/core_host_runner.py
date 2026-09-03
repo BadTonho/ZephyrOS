@@ -560,6 +560,12 @@ SHELL_COMMANDS_VFS_SOURCE_FILES = (
     ROOT / "src" / "shell" / "shell_command_utils.c",
     ROOT / "src" / "core" / "string.c",
 )
+RECOVERY_RUNTIME_RESULT_DIR = ROOT / "build" / "test-results" / "recovery-runtime-host"
+RECOVERY_RUNTIME_BINARY = ROOT / "build" / "tests" / "test_recovery_runtime_host.exe"
+RECOVERY_RUNTIME_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_recovery_runtime_host.c",
+    ROOT / "src" / "boot" / "recovery_runtime.c",
+)
 SOURCE_FILES = CORE_SOURCE_FILES
 
 
@@ -726,6 +732,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
     if case_id == "host:shell:commands-vfs":
         return (SHELL_COMMANDS_VFS_RESULT_DIR, SHELL_COMMANDS_VFS_BINARY,
                 SHELL_COMMANDS_VFS_SOURCE_FILES, "shell-commands-vfs-host")
+    if case_id == "host:boot:recovery-runtime":
+        return (RECOVERY_RUNTIME_RESULT_DIR, RECOVERY_RUNTIME_BINARY,
+                RECOVERY_RUNTIME_SOURCE_FILES, "recovery-runtime-host")
     raise ValueError(f"caso_host_invalido:{case_id}")
 
 
@@ -916,7 +925,8 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:shell:command-utils",
                                  "host:gui:display", "host:shell:core",
                                  "host:core:usb-transport", "host:gui:widgets",
-                                 "host:shell:commands-vfs"))
+                                 "host:shell:commands-vfs",
+                                 "host:boot:recovery-runtime"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
     return parser.parse_args()
