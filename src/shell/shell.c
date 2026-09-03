@@ -252,7 +252,6 @@ static void shell_redraw_after_overlay_close(void) {
     taskbar_draw();
 }
 
-
 void shell_runtime_finish_command(void) {
     shell_runtime_reset_input();
     if (shell_should_show_prompt()) shell_print_prompt();

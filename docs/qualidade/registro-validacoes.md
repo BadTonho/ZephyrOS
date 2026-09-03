@@ -4609,6 +4609,18 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   caminho freestanding de 32 bits. O catalogo foi sincronizado com 7.197
   superficies, 4.290 `COVERED`, 2.907 `PENDING` e 103 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
+- Incremento GUI/display e Shell/core concluido em 2026-09-03: foram criados
+  os casos host-only `host:gui:display` e `host:shell:core`, com fixtures
+  estaticas para VESA/display, cenas, taskbar, Window Manager, terminal,
+  mouse, inicializacao e conclusao de comando. As execucoes instrumentadas
+  terminaram `PASS`, sem enderecos desconhecidos ou ambiguos; `display.c`
+  ficou com oito superficies cobertas e `shell.c` sem superficies pendentes.
+  Foram executados `make q3check`, `make clean`, `make`, os 65 casos host-only
+  do registro, `make catalog-test` e 52 testes unitarios dos runners; todos
+  passaram. O catalogo registra 7.198 superficies, 4.308 `COVERED`, 2.890
+  `PENDING` e 106 casos. O fechamento integral, o gate estrito e a validacao
+  TST7 completa continuam pendentes.
+
 - Incremento Core/energia terminal concluido em 2026-09-03: o caso
   `host:core:power` passou a exercitar `power_reboot_commit`,
   `power_trigger_triple_fault` e `power_terminal_halt` por um seam exclusivo

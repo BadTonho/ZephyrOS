@@ -1852,6 +1852,9 @@ test-shell-command-utils-host: tools\core_host_runner.py tools\coverage_collecto
 test-display-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_display_host.c tests\catalog.json src\gui\display.c src\include\ui\display.h src\include\drivers\vesa.h src\include\ui\desktop.h src\include\ui\taskbar.h src\include\ui\wm.h src\include\core\errors.h src\include\core\log.h src\include\core\string.h src\core\string.c
 	python tools/core_host_runner.py --case host:gui:display --cc "$(HOST_CC)"
 
+test-shell-core-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_shell_host.c tests\catalog.json src\shell\shell.c src\include\apps\shell.h src\include\apps\shell_input.h src\include\apps\shell_job.h src\include\apps\shell_runtime.h src\include\core\app_loader.h src\include\core\errors.h src\include\core\log.h src\include\core\video.h src\include\drivers\mouse.h src\include\apps\guitest.h src\include\ui\appstore.h src\include\ui\desktop.h src\include\ui\filemanager.h src\include\ui\settings.h src\include\ui\taskbar.h src\include\ui\updater.h src\include\ui\wm.h
+	python tools/core_host_runner.py --case host:shell:core --cc "$(HOST_CC)"
+
 test-tst2-host: tools\tst2_host_runner.py tests\unit\test_protocol_core.c tests\unit\test_qemu_test_runner.py src\core\test_protocol_core.c src\core\test_protocol_core.h
 	python tools\tst2_host_runner.py --cc "$(HOST_CC)"
 

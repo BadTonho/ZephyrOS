@@ -513,6 +513,26 @@ hardware. O relatorio fica em `build/test-results/shell-hosted-host/`:
 make test-shell-hosted-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-display-host` exercita as metricas e escalas do display com VESA,
+backbuffer, desktop, taskbar e Window Manager falsos. A fixture cobre
+disponibilidade, limites de resolucao, parsing, conversao de pixels, refresh de
+cenas e rollback de reflow; o relatorio fica em
+`build/test-results/display-host/`:
+
+```text
+make test-display-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O caso `test-shell-core-host` exercita o ciclo de vida central do Shell com
+servicos falsos. A fixture cobre inicializacao, mouse/scroll, suspensao do
+terminal, conclusao de comando e redraw pelo fluxo de `shell_handle_key`, sem
+hardware ou GUI real. O relatorio fica em
+`build/test-results/shell-core-host/`:
+
+```text
+make test-shell-core-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O caso `test-shell-command-utils-host` exercita os utilitarios de comandos do
 Shell com parsing de tokens e argumentos, comparacao de subcomandos,
 normalizacao para maiusculas, conversao numerica, limites, entradas invalidas
