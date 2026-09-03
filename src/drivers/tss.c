@@ -32,7 +32,13 @@ static void tss_load_gdt(uint32_t base, uint32_t limit) {
     gdt[5] = tss_descriptor;
 
     pointer.limit = sizeof(gdt) - 1;
+#if defined(ZEPHYROS_HOST_TEST)
+    pointer.base = 0U;
+    (void)pointer;
+#else
     pointer.base = (uint32_t)&gdt;
+#endif
+#if !defined(ZEPHYROS_HOST_TEST)
     asm volatile("lgdt %0" : : "m"(pointer) : "memory");
     asm volatile(
         "mov $0x10, %%ax\n"
@@ -42,13 +48,18 @@ static void tss_load_gdt(uint32_t base, uint32_t limit) {
         "mov %%ax, %%gs\n"
         "mov %%ax, %%ss\n"
         : : : "ax", "memory");
+#endif
 }
 
 void tss_init(void) {
     LOG_INFO("THRD", "Inicializando TSS");
     tss_ready = 0;
 
+#if defined(ZEPHYROS_HOST_TEST)
+    uint32_t base = 0U;
+#else
     uint32_t base = (uint32_t)&tss;
+#endif
     uint32_t limit = sizeof(tss_entry_t) - 1;
 
     kmemset(&tss, 0, sizeof(tss_entry_t));
