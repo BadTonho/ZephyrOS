@@ -4514,3 +4514,16 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   Assembly original. O catalogo registra 7.196 superficies, 4.244 `COVERED`,
   2.952 `PENDING` e 96 casos. O fechamento integral, o gate estrito e a
   validacao TST7 completa continuam pendentes.
+
+- Concluida em: 2026-09-02
+
+  Incremento Drivers/Serial: foi criado o caso host-only `host:drivers:serial` e
+  o alvo `make test-serial-host` com portas UART simuladas, flags de interrupcao
+  inertes no host e cobertura dinamica. A fixture exercitou inicializacao COM1,
+  leitura sem dados e com dados, fila de transmissao, filtragem de bytes,
+  sequencias ANSI, estado do transmissor e limites de `flush`. A execucao
+  terminou `PASS`, sem enderecos desconhecidos ou ambiguos, resolvendo as duas
+  superficies pendentes de `src/drivers/serial.c`; o build freestanding preserva
+  as operacoes de portas e flags originais. O catalogo registra 7.196
+  superficies, 4.251 `COVERED`, 2.945 `PENDING` e 97 casos. O fechamento
+  integral, o gate estrito e a validacao TST7 completa continuam pendentes.

@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7196**
-- Casos de teste: **96**
+- Casos de teste: **97**
 - Superfícies aposentadas: **22**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4249 |
+| `COVERED` | 4251 |
 | `MANUAL` | 0 |
-| `PENDING` | 2947 |
+| `PENDING` | 2945 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 96 |
+| `AUTOMATED` | 97 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -985,11 +985,11 @@
 | `api:src/include/drivers/rtl8811cu.h:rtl8811cu_scan` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_scan` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/rtl8811cu.h:rtl8811cu_state_name` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_state_name` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/rtl8811cu.h:rtl8811cu_validate_state` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_validate_state` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/serial.h:serial_flush` | `src/include/drivers/serial.h` | `serial_flush` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/serial.h:serial_init` | `src/include/drivers/serial.h` | `serial_init` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/serial.h:serial_is_ready` | `src/include/drivers/serial.h` | `serial_is_ready` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/serial.h:serial_read_byte` | `src/include/drivers/serial.h` | `serial_read_byte` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/serial.h:serial_write_text` | `src/include/drivers/serial.h` | `serial_write_text` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/serial.h:serial_flush` | `src/include/drivers/serial.h` | `serial_flush` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/serial.h:serial_init` | `src/include/drivers/serial.h` | `serial_init` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/serial.h:serial_is_ready` | `src/include/drivers/serial.h` | `serial_is_ready` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/serial.h:serial_read_byte` | `src/include/drivers/serial.h` | `serial_read_byte` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/serial.h:serial_write_text` | `src/include/drivers/serial.h` | `serial_write_text` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/speaker.h:speaker_beep` | `src/include/drivers/speaker.h` | `speaker_beep` | `drivers` | `COVERED` | 1 |
 | `api:src/include/drivers/speaker.h:speaker_init` | `src/include/drivers/speaker.h` | `speaker_init` | `drivers` | `COVERED` | 1 |
 | `api:src/include/drivers/speaker.h:speaker_off` | `src/include/drivers/speaker.h` | `speaker_off` | `drivers` | `COVERED` | 1 |
@@ -4360,19 +4360,19 @@
 | `c:src/drivers/rtl8811cu.c:rtl8811cu_service_pending` | `src/drivers/rtl8811cu.c` | `rtl8811cu_service_pending` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/rtl8811cu.c:rtl8811cu_state_name` | `src/drivers/rtl8811cu.c` | `rtl8811cu_state_name` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/rtl8811cu.c:rtl8811cu_validate_state` | `src/drivers/rtl8811cu.c` | `rtl8811cu_validate_state` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/serial.c:serial_byte_allowed` | `src/drivers/serial.c` | `serial_byte_allowed` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/serial.c:serial_flush` | `src/drivers/serial.c` | `serial_flush` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/serial.c:serial_flush_locked` | `src/drivers/serial.c` | `serial_flush_locked` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/serial.c:serial_inb` | `src/drivers/serial.c` | `serial_inb` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/serial.c:serial_init` | `src/drivers/serial.c` | `serial_init` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/serial.c:serial_is_ready` | `src/drivers/serial.c` | `serial_is_ready` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/serial.c:serial_next_index` | `src/drivers/serial.c` | `serial_next_index` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/serial.c:serial_outb` | `src/drivers/serial.c` | `serial_outb` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/serial.c:serial_prepare_byte` | `src/drivers/serial.c` | `serial_prepare_byte` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/serial.c:serial_read_byte` | `src/drivers/serial.c` | `serial_read_byte` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/serial.c:serial_restore_interrupts` | `src/drivers/serial.c` | `serial_restore_interrupts` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/serial.c:serial_suspend_interrupts` | `src/drivers/serial.c` | `serial_suspend_interrupts` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/serial.c:serial_write_text` | `src/drivers/serial.c` | `serial_write_text` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/serial.c:serial_byte_allowed` | `src/drivers/serial.c` | `serial_byte_allowed` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/serial.c:serial_flush` | `src/drivers/serial.c` | `serial_flush` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/serial.c:serial_flush_locked` | `src/drivers/serial.c` | `serial_flush_locked` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/serial.c:serial_inb` | `src/drivers/serial.c` | `serial_inb` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/serial.c:serial_init` | `src/drivers/serial.c` | `serial_init` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/serial.c:serial_is_ready` | `src/drivers/serial.c` | `serial_is_ready` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/serial.c:serial_next_index` | `src/drivers/serial.c` | `serial_next_index` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/serial.c:serial_outb` | `src/drivers/serial.c` | `serial_outb` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/serial.c:serial_prepare_byte` | `src/drivers/serial.c` | `serial_prepare_byte` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/serial.c:serial_read_byte` | `src/drivers/serial.c` | `serial_read_byte` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/serial.c:serial_restore_interrupts` | `src/drivers/serial.c` | `serial_restore_interrupts` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/serial.c:serial_suspend_interrupts` | `src/drivers/serial.c` | `serial_suspend_interrupts` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/serial.c:serial_write_text` | `src/drivers/serial.c` | `serial_write_text` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/speaker.c:inb` | `src/drivers/speaker.c` | `inb` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/speaker.c:outb` | `src/drivers/speaker.c` | `outb` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/speaker.c:speaker_beep` | `src/drivers/speaker.c` | `speaker_beep` | `drivers` | `COVERED` | 1 |
@@ -7302,7 +7302,9 @@
 | `host:core:wifi-manager` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inventariar candidatos PCI e USB, consultar interfaces, executar scan e conexao aberta com backends falsos | identificadores, estados, contadores, limites, indisponibilidade e recuperacao preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente fixtures estaticos PCI, USB e RTL8811CU no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:workqueue` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fixture de workqueue com espera controlada | autoteste, callbacks, filas, prioridades, limites e limpeza validos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico da workqueue e callbacks falsos no processo host | trabalhos destruidos, filas vazias, fallback restaurado e artefatos preservados |
 | `host:drivers:font` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inicializar o driver de fonte e consultar as dimensoes publicadas | font_init e idempotente e as dimensoes publicadas permanecem 8x16 | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabela estatica de fontes e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:drivers:rng` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver RNG real com capacidades e resultados RDRAND simulados | capacidade, estado, bytes gerados, falhas de hardware e codigos de erro preservam o contrato sem executar instrucoes privilegiadas no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado RNG e valores de entropia estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:rtc-status` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | consultar o estado inicial do RTC com destinos valido e nulo | rtc_get_status rejeita destino nulo e publica snapshot inicial estavel | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do RTC e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:drivers:serial` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver serial real com registradores UART simulados | inicializacao, leitura, filtragem, enfileiramento e flush respeitam o contrato sem acessar portas I/O reais | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado UART e fila de transmissao do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:usb-hid` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enumerar teclados e mouses UHCI, enviar relatorios Boot, publicar eventos de entrada e exercitar refresh, remocao e limites | parsing valido, rejeicao de reports corrompidos, estados, contadores, cancelamento e indisponibilidade preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente dispositivos USB HID e callbacks de entrada estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:usb-msc` | `host` | `host-only-readonly` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enumerar dispositivo MSC UHCI, executar inquiry, TUR, capacity e READ10 simulados, validar block readonly e exercitar recuperacao | protocolo BOT/SCSI, identificadores, capacidade, leituras, estados, limites e falhas preservam o contrato sem escrita | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente transporte USB MSC, registro de bloco e buffers estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:memory:memory` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar inicializacao E820, alocacao e liberacao PMM por zona, heap, alinhamento e estatisticas | PMM e heap rejeitam limites invalidos, contabilizam falhas e restauram todas as paginas e blocos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente mapa E820, bitmap PMM e heap estaticos no processo host | paginas e blocos liberados, estatisticas restauradas e artefatos preservados |
@@ -7377,7 +7379,6 @@
 | `qemu:tst6:stress:kernel` | `qemu` | `tst6` | `qemu:tst6:stress:kernel` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | paging, heap, SLAB, processos e threads estao READY | repetir ciclos deterministas de memoria e execucao sob teto obrigatorio | invariantes estaveis permanecem iguais e a primeira falha interrompe a suite | overflow, vazamento, deadlock, timeout, protocolo ou QEMU | alocacoes e objetos temporarios de cada ciclo em snapshot | devolver paginas, destruir objetos e registrar seed e iteracao |
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
-| `host:drivers:rng` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver RNG real com capacidades e resultados RDRAND simulados | capacidade, estado, bytes gerados, falhas de hardware e codigos de erro preservam o contrato sem executar instrucoes privilegiadas no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado RNG e valores de entropia estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -8814,8 +8815,6 @@
 - `c:src/drivers/rtl8811cu.c:rtl8811cu_service_pending`
 - `c:src/drivers/rtl8811cu.c:rtl8811cu_state_name`
 - `c:src/drivers/rtl8811cu.c:rtl8811cu_validate_state`
-- `c:src/drivers/serial.c:serial_init`
-- `c:src/drivers/serial.c:serial_read_byte`
 - `c:src/drivers/speaker.c:speaker_init`
 - `c:src/drivers/speaker.c:speaker_play_melody`
 - `c:src/drivers/tss.c:tss_init`

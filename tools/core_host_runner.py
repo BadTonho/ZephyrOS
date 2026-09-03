@@ -462,6 +462,12 @@ RNG_SOURCE_FILES = (
     ROOT / "src" / "drivers" / "rng.c",
     ROOT / "src" / "core" / "string.c",
 )
+SERIAL_RESULT_DIR = ROOT / "build" / "test-results" / "serial-host"
+SERIAL_BINARY = ROOT / "build" / "tests" / "test_serial_host.exe"
+SERIAL_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_serial_host.c",
+    ROOT / "src" / "drivers" / "serial.c",
+)
 SHELL_INPUT_RESULT_DIR = ROOT / "build" / "test-results" / "shell-input-host"
 SHELL_INPUT_BINARY = ROOT / "build" / "tests" / "test_shell_input_host.exe"
 SHELL_INPUT_SOURCE_FILES = (
@@ -605,6 +611,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return BMP_RESULT_DIR, BMP_BINARY, BMP_SOURCE_FILES, "bmp-host"
     if case_id == "host:drivers:rng":
         return RNG_RESULT_DIR, RNG_BINARY, RNG_SOURCE_FILES, "rng-host"
+    if case_id == "host:drivers:serial":
+        return SERIAL_RESULT_DIR, SERIAL_BINARY, SERIAL_SOURCE_FILES, "serial-host"
     if case_id == "host:shell:input":
         return (SHELL_INPUT_RESULT_DIR, SHELL_INPUT_BINARY,
                 SHELL_INPUT_SOURCE_FILES, "shell-input-host")
@@ -790,6 +798,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:storage:wav",
                                  "host:storage:bmp",
                                  "host:drivers:rng",
+                                 "host:drivers:serial",
                                  "host:shell:input", "host:shell:command-utils"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
