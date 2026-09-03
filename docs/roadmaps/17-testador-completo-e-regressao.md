@@ -1376,6 +1376,19 @@ pendente.
   superficies, 4.261 `COVERED`, 2.935 `PENDING` e 99 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Drivers/Keyboard concluido em 2026-09-02: foi criado o caso
+  host-only `host:drivers:keyboard` com controlador PS/2, IRQ, fila de eventos
+  e portas simulados e instrumentacao dinamica. A fixture exercitou tabelas de
+  scancode, teclas ABNT2, estado antes da inicializacao, registro de filtros,
+  inicializacao, metricas, reset e falha de dependencia. `make
+  test-keyboard-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` terminou `PASS`,
+  cobrindo as sete superficies pendentes de `src/drivers/keyboard.c`, sem
+  enderecos desconhecidos ou ambiguos. O caminho freestanding preserva CLI,
+  STI, I/O e espera do controlador; no host, essas operacoes sao neutralizadas
+  somente pela fixture. O catalogo registra 7.196 superficies, 4.268
+  `COVERED`, 2.928 `PENDING` e 100 casos. O fechamento integral, o gate estrito
+  e a validacao TST7 completa continuam pendentes.
+
 - Incremento Core/wifi_manager concluido em 2026-09-02: foi criado o caso
   host-only `host:core:wifi-manager` com fixtures estaticos de PCI, USB e
   RTL8811CU. A fixture exercitou formatacao e busca case-insensitive de IDs,

@@ -4562,3 +4562,15 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   validado com 7.196 superficies, 4.261 `COVERED`, 2.935 `PENDING` e 99 casos.
   O fechamento integral, o gate estrito e a validacao TST7 completa continuam
   pendentes.
+
+- Incremento Drivers/Keyboard concluido em 2026-09-02: foi criado o caso
+  host-only `host:drivers:keyboard` e o alvo `make test-keyboard-host` com
+  controlador PS/2, IRQ, fila de eventos e portas simulados e cobertura
+  dinamica. A fixture exercitou tabelas de scancode, teclas ABNT2, estado antes
+  da inicializacao, filtros, inicializacao, metricas, reset e falha de
+  dependencia. A execucao terminou `PASS`, sem enderecos desconhecidos ou
+  ambiguos, resolvendo as sete superficies pendentes de `src/drivers/keyboard.c`;
+  o caminho freestanding preserva CLI, STI, I/O e espera do controlador, e o
+  host usa somente stubs estaticos. O catalogo registra 7.196 superficies,
+  4.268 `COVERED`, 2.928 `PENDING` e 100 casos. O fechamento integral, o gate
+  estrito e a validacao TST7 completa continuam pendentes.

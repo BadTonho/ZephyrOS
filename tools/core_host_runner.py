@@ -481,6 +481,12 @@ SPEAKER_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_speaker_host.c",
     ROOT / "src" / "drivers" / "speaker.c",
 )
+KEYBOARD_RESULT_DIR = ROOT / "build" / "test-results" / "keyboard-host"
+KEYBOARD_BINARY = ROOT / "build" / "tests" / "test_keyboard_host.exe"
+KEYBOARD_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_keyboard_host.c",
+    ROOT / "src" / "drivers" / "keyboard.c",
+)
 SHELL_INPUT_RESULT_DIR = ROOT / "build" / "test-results" / "shell-input-host"
 SHELL_INPUT_BINARY = ROOT / "build" / "tests" / "test_shell_input_host.exe"
 SHELL_INPUT_SOURCE_FILES = (
@@ -630,6 +636,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return TSS_RESULT_DIR, TSS_BINARY, TSS_SOURCE_FILES, "tss-host"
     if case_id == "host:drivers:speaker":
         return SPEAKER_RESULT_DIR, SPEAKER_BINARY, SPEAKER_SOURCE_FILES, "speaker-host"
+    if case_id == "host:drivers:keyboard":
+        return KEYBOARD_RESULT_DIR, KEYBOARD_BINARY, KEYBOARD_SOURCE_FILES, "keyboard-host"
     if case_id == "host:shell:input":
         return (SHELL_INPUT_RESULT_DIR, SHELL_INPUT_BINARY,
                 SHELL_INPUT_SOURCE_FILES, "shell-input-host")
@@ -818,6 +826,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:drivers:serial",
                                  "host:drivers:tss",
                                  "host:drivers:speaker",
+                                 "host:drivers:keyboard",
                                  "host:shell:input", "host:shell:command-utils"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)

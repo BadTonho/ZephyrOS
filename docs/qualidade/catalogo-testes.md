@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7196**
-- Casos de teste: **99**
+- Casos de teste: **100**
 - Superfícies aposentadas: **22**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4261 |
+| `COVERED` | 4268 |
 | `MANUAL` | 0 |
-| `PENDING` | 2935 |
+| `PENDING` | 2928 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 99 |
+| `AUTOMATED` | 100 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -432,15 +432,15 @@
 | `api:src/include/core/irq_deferred.h:irq_deferred_set_notifier` | `src/include/core/irq_deferred.h` | `irq_deferred_set_notifier` | `core` | `COVERED` | 4 |
 | `api:src/include/core/irq_deferred.h:irq_deferred_validate_state` | `src/include/core/irq_deferred.h` | `irq_deferred_validate_state` | `core` | `COVERED` | 4 |
 | `api:src/include/core/irq_deferred.h:irq_deferred_work_init` | `src/include/core/irq_deferred.h` | `irq_deferred_work_init` | `core` | `COVERED` | 4 |
-| `api:src/include/core/keyboard.h:keyboard_controller_reset` | `src/include/core/keyboard.h` | `keyboard_controller_reset` | `core` | `COVERED` | 3 |
-| `api:src/include/core/keyboard.h:keyboard_controller_reset_available` | `src/include/core/keyboard.h` | `keyboard_controller_reset_available` | `core` | `COVERED` | 3 |
-| `api:src/include/core/keyboard.h:keyboard_get_metrics` | `src/include/core/keyboard.h` | `keyboard_get_metrics` | `core` | `COVERED` | 3 |
-| `api:src/include/core/keyboard.h:keyboard_handler` | `src/include/core/keyboard.h` | `keyboard_handler` | `core` | `COVERED` | 3 |
-| `api:src/include/core/keyboard.h:keyboard_init` | `src/include/core/keyboard.h` | `keyboard_init` | `core` | `COVERED` | 3 |
-| `api:src/include/core/keyboard.h:keyboard_process_events` | `src/include/core/keyboard.h` | `keyboard_process_events` | `core` | `COVERED` | 3 |
-| `api:src/include/core/keyboard.h:keyboard_scancode_to_ascii` | `src/include/core/keyboard.h` | `keyboard_scancode_to_ascii` | `core` | `COVERED` | 3 |
-| `api:src/include/core/keyboard.h:keyboard_scancode_to_ascii_shifted` | `src/include/core/keyboard.h` | `keyboard_scancode_to_ascii_shifted` | `core` | `COVERED` | 3 |
-| `api:src/include/core/keyboard.h:keyboard_set_focus_cancel_filter` | `src/include/core/keyboard.h` | `keyboard_set_focus_cancel_filter` | `core` | `COVERED` | 3 |
+| `api:src/include/core/keyboard.h:keyboard_controller_reset` | `src/include/core/keyboard.h` | `keyboard_controller_reset` | `core` | `COVERED` | 4 |
+| `api:src/include/core/keyboard.h:keyboard_controller_reset_available` | `src/include/core/keyboard.h` | `keyboard_controller_reset_available` | `core` | `COVERED` | 4 |
+| `api:src/include/core/keyboard.h:keyboard_get_metrics` | `src/include/core/keyboard.h` | `keyboard_get_metrics` | `core` | `COVERED` | 4 |
+| `api:src/include/core/keyboard.h:keyboard_handler` | `src/include/core/keyboard.h` | `keyboard_handler` | `core` | `COVERED` | 4 |
+| `api:src/include/core/keyboard.h:keyboard_init` | `src/include/core/keyboard.h` | `keyboard_init` | `core` | `COVERED` | 4 |
+| `api:src/include/core/keyboard.h:keyboard_process_events` | `src/include/core/keyboard.h` | `keyboard_process_events` | `core` | `COVERED` | 4 |
+| `api:src/include/core/keyboard.h:keyboard_scancode_to_ascii` | `src/include/core/keyboard.h` | `keyboard_scancode_to_ascii` | `core` | `COVERED` | 4 |
+| `api:src/include/core/keyboard.h:keyboard_scancode_to_ascii_shifted` | `src/include/core/keyboard.h` | `keyboard_scancode_to_ascii_shifted` | `core` | `COVERED` | 4 |
+| `api:src/include/core/keyboard.h:keyboard_set_focus_cancel_filter` | `src/include/core/keyboard.h` | `keyboard_set_focus_cancel_filter` | `core` | `COVERED` | 4 |
 | `api:src/include/core/log.h:log_clear_buffer` | `src/include/core/log.h` | `log_clear_buffer` | `core` | `COVERED` | 31 |
 | `api:src/include/core/log.h:log_copy_recent` | `src/include/core/log.h` | `log_copy_recent` | `core` | `COVERED` | 31 |
 | `api:src/include/core/log.h:log_get_buffer` | `src/include/core/log.h` | `log_get_buffer` | `core` | `COVERED` | 31 |
@@ -4204,14 +4204,14 @@
 | `c:src/drivers/idt.c:isr_handler` | `src/drivers/idt.c` | `isr_handler` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/idt.c:outb` | `src/drivers/idt.c` | `outb` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/idt.c:pic_remap` | `src/drivers/idt.c` | `pic_remap` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/keyboard.c:inb` | `src/drivers/keyboard.c` | `inb` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/keyboard.c:inb` | `src/drivers/keyboard.c` | `inb` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/keyboard.c:keyboard_bottom_half` | `src/drivers/keyboard.c` | `keyboard_bottom_half` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/keyboard.c:keyboard_controller_reset` | `src/drivers/keyboard.c` | `keyboard_controller_reset` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/keyboard.c:keyboard_controller_reset_available` | `src/drivers/keyboard.c` | `keyboard_controller_reset_available` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/keyboard.c:keyboard_controller_reset` | `src/drivers/keyboard.c` | `keyboard_controller_reset` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/keyboard.c:keyboard_controller_reset_available` | `src/drivers/keyboard.c` | `keyboard_controller_reset_available` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/keyboard.c:keyboard_enqueue_scancodes` | `src/drivers/keyboard.c` | `keyboard_enqueue_scancodes` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/keyboard.c:keyboard_get_metrics` | `src/drivers/keyboard.c` | `keyboard_get_metrics` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/keyboard.c:keyboard_get_metrics` | `src/drivers/keyboard.c` | `keyboard_get_metrics` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/keyboard.c:keyboard_handler` | `src/drivers/keyboard.c` | `keyboard_handler` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/keyboard.c:keyboard_init` | `src/drivers/keyboard.c` | `keyboard_init` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/keyboard.c:keyboard_init` | `src/drivers/keyboard.c` | `keyboard_init` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/keyboard.c:keyboard_input_sink` | `src/drivers/keyboard.c` | `keyboard_input_sink` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/keyboard.c:keyboard_irq_restore` | `src/drivers/keyboard.c` | `keyboard_irq_restore` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/keyboard.c:keyboard_irq_save` | `src/drivers/keyboard.c` | `keyboard_irq_save` | `drivers` | `COVERED` | 3 |
@@ -4219,11 +4219,11 @@
 | `c:src/drivers/keyboard.c:keyboard_process_raw_byte` | `src/drivers/keyboard.c` | `keyboard_process_raw_byte` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/keyboard.c:keyboard_ps2_usage` | `src/drivers/keyboard.c` | `keyboard_ps2_usage` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/keyboard.c:keyboard_raw_enqueue` | `src/drivers/keyboard.c` | `keyboard_raw_enqueue` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/keyboard.c:keyboard_scancode_to_ascii` | `src/drivers/keyboard.c` | `keyboard_scancode_to_ascii` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/keyboard.c:keyboard_scancode_to_ascii_shifted` | `src/drivers/keyboard.c` | `keyboard_scancode_to_ascii_shifted` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/keyboard.c:keyboard_set_focus_cancel_filter` | `src/drivers/keyboard.c` | `keyboard_set_focus_cancel_filter` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/keyboard.c:keyboard_scancode_to_ascii` | `src/drivers/keyboard.c` | `keyboard_scancode_to_ascii` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/keyboard.c:keyboard_scancode_to_ascii_shifted` | `src/drivers/keyboard.c` | `keyboard_scancode_to_ascii_shifted` | `drivers` | `COVERED` | 4 |
+| `c:src/drivers/keyboard.c:keyboard_set_focus_cancel_filter` | `src/drivers/keyboard.c` | `keyboard_set_focus_cancel_filter` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/keyboard.c:keyboard_usage_scancode` | `src/drivers/keyboard.c` | `keyboard_usage_scancode` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/keyboard.c:outb` | `src/drivers/keyboard.c` | `outb` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/keyboard.c:outb` | `src/drivers/keyboard.c` | `outb` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/mouse.c:draw_cursor` | `src/drivers/mouse.c` | `draw_cursor` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/mouse.c:erase_cursor` | `src/drivers/mouse.c` | `erase_cursor` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/mouse.c:inb` | `src/drivers/mouse.c` | `inb` | `drivers` | `PENDING` | 0 |
@@ -7302,6 +7302,7 @@
 | `host:core:wifi-manager` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inventariar candidatos PCI e USB, consultar interfaces, executar scan e conexao aberta com backends falsos | identificadores, estados, contadores, limites, indisponibilidade e recuperacao preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente fixtures estaticos PCI, USB e RTL8811CU no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:workqueue` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fixture de workqueue com espera controlada | autoteste, callbacks, filas, prioridades, limites e limpeza validos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico da workqueue e callbacks falsos no processo host | trabalhos destruidos, filas vazias, fallback restaurado e artefatos preservados |
 | `host:drivers:font` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inicializar o driver de fonte e consultar as dimensoes publicadas | font_init e idempotente e as dimensoes publicadas permanecem 8x16 | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabela estatica de fontes e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:drivers:keyboard` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver teclado real com controlador PS/2 e dependencias registradas simulados | scancodes, inicializacao, filtros, reset, metricas e falhas preservam o contrato sem executar CLI, STI ou I/O privilegiado no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente filas, metricas e portas estaticas do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:rng` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver RNG real com capacidades e resultados RDRAND simulados | capacidade, estado, bytes gerados, falhas de hardware e codigos de erro preservam o contrato sem executar instrucoes privilegiadas no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado RNG e valores de entropia estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:rtc-status` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | consultar o estado inicial do RTC com destinos valido e nulo | rtc_get_status rejeita destino nulo e publica snapshot inicial estavel | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do RTC e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:serial` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver serial real com registradores UART simulados | inicializacao, leitura, filtragem, enfileiramento e flush respeitam o contrato sem acessar portas I/O reais | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado UART e fila de transmissao do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -8709,13 +8710,6 @@
 - `c:src/drivers/idt.c:idt_unmask_irq`
 - `c:src/drivers/idt.c:inb`
 - `c:src/drivers/idt.c:pic_remap`
-- `c:src/drivers/keyboard.c:keyboard_controller_reset`
-- `c:src/drivers/keyboard.c:keyboard_controller_reset_available`
-- `c:src/drivers/keyboard.c:keyboard_get_metrics`
-- `c:src/drivers/keyboard.c:keyboard_init`
-- `c:src/drivers/keyboard.c:keyboard_scancode_to_ascii`
-- `c:src/drivers/keyboard.c:keyboard_set_focus_cancel_filter`
-- `c:src/drivers/keyboard.c:outb`
 - `c:src/drivers/mouse.c:inb`
 - `c:src/drivers/mouse.c:mouse_accumulate_delta`
 - `c:src/drivers/mouse.c:mouse_apply_movement`
