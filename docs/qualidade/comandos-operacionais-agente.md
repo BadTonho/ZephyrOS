@@ -79,6 +79,7 @@ make test-tls-host
 make test-tls-client-host
 make test-mediaplayer-host
 make test-shell-job-host
+make test-shell-pipeline-host
 make test-socket-runtime-host
 make test-sysfs-host
 ```
@@ -107,6 +108,12 @@ relogio, teclado, IPC, video e runtime falsos. Ele exercita sucesso, falha,
 cancelamento, drenagem, timeout, deadlines, wakeups, eventos bloqueados,
 geracoes obsoletas e o comando `job status`; seu relatorio fica em
 `build/test-results/shell-job-host/`.
+
+O caso `test-shell-pipeline-host` compila o executor de pipelines do Shell com
+VFS, threads, video e logs falsos. Ele exercita parsing, limites de comandos e
+destinos, pipes, leitura, escrita, redirecionamento, autoteste de pipe,
+workers, falhas de criacao e limpeza; seu relatorio fica em
+`build/test-results/shell-pipeline-host/`.
 
 O caso `test-crypto-host` valida os contratos SHA-256, SHA-512 e Ed25519,
 incluindo o ajuste de scalar para `uint32_t` e a rejeicao de entradas invalidas.

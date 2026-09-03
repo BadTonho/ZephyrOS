@@ -5071,3 +5071,19 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `python tools/test_catalog.py render`. O catalogo registra 7.219
   superficies, 4.955 `COVERED`, 2.264 `PENDING` e 131 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
+
+- Incremento Shell/pipeline concluido em 2026-09-03. Foi criado o caso
+  host-only `host:shell:pipeline` com `make test-shell-pipeline-host`,
+  compilando `src/shell/shell_pipeline.c` real com VFS, threads, video e logs
+  falsos. A fixture passou por parsing, limites, pipes, leitura, escrita,
+  redirecionamento, autoteste de pipe, workers, falhas de criacao, erros de
+  I/O, overflow e limpeza.
+
+  `make test-shell-pipeline-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
+  terminou `PASS` com warnings tratados como erro. O relatorio
+  `build/test-results/shell-pipeline-host/coverage.json` resolveu as 26
+  superficies C do modulo, com `unknown_addresses=[]` e
+  `ambiguous_symbols=[]`. Tambem passaram `python tools/test_catalog.py sync`
+  e `python tools/test_catalog.py render`. O catalogo registra 7.219
+  superficies, 4.977 `COVERED`, 2.242 `PENDING` e 132 casos. O fechamento
+  integral, o gate estrito e a validacao TST7 completa continuam pendentes.

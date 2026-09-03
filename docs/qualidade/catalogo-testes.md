@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7219**
-- Casos de teste: **131**
+- Casos de teste: **132**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4955 |
+| `COVERED` | 4977 |
 | `MANUAL` | 0 |
-| `PENDING` | 2264 |
+| `PENDING` | 2242 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 131 |
+| `AUTOMATED` | 132 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -147,12 +147,12 @@
 | `api:src/include/apps/shell_job.h:shell_network_start_job` | `src/include/apps/shell_job.h` | `shell_network_start_job` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/shell_job.h:shell_packages_start_job` | `src/include/apps/shell_job.h` | `shell_packages_start_job` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/shell_job.h:shell_storage_start_job` | `src/include/apps/shell_job.h` | `shell_storage_start_job` | `apps` | `PENDING` | 0 |
-| `api:src/include/apps/shell_pipeline.h:shell_pipeline_is_active` | `src/include/apps/shell_pipeline.h` | `shell_pipeline_is_active` | `apps` | `COVERED` | 5 |
-| `api:src/include/apps/shell_pipeline.h:shell_pipeline_print_num` | `src/include/apps/shell_pipeline.h` | `shell_pipeline_print_num` | `apps` | `COVERED` | 5 |
-| `api:src/include/apps/shell_pipeline.h:shell_pipeline_read` | `src/include/apps/shell_pipeline.h` | `shell_pipeline_read` | `apps` | `COVERED` | 5 |
-| `api:src/include/apps/shell_pipeline.h:shell_pipeline_self_test` | `src/include/apps/shell_pipeline.h` | `shell_pipeline_self_test` | `apps` | `COVERED` | 5 |
-| `api:src/include/apps/shell_pipeline.h:shell_pipeline_try_execute` | `src/include/apps/shell_pipeline.h` | `shell_pipeline_try_execute` | `apps` | `COVERED` | 5 |
-| `api:src/include/apps/shell_pipeline.h:shell_pipeline_write` | `src/include/apps/shell_pipeline.h` | `shell_pipeline_write` | `apps` | `COVERED` | 5 |
+| `api:src/include/apps/shell_pipeline.h:shell_pipeline_is_active` | `src/include/apps/shell_pipeline.h` | `shell_pipeline_is_active` | `apps` | `COVERED` | 6 |
+| `api:src/include/apps/shell_pipeline.h:shell_pipeline_print_num` | `src/include/apps/shell_pipeline.h` | `shell_pipeline_print_num` | `apps` | `COVERED` | 6 |
+| `api:src/include/apps/shell_pipeline.h:shell_pipeline_read` | `src/include/apps/shell_pipeline.h` | `shell_pipeline_read` | `apps` | `COVERED` | 6 |
+| `api:src/include/apps/shell_pipeline.h:shell_pipeline_self_test` | `src/include/apps/shell_pipeline.h` | `shell_pipeline_self_test` | `apps` | `COVERED` | 6 |
+| `api:src/include/apps/shell_pipeline.h:shell_pipeline_try_execute` | `src/include/apps/shell_pipeline.h` | `shell_pipeline_try_execute` | `apps` | `COVERED` | 6 |
+| `api:src/include/apps/shell_pipeline.h:shell_pipeline_write` | `src/include/apps/shell_pipeline.h` | `shell_pipeline_write` | `apps` | `COVERED` | 6 |
 | `api:src/include/apps/shell_runtime.h:shell_checks_handle_job_key` | `src/include/apps/shell_runtime.h` | `shell_checks_handle_job_key` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/shell_runtime.h:shell_checks_handle_loader_result` | `src/include/apps/shell_runtime.h` | `shell_checks_handle_loader_result` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/shell_runtime.h:shell_checks_input_blocked` | `src/include/apps/shell_runtime.h` | `shell_checks_input_blocked` | `apps` | `COVERED` | 1 |
@@ -6810,32 +6810,32 @@
 | `c:src/shell/shell_job.c:shell_job_set_timeout` | `src/shell/shell_job.c` | `shell_job_set_timeout` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_job.c:shell_job_start` | `src/shell/shell_job.c` | `shell_job_start` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_job.c:shell_job_state_name` | `src/shell/shell_job.c` | `shell_job_state_name` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_pipeline.c:shell_pipeline_all_finished` | `src/shell/shell_pipeline.c` | `shell_pipeline_all_finished` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_pipeline.c:shell_pipeline_close_fd` | `src/shell/shell_pipeline.c` | `shell_pipeline_close_fd` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_pipeline.c:shell_pipeline_close_resources` | `src/shell/shell_pipeline.c` | `shell_pipeline_close_resources` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_pipeline.c:shell_pipeline_command_supported` | `src/shell/shell_pipeline.c` | `shell_pipeline_command_supported` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_pipeline.c:shell_pipeline_copy_segment` | `src/shell/shell_pipeline.c` | `shell_pipeline_copy_segment` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_pipeline.c:shell_pipeline_copy_target` | `src/shell/shell_pipeline.c` | `shell_pipeline_copy_target` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_pipeline.c:shell_pipeline_copy_text` | `src/shell/shell_pipeline.c` | `shell_pipeline_copy_text` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_pipeline.c:shell_pipeline_create_resources` | `src/shell/shell_pipeline.c` | `shell_pipeline_create_resources` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_pipeline.c:shell_pipeline_current_stage` | `src/shell/shell_pipeline.c` | `shell_pipeline_current_stage` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_pipeline.c:shell_pipeline_destroy_threads` | `src/shell/shell_pipeline.c` | `shell_pipeline_destroy_threads` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_pipeline.c:shell_pipeline_has_operator` | `src/shell/shell_pipeline.c` | `shell_pipeline_has_operator` | `shell` | `COVERED` | 5 |
-| `c:src/shell/shell_pipeline.c:shell_pipeline_is_active` | `src/shell/shell_pipeline.c` | `shell_pipeline_is_active` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_pipeline.c:shell_pipeline_is_space` | `src/shell/shell_pipeline.c` | `shell_pipeline_is_space` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_pipeline.c:shell_pipeline_parse` | `src/shell/shell_pipeline.c` | `shell_pipeline_parse` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_pipeline.c:shell_pipeline_print_num` | `src/shell/shell_pipeline.c` | `shell_pipeline_print_num` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_pipeline.c:shell_pipeline_read` | `src/shell/shell_pipeline.c` | `shell_pipeline_read` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_pipeline.c:shell_pipeline_record_error` | `src/shell/shell_pipeline.c` | `shell_pipeline_record_error` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_pipeline.c:shell_pipeline_reject` | `src/shell/shell_pipeline.c` | `shell_pipeline_reject` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_pipeline.c:shell_pipeline_reset` | `src/shell/shell_pipeline.c` | `shell_pipeline_reset` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_pipeline.c:shell_pipeline_self_test` | `src/shell/shell_pipeline.c` | `shell_pipeline_self_test` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_pipeline.c:shell_pipeline_sink_entry` | `src/shell/shell_pipeline.c` | `shell_pipeline_sink_entry` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_pipeline.c:shell_pipeline_stage_entry` | `src/shell/shell_pipeline.c` | `shell_pipeline_stage_entry` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_pipeline.c:shell_pipeline_test_consumer` | `src/shell/shell_pipeline.c` | `shell_pipeline_test_consumer` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_pipeline.c:shell_pipeline_test_producer` | `src/shell/shell_pipeline.c` | `shell_pipeline_test_producer` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_pipeline.c:shell_pipeline_try_execute` | `src/shell/shell_pipeline.c` | `shell_pipeline_try_execute` | `shell` | `COVERED` | 5 |
-| `c:src/shell/shell_pipeline.c:shell_pipeline_write` | `src/shell/shell_pipeline.c` | `shell_pipeline_write` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_pipeline.c:shell_pipeline_all_finished` | `src/shell/shell_pipeline.c` | `shell_pipeline_all_finished` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_pipeline.c:shell_pipeline_close_fd` | `src/shell/shell_pipeline.c` | `shell_pipeline_close_fd` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_pipeline.c:shell_pipeline_close_resources` | `src/shell/shell_pipeline.c` | `shell_pipeline_close_resources` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_pipeline.c:shell_pipeline_command_supported` | `src/shell/shell_pipeline.c` | `shell_pipeline_command_supported` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_pipeline.c:shell_pipeline_copy_segment` | `src/shell/shell_pipeline.c` | `shell_pipeline_copy_segment` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_pipeline.c:shell_pipeline_copy_target` | `src/shell/shell_pipeline.c` | `shell_pipeline_copy_target` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_pipeline.c:shell_pipeline_copy_text` | `src/shell/shell_pipeline.c` | `shell_pipeline_copy_text` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_pipeline.c:shell_pipeline_create_resources` | `src/shell/shell_pipeline.c` | `shell_pipeline_create_resources` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_pipeline.c:shell_pipeline_current_stage` | `src/shell/shell_pipeline.c` | `shell_pipeline_current_stage` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_pipeline.c:shell_pipeline_destroy_threads` | `src/shell/shell_pipeline.c` | `shell_pipeline_destroy_threads` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_pipeline.c:shell_pipeline_has_operator` | `src/shell/shell_pipeline.c` | `shell_pipeline_has_operator` | `shell` | `COVERED` | 6 |
+| `c:src/shell/shell_pipeline.c:shell_pipeline_is_active` | `src/shell/shell_pipeline.c` | `shell_pipeline_is_active` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_pipeline.c:shell_pipeline_is_space` | `src/shell/shell_pipeline.c` | `shell_pipeline_is_space` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_pipeline.c:shell_pipeline_parse` | `src/shell/shell_pipeline.c` | `shell_pipeline_parse` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_pipeline.c:shell_pipeline_print_num` | `src/shell/shell_pipeline.c` | `shell_pipeline_print_num` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_pipeline.c:shell_pipeline_read` | `src/shell/shell_pipeline.c` | `shell_pipeline_read` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_pipeline.c:shell_pipeline_record_error` | `src/shell/shell_pipeline.c` | `shell_pipeline_record_error` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_pipeline.c:shell_pipeline_reject` | `src/shell/shell_pipeline.c` | `shell_pipeline_reject` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_pipeline.c:shell_pipeline_reset` | `src/shell/shell_pipeline.c` | `shell_pipeline_reset` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_pipeline.c:shell_pipeline_self_test` | `src/shell/shell_pipeline.c` | `shell_pipeline_self_test` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_pipeline.c:shell_pipeline_sink_entry` | `src/shell/shell_pipeline.c` | `shell_pipeline_sink_entry` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_pipeline.c:shell_pipeline_stage_entry` | `src/shell/shell_pipeline.c` | `shell_pipeline_stage_entry` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_pipeline.c:shell_pipeline_test_consumer` | `src/shell/shell_pipeline.c` | `shell_pipeline_test_consumer` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_pipeline.c:shell_pipeline_test_producer` | `src/shell/shell_pipeline.c` | `shell_pipeline_test_producer` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_pipeline.c:shell_pipeline_try_execute` | `src/shell/shell_pipeline.c` | `shell_pipeline_try_execute` | `shell` | `COVERED` | 6 |
+| `c:src/shell/shell_pipeline.c:shell_pipeline_write` | `src/shell/shell_pipeline.c` | `shell_pipeline_write` | `shell` | `COVERED` | 3 |
 | `c:src/shell/taskmanager.c:draw_bar` | `src/shell/taskmanager.c` | `draw_bar` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:draw_box` | `src/shell/taskmanager.c` | `draw_box` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:draw_header` | `src/shell/taskmanager.c` | `draw_header` | `shell` | `PENDING` | 0 |
@@ -7379,6 +7379,7 @@
 | `host:shell:hosted` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | abrir, reabrir, desenhar, encaminhar tecla e mouse, fechar e rejeitar registro do Shell Classic hospedado | o Shell hospedado publica visibilidade, encaminha callbacks e restaura o estado quando o registro falha | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do adaptador, callbacks do Window Manager e terminal falso no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:input` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enviar scancodes falsos para comandos, historico, scroll, edicao, cancelamento e limite | entrada, historico e terminal preservam o contrato e nao ultrapassam o buffer | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos do Shell e stubs de terminal no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:introspection` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar parser hexadecimal com limites e entradas invalidas | parse_hex_u32 aceita digitos validos e rejeita prefixo, digito e overflow com codigos canonicos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:shell:job` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar ciclo de vida, deadlines, wakeups, progresso, cancelamento, drenagem, timeout, erros, eventos IPC e diagnostico job status | jobs completam, falham, cancelam ou expiram com estado, codigo, geracao e limpeza coerentes | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do executor, filas IPC, relogio, teclado, video e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:mediaplayer` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar audio, imagem e reproducao combinada com arquivos estaticos e dependencias de hardware simuladas | o Media Player preserva estados, metadados, erros canonicos, limites e ownership sem hardware ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos, allocator de teste, recovery fake e contadores de audio e video do processo host | dados de audio e imagem liberados, estado parado e manifesto, logs e cobertura preservados |
 | `host:storage:block` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar block_self_test e block_cache_self_test com providers estaticos | filas BIO, limites, cancelamento, failpoints, cache, writeback e sync passam e o inventario retorna ao estado inicial | compilador ausente, warning, cobertura incompleta, failpoint residual, falha de assercao ou timeout | somente estruturas globais do processo host e buffers estaticos de provider | autotestes removem dispositivos temporarios, limpam cache e deixam fila sem pendencias |
 | `host:storage:bmp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar parser BMP real com imagens estaticas, framebuffer e VESA simulados | headers, paletas, pixels, orientacao, transparencia, redimensionamento, escala, ownership e erros preservam o contrato sem hardware real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente imagens BMP, framebuffer e allocator estaticos do processo host | imagens liberadas, alocacoes devolvidas e manifesto, logs e cobertura preservados |
@@ -7435,7 +7436,7 @@
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
 | `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
-| `host:shell:job` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar ciclo de vida, deadlines, wakeups, progresso, cancelamento, drenagem, timeout, erros, eventos IPC e diagnostico job status | jobs completam, falham, cancelam ou expiram com estado, codigo, geracao e limpeza coerentes | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do executor, filas IPC, relogio, teclado, video e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:shell:pipeline` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar parsing, limites, pipes, redirecionamento, workers, leitura, escrita, autoteste e limpeza sob falhas controladas | pipelines validos concluem, entradas invalidas retornam codigo canonico e recursos sao restaurados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente pipes, threads, buffers, redirecionamento, video e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -9336,28 +9337,6 @@
 - `c:src/shell/shell_hosted.c:shell_hosted_reset`
 - `c:src/shell/shell_input.c:shell_input_get_buffer`
 - `c:src/shell/shell_input.c:shell_input_init`
-- `c:src/shell/shell_pipeline.c:shell_pipeline_all_finished`
-- `c:src/shell/shell_pipeline.c:shell_pipeline_close_fd`
-- `c:src/shell/shell_pipeline.c:shell_pipeline_close_resources`
-- `c:src/shell/shell_pipeline.c:shell_pipeline_command_supported`
-- `c:src/shell/shell_pipeline.c:shell_pipeline_copy_segment`
-- `c:src/shell/shell_pipeline.c:shell_pipeline_copy_target`
-- `c:src/shell/shell_pipeline.c:shell_pipeline_copy_text`
-- `c:src/shell/shell_pipeline.c:shell_pipeline_create_resources`
-- `c:src/shell/shell_pipeline.c:shell_pipeline_current_stage`
-- `c:src/shell/shell_pipeline.c:shell_pipeline_destroy_threads`
-- `c:src/shell/shell_pipeline.c:shell_pipeline_is_active`
-- `c:src/shell/shell_pipeline.c:shell_pipeline_is_space`
-- `c:src/shell/shell_pipeline.c:shell_pipeline_parse`
-- `c:src/shell/shell_pipeline.c:shell_pipeline_read`
-- `c:src/shell/shell_pipeline.c:shell_pipeline_record_error`
-- `c:src/shell/shell_pipeline.c:shell_pipeline_reject`
-- `c:src/shell/shell_pipeline.c:shell_pipeline_reset`
-- `c:src/shell/shell_pipeline.c:shell_pipeline_self_test`
-- `c:src/shell/shell_pipeline.c:shell_pipeline_sink_entry`
-- `c:src/shell/shell_pipeline.c:shell_pipeline_stage_entry`
-- `c:src/shell/shell_pipeline.c:shell_pipeline_test_consumer`
-- `c:src/shell/shell_pipeline.c:shell_pipeline_test_producer`
 - `c:src/shell/taskmanager.c:draw_bar`
 - `c:src/shell/taskmanager.c:draw_box`
 - `c:src/shell/taskmanager.c:draw_header`

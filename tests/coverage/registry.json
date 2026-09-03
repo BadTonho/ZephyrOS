@@ -2996,6 +2996,58 @@
       "evidence": "make test-shell-commands-vfs-host PASS com grep, pipetest, erros de pipeline e limites no relatorio instrumentado"
     },
     {
+      "id": "shell-pipeline-host-dynamic",
+      "domain": "shell-pipeline",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:shell:pipeline"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/shell-pipeline-host/coverage.json",
+      "coverage_sources": [
+        "src/shell/shell_pipeline.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:shell:pipeline",
+        "scenario": "Contrato host-only do executor de pipelines do Shell",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "vfs-thread-video-stubs"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "validar parsing, limites, pipes, redirecionamento, workers, leitura, escrita, autoteste e limpeza sob falhas controladas",
+        "expected": "pipelines validos concluem, entradas invalidas retornam codigo canonico e recursos sao restaurados",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente pipes, threads, buffers, redirecionamento, video e logs falsos no processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "shell",
+          "pipeline",
+          "vfs",
+          "threads",
+          "redirect",
+          "limits",
+          "coverage"
+        ]
+      },
+      "evidence": "make test-shell-pipeline-host PASS com parser, pipeline, redirecionamento, autoteste de pipe, limites, falhas de criacao e limpeza no relatorio instrumentado"
+    },
+    {
       "id": "recovery-runtime-host-dynamic",
       "domain": "boot-recovery-runtime",
       "owner": "quality",
