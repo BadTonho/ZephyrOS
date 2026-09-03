@@ -2179,7 +2179,7 @@
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-power-host PASS com ACPI indisponivel e disponivel, quiescencia, falhas de sync, falha de S5, limpeza e estados publicados no relatorio instrumentado"
+      "evidence": "make test-power-host PASS com ACPI indisponivel e disponivel, quiescencia, falhas de sync, falha de S5, limpeza, reboot com triple fault controlado, halt terminal controlado, ausencia de metodo de reboot e estados publicados no relatorio instrumentado"
     },
     {
       "id": "process-ipc-host-dynamic",

@@ -428,9 +428,13 @@ static void power_terminal_halt(void) __attribute__((noreturn));
 
 static void power_trigger_triple_fault(void) __attribute__((noreturn));
 
+#if defined(ZEPHYROS_HOST_TEST)
+extern void power_test_terminal_action(void) __attribute__((noreturn));
+#endif
+
 static void power_trigger_triple_fault(void) {
 #if defined(ZEPHYROS_HOST_TEST)
-    __builtin_trap();
+    power_test_terminal_action();
 #else
     idt_ptr_t null_idt;
 
@@ -478,7 +482,7 @@ static int power_reboot_commit(void) {
 
 static void power_terminal_halt(void) {
 #if defined(ZEPHYROS_HOST_TEST)
-    __builtin_trap();
+    power_test_terminal_action();
 #else
     for (;;) asm volatile("cli\n\thlt");
 #endif
@@ -578,6 +582,12 @@ int power_init(void) {
     LOG_INFO("POWER", "Coordenador de energia inicializado");
     return OK;
 }
+
+#if defined(ZEPHYROS_HOST_TEST)
+void power_test_set_reboot_triple_fault_available(uint8_t available) {
+    power_status.reboot_triple_fault_available = available ? 1U : 0U;
+}
+#endif
 
 int power_get_status(power_status_t* out_status) {
     uint32_t flags;

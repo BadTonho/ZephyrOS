@@ -1484,6 +1484,18 @@ pendente.
   7.196 superficies, 3.953 `COVERED`, 3.243 `PENDING` e 86 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Core/energia terminal concluido em 2026-09-03: o caso
+  `host:core:power` passou a exercitar `power_reboot_commit`,
+  `power_trigger_triple_fault` e `power_terminal_halt` por um seam exclusivo
+  do build host. A fixture captura as acoes terminais com `setjmp`/`longjmp`,
+  sem executar reset, halt ou triple fault no processo de teste, e valida as
+  rotas de reboot por triple fault, halt apos commit parcial e ausencia de
+  metodo de reboot. `make test-power-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
+  terminou `PASS`; os 62 casos host-only registrados tambem passaram. O
+  catalogo registra 7.198 superficies, 4.294 `COVERED` e 2.904 `PENDING`.
+  O fechamento integral, o gate estrito e a validacao TST7 completa continuam
+  pendentes.
+
 - Incremento Drivers/usb_hid concluido em 2026-09-02: foi criado o caso
   host-only `host:drivers:usb-hid` com dispositivos HID Boot UHCI simulados.
   A fixture cobre teclados e mouses, parsing de relatorios, rollover,

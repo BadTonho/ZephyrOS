@@ -4609,3 +4609,15 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   caminho freestanding de 32 bits. O catalogo foi sincronizado com 7.197
   superficies, 4.290 `COVERED`, 2.907 `PENDING` e 103 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
+- Incremento Core/energia terminal concluido em 2026-09-03: o caso
+  `host:core:power` passou a exercitar `power_reboot_commit`,
+  `power_trigger_triple_fault` e `power_terminal_halt` por um seam exclusivo
+  do build host, que captura a acao terminal com `setjmp`/`longjmp` sem
+  executar reset, halt ou triple fault no processo de teste. Foram validadas
+  as rotas de reboot por triple fault, halt apos commit parcial e ausencia de
+  metodo de reboot, incluindo fase, alvo, erro e estado publicado. O comando
+  `make test-power-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` terminou
+  `PASS`; os 62 casos host-only registrados tambem passaram, e o catalogo foi
+  sincronizado com 7.198 superficies, 4.294 `COVERED` e 2.904 `PENDING`.
+  O fechamento integral, o gate estrito e a validacao TST7 completa continuam
+  pendentes.

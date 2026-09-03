@@ -4,7 +4,7 @@
 
 ## Resumo
 
-- Superfícies ativas: **7197**
+- Superfícies ativas: **7198**
 - Casos de teste: **103**
 - Superfícies aposentadas: **22**
 
@@ -12,16 +12,16 @@
 |---|---:|
 | `api_function` | 1541 |
 | `asm_entry` | 101 |
-| `c_function` | 5435 |
+| `c_function` | 5436 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4290 |
+| `COVERED` | 4294 |
 | `MANUAL` | 0 |
-| `PENDING` | 2907 |
+| `PENDING` | 2904 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -37,7 +37,7 @@
 | `apps` | 134 |
 | `appstore` | 88 |
 | `boot` | 136 |
-| `core` | 2770 |
+| `core` | 2771 |
 | `desktop` | 40 |
 | `drivers` | 915 |
 | `filemanager` | 92 |
@@ -2927,7 +2927,7 @@
 | `c:src/core/power.c:power_quiesce_workqueue` | `src/core/power.c` | `power_quiesce_workqueue` | `core` | `COVERED` | 1 |
 | `c:src/core/power.c:power_quiescence_state_name` | `src/core/power.c` | `power_quiescence_state_name` | `core` | `COVERED` | 1 |
 | `c:src/core/power.c:power_reboot` | `src/core/power.c` | `power_reboot` | `core` | `COVERED` | 1 |
-| `c:src/core/power.c:power_reboot_commit` | `src/core/power.c` | `power_reboot_commit` | `core` | `PENDING` | 0 |
+| `c:src/core/power.c:power_reboot_commit` | `src/core/power.c` | `power_reboot_commit` | `core` | `COVERED` | 1 |
 | `c:src/core/power.c:power_record_admission_error` | `src/core/power.c` | `power_record_admission_error` | `core` | `COVERED` | 1 |
 | `c:src/core/power.c:power_record_failure` | `src/core/power.c` | `power_record_failure` | `core` | `COVERED` | 1 |
 | `c:src/core/power.c:power_register_notifiers` | `src/core/power.c` | `power_register_notifiers` | `core` | `COVERED` | 1 |
@@ -2936,12 +2936,13 @@
 | `c:src/core/power.c:power_shutdown` | `src/core/power.c` | `power_shutdown` | `core` | `COVERED` | 1 |
 | `c:src/core/power.c:power_shutdown_prepare` | `src/core/power.c` | `power_shutdown_prepare` | `core` | `COVERED` | 1 |
 | `c:src/core/power.c:power_shutdown_request` | `src/core/power.c` | `power_shutdown_request` | `core` | `COVERED` | 1 |
-| `c:src/core/power.c:power_terminal_halt` | `src/core/power.c` | `power_terminal_halt` | `core` | `PENDING` | 0 |
+| `c:src/core/power.c:power_terminal_halt` | `src/core/power.c` | `power_terminal_halt` | `core` | `COVERED` | 1 |
+| `c:src/core/power.c:power_test_set_reboot_triple_fault_available` | `src/core/power.c` | `power_test_set_reboot_triple_fault_available` | `core` | `COVERED` | 1 |
 | `c:src/core/power.c:power_transaction_begin` | `src/core/power.c` | `power_transaction_begin` | `core` | `COVERED` | 1 |
 | `c:src/core/power.c:power_transaction_hardware_phase` | `src/core/power.c` | `power_transaction_hardware_phase` | `core` | `COVERED` | 1 |
 | `c:src/core/power.c:power_transaction_phase_name` | `src/core/power.c` | `power_transaction_phase_name` | `core` | `COVERED` | 1 |
 | `c:src/core/power.c:power_transaction_target_name` | `src/core/power.c` | `power_transaction_target_name` | `core` | `COVERED` | 1 |
-| `c:src/core/power.c:power_trigger_triple_fault` | `src/core/power.c` | `power_trigger_triple_fault` | `core` | `PENDING` | 0 |
+| `c:src/core/power.c:power_trigger_triple_fault` | `src/core/power.c` | `power_trigger_triple_fault` | `core` | `COVERED` | 1 |
 | `c:src/core/power.c:system_reboot` | `src/core/power.c` | `system_reboot` | `core` | `COVERED` | 1 |
 | `c:src/core/power_notifier.c:power_notifier_copy_name` | `src/core/power_notifier.c` | `power_notifier_copy_name` | `core` | `COVERED` | 2 |
 | `c:src/core/power_notifier.c:power_notifier_finalize` | `src/core/power_notifier.c` | `power_notifier_finalize` | `core` | `COVERED` | 2 |
@@ -7912,9 +7913,6 @@
 - `c:src/core/app_remote.c:app_remote_write_record`
 - `c:src/core/app_remote.c:app_remote_write_u16`
 - `c:src/core/app_remote.c:app_remote_write_u32`
-- `c:src/core/power.c:power_reboot_commit`
-- `c:src/core/power.c:power_terminal_halt`
-- `c:src/core/power.c:power_trigger_triple_fault`
 - `c:src/core/socket.c:socket_family_name`
 - `c:src/core/socket.c:socket_find_fd`
 - `c:src/core/socket.c:socket_init`

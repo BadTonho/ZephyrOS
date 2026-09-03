@@ -63920,9 +63920,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:power"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/power.c:power_record_admission_error",
@@ -64106,9 +64109,33 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:power"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/power.c:power_test_set_reboot_triple_fault_available",
+      "kind": "c_function",
+      "source": "src/core/power.c",
+      "symbol": "power_test_set_reboot_triple_fault_available",
+      "linkage": "external",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:power"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/power.c:power_transaction_begin",
@@ -64208,9 +64235,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:power"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/power.c:system_reboot",
@@ -152364,6 +152394,7 @@
         "c:src/core/power.c:power_quiesce_workqueue",
         "c:src/core/power.c:power_quiescence_state_name",
         "c:src/core/power.c:power_reboot",
+        "c:src/core/power.c:power_reboot_commit",
         "c:src/core/power.c:power_record_admission_error",
         "c:src/core/power.c:power_record_failure",
         "c:src/core/power.c:power_register_notifiers",
@@ -152372,10 +152403,13 @@
         "c:src/core/power.c:power_shutdown",
         "c:src/core/power.c:power_shutdown_prepare",
         "c:src/core/power.c:power_shutdown_request",
+        "c:src/core/power.c:power_terminal_halt",
+        "c:src/core/power.c:power_test_set_reboot_triple_fault_available",
         "c:src/core/power.c:power_transaction_begin",
         "c:src/core/power.c:power_transaction_hardware_phase",
         "c:src/core/power.c:power_transaction_phase_name",
         "c:src/core/power.c:power_transaction_target_name",
+        "c:src/core/power.c:power_trigger_triple_fault",
         "c:src/core/power.c:system_reboot",
         "c:src/core/power_notifier.c:power_notifier_copy_name",
         "c:src/core/power_notifier.c:power_notifier_finalize",

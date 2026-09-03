@@ -1,3 +1,4 @@
+#include <setjmp.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -30,6 +31,16 @@ static uint8_t fake_vfs_quiescing;
 static uint8_t fake_keyboard_reset_available;
 static acpi_status_t fake_acpi_status;
 static acpi_power_info_t fake_acpi_power_info;
+static jmp_buf terminal_action_jump;
+static volatile uint8_t terminal_action_called;
+
+extern void power_test_set_reboot_triple_fault_available(uint8_t available);
+
+void __attribute__((noreturn)) power_test_terminal_action(void) {
+    terminal_action_called = 1U;
+    longjmp(terminal_action_jump, 1);
+    __builtin_unreachable();
+}
 
 static void __attribute__((no_instrument_function))
 coverage_record(void* function) {
@@ -350,6 +361,71 @@ static int test_available_acpi_and_cleanup(void) {
     return 0;
 }
 
+static int test_reboot_terminal_paths(void) {
+    power_status_t status;
+    int jump_result;
+
+    reset_fixtures();
+    fake_acpi_status_result = OK;
+    fake_acpi_status.available = 1U;
+    fake_acpi_status.fadt_present = 1U;
+    fake_acpi_status.dsdt_present = 1U;
+    fake_acpi_power_result = OK;
+    fake_acpi_power_info.mode = ACPI_MODE_ENABLED;
+    fake_acpi_power_info.s5_state = ACPI_S5_DECLARED;
+    fake_acpi_power_info.pm1a_readable = 1U;
+    fake_acpi_power_info.s5_transition_ready = 1U;
+    fake_acpi_power_info.reset_register_present = 1U;
+    fake_acpi_power_info.reset_register_valid = 1U;
+    if (power_init() != OK) return 40;
+    power_test_set_reboot_triple_fault_available(1U);
+    terminal_action_called = 0U;
+    jump_result = setjmp(terminal_action_jump);
+    if (jump_result == 0) {
+        (void)system_reboot();
+        return 41;
+    }
+    if (!terminal_action_called || power_get_status(&status) != OK ||
+        status.transaction_target != POWER_TRANSACTION_TARGET_REBOOT ||
+        status.transaction_phase != POWER_TRANSACTION_TERMINAL ||
+        !status.commit_started) return 42;
+
+    reset_fixtures();
+    fake_acpi_status_result = OK;
+    fake_acpi_status.available = 1U;
+    fake_acpi_status.fadt_present = 1U;
+    fake_acpi_status.dsdt_present = 1U;
+    fake_acpi_power_result = OK;
+    fake_acpi_power_info.mode = ACPI_MODE_ENABLED;
+    fake_acpi_power_info.s5_state = ACPI_S5_DECLARED;
+    fake_acpi_power_info.pm1a_readable = 1U;
+    fake_acpi_power_info.s5_transition_ready = 1U;
+    fake_acpi_power_info.reset_register_present = 1U;
+    fake_acpi_power_info.reset_register_valid = 1U;
+    if (power_init() != OK) return 43;
+    power_test_set_reboot_triple_fault_available(0U);
+    terminal_action_called = 0U;
+    jump_result = setjmp(terminal_action_jump);
+    if (jump_result == 0) {
+        (void)system_reboot();
+        return 44;
+    }
+    if (!terminal_action_called || power_get_status(&status) != OK ||
+        status.transaction_target != POWER_TRANSACTION_TARGET_REBOOT ||
+        status.transaction_phase != POWER_TRANSACTION_TERMINAL ||
+        !status.commit_started) return 45;
+
+    reset_fixtures();
+    if (power_init() != OK) return 46;
+    power_test_set_reboot_triple_fault_available(0U);
+    if (system_reboot() != ERR_UNAVAILABLE ||
+        power_get_status(&status) != OK ||
+        status.last_error != ERR_UNAVAILABLE ||
+        status.transaction_phase != POWER_TRANSACTION_IDLE ||
+        status.commit_started) return 47;
+    return 0;
+}
+
 int main(void) {
     int result = 0;
 
@@ -358,6 +434,7 @@ int main(void) {
     if (!result) result = test_preinitialization();
     if (!result) result = test_unavailable_acpi();
     if (!result) result = test_available_acpi_and_cleanup();
+    if (!result) result = test_reboot_terminal_paths();
     coverage_active = 0U;
     coverage_emit(result);
     if (result) {
