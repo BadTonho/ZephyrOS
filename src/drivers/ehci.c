@@ -202,6 +202,18 @@ typedef struct {
 
 static ehci_controller_t ehci_controllers[EHCI_CONTROLLER_CAPACITY];
 
+#if defined(ZEPHYROS_HOST_TEST)
+extern uint32_t ehci_host_physical_address(const void* address);
+extern volatile uint8_t* ehci_host_mmio(uint32_t base);
+extern uint32_t ehci_host_mmio_read(volatile uint8_t* mmio, uint32_t offset);
+extern void ehci_host_mmio_write(volatile uint8_t* mmio, uint32_t offset,
+                                 uint32_t value);
+extern void ehci_host_complete_transfer(void* qtd_pool, uint32_t qtd_count,
+                                        uint8_t* buffer_pool);
+extern void ehci_host_complete_interrupt(void* qtd_pool, uint32_t qtd_index,
+                                         uint16_t max_packet);
+#endif
+
 static uint32_t ehci_timeout_ticks(uint32_t milliseconds) {
     uint32_t frequency = timer_get_frequency();
     uint32_t whole_seconds;
@@ -238,14 +250,22 @@ static int ehci_deadline_expired(uint32_t start, uint32_t milliseconds) {
 static uint32_t ehci_read(const ehci_controller_t* controller,
                           uint32_t offset) {
     if (!controller || !controller->mmio) return 0xFFFFFFFFU;
+#if defined(ZEPHYROS_HOST_TEST)
+    return ehci_host_mmio_read(controller->mmio, offset);
+#else
     return *(volatile uint32_t*)(controller->mmio + offset);
+#endif
 }
 
 static void ehci_write(ehci_controller_t* controller, uint32_t offset,
                        uint32_t value) {
     if (!controller || !controller->mmio) return;
+#if defined(ZEPHYROS_HOST_TEST)
+    ehci_host_mmio_write(controller->mmio, offset, value);
+#else
     *(volatile uint32_t*)(controller->mmio + offset) = value;
-    asm volatile("" : : : "memory");
+    __asm__ volatile("" : : : "memory");
+#endif
 }
 
 static ehci_controller_t* ehci_find(uint8_t bus, uint8_t device,
@@ -362,7 +382,12 @@ static int ehci_map_mmio(ehci_controller_t* controller, uint32_t base) {
         }
     }
     controller->mmio_base = base;
+#if defined(ZEPHYROS_HOST_TEST)
+    controller->mmio = ehci_host_mmio(base);
+    if (!controller->mmio) return ERR_MEM;
+#else
     controller->mmio = (volatile uint8_t*)base;
+#endif
     return OK;
 }
 
@@ -374,7 +399,11 @@ static int ehci_allocate_dma(ehci_controller_t* controller) {
         LOG_ERROR("EHCI", "Falha ao alocar estruturas DMA EHCI");
         return ERR_MEM;
     }
+#if defined(ZEPHYROS_HOST_TEST)
+    controller->dma_pool_phys = ehci_host_physical_address(controller->dma_pool);
+#else
     controller->dma_pool_phys = (uint32_t)controller->dma_pool;
+#endif
     controller->queue_heads = (ehci_qh_t*)controller->dma_pool;
     controller->qtd_pool = (ehci_qtd_t*)(controller->dma_pool + PAGE_SIZE);
     controller->buffer_pool = controller->dma_pool + PAGE_SIZE * 2U;
@@ -462,7 +491,7 @@ static int ehci_reset_controller(ehci_controller_t* controller) {
             LOG_ERROR("EHCI", "Timeout ao parar controlador EHCI");
             return ERR_TIMEOUT;
         }
-        asm volatile("pause");
+        __asm__ volatile("pause");
     }
     ehci_write(controller, base + EHCI_USBCMD, EHCI_USBCMD_HC_RESET);
     start = timer_get_ticks();
@@ -471,7 +500,7 @@ static int ehci_reset_controller(ehci_controller_t* controller) {
             LOG_ERROR("EHCI", "Timeout no reset do controlador EHCI");
             return ERR_TIMEOUT;
         }
-        asm volatile("pause");
+        __asm__ volatile("pause");
     }
     ehci_write(controller, base + EHCI_USBSTS, 0xFFFFFFFFU);
     ehci_write(controller, base + EHCI_CTRLDSSEGMENT, 0U);
@@ -499,7 +528,7 @@ static int ehci_start_controller(ehci_controller_t* controller) {
             LOG_ERROR("EHCI", "Controlador EHCI permaneceu parado");
             return ERR_UNAVAILABLE;
         }
-        asm volatile("pause");
+        __asm__ volatile("pause");
     }
     return OK;
 }
@@ -596,6 +625,10 @@ static int ehci_wait_qtds(ehci_controller_t* controller, uint32_t count,
         return ERR_INVALID;
     }
     start = timer_get_ticks();
+#if defined(ZEPHYROS_HOST_TEST)
+    ehci_host_complete_transfer(controller->qtd_pool, count,
+                                controller->buffer_pool);
+#endif
     for (;;) {
         uint8_t active = 0U;
 
@@ -615,7 +648,7 @@ static int ehci_wait_qtds(ehci_controller_t* controller, uint32_t count,
             (void)ehci_recover_controller(controller);
             return ERR_TIMEOUT;
         }
-        asm volatile("pause");
+        __asm__ volatile("pause");
     }
 }
 
@@ -639,7 +672,7 @@ static int ehci_submit_sync(ehci_controller_t* controller, uint32_t count,
     controller->queue_heads[1].alternate_next_qtd = EHCI_PTR_TERM;
     controller->qtd_in_use = count;
     controller->buffer_in_use = 1U;
-    asm volatile("" : : : "memory");
+    __asm__ volatile("" : : : "memory");
     return ehci_wait_qtds(controller, count, timeout_ms);
 }
 
@@ -889,13 +922,13 @@ static int ehci_reset_port(ehci_controller_t* controller, uint32_t port) {
             LOG_ERROR("EHCI", "Timeout no reset da porta EHCI");
             return ERR_TIMEOUT;
         }
-        asm volatile("pause");
+        __asm__ volatile("pause");
     }
     status = ehci_read(controller, offset);
     ehci_write(controller, offset, status | EHCI_PORT_RWC);
     start = timer_get_ticks();
     while (!ehci_deadline_expired(start, EHCI_SET_ADDRESS_DELAY_MS)) {
-        asm volatile("pause");
+        __asm__ volatile("pause");
     }
     status = ehci_read(controller, offset);
     if (!(status & EHCI_PORT_CCS) || !(status & EHCI_PORT_PED)) {
@@ -949,7 +982,7 @@ static int ehci_enumerate_port(ehci_controller_t* controller, uint32_t port) {
         uint32_t start = timer_get_ticks();
 
         while (!ehci_deadline_expired(start, EHCI_SET_ADDRESS_DELAY_MS)) {
-            asm volatile("pause");
+            __asm__ volatile("pause");
         }
     }
     result = ehci_read_descriptor(controller, record, EHCI_DESCRIPTOR_DEVICE,
@@ -1202,6 +1235,11 @@ static int ehci_interrupt_poll(ehci_controller_t* controller) {
     request = &controller->interrupt_requests[0];
     if (!request->active) return 0;
     qtd = &controller->qtd_pool[EHCI_QTD_CAPACITY - 1U];
+#if defined(ZEPHYROS_HOST_TEST)
+    ehci_host_complete_interrupt(controller->qtd_pool,
+                                 EHCI_QTD_CAPACITY - 1U,
+                                 request->max_packet);
+#endif
     if (qtd->token & EHCI_QTD_STATUS_ACTIVE) {
         if ((int32_t)(timer_get_ticks() - request->deadline) < 0) return 0;
         result = ERR_TIMEOUT;
@@ -1669,3 +1707,16 @@ int ehci_interrupt_cancel(const usb_device_info_t* device,
     spinlock_release(&controller->transfer_lock);
     return OK;
 }
+
+#if defined(ZEPHYROS_HOST_TEST)
+void ehci_host_reset(void) {
+    for (uint32_t index = 0U; index < EHCI_CONTROLLER_CAPACITY; index++) {
+        ehci_controller_t* controller = &ehci_controllers[index];
+
+        if (!controller->used) continue;
+        ehci_disable(controller);
+        ehci_release_dma(controller);
+        kmemset(controller, 0, sizeof(*controller));
+    }
+}
+#endif

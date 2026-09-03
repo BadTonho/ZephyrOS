@@ -4281,6 +4281,58 @@
         "status": "AUTOMATED"
       },
       "evidence": "make test-uhci-host PASS com PCI, DMA, enumeracao, descritores, controle, bulk, interrupt, timeout, recuperacao, fixture invalida e cobertura instrumentada completa"
+    },
+    {
+      "id": "ehci-host-dynamic",
+      "domain": "drivers-ehci",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:drivers:ehci"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/ehci-host/coverage.json",
+      "coverage_sources": [
+        "src/drivers/ehci.c"
+      ],
+      "include_public_apis": false,
+      "case_definition": {
+        "id": "host:drivers:ehci",
+        "scenario": "Contrato host-only do driver EHCI com PCI, MMIO, DMA, enumeracao e transfers simulados",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "pci-ehci-mmio-dma-qtd-falso"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "validar PCI, MMIO, alinhamento DMA, reset, enumeracao, descritores, controle, bulk, interrupt, timeout, recuperacao e limpeza",
+        "expected": "operacoes validas preservam invariantes do controlador e fixtures invalidas retornam erros canonicos sem I/O privilegiado",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente PCI, MMIO, memoria DMA, relogio e dispositivos USB falsos no processo host",
+        "cleanup": "controlador falso resetado, paginas DMA devolvidas e manifesto, logs e cobertura preservados",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "drivers",
+          "usb",
+          "ehci",
+          "mmio",
+          "limits",
+          "recovery",
+          "coverage"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "make test-ehci-host PASS com PCI, MMIO, DMA, enumeracao, descritores, controle, bulk, interrupt, timeout, recuperacao, fixture invalida e cobertura instrumentada completa"
     }
   ]
 }

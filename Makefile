@@ -1888,6 +1888,9 @@ test-acpi-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit
 test-uhci-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_uhci_host.c tests\catalog.json src\drivers\uhci.c src\include\drivers\uhci.h src\include\drivers\pci.h src\include\core\usb_manager.h src\include\core\memory.h src\include\core\string.h src\include\core\errors.h src\include\core\log.h src\include\core\timer.h src\include\core\irq_deferred.h src\include\core\spinlock.h src\include\drivers\idt.h
 	python tools\core_host_runner.py --case host:drivers:uhci --cc "$(HOST_CC)"
 
+test-ehci-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_ehci_host.c tests\catalog.json src\drivers\ehci.c src\include\drivers\ehci.h src\include\drivers\pci.h src\include\core\usb_manager.h src\include\core\memory.h src\include\core\string.h src\include\core\errors.h src\include\core\log.h src\include\core\timer.h src\include\core\spinlock.h src\include\drivers\idt.h src\include\memory\paging.h
+	python tools/core_host_runner.py --case host:drivers:ehci --cc "$(HOST_CC)"
+
 test-tst2-host: tools\tst2_host_runner.py tests\unit\test_protocol_core.c tests\unit\test_qemu_test_runner.py src\core\test_protocol_core.c src\core\test_protocol_core.h
 	python tools\tst2_host_runner.py --cc "$(HOST_CC)"
 
@@ -1978,3 +1981,4 @@ clean:
 .PHONY: catalog-test-strict
 .PHONY: test-acpi-host
 .PHONY: test-uhci-host
+.PHONY: test-ehci-host

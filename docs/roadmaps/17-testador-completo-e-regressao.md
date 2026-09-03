@@ -1497,6 +1497,21 @@ pendente.
   7.196 superficies, 3.953 `COVERED`, 3.243 `PENDING` e 86 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Drivers/EHCI concluido em 2026-09-03: foi criado o caso
+  host-only `host:drivers:ehci` e o alvo `make test-ehci-host`. A fixture usa
+  PCI, MMIO, DMA, temporizador e dispositivos USB falsos para exercitar
+  inicializacao, reset, enumeracao high-speed, descritores, transfers de
+  controle e bulk, interrupt, timeout, erro de qTD, recuperacao, falhas de
+  hardware e limpeza. O relatorio instrumentado
+  `build/test-results/ehci-host/coverage.json` terminou `PASS`, observou 83
+  enderecos sem desconhecidos ou ambiguos e resolveu as 52 superficies de
+  `src/drivers/ehci.c`, sem I/O privilegiado ou hardware real. Foram executados
+  `make q3check`, `make clean`, `make`,
+  `make test-ehci-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` e
+  `make catalog-test`; todos passaram. O catalogo registra 7.203 superficies,
+  4.580 `COVERED`, 2.623 `PENDING` e 118 casos. O fechamento integral, o gate
+  estrito e a validacao TST7 completa continuam pendentes.
+
 - Incremento Drivers/UHCI concluido em 2026-09-03: foi criado o caso
   host-only `host:drivers:uhci` e o alvo `make test-uhci-host`. A fixture usa
   PCI, DMA, portas, IRQ, temporizador e dispositivos USB falsos para exercitar
