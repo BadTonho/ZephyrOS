@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7204**
-- Casos de teste: **119**
+- Casos de teste: **120**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4619 |
+| `COVERED` | 4653 |
 | `MANUAL` | 0 |
-| `PENDING` | 2585 |
+| `PENDING` | 2551 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 119 |
+| `AUTOMATED` | 120 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -944,19 +944,19 @@
 | `api:src/include/drivers/idt.h:idt_set_gate` | `src/include/drivers/idt.h` | `idt_set_gate` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/idt.h:idt_unmask_irq` | `src/include/drivers/idt.h` | `idt_unmask_irq` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/idt.h:idt_validate_irq_state` | `src/include/drivers/idt.h` | `idt_validate_irq_state` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/mouse.h:mouse_get_buttons` | `src/include/drivers/mouse.h` | `mouse_get_buttons` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/mouse.h:mouse_get_config` | `src/include/drivers/mouse.h` | `mouse_get_config` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/mouse.h:mouse_get_status` | `src/include/drivers/mouse.h` | `mouse_get_status` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/mouse.h:mouse_get_x` | `src/include/drivers/mouse.h` | `mouse_get_x` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/mouse.h:mouse_get_y` | `src/include/drivers/mouse.h` | `mouse_get_y` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/mouse.h:mouse_has_wheel` | `src/include/drivers/mouse.h` | `mouse_has_wheel` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/mouse.h:mouse_init` | `src/include/drivers/mouse.h` | `mouse_init` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/mouse.h:mouse_invalidate_cursor` | `src/include/drivers/mouse.h` | `mouse_invalidate_cursor` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/mouse.h:mouse_process_events` | `src/include/drivers/mouse.h` | `mouse_process_events` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/mouse.h:mouse_set_acceleration` | `src/include/drivers/mouse.h` | `mouse_set_acceleration` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/mouse.h:mouse_set_callback` | `src/include/drivers/mouse.h` | `mouse_set_callback` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/mouse.h:mouse_set_primary_button` | `src/include/drivers/mouse.h` | `mouse_set_primary_button` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/mouse.h:mouse_set_speed` | `src/include/drivers/mouse.h` | `mouse_set_speed` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/mouse.h:mouse_get_buttons` | `src/include/drivers/mouse.h` | `mouse_get_buttons` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/mouse.h:mouse_get_config` | `src/include/drivers/mouse.h` | `mouse_get_config` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/mouse.h:mouse_get_status` | `src/include/drivers/mouse.h` | `mouse_get_status` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/mouse.h:mouse_get_x` | `src/include/drivers/mouse.h` | `mouse_get_x` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/mouse.h:mouse_get_y` | `src/include/drivers/mouse.h` | `mouse_get_y` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/mouse.h:mouse_has_wheel` | `src/include/drivers/mouse.h` | `mouse_has_wheel` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/mouse.h:mouse_init` | `src/include/drivers/mouse.h` | `mouse_init` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/mouse.h:mouse_invalidate_cursor` | `src/include/drivers/mouse.h` | `mouse_invalidate_cursor` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/mouse.h:mouse_process_events` | `src/include/drivers/mouse.h` | `mouse_process_events` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/mouse.h:mouse_set_acceleration` | `src/include/drivers/mouse.h` | `mouse_set_acceleration` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/mouse.h:mouse_set_callback` | `src/include/drivers/mouse.h` | `mouse_set_callback` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/mouse.h:mouse_set_primary_button` | `src/include/drivers/mouse.h` | `mouse_set_primary_button` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/mouse.h:mouse_set_speed` | `src/include/drivers/mouse.h` | `mouse_set_speed` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/pci.h:pci_enable_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_bus_mastering` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_io_and_bus_mastering` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_memory_and_bus_mastering` | `drivers` | `COVERED` | 2 |
@@ -4229,52 +4229,52 @@
 | `c:src/drivers/keyboard.c:keyboard_set_focus_cancel_filter` | `src/drivers/keyboard.c` | `keyboard_set_focus_cancel_filter` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/keyboard.c:keyboard_usage_scancode` | `src/drivers/keyboard.c` | `keyboard_usage_scancode` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/keyboard.c:outb` | `src/drivers/keyboard.c` | `outb` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/mouse.c:draw_cursor` | `src/drivers/mouse.c` | `draw_cursor` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/mouse.c:erase_cursor` | `src/drivers/mouse.c` | `erase_cursor` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/mouse.c:inb` | `src/drivers/mouse.c` | `inb` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_accumulate_delta` | `src/drivers/mouse.c` | `mouse_accumulate_delta` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_apply_movement` | `src/drivers/mouse.c` | `mouse_apply_movement` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_bottom_half` | `src/drivers/mouse.c` | `mouse_bottom_half` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/mouse.c:mouse_collect_event_batch` | `src/drivers/mouse.c` | `mouse_collect_event_batch` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_damage_region_area` | `src/drivers/mouse.c` | `mouse_damage_region_area` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_damage_region_union` | `src/drivers/mouse.c` | `mouse_damage_region_union` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_decode_wheel` | `src/drivers/mouse.c` | `mouse_decode_wheel` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_delta_magnitude` | `src/drivers/mouse.c` | `mouse_delta_magnitude` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_dispatch_event` | `src/drivers/mouse.c` | `mouse_dispatch_event` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_enable_wheel_protocol` | `src/drivers/mouse.c` | `mouse_enable_wheel_protocol` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_enqueue_packet` | `src/drivers/mouse.c` | `mouse_enqueue_packet` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_get_buttons` | `src/drivers/mouse.c` | `mouse_get_buttons` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_get_config` | `src/drivers/mouse.c` | `mouse_get_config` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/mouse.c:mouse_get_status` | `src/drivers/mouse.c` | `mouse_get_status` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_get_x` | `src/drivers/mouse.c` | `mouse_get_x` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_get_y` | `src/drivers/mouse.c` | `mouse_get_y` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_handler` | `src/drivers/mouse.c` | `mouse_handler` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_has_wheel` | `src/drivers/mouse.c` | `mouse_has_wheel` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_init` | `src/drivers/mouse.c` | `mouse_init` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_init_fail` | `src/drivers/mouse.c` | `mouse_init_fail` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_input_sink` | `src/drivers/mouse.c` | `mouse_input_sink` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_invalidate_cursor` | `src/drivers/mouse.c` | `mouse_invalidate_cursor` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/mouse.c:mouse_make_damage_region` | `src/drivers/mouse.c` | `mouse_make_damage_region` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/mouse.c:mouse_map_buttons` | `src/drivers/mouse.c` | `mouse_map_buttons` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_present_cursor` | `src/drivers/mouse.c` | `mouse_present_cursor` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/mouse.c:mouse_present_damage_region` | `src/drivers/mouse.c` | `mouse_present_damage_region` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/mouse.c:mouse_process_events` | `src/drivers/mouse.c` | `mouse_process_events` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/mouse.c:mouse_process_raw_byte` | `src/drivers/mouse.c` | `mouse_process_raw_byte` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_read` | `src/drivers/mouse.c` | `mouse_read` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_report_queue_overflow` | `src/drivers/mouse.c` | `mouse_report_queue_overflow` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/mouse.c:mouse_reset_state` | `src/drivers/mouse.c` | `mouse_reset_state` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_restore_interrupts` | `src/drivers/mouse.c` | `mouse_restore_interrupts` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/mouse.c:mouse_scale_delta` | `src/drivers/mouse.c` | `mouse_scale_delta` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_set_acceleration` | `src/drivers/mouse.c` | `mouse_set_acceleration` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_set_callback` | `src/drivers/mouse.c` | `mouse_set_callback` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_set_primary_button` | `src/drivers/mouse.c` | `mouse_set_primary_button` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_set_sample_rate` | `src/drivers/mouse.c` | `mouse_set_sample_rate` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_set_speed` | `src/drivers/mouse.c` | `mouse_set_speed` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_suspend_interrupts` | `src/drivers/mouse.c` | `mouse_suspend_interrupts` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/mouse.c:mouse_wait` | `src/drivers/mouse.c` | `mouse_wait` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_write` | `src/drivers/mouse.c` | `mouse_write` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:mouse_write_ack` | `src/drivers/mouse.c` | `mouse_write_ack` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/mouse.c:outb` | `src/drivers/mouse.c` | `outb` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/mouse.c:draw_cursor` | `src/drivers/mouse.c` | `draw_cursor` | `drivers` | `COVERED` | 4 |
+| `c:src/drivers/mouse.c:erase_cursor` | `src/drivers/mouse.c` | `erase_cursor` | `drivers` | `COVERED` | 4 |
+| `c:src/drivers/mouse.c:inb` | `src/drivers/mouse.c` | `inb` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_accumulate_delta` | `src/drivers/mouse.c` | `mouse_accumulate_delta` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_apply_movement` | `src/drivers/mouse.c` | `mouse_apply_movement` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_bottom_half` | `src/drivers/mouse.c` | `mouse_bottom_half` | `drivers` | `COVERED` | 4 |
+| `c:src/drivers/mouse.c:mouse_collect_event_batch` | `src/drivers/mouse.c` | `mouse_collect_event_batch` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_damage_region_area` | `src/drivers/mouse.c` | `mouse_damage_region_area` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_damage_region_union` | `src/drivers/mouse.c` | `mouse_damage_region_union` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_decode_wheel` | `src/drivers/mouse.c` | `mouse_decode_wheel` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_delta_magnitude` | `src/drivers/mouse.c` | `mouse_delta_magnitude` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_dispatch_event` | `src/drivers/mouse.c` | `mouse_dispatch_event` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_enable_wheel_protocol` | `src/drivers/mouse.c` | `mouse_enable_wheel_protocol` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_enqueue_packet` | `src/drivers/mouse.c` | `mouse_enqueue_packet` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_get_buttons` | `src/drivers/mouse.c` | `mouse_get_buttons` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_get_config` | `src/drivers/mouse.c` | `mouse_get_config` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/mouse.c:mouse_get_status` | `src/drivers/mouse.c` | `mouse_get_status` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_get_x` | `src/drivers/mouse.c` | `mouse_get_x` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_get_y` | `src/drivers/mouse.c` | `mouse_get_y` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_handler` | `src/drivers/mouse.c` | `mouse_handler` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_has_wheel` | `src/drivers/mouse.c` | `mouse_has_wheel` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_init` | `src/drivers/mouse.c` | `mouse_init` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_init_fail` | `src/drivers/mouse.c` | `mouse_init_fail` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_input_sink` | `src/drivers/mouse.c` | `mouse_input_sink` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_invalidate_cursor` | `src/drivers/mouse.c` | `mouse_invalidate_cursor` | `drivers` | `COVERED` | 4 |
+| `c:src/drivers/mouse.c:mouse_make_damage_region` | `src/drivers/mouse.c` | `mouse_make_damage_region` | `drivers` | `COVERED` | 4 |
+| `c:src/drivers/mouse.c:mouse_map_buttons` | `src/drivers/mouse.c` | `mouse_map_buttons` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_present_cursor` | `src/drivers/mouse.c` | `mouse_present_cursor` | `drivers` | `COVERED` | 4 |
+| `c:src/drivers/mouse.c:mouse_present_damage_region` | `src/drivers/mouse.c` | `mouse_present_damage_region` | `drivers` | `COVERED` | 4 |
+| `c:src/drivers/mouse.c:mouse_process_events` | `src/drivers/mouse.c` | `mouse_process_events` | `drivers` | `COVERED` | 4 |
+| `c:src/drivers/mouse.c:mouse_process_raw_byte` | `src/drivers/mouse.c` | `mouse_process_raw_byte` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_read` | `src/drivers/mouse.c` | `mouse_read` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_report_queue_overflow` | `src/drivers/mouse.c` | `mouse_report_queue_overflow` | `drivers` | `COVERED` | 4 |
+| `c:src/drivers/mouse.c:mouse_reset_state` | `src/drivers/mouse.c` | `mouse_reset_state` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_restore_interrupts` | `src/drivers/mouse.c` | `mouse_restore_interrupts` | `drivers` | `COVERED` | 4 |
+| `c:src/drivers/mouse.c:mouse_scale_delta` | `src/drivers/mouse.c` | `mouse_scale_delta` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_set_acceleration` | `src/drivers/mouse.c` | `mouse_set_acceleration` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_set_callback` | `src/drivers/mouse.c` | `mouse_set_callback` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_set_primary_button` | `src/drivers/mouse.c` | `mouse_set_primary_button` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_set_sample_rate` | `src/drivers/mouse.c` | `mouse_set_sample_rate` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_set_speed` | `src/drivers/mouse.c` | `mouse_set_speed` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_suspend_interrupts` | `src/drivers/mouse.c` | `mouse_suspend_interrupts` | `drivers` | `COVERED` | 4 |
+| `c:src/drivers/mouse.c:mouse_wait` | `src/drivers/mouse.c` | `mouse_wait` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_write` | `src/drivers/mouse.c` | `mouse_write` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:mouse_write_ack` | `src/drivers/mouse.c` | `mouse_write_ack` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/mouse.c:outb` | `src/drivers/mouse.c` | `outb` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/pci.c:inl` | `src/drivers/pci.c` | `inl` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/pci.c:outl` | `src/drivers/pci.c` | `outl` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/pci.c:pci_enable_bus_mastering` | `src/drivers/pci.c` | `pci_enable_bus_mastering` | `drivers` | `COVERED` | 1 |
@@ -7316,6 +7316,7 @@
 | `host:drivers:ehci` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar PCI, MMIO, alinhamento DMA, reset, enumeracao, descritores, controle, bulk, interrupt, timeout, recuperacao e limpeza | operacoes validas preservam invariantes do controlador e fixtures invalidas retornam erros canonicos sem I/O privilegiado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente PCI, MMIO, memoria DMA, relogio e dispositivos USB falsos no processo host | controlador falso resetado, paginas DMA devolvidas e manifesto, logs e cobertura preservados |
 | `host:drivers:font` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inicializar o driver de fonte e consultar as dimensoes publicadas | font_init e idempotente e as dimensoes publicadas permanecem 8x16 | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabela estatica de fontes e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:keyboard` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver teclado real com controlador PS/2 e dependencias registradas simulados | scancodes, inicializacao, filtros, reset, metricas e falhas preservam o contrato sem executar CLI, STI ou I/O privilegiado no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente filas, metricas e portas estaticas do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:drivers:mouse` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar inicializacao, protocolo wheel e fallback, IRQ12, filas, eventos, cursor, configuracao, limites, falhas e limpeza | eventos validos chegam ao callback, configuracoes respeitam limites e fixtures invalidas retornam erros canonicos sem I/O privilegiado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente portas PS/2, IRQ, fila de entrada, framebuffer VESA e dispositivos falsos no processo host | estado da controladora, fila, cursor e framebuffer falso permanecem restritos ao processo; manifesto, logs e cobertura preservados |
 | `host:drivers:pci` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar leitura, escrita, varredura, inventario, multifuncao, limites e habilitacao de recursos PCI | dispositivos validos sao registrados, ausentes sao ignorados, limite retorna ERR_OVERFLOW e comandos aceitos sao publicados | compilador ausente, warning, cobertura incompleta, falha de assercao, acesso I/O real ou timeout | somente espaco de configuracao, inventario e contadores falsos no processo host; nenhum porto I/O real e acessado | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:rng` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver RNG real com capacidades e resultados RDRAND simulados | capacidade, estado, bytes gerados, falhas de hardware e codigos de erro preservam o contrato sem executar instrucoes privilegiadas no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado RNG e valores de entropia estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:rtc-status` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | consultar o estado inicial do RTC com destinos valido e nulo | rtc_get_status rejeita destino nulo e publica snapshot inicial estavel | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do RTC e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -8587,40 +8588,6 @@
 - `c:src/drivers/idt.c:idt_unmask_irq`
 - `c:src/drivers/idt.c:inb`
 - `c:src/drivers/idt.c:pic_remap`
-- `c:src/drivers/mouse.c:inb`
-- `c:src/drivers/mouse.c:mouse_accumulate_delta`
-- `c:src/drivers/mouse.c:mouse_apply_movement`
-- `c:src/drivers/mouse.c:mouse_collect_event_batch`
-- `c:src/drivers/mouse.c:mouse_damage_region_area`
-- `c:src/drivers/mouse.c:mouse_damage_region_union`
-- `c:src/drivers/mouse.c:mouse_decode_wheel`
-- `c:src/drivers/mouse.c:mouse_delta_magnitude`
-- `c:src/drivers/mouse.c:mouse_dispatch_event`
-- `c:src/drivers/mouse.c:mouse_enable_wheel_protocol`
-- `c:src/drivers/mouse.c:mouse_enqueue_packet`
-- `c:src/drivers/mouse.c:mouse_get_buttons`
-- `c:src/drivers/mouse.c:mouse_get_status`
-- `c:src/drivers/mouse.c:mouse_get_x`
-- `c:src/drivers/mouse.c:mouse_get_y`
-- `c:src/drivers/mouse.c:mouse_handler`
-- `c:src/drivers/mouse.c:mouse_has_wheel`
-- `c:src/drivers/mouse.c:mouse_init`
-- `c:src/drivers/mouse.c:mouse_init_fail`
-- `c:src/drivers/mouse.c:mouse_input_sink`
-- `c:src/drivers/mouse.c:mouse_map_buttons`
-- `c:src/drivers/mouse.c:mouse_process_raw_byte`
-- `c:src/drivers/mouse.c:mouse_read`
-- `c:src/drivers/mouse.c:mouse_reset_state`
-- `c:src/drivers/mouse.c:mouse_scale_delta`
-- `c:src/drivers/mouse.c:mouse_set_acceleration`
-- `c:src/drivers/mouse.c:mouse_set_callback`
-- `c:src/drivers/mouse.c:mouse_set_primary_button`
-- `c:src/drivers/mouse.c:mouse_set_sample_rate`
-- `c:src/drivers/mouse.c:mouse_set_speed`
-- `c:src/drivers/mouse.c:mouse_wait`
-- `c:src/drivers/mouse.c:mouse_write`
-- `c:src/drivers/mouse.c:mouse_write_ack`
-- `c:src/drivers/mouse.c:outb`
 - `c:src/drivers/rtc.c:rtc_inb`
 - `c:src/drivers/rtc.c:rtc_init`
 - `c:src/drivers/rtc.c:rtc_outb`

@@ -20434,12 +20434,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:mouse",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/mouse.h:mouse_get_config",
@@ -20457,12 +20458,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:mouse",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/mouse.h:mouse_get_status",
@@ -20480,12 +20482,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:mouse",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/mouse.h:mouse_get_x",
@@ -20503,12 +20506,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:mouse",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/mouse.h:mouse_get_y",
@@ -20526,12 +20530,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:mouse",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/mouse.h:mouse_has_wheel",
@@ -20549,12 +20554,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:mouse",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/mouse.h:mouse_init",
@@ -20572,12 +20578,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:mouse",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/mouse.h:mouse_invalidate_cursor",
@@ -20595,12 +20602,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:mouse",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/mouse.h:mouse_process_events",
@@ -20618,12 +20626,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:mouse",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/mouse.h:mouse_set_acceleration",
@@ -20641,12 +20650,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:mouse",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/mouse.h:mouse_set_callback",
@@ -20664,12 +20674,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:mouse",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/mouse.h:mouse_set_primary_button",
@@ -20687,12 +20698,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:mouse",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/mouse.h:mouse_set_speed",
@@ -20710,12 +20722,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:mouse",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_enable_bus_mastering",
@@ -90152,12 +90165,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:mouse",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:erase_cursor",
@@ -90175,12 +90189,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:mouse",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:inb",
@@ -90196,9 +90211,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_accumulate_delta",
@@ -90214,9 +90232,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_apply_movement",
@@ -90232,9 +90253,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_bottom_half",
@@ -90252,12 +90276,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:mouse",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_collect_event_batch",
@@ -90273,9 +90298,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_damage_region_area",
@@ -90291,9 +90319,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_damage_region_union",
@@ -90309,9 +90340,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_decode_wheel",
@@ -90327,9 +90361,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_delta_magnitude",
@@ -90345,9 +90382,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_dispatch_event",
@@ -90363,9 +90403,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_enable_wheel_protocol",
@@ -90381,9 +90424,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_enqueue_packet",
@@ -90399,9 +90445,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_get_buttons",
@@ -90417,9 +90466,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_get_config",
@@ -90437,10 +90489,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:mouse",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_get_status",
@@ -90456,9 +90509,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_get_x",
@@ -90474,9 +90530,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_get_y",
@@ -90492,9 +90551,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_handler",
@@ -90510,9 +90572,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_has_wheel",
@@ -90528,9 +90593,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_init",
@@ -90546,9 +90614,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_init_fail",
@@ -90564,9 +90635,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_input_sink",
@@ -90582,9 +90656,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_invalidate_cursor",
@@ -90602,12 +90679,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:mouse",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_make_damage_region",
@@ -90625,12 +90703,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:mouse",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_map_buttons",
@@ -90646,9 +90725,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_present_cursor",
@@ -90666,12 +90748,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:mouse",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_present_damage_region",
@@ -90689,12 +90772,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:mouse",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_process_events",
@@ -90712,12 +90796,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:mouse",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_process_raw_byte",
@@ -90733,9 +90818,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_read",
@@ -90751,9 +90839,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_report_queue_overflow",
@@ -90771,12 +90862,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:mouse",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_reset_state",
@@ -90792,9 +90884,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_restore_interrupts",
@@ -90812,12 +90907,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:mouse",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_scale_delta",
@@ -90833,9 +90929,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_set_acceleration",
@@ -90851,9 +90950,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_set_callback",
@@ -90869,9 +90971,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_set_primary_button",
@@ -90887,9 +90992,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_set_sample_rate",
@@ -90905,9 +91013,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_set_speed",
@@ -90923,9 +91034,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_suspend_interrupts",
@@ -90943,12 +91057,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:mouse",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_wait",
@@ -90964,9 +91079,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_write",
@@ -90982,9 +91100,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:mouse_write_ack",
@@ -91000,9 +91121,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:outb",
@@ -91018,9 +91142,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/pci.c:inl",
@@ -154706,6 +154833,101 @@
         "c:src/drivers/keyboard.c:keyboard_set_focus_cancel_filter",
         "c:src/drivers/keyboard.c:outb"
       ]
+    },
+    {
+      "id": "host:drivers:mouse",
+      "scenario": "Contrato host-only do driver PS/2 com controladora, IRQ12, cursor e eventos simulados",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "hardware": "ps2-mouse-ports-irq12-vesa-falso"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "validar inicializacao, protocolo wheel e fallback, IRQ12, filas, eventos, cursor, configuracao, limites, falhas e limpeza",
+      "expected": "eventos validos chegam ao callback, configuracoes respeitam limites e fixtures invalidas retornam erros canonicos sem I/O privilegiado",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente portas PS/2, IRQ, fila de entrada, framebuffer VESA e dispositivos falsos no processo host",
+      "cleanup": "estado da controladora, fila, cursor e framebuffer falso permanecem restritos ao processo; manifesto, logs e cobertura preservados",
+      "surface_ids": [
+        "api:src/include/drivers/mouse.h:mouse_get_buttons",
+        "api:src/include/drivers/mouse.h:mouse_get_config",
+        "api:src/include/drivers/mouse.h:mouse_get_status",
+        "api:src/include/drivers/mouse.h:mouse_get_x",
+        "api:src/include/drivers/mouse.h:mouse_get_y",
+        "api:src/include/drivers/mouse.h:mouse_has_wheel",
+        "api:src/include/drivers/mouse.h:mouse_init",
+        "api:src/include/drivers/mouse.h:mouse_invalidate_cursor",
+        "api:src/include/drivers/mouse.h:mouse_process_events",
+        "api:src/include/drivers/mouse.h:mouse_set_acceleration",
+        "api:src/include/drivers/mouse.h:mouse_set_callback",
+        "api:src/include/drivers/mouse.h:mouse_set_primary_button",
+        "api:src/include/drivers/mouse.h:mouse_set_speed",
+        "c:src/drivers/mouse.c:draw_cursor",
+        "c:src/drivers/mouse.c:erase_cursor",
+        "c:src/drivers/mouse.c:inb",
+        "c:src/drivers/mouse.c:mouse_accumulate_delta",
+        "c:src/drivers/mouse.c:mouse_apply_movement",
+        "c:src/drivers/mouse.c:mouse_bottom_half",
+        "c:src/drivers/mouse.c:mouse_collect_event_batch",
+        "c:src/drivers/mouse.c:mouse_damage_region_area",
+        "c:src/drivers/mouse.c:mouse_damage_region_union",
+        "c:src/drivers/mouse.c:mouse_decode_wheel",
+        "c:src/drivers/mouse.c:mouse_delta_magnitude",
+        "c:src/drivers/mouse.c:mouse_dispatch_event",
+        "c:src/drivers/mouse.c:mouse_enable_wheel_protocol",
+        "c:src/drivers/mouse.c:mouse_enqueue_packet",
+        "c:src/drivers/mouse.c:mouse_get_buttons",
+        "c:src/drivers/mouse.c:mouse_get_config",
+        "c:src/drivers/mouse.c:mouse_get_status",
+        "c:src/drivers/mouse.c:mouse_get_x",
+        "c:src/drivers/mouse.c:mouse_get_y",
+        "c:src/drivers/mouse.c:mouse_handler",
+        "c:src/drivers/mouse.c:mouse_has_wheel",
+        "c:src/drivers/mouse.c:mouse_init",
+        "c:src/drivers/mouse.c:mouse_init_fail",
+        "c:src/drivers/mouse.c:mouse_input_sink",
+        "c:src/drivers/mouse.c:mouse_invalidate_cursor",
+        "c:src/drivers/mouse.c:mouse_make_damage_region",
+        "c:src/drivers/mouse.c:mouse_map_buttons",
+        "c:src/drivers/mouse.c:mouse_present_cursor",
+        "c:src/drivers/mouse.c:mouse_present_damage_region",
+        "c:src/drivers/mouse.c:mouse_process_events",
+        "c:src/drivers/mouse.c:mouse_process_raw_byte",
+        "c:src/drivers/mouse.c:mouse_read",
+        "c:src/drivers/mouse.c:mouse_report_queue_overflow",
+        "c:src/drivers/mouse.c:mouse_reset_state",
+        "c:src/drivers/mouse.c:mouse_restore_interrupts",
+        "c:src/drivers/mouse.c:mouse_scale_delta",
+        "c:src/drivers/mouse.c:mouse_set_acceleration",
+        "c:src/drivers/mouse.c:mouse_set_callback",
+        "c:src/drivers/mouse.c:mouse_set_primary_button",
+        "c:src/drivers/mouse.c:mouse_set_sample_rate",
+        "c:src/drivers/mouse.c:mouse_set_speed",
+        "c:src/drivers/mouse.c:mouse_suspend_interrupts",
+        "c:src/drivers/mouse.c:mouse_wait",
+        "c:src/drivers/mouse.c:mouse_write",
+        "c:src/drivers/mouse.c:mouse_write_ack",
+        "c:src/drivers/mouse.c:outb"
+      ],
+      "tags": [
+        "host",
+        "drivers",
+        "input",
+        "mouse",
+        "ps2",
+        "limits",
+        "recovery",
+        "coverage"
+      ],
+      "status": "AUTOMATED"
     },
     {
       "id": "host:drivers:pci",

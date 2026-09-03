@@ -125,13 +125,23 @@ static int32_t mouse_accumulate_delta(int32_t current, int32_t delta) {
 }
 
 static uint8_t inb(uint16_t port) {
+#if defined(ZEPHYROS_HOST_TEST)
+    extern uint8_t mouse_host_inb(uint16_t port);
+    return mouse_host_inb(port);
+#else
     uint8_t result;
     asm volatile("inb %1, %0" : "=a"(result) : "Nd"(port));
     return result;
+#endif
 }
 
 static void outb(uint16_t port, uint8_t val) {
+#if defined(ZEPHYROS_HOST_TEST)
+    extern void mouse_host_outb(uint16_t port, uint8_t value);
+    mouse_host_outb(port, val);
+#else
     asm volatile("outb %0, %1" : : "a"(val), "Nd"(port));
+#endif
 }
 
 static int mouse_wait(uint8_t a_type) {
@@ -603,16 +613,24 @@ static void mouse_bottom_half(void* context) {
 /* ========== Inicializacao ========== */
 
 static uint32_t mouse_suspend_interrupts(void) {
+#if defined(ZEPHYROS_HOST_TEST)
+    return 0U;
+#else
     uint32_t flags;
 
     asm volatile("pushf\n\tpop %0\n\tcli" : "=r"(flags) : : "memory");
     return flags;
+#endif
 }
 
 static void mouse_restore_interrupts(uint32_t flags) {
+#if defined(ZEPHYROS_HOST_TEST)
+    (void)flags;
+#else
     if (flags & MOUSE_EFLAGS_INTERRUPT_ENABLE) {
         asm volatile("sti" : : : "memory");
     }
+#endif
 }
 
 static int mouse_enqueue_packet(const mouse_packet_t* value) {

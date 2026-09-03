@@ -1290,6 +1290,25 @@ funcoes e warnings tratados como erro. O relatorio fica em
 status `PASS`, nenhum endereco desconhecido ou ambiguo e deixar o controlador
 falso, paginas DMA, filas e estado de IRQ restaurados.
 
+## Driver de mouse: teste host-only
+
+O caso `host:drivers:mouse` usa uma controladora PS/2, IRQ12, fila de entrada e
+framebuffer VESA falsos no processo host. Ele cobre inicializacao com
+Intellimouse, fallback de tres bytes, ACK invalido, timeout, eventos de
+movimento, botoes e roda, coalescencia, cursor, configuracao, limites,
+recuperacao e limpeza. Nenhuma instrucao de I/O privilegiado ou hardware real
+e executada pelo teste.
+
+```text
+make test-mouse-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O alvo exige compilador C nativo e `nm`, compila com instrumentacao de funcoes
+e warnings tratados como erro. O relatorio fica em
+`build/test-results/mouse-host/coverage.json`; uma execucao `PASS` deve ter
+status `PASS`, nenhum endereco desconhecido ou ambiguo e deixar as filas,
+estado da controladora, cursor e framebuffer falsos restritos ao processo.
+
 ## TST7: regressao continua
 
 O runner TST7 e independente do provedor de CI. O modo `quick` executa as

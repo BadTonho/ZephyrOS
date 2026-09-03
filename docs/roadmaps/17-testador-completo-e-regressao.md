@@ -1541,6 +1541,24 @@ pendente.
   4.529 `COVERED`, 2.673 `PENDING` e 117 casos. O fechamento integral, o gate
   estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Drivers/mouse concluido em 2026-09-03: foi criado o caso
+  host-only `host:drivers:mouse` e o alvo `make test-mouse-host`. A fixture
+  simulou a controladora PS/2, IRQ12, fila de entrada, framebuffer VESA e
+  respostas Intellimouse para exercitar inicializacao, fallback de tres bytes,
+  eventos de movimento, botoes e roda, coalescencia, cursor, configuracao,
+  timeouts, ACK invalido, indisponibilidade, recuperacao e limpeza. O relatorio
+  instrumentado `build/test-results/mouse-host/coverage.json` terminou `PASS`,
+  resolveu as 46 superficies de `src/drivers/mouse.c` e as 13 APIs publicas
+  correspondentes, sem enderecos desconhecidos ou ambiguos. Foram executados
+  `make q3check`, `make clean`, `make`,
+  `make test-mouse-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`, a
+  sincronizacao, renderizacao e validacao do catalogo e `git diff --check`;
+  todos passaram. O build completo manteve apenas warnings legados em modulos
+  nao relacionados ao mouse. O catalogo registra 7.204 superficies, 4.665
+  `COVERED`, 2.539 `PENDING` e 120 casos.
+  O fechamento integral, o gate estrito e a validacao TST7 completa continuam
+  pendentes.
+
 - Incremento Drivers/video concluido em 2026-09-03: foi criado o caso host-only
   `host:drivers:video` e o alvo `make test-video-host`. A fixture usa
   framebuffer, fonte, VESA, mouse e logs falsos para exercitar inicializacao,

@@ -4384,6 +4384,58 @@
         "status": "AUTOMATED"
       },
       "evidence": "make test-rtl8139-host PASS com PCI, portas I/O, MAC, DMA, RX/TX, IRQ, bottom-half, timeout, recuperacao, fixtures invalidas e cobertura instrumentada completa"
+    },
+    {
+      "id": "mouse-host-dynamic",
+      "domain": "drivers-mouse",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:drivers:mouse"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/mouse-host/coverage.json",
+      "coverage_sources": [
+        "src/drivers/mouse.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:drivers:mouse",
+        "scenario": "Contrato host-only do driver PS/2 com controladora, IRQ12, cursor e eventos simulados",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "ps2-mouse-ports-irq12-vesa-falso"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "validar inicializacao, protocolo wheel e fallback, IRQ12, filas, eventos, cursor, configuracao, limites, falhas e limpeza",
+        "expected": "eventos validos chegam ao callback, configuracoes respeitam limites e fixtures invalidas retornam erros canonicos sem I/O privilegiado",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente portas PS/2, IRQ, fila de entrada, framebuffer VESA e dispositivos falsos no processo host",
+        "cleanup": "estado da controladora, fila, cursor e framebuffer falso permanecem restritos ao processo; manifesto, logs e cobertura preservados",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "drivers",
+          "input",
+          "mouse",
+          "ps2",
+          "limits",
+          "recovery",
+          "coverage"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "make test-mouse-host PASS com inicializacao PS/2, Intellimouse, fallback, IRQ12, eventos, cursor, configuracao, timeouts, erros de ACK, recuperacao e cobertura instrumentada completa"
     }
   ]
 }
