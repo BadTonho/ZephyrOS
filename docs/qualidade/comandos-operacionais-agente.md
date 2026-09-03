@@ -444,6 +444,15 @@ executar `lgdt` ou trocar segmentos; o relatorio fica em
 make test-tss-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-speaker-host` compila o driver PC speaker real com portas PIT e
+controle simulados. A fixture cobre inicializacao, silencio, frequencia zero,
+beep, melody e esperas limitadas por ticks sem executar I/O privilegiado ou
+`hlt`; o relatorio fica em `build/test-results/speaker-host/`:
+
+```text
+make test-speaker-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O caso `test-shell-input-host` exercita a entrada do Shell com terminal,
 historico, navegacao para cima/baixo, edicao, teclas de rolagem, cancelamento,
 bloqueio, modificadores e limite do buffer. A fixture usa apenas video,

@@ -4540,3 +4540,14 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   as operacoes de portas e flags originais. O catalogo registra 7.196
   superficies, 4.251 `COVERED`, 2.945 `PENDING` e 97 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
+
+- Incremento Drivers/Speaker concluido em 2026-09-02: foi criado o caso
+  host-only `host:drivers:speaker` e o alvo `make test-speaker-host` com portas
+  PIT e PC speaker simuladas e cobertura dinamica. A fixture exercitou
+  inicializacao, desligamento, frequencia zero, beep, melody, duracoes e espera
+  por ticks. A execucao terminou `PASS`, sem enderecos desconhecidos ou
+  ambiguos, resolvendo as duas superficies pendentes de `src/drivers/speaker.c`;
+  o build freestanding preserva I/O e `hlt`, enquanto o host usa somente o
+  backend de portas falso. O catalogo registra 7.196 superficies, 4.258
+  `COVERED`, 2.938 `PENDING` e 99 casos. O fechamento integral, o gate estrito
+  e a validacao TST7 completa continuam pendentes.

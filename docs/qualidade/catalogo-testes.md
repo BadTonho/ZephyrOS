@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7196**
-- Casos de teste: **98**
+- Casos de teste: **99**
 - Superfícies aposentadas: **22**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4256 |
+| `COVERED` | 4258 |
 | `MANUAL` | 0 |
-| `PENDING` | 2940 |
+| `PENDING` | 2938 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 98 |
+| `AUTOMATED` | 99 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -990,10 +990,10 @@
 | `api:src/include/drivers/serial.h:serial_is_ready` | `src/include/drivers/serial.h` | `serial_is_ready` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/serial.h:serial_read_byte` | `src/include/drivers/serial.h` | `serial_read_byte` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/serial.h:serial_write_text` | `src/include/drivers/serial.h` | `serial_write_text` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/speaker.h:speaker_beep` | `src/include/drivers/speaker.h` | `speaker_beep` | `drivers` | `COVERED` | 1 |
-| `api:src/include/drivers/speaker.h:speaker_init` | `src/include/drivers/speaker.h` | `speaker_init` | `drivers` | `COVERED` | 1 |
-| `api:src/include/drivers/speaker.h:speaker_off` | `src/include/drivers/speaker.h` | `speaker_off` | `drivers` | `COVERED` | 1 |
-| `api:src/include/drivers/speaker.h:speaker_play_melody` | `src/include/drivers/speaker.h` | `speaker_play_melody` | `drivers` | `COVERED` | 1 |
+| `api:src/include/drivers/speaker.h:speaker_beep` | `src/include/drivers/speaker.h` | `speaker_beep` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/speaker.h:speaker_init` | `src/include/drivers/speaker.h` | `speaker_init` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/speaker.h:speaker_off` | `src/include/drivers/speaker.h` | `speaker_off` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/speaker.h:speaker_play_melody` | `src/include/drivers/speaker.h` | `speaker_play_melody` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/tss.h:tss_init` | `src/include/drivers/tss.h` | `tss_init` | `drivers` | `COVERED` | 1 |
 | `api:src/include/drivers/tss.h:tss_is_ready` | `src/include/drivers/tss.h` | `tss_is_ready` | `drivers` | `COVERED` | 1 |
 | `api:src/include/drivers/tss.h:tss_set_kernel_stack` | `src/include/drivers/tss.h` | `tss_set_kernel_stack` | `drivers` | `COVERED` | 1 |
@@ -4373,12 +4373,12 @@
 | `c:src/drivers/serial.c:serial_restore_interrupts` | `src/drivers/serial.c` | `serial_restore_interrupts` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/serial.c:serial_suspend_interrupts` | `src/drivers/serial.c` | `serial_suspend_interrupts` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/serial.c:serial_write_text` | `src/drivers/serial.c` | `serial_write_text` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/speaker.c:inb` | `src/drivers/speaker.c` | `inb` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/speaker.c:outb` | `src/drivers/speaker.c` | `outb` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/speaker.c:speaker_beep` | `src/drivers/speaker.c` | `speaker_beep` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/speaker.c:speaker_init` | `src/drivers/speaker.c` | `speaker_init` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/speaker.c:speaker_off` | `src/drivers/speaker.c` | `speaker_off` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/speaker.c:speaker_play_melody` | `src/drivers/speaker.c` | `speaker_play_melody` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/speaker.c:inb` | `src/drivers/speaker.c` | `inb` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/speaker.c:outb` | `src/drivers/speaker.c` | `outb` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/speaker.c:speaker_beep` | `src/drivers/speaker.c` | `speaker_beep` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/speaker.c:speaker_init` | `src/drivers/speaker.c` | `speaker_init` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/speaker.c:speaker_off` | `src/drivers/speaker.c` | `speaker_off` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/speaker.c:speaker_play_melody` | `src/drivers/speaker.c` | `speaker_play_melody` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/timer.c:outb` | `src/drivers/timer.c` | `outb` | `drivers` | `COVERED` | 5 |
 | `c:src/drivers/timer.c:timer_cancel` | `src/drivers/timer.c` | `timer_cancel` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/timer.c:timer_copy_active` | `src/drivers/timer.c` | `timer_copy_active` | `drivers` | `COVERED` | 1 |
@@ -7380,6 +7380,7 @@
 | `qemu:tst6:stress:kernel` | `qemu` | `tst6` | `qemu:tst6:stress:kernel` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | paging, heap, SLAB, processos e threads estao READY | repetir ciclos deterministas de memoria e execucao sob teto obrigatorio | invariantes estaveis permanecem iguais e a primeira falha interrompe a suite | overflow, vazamento, deadlock, timeout, protocolo ou QEMU | alocacoes e objetos temporarios de cada ciclo em snapshot | devolver paginas, destruir objetos e registrar seed e iteracao |
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
+| `host:drivers:speaker` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver speaker real com portas PIT e PC speaker simuladas | inicializacao, desligamento, tons, melody e espera por ticks respeitam o contrato sem acessar I/O privilegiado ou executar hlt no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente registradores PIT e PC speaker estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -8813,8 +8814,6 @@
 - `c:src/drivers/rtl8811cu.c:rtl8811cu_service_pending`
 - `c:src/drivers/rtl8811cu.c:rtl8811cu_state_name`
 - `c:src/drivers/rtl8811cu.c:rtl8811cu_validate_state`
-- `c:src/drivers/speaker.c:speaker_init`
-- `c:src/drivers/speaker.c:speaker_play_melody`
 - `c:src/drivers/uhci.c:uhci_allocate`
 - `c:src/drivers/uhci.c:uhci_allocate_dma`
 - `c:src/drivers/uhci.c:uhci_bulk_transfer`

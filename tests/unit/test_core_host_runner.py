@@ -182,6 +182,17 @@ class CoreHostRunnerTests(unittest.TestCase):
         self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
                       "test_tss_host.c", sources)
 
+    def test_speaker_case_has_port_fixture_sources(self):
+        result_dir, binary, sources, suite = core_host_runner.case_configuration(
+            "host:drivers:speaker")
+        self.assertEqual(suite, "speaker-host")
+        self.assertEqual(result_dir, core_host_runner.SPEAKER_RESULT_DIR)
+        self.assertEqual(binary, core_host_runner.SPEAKER_BINARY)
+        self.assertIn(core_host_runner.ROOT / "src" / "drivers" / "speaker.c",
+                      sources)
+        self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
+                      "test_speaker_host.c", sources)
+
 
 if __name__ == "__main__":
     unittest.main()
