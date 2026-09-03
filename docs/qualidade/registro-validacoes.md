@@ -4931,8 +4931,8 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `make test-rtc-status-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`,
   `python tools/test_catalog.py sync`, `python tools/test_catalog.py render`,
   `make catalog-test` e a contagem de pendencias; todos passaram nesta etapa.
-  O catalogo registra 7.209 superficies, 4.766 `COVERED`, 2.443 `PENDING` e
-  124 casos. O fechamento integral, o gate estrito e a validacao TST7 completa
+  O catalogo registra 7.219 superficies, 4.910 `COVERED`, 2.309 `PENDING` e
+  128 casos. O fechamento integral, o gate estrito e a validacao TST7 completa
   continuam pendentes.
 
 - Incremento Drivers/IDT concluido em 2026-09-03. Foi criado o caso host-only
