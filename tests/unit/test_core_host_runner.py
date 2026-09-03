@@ -259,6 +259,17 @@ class CoreHostRunnerTests(unittest.TestCase):
         self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
                       "test_display_host.c", sources)
 
+    def test_usb_transport_case_has_dispatch_fixture_sources(self):
+        result_dir, binary, sources, suite = core_host_runner.case_configuration(
+            "host:core:usb-transport")
+        self.assertEqual(suite, "usb-transport-host")
+        self.assertEqual(result_dir, core_host_runner.USB_TRANSPORT_RESULT_DIR)
+        self.assertEqual(binary, core_host_runner.USB_TRANSPORT_BINARY)
+        self.assertIn(core_host_runner.ROOT / "src" / "core" /
+                      "usb_transport.c", sources)
+        self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
+                      "test_usb_transport_host.c", sources)
+
     def test_shell_core_case_has_shell_fixture_sources(self):
         result_dir, binary, sources, suite = core_host_runner.case_configuration(
             "host:shell:core")

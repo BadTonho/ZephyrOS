@@ -539,6 +539,12 @@ SHELL_CORE_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_shell_host.c",
     ROOT / "src" / "shell" / "shell.c",
 )
+USB_TRANSPORT_RESULT_DIR = ROOT / "build" / "test-results" / "usb-transport-host"
+USB_TRANSPORT_BINARY = ROOT / "build" / "tests" / "test_usb_transport_host.exe"
+USB_TRANSPORT_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_usb_transport_host.c",
+    ROOT / "src" / "core" / "usb_transport.c",
+)
 SOURCE_FILES = CORE_SOURCE_FILES
 
 
@@ -697,6 +703,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return DISPLAY_RESULT_DIR, DISPLAY_BINARY, DISPLAY_SOURCE_FILES, "display-host"
     if case_id == "host:shell:core":
         return SHELL_CORE_RESULT_DIR, SHELL_CORE_BINARY, SHELL_CORE_SOURCE_FILES, "shell-core-host"
+    if case_id == "host:core:usb-transport":
+        return (USB_TRANSPORT_RESULT_DIR, USB_TRANSPORT_BINARY,
+                USB_TRANSPORT_SOURCE_FILES, "usb-transport-host")
     raise ValueError(f"caso_host_invalido:{case_id}")
 
 
@@ -885,7 +894,8 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:core:test-coverage",
                                  "host:shell:input", "host:shell:hosted",
                                  "host:shell:command-utils",
-                                 "host:gui:display", "host:shell:core"))
+                                 "host:gui:display", "host:shell:core",
+                                 "host:core:usb-transport"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
     return parser.parse_args()

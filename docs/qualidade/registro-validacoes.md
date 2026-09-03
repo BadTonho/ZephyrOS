@@ -4644,3 +4644,17 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   superficies, 4.294 `COVERED` e 2.904 `PENDING`; os 63 casos host-only do
   registro passaram nesta rodada. O fechamento integral, o gate estrito e a
   validacao TST7 completa continuam pendentes.
+
+- Incremento Core/usb_transport concluido em 2026-09-03: foi criado o caso
+  host-only `host:core:usb-transport` e o alvo `make test-usb-transport-host`
+  com backends EHCI e UHCI falsos. A fixture exercitou argumentos nulos,
+  controlador desconhecido, controle, Bulk, reset de toggles, submissao e
+  cancelamento de Interrupt, validando `ERR_NULL`, `ERR_UNAVAILABLE` e o
+  encaminhamento integral dos argumentos. A execucao instrumentada terminou
+  `PASS`, com os sete simbolos de `src/core/usb_transport.c` resolvidos e sem
+  enderecos desconhecidos ou ambiguos. Foram executados `make q3check`,
+  `make clean`, `make`, os 66 casos host-only do registro, a sincronizacao e
+  renderizacao do catalogo, `make catalog-test` e 53 testes unitarios dos
+  runners; todos passaram. O catalogo registra 7.198 superficies, 4.320
+  `COVERED`, 2.878 `PENDING` e 107 casos. O fechamento integral, o gate
+  estrito e a validacao TST7 completa continuam pendentes.

@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7198**
-- Casos de teste: **106**
+- Casos de teste: **107**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4308 |
+| `COVERED` | 4320 |
 | `MANUAL` | 0 |
-| `PENDING` | 2890 |
+| `PENDING` | 2878 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 106 |
+| `AUTOMATED` | 107 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -785,11 +785,11 @@
 | `api:src/include/core/usb_manager.h:usb_manager_state_name` | `src/include/core/usb_manager.h` | `usb_manager_state_name` | `core` | `COVERED` | 4 |
 | `api:src/include/core/usb_manager.h:usb_manager_uhci_state_name` | `src/include/core/usb_manager.h` | `usb_manager_uhci_state_name` | `core` | `COVERED` | 4 |
 | `api:src/include/core/usb_manager.h:usb_manager_validate_state` | `src/include/core/usb_manager.h` | `usb_manager_validate_state` | `core` | `COVERED` | 4 |
-| `api:src/include/core/usb_transport.h:usb_transport_bulk_transfer` | `src/include/core/usb_transport.h` | `usb_transport_bulk_transfer` | `core` | `PENDING` | 0 |
-| `api:src/include/core/usb_transport.h:usb_transport_control_request` | `src/include/core/usb_transport.h` | `usb_transport_control_request` | `core` | `PENDING` | 0 |
-| `api:src/include/core/usb_transport.h:usb_transport_interrupt_cancel` | `src/include/core/usb_transport.h` | `usb_transport_interrupt_cancel` | `core` | `PENDING` | 0 |
-| `api:src/include/core/usb_transport.h:usb_transport_interrupt_submit` | `src/include/core/usb_transport.h` | `usb_transport_interrupt_submit` | `core` | `PENDING` | 0 |
-| `api:src/include/core/usb_transport.h:usb_transport_reset_bulk_toggles` | `src/include/core/usb_transport.h` | `usb_transport_reset_bulk_toggles` | `core` | `PENDING` | 0 |
+| `api:src/include/core/usb_transport.h:usb_transport_bulk_transfer` | `src/include/core/usb_transport.h` | `usb_transport_bulk_transfer` | `core` | `COVERED` | 1 |
+| `api:src/include/core/usb_transport.h:usb_transport_control_request` | `src/include/core/usb_transport.h` | `usb_transport_control_request` | `core` | `COVERED` | 1 |
+| `api:src/include/core/usb_transport.h:usb_transport_interrupt_cancel` | `src/include/core/usb_transport.h` | `usb_transport_interrupt_cancel` | `core` | `COVERED` | 1 |
+| `api:src/include/core/usb_transport.h:usb_transport_interrupt_submit` | `src/include/core/usb_transport.h` | `usb_transport_interrupt_submit` | `core` | `COVERED` | 1 |
+| `api:src/include/core/usb_transport.h:usb_transport_reset_bulk_toggles` | `src/include/core/usb_transport.h` | `usb_transport_reset_bulk_toggles` | `core` | `COVERED` | 1 |
 | `api:src/include/core/video.h:video_backspace` | `src/include/core/video.h` | `video_backspace` | `core` | `COVERED` | 4 |
 | `api:src/include/core/video.h:video_begin_update` | `src/include/core/video.h` | `video_begin_update` | `core` | `COVERED` | 4 |
 | `api:src/include/core/video.h:video_clear` | `src/include/core/video.h` | `video_clear` | `core` | `COVERED` | 4 |
@@ -3813,13 +3813,13 @@
 | `c:src/core/usb_manager.c:usb_sync_hid_runtime` | `src/core/usb_manager.c` | `usb_sync_hid_runtime` | `core` | `COVERED` | 1 |
 | `c:src/core/usb_manager.c:usb_sync_msc_runtime` | `src/core/usb_manager.c` | `usb_sync_msc_runtime` | `core` | `COVERED` | 1 |
 | `c:src/core/usb_manager.c:usb_sync_recovery` | `src/core/usb_manager.c` | `usb_sync_recovery` | `core` | `COVERED` | 1 |
-| `c:src/core/usb_transport.c:usb_transport_bulk_transfer` | `src/core/usb_transport.c` | `usb_transport_bulk_transfer` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_transport.c:usb_transport_control_request` | `src/core/usb_transport.c` | `usb_transport_control_request` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_transport.c:usb_transport_interrupt_cancel` | `src/core/usb_transport.c` | `usb_transport_interrupt_cancel` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_transport.c:usb_transport_interrupt_submit` | `src/core/usb_transport.c` | `usb_transport_interrupt_submit` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_transport.c:usb_transport_is_ehci` | `src/core/usb_transport.c` | `usb_transport_is_ehci` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_transport.c:usb_transport_is_uhci` | `src/core/usb_transport.c` | `usb_transport_is_uhci` | `core` | `PENDING` | 0 |
-| `c:src/core/usb_transport.c:usb_transport_reset_bulk_toggles` | `src/core/usb_transport.c` | `usb_transport_reset_bulk_toggles` | `core` | `PENDING` | 0 |
+| `c:src/core/usb_transport.c:usb_transport_bulk_transfer` | `src/core/usb_transport.c` | `usb_transport_bulk_transfer` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_transport.c:usb_transport_control_request` | `src/core/usb_transport.c` | `usb_transport_control_request` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_transport.c:usb_transport_interrupt_cancel` | `src/core/usb_transport.c` | `usb_transport_interrupt_cancel` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_transport.c:usb_transport_interrupt_submit` | `src/core/usb_transport.c` | `usb_transport_interrupt_submit` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_transport.c:usb_transport_is_ehci` | `src/core/usb_transport.c` | `usb_transport_is_ehci` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_transport.c:usb_transport_is_uhci` | `src/core/usb_transport.c` | `usb_transport_is_uhci` | `core` | `COVERED` | 1 |
+| `c:src/core/usb_transport.c:usb_transport_reset_bulk_toggles` | `src/core/usb_transport.c` | `usb_transport_reset_bulk_toggles` | `core` | `COVERED` | 1 |
 | `c:src/core/wait.c:init_waitqueue_head` | `src/core/wait.c` | `init_waitqueue_head` | `core` | `COVERED` | 6 |
 | `c:src/core/wait.c:wait_channel_get_condition` | `src/core/wait.c` | `wait_channel_get_condition` | `core` | `COVERED` | 4 |
 | `c:src/core/wait.c:wait_channel_init` | `src/core/wait.c` | `wait_channel_init` | `core` | `COVERED` | 3 |
@@ -7302,6 +7302,7 @@
 | `host:core:test-coverage` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o coletor real com transporte serial falso e caminhos de limite | funcoes de registro, hash, formatacao e emissao produzem um relatorio ZCOV valido sem espera indefinida | compilador ausente, warning, cobertura incompleta, relatorio invalido, falha de assercao ou timeout | somente buffers estaticos e callbacks seriais falsos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:timer` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar timers one-shot e periodicos com IDT, PIC e scheduler simulados | handles, prazos, cancelamento, dispatch, callbacks, notifier e limpeza respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas estaticas do servico de timers no processo host | todos os timers e proprietarios sao destruidos e os artefatos sao preservados |
 | `host:core:usb-manager` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inventariar controladores UHCI, EHCI e fora do escopo, sincronizar drivers de classe, consultar portas e dispositivos, executar polling e refresh | estados, identificadores, agregacoes, limites, indisponibilidade e recuperacao preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente fixtures estaticos PCI, UHCI, EHCI, MSC e HID no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:core:usb-transport` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar entradas nulas, controladores desconhecidos e encaminhamento de controle, Bulk, toggles e Interrupt para EHCI e UHCI falsos | erros canonicos rejeitam entradas invalidas, controlador desconhecido retorna ERR_UNAVAILABLE e cada operacao chega ao backend selecionado sem hardware | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente contadores e argumentos estaticos dos backends EHCI e UHCI falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:wifi-manager` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inventariar candidatos PCI e USB, consultar interfaces, executar scan e conexao aberta com backends falsos | identificadores, estados, contadores, limites, indisponibilidade e recuperacao preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente fixtures estaticos PCI, USB e RTL8811CU no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:workqueue` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fixture de workqueue com espera controlada | autoteste, callbacks, filas, prioridades, limites e limpeza validos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico da workqueue e callbacks falsos no processo host | trabalhos destruidos, filas vazias, fallback restaurado e artefatos preservados |
 | `host:drivers:font` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inicializar o driver de fonte e consultar as dimensoes publicadas | font_init e idempotente e as dimensoes publicadas permanecem 8x16 | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabela estatica de fontes e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7505,11 +7506,6 @@
 - `api:src/include/core/update_system_slots.h:update_system_slots_reboot_preflight`
 - `api:src/include/core/update_system_slots.h:update_system_slots_stage_file`
 - `api:src/include/core/update_system_slots.h:update_system_slots_state_name`
-- `api:src/include/core/usb_transport.h:usb_transport_bulk_transfer`
-- `api:src/include/core/usb_transport.h:usb_transport_control_request`
-- `api:src/include/core/usb_transport.h:usb_transport_interrupt_cancel`
-- `api:src/include/core/usb_transport.h:usb_transport_interrupt_submit`
-- `api:src/include/core/usb_transport.h:usb_transport_reset_bulk_toggles`
 - `api:src/include/drivers/ac97.h:ac97_get_device`
 - `api:src/include/drivers/ac97.h:ac97_handler`
 - `api:src/include/drivers/ac97.h:ac97_init`
@@ -8475,13 +8471,6 @@
 - `c:src/core/update_system_slots.c:update_system_slots_reboot_preflight`
 - `c:src/core/update_system_slots.c:update_system_slots_stage_file`
 - `c:src/core/update_system_slots.c:update_system_slots_state_name`
-- `c:src/core/usb_transport.c:usb_transport_bulk_transfer`
-- `c:src/core/usb_transport.c:usb_transport_control_request`
-- `c:src/core/usb_transport.c:usb_transport_interrupt_cancel`
-- `c:src/core/usb_transport.c:usb_transport_interrupt_submit`
-- `c:src/core/usb_transport.c:usb_transport_is_ehci`
-- `c:src/core/usb_transport.c:usb_transport_is_uhci`
-- `c:src/core/usb_transport.c:usb_transport_reset_bulk_toggles`
 - `c:src/desktop/desktop.c:desktop_add_icon`
 - `c:src/desktop/desktop.c:desktop_drag_threshold_reached`
 - `c:src/desktop/desktop.c:desktop_draw`
