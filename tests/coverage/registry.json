@@ -1555,6 +1555,48 @@
       "evidence": "make test-net-socket-host PASS com handles geracionais, conexao, filas RX/TX, eventos, EOF, timeout, cancelamento, limites, reset e limpeza usando TCP, timer e VFS falsos"
     },
     {
+      "id": "socket-runtime-host-dynamic",
+      "domain": "network-socket-runtime",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:network:socket-runtime"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/socket-runtime-host/coverage.json",
+      "coverage_sources": [
+        "src/core/socket.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-socket-runtime-host PASS com backend TCP, adaptadores VFS, filas UNIX, espera cancelada, limites de capacidade, autoteste e limpeza; coverage.json instrumentado confirmou as funcoes de src/core/socket.c",
+      "case_definition": {
+        "id": "host:network:socket-runtime",
+        "scenario": "Runtime host-only dos sockets nativos com backends TCP, VFS e espera falsos",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "isolation": "fixture",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "transport": "TCP/VFS/wait fake"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "compilar e executar os caminhos TCP, adaptadores VFS, filas UNIX, espera cancelada, limites e autoteste dos sockets",
+        "expected": "operacoes validas preservam o estado publicado, erros canonicos permanecem observaveis e nenhum socket, fila ou buffer residual permanece",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente estado estatico dos sockets e backends falsos no processo host",
+        "cleanup": "sockets, descritores, filas, SKBs falsos e estado global restaurados; manifestos, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": []
+      }
+    },
+    {
       "id": "network-ipv4-host",
       "domain": "network-ipv4",
       "owner": "quality",

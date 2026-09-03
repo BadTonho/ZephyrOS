@@ -1497,6 +1497,25 @@ pendente.
   7.196 superficies, 3.953 `COVERED`, 3.243 `PENDING` e 86 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Network/socket runtime concluido em 2026-09-03: foi criado o caso
+  host-only `host:network:socket-runtime` e o alvo
+  `make test-socket-runtime-host`. A fixture conecta o `src/core/socket.c`
+  real a backends falsos de TCP, VFS, filas de espera, SKB e processo, sem
+  rede ou hardware. Foram exercitados inicializacao idempotente, criacao,
+  bind/listen/connect/accept, envio e recepcao TCP, EOF, erros, polling,
+  adaptadores VFS, filas UNIX, cancelamento, capacidade e autoteste com
+  limpeza do estado global.
+
+  `make test-socket-runtime-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
+  terminou `PASS`. O relatorio instrumentado
+  `build/test-results/socket-runtime-host/coverage.json` resolveu as 64
+  funcoes de `src/core/socket.c`, sem enderecos desconhecidos ou ambiguos.
+  Tambem passaram `make test-net-socket-host`, os testes unitarios dos
+  runners, sincronizacao/renderizacao e `make catalog-test`. O catalogo
+  registra 7.219 superficies, 4.867 `COVERED`, 2.352 `PENDING` e 127 casos.
+  O fechamento integral, o gate estrito e a validacao TST7 completa continuam
+  pendentes.
+
 - Incremento Drivers/RTL8139 concluido em: 2026-09-03 (America/Sao_Paulo).
   Foi criado o caso host-only `host:drivers:rtl8139` e o alvo
   `make test-rtl8139-host`. A fixture simulou PCI, portas I/O, DMA,

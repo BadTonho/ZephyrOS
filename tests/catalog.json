@@ -12425,12 +12425,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst5:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/socket.h:socket_bind",
@@ -12448,12 +12449,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst5:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/socket.h:socket_close",
@@ -12471,12 +12473,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst5:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/socket.h:socket_connect",
@@ -12494,12 +12497,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst5:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/socket.h:socket_create",
@@ -12517,12 +12521,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst5:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/socket.h:socket_family_name",
@@ -12540,11 +12545,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst5:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/socket.h:socket_get_info",
@@ -12562,12 +12568,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst5:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/socket.h:socket_get_status",
@@ -12585,12 +12592,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst5:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/socket.h:socket_init",
@@ -12608,11 +12616,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst5:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/socket.h:socket_listen",
@@ -12630,12 +12639,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst5:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/socket.h:socket_recv",
@@ -12653,12 +12663,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst5:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/socket.h:socket_self_test",
@@ -12676,12 +12687,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst5:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/socket.h:socket_send",
@@ -12699,12 +12711,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst5:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/socket.h:socket_set_nonblocking",
@@ -12722,12 +12735,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst5:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/socket.h:socket_state_name",
@@ -12745,11 +12759,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst5:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/socket.h:socket_validate_state",
@@ -12767,12 +12782,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst5:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/spinlock.h:spinlock_acquire",
@@ -66190,11 +66206,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_address_clear",
@@ -66212,11 +66229,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_address_equal",
@@ -66234,11 +66252,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_address_valid",
@@ -66256,11 +66275,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_allocate",
@@ -66278,11 +66298,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_bind",
@@ -66300,11 +66321,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_close",
@@ -66322,11 +66344,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_connect",
@@ -66344,11 +66367,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_copy_address",
@@ -66366,11 +66390,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_create",
@@ -66388,11 +66413,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_destroy",
@@ -66410,11 +66436,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_drop_buffer",
@@ -66432,11 +66459,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_family_name",
@@ -66452,9 +66480,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_fill_info",
@@ -66472,12 +66503,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst5:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_find_fd",
@@ -66493,9 +66525,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_get_info",
@@ -66513,12 +66548,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst5:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_get_status",
@@ -66536,12 +66572,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst5:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_index_locked",
@@ -66559,11 +66596,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_init",
@@ -66579,9 +66617,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_listen",
@@ -66599,11 +66640,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_pending_pop_locked",
@@ -66619,9 +66661,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_pending_remove_locked",
@@ -66655,9 +66700,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_queue_clear",
@@ -66675,11 +66723,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_queue_front_locked",
@@ -66695,9 +66744,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_queue_pop_locked",
@@ -66713,9 +66765,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_queue_push_locked",
@@ -66733,11 +66788,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_record_failure_locked",
@@ -66753,9 +66809,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_recv",
@@ -66773,11 +66832,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_self_test",
@@ -66795,11 +66855,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_send",
@@ -66817,11 +66878,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_set_nonblocking",
@@ -66839,11 +66901,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_state_name",
@@ -66859,9 +66922,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_tcp_accept",
@@ -66877,9 +66943,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_tcp_close",
@@ -66895,9 +66964,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_tcp_connect",
@@ -66913,9 +66985,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_tcp_listen",
@@ -66931,9 +67006,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_tcp_recv",
@@ -66949,9 +67027,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_tcp_send",
@@ -66967,9 +67048,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_tcp_unavailable",
@@ -66985,9 +67069,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_tcp_wait",
@@ -67003,9 +67090,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_test_block",
@@ -67023,11 +67113,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_test_count",
@@ -67045,11 +67136,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_test_wake",
@@ -67067,11 +67159,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_test_yield",
@@ -67111,11 +67204,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_unix_bind",
@@ -67133,11 +67227,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_unix_close",
@@ -67155,11 +67250,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_unix_connect",
@@ -67177,11 +67273,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_unix_listen",
@@ -67199,11 +67296,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_unix_path_length",
@@ -67221,11 +67319,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_unix_recv",
@@ -67243,11 +67342,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_unix_send",
@@ -67265,11 +67365,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_validate_state",
@@ -67287,11 +67388,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_vfs_close",
@@ -67309,11 +67411,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_vfs_ioctl",
@@ -67329,9 +67432,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_vfs_lseek",
@@ -67347,9 +67453,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_vfs_open",
@@ -67367,11 +67476,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_vfs_poll",
@@ -67387,9 +67497,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_vfs_read",
@@ -67405,9 +67518,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_vfs_sync",
@@ -67423,9 +67539,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_vfs_write",
@@ -67441,9 +67560,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_wait_condition",
@@ -67459,9 +67581,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_wait_local",
@@ -67477,9 +67602,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_wait_owner",
@@ -67497,11 +67625,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_wake",
@@ -67519,11 +67648,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:network:socket-runtime",
         "qemu:tst4:network",
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/string.c:kmemcpy",
@@ -158623,6 +158753,112 @@
         "socket",
         "wait",
         "coverage"
+      ]
+    },
+    {
+      "id": "host:network:socket-runtime",
+      "scenario": "Runtime host-only dos sockets nativos com backends TCP, VFS e espera falsos",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "isolation": "fixture",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "transport": "TCP/VFS/wait fake"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "compilar e executar os caminhos TCP, adaptadores VFS, filas UNIX, espera cancelada, limites e autoteste dos sockets",
+      "expected": "operacoes validas preservam o estado publicado, erros canonicos permanecem observaveis e nenhum socket, fila ou buffer residual permanece",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente estado estatico dos sockets e backends falsos no processo host",
+      "cleanup": "sockets, descritores, filas, SKBs falsos e estado global restaurados; manifestos, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/socket.h:socket_accept",
+        "api:src/include/core/socket.h:socket_bind",
+        "api:src/include/core/socket.h:socket_close",
+        "api:src/include/core/socket.h:socket_connect",
+        "api:src/include/core/socket.h:socket_create",
+        "api:src/include/core/socket.h:socket_family_name",
+        "api:src/include/core/socket.h:socket_get_info",
+        "api:src/include/core/socket.h:socket_get_status",
+        "api:src/include/core/socket.h:socket_init",
+        "api:src/include/core/socket.h:socket_listen",
+        "api:src/include/core/socket.h:socket_recv",
+        "api:src/include/core/socket.h:socket_self_test",
+        "api:src/include/core/socket.h:socket_send",
+        "api:src/include/core/socket.h:socket_set_nonblocking",
+        "api:src/include/core/socket.h:socket_state_name",
+        "api:src/include/core/socket.h:socket_validate_state",
+        "c:src/core/socket.c:socket_accept",
+        "c:src/core/socket.c:socket_address_clear",
+        "c:src/core/socket.c:socket_address_equal",
+        "c:src/core/socket.c:socket_address_valid",
+        "c:src/core/socket.c:socket_allocate",
+        "c:src/core/socket.c:socket_bind",
+        "c:src/core/socket.c:socket_close",
+        "c:src/core/socket.c:socket_connect",
+        "c:src/core/socket.c:socket_copy_address",
+        "c:src/core/socket.c:socket_create",
+        "c:src/core/socket.c:socket_destroy",
+        "c:src/core/socket.c:socket_drop_buffer",
+        "c:src/core/socket.c:socket_family_name",
+        "c:src/core/socket.c:socket_fill_info",
+        "c:src/core/socket.c:socket_find_fd",
+        "c:src/core/socket.c:socket_get_info",
+        "c:src/core/socket.c:socket_get_status",
+        "c:src/core/socket.c:socket_index_locked",
+        "c:src/core/socket.c:socket_init",
+        "c:src/core/socket.c:socket_listen",
+        "c:src/core/socket.c:socket_pending_pop_locked",
+        "c:src/core/socket.c:socket_poll_revents",
+        "c:src/core/socket.c:socket_queue_clear",
+        "c:src/core/socket.c:socket_queue_front_locked",
+        "c:src/core/socket.c:socket_queue_pop_locked",
+        "c:src/core/socket.c:socket_queue_push_locked",
+        "c:src/core/socket.c:socket_record_failure_locked",
+        "c:src/core/socket.c:socket_recv",
+        "c:src/core/socket.c:socket_self_test",
+        "c:src/core/socket.c:socket_send",
+        "c:src/core/socket.c:socket_set_nonblocking",
+        "c:src/core/socket.c:socket_state_name",
+        "c:src/core/socket.c:socket_tcp_accept",
+        "c:src/core/socket.c:socket_tcp_close",
+        "c:src/core/socket.c:socket_tcp_connect",
+        "c:src/core/socket.c:socket_tcp_listen",
+        "c:src/core/socket.c:socket_tcp_recv",
+        "c:src/core/socket.c:socket_tcp_send",
+        "c:src/core/socket.c:socket_tcp_unavailable",
+        "c:src/core/socket.c:socket_tcp_wait",
+        "c:src/core/socket.c:socket_test_block",
+        "c:src/core/socket.c:socket_test_count",
+        "c:src/core/socket.c:socket_test_wake",
+        "c:src/core/socket.c:socket_unix_accept",
+        "c:src/core/socket.c:socket_unix_bind",
+        "c:src/core/socket.c:socket_unix_close",
+        "c:src/core/socket.c:socket_unix_connect",
+        "c:src/core/socket.c:socket_unix_listen",
+        "c:src/core/socket.c:socket_unix_path_length",
+        "c:src/core/socket.c:socket_unix_recv",
+        "c:src/core/socket.c:socket_unix_send",
+        "c:src/core/socket.c:socket_validate_state",
+        "c:src/core/socket.c:socket_vfs_close",
+        "c:src/core/socket.c:socket_vfs_ioctl",
+        "c:src/core/socket.c:socket_vfs_lseek",
+        "c:src/core/socket.c:socket_vfs_open",
+        "c:src/core/socket.c:socket_vfs_poll",
+        "c:src/core/socket.c:socket_vfs_read",
+        "c:src/core/socket.c:socket_vfs_sync",
+        "c:src/core/socket.c:socket_vfs_write",
+        "c:src/core/socket.c:socket_wait_condition",
+        "c:src/core/socket.c:socket_wait_local",
+        "c:src/core/socket.c:socket_wait_owner",
+        "c:src/core/socket.c:socket_wake"
       ]
     },
     {

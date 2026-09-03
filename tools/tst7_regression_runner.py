@@ -137,6 +137,7 @@ HOST_CASE_TARGETS = {
     "host:security:tls": "test-tls-host",
     "host:network:http": "test-http-host",
     "host:network:socket": "test-net-socket-host",
+    "host:network:socket-runtime": "test-socket-runtime-host",
     "host:memory:vma": "test-vma-host",
     "host:memory:paging": "test-paging-host",
     "host:memory:memory": "test-memory-host",
