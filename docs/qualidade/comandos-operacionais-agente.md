@@ -463,6 +463,16 @@ fica em `build/test-results/keyboard-host/`:
 make test-keyboard-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-protocol-adapter-host` compila o adaptador ZTEST real com o nucleo
+incremental, transporte serial, relogio e executor de casos simulados. A
+fixture cobre inicializacao, recepcao fragmentada, handshake, heartbeat, RUN,
+falha com fase, ABORT, panic, timeout e bloqueios sem acessar QEMU ou hardware;
+o relatorio fica em `build/test-results/protocol-adapter-host/`:
+
+```text
+make test-protocol-adapter-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O caso `test-shell-input-host` exercita a entrada do Shell com terminal,
 historico, navegacao para cima/baixo, edicao, teclas de rolagem, cancelamento,
 bloqueio, modificadores e limite do buffer. A fixture usa apenas video,

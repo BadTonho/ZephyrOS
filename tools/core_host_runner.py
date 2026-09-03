@@ -487,6 +487,13 @@ KEYBOARD_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_keyboard_host.c",
     ROOT / "src" / "drivers" / "keyboard.c",
 )
+PROTOCOL_ADAPTER_RESULT_DIR = ROOT / "build" / "test-results" / "protocol-adapter-host"
+PROTOCOL_ADAPTER_BINARY = ROOT / "build" / "tests" / "test_protocol_host.exe"
+PROTOCOL_ADAPTER_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_protocol_host.c",
+    ROOT / "src" / "core" / "test_protocol.c",
+    ROOT / "src" / "core" / "test_protocol_core.c",
+)
 SHELL_INPUT_RESULT_DIR = ROOT / "build" / "test-results" / "shell-input-host"
 SHELL_INPUT_BINARY = ROOT / "build" / "tests" / "test_shell_input_host.exe"
 SHELL_INPUT_SOURCE_FILES = (
@@ -638,6 +645,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return SPEAKER_RESULT_DIR, SPEAKER_BINARY, SPEAKER_SOURCE_FILES, "speaker-host"
     if case_id == "host:drivers:keyboard":
         return KEYBOARD_RESULT_DIR, KEYBOARD_BINARY, KEYBOARD_SOURCE_FILES, "keyboard-host"
+    if case_id == "host:tst2:protocol-adapter":
+        return (PROTOCOL_ADAPTER_RESULT_DIR, PROTOCOL_ADAPTER_BINARY,
+                PROTOCOL_ADAPTER_SOURCE_FILES, "protocol-adapter-host")
     if case_id == "host:shell:input":
         return (SHELL_INPUT_RESULT_DIR, SHELL_INPUT_BINARY,
                 SHELL_INPUT_SOURCE_FILES, "shell-input-host")
@@ -827,6 +837,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:drivers:tss",
                                  "host:drivers:speaker",
                                  "host:drivers:keyboard",
+                                 "host:tst2:protocol-adapter",
                                  "host:shell:input", "host:shell:command-utils"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)

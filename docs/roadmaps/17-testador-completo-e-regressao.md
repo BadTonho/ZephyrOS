@@ -1389,6 +1389,18 @@ pendente.
   `COVERED`, 2.928 `PENDING` e 100 casos. O fechamento integral, o gate estrito
   e a validacao TST7 completa continuam pendentes.
 
+- Incremento Core/ZTEST adapter concluido em 2026-09-02: foi criado o caso
+  host-only `host:tst2:protocol-adapter` com transporte serial, relogio e
+  executores de kernel simulados. A fixture exercitou inicializacao sem serial,
+  handshake fragmentado, `READY`, `HEARTBEAT`, `RUN`, `ABORT`, panic, timeout,
+  roteamento TST4/TST5/TST6, falha com fase e bloqueios antes de `READY`.
+  `make test-protocol-adapter-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
+  terminou `PASS`; o relatorio instrumentado cobriu as nove superficies
+  pendentes de `src/core/test_protocol.c`, sem enderecos desconhecidos ou
+  ambiguos. O catalogo registra 7.196 superficies, 4.277 `COVERED`, 2.919
+  `PENDING` e 101 casos. O fechamento integral, o gate estrito e a validacao
+  TST7 completa continuam pendentes.
+
 - Incremento Core/wifi_manager concluido em 2026-09-02: foi criado o caso
   host-only `host:core:wifi-manager` com fixtures estaticos de PCI, USB e
   RTL8811CU. A fixture exercitou formatacao e busca case-insensitive de IDs,
