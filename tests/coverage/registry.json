@@ -4650,6 +4650,59 @@
         "status": "AUTOMATED"
       },
       "evidence": "make test-ata-host PASS com descoberta ATA, identificacao, inventario, IRQ, PIO, flush, limites, retries, timeouts e cobertura instrumentada completa"
+    },
+    {
+      "id": "idt-host-dynamic",
+      "domain": "drivers-idt",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:drivers:idt"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/idt-host/coverage.json",
+      "coverage_sources": [
+        "src/drivers/idt.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:drivers:idt",
+        "scenario": "Contrato host-only da IDT, PIC e despacho de IRQ",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "idt-pic-flags-lidt-falsos"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "validar inicializacao, gates, handlers, IRQ compartilhada, mascaras PIC, syscall e caminho de panico",
+        "expected": "IDT e PIC publicam estado coerente; handlers e IRQs respeitam limites, duplicidade, EOI e erros canonicos sem instrucoes privilegiadas reais",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao, instrucao privilegiada executada ou timeout",
+        "effects": "somente tabelas IDT, estado PIC, flags, callbacks e panic longjmp no processo host",
+        "cleanup": "estado de IDT, PIC, handlers, ocorrencias, flags, logs e cobertura permanecem confinados ao processo host",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "drivers",
+          "idt",
+          "pic",
+          "irq",
+          "syscall",
+          "limits",
+          "recovery",
+          "coverage"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "make test-idt-host PASS com gates, handlers, IRQ compartilhada, PIC, syscall, panic controlado e cobertura instrumentada completa"
     }
   ]
 }
