@@ -20,9 +20,9 @@ typedef struct {
 
 static icon_registry_t registry;
 static desktop_bmp_cache_t desktop_bmps[ICON_DESKTOP_COUNT] = {
-    {"SHELL.BMP", {0}, ERR_UNAVAILABLE},
-    {"EXPLORER.BMP", {0}, ERR_UNAVAILABLE},
-    {"TASKMGR.BMP", {0}, ERR_UNAVAILABLE}
+    {.filename = "SHELL.BMP", .status = ERR_UNAVAILABLE},
+    {.filename = "EXPLORER.BMP", .status = ERR_UNAVAILABLE},
+    {.filename = "TASKMGR.BMP", .status = ERR_UNAVAILABLE}
 };
 static uint8_t emitted_warning_mask = 0;
 

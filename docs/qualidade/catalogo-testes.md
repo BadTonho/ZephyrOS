@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7198**
-- Casos de teste: **112**
+- Casos de teste: **113**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4363 |
+| `COVERED` | 4380 |
 | `MANUAL` | 0 |
-| `PENDING` | 2835 |
+| `PENDING` | 2818 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 112 |
+| `AUTOMATED` | 113 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -1514,20 +1514,20 @@
 | `api:src/include/ui/gui.h:gui_measure_scaled_text` | `src/include/ui/gui.h` | `gui_measure_scaled_text` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/gui.h:gui_set_theme` | `src/include/ui/gui.h` | `gui_set_theme` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/gui.h:gui_theme_name` | `src/include/ui/gui.h` | `gui_theme_name` | `ui` | `COVERED` | 3 |
-| `api:src/include/ui/icons.h:icons_draw_desktop_bitmap` | `src/include/ui/icons.h` | `icons_draw_desktop_bitmap` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/icons.h:icons_draw_desktop_bitmap_resized` | `src/include/ui/icons.h` | `icons_draw_desktop_bitmap_resized` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/icons.h:icons_get_desktop` | `src/include/ui/icons.h` | `icons_get_desktop` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/icons.h:icons_get_desktop_bitmap_status` | `src/include/ui/icons.h` | `icons_get_desktop_bitmap_status` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/icons.h:icons_get_fm` | `src/include/ui/icons.h` | `icons_get_fm` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/icons.h:icons_get_registry` | `src/include/ui/icons.h` | `icons_get_registry` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/icons.h:icons_get_tb` | `src/include/ui/icons.h` | `icons_get_tb` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/icons.h:icons_get_wm` | `src/include/ui/icons.h` | `icons_get_wm` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/icons.h:icons_init` | `src/include/ui/icons.h` | `icons_init` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/icons.h:icons_reset_defaults` | `src/include/ui/icons.h` | `icons_reset_defaults` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/icons.h:icons_set_desktop` | `src/include/ui/icons.h` | `icons_set_desktop` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/icons.h:icons_set_fm` | `src/include/ui/icons.h` | `icons_set_fm` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/icons.h:icons_set_tb` | `src/include/ui/icons.h` | `icons_set_tb` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/icons.h:icons_set_wm` | `src/include/ui/icons.h` | `icons_set_wm` | `ui` | `COVERED` | 2 |
+| `api:src/include/ui/icons.h:icons_draw_desktop_bitmap` | `src/include/ui/icons.h` | `icons_draw_desktop_bitmap` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/icons.h:icons_draw_desktop_bitmap_resized` | `src/include/ui/icons.h` | `icons_draw_desktop_bitmap_resized` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/icons.h:icons_get_desktop` | `src/include/ui/icons.h` | `icons_get_desktop` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/icons.h:icons_get_desktop_bitmap_status` | `src/include/ui/icons.h` | `icons_get_desktop_bitmap_status` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/icons.h:icons_get_fm` | `src/include/ui/icons.h` | `icons_get_fm` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/icons.h:icons_get_registry` | `src/include/ui/icons.h` | `icons_get_registry` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/icons.h:icons_get_tb` | `src/include/ui/icons.h` | `icons_get_tb` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/icons.h:icons_get_wm` | `src/include/ui/icons.h` | `icons_get_wm` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/icons.h:icons_init` | `src/include/ui/icons.h` | `icons_init` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/icons.h:icons_reset_defaults` | `src/include/ui/icons.h` | `icons_reset_defaults` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/icons.h:icons_set_desktop` | `src/include/ui/icons.h` | `icons_set_desktop` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/icons.h:icons_set_fm` | `src/include/ui/icons.h` | `icons_set_fm` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/icons.h:icons_set_tb` | `src/include/ui/icons.h` | `icons_set_tb` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/icons.h:icons_set_wm` | `src/include/ui/icons.h` | `icons_set_wm` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/settings.h:settings_close` | `src/include/ui/settings.h` | `settings_close` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/settings.h:settings_draw` | `src/include/ui/settings.h` | `settings_draw` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/settings.h:settings_get_mode` | `src/include/ui/settings.h` | `settings_get_mode` | `ui` | `COVERED` | 2 |
@@ -5509,24 +5509,24 @@
 | `c:src/gui/gui.c:gui_min_u32` | `src/gui/gui.c` | `gui_min_u32` | `gui` | `COVERED` | 3 |
 | `c:src/gui/gui.c:gui_set_theme` | `src/gui/gui.c` | `gui_set_theme` | `gui` | `COVERED` | 1 |
 | `c:src/gui/gui.c:gui_theme_name` | `src/gui/gui.c` | `gui_theme_name` | `gui` | `COVERED` | 1 |
-| `c:src/icons/icons.c:icons_draw_desktop_bitmap` | `src/icons/icons.c` | `icons_draw_desktop_bitmap` | `icons` | `PENDING` | 0 |
-| `c:src/icons/icons.c:icons_draw_desktop_bitmap_resized` | `src/icons/icons.c` | `icons_draw_desktop_bitmap_resized` | `icons` | `COVERED` | 2 |
-| `c:src/icons/icons.c:icons_get_desktop` | `src/icons/icons.c` | `icons_get_desktop` | `icons` | `PENDING` | 0 |
-| `c:src/icons/icons.c:icons_get_desktop_bitmap_status` | `src/icons/icons.c` | `icons_get_desktop_bitmap_status` | `icons` | `PENDING` | 0 |
-| `c:src/icons/icons.c:icons_get_fm` | `src/icons/icons.c` | `icons_get_fm` | `icons` | `PENDING` | 0 |
-| `c:src/icons/icons.c:icons_get_registry` | `src/icons/icons.c` | `icons_get_registry` | `icons` | `PENDING` | 0 |
-| `c:src/icons/icons.c:icons_get_tb` | `src/icons/icons.c` | `icons_get_tb` | `icons` | `PENDING` | 0 |
-| `c:src/icons/icons.c:icons_get_wm` | `src/icons/icons.c` | `icons_get_wm` | `icons` | `PENDING` | 0 |
-| `c:src/icons/icons.c:icons_init` | `src/icons/icons.c` | `icons_init` | `icons` | `PENDING` | 0 |
-| `c:src/icons/icons.c:icons_load_desktop_bmp` | `src/icons/icons.c` | `icons_load_desktop_bmp` | `icons` | `PENDING` | 0 |
-| `c:src/icons/icons.c:icons_release_desktop_bmps` | `src/icons/icons.c` | `icons_release_desktop_bmps` | `icons` | `PENDING` | 0 |
-| `c:src/icons/icons.c:icons_reset_defaults` | `src/icons/icons.c` | `icons_reset_defaults` | `icons` | `PENDING` | 0 |
-| `c:src/icons/icons.c:icons_set_defaults` | `src/icons/icons.c` | `icons_set_defaults` | `icons` | `PENDING` | 0 |
-| `c:src/icons/icons.c:icons_set_desktop` | `src/icons/icons.c` | `icons_set_desktop` | `icons` | `PENDING` | 0 |
-| `c:src/icons/icons.c:icons_set_fm` | `src/icons/icons.c` | `icons_set_fm` | `icons` | `PENDING` | 0 |
-| `c:src/icons/icons.c:icons_set_tb` | `src/icons/icons.c` | `icons_set_tb` | `icons` | `PENDING` | 0 |
-| `c:src/icons/icons.c:icons_set_wm` | `src/icons/icons.c` | `icons_set_wm` | `icons` | `PENDING` | 0 |
-| `c:src/icons/icons.c:icons_warn_once` | `src/icons/icons.c` | `icons_warn_once` | `icons` | `PENDING` | 0 |
+| `c:src/icons/icons.c:icons_draw_desktop_bitmap` | `src/icons/icons.c` | `icons_draw_desktop_bitmap` | `icons` | `COVERED` | 1 |
+| `c:src/icons/icons.c:icons_draw_desktop_bitmap_resized` | `src/icons/icons.c` | `icons_draw_desktop_bitmap_resized` | `icons` | `COVERED` | 3 |
+| `c:src/icons/icons.c:icons_get_desktop` | `src/icons/icons.c` | `icons_get_desktop` | `icons` | `COVERED` | 1 |
+| `c:src/icons/icons.c:icons_get_desktop_bitmap_status` | `src/icons/icons.c` | `icons_get_desktop_bitmap_status` | `icons` | `COVERED` | 1 |
+| `c:src/icons/icons.c:icons_get_fm` | `src/icons/icons.c` | `icons_get_fm` | `icons` | `COVERED` | 1 |
+| `c:src/icons/icons.c:icons_get_registry` | `src/icons/icons.c` | `icons_get_registry` | `icons` | `COVERED` | 1 |
+| `c:src/icons/icons.c:icons_get_tb` | `src/icons/icons.c` | `icons_get_tb` | `icons` | `COVERED` | 1 |
+| `c:src/icons/icons.c:icons_get_wm` | `src/icons/icons.c` | `icons_get_wm` | `icons` | `COVERED` | 1 |
+| `c:src/icons/icons.c:icons_init` | `src/icons/icons.c` | `icons_init` | `icons` | `COVERED` | 1 |
+| `c:src/icons/icons.c:icons_load_desktop_bmp` | `src/icons/icons.c` | `icons_load_desktop_bmp` | `icons` | `COVERED` | 1 |
+| `c:src/icons/icons.c:icons_release_desktop_bmps` | `src/icons/icons.c` | `icons_release_desktop_bmps` | `icons` | `COVERED` | 1 |
+| `c:src/icons/icons.c:icons_reset_defaults` | `src/icons/icons.c` | `icons_reset_defaults` | `icons` | `COVERED` | 1 |
+| `c:src/icons/icons.c:icons_set_defaults` | `src/icons/icons.c` | `icons_set_defaults` | `icons` | `COVERED` | 1 |
+| `c:src/icons/icons.c:icons_set_desktop` | `src/icons/icons.c` | `icons_set_desktop` | `icons` | `COVERED` | 1 |
+| `c:src/icons/icons.c:icons_set_fm` | `src/icons/icons.c` | `icons_set_fm` | `icons` | `COVERED` | 1 |
+| `c:src/icons/icons.c:icons_set_tb` | `src/icons/icons.c` | `icons_set_tb` | `icons` | `COVERED` | 1 |
+| `c:src/icons/icons.c:icons_set_wm` | `src/icons/icons.c` | `icons_set_wm` | `icons` | `COVERED` | 1 |
+| `c:src/icons/icons.c:icons_warn_once` | `src/icons/icons.c` | `icons_warn_once` | `icons` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:desktop_process_main` | `src/kernel/kernel.c` | `desktop_process_main` | `kernel` | `PENDING` | 0 |
 | `c:src/kernel/kernel.c:global_mouse_handler` | `src/kernel/kernel.c` | `global_mouse_handler` | `kernel` | `PENDING` | 0 |
 | `c:src/kernel/kernel.c:kernel_cancel_foreground_app` | `src/kernel/kernel.c` | `kernel_cancel_foreground_app` | `kernel` | `PENDING` | 0 |
@@ -7308,6 +7308,7 @@
 | `host:core:workqueue` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fixture de workqueue com espera controlada | autoteste, callbacks, filas, prioridades, limites e limpeza validos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico da workqueue e callbacks falsos no processo host | trabalhos destruidos, filas vazias, fallback restaurado e artefatos preservados |
 | `host:drivers:font` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inicializar o driver de fonte e consultar as dimensoes publicadas | font_init e idempotente e as dimensoes publicadas permanecem 8x16 | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabela estatica de fontes e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:keyboard` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver teclado real com controlador PS/2 e dependencias registradas simulados | scancodes, inicializacao, filtros, reset, metricas e falhas preservam o contrato sem executar CLI, STI ou I/O privilegiado no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente filas, metricas e portas estaticas do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:drivers:pci` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar leitura, escrita, varredura, inventario, multifuncao, limites e habilitacao de recursos PCI | dispositivos validos sao registrados, ausentes sao ignorados, limite retorna ERR_OVERFLOW e comandos aceitos sao publicados | compilador ausente, warning, cobertura incompleta, falha de assercao, acesso I/O real ou timeout | somente espaco de configuracao, inventario e contadores falsos no processo host; nenhum porto I/O real e acessado | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:rng` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver RNG real com capacidades e resultados RDRAND simulados | capacidade, estado, bytes gerados, falhas de hardware e codigos de erro preservam o contrato sem executar instrucoes privilegiadas no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado RNG e valores de entropia estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:rtc-status` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | consultar o estado inicial do RTC com destinos valido e nulo | rtc_get_status rejeita destino nulo e publica snapshot inicial estavel | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do RTC e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:serial` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver serial real com registradores UART simulados | inicializacao, leitura, filtragem, enfileiramento e flush respeitam o contrato sem acessar portas I/O reais | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado UART e fila de transmissao do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7359,6 +7360,7 @@
 | `host:tst2:protocol-core` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo disponivel | compilar e executar o fake transport do nucleo do protocolo | handshake, sequencia, CRC, entradas invalidas e eventos terminam sem bloqueio | compilador ausente, warning, falha de assercao ou timeout | somente buffers estaticos e transporte falso do teste | processo host encerrado e artefatos preservados pelo runner |
 | `host:tst3:string-compress` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo disponivel | compilar e executar buffers estaticos de strings e compressao | casos validos, vazios, limites, truncamento e overflow retornam o contrato esperado | compilador ausente, warning, falha de assercao ou timeout | somente buffers estaticos e stub de video_print | processo host encerrado e artefatos preservados pelo runner |
 | `host:tst5:blackbox` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo disponivel | compilar e executar o harness black-box com snapshots de terminal falsos | casos TST5 validos encontram o marcador apos nova geracao e caso invalido retorna ERR_NOT_FOUND | compilador ausente, warning, marcador ausente, caso invalido ou timeout | somente buffers estaticos e callbacks falsos do observador | processo host encerrado e relatorio de cobertura preservado |
+| `host:ui:icons` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar defaults, mutacoes, fallback, cache BMP, limites VESA e falhas controladas | registro vetorial permanece utilizavel sem filesystem e BMPs validos sao aceitos somente no formato esperado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente registro, cache e dispositivos BMP/VESA falsos no processo host | processo host encerrado, cache liberado e manifesto, logs e cobertura preservados |
 | `qemu:tst2:boot-ready` | `qemu` | `smoke` | `qemu:tst2:boot-ready` | `AUTOMATED` | 30 | 5 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e o executavel qemu-system-i386 esta disponivel | iniciar o guest em snapshot, enviar HELLO e executar o caso de boot apos READY | o guest publica READY, HEARTBEAT e PASS para o caso solicitado | PANIC, TIMEOUT, ausencia de heartbeat, erro de protocolo ou encerramento inesperado do QEMU | cria um processo QEMU e artefatos temporarios da execucao | encerrar o QEMU via QMP e preservar o relatorio, serial e logs da execucao |
 | `qemu:tst4:execution` | `qemu` | `smoke` | `qemu:tst4:execution` | `AUTOMATED` | 60 | 10 | `snapshot` | `quality` | `qemu` | processos, threads, IPC, wait e workqueue estao READY | executar um unico autoteste interno apos READY | todos os resultados estruturados passam e nenhum estado residual permanece | falha de resultado, invariante, fila, contador, timeout, protocolo ou QEMU | cria somente objetos temporarios dos self-tests existentes | cada self-test desfaz seus objetos e o harness valida as filas finais |
 | `qemu:tst4:memory-slab` | `qemu` | `smoke` | `qemu:tst4:memory-slab` | `AUTOMATED` | 30 | 5 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e paging, PMM, heap e SLAB estao READY | iniciar o guest em snapshot e enviar um unico RUN apos READY | o guest publica READY, HEARTBEAT, BEGIN e PASS, preservando o estado de memoria | falha de pre-condicao, invariante, contador, pagina, protocolo, heartbeat ou QEMU | cria um processo QEMU e recursos temporarios de memoria do autoteste | encerrar o QEMU via QMP e preservar manifesto, serial, logs e resultado |
@@ -7395,7 +7397,6 @@
 | `qemu:tst6:stress:kernel` | `qemu` | `tst6` | `qemu:tst6:stress:kernel` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | paging, heap, SLAB, processos e threads estao READY | repetir ciclos deterministas de memoria e execucao sob teto obrigatorio | invariantes estaveis permanecem iguais e a primeira falha interrompe a suite | overflow, vazamento, deadlock, timeout, protocolo ou QEMU | alocacoes e objetos temporarios de cada ciclo em snapshot | devolver paginas, destruir objetos e registrar seed e iteracao |
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
-| `host:drivers:pci` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar leitura, escrita, varredura, inventario, multifuncao, limites e habilitacao de recursos PCI | dispositivos validos sao registrados, ausentes sao ignorados, limite retorna ERR_OVERFLOW e comandos aceitos sao publicados | compilador ausente, warning, cobertura incompleta, falha de assercao, acesso I/O real ou timeout | somente espaco de configuracao, inventario e contadores falsos no processo host; nenhum porto I/O real e acessado | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -8974,23 +8975,6 @@
 - `c:src/fs/sysfs.c:sysfs_render_pci`
 - `c:src/fs/sysfs.c:sysfs_sync`
 - `c:src/fs/sysfs.c:sysfs_write`
-- `c:src/icons/icons.c:icons_draw_desktop_bitmap`
-- `c:src/icons/icons.c:icons_get_desktop`
-- `c:src/icons/icons.c:icons_get_desktop_bitmap_status`
-- `c:src/icons/icons.c:icons_get_fm`
-- `c:src/icons/icons.c:icons_get_registry`
-- `c:src/icons/icons.c:icons_get_tb`
-- `c:src/icons/icons.c:icons_get_wm`
-- `c:src/icons/icons.c:icons_init`
-- `c:src/icons/icons.c:icons_load_desktop_bmp`
-- `c:src/icons/icons.c:icons_release_desktop_bmps`
-- `c:src/icons/icons.c:icons_reset_defaults`
-- `c:src/icons/icons.c:icons_set_defaults`
-- `c:src/icons/icons.c:icons_set_desktop`
-- `c:src/icons/icons.c:icons_set_fm`
-- `c:src/icons/icons.c:icons_set_tb`
-- `c:src/icons/icons.c:icons_set_wm`
-- `c:src/icons/icons.c:icons_warn_once`
 - `c:src/kernel/kernel.c:desktop_process_main`
 - `c:src/kernel/kernel.c:global_mouse_handler`
 - `c:src/kernel/kernel.c:kernel_cancel_foreground_app`

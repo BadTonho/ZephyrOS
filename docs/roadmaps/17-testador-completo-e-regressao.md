@@ -1590,6 +1590,19 @@ pendente.
   unitarios dos runners. O fechamento integral, o gate estrito e a validacao
   TST7 completa continuam pendentes.
 
+- Incremento UI/icones concluido em 2026-09-03: foi criado o caso host-only
+  `host:ui:icons` e o alvo `make test-icons-host`. A fixture usa filesystem,
+  memoria, BMP e VESA falsos para exercitar fallback sem filesystem, defaults,
+  mutacoes do registro, carga valida, formato invalido, falha de memoria,
+  cache, desenho e limites de tela. O relatorio instrumentado terminou `PASS`,
+  resolveu as 18 funcoes de `src/icons/icons.c` sem enderecos desconhecidos ou
+  ambiguos e nao acessou hardware. Foram executados `make q3check`, `make
+  clean`, `make`, o caso apos o build limpo, a matriz host compativel, a
+  sincronizacao/renderizacao e `make catalog-test`; todos passaram. O catalogo
+  registra 7.198 superficies, 4.380 `COVERED`, 2.818 `PENDING` e 113 casos.
+  O fechamento integral, o gate estrito e a validacao TST7 completa continuam
+  pendentes.
+
 - Incremento Core/energia terminal concluido em 2026-09-03: o caso
   `host:core:power` passou a exercitar `power_reboot_commit`,
   `power_trigger_triple_fault` e `power_terminal_halt` por um seam exclusivo

@@ -592,6 +592,15 @@ de memoria, I/O e bus mastering com portas PCI falsas. O relatorio fica em
 make test-pci-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-icons-host` exercita o registro e o cache de icones com filesystem,
+BMP, memoria e VESA falsos. A fixture verifica fallback sem filesystem, carga
+valida, formato invalido, falha de memoria, mutacoes do registro e limites de
+desenho. O relatorio fica em `build/test-results/icons-host/`:
+
+```text
+make test-icons-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O caso `test-shell-command-utils-host` exercita os utilitarios de comandos do
 Shell com parsing de tokens e argumentos, comparacao de subcomandos,
 normalizacao para maiusculas, conversao numerica, limites, entradas invalidas

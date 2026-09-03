@@ -3757,6 +3757,109 @@
         "status": "AUTOMATED",
         "surface_ids": []
       }
+    },
+    {
+      "id": "icons-host-dynamic",
+      "domain": "ui-icons",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:ui:icons"
+      ],
+      "surface_selector": "coverage_report",
+      "surface_ids": [
+        "api:src/include/ui/icons.h:icons_draw_desktop_bitmap",
+        "api:src/include/ui/icons.h:icons_draw_desktop_bitmap_resized",
+        "api:src/include/ui/icons.h:icons_get_desktop",
+        "api:src/include/ui/icons.h:icons_get_desktop_bitmap_status",
+        "api:src/include/ui/icons.h:icons_get_fm",
+        "api:src/include/ui/icons.h:icons_get_registry",
+        "api:src/include/ui/icons.h:icons_get_tb",
+        "api:src/include/ui/icons.h:icons_get_wm",
+        "api:src/include/ui/icons.h:icons_init",
+        "api:src/include/ui/icons.h:icons_reset_defaults",
+        "api:src/include/ui/icons.h:icons_set_desktop",
+        "api:src/include/ui/icons.h:icons_set_fm",
+        "api:src/include/ui/icons.h:icons_set_tb",
+        "api:src/include/ui/icons.h:icons_set_wm",
+        "c:src/icons/icons.c:icons_draw_desktop_bitmap",
+        "c:src/icons/icons.c:icons_draw_desktop_bitmap_resized",
+        "c:src/icons/icons.c:icons_get_desktop",
+        "c:src/icons/icons.c:icons_get_desktop_bitmap_status",
+        "c:src/icons/icons.c:icons_get_fm",
+        "c:src/icons/icons.c:icons_get_registry",
+        "c:src/icons/icons.c:icons_get_tb",
+        "c:src/icons/icons.c:icons_get_wm",
+        "c:src/icons/icons.c:icons_init",
+        "c:src/icons/icons.c:icons_load_desktop_bmp",
+        "c:src/icons/icons.c:icons_release_desktop_bmps",
+        "c:src/icons/icons.c:icons_reset_defaults",
+        "c:src/icons/icons.c:icons_set_defaults",
+        "c:src/icons/icons.c:icons_set_desktop",
+        "c:src/icons/icons.c:icons_set_fm",
+        "c:src/icons/icons.c:icons_set_tb",
+        "c:src/icons/icons.c:icons_set_wm",
+        "c:src/icons/icons.c:icons_warn_once"
+      ],
+      "coverage_report": "build/test-results/icons-host/coverage.json",
+      "coverage_sources": [
+        "src/icons/icons.c"
+      ],
+      "include_public_apis": false,
+      "case_definition": {
+        "id": "host:ui:icons",
+        "scenario": "Contrato host-only do registro e cache de icones",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "bmp-and-vesa-stubs"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "validar defaults, mutacoes, fallback, cache BMP, limites VESA e falhas controladas",
+        "expected": "registro vetorial permanece utilizavel sem filesystem e BMPs validos sao aceitos somente no formato esperado",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente registro, cache e dispositivos BMP/VESA falsos no processo host",
+        "cleanup": "processo host encerrado, cache liberado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": [
+          "c:src/icons/icons.c:icons_draw_desktop_bitmap",
+          "c:src/icons/icons.c:icons_draw_desktop_bitmap_resized",
+          "c:src/icons/icons.c:icons_get_desktop",
+          "c:src/icons/icons.c:icons_get_desktop_bitmap_status",
+          "c:src/icons/icons.c:icons_get_fm",
+          "c:src/icons/icons.c:icons_get_registry",
+          "c:src/icons/icons.c:icons_get_tb",
+          "c:src/icons/icons.c:icons_get_wm",
+          "c:src/icons/icons.c:icons_init",
+          "c:src/icons/icons.c:icons_load_desktop_bmp",
+          "c:src/icons/icons.c:icons_release_desktop_bmps",
+          "c:src/icons/icons.c:icons_reset_defaults",
+          "c:src/icons/icons.c:icons_set_defaults",
+          "c:src/icons/icons.c:icons_set_desktop",
+          "c:src/icons/icons.c:icons_set_fm",
+          "c:src/icons/icons.c:icons_set_tb",
+          "c:src/icons/icons.c:icons_set_wm",
+          "c:src/icons/icons.c:icons_warn_once"
+        ],
+        "tags": [
+          "host",
+          "ui",
+          "icons",
+          "bitmap",
+          "limits",
+          "coverage"
+        ]
+      },
+      "evidence": "make test-icons-host PASS com fallback sem filesystem, cache BMP, falhas de memoria e formato, limites VESA e cobertura instrumentada completa"
     }
   ]
 }
