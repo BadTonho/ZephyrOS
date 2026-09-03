@@ -333,6 +333,17 @@ class CoreHostRunnerTests(unittest.TestCase):
         self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
                       "test_icons_host.c", sources)
 
+    def test_vesa_case_has_framebuffer_fixture_sources(self):
+        result_dir, binary, sources, suite = core_host_runner.case_configuration(
+            "host:drivers:vesa")
+        self.assertEqual(suite, "vesa-host")
+        self.assertEqual(result_dir, core_host_runner.VESA_RESULT_DIR)
+        self.assertEqual(binary, core_host_runner.VESA_BINARY)
+        self.assertIn(core_host_runner.ROOT / "src" / "drivers" / "vesa.c",
+                      sources)
+        self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
+                      "test_vesa_host.c", sources)
+
     def test_shell_core_case_has_shell_fixture_sources(self):
         result_dir, binary, sources, suite = core_host_runner.case_configuration(
             "host:shell:core")

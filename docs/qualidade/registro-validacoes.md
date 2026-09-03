@@ -4742,3 +4742,16 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   registra 7.198 superficies, 4.380 `COVERED`, 2.818 `PENDING` e 113 casos.
   O fechamento integral, o gate estrito e a validacao TST7 completa continuam
   pendentes.
+
+- Incremento Drivers/VESA concluido em 2026-09-03: foi criado o caso host-only
+  `host:drivers:vesa` e o alvo `make test-vesa-host`. A fixture usou seams
+  exclusivos do build host para boot info e framebuffer e exercitou
+  inicializacao valida e invalida, modos 24/32 bpp, backbuffer, desenho,
+  clipping, frames, metricas, flip, falha de alocacao e desativacao. O
+  relatorio instrumentado terminou `PASS`, resolveu as 12 funcoes pendentes de
+  `src/drivers/vesa.c` sem enderecos desconhecidos ou ambiguos e nao acessou
+  hardware real. Foram executados `make q3check`, `make clean`, `make`, o caso
+  apos o build limpo, 75 casos host compativeis, a sincronizacao e renderizacao
+  do catalogo e `make catalog-test`; todos passaram. O catalogo registra 7.198
+  superficies, 4.392 `COVERED`, 2.806 `PENDING` e 114 casos. O fechamento
+  integral, o gate estrito e a validacao TST7 completa continuam pendentes.

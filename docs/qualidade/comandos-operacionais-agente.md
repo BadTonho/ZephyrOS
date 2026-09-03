@@ -601,6 +601,16 @@ desenho. O relatorio fica em `build/test-results/icons-host/`:
 make test-icons-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-vesa-host` exercita o driver VESA com fixtures estaticas de boot,
+framebuffer, memoria, fonte e relogio. A fixture verifica inicializacao valida
+e invalida, modos 24/32 bpp, backbuffer, pixels, desenho, clipping, frames,
+metricas, flip, falha de alocacao e desativacao. O relatorio fica em
+`build/test-results/vesa-host/`:
+
+```text
+make test-vesa-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O caso `test-shell-command-utils-host` exercita os utilitarios de comandos do
 Shell com parsing de tokens e argumentos, comparacao de subcomandos,
 normalizacao para maiusculas, conversao numerica, limites, entradas invalidas

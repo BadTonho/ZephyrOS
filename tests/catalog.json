@@ -22345,13 +22345,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:vesa",
         "qemu:tst4:platform",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/vesa.h:vesa_draw_bitmap",
@@ -22369,13 +22370,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:vesa",
         "qemu:tst4:platform",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/vesa.h:vesa_draw_char",
@@ -22417,13 +22419,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:vesa",
         "qemu:tst4:platform",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/vesa.h:vesa_draw_glyph8x16",
@@ -22537,13 +22540,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:vesa",
         "qemu:tst4:platform",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/vesa.h:vesa_draw_vline",
@@ -22633,13 +22637,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:vesa",
         "qemu:tst4:platform",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/vesa.h:vesa_flip_region",
@@ -22777,13 +22782,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:vesa",
         "qemu:tst4:platform",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/vesa.h:vesa_get_mode",
@@ -22801,13 +22807,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:vesa",
         "qemu:tst4:platform",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/vesa.h:vesa_get_pixel",
@@ -22873,13 +22880,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:vesa",
         "qemu:tst4:platform",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/vesa.h:vesa_init_backbuffer",
@@ -22897,13 +22905,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:vesa",
         "qemu:tst4:platform",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/vesa.h:vesa_put_pixel",
@@ -22993,13 +23002,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:vesa",
         "qemu:tst4:platform",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/vesa.h:vesa_set_clip_rect",
@@ -23041,13 +23051,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:vesa",
         "qemu:tst4:platform",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/fs/block.h:block_cancel",
@@ -96721,9 +96732,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:vesa"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/vesa.c:vesa_accumulate_region",
@@ -96833,9 +96847,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:vesa"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/vesa.c:vesa_draw_bitmap",
@@ -96851,9 +96868,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:vesa"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/vesa.c:vesa_draw_char",
@@ -96890,9 +96910,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:vesa"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/vesa.c:vesa_draw_glyph8x16",
@@ -96996,9 +97019,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:vesa"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/vesa.c:vesa_draw_vline",
@@ -97082,9 +97108,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:vesa"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/vesa.c:vesa_flip_region",
@@ -97218,9 +97247,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:vesa"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/vesa.c:vesa_get_mode",
@@ -97236,9 +97268,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:vesa"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/vesa.c:vesa_get_pixel",
@@ -97300,9 +97335,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:vesa"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/vesa.c:vesa_init_backbuffer",
@@ -97318,9 +97356,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:vesa"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/vesa.c:vesa_metrics_add",
@@ -97476,9 +97517,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:vesa"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/vesa.c:vesa_set_clip_rect",
@@ -97516,9 +97560,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:vesa"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/video.c:clear_visual_buffer_locked",
@@ -167890,6 +167937,63 @@
         "tst6",
         "stress",
         "storage"
+      ]
+    },
+    {
+      "id": "host:drivers:vesa",
+      "scenario": "Contrato host-only do driver VESA",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "hardware": "boot-info-e-framebuffer-estaticos"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "validar inicializacao, modos 24/32 bpp, backbuffer, desenho, clipping, frames, metricas e desativacao com framebuffer falso",
+      "expected": "parametros invalidos sao rejeitados, pixels e regioes sao copiados corretamente e o estado VESA e restaurado apos desativacao",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente buffers estaticos, metricas e fixture de boot no processo host",
+      "cleanup": "processo host encerrado, backbuffer liberado e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/drivers/vesa.h:vesa_disable",
+        "api:src/include/drivers/vesa.h:vesa_draw_bitmap",
+        "api:src/include/drivers/vesa.h:vesa_draw_circle",
+        "api:src/include/drivers/vesa.h:vesa_draw_string",
+        "api:src/include/drivers/vesa.h:vesa_flip",
+        "api:src/include/drivers/vesa.h:vesa_get_metrics",
+        "api:src/include/drivers/vesa.h:vesa_get_mode",
+        "api:src/include/drivers/vesa.h:vesa_init",
+        "api:src/include/drivers/vesa.h:vesa_init_backbuffer",
+        "api:src/include/drivers/vesa.h:vesa_rgba",
+        "api:src/include/drivers/vesa.h:vesa_set_mode",
+        "c:src/drivers/vesa.c:memset_simple",
+        "c:src/drivers/vesa.c:vesa_disable",
+        "c:src/drivers/vesa.c:vesa_draw_bitmap",
+        "c:src/drivers/vesa.c:vesa_draw_circle",
+        "c:src/drivers/vesa.c:vesa_draw_string",
+        "c:src/drivers/vesa.c:vesa_flip",
+        "c:src/drivers/vesa.c:vesa_get_metrics",
+        "c:src/drivers/vesa.c:vesa_get_mode",
+        "c:src/drivers/vesa.c:vesa_init",
+        "c:src/drivers/vesa.c:vesa_init_backbuffer",
+        "c:src/drivers/vesa.c:vesa_rgba",
+        "c:src/drivers/vesa.c:vesa_set_mode"
+      ],
+      "tags": [
+        "host",
+        "drivers",
+        "vesa",
+        "framebuffer",
+        "limits",
+        "coverage"
       ]
     }
   ],

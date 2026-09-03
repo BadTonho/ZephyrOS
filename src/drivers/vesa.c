@@ -6,6 +6,11 @@
 #include "core/string.h"
 #include "core/timer.h"
 
+#ifdef ZEPHYROS_HOST_TEST
+extern vesa_boot_info_t* vesa_host_boot_info(uint32_t address);
+extern uint32_t* vesa_host_framebuffer(uint32_t address);
+#endif
+
 #define VESA_METRICS_MAX_VALUE 0xFFFFFFFFU
 
 static vesa_mode_t current_mode;
@@ -161,9 +166,13 @@ void vesa_init(uint32_t boot_info_addr) {
         return;
     }
 
+#ifdef ZEPHYROS_HOST_TEST
+    vesa_boot_info_t* boot = vesa_host_boot_info(boot_info_addr);
+#else
     vesa_boot_info_t* boot = (vesa_boot_info_t*)boot_info_addr;
+#endif
 
-    if (!boot->initialized) {
+    if (!boot || !boot->initialized) {
         LOG_WARN("VESA", "VESA nao disponivel no boot");
         return;
     }
@@ -178,7 +187,16 @@ void vesa_init(uint32_t boot_info_addr) {
     current_mode.height = boot->height;
     current_mode.bpp = boot->bpp;
     current_mode.pitch = boot->pitch;
+#ifdef ZEPHYROS_HOST_TEST
+    current_mode.framebuffer = vesa_host_framebuffer(boot->framebuffer_addr);
+#else
     current_mode.framebuffer = (uint32_t*)(uint32_t)boot->framebuffer_addr;
+#endif
+    if (!current_mode.framebuffer) {
+        LOG_ERROR("VESA", "Framebuffer indisponivel");
+        memset_simple(&current_mode, 0, sizeof(vesa_mode_t));
+        return;
+    }
     current_mode.initialized = 1;
 
     LOG_INFO("VESA", "Framebuffer detectado");

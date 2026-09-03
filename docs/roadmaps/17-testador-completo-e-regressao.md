@@ -1603,6 +1603,20 @@ pendente.
   O fechamento integral, o gate estrito e a validacao TST7 completa continuam
   pendentes.
 
+- Incremento Drivers/VESA concluido em 2026-09-03: foi criado o caso host-only
+  `host:drivers:vesa` e o alvo `make test-vesa-host`. A fixture usa seams
+  exclusivos do build host para o boot info e o framebuffer, mantendo o build
+  freestanding com os enderecos reais. Foram exercitados inicializacao valida e
+  invalida, modos 24/32 bpp, backbuffer, pixels, desenho, clipping, frames,
+  metricas, flip, falha de alocacao e desativacao. O relatorio instrumentado
+  terminou `PASS`, resolveu as 12 funcoes pendentes de `src/drivers/vesa.c`
+  sem enderecos desconhecidos ou ambiguos e nao acessou hardware real. Tambem
+  passaram `make q3check`, `make clean`, `make`, o caso apos o build limpo, 75
+  casos host compativeis, a sincronizacao/renderizacao, `make catalog-test` e
+  os testes unitarios dos runners. O catalogo registra 7.198 superficies,
+  4.392 `COVERED`, 2.806 `PENDING` e 114 casos. O fechamento integral, o gate
+  estrito e a validacao TST7 completa continuam pendentes.
+
 - Incremento Core/energia terminal concluido em 2026-09-03: o caso
   `host:core:power` passou a exercitar `power_reboot_commit`,
   `power_trigger_triple_fault` e `power_terminal_halt` por um seam exclusivo
