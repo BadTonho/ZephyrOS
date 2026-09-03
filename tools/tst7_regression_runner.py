@@ -169,6 +169,7 @@ HOST_CASE_TARGETS = {
     "host:shell:command-utils": "test-shell-command-utils-host",
     "host:gui:display": "test-display-host",
     "host:shell:core": "test-shell-core-host",
+    "host:core:usb-transport": "test-usb-transport-host",
     "host:tst2:protocol-core": "test-tst2-host",
     "host:tst3:string-compress": "test-tst3-host",
 }

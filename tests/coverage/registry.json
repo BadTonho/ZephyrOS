@@ -2670,6 +2670,69 @@
       "evidence": "make test-shell-core-host PASS com inicializacao, scroll, suspensao, conclusao de comando e redraw de fallback no relatorio instrumentado"
     },
     {
+      "id": "usb-transport-host-dynamic",
+      "domain": "core-usb",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:usb-transport"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/usb-transport-host/coverage.json",
+      "coverage_sources": [
+        "src/core/usb_transport.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:core:usb-transport",
+        "scenario": "Contrato host-only do despachante de transporte USB",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "ehci-uhci-dispatch-stub"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "validar entradas nulas, controladores desconhecidos e encaminhamento de controle, Bulk, toggles e Interrupt para EHCI e UHCI falsos",
+        "expected": "erros canonicos rejeitam entradas invalidas, controlador desconhecido retorna ERR_UNAVAILABLE e cada operacao chega ao backend selecionado sem hardware",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente contadores e argumentos estaticos dos backends EHCI e UHCI falsos no processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": [
+          "api:src/include/core/usb_transport.h:usb_transport_bulk_transfer",
+          "api:src/include/core/usb_transport.h:usb_transport_control_request",
+          "api:src/include/core/usb_transport.h:usb_transport_interrupt_cancel",
+          "api:src/include/core/usb_transport.h:usb_transport_interrupt_submit",
+          "api:src/include/core/usb_transport.h:usb_transport_reset_bulk_toggles",
+          "c:src/core/usb_transport.c:usb_transport_bulk_transfer",
+          "c:src/core/usb_transport.c:usb_transport_control_request",
+          "c:src/core/usb_transport.c:usb_transport_interrupt_cancel",
+          "c:src/core/usb_transport.c:usb_transport_interrupt_submit",
+          "c:src/core/usb_transport.c:usb_transport_is_ehci",
+          "c:src/core/usb_transport.c:usb_transport_is_uhci",
+          "c:src/core/usb_transport.c:usb_transport_reset_bulk_toggles"
+        ],
+        "tags": [
+          "host",
+          "core",
+          "usb",
+          "transport",
+          "dispatch",
+          "coverage"
+        ]
+      },
+      "evidence": "make test-usb-transport-host PASS com entradas invalidas, controlador desconhecido e dispatch EHCI/UHCI no relatorio instrumentado"
+    },
+    {
       "id": "display-host-dynamic",
       "domain": "gui-display",
       "owner": "quality",

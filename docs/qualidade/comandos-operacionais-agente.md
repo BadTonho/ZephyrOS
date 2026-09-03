@@ -533,6 +533,16 @@ hardware ou GUI real. O relatorio fica em
 make test-shell-core-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-usb-transport-host` exercita o despachante de transporte USB com
+backends EHCI e UHCI falsos. A fixture cobre argumentos nulos, controlador
+desconhecido, encaminhamento de controle, Bulk, toggles e Interrupt, sem
+hardware real. O relatorio fica em
+`build/test-results/usb-transport-host/`:
+
+```text
+make test-usb-transport-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O caso `test-shell-command-utils-host` exercita os utilitarios de comandos do
 Shell com parsing de tokens e argumentos, comparacao de subcomandos,
 normalizacao para maiusculas, conversao numerica, limites, entradas invalidas

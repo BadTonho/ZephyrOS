@@ -1505,6 +1505,19 @@ pendente.
   passaram; `display.c` ficou sem pendencias e `shell.c` tambem. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Core/usb_transport concluido em 2026-09-03: foi criado o caso
+  host-only `host:core:usb-transport` com backends EHCI e UHCI falsos. A
+  fixture cobriu entradas nulas, controlador desconhecido, controle, Bulk,
+  reset de toggles, submissao e cancelamento de Interrupt, confirmando os
+  codigos `ERR_NULL`/`ERR_UNAVAILABLE` e o dispatch correto dos argumentos.
+  O relatorio instrumentado terminou `PASS`, resolveu os sete simbolos de
+  `src/core/usb_transport.c` e nao registrou enderecos desconhecidos ou
+  ambiguos. Foram executados `make q3check`, `make clean`, `make`, os 66 casos
+  host-only do registro, `make catalog-test` e os 53 testes unitarios dos
+  runners; todos passaram. O catalogo registra 7.198 superficies, 4.320
+  `COVERED`, 2.878 `PENDING` e 107 casos. O fechamento integral, o gate
+  estrito e a validacao TST7 completa continuam pendentes.
+
 - Incremento Core/energia terminal concluido em 2026-09-03: o caso
   `host:core:power` passou a exercitar `power_reboot_commit`,
   `power_trigger_triple_fault` e `power_terminal_halt` por um seam exclusivo
