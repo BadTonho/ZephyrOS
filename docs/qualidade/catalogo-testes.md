@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7198**
-- Casos de teste: **111**
+- Casos de teste: **112**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4351 |
+| `COVERED` | 4363 |
 | `MANUAL` | 0 |
-| `PENDING` | 2847 |
+| `PENDING` | 2835 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 111 |
+| `AUTOMATED` | 112 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -957,16 +957,16 @@
 | `api:src/include/drivers/mouse.h:mouse_set_callback` | `src/include/drivers/mouse.h` | `mouse_set_callback` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/mouse.h:mouse_set_primary_button` | `src/include/drivers/mouse.h` | `mouse_set_primary_button` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/mouse.h:mouse_set_speed` | `src/include/drivers/mouse.h` | `mouse_set_speed` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/pci.h:pci_enable_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_bus_mastering` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_io_and_bus_mastering` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_memory_and_bus_mastering` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_get_device` | `src/include/drivers/pci.h` | `pci_get_device` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_get_device_at` | `src/include/drivers/pci.h` | `pci_get_device_at` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_get_device_by_id` | `src/include/drivers/pci.h` | `pci_get_device_by_id` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_get_device_count` | `src/include/drivers/pci.h` | `pci_get_device_count` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_init` | `src/include/drivers/pci.h` | `pci_init` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_read` | `src/include/drivers/pci.h` | `pci_read` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_write` | `src/include/drivers/pci.h` | `pci_write` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/pci.h:pci_enable_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_bus_mastering` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_io_and_bus_mastering` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_memory_and_bus_mastering` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_get_device` | `src/include/drivers/pci.h` | `pci_get_device` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_get_device_at` | `src/include/drivers/pci.h` | `pci_get_device_at` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_get_device_by_id` | `src/include/drivers/pci.h` | `pci_get_device_by_id` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_get_device_count` | `src/include/drivers/pci.h` | `pci_get_device_count` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_init` | `src/include/drivers/pci.h` | `pci_init` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_read` | `src/include/drivers/pci.h` | `pci_read` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_write` | `src/include/drivers/pci.h` | `pci_write` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/rng.h:rng_get_bytes` | `src/include/drivers/rng.h` | `rng_get_bytes` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/rng.h:rng_get_status` | `src/include/drivers/rng.h` | `rng_get_status` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/rng.h:rng_init` | `src/include/drivers/rng.h` | `rng_init` | `drivers` | `COVERED` | 3 |
@@ -4272,20 +4272,20 @@
 | `c:src/drivers/mouse.c:mouse_write` | `src/drivers/mouse.c` | `mouse_write` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/mouse.c:mouse_write_ack` | `src/drivers/mouse.c` | `mouse_write_ack` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/mouse.c:outb` | `src/drivers/mouse.c` | `outb` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/pci.c:inl` | `src/drivers/pci.c` | `inl` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/pci.c:outl` | `src/drivers/pci.c` | `outl` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/pci.c:pci_enable_bus_mastering` | `src/drivers/pci.c` | `pci_enable_bus_mastering` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/pci.c:pci_enable_io_and_bus_mastering` | `src/drivers/pci.c` | `pci_enable_io_and_bus_mastering` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/pci.c:pci_enable_memory_and_bus_mastering` | `src/drivers/pci.c` | `pci_enable_memory_and_bus_mastering` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/pci.c:pci_get_device` | `src/drivers/pci.c` | `pci_get_device` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/pci.c:pci_get_device_at` | `src/drivers/pci.c` | `pci_get_device_at` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/pci.c:pci_get_device_by_id` | `src/drivers/pci.c` | `pci_get_device_by_id` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/pci.c:pci_get_device_count` | `src/drivers/pci.c` | `pci_get_device_count` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/pci.c:pci_init` | `src/drivers/pci.c` | `pci_init` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/pci.c:pci_read` | `src/drivers/pci.c` | `pci_read` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/pci.c:pci_scan_device` | `src/drivers/pci.c` | `pci_scan_device` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/pci.c:pci_scan_function` | `src/drivers/pci.c` | `pci_scan_function` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/pci.c:pci_write` | `src/drivers/pci.c` | `pci_write` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/pci.c:inl` | `src/drivers/pci.c` | `inl` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/pci.c:outl` | `src/drivers/pci.c` | `outl` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/pci.c:pci_enable_bus_mastering` | `src/drivers/pci.c` | `pci_enable_bus_mastering` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/pci.c:pci_enable_io_and_bus_mastering` | `src/drivers/pci.c` | `pci_enable_io_and_bus_mastering` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/pci.c:pci_enable_memory_and_bus_mastering` | `src/drivers/pci.c` | `pci_enable_memory_and_bus_mastering` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/pci.c:pci_get_device` | `src/drivers/pci.c` | `pci_get_device` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/pci.c:pci_get_device_at` | `src/drivers/pci.c` | `pci_get_device_at` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/pci.c:pci_get_device_by_id` | `src/drivers/pci.c` | `pci_get_device_by_id` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/pci.c:pci_get_device_count` | `src/drivers/pci.c` | `pci_get_device_count` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/pci.c:pci_init` | `src/drivers/pci.c` | `pci_init` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/pci.c:pci_read` | `src/drivers/pci.c` | `pci_read` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/pci.c:pci_scan_device` | `src/drivers/pci.c` | `pci_scan_device` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/pci.c:pci_scan_function` | `src/drivers/pci.c` | `pci_scan_function` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/pci.c:pci_write` | `src/drivers/pci.c` | `pci_write` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/rng.c:rng_cpu_has_cpuid` | `src/drivers/rng.c` | `rng_cpu_has_cpuid` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/rng.c:rng_cpuid` | `src/drivers/rng.c` | `rng_cpuid` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/rng.c:rng_get_bytes` | `src/drivers/rng.c` | `rng_get_bytes` | `drivers` | `COVERED` | 1 |
@@ -7317,6 +7317,7 @@
 | `host:drivers:usb-msc` | `host` | `host-only-readonly` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enumerar dispositivo MSC UHCI, executar inquiry, TUR, capacity e READ10 simulados, validar block readonly e exercitar recuperacao | protocolo BOT/SCSI, identificadores, capacidade, leituras, estados, limites e falhas preservam o contrato sem escrita | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente transporte USB MSC, registro de bloco e buffers estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:gui:display` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar inicializacao, disponibilidade VESA, parsing de escala, conversao de pixels e refresh das cenas | metricas e escalas validas funcionam, limites retornam erros canonicos e falha de reflow restaura a escala anterior | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do display e callbacks falsos de VESA, desktop, taskbar e Window Manager | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:gui:widgets` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar temas, desenho de texto nativo e escalado, medicao, paineis, formas, gradientes, botoes e molduras em framebuffer falso | temas invalidos e estados indisponiveis retornam ou preservam o contrato, limites nao escapam do framebuffer e as primitivas encaminham o desenho para VESA | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente metricas, fonte, framebuffer e contadores estaticos falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:kernel:panic` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar panic, panic_memory, mensagens padrao e explicitas, metricas zero e nao zero e encaminhamento ao protocolo | panic publica a razao correta, desenha o diagnostico completo, descarrega a tela e interrompe apenas o fluxo de teste | compilador ausente, warning, cobertura incompleta, retorno inesperado do halt, falha de assercao ou timeout | somente buffers, contadores de video e razao do protocolo no processo host; nenhum halt real e executado | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:memory:memory` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar inicializacao E820, alocacao e liberacao PMM por zona, heap, alinhamento e estatisticas | PMM e heap rejeitam limites invalidos, contabilizam falhas e restauram todas as paginas e blocos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente mapa E820, bitmap PMM e heap estaticos no processo host | paginas e blocos liberados, estatisticas restauradas e artefatos preservados |
 | `host:memory:paging` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar init, mapeamento, diretorios de usuario, faults lazy, copias, limites e cleanup com PMM falso | o paging respeita os limites de usuario, rejeita estados invalidos e restaura os recursos da fixture | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente diretorios, tabelas e paginas estaticos no processo host | diretorios e tabelas liberados, pagina de usuario coletada e artefatos preservados |
 | `host:memory:slab-metadata` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar inicializacao, limites, metadados, estatisticas e limpeza do registrador SLAB sem alocar paginas reais | estado publicado, informacoes por indice, duplicidade e limpeza respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas de metadados no processo host; nenhuma pagina real e alocada | cache temporario destruido e manifesto, logs e cobertura preservados |
@@ -7394,7 +7395,7 @@
 | `qemu:tst6:stress:kernel` | `qemu` | `tst6` | `qemu:tst6:stress:kernel` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | paging, heap, SLAB, processos e threads estao READY | repetir ciclos deterministas de memoria e execucao sob teto obrigatorio | invariantes estaveis permanecem iguais e a primeira falha interrompe a suite | overflow, vazamento, deadlock, timeout, protocolo ou QEMU | alocacoes e objetos temporarios de cada ciclo em snapshot | devolver paginas, destruir objetos e registrar seed e iteracao |
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
-| `host:kernel:panic` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar panic, panic_memory, mensagens padrao e explicitas, metricas zero e nao zero e encaminhamento ao protocolo | panic publica a razao correta, desenha o diagnostico completo, descarrega a tela e interrompe apenas o fluxo de teste | compilador ausente, warning, cobertura incompleta, retorno inesperado do halt, falha de assercao ou timeout | somente buffers, contadores de video e razao do protocolo no processo host; nenhum halt real e executado | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:drivers:pci` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar leitura, escrita, varredura, inventario, multifuncao, limites e habilitacao de recursos PCI | dispositivos validos sao registrados, ausentes sao ignorados, limite retorna ERR_OVERFLOW e comandos aceitos sao publicados | compilador ausente, warning, cobertura incompleta, falha de assercao, acesso I/O real ou timeout | somente espaco de configuracao, inventario e contadores falsos no processo host; nenhum porto I/O real e acessado | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -8713,18 +8714,6 @@
 - `c:src/drivers/mouse.c:mouse_write`
 - `c:src/drivers/mouse.c:mouse_write_ack`
 - `c:src/drivers/mouse.c:outb`
-- `c:src/drivers/pci.c:inl`
-- `c:src/drivers/pci.c:outl`
-- `c:src/drivers/pci.c:pci_enable_bus_mastering`
-- `c:src/drivers/pci.c:pci_enable_io_and_bus_mastering`
-- `c:src/drivers/pci.c:pci_enable_memory_and_bus_mastering`
-- `c:src/drivers/pci.c:pci_get_device`
-- `c:src/drivers/pci.c:pci_get_device_by_id`
-- `c:src/drivers/pci.c:pci_init`
-- `c:src/drivers/pci.c:pci_read`
-- `c:src/drivers/pci.c:pci_scan_device`
-- `c:src/drivers/pci.c:pci_scan_function`
-- `c:src/drivers/pci.c:pci_write`
 - `c:src/drivers/rtl8139.c:rtl8139_advance_rx`
 - `c:src/drivers/rtl8139.c:rtl8139_allocate_device`
 - `c:src/drivers/rtl8139.c:rtl8139_allocate_dma`

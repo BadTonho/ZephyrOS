@@ -583,6 +583,15 @@ O relatorio fica em `build/test-results/panic-host/`:
 make test-panic-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-pci-host` exercita a leitura e escrita do espaco de configuracao,
+varredura, funcoes multifuncao, inventario, limite de dispositivos e habilitacao
+de memoria, I/O e bus mastering com portas PCI falsas. O relatorio fica em
+`build/test-results/pci-host/`:
+
+```text
+make test-pci-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O caso `test-shell-command-utils-host` exercita os utilitarios de comandos do
 Shell com parsing de tokens e argumentos, comparacao de subcomandos,
 normalizacao para maiusculas, conversao numerica, limites, entradas invalidas
