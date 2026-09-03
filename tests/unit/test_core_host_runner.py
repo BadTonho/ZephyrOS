@@ -248,6 +248,17 @@ class CoreHostRunnerTests(unittest.TestCase):
         self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
                       "test_shell_hosted_host.c", sources)
 
+    def test_display_case_has_gui_fixture_sources(self):
+        result_dir, binary, sources, suite = core_host_runner.case_configuration(
+            "host:gui:display")
+        self.assertEqual(suite, "display-host")
+        self.assertEqual(result_dir, core_host_runner.DISPLAY_RESULT_DIR)
+        self.assertEqual(binary, core_host_runner.DISPLAY_BINARY)
+        self.assertIn(core_host_runner.ROOT / "src" / "gui" /
+                      "display.c", sources)
+        self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
+                      "test_display_host.c", sources)
+
 
 if __name__ == "__main__":
     unittest.main()

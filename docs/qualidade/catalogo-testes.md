@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7198**
-- Casos de teste: **104**
+- Casos de teste: **105**
 - Superfícies aposentadas: **22**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4297 |
+| `COVERED` | 4303 |
 | `MANUAL` | 0 |
-| `PENDING` | 2901 |
+| `PENDING` | 2895 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 104 |
+| `AUTOMATED` | 105 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -1483,12 +1483,12 @@
 | `api:src/include/ui/desktop.h:desktop_set_active` | `src/include/ui/desktop.h` | `desktop_set_active` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/desktop.h:desktop_set_mode` | `src/include/ui/desktop.h` | `desktop_set_mode` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/desktop.h:desktop_update_selection` | `src/include/ui/desktop.h` | `desktop_update_selection` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/display.h:display_apply_scale` | `src/include/ui/display.h` | `display_apply_scale` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/display.h:display_get_metrics` | `src/include/ui/display.h` | `display_get_metrics` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/display.h:display_init` | `src/include/ui/display.h` | `display_init` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/display.h:display_parse_scale` | `src/include/ui/display.h` | `display_parse_scale` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/display.h:display_scale_name` | `src/include/ui/display.h` | `display_scale_name` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/display.h:display_scale_px` | `src/include/ui/display.h` | `display_scale_px` | `ui` | `COVERED` | 2 |
+| `api:src/include/ui/display.h:display_apply_scale` | `src/include/ui/display.h` | `display_apply_scale` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/display.h:display_get_metrics` | `src/include/ui/display.h` | `display_get_metrics` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/display.h:display_init` | `src/include/ui/display.h` | `display_init` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/display.h:display_parse_scale` | `src/include/ui/display.h` | `display_parse_scale` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/display.h:display_scale_name` | `src/include/ui/display.h` | `display_scale_name` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/display.h:display_scale_px` | `src/include/ui/display.h` | `display_scale_px` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/filemanager.h:fm_close` | `src/include/ui/filemanager.h` | `fm_close` | `ui` | `COVERED` | 1 |
 | `api:src/include/ui/filemanager.h:fm_draw` | `src/include/ui/filemanager.h` | `fm_draw` | `ui` | `COVERED` | 1 |
 | `api:src/include/ui/filemanager.h:fm_get_mode` | `src/include/ui/filemanager.h` | `fm_get_mode` | `ui` | `COVERED` | 1 |
@@ -5479,14 +5479,14 @@
 | `c:src/fs/wav.c:wav_init` | `src/fs/wav.c` | `wav_init` | `fs` | `COVERED` | 1 |
 | `c:src/fs/wav.c:wav_load` | `src/fs/wav.c` | `wav_load` | `fs` | `COVERED` | 1 |
 | `c:src/fs/wav.c:wav_play` | `src/fs/wav.c` | `wav_play` | `fs` | `COVERED` | 1 |
-| `c:src/gui/display.c:display_apply_scale` | `src/gui/display.c` | `display_apply_scale` | `gui` | `PENDING` | 0 |
-| `c:src/gui/display.c:display_get_metrics` | `src/gui/display.c` | `display_get_metrics` | `gui` | `COVERED` | 2 |
-| `c:src/gui/display.c:display_init` | `src/gui/display.c` | `display_init` | `gui` | `PENDING` | 0 |
-| `c:src/gui/display.c:display_mode_supports` | `src/gui/display.c` | `display_mode_supports` | `gui` | `PENDING` | 0 |
-| `c:src/gui/display.c:display_parse_scale` | `src/gui/display.c` | `display_parse_scale` | `gui` | `PENDING` | 0 |
-| `c:src/gui/display.c:display_refresh_scene` | `src/gui/display.c` | `display_refresh_scene` | `gui` | `PENDING` | 0 |
-| `c:src/gui/display.c:display_scale_name` | `src/gui/display.c` | `display_scale_name` | `gui` | `PENDING` | 0 |
-| `c:src/gui/display.c:display_scale_px` | `src/gui/display.c` | `display_scale_px` | `gui` | `COVERED` | 2 |
+| `c:src/gui/display.c:display_apply_scale` | `src/gui/display.c` | `display_apply_scale` | `gui` | `COVERED` | 1 |
+| `c:src/gui/display.c:display_get_metrics` | `src/gui/display.c` | `display_get_metrics` | `gui` | `COVERED` | 3 |
+| `c:src/gui/display.c:display_init` | `src/gui/display.c` | `display_init` | `gui` | `COVERED` | 1 |
+| `c:src/gui/display.c:display_mode_supports` | `src/gui/display.c` | `display_mode_supports` | `gui` | `COVERED` | 1 |
+| `c:src/gui/display.c:display_parse_scale` | `src/gui/display.c` | `display_parse_scale` | `gui` | `COVERED` | 1 |
+| `c:src/gui/display.c:display_refresh_scene` | `src/gui/display.c` | `display_refresh_scene` | `gui` | `COVERED` | 1 |
+| `c:src/gui/display.c:display_scale_name` | `src/gui/display.c` | `display_scale_name` | `gui` | `COVERED` | 1 |
+| `c:src/gui/display.c:display_scale_px` | `src/gui/display.c` | `display_scale_px` | `gui` | `COVERED` | 3 |
 | `c:src/gui/gui.c:gui_clamp_to_screen` | `src/gui/gui.c` | `gui_clamp_to_screen` | `gui` | `COVERED` | 2 |
 | `c:src/gui/gui.c:gui_draw_button` | `src/gui/gui.c` | `gui_draw_button` | `gui` | `PENDING` | 0 |
 | `c:src/gui/gui.c:gui_draw_flat_border` | `src/gui/gui.c` | `gui_draw_flat_border` | `gui` | `COVERED` | 2 |
@@ -7313,6 +7313,7 @@
 | `host:drivers:tss` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver TSS real com carregamento GDT e flush simulados | inicializacao, prontidao e atualizacao de stack preservam o contrato sem executar lgdt, troca de segmentos ou flush privilegiado no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente descritor TSS, GDT e contador de flush do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:usb-hid` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enumerar teclados e mouses UHCI, enviar relatorios Boot, publicar eventos de entrada e exercitar refresh, remocao e limites | parsing valido, rejeicao de reports corrompidos, estados, contadores, cancelamento e indisponibilidade preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente dispositivos USB HID e callbacks de entrada estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:usb-msc` | `host` | `host-only-readonly` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enumerar dispositivo MSC UHCI, executar inquiry, TUR, capacity e READ10 simulados, validar block readonly e exercitar recuperacao | protocolo BOT/SCSI, identificadores, capacidade, leituras, estados, limites e falhas preservam o contrato sem escrita | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente transporte USB MSC, registro de bloco e buffers estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:gui:display` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar inicializacao, disponibilidade VESA, parsing de escala, conversao de pixels e refresh das cenas | metricas e escalas validas funcionam, limites retornam erros canonicos e falha de reflow restaura a escala anterior | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do display e callbacks falsos de VESA, desktop, taskbar e Window Manager | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:memory:memory` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar inicializacao E820, alocacao e liberacao PMM por zona, heap, alinhamento e estatisticas | PMM e heap rejeitam limites invalidos, contabilizam falhas e restauram todas as paginas e blocos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente mapa E820, bitmap PMM e heap estaticos no processo host | paginas e blocos liberados, estatisticas restauradas e artefatos preservados |
 | `host:memory:paging` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar init, mapeamento, diretorios de usuario, faults lazy, copias, limites e cleanup com PMM falso | o paging respeita os limites de usuario, rejeita estados invalidos e restaura os recursos da fixture | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente diretorios, tabelas e paginas estaticos no processo host | diretorios e tabelas liberados, pagina de usuario coletada e artefatos preservados |
 | `host:memory:slab-metadata` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar inicializacao, limites, metadados, estatisticas e limpeza do registrador SLAB sem alocar paginas reais | estado publicado, informacoes por indice, duplicidade e limpeza respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas de metadados no processo host; nenhuma pagina real e alocada | cache temporario destruido e manifesto, logs e cobertura preservados |
@@ -8998,12 +8999,6 @@
 - `c:src/fs/sysfs.c:sysfs_render_pci`
 - `c:src/fs/sysfs.c:sysfs_sync`
 - `c:src/fs/sysfs.c:sysfs_write`
-- `c:src/gui/display.c:display_apply_scale`
-- `c:src/gui/display.c:display_init`
-- `c:src/gui/display.c:display_mode_supports`
-- `c:src/gui/display.c:display_parse_scale`
-- `c:src/gui/display.c:display_refresh_scene`
-- `c:src/gui/display.c:display_scale_name`
 - `c:src/gui/gui.c:gui_draw_button`
 - `c:src/gui/gui.c:gui_draw_panel`
 - `c:src/gui/gui.c:gui_draw_resampled_glyph`
