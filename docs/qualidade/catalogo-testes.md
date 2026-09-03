@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **7209**
-- Casos de teste: **124**
+- Superfícies ativas: **7211**
+- Casos de teste: **125**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
 |---|---:|
 | `api_function` | 1541 |
 | `asm_entry` | 101 |
-| `c_function` | 5447 |
+| `c_function` | 5449 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4766 |
+| `COVERED` | 4781 |
 | `MANUAL` | 0 |
-| `PENDING` | 2443 |
+| `PENDING` | 2430 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 124 |
+| `AUTOMATED` | 125 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -39,7 +39,7 @@
 | `boot` | 136 |
 | `core` | 2771 |
 | `desktop` | 40 |
-| `drivers` | 926 |
+| `drivers` | 928 |
 | `filemanager` | 92 |
 | `fs` | 957 |
 | `gui` | 30 |
@@ -934,16 +934,16 @@
 | `api:src/include/drivers/font.h:font_get_height` | `src/include/drivers/font.h` | `font_get_height` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/font.h:font_get_width` | `src/include/drivers/font.h` | `font_get_width` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/font.h:font_init` | `src/include/drivers/font.h` | `font_init` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/idt.h:idt_enable_user_syscall` | `src/include/drivers/idt.h` | `idt_enable_user_syscall` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/idt.h:idt_get_irq_status` | `src/include/drivers/idt.h` | `idt_get_irq_status` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/idt.h:idt_get_shared_irq_handler_count` | `src/include/drivers/idt.h` | `idt_get_shared_irq_handler_count` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/idt.h:idt_init` | `src/include/drivers/idt.h` | `idt_init` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/idt.h:idt_is_user_syscall_enabled` | `src/include/drivers/idt.h` | `idt_is_user_syscall_enabled` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/idt.h:idt_register_handler` | `src/include/drivers/idt.h` | `idt_register_handler` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/idt.h:idt_register_shared_irq_handler` | `src/include/drivers/idt.h` | `idt_register_shared_irq_handler` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/idt.h:idt_set_gate` | `src/include/drivers/idt.h` | `idt_set_gate` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/idt.h:idt_unmask_irq` | `src/include/drivers/idt.h` | `idt_unmask_irq` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/idt.h:idt_validate_irq_state` | `src/include/drivers/idt.h` | `idt_validate_irq_state` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/idt.h:idt_enable_user_syscall` | `src/include/drivers/idt.h` | `idt_enable_user_syscall` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/idt.h:idt_get_irq_status` | `src/include/drivers/idt.h` | `idt_get_irq_status` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/idt.h:idt_get_shared_irq_handler_count` | `src/include/drivers/idt.h` | `idt_get_shared_irq_handler_count` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/idt.h:idt_init` | `src/include/drivers/idt.h` | `idt_init` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/idt.h:idt_is_user_syscall_enabled` | `src/include/drivers/idt.h` | `idt_is_user_syscall_enabled` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/idt.h:idt_register_handler` | `src/include/drivers/idt.h` | `idt_register_handler` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/idt.h:idt_register_shared_irq_handler` | `src/include/drivers/idt.h` | `idt_register_shared_irq_handler` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/idt.h:idt_set_gate` | `src/include/drivers/idt.h` | `idt_set_gate` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/idt.h:idt_unmask_irq` | `src/include/drivers/idt.h` | `idt_unmask_irq` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/idt.h:idt_validate_irq_state` | `src/include/drivers/idt.h` | `idt_validate_irq_state` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/mouse.h:mouse_get_buttons` | `src/include/drivers/mouse.h` | `mouse_get_buttons` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/mouse.h:mouse_get_config` | `src/include/drivers/mouse.h` | `mouse_get_config` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/mouse.h:mouse_get_status` | `src/include/drivers/mouse.h` | `mouse_get_status` | `drivers` | `COVERED` | 4 |
@@ -4195,25 +4195,27 @@
 | `c:src/drivers/font.c:font_get_height` | `src/drivers/font.c` | `font_get_height` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/font.c:font_get_width` | `src/drivers/font.c` | `font_get_width` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/font.c:font_init` | `src/drivers/font.c` | `font_init` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/idt.c:idt_enable_user_syscall` | `src/drivers/idt.c` | `idt_enable_user_syscall` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/idt.c:idt_get_irq_status` | `src/drivers/idt.c` | `idt_get_irq_status` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/idt.c:idt_get_shared_irq_handler_count` | `src/drivers/idt.c` | `idt_get_shared_irq_handler_count` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/idt.c:idt_init` | `src/drivers/idt.c` | `idt_init` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/idt.c:idt_is_user_syscall_enabled` | `src/drivers/idt.c` | `idt_is_user_syscall_enabled` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/idt.c:idt_panic_exception` | `src/drivers/idt.c` | `idt_panic_exception` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/idt.c:idt_print_hex32` | `src/drivers/idt.c` | `idt_print_hex32` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/idt.c:idt_print_uint32` | `src/drivers/idt.c` | `idt_print_uint32` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/idt.c:idt_register_handler` | `src/drivers/idt.c` | `idt_register_handler` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/idt.c:idt_register_shared_irq_handler` | `src/drivers/idt.c` | `idt_register_shared_irq_handler` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/idt.c:idt_set_gate` | `src/drivers/idt.c` | `idt_set_gate` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/idt.c:idt_unmask_irq` | `src/drivers/idt.c` | `idt_unmask_irq` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/idt.c:idt_data_address` | `src/drivers/idt.c` | `idt_data_address` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/idt.c:idt_enable_user_syscall` | `src/drivers/idt.c` | `idt_enable_user_syscall` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/idt.c:idt_get_irq_status` | `src/drivers/idt.c` | `idt_get_irq_status` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/idt.c:idt_get_shared_irq_handler_count` | `src/drivers/idt.c` | `idt_get_shared_irq_handler_count` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/idt.c:idt_handler_address` | `src/drivers/idt.c` | `idt_handler_address` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/idt.c:idt_init` | `src/drivers/idt.c` | `idt_init` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/idt.c:idt_is_user_syscall_enabled` | `src/drivers/idt.c` | `idt_is_user_syscall_enabled` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/idt.c:idt_panic_exception` | `src/drivers/idt.c` | `idt_panic_exception` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/idt.c:idt_print_hex32` | `src/drivers/idt.c` | `idt_print_hex32` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/idt.c:idt_print_uint32` | `src/drivers/idt.c` | `idt_print_uint32` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/idt.c:idt_register_handler` | `src/drivers/idt.c` | `idt_register_handler` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/idt.c:idt_register_shared_irq_handler` | `src/drivers/idt.c` | `idt_register_shared_irq_handler` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/idt.c:idt_set_gate` | `src/drivers/idt.c` | `idt_set_gate` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/idt.c:idt_unmask_irq` | `src/drivers/idt.c` | `idt_unmask_irq` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/idt.c:idt_user_exception_handler` | `src/drivers/idt.c` | `idt_user_exception_handler` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/idt.c:idt_validate_irq_state` | `src/drivers/idt.c` | `idt_validate_irq_state` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/idt.c:inb` | `src/drivers/idt.c` | `inb` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/idt.c:irq_handler` | `src/drivers/idt.c` | `irq_handler` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/idt.c:isr_handler` | `src/drivers/idt.c` | `isr_handler` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/idt.c:outb` | `src/drivers/idt.c` | `outb` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/idt.c:pic_remap` | `src/drivers/idt.c` | `pic_remap` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/idt.c:idt_validate_irq_state` | `src/drivers/idt.c` | `idt_validate_irq_state` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/idt.c:inb` | `src/drivers/idt.c` | `inb` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/idt.c:irq_handler` | `src/drivers/idt.c` | `irq_handler` | `drivers` | `COVERED` | 4 |
+| `c:src/drivers/idt.c:isr_handler` | `src/drivers/idt.c` | `isr_handler` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/idt.c:outb` | `src/drivers/idt.c` | `outb` | `drivers` | `COVERED` | 4 |
+| `c:src/drivers/idt.c:pic_remap` | `src/drivers/idt.c` | `pic_remap` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/keyboard.c:inb` | `src/drivers/keyboard.c` | `inb` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/keyboard.c:keyboard_bottom_half` | `src/drivers/keyboard.c` | `keyboard_bottom_half` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/keyboard.c:keyboard_controller_reset` | `src/drivers/keyboard.c` | `keyboard_controller_reset` | `drivers` | `COVERED` | 1 |
@@ -7323,6 +7325,7 @@
 | `host:drivers:e1000` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar PCI, mapeamento MMIO, reset, MAC, DMA, configuracao de descritores, TX, RX, IRQ deferred, quiescencia e falhas de inicializacao | frames validos sao transmitidos e recebidos, eventos IRQ sao processados e fixtures invalidas retornam erros canonicos com limpeza | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente MMIO, DMA, PCI, IRQ deferred e frames Ethernet falsos no processo host | dispositivo falso, descritores, buffers DMA, fila IRQ e estado MMIO sao restaurados; manifesto, logs e cobertura preservados |
 | `host:drivers:ehci` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar PCI, MMIO, alinhamento DMA, reset, enumeracao, descritores, controle, bulk, interrupt, timeout, recuperacao e limpeza | operacoes validas preservam invariantes do controlador e fixtures invalidas retornam erros canonicos sem I/O privilegiado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente PCI, MMIO, memoria DMA, relogio e dispositivos USB falsos no processo host | controlador falso resetado, paginas DMA devolvidas e manifesto, logs e cobertura preservados |
 | `host:drivers:font` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inicializar o driver de fonte e consultar as dimensoes publicadas | font_init e idempotente e as dimensoes publicadas permanecem 8x16 | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabela estatica de fontes e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:drivers:idt` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar inicializacao, gates, handlers, IRQ compartilhada, mascaras PIC, syscall e caminho de panico | IDT e PIC publicam estado coerente; handlers e IRQs respeitam limites, duplicidade, EOI e erros canonicos sem instrucoes privilegiadas reais | compilador ausente, warning, cobertura incompleta, falha de assercao, instrucao privilegiada executada ou timeout | somente tabelas IDT, estado PIC, flags, callbacks e panic longjmp no processo host | estado de IDT, PIC, handlers, ocorrencias, flags, logs e cobertura permanecem confinados ao processo host |
 | `host:drivers:keyboard` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver teclado real com controlador PS/2 e dependencias registradas simulados | scancodes, inicializacao, filtros, reset, metricas e falhas preservam o contrato sem executar CLI, STI ou I/O privilegiado no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente filas, metricas e portas estaticas do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:mouse` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar inicializacao, protocolo wheel e fallback, IRQ12, filas, eventos, cursor, configuracao, limites, falhas e limpeza | eventos validos chegam ao callback, configuracoes respeitam limites e fixtures invalidas retornam erros canonicos sem I/O privilegiado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente portas PS/2, IRQ, fila de entrada, framebuffer VESA e dispositivos falsos no processo host | estado da controladora, fila, cursor e framebuffer falso permanecem restritos ao processo; manifesto, logs e cobertura preservados |
 | `host:drivers:pci` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar leitura, escrita, varredura, inventario, multifuncao, limites e habilitacao de recursos PCI | dispositivos validos sao registrados, ausentes sao ignorados, limite retorna ERR_OVERFLOW e comandos aceitos sao publicados | compilador ausente, warning, cobertura incompleta, falha de assercao, acesso I/O real ou timeout | somente espaco de configuracao, inventario e contadores falsos no processo host; nenhum porto I/O real e acessado | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -8502,19 +8505,6 @@
 - `c:src/desktop/desktop.c:desktop_update_drag_preview`
 - `c:src/desktop/desktop.c:desktop_update_selection`
 - `c:src/desktop/desktop.c:draw_single_icon_simple`
-- `c:src/drivers/idt.c:idt_enable_user_syscall`
-- `c:src/drivers/idt.c:idt_get_irq_status`
-- `c:src/drivers/idt.c:idt_get_shared_irq_handler_count`
-- `c:src/drivers/idt.c:idt_init`
-- `c:src/drivers/idt.c:idt_panic_exception`
-- `c:src/drivers/idt.c:idt_print_hex32`
-- `c:src/drivers/idt.c:idt_print_uint32`
-- `c:src/drivers/idt.c:idt_register_handler`
-- `c:src/drivers/idt.c:idt_register_shared_irq_handler`
-- `c:src/drivers/idt.c:idt_set_gate`
-- `c:src/drivers/idt.c:idt_unmask_irq`
-- `c:src/drivers/idt.c:inb`
-- `c:src/drivers/idt.c:pic_remap`
 - `c:src/filemanager/filemanager.c:fm_block_read_only_mutation`
 - `c:src/filemanager/filemanager.c:fm_classic_draw_help`
 - `c:src/filemanager/filemanager.c:fm_classic_draw_input_dialog`

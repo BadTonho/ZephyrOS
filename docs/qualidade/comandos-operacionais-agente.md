@@ -607,6 +607,16 @@ e warnings tratados como erro. Uma execucao `PASS` deve resolver as funcoes
 de `src/drivers/ata.c` sem enderecos desconhecidos ou ambiguos e manter
 dispositivos, contadores, handlers e estado de portas confinados ao processo.
 
+O caso `test-idt-host` exercita a inicializacao da IDT, montagem de gates, PIC,
+handlers simples e compartilhados, mascaras, estatisticas de IRQ, syscall,
+despacho, EOI e panic controlado usando stubs de ISR, portas e flags. Nenhuma
+instrucao `lidt`, `sti`, `cli` ou I/O privilegiado e executada pelo processo
+host. O relatorio fica em `build/test-results/idt-host/`:
+
+```text
+make test-idt-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O caso `test-icons-host` exercita o registro e o cache de icones com filesystem,
 BMP, memoria e VESA falsos. A fixture verifica fallback sem filesystem, carga
 valida, formato invalido, falha de memoria, mutacoes do registro e limites de

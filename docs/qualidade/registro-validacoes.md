@@ -4935,3 +4935,18 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   O catalogo registra 7.209 superficies, 4.766 `COVERED`, 2.443 `PENDING` e
   124 casos. O fechamento integral, o gate estrito e a validacao TST7 completa
   continuam pendentes.
+
+- Incremento Drivers/IDT concluido em 2026-09-03. Foi criado o caso host-only
+  `host:drivers:idt` e o alvo `make test-idt-host`. A fixture usa stubs de
+  ISR/IRQ, PIC, flags, `lidt` e panic para exercitar inicializacao, gates,
+  handlers simples e compartilhados, limites, unmask, estatisticas, EOI,
+  syscall e despacho sem executar instrucoes privilegiadas. O relatorio
+  `build/test-results/idt-host/coverage.json` terminou `PASS`, resolveu as 20
+  funcoes observadas de `src/drivers/idt.c`, sem enderecos desconhecidos ou
+  ambiguos, e os erros canonicos das fixtures negativas foram confirmados.
+  Foram executados `make test-idt-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`, `python tools/test_catalog.py
+  sync`, `python tools/test_catalog.py render`, `make catalog-test` e a
+  contagem de pendencias; todos passaram nesta etapa. O catalogo registra
+  7.211 superficies, 4.781 `COVERED`, 2.430 `PENDING` e 125 casos. O fechamento
+  integral, o gate estrito e a validacao TST7 completa continuam pendentes.

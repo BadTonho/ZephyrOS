@@ -1633,6 +1633,17 @@ pendente.
   `PENDING` e 124 casos. O fechamento integral, o gate estrito e a validacao
   TST7 completa continuam pendentes.
 
+- Incremento Drivers/IDT concluido em 2026-09-03. Foi criado o caso host-only
+  `host:drivers:idt` e o alvo `make test-idt-host`. A fixture usa stubs para
+  ISR/IRQ, PIC, flags, `lidt` e panic para exercitar inicializacao, gates,
+  handlers simples e compartilhados, limites, unmask, estatisticas, EOI,
+  syscall e despacho sem executar instrucoes privilegiadas. O relatorio
+  instrumentado terminou `PASS`, resolveu as 20 funcoes observadas de
+  `src/drivers/idt.c`, sem enderecos desconhecidos ou ambiguos. O catalogo foi
+  sincronizado, renderizado e validado; agora registra 7.211 superficies,
+  4.781 `COVERED`, 2.430 `PENDING` e 125 casos. O fechamento integral, o gate
+  estrito e a validacao TST7 completa continuam pendentes.
+
 - Incremento Drivers/video concluido em 2026-09-03: foi criado o caso host-only
   `host:drivers:video` e o alvo `make test-video-host`. A fixture usa
   framebuffer, fonte, VESA, mouse e logs falsos para exercitar inicializacao,
