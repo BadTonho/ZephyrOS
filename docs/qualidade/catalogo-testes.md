@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7209**
-- Casos de teste: **122**
+- Casos de teste: **123**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4717 |
+| `COVERED` | 4741 |
 | `MANUAL` | 0 |
-| `PENDING` | 2492 |
+| `PENDING` | 2468 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 122 |
+| `AUTOMATED` | 123 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -978,13 +978,13 @@
 | `api:src/include/drivers/rtc.h:rtc_validate_state` | `src/include/drivers/rtc.h` | `rtc_validate_state` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/rtl8139.h:rtl8139_handler` | `src/include/drivers/rtl8139.h` | `rtl8139_handler` | `drivers` | `COVERED` | 1 |
 | `api:src/include/drivers/rtl8139.h:rtl8139_init` | `src/include/drivers/rtl8139.h` | `rtl8139_init` | `drivers` | `COVERED` | 1 |
-| `api:src/include/drivers/rtl8811cu.h:rtl8811cu_connect_open` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_connect_open` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/rtl8811cu.h:rtl8811cu_get_status` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_get_status` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/rtl8811cu.h:rtl8811cu_init` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_init` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/rtl8811cu.h:rtl8811cu_probe` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_probe` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/rtl8811cu.h:rtl8811cu_scan` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_scan` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/rtl8811cu.h:rtl8811cu_state_name` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_state_name` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/rtl8811cu.h:rtl8811cu_validate_state` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_validate_state` | `drivers` | `PENDING` | 0 |
+| `api:src/include/drivers/rtl8811cu.h:rtl8811cu_connect_open` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_connect_open` | `drivers` | `COVERED` | 1 |
+| `api:src/include/drivers/rtl8811cu.h:rtl8811cu_get_status` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_get_status` | `drivers` | `COVERED` | 1 |
+| `api:src/include/drivers/rtl8811cu.h:rtl8811cu_init` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_init` | `drivers` | `COVERED` | 1 |
+| `api:src/include/drivers/rtl8811cu.h:rtl8811cu_probe` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_probe` | `drivers` | `COVERED` | 1 |
+| `api:src/include/drivers/rtl8811cu.h:rtl8811cu_scan` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_scan` | `drivers` | `COVERED` | 1 |
+| `api:src/include/drivers/rtl8811cu.h:rtl8811cu_state_name` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_state_name` | `drivers` | `COVERED` | 1 |
+| `api:src/include/drivers/rtl8811cu.h:rtl8811cu_validate_state` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_validate_state` | `drivers` | `COVERED` | 1 |
 | `api:src/include/drivers/serial.h:serial_flush` | `src/include/drivers/serial.h` | `serial_flush` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/serial.h:serial_init` | `src/include/drivers/serial.h` | `serial_init` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/serial.h:serial_is_ready` | `src/include/drivers/serial.h` | `serial_is_ready` | `drivers` | `COVERED` | 3 |
@@ -4354,23 +4354,23 @@
 | `c:src/drivers/rtl8139.c:rtl8139_service_pending` | `src/drivers/rtl8139.c` | `rtl8139_service_pending` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/rtl8139.c:rtl8139_update_link` | `src/drivers/rtl8139.c` | `rtl8139_update_link` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/rtl8139.c:rtl8139_wait_reset` | `src/drivers/rtl8139.c` | `rtl8139_wait_reset` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/rtl8811cu.c:rtl8811cu_connect_open` | `src/drivers/rtl8811cu.c` | `rtl8811cu_connect_open` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8811cu.c:rtl8811cu_device_matches` | `src/drivers/rtl8811cu.c` | `rtl8811cu_device_matches` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8811cu.c:rtl8811cu_firmware_check` | `src/drivers/rtl8811cu.c` | `rtl8811cu_firmware_check` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8811cu.c:rtl8811cu_get_driver_status` | `src/drivers/rtl8811cu.c` | `rtl8811cu_get_driver_status` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8811cu.c:rtl8811cu_get_status` | `src/drivers/rtl8811cu.c` | `rtl8811cu_get_status` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8811cu.c:rtl8811cu_init` | `src/drivers/rtl8811cu.c` | `rtl8811cu_init` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8811cu.c:rtl8811cu_prepare_interface` | `src/drivers/rtl8811cu.c` | `rtl8811cu_prepare_interface` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8811cu.c:rtl8811cu_probe` | `src/drivers/rtl8811cu.c` | `rtl8811cu_probe` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8811cu.c:rtl8811cu_quiesce` | `src/drivers/rtl8811cu.c` | `rtl8811cu_quiesce` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8811cu.c:rtl8811cu_read_le16` | `src/drivers/rtl8811cu.c` | `rtl8811cu_read_le16` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8811cu.c:rtl8811cu_receive_frame` | `src/drivers/rtl8811cu.c` | `rtl8811cu_receive_frame` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8811cu.c:rtl8811cu_rx_pending` | `src/drivers/rtl8811cu.c` | `rtl8811cu_rx_pending` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8811cu.c:rtl8811cu_scan` | `src/drivers/rtl8811cu.c` | `rtl8811cu_scan` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8811cu.c:rtl8811cu_send_frame` | `src/drivers/rtl8811cu.c` | `rtl8811cu_send_frame` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8811cu.c:rtl8811cu_service_pending` | `src/drivers/rtl8811cu.c` | `rtl8811cu_service_pending` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8811cu.c:rtl8811cu_state_name` | `src/drivers/rtl8811cu.c` | `rtl8811cu_state_name` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8811cu.c:rtl8811cu_validate_state` | `src/drivers/rtl8811cu.c` | `rtl8811cu_validate_state` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/rtl8811cu.c:rtl8811cu_connect_open` | `src/drivers/rtl8811cu.c` | `rtl8811cu_connect_open` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8811cu.c:rtl8811cu_device_matches` | `src/drivers/rtl8811cu.c` | `rtl8811cu_device_matches` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8811cu.c:rtl8811cu_firmware_check` | `src/drivers/rtl8811cu.c` | `rtl8811cu_firmware_check` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8811cu.c:rtl8811cu_get_driver_status` | `src/drivers/rtl8811cu.c` | `rtl8811cu_get_driver_status` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8811cu.c:rtl8811cu_get_status` | `src/drivers/rtl8811cu.c` | `rtl8811cu_get_status` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8811cu.c:rtl8811cu_init` | `src/drivers/rtl8811cu.c` | `rtl8811cu_init` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8811cu.c:rtl8811cu_prepare_interface` | `src/drivers/rtl8811cu.c` | `rtl8811cu_prepare_interface` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8811cu.c:rtl8811cu_probe` | `src/drivers/rtl8811cu.c` | `rtl8811cu_probe` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8811cu.c:rtl8811cu_quiesce` | `src/drivers/rtl8811cu.c` | `rtl8811cu_quiesce` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8811cu.c:rtl8811cu_read_le16` | `src/drivers/rtl8811cu.c` | `rtl8811cu_read_le16` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8811cu.c:rtl8811cu_receive_frame` | `src/drivers/rtl8811cu.c` | `rtl8811cu_receive_frame` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8811cu.c:rtl8811cu_rx_pending` | `src/drivers/rtl8811cu.c` | `rtl8811cu_rx_pending` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8811cu.c:rtl8811cu_scan` | `src/drivers/rtl8811cu.c` | `rtl8811cu_scan` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8811cu.c:rtl8811cu_send_frame` | `src/drivers/rtl8811cu.c` | `rtl8811cu_send_frame` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8811cu.c:rtl8811cu_service_pending` | `src/drivers/rtl8811cu.c` | `rtl8811cu_service_pending` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8811cu.c:rtl8811cu_state_name` | `src/drivers/rtl8811cu.c` | `rtl8811cu_state_name` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8811cu.c:rtl8811cu_validate_state` | `src/drivers/rtl8811cu.c` | `rtl8811cu_validate_state` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/serial.c:serial_byte_allowed` | `src/drivers/serial.c` | `serial_byte_allowed` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/serial.c:serial_flush` | `src/drivers/serial.c` | `serial_flush` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/serial.c:serial_flush_locked` | `src/drivers/serial.c` | `serial_flush_locked` | `drivers` | `COVERED` | 3 |
@@ -7417,6 +7417,7 @@
 | `qemu:tst6:stress:kernel` | `qemu` | `tst6` | `qemu:tst6:stress:kernel` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | paging, heap, SLAB, processos e threads estao READY | repetir ciclos deterministas de memoria e execucao sob teto obrigatorio | invariantes estaveis permanecem iguais e a primeira falha interrompe a suite | overflow, vazamento, deadlock, timeout, protocolo ou QEMU | alocacoes e objetos temporarios de cada ciclo em snapshot | devolver paginas, destruir objetos e registrar seed e iteracao |
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
+| `host:drivers:rtl8811cu` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar identificacao USB, revisao, descritores, endpoints Bulk, cabecalho de firmware, estados, callbacks Ethernet, scan, associacao e indisponibilidade segura | dispositivos incompatíveis e fixtures invalidas retornam erros canonicos; o dispositivo suportado permanece indisponivel sem firmware e transporte confirmados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estruturas USB, filesystem, interface Ethernet e estado do driver falso no processo host | estruturas de dispositivo, firmware falso, interface, estado global, manifesto, logs e cobertura permanecem confinados ao processo host |
 
 ## Superfícies sem caso associado
 
@@ -7545,13 +7546,6 @@
 - `api:src/include/drivers/ehci.h:ehci_poll`
 - `api:src/include/drivers/ehci.h:ehci_reset_bulk_toggles`
 - `api:src/include/drivers/ehci.h:ehci_validate_state`
-- `api:src/include/drivers/rtl8811cu.h:rtl8811cu_connect_open`
-- `api:src/include/drivers/rtl8811cu.h:rtl8811cu_get_status`
-- `api:src/include/drivers/rtl8811cu.h:rtl8811cu_init`
-- `api:src/include/drivers/rtl8811cu.h:rtl8811cu_probe`
-- `api:src/include/drivers/rtl8811cu.h:rtl8811cu_scan`
-- `api:src/include/drivers/rtl8811cu.h:rtl8811cu_state_name`
-- `api:src/include/drivers/rtl8811cu.h:rtl8811cu_validate_state`
 - `api:src/include/process/process.h:process_context_switch`
 - `api:src/include/process/process.h:process_user_enter`
 - `api:src/include/process/process.h:process_user_termination_enter`
@@ -8545,23 +8539,6 @@
 - `c:src/drivers/rtc.c:rtc_read_register`
 - `c:src/drivers/rtc.c:rtc_read_utc`
 - `c:src/drivers/rtc.c:rtc_wait_update_complete`
-- `c:src/drivers/rtl8811cu.c:rtl8811cu_connect_open`
-- `c:src/drivers/rtl8811cu.c:rtl8811cu_device_matches`
-- `c:src/drivers/rtl8811cu.c:rtl8811cu_firmware_check`
-- `c:src/drivers/rtl8811cu.c:rtl8811cu_get_driver_status`
-- `c:src/drivers/rtl8811cu.c:rtl8811cu_get_status`
-- `c:src/drivers/rtl8811cu.c:rtl8811cu_init`
-- `c:src/drivers/rtl8811cu.c:rtl8811cu_prepare_interface`
-- `c:src/drivers/rtl8811cu.c:rtl8811cu_probe`
-- `c:src/drivers/rtl8811cu.c:rtl8811cu_quiesce`
-- `c:src/drivers/rtl8811cu.c:rtl8811cu_read_le16`
-- `c:src/drivers/rtl8811cu.c:rtl8811cu_receive_frame`
-- `c:src/drivers/rtl8811cu.c:rtl8811cu_rx_pending`
-- `c:src/drivers/rtl8811cu.c:rtl8811cu_scan`
-- `c:src/drivers/rtl8811cu.c:rtl8811cu_send_frame`
-- `c:src/drivers/rtl8811cu.c:rtl8811cu_service_pending`
-- `c:src/drivers/rtl8811cu.c:rtl8811cu_state_name`
-- `c:src/drivers/rtl8811cu.c:rtl8811cu_validate_state`
 - `c:src/filemanager/filemanager.c:fm_block_read_only_mutation`
 - `c:src/filemanager/filemanager.c:fm_classic_draw_help`
 - `c:src/filemanager/filemanager.c:fm_classic_draw_input_dialog`

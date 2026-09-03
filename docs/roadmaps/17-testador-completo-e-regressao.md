@@ -1574,6 +1574,23 @@ pendente.
   121 casos. O fechamento integral, o gate estrito e a validacao TST7 completa
   continuam pendentes.
 
+
+- Incremento Drivers/RTL8811CU concluido em 2026-09-03. Foi criado o caso
+  `host:drivers:rtl8811cu` e o alvo `make test-rtl8811cu-host`. A fixture
+  simulou dispositivos USB EHCI high-speed, descritores, endpoints Bulk,
+  filesystem e firmware falso, exercitando probe, estados de inicializacao,
+  callbacks Ethernet, scan, associacao aberta, limites de SSID e caminhos
+  de indisponibilidade segura. O relatorio instrumentado
+  `build/test-results/rtl8811cu-host/coverage.json` terminou `PASS`, resolveu
+  17 funcoes de `src/drivers/rtl8811cu.c` e as 7 APIs publicas correspondentes,
+  sem enderecos desconhecidos ou ambiguos. Foram executados
+  `make test-rtl8811cu-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`,
+  `python tools/test_catalog.py sync`, `python tools/test_catalog.py render`,
+  `python tools/test_catalog.py validate`, `make q3check`, `make clean`,
+  `make` e `git diff --check`; todos passaram nesta etapa. O catalogo registra
+  7.209 superficies, 4.741 `COVERED`, 2.468 `PENDING` e 123 casos. O fechamento
+  integral, o gate estrito e a validacao TST7 completa continuam pendentes.
+
 - Incremento Drivers/AC97 concluido em 2026-09-03. Foi criado o caso
   host-only `host:drivers:ac97` e o alvo `make test-ac97-host`. A fixture
   simulou PCI, portas I/O, codec, reset, energia, playback, memoria, IRQ,
