@@ -566,6 +566,12 @@ RECOVERY_RUNTIME_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_recovery_runtime_host.c",
     ROOT / "src" / "boot" / "recovery_runtime.c",
 )
+PANIC_RESULT_DIR = ROOT / "build" / "test-results" / "panic-host"
+PANIC_BINARY = ROOT / "build" / "tests" / "test_panic_host.exe"
+PANIC_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_panic_host.c",
+    ROOT / "src" / "kernel" / "panic.c",
+)
 SOURCE_FILES = CORE_SOURCE_FILES
 
 
@@ -735,6 +741,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
     if case_id == "host:boot:recovery-runtime":
         return (RECOVERY_RUNTIME_RESULT_DIR, RECOVERY_RUNTIME_BINARY,
                 RECOVERY_RUNTIME_SOURCE_FILES, "recovery-runtime-host")
+    if case_id == "host:kernel:panic":
+        return PANIC_RESULT_DIR, PANIC_BINARY, PANIC_SOURCE_FILES, "panic-host"
     raise ValueError(f"caso_host_invalido:{case_id}")
 
 
@@ -926,7 +934,8 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:gui:display", "host:shell:core",
                                  "host:core:usb-transport", "host:gui:widgets",
                                  "host:shell:commands-vfs",
-                                 "host:boot:recovery-runtime"))
+                                 "host:boot:recovery-runtime",
+                                 "host:kernel:panic"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
     return parser.parse_args()

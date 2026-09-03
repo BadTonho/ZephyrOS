@@ -72,9 +72,11 @@ void panic_memory(const char* message, uint32_t mmap_entries,
     panic_halt();
 }
 
+#ifndef ZEPHYROS_HOST_TEST
 void panic_halt(void) {
     asm volatile("cli");
     for (;;) {
         asm volatile("hlt");
     }
 }
+#endif

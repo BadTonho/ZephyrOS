@@ -173,6 +173,7 @@ HOST_CASE_TARGETS = {
     "host:gui:widgets": "test-gui-host",
     "host:shell:commands-vfs": "test-shell-commands-vfs-host",
     "host:boot:recovery-runtime": "test-recovery-runtime-host",
+    "host:kernel:panic": "test-panic-host",
     "host:tst2:protocol-core": "test-tst2-host",
     "host:tst3:string-compress": "test-tst3-host",
 }
