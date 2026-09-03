@@ -213,6 +213,10 @@ class Tst7RunnerContractTests(unittest.TestCase):
         self.assertEqual(runner.HOST_CASE_TARGETS["host:tst5:blackbox"],
                          "test-blackbox-host")
 
+    def test_test_coverage_host_case_is_mapped(self):
+        self.assertEqual(runner.HOST_CASE_TARGETS["host:core:test-coverage"],
+                         "test-coverage-host")
+
     def test_seed_is_reproducible(self):
         self.assertEqual(runner.stable_seed("qemu:tst6:stress:kernel"),
                          runner.stable_seed("qemu:tst6:stress:kernel"))

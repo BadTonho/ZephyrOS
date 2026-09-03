@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **7196**
-- Casos de teste: **102**
+- Superfícies ativas: **7197**
+- Casos de teste: **103**
 - Superfícies aposentadas: **22**
 
 | Tipo | Quantidade |
 |---|---:|
 | `api_function` | 1541 |
 | `asm_entry` | 101 |
-| `c_function` | 5434 |
+| `c_function` | 5435 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4278 |
+| `COVERED` | 4290 |
 | `MANUAL` | 0 |
-| `PENDING` | 2918 |
+| `PENDING` | 2907 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 102 |
+| `AUTOMATED` | 103 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -37,7 +37,7 @@
 | `apps` | 134 |
 | `appstore` | 88 |
 | `boot` | 136 |
-| `core` | 2769 |
+| `core` | 2770 |
 | `desktop` | 40 |
 | `drivers` | 915 |
 | `filemanager` | 92 |
@@ -3167,17 +3167,18 @@
 | `c:src/core/tcp.c:tcp_validate_state` | `src/core/tcp.c` | `tcp_validate_state` | `core` | `COVERED` | 3 |
 | `c:src/core/tcp.c:tcp_write_u16` | `src/core/tcp.c` | `tcp_write_u16` | `core` | `COVERED` | 3 |
 | `c:src/core/tcp.c:tcp_write_u32` | `src/core/tcp.c` | `tcp_write_u32` | `core` | `COVERED` | 3 |
-| `c:src/core/test_coverage.c:__cyg_profile_func_enter` | `src/core/test_coverage.c` | `__cyg_profile_func_enter` | `core` | `PENDING` | 0 |
-| `c:src/core/test_coverage.c:__cyg_profile_func_exit` | `src/core/test_coverage.c` | `__cyg_profile_func_exit` | `core` | `PENDING` | 0 |
-| `c:src/core/test_coverage.c:coverage_append` | `src/core/test_coverage.c` | `coverage_append` | `core` | `PENDING` | 0 |
-| `c:src/core/test_coverage.c:coverage_append_hex` | `src/core/test_coverage.c` | `coverage_append_hex` | `core` | `PENDING` | 0 |
-| `c:src/core/test_coverage.c:coverage_emit_addresses` | `src/core/test_coverage.c` | `coverage_emit_addresses` | `core` | `PENDING` | 0 |
-| `c:src/core/test_coverage.c:coverage_emit_header` | `src/core/test_coverage.c` | `coverage_emit_header` | `core` | `PENDING` | 0 |
-| `c:src/core/test_coverage.c:coverage_emit_line` | `src/core/test_coverage.c` | `coverage_emit_line` | `core` | `PENDING` | 0 |
-| `c:src/core/test_coverage.c:coverage_hash_slot` | `src/core/test_coverage.c` | `coverage_hash_slot` | `core` | `PENDING` | 0 |
-| `c:src/core/test_coverage.c:coverage_record` | `src/core/test_coverage.c` | `coverage_record` | `core` | `PENDING` | 0 |
-| `c:src/core/test_coverage.c:test_coverage_begin_case` | `src/core/test_coverage.c` | `test_coverage_begin_case` | `core` | `PENDING` | 0 |
-| `c:src/core/test_coverage.c:test_coverage_end_case` | `src/core/test_coverage.c` | `test_coverage_end_case` | `core` | `PENDING` | 0 |
+| `c:src/core/test_coverage.c:__cyg_profile_func_enter` | `src/core/test_coverage.c` | `__cyg_profile_func_enter` | `core` | `COVERED` | 1 |
+| `c:src/core/test_coverage.c:__cyg_profile_func_exit` | `src/core/test_coverage.c` | `__cyg_profile_func_exit` | `core` | `COVERED` | 1 |
+| `c:src/core/test_coverage.c:coverage_append` | `src/core/test_coverage.c` | `coverage_append` | `core` | `COVERED` | 1 |
+| `c:src/core/test_coverage.c:coverage_append_hex` | `src/core/test_coverage.c` | `coverage_append_hex` | `core` | `COVERED` | 1 |
+| `c:src/core/test_coverage.c:coverage_emit_addresses` | `src/core/test_coverage.c` | `coverage_emit_addresses` | `core` | `COVERED` | 1 |
+| `c:src/core/test_coverage.c:coverage_emit_header` | `src/core/test_coverage.c` | `coverage_emit_header` | `core` | `COVERED` | 1 |
+| `c:src/core/test_coverage.c:coverage_emit_line` | `src/core/test_coverage.c` | `coverage_emit_line` | `core` | `COVERED` | 1 |
+| `c:src/core/test_coverage.c:coverage_hash_slot` | `src/core/test_coverage.c` | `coverage_hash_slot` | `core` | `COVERED` | 1 |
+| `c:src/core/test_coverage.c:coverage_record` | `src/core/test_coverage.c` | `coverage_record` | `core` | `COVERED` | 1 |
+| `c:src/core/test_coverage.c:test_coverage_begin_case` | `src/core/test_coverage.c` | `test_coverage_begin_case` | `core` | `COVERED` | 1 |
+| `c:src/core/test_coverage.c:test_coverage_end_case` | `src/core/test_coverage.c` | `test_coverage_end_case` | `core` | `COVERED` | 1 |
+| `c:src/core/test_coverage.c:test_coverage_host_exercise` | `src/core/test_coverage.c` | `test_coverage_host_exercise` | `core` | `COVERED` | 1 |
 | `c:src/core/test_protocol.c:protocol_copy_text` | `src/core/test_protocol.c` | `protocol_copy_text` | `core` | `COVERED` | 1 |
 | `c:src/core/test_protocol.c:protocol_dispatch_case` | `src/core/test_protocol.c` | `protocol_dispatch_case` | `core` | `COVERED` | 8 |
 | `c:src/core/test_protocol.c:protocol_emit_event` | `src/core/test_protocol.c` | `protocol_emit_event` | `core` | `COVERED` | 4 |
@@ -7297,6 +7298,7 @@
 | `host:core:power` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar energia com ACPI, storage e dependencias simulados | estados de energia, cadeia de notificadores, quiescencia e limpeza apos falha preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do processo host e fixtures de energia | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:scheduling` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar os autotestes de wait, workqueue e irq_deferred, alem de limites e estados invalidos | coalescencia, rerun, cancelamento, FIFO, capacidade, disponibilidade e invariantes respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente filas, trabalhos e buffers estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:state` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar contratos de recovery e notificadores de energia | estados, capacidades opcionais, timeouts, ordem e erros canonicos sao observados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico dos servicos e artefatos host-only | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:core:test-coverage` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o coletor real com transporte serial falso e caminhos de limite | funcoes de registro, hash, formatacao e emissao produzem um relatorio ZCOV valido sem espera indefinida | compilador ausente, warning, cobertura incompleta, relatorio invalido, falha de assercao ou timeout | somente buffers estaticos e callbacks seriais falsos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:timer` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar timers one-shot e periodicos com IDT, PIC e scheduler simulados | handles, prazos, cancelamento, dispatch, callbacks, notifier e limpeza respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas estaticas do servico de timers no processo host | todos os timers e proprietarios sao destruidos e os artefatos sao preservados |
 | `host:core:usb-manager` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inventariar controladores UHCI, EHCI e fora do escopo, sincronizar drivers de classe, consultar portas e dispositivos, executar polling e refresh | estados, identificadores, agregacoes, limites, indisponibilidade e recuperacao preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente fixtures estaticos PCI, UHCI, EHCI, MSC e HID no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:wifi-manager` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inventariar candidatos PCI e USB, consultar interfaces, executar scan e conexao aberta com backends falsos | identificadores, estados, contadores, limites, indisponibilidade e recuperacao preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente fixtures estaticos PCI, USB e RTL8811CU no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7964,17 +7966,6 @@
 - `c:src/core/syscall.c:syscall_user_signal_mask`
 - `c:src/core/syscall.c:syscall_user_sync`
 - `c:src/core/syscall.c:syscall_user_uptime`
-- `c:src/core/test_coverage.c:__cyg_profile_func_enter`
-- `c:src/core/test_coverage.c:__cyg_profile_func_exit`
-- `c:src/core/test_coverage.c:coverage_append`
-- `c:src/core/test_coverage.c:coverage_append_hex`
-- `c:src/core/test_coverage.c:coverage_emit_addresses`
-- `c:src/core/test_coverage.c:coverage_emit_header`
-- `c:src/core/test_coverage.c:coverage_emit_line`
-- `c:src/core/test_coverage.c:coverage_hash_slot`
-- `c:src/core/test_coverage.c:coverage_record`
-- `c:src/core/test_coverage.c:test_coverage_begin_case`
-- `c:src/core/test_coverage.c:test_coverage_end_case`
 - `c:src/core/tls_client.c:tls_client_close`
 - `c:src/core/tls_client.c:tls_client_configure`
 - `c:src/core/tls_client.c:tls_client_divide_u64`

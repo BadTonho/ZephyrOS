@@ -548,6 +548,47 @@
       }
     },
     {
+      "id": "core-test-coverage-host-dynamic",
+      "domain": "core",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:test-coverage"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/test-coverage-host/coverage.json",
+      "coverage_sources": [
+        "src/core/test_coverage.c"
+      ],
+      "evidence": "make test-coverage-host aprovado com serial falso, escrita parcial, falta de progresso, truncamento de identificador e relatorio ZCOV",
+      "case_definition": {
+        "id": "host:core:test-coverage",
+        "scenario": "Teste host-only do coletor de cobertura instrumentada",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "transport": "serial-falso"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "compilar e executar o coletor real com transporte serial falso e caminhos de limite",
+        "expected": "funcoes de registro, hash, formatacao e emissao produzem um relatorio ZCOV valido sem espera indefinida",
+        "errors": "compilador ausente, warning, cobertura incompleta, relatorio invalido, falha de assercao ou timeout",
+        "effects": "somente buffers estaticos e callbacks seriais falsos do processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": []
+      }
+    },
+    {
       "id": "core-state-host-dynamic",
       "domain": "core-state",
       "owner": "quality",

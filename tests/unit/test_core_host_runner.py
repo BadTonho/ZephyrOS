@@ -226,6 +226,17 @@ class CoreHostRunnerTests(unittest.TestCase):
         self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
                       "test_kernel_tests_blackbox_host.c", sources)
 
+    def test_test_coverage_case_has_serial_fixture_sources(self):
+        result_dir, binary, sources, suite = core_host_runner.case_configuration(
+            "host:core:test-coverage")
+        self.assertEqual(suite, "test-coverage-host")
+        self.assertEqual(result_dir, core_host_runner.TEST_COVERAGE_RESULT_DIR)
+        self.assertEqual(binary, core_host_runner.TEST_COVERAGE_BINARY)
+        self.assertIn(core_host_runner.ROOT / "src" / "core" /
+                      "test_coverage.c", sources)
+        self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
+                      "test_coverage_host.c", sources)
+
 
 if __name__ == "__main__":
     unittest.main()
