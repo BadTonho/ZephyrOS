@@ -137,6 +137,9 @@ class Tst7RunnerContractTests(unittest.TestCase):
         self.assertEqual(
             runner.HOST_CASE_TARGETS["host:drivers:usb-msc"],
             "test-usb-msc-host")
+        self.assertEqual(
+            runner.HOST_CASE_TARGETS["host:storage:devfs"],
+            "test-devfs-host")
 
     def test_strict_coverage_option_is_parseable(self):
         arguments = runner.parser().parse_args([

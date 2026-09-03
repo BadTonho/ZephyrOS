@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7196**
-- Casos de teste: **91**
+- Casos de teste: **92**
 - Superfícies aposentadas: **22**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4206 |
+| `COVERED` | 4212 |
 | `MANUAL` | 0 |
-| `PENDING` | 2990 |
+| `PENDING` | 2984 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 91 |
+| `AUTOMATED` | 92 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -605,8 +605,8 @@
 | `api:src/include/core/spinlock.h:spinlock_init` | `src/include/core/spinlock.h` | `spinlock_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_release` | `src/include/core/spinlock.h` | `spinlock_release` | `core` | `PENDING` | 0 |
 | `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 39 |
-| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 39 |
-| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 32 |
+| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 40 |
+| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 33 |
 | `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 35 |
 | `api:src/include/core/syscall.h:syscall_enable_user_mode` | `src/include/core/syscall.h` | `syscall_enable_user_mode` | `core` | `COVERED` | 1 |
 | `api:src/include/core/syscall.h:syscall_handler` | `src/include/core/syscall.h` | `syscall_handler` | `core` | `COVERED` | 1 |
@@ -1097,15 +1097,15 @@
 | `api:src/include/fs/bmp.h:bmp_free` | `src/include/fs/bmp.h` | `bmp_free` | `fs` | `COVERED` | 2 |
 | `api:src/include/fs/bmp.h:bmp_init` | `src/include/fs/bmp.h` | `bmp_init` | `fs` | `COVERED` | 2 |
 | `api:src/include/fs/bmp.h:bmp_load` | `src/include/fs/bmp.h` | `bmp_load` | `fs` | `COVERED` | 2 |
-| `api:src/include/fs/devfs.h:devfs_copy_nodes` | `src/include/fs/devfs.h` | `devfs_copy_nodes` | `fs` | `COVERED` | 2 |
-| `api:src/include/fs/devfs.h:devfs_get_status` | `src/include/fs/devfs.h` | `devfs_get_status` | `fs` | `COVERED` | 2 |
-| `api:src/include/fs/devfs.h:devfs_init` | `src/include/fs/devfs.h` | `devfs_init` | `fs` | `COVERED` | 2 |
-| `api:src/include/fs/devfs.h:devfs_is_ready` | `src/include/fs/devfs.h` | `devfs_is_ready` | `fs` | `COVERED` | 2 |
-| `api:src/include/fs/devfs.h:devfs_list` | `src/include/fs/devfs.h` | `devfs_list` | `fs` | `COVERED` | 2 |
-| `api:src/include/fs/devfs.h:devfs_lookup` | `src/include/fs/devfs.h` | `devfs_lookup` | `fs` | `COVERED` | 2 |
-| `api:src/include/fs/devfs.h:devfs_open_file` | `src/include/fs/devfs.h` | `devfs_open_file` | `fs` | `COVERED` | 2 |
-| `api:src/include/fs/devfs.h:devfs_self_test` | `src/include/fs/devfs.h` | `devfs_self_test` | `fs` | `COVERED` | 2 |
-| `api:src/include/fs/devfs.h:devfs_validate_state` | `src/include/fs/devfs.h` | `devfs_validate_state` | `fs` | `COVERED` | 2 |
+| `api:src/include/fs/devfs.h:devfs_copy_nodes` | `src/include/fs/devfs.h` | `devfs_copy_nodes` | `fs` | `COVERED` | 3 |
+| `api:src/include/fs/devfs.h:devfs_get_status` | `src/include/fs/devfs.h` | `devfs_get_status` | `fs` | `COVERED` | 3 |
+| `api:src/include/fs/devfs.h:devfs_init` | `src/include/fs/devfs.h` | `devfs_init` | `fs` | `COVERED` | 3 |
+| `api:src/include/fs/devfs.h:devfs_is_ready` | `src/include/fs/devfs.h` | `devfs_is_ready` | `fs` | `COVERED` | 3 |
+| `api:src/include/fs/devfs.h:devfs_list` | `src/include/fs/devfs.h` | `devfs_list` | `fs` | `COVERED` | 3 |
+| `api:src/include/fs/devfs.h:devfs_lookup` | `src/include/fs/devfs.h` | `devfs_lookup` | `fs` | `COVERED` | 3 |
+| `api:src/include/fs/devfs.h:devfs_open_file` | `src/include/fs/devfs.h` | `devfs_open_file` | `fs` | `COVERED` | 3 |
+| `api:src/include/fs/devfs.h:devfs_self_test` | `src/include/fs/devfs.h` | `devfs_self_test` | `fs` | `COVERED` | 3 |
+| `api:src/include/fs/devfs.h:devfs_validate_state` | `src/include/fs/devfs.h` | `devfs_validate_state` | `fs` | `COVERED` | 3 |
 | `api:src/include/fs/fat12.h:fat12_atomic_delete_file_in_dir` | `src/include/fs/fat12.h` | `fat12_atomic_delete_file_in_dir` | `fs` | `COVERED` | 2 |
 | `api:src/include/fs/fat12.h:fat12_atomic_delete_root` | `src/include/fs/fat12.h` | `fat12_atomic_delete_root` | `fs` | `COVERED` | 2 |
 | `api:src/include/fs/fat12.h:fat12_atomic_write_file_in_dir` | `src/include/fs/fat12.h` | `fat12_atomic_write_file_in_dir` | `fs` | `COVERED` | 2 |
@@ -3077,8 +3077,8 @@
 | `c:src/core/socket.c:socket_wait_owner` | `src/core/socket.c` | `socket_wait_owner` | `core` | `COVERED` | 2 |
 | `c:src/core/socket.c:socket_wake` | `src/core/socket.c` | `socket_wake` | `core` | `COVERED` | 2 |
 | `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 39 |
-| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 39 |
-| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 32 |
+| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 40 |
+| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 33 |
 | `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 35 |
 | `c:src/core/syscall.c:syscall_copy_user_string` | `src/core/syscall.c` | `syscall_copy_user_string` | `core` | `PENDING` | 0 |
 | `c:src/core/syscall.c:syscall_dispatch` | `src/core/syscall.c` | `syscall_dispatch` | `core` | `COVERED` | 1 |
@@ -4891,37 +4891,37 @@
 | `c:src/fs/bmp.c:read_i32` | `src/fs/bmp.c` | `read_i32` | `fs` | `PENDING` | 0 |
 | `c:src/fs/bmp.c:read_u16` | `src/fs/bmp.c` | `read_u16` | `fs` | `PENDING` | 0 |
 | `c:src/fs/bmp.c:read_u32` | `src/fs/bmp.c` | `read_u32` | `fs` | `PENDING` | 0 |
-| `c:src/fs/devfs.c:devfs_copy_nodes` | `src/fs/devfs.c` | `devfs_copy_nodes` | `fs` | `COVERED` | 2 |
-| `c:src/fs/devfs.c:devfs_copy_text` | `src/fs/devfs.c` | `devfs_copy_text` | `fs` | `COVERED` | 2 |
-| `c:src/fs/devfs.c:devfs_find_hda` | `src/fs/devfs.c` | `devfs_find_hda` | `fs` | `COVERED` | 2 |
-| `c:src/fs/devfs.c:devfs_generic_close` | `src/fs/devfs.c` | `devfs_generic_close` | `fs` | `COVERED` | 2 |
-| `c:src/fs/devfs.c:devfs_generic_open` | `src/fs/devfs.c` | `devfs_generic_open` | `fs` | `COVERED` | 2 |
-| `c:src/fs/devfs.c:devfs_get_status` | `src/fs/devfs.c` | `devfs_get_status` | `fs` | `COVERED` | 2 |
-| `c:src/fs/devfs.c:devfs_hda_capacity` | `src/fs/devfs.c` | `devfs_hda_capacity` | `fs` | `COVERED` | 2 |
-| `c:src/fs/devfs.c:devfs_hda_lseek` | `src/fs/devfs.c` | `devfs_hda_lseek` | `fs` | `COVERED` | 2 |
-| `c:src/fs/devfs.c:devfs_hda_read` | `src/fs/devfs.c` | `devfs_hda_read` | `fs` | `COVERED` | 2 |
-| `c:src/fs/devfs.c:devfs_hda_sync` | `src/fs/devfs.c` | `devfs_hda_sync` | `fs` | `COVERED` | 2 |
-| `c:src/fs/devfs.c:devfs_init` | `src/fs/devfs.c` | `devfs_init` | `fs` | `PENDING` | 0 |
-| `c:src/fs/devfs.c:devfs_is_ready` | `src/fs/devfs.c` | `devfs_is_ready` | `fs` | `PENDING` | 0 |
-| `c:src/fs/devfs.c:devfs_list` | `src/fs/devfs.c` | `devfs_list` | `fs` | `COVERED` | 2 |
-| `c:src/fs/devfs.c:devfs_lookup` | `src/fs/devfs.c` | `devfs_lookup` | `fs` | `COVERED` | 2 |
-| `c:src/fs/devfs.c:devfs_metric` | `src/fs/devfs.c` | `devfs_metric` | `fs` | `COVERED` | 2 |
+| `c:src/fs/devfs.c:devfs_copy_nodes` | `src/fs/devfs.c` | `devfs_copy_nodes` | `fs` | `COVERED` | 3 |
+| `c:src/fs/devfs.c:devfs_copy_text` | `src/fs/devfs.c` | `devfs_copy_text` | `fs` | `COVERED` | 3 |
+| `c:src/fs/devfs.c:devfs_find_hda` | `src/fs/devfs.c` | `devfs_find_hda` | `fs` | `COVERED` | 3 |
+| `c:src/fs/devfs.c:devfs_generic_close` | `src/fs/devfs.c` | `devfs_generic_close` | `fs` | `COVERED` | 3 |
+| `c:src/fs/devfs.c:devfs_generic_open` | `src/fs/devfs.c` | `devfs_generic_open` | `fs` | `COVERED` | 3 |
+| `c:src/fs/devfs.c:devfs_get_status` | `src/fs/devfs.c` | `devfs_get_status` | `fs` | `COVERED` | 3 |
+| `c:src/fs/devfs.c:devfs_hda_capacity` | `src/fs/devfs.c` | `devfs_hda_capacity` | `fs` | `COVERED` | 3 |
+| `c:src/fs/devfs.c:devfs_hda_lseek` | `src/fs/devfs.c` | `devfs_hda_lseek` | `fs` | `COVERED` | 3 |
+| `c:src/fs/devfs.c:devfs_hda_read` | `src/fs/devfs.c` | `devfs_hda_read` | `fs` | `COVERED` | 3 |
+| `c:src/fs/devfs.c:devfs_hda_sync` | `src/fs/devfs.c` | `devfs_hda_sync` | `fs` | `COVERED` | 3 |
+| `c:src/fs/devfs.c:devfs_init` | `src/fs/devfs.c` | `devfs_init` | `fs` | `COVERED` | 1 |
+| `c:src/fs/devfs.c:devfs_is_ready` | `src/fs/devfs.c` | `devfs_is_ready` | `fs` | `COVERED` | 1 |
+| `c:src/fs/devfs.c:devfs_list` | `src/fs/devfs.c` | `devfs_list` | `fs` | `COVERED` | 3 |
+| `c:src/fs/devfs.c:devfs_lookup` | `src/fs/devfs.c` | `devfs_lookup` | `fs` | `COVERED` | 3 |
+| `c:src/fs/devfs.c:devfs_metric` | `src/fs/devfs.c` | `devfs_metric` | `fs` | `COVERED` | 3 |
 | `c:src/fs/devfs.c:devfs_null_read` | `src/fs/devfs.c` | `devfs_null_read` | `fs` | `COVERED` | 2 |
 | `c:src/fs/devfs.c:devfs_null_write` | `src/fs/devfs.c` | `devfs_null_write` | `fs` | `COVERED` | 2 |
-| `c:src/fs/devfs.c:devfs_open_file` | `src/fs/devfs.c` | `devfs_open_file` | `fs` | `COVERED` | 2 |
-| `c:src/fs/devfs.c:devfs_operations` | `src/fs/devfs.c` | `devfs_operations` | `fs` | `COVERED` | 1 |
-| `c:src/fs/devfs.c:devfs_path_node` | `src/fs/devfs.c` | `devfs_path_node` | `fs` | `COVERED` | 2 |
+| `c:src/fs/devfs.c:devfs_open_file` | `src/fs/devfs.c` | `devfs_open_file` | `fs` | `COVERED` | 3 |
+| `c:src/fs/devfs.c:devfs_operations` | `src/fs/devfs.c` | `devfs_operations` | `fs` | `COVERED` | 2 |
+| `c:src/fs/devfs.c:devfs_path_node` | `src/fs/devfs.c` | `devfs_path_node` | `fs` | `COVERED` | 3 |
 | `c:src/fs/devfs.c:devfs_self_test` | `src/fs/devfs.c` | `devfs_self_test` | `fs` | `COVERED` | 2 |
-| `c:src/fs/devfs.c:devfs_speaker_ioctl` | `src/fs/devfs.c` | `devfs_speaker_ioctl` | `fs` | `COVERED` | 2 |
-| `c:src/fs/devfs.c:devfs_speaker_write` | `src/fs/devfs.c` | `devfs_speaker_write` | `fs` | `COVERED` | 2 |
+| `c:src/fs/devfs.c:devfs_speaker_ioctl` | `src/fs/devfs.c` | `devfs_speaker_ioctl` | `fs` | `COVERED` | 3 |
+| `c:src/fs/devfs.c:devfs_speaker_write` | `src/fs/devfs.c` | `devfs_speaker_write` | `fs` | `COVERED` | 3 |
 | `c:src/fs/devfs.c:devfs_test_count` | `src/fs/devfs.c` | `devfs_test_count` | `fs` | `COVERED` | 2 |
-| `c:src/fs/devfs.c:devfs_tone_valid` | `src/fs/devfs.c` | `devfs_tone_valid` | `fs` | `COVERED` | 2 |
-| `c:src/fs/devfs.c:devfs_unavailable_ioctl` | `src/fs/devfs.c` | `devfs_unavailable_ioctl` | `fs` | `PENDING` | 0 |
-| `c:src/fs/devfs.c:devfs_unavailable_lseek` | `src/fs/devfs.c` | `devfs_unavailable_lseek` | `fs` | `PENDING` | 0 |
-| `c:src/fs/devfs.c:devfs_unavailable_read` | `src/fs/devfs.c` | `devfs_unavailable_read` | `fs` | `PENDING` | 0 |
-| `c:src/fs/devfs.c:devfs_unavailable_sync` | `src/fs/devfs.c` | `devfs_unavailable_sync` | `fs` | `COVERED` | 2 |
-| `c:src/fs/devfs.c:devfs_unavailable_write` | `src/fs/devfs.c` | `devfs_unavailable_write` | `fs` | `PENDING` | 0 |
-| `c:src/fs/devfs.c:devfs_validate_state` | `src/fs/devfs.c` | `devfs_validate_state` | `fs` | `COVERED` | 2 |
+| `c:src/fs/devfs.c:devfs_tone_valid` | `src/fs/devfs.c` | `devfs_tone_valid` | `fs` | `COVERED` | 3 |
+| `c:src/fs/devfs.c:devfs_unavailable_ioctl` | `src/fs/devfs.c` | `devfs_unavailable_ioctl` | `fs` | `COVERED` | 1 |
+| `c:src/fs/devfs.c:devfs_unavailable_lseek` | `src/fs/devfs.c` | `devfs_unavailable_lseek` | `fs` | `COVERED` | 1 |
+| `c:src/fs/devfs.c:devfs_unavailable_read` | `src/fs/devfs.c` | `devfs_unavailable_read` | `fs` | `COVERED` | 1 |
+| `c:src/fs/devfs.c:devfs_unavailable_sync` | `src/fs/devfs.c` | `devfs_unavailable_sync` | `fs` | `COVERED` | 3 |
+| `c:src/fs/devfs.c:devfs_unavailable_write` | `src/fs/devfs.c` | `devfs_unavailable_write` | `fs` | `COVERED` | 1 |
+| `c:src/fs/devfs.c:devfs_validate_state` | `src/fs/devfs.c` | `devfs_validate_state` | `fs` | `COVERED` | 3 |
 | `c:src/fs/devfs.c:devfs_zero_read` | `src/fs/devfs.c` | `devfs_zero_read` | `fs` | `COVERED` | 2 |
 | `c:src/fs/fat12.c:fat12_atomic_delete_file_in_dir` | `src/fs/fat12.c` | `fat12_atomic_delete_file_in_dir` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_atomic_delete_root` | `src/fs/fat12.c` | `fat12_atomic_delete_root` | `fs` | `COVERED` | 1 |
@@ -7304,6 +7304,7 @@
 | `host:drivers:font` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inicializar o driver de fonte e consultar as dimensoes publicadas | font_init e idempotente e as dimensoes publicadas permanecem 8x16 | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabela estatica de fontes e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:rtc-status` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | consultar o estado inicial do RTC com destinos valido e nulo | rtc_get_status rejeita destino nulo e publica snapshot inicial estavel | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do RTC e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:usb-hid` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enumerar teclados e mouses UHCI, enviar relatorios Boot, publicar eventos de entrada e exercitar refresh, remocao e limites | parsing valido, rejeicao de reports corrompidos, estados, contadores, cancelamento e indisponibilidade preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente dispositivos USB HID e callbacks de entrada estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:drivers:usb-msc` | `host` | `host-only-readonly` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enumerar dispositivo MSC UHCI, executar inquiry, TUR, capacity e READ10 simulados, validar block readonly e exercitar recuperacao | protocolo BOT/SCSI, identificadores, capacidade, leituras, estados, limites e falhas preservam o contrato sem escrita | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente transporte USB MSC, registro de bloco e buffers estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:memory:memory` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar inicializacao E820, alocacao e liberacao PMM por zona, heap, alinhamento e estatisticas | PMM e heap rejeitam limites invalidos, contabilizam falhas e restauram todas as paginas e blocos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente mapa E820, bitmap PMM e heap estaticos no processo host | paginas e blocos liberados, estatisticas restauradas e artefatos preservados |
 | `host:memory:paging` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar init, mapeamento, diretorios de usuario, faults lazy, copias, limites e cleanup com PMM falso | o paging respeita os limites de usuario, rejeita estados invalidos e restaura os recursos da fixture | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente diretorios, tabelas e paginas estaticos no processo host | diretorios e tabelas liberados, pagina de usuario coletada e artefatos preservados |
 | `host:memory:slab-metadata` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar inicializacao, limites, metadados, estatisticas e limpeza do registrador SLAB sem alocar paginas reais | estado publicado, informacoes por indice, duplicidade e limpeza respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas de metadados no processo host; nenhuma pagina real e alocada | cache temporario destruido e manifesto, logs e cobertura preservados |
@@ -7372,7 +7373,7 @@
 | `qemu:tst6:stress:kernel` | `qemu` | `tst6` | `qemu:tst6:stress:kernel` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | paging, heap, SLAB, processos e threads estao READY | repetir ciclos deterministas de memoria e execucao sob teto obrigatorio | invariantes estaveis permanecem iguais e a primeira falha interrompe a suite | overflow, vazamento, deadlock, timeout, protocolo ou QEMU | alocacoes e objetos temporarios de cada ciclo em snapshot | devolver paginas, destruir objetos e registrar seed e iteracao |
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
-| `host:drivers:usb-msc` | `host` | `host-only-readonly` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enumerar dispositivo MSC UHCI, executar inquiry, TUR, capacity e READ10 simulados, validar block readonly e exercitar recuperacao | protocolo BOT/SCSI, identificadores, capacidade, leituras, estados, limites e falhas preservam o contrato sem escrita | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente transporte USB MSC, registro de bloco e buffers estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:storage:devfs` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar dispositivos null, zero, tty, speaker e hda com transporte estatico | registro, permissoes, leituras, seeks, ioctl, indisponibilidade e invariantes preservam o contrato sem hardware real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estruturas devfs e buffers estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -8999,12 +9000,6 @@
 - `c:src/fs/bmp.c:read_i32`
 - `c:src/fs/bmp.c:read_u16`
 - `c:src/fs/bmp.c:read_u32`
-- `c:src/fs/devfs.c:devfs_init`
-- `c:src/fs/devfs.c:devfs_is_ready`
-- `c:src/fs/devfs.c:devfs_unavailable_ioctl`
-- `c:src/fs/devfs.c:devfs_unavailable_lseek`
-- `c:src/fs/devfs.c:devfs_unavailable_read`
-- `c:src/fs/devfs.c:devfs_unavailable_write`
 - `c:src/fs/procfs.c:procfs_append_hex`
 - `c:src/fs/procfs.c:procfs_append_line_hex`
 - `c:src/fs/procfs.c:procfs_init`
