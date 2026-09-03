@@ -302,6 +302,16 @@ class CoreHostRunnerTests(unittest.TestCase):
         self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
                       "test_recovery_runtime_host.c", sources)
 
+    def test_panic_case_has_halt_fixture_sources(self):
+        result_dir, binary, sources, suite = core_host_runner.case_configuration(
+            "host:kernel:panic")
+        self.assertEqual(suite, "panic-host")
+        self.assertEqual(result_dir, core_host_runner.PANIC_RESULT_DIR)
+        self.assertEqual(binary, core_host_runner.PANIC_BINARY)
+        self.assertIn(core_host_runner.ROOT / "src" / "kernel" / "panic.c", sources)
+        self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
+                      "test_panic_host.c", sources)
+
     def test_shell_core_case_has_shell_fixture_sources(self):
         result_dir, binary, sources, suite = core_host_runner.case_configuration(
             "host:shell:core")

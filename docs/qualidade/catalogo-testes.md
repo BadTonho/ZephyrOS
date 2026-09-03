@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7198**
-- Casos de teste: **110**
+- Casos de teste: **111**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4342 |
+| `COVERED` | 4351 |
 | `MANUAL` | 0 |
-| `PENDING` | 2856 |
+| `PENDING` | 2847 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 110 |
+| `AUTOMATED` | 111 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -529,9 +529,9 @@
 | `api:src/include/core/network_manager.h:network_manager_renew_dhcp` | `src/include/core/network_manager.h` | `network_manager_renew_dhcp` | `core` | `COVERED` | 3 |
 | `api:src/include/core/network_manager.h:network_manager_send_diagnostic` | `src/include/core/network_manager.h` | `network_manager_send_diagnostic` | `core` | `COVERED` | 3 |
 | `api:src/include/core/network_manager.h:network_manager_set_quiescing` | `src/include/core/network_manager.h` | `network_manager_set_quiescing` | `core` | `COVERED` | 3 |
-| `api:src/include/core/panic.h:panic` | `src/include/core/panic.h` | `panic` | `core` | `PENDING` | 0 |
-| `api:src/include/core/panic.h:panic_halt` | `src/include/core/panic.h` | `panic_halt` | `core` | `PENDING` | 0 |
-| `api:src/include/core/panic.h:panic_memory` | `src/include/core/panic.h` | `panic_memory` | `core` | `PENDING` | 0 |
+| `api:src/include/core/panic.h:panic` | `src/include/core/panic.h` | `panic` | `core` | `COVERED` | 1 |
+| `api:src/include/core/panic.h:panic_halt` | `src/include/core/panic.h` | `panic_halt` | `core` | `COVERED` | 1 |
+| `api:src/include/core/panic.h:panic_memory` | `src/include/core/panic.h` | `panic_memory` | `core` | `COVERED` | 1 |
 | `api:src/include/core/power.h:power_capability_name` | `src/include/core/power.h` | `power_capability_name` | `core` | `COVERED` | 4 |
 | `api:src/include/core/power.h:power_get_status` | `src/include/core/power.h` | `power_get_status` | `core` | `COVERED` | 4 |
 | `api:src/include/core/power.h:power_init` | `src/include/core/power.h` | `power_init` | `core` | `COVERED` | 4 |
@@ -5555,12 +5555,12 @@
 | `c:src/kernel/kernel.c:shell_process_main` | `src/kernel/kernel.c` | `shell_process_main` | `kernel` | `PENDING` | 0 |
 | `c:src/kernel/kernel.c:system_process_main` | `src/kernel/kernel.c` | `system_process_main` | `kernel` | `PENDING` | 0 |
 | `c:src/kernel/kernel.c:test_protocol_process_main` | `src/kernel/kernel.c` | `test_protocol_process_main` | `kernel` | `PENDING` | 0 |
-| `c:src/kernel/panic.c:panic` | `src/kernel/panic.c` | `panic` | `kernel` | `PENDING` | 0 |
-| `c:src/kernel/panic.c:panic_draw_header` | `src/kernel/panic.c` | `panic_draw_header` | `kernel` | `PENDING` | 0 |
-| `c:src/kernel/panic.c:panic_halt` | `src/kernel/panic.c` | `panic_halt` | `kernel` | `PENDING` | 0 |
-| `c:src/kernel/panic.c:panic_memory` | `src/kernel/panic.c` | `panic_memory` | `kernel` | `PENDING` | 0 |
-| `c:src/kernel/panic.c:panic_print_metric` | `src/kernel/panic.c` | `panic_print_metric` | `kernel` | `PENDING` | 0 |
-| `c:src/kernel/panic.c:panic_print_number` | `src/kernel/panic.c` | `panic_print_number` | `kernel` | `PENDING` | 0 |
+| `c:src/kernel/panic.c:panic` | `src/kernel/panic.c` | `panic` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/panic.c:panic_draw_header` | `src/kernel/panic.c` | `panic_draw_header` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/panic.c:panic_halt` | `src/kernel/panic.c` | `panic_halt` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/panic.c:panic_memory` | `src/kernel/panic.c` | `panic_memory` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/panic.c:panic_print_metric` | `src/kernel/panic.c` | `panic_print_metric` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/panic.c:panic_print_number` | `src/kernel/panic.c` | `panic_print_number` | `kernel` | `COVERED` | 1 |
 | `c:src/memory/compress.c:compress_data` | `src/memory/compress.c` | `compress_data` | `memory` | `COVERED` | 1 |
 | `c:src/memory/compress.c:compress_disable` | `src/memory/compress.c` | `compress_disable` | `memory` | `COVERED` | 1 |
 | `c:src/memory/compress.c:compress_enable` | `src/memory/compress.c` | `compress_enable` | `memory` | `COVERED` | 1 |
@@ -7284,6 +7284,7 @@
 
 | ID | Executor | Perfil | Caso guest | Status | Timeout | Heartbeat | Isolamento | Proprietario | Camada | Pre-condicoes | Acao | Resultado esperado | Erros | Efeitos | Limpeza |
 |---|---|---|---|---|---:|---:|---|---|---|---|---|---|---|---|---|
+| `host:boot:recovery-runtime` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar preenchimento, copia, comprimento, comparacao e ponto de entrada de log sem executar o loader de recuperacao | utilitarios preservam bytes, limites e ordenacao lexicografica e o ponto de log aceita todos os niveis sem estado residual | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos no processo host; nenhuma imagem ou hardware de boot e acessada | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:app-api` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fachada de arquivos, memoria, IPC e VMA com stubs controlados | APIs publicas preservam erros, limites, estados e dados retornados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado da fachada e backends estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:app-builtin` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar os construtores de aplicativos internos com loader falso | imagens ZAPP preservam cabecalho, limites, entrada, dados, pre-condicoes e retornos canonicos | compilador ausente, warning, imagem invalida, falha de assercao ou timeout | somente imagem estatica e estado do loader falso no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:app-catalog` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar catalogo com fontes de pacotes, dependencias, instalados e limites simulados | classificacao, aliases, planos, ciclos, motivos canonicos e indisponibilidade preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do catalogo e backends host simulados | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7393,7 +7394,7 @@
 | `qemu:tst6:stress:kernel` | `qemu` | `tst6` | `qemu:tst6:stress:kernel` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | paging, heap, SLAB, processos e threads estao READY | repetir ciclos deterministas de memoria e execucao sob teto obrigatorio | invariantes estaveis permanecem iguais e a primeira falha interrompe a suite | overflow, vazamento, deadlock, timeout, protocolo ou QEMU | alocacoes e objetos temporarios de cada ciclo em snapshot | devolver paginas, destruir objetos e registrar seed e iteracao |
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
-| `host:boot:recovery-runtime` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar preenchimento, copia, comprimento, comparacao e ponto de entrada de log sem executar o loader de recuperacao | utilitarios preservam bytes, limites e ordenacao lexicografica e o ponto de log aceita todos os niveis sem estado residual | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos no processo host; nenhuma imagem ou hardware de boot e acessada | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:kernel:panic` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar panic, panic_memory, mensagens padrao e explicitas, metricas zero e nao zero e encaminhamento ao protocolo | panic publica a razao correta, desenha o diagnostico completo, descarrega a tela e interrompe apenas o fluxo de teste | compilador ausente, warning, cobertura incompleta, retorno inesperado do halt, falha de assercao ou timeout | somente buffers, contadores de video e razao do protocolo no processo host; nenhum halt real e executado | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -7438,9 +7439,6 @@
 - `api:src/include/core/app_remote.h:app_remote_request_cancel`
 - `api:src/include/core/app_remote.h:app_remote_state_name`
 - `api:src/include/core/app_remote.h:app_remote_test_fail_after`
-- `api:src/include/core/panic.h:panic`
-- `api:src/include/core/panic.h:panic_halt`
-- `api:src/include/core/panic.h:panic_memory`
 - `api:src/include/core/spinlock.h:spinlock_acquire`
 - `api:src/include/core/spinlock.h:spinlock_init`
 - `api:src/include/core/spinlock.h:spinlock_release`
@@ -9027,12 +9025,6 @@
 - `c:src/kernel/kernel.c:shell_process_main`
 - `c:src/kernel/kernel.c:system_process_main`
 - `c:src/kernel/kernel.c:test_protocol_process_main`
-- `c:src/kernel/panic.c:panic`
-- `c:src/kernel/panic.c:panic_draw_header`
-- `c:src/kernel/panic.c:panic_halt`
-- `c:src/kernel/panic.c:panic_memory`
-- `c:src/kernel/panic.c:panic_print_metric`
-- `c:src/kernel/panic.c:panic_print_number`
 - `c:src/process/process.c:process_apply_pending_cancel`
 - `c:src/process/process.c:process_bootstrap_idle`
 - `c:src/process/process.c:process_cancel_focused_user`

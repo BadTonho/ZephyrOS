@@ -11148,9 +11148,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:kernel:panic"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/panic.h:panic_halt",
@@ -11166,9 +11169,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:kernel:panic"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/panic.h:panic_memory",
@@ -11184,9 +11190,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:kernel:panic"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/power.h:power_capability_name",
@@ -117895,9 +117904,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:kernel:panic"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/kernel/panic.c:panic_draw_header",
@@ -117913,9 +117925,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:kernel:panic"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/kernel/panic.c:panic_halt",
@@ -117931,9 +117946,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:kernel:panic"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/kernel/panic.c:panic_memory",
@@ -117949,9 +117967,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:kernel:panic"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/kernel/panic.c:panic_print_metric",
@@ -117967,9 +117988,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:kernel:panic"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/kernel/panic.c:panic_print_number",
@@ -117985,9 +118009,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:kernel:panic"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/compress.c:compress_data",
@@ -151034,6 +151061,46 @@
   ],
   "cases": [
     {
+      "id": "host:boot:recovery-runtime",
+      "scenario": "Contrato host-only dos utilitarios freestanding do runtime de recuperacao",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "hardware": "none"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "validar preenchimento, copia, comprimento, comparacao e ponto de entrada de log sem executar o loader de recuperacao",
+      "expected": "utilitarios preservam bytes, limites e ordenacao lexicografica e o ponto de log aceita todos os niveis sem estado residual",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente buffers estaticos no processo host; nenhuma imagem ou hardware de boot e acessada",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "c:src/boot/recovery_runtime.c:kmemcpy",
+        "c:src/boot/recovery_runtime.c:kmemset",
+        "c:src/boot/recovery_runtime.c:kstrcmp",
+        "c:src/boot/recovery_runtime.c:kstrlen",
+        "c:src/boot/recovery_runtime.c:log_print"
+      ],
+      "tags": [
+        "host",
+        "boot",
+        "recovery",
+        "freestanding",
+        "strings",
+        "limits",
+        "coverage"
+      ]
+    },
+    {
       "id": "host:core:app-api",
       "scenario": "Contrato host-only da fachada de aplicativos",
       "owner": "quality",
@@ -167542,8 +167609,8 @@
       ]
     },
     {
-      "id": "host:boot:recovery-runtime",
-      "scenario": "Contrato host-only dos utilitarios freestanding do runtime de recuperacao",
+      "id": "host:kernel:panic",
+      "scenario": "Contrato host-only das rotas de panic e diagnostico de memoria",
       "owner": "quality",
       "layer": "host",
       "executor": "host",
@@ -167555,28 +167622,33 @@
         "compiler": "HOST_CC",
         "instrumentation": "-finstrument-functions",
         "warnings": "error",
-        "hardware": "none"
+        "hardware": "video-protocol-stub",
+        "halt": "setjmp-longjmp"
       },
       "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "validar preenchimento, copia, comprimento, comparacao e ponto de entrada de log sem executar o loader de recuperacao",
-      "expected": "utilitarios preservam bytes, limites e ordenacao lexicografica e o ponto de log aceita todos os niveis sem estado residual",
-      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
-      "effects": "somente buffers estaticos no processo host; nenhuma imagem ou hardware de boot e acessada",
+      "action": "validar panic, panic_memory, mensagens padrao e explicitas, metricas zero e nao zero e encaminhamento ao protocolo",
+      "expected": "panic publica a razao correta, desenha o diagnostico completo, descarrega a tela e interrompe apenas o fluxo de teste",
+      "errors": "compilador ausente, warning, cobertura incompleta, retorno inesperado do halt, falha de assercao ou timeout",
+      "effects": "somente buffers, contadores de video e razao do protocolo no processo host; nenhum halt real e executado",
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
       "surface_ids": [
-        "c:src/boot/recovery_runtime.c:kmemcpy",
-        "c:src/boot/recovery_runtime.c:kmemset",
-        "c:src/boot/recovery_runtime.c:kstrcmp",
-        "c:src/boot/recovery_runtime.c:kstrlen",
-        "c:src/boot/recovery_runtime.c:log_print"
+        "api:src/include/core/panic.h:panic",
+        "api:src/include/core/panic.h:panic_halt",
+        "api:src/include/core/panic.h:panic_memory",
+        "c:src/kernel/panic.c:panic",
+        "c:src/kernel/panic.c:panic_draw_header",
+        "c:src/kernel/panic.c:panic_halt",
+        "c:src/kernel/panic.c:panic_memory",
+        "c:src/kernel/panic.c:panic_print_metric",
+        "c:src/kernel/panic.c:panic_print_number"
       ],
       "tags": [
         "host",
-        "boot",
-        "recovery",
-        "freestanding",
-        "strings",
+        "kernel",
+        "panic",
+        "diagnostics",
+        "halt",
         "limits",
         "coverage"
       ]

@@ -2875,6 +2875,65 @@
       "evidence": "make test-recovery-runtime-host PASS com primitivas de memoria, strings e log do runtime freestanding no relatorio instrumentado"
     },
     {
+      "id": "panic-host-dynamic",
+      "domain": "kernel-panic",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:kernel:panic"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/panic-host/coverage.json",
+      "coverage_sources": [
+        "src/kernel/panic.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:kernel:panic",
+        "scenario": "Contrato host-only das rotas de panic e diagnostico de memoria",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "video-protocol-stub",
+          "halt": "setjmp-longjmp"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "validar panic, panic_memory, mensagens padrao e explicitas, metricas zero e nao zero e encaminhamento ao protocolo",
+        "expected": "panic publica a razao correta, desenha o diagnostico completo, descarrega a tela e interrompe apenas o fluxo de teste",
+        "errors": "compilador ausente, warning, cobertura incompleta, retorno inesperado do halt, falha de assercao ou timeout",
+        "effects": "somente buffers, contadores de video e razao do protocolo no processo host; nenhum halt real e executado",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": [
+          "c:src/kernel/panic.c:panic",
+          "c:src/kernel/panic.c:panic_draw_header",
+          "c:src/kernel/panic.c:panic_halt",
+          "c:src/kernel/panic.c:panic_memory",
+          "c:src/kernel/panic.c:panic_print_metric",
+          "c:src/kernel/panic.c:panic_print_number"
+        ],
+        "tags": [
+          "host",
+          "kernel",
+          "panic",
+          "diagnostics",
+          "halt",
+          "limits",
+          "coverage"
+        ]
+      },
+      "evidence": "make test-panic-host PASS com panic, panic_memory, diagnostico de metricas e halt capturado por fixture host"
+    },
+    {
       "id": "usb-transport-host-dynamic",
       "domain": "core-usb",
       "owner": "quality",

@@ -1559,6 +1559,21 @@ pendente.
   casos. O fechamento integral, o gate estrito e a validacao TST7 completa
   continuam pendentes.
 
+- Incremento Kernel/panic concluido em 2026-09-03: foi criado o caso host-only
+  `host:kernel:panic` e o alvo `make test-panic-host`. A fixture exercitou
+  `panic`, `panic_memory`, o cabecalho de diagnostico, metricas com valores
+  zero e no limite, mensagens ausentes e explicitas e o encaminhamento dos
+  motivos `ERR_STATE`, `ERR_MEM` e personalizados ao protocolo. O halt foi
+  capturado por `setjmp`/`longjmp` somente no build host; o build freestanding
+  continua com o halt real. O relatorio instrumentado terminou `PASS`, resolveu
+  as seis superficies C e as tres APIs publicas correspondentes, sem enderecos
+  desconhecidos ou ambiguos. Foram regeneradas as 70 fixtures host-only do
+  registro e todas passaram. Tambem passaram `make catalog-test`, 58 testes
+  unitarios dos runners, `make q3check`, `make clean`, `make` e a repeticao de
+  `make test-panic-host` apos o build limpo. O catalogo registra 7.198
+  superficies, 4.351 `COVERED`, 2.847 `PENDING` e 111 casos. O fechamento
+  integral, o gate estrito e a validacao TST7 completa continuam pendentes.
+
 - Incremento Core/energia terminal concluido em 2026-09-03: o caso
   `host:core:power` passou a exercitar `power_reboot_commit`,
   `power_trigger_triple_fault` e `power_terminal_halt` por um seam exclusivo

@@ -573,6 +573,16 @@ relatorio fica em `build/test-results/recovery-runtime-host/`:
 make test-recovery-runtime-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-panic-host` exercita as rotas de `panic` e `panic_memory` com
+captura do protocolo, da tela, das metricas e do halt por fixture host-only.
+Mensagens ausentes e explicitas, valores de memoria zero e no limite e o
+encaminhamento dos motivos canonicos sao verificados sem executar halt real.
+O relatorio fica em `build/test-results/panic-host/`:
+
+```text
+make test-panic-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O caso `test-shell-command-utils-host` exercita os utilitarios de comandos do
 Shell com parsing de tokens e argumentos, comparacao de subcomandos,
 normalizacao para maiusculas, conversao numerica, limites, entradas invalidas
