@@ -1396,6 +1396,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:job",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -1404,7 +1405,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_job.h:shell_job_cancel_requested",
@@ -1422,6 +1423,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:job",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -1430,7 +1432,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_job.h:shell_job_clear_next_wake",
@@ -1448,6 +1450,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:job",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -1456,7 +1459,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_job.h:shell_job_clear_timeout",
@@ -1474,6 +1477,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:job",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -1482,7 +1486,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_job.h:shell_job_generation_matches",
@@ -1500,6 +1504,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:job",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -1508,7 +1513,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_job.h:shell_job_get_generation",
@@ -1526,6 +1531,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:job",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -1534,7 +1540,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_job.h:shell_job_get_status",
@@ -1552,6 +1558,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:job",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -1560,7 +1567,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_job.h:shell_job_get_wait_timeout",
@@ -1578,6 +1585,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:job",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -1586,7 +1594,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_job.h:shell_job_handle_key",
@@ -1604,6 +1612,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:job",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -1612,7 +1621,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_job.h:shell_job_input_blocked",
@@ -1630,6 +1639,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:job",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -1638,7 +1648,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_job.h:shell_job_is_active",
@@ -1656,6 +1666,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:job",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -1664,7 +1675,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_job.h:shell_job_kind_name",
@@ -1682,6 +1693,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:job",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -1690,7 +1702,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_job.h:shell_job_note_stale_event",
@@ -1708,6 +1720,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:job",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -1716,7 +1729,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_job.h:shell_job_poll",
@@ -1734,6 +1747,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:job",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -1742,7 +1756,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_job.h:shell_job_pump_events",
@@ -1760,6 +1774,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:job",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -1768,7 +1783,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_job.h:shell_job_request_cancel",
@@ -1786,6 +1801,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:job",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -1794,7 +1810,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_job.h:shell_job_reset",
@@ -1812,6 +1828,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:job",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -1820,7 +1837,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_job.h:shell_job_set_deadline",
@@ -1838,6 +1855,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:job",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -1846,7 +1864,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_job.h:shell_job_set_next_wake",
@@ -1864,6 +1882,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:job",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -1872,7 +1891,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_job.h:shell_job_set_phase",
@@ -1890,6 +1909,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:job",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -1898,7 +1918,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_job.h:shell_job_set_progress",
@@ -1916,6 +1936,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:job",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -1924,7 +1945,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_job.h:shell_job_set_timeout",
@@ -1942,6 +1963,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:job",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -1950,7 +1972,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_job.h:shell_job_start",
@@ -1968,6 +1990,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:job",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -1976,7 +1999,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_job.h:shell_job_state_name",
@@ -1994,6 +2017,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:job",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -2002,7 +2026,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_job.h:shell_network_start_job",
@@ -143543,9 +143567,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:job"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_job.c:shell_job_begin_drain",
@@ -143561,9 +143588,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:job"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_job.c:shell_job_cancel_requested",
@@ -143579,9 +143609,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:job"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_job.c:shell_job_clear_next_wake",
@@ -143597,9 +143630,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:job"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_job.c:shell_job_clear_timeout",
@@ -143615,9 +143651,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:job"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_job.c:shell_job_complete",
@@ -143633,9 +143672,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:job"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_job.c:shell_job_copy_text",
@@ -143651,9 +143693,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:job"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_job.c:shell_job_generation_matches",
@@ -143669,9 +143714,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:job"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_job.c:shell_job_get_generation",
@@ -143687,9 +143735,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:job"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_job.c:shell_job_get_status",
@@ -143705,9 +143756,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:job"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_job.c:shell_job_get_wait_timeout",
@@ -143725,6 +143779,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:job",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -143733,7 +143788,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_job.c:shell_job_handle_key",
@@ -143749,9 +143804,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:job"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_job.c:shell_job_input_blocked",
@@ -143769,6 +143827,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:job",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -143776,7 +143835,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_job.c:shell_job_is_active",
@@ -143794,6 +143853,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:job",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -143802,7 +143862,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_job.c:shell_job_kind_name",
@@ -143818,9 +143878,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:job"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_job.c:shell_job_mark_cancel_requested",
@@ -143836,9 +143899,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:job"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_job.c:shell_job_mark_timeout_requested",
@@ -143854,9 +143920,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:job"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_job.c:shell_job_note_stale_event",
@@ -143872,9 +143941,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:job"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_job.c:shell_job_poll",
@@ -143892,6 +143964,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:job",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -143900,7 +143973,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_job.c:shell_job_poll_drain",
@@ -143916,9 +143989,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:job"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_job.c:shell_job_pump_events",
@@ -143934,9 +144010,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:job"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_job.c:shell_job_request_cancel",
@@ -143952,9 +144031,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:job"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_job.c:shell_job_reset",
@@ -143970,9 +144052,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:job"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_job.c:shell_job_set_deadline",
@@ -143988,9 +144073,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:job"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_job.c:shell_job_set_next_wake",
@@ -144006,9 +144094,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:job"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_job.c:shell_job_set_phase",
@@ -144024,9 +144115,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:job"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_job.c:shell_job_set_progress",
@@ -144042,9 +144136,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:job"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_job.c:shell_job_set_timeout",
@@ -144060,9 +144157,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:job"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_job.c:shell_job_start",
@@ -144078,9 +144178,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:job"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_job.c:shell_job_state_name",
@@ -144096,9 +144199,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:job"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_pipeline.c:shell_pipeline_all_finished",
@@ -159894,6 +160000,54 @@
       ]
     },
     {
+      "id": "host:shell:mediaplayer",
+      "scenario": "Contrato host-only do Media Player",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "audio": "AC97 fake",
+        "video": "VESA fake"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "executar audio, imagem e reproducao combinada com arquivos estaticos e dependencias de hardware simuladas",
+      "expected": "o Media Player preserva estados, metadados, erros canonicos, limites e ownership sem hardware ou armazenamento real",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente buffers estaticos, allocator de teste, recovery fake e contadores de audio e video do processo host",
+      "cleanup": "dados de audio e imagem liberados, estado parado e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/apps/mediaplayer.h:mp_get_status",
+        "api:src/include/apps/mediaplayer.h:mp_init",
+        "api:src/include/apps/mediaplayer.h:mp_pause",
+        "api:src/include/apps/mediaplayer.h:mp_play_audio",
+        "api:src/include/apps/mediaplayer.h:mp_play_image",
+        "api:src/include/apps/mediaplayer.h:mp_play_media",
+        "api:src/include/apps/mediaplayer.h:mp_resume",
+        "api:src/include/apps/mediaplayer.h:mp_stop",
+        "api:src/include/apps/mediaplayer.h:mp_update",
+        "c:src/shell/mediaplayer.c:load_file",
+        "c:src/shell/mediaplayer.c:mp_cleanup",
+        "c:src/shell/mediaplayer.c:mp_get_status",
+        "c:src/shell/mediaplayer.c:mp_init",
+        "c:src/shell/mediaplayer.c:mp_pause",
+        "c:src/shell/mediaplayer.c:mp_play_audio",
+        "c:src/shell/mediaplayer.c:mp_play_image",
+        "c:src/shell/mediaplayer.c:mp_play_media",
+        "c:src/shell/mediaplayer.c:mp_resume",
+        "c:src/shell/mediaplayer.c:mp_stop",
+        "c:src/shell/mediaplayer.c:mp_update",
+        "c:src/shell/mediaplayer.c:str_copy"
+      ]
+    },
+    {
       "id": "host:storage:block",
       "scenario": "Autotestes host-only das camadas BIO e block-cache",
       "owner": "quality",
@@ -171266,8 +171420,8 @@
       "status": "AUTOMATED"
     },
     {
-      "id": "host:shell:mediaplayer",
-      "scenario": "Contrato host-only do Media Player",
+      "id": "host:shell:job",
+      "scenario": "Contrato host-only do executor cooperativo de jobs do Shell",
       "owner": "quality",
       "layer": "host",
       "executor": "host",
@@ -171279,38 +171433,79 @@
         "compiler": "HOST_CC",
         "instrumentation": "-finstrument-functions",
         "warnings": "error",
-        "audio": "AC97 fake",
-        "video": "VESA fake"
+        "hardware": "timer-ipc-keyboard-video-stubs"
       },
       "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "executar audio, imagem e reproducao combinada com arquivos estaticos e dependencias de hardware simuladas",
-      "expected": "o Media Player preserva estados, metadados, erros canonicos, limites e ownership sem hardware ou armazenamento real",
+      "action": "validar ciclo de vida, deadlines, wakeups, progresso, cancelamento, drenagem, timeout, erros, eventos IPC e diagnostico job status",
+      "expected": "jobs completam, falham, cancelam ou expiram com estado, codigo, geracao e limpeza coerentes",
       "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
-      "effects": "somente buffers estaticos, allocator de teste, recovery fake e contadores de audio e video do processo host",
-      "cleanup": "dados de audio e imagem liberados, estado parado e manifesto, logs e cobertura preservados",
+      "effects": "somente estado estatico do executor, filas IPC, relogio, teclado, video e logs falsos no processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
       "surface_ids": [
-        "api:src/include/apps/mediaplayer.h:mp_get_status",
-        "api:src/include/apps/mediaplayer.h:mp_init",
-        "api:src/include/apps/mediaplayer.h:mp_pause",
-        "api:src/include/apps/mediaplayer.h:mp_play_audio",
-        "api:src/include/apps/mediaplayer.h:mp_play_image",
-        "api:src/include/apps/mediaplayer.h:mp_play_media",
-        "api:src/include/apps/mediaplayer.h:mp_resume",
-        "api:src/include/apps/mediaplayer.h:mp_stop",
-        "api:src/include/apps/mediaplayer.h:mp_update",
-        "c:src/shell/mediaplayer.c:load_file",
-        "c:src/shell/mediaplayer.c:mp_cleanup",
-        "c:src/shell/mediaplayer.c:mp_get_status",
-        "c:src/shell/mediaplayer.c:mp_init",
-        "c:src/shell/mediaplayer.c:mp_pause",
-        "c:src/shell/mediaplayer.c:mp_play_audio",
-        "c:src/shell/mediaplayer.c:mp_play_image",
-        "c:src/shell/mediaplayer.c:mp_play_media",
-        "c:src/shell/mediaplayer.c:mp_resume",
-        "c:src/shell/mediaplayer.c:mp_stop",
-        "c:src/shell/mediaplayer.c:mp_update",
-        "c:src/shell/mediaplayer.c:str_copy"
+        "api:src/include/apps/shell_job.h:shell_dispatch_cmd_job",
+        "api:src/include/apps/shell_job.h:shell_job_cancel_requested",
+        "api:src/include/apps/shell_job.h:shell_job_clear_next_wake",
+        "api:src/include/apps/shell_job.h:shell_job_clear_timeout",
+        "api:src/include/apps/shell_job.h:shell_job_generation_matches",
+        "api:src/include/apps/shell_job.h:shell_job_get_generation",
+        "api:src/include/apps/shell_job.h:shell_job_get_status",
+        "api:src/include/apps/shell_job.h:shell_job_get_wait_timeout",
+        "api:src/include/apps/shell_job.h:shell_job_handle_key",
+        "api:src/include/apps/shell_job.h:shell_job_input_blocked",
+        "api:src/include/apps/shell_job.h:shell_job_is_active",
+        "api:src/include/apps/shell_job.h:shell_job_kind_name",
+        "api:src/include/apps/shell_job.h:shell_job_note_stale_event",
+        "api:src/include/apps/shell_job.h:shell_job_poll",
+        "api:src/include/apps/shell_job.h:shell_job_pump_events",
+        "api:src/include/apps/shell_job.h:shell_job_request_cancel",
+        "api:src/include/apps/shell_job.h:shell_job_reset",
+        "api:src/include/apps/shell_job.h:shell_job_set_deadline",
+        "api:src/include/apps/shell_job.h:shell_job_set_next_wake",
+        "api:src/include/apps/shell_job.h:shell_job_set_phase",
+        "api:src/include/apps/shell_job.h:shell_job_set_progress",
+        "api:src/include/apps/shell_job.h:shell_job_set_timeout",
+        "api:src/include/apps/shell_job.h:shell_job_start",
+        "api:src/include/apps/shell_job.h:shell_job_state_name",
+        "c:src/shell/shell_job.c:shell_dispatch_cmd_job",
+        "c:src/shell/shell_job.c:shell_job_begin_drain",
+        "c:src/shell/shell_job.c:shell_job_cancel_requested",
+        "c:src/shell/shell_job.c:shell_job_clear_next_wake",
+        "c:src/shell/shell_job.c:shell_job_clear_timeout",
+        "c:src/shell/shell_job.c:shell_job_complete",
+        "c:src/shell/shell_job.c:shell_job_copy_text",
+        "c:src/shell/shell_job.c:shell_job_generation_matches",
+        "c:src/shell/shell_job.c:shell_job_get_generation",
+        "c:src/shell/shell_job.c:shell_job_get_status",
+        "c:src/shell/shell_job.c:shell_job_get_wait_timeout",
+        "c:src/shell/shell_job.c:shell_job_handle_key",
+        "c:src/shell/shell_job.c:shell_job_input_blocked",
+        "c:src/shell/shell_job.c:shell_job_is_active",
+        "c:src/shell/shell_job.c:shell_job_kind_name",
+        "c:src/shell/shell_job.c:shell_job_mark_cancel_requested",
+        "c:src/shell/shell_job.c:shell_job_mark_timeout_requested",
+        "c:src/shell/shell_job.c:shell_job_note_stale_event",
+        "c:src/shell/shell_job.c:shell_job_poll",
+        "c:src/shell/shell_job.c:shell_job_poll_drain",
+        "c:src/shell/shell_job.c:shell_job_pump_events",
+        "c:src/shell/shell_job.c:shell_job_request_cancel",
+        "c:src/shell/shell_job.c:shell_job_reset",
+        "c:src/shell/shell_job.c:shell_job_set_deadline",
+        "c:src/shell/shell_job.c:shell_job_set_next_wake",
+        "c:src/shell/shell_job.c:shell_job_set_phase",
+        "c:src/shell/shell_job.c:shell_job_set_progress",
+        "c:src/shell/shell_job.c:shell_job_set_timeout",
+        "c:src/shell/shell_job.c:shell_job_start",
+        "c:src/shell/shell_job.c:shell_job_state_name"
+      ],
+      "tags": [
+        "host",
+        "shell",
+        "job",
+        "cancelamento",
+        "timeout",
+        "ipc",
+        "coverage"
       ]
     }
   ],
