@@ -453,6 +453,16 @@ beep, melody e esperas limitadas por ticks sem executar I/O privilegiado ou
 make test-speaker-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-keyboard-host` compila o driver PS/2 real com controlador, IRQ,
+fila e portas simulados. A fixture cobre tabelas de scancode, teclas ABNT2,
+inicializacao, filtro de cancelamento, metricas, reset e falhas de dependencia
+sem executar `cli`, `sti`, I/O privilegiado ou espera ativa no host; o relatorio
+fica em `build/test-results/keyboard-host/`:
+
+```text
+make test-keyboard-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O caso `test-shell-input-host` exercita a entrada do Shell com terminal,
 historico, navegacao para cima/baixo, edicao, teclas de rolagem, cancelamento,
 bloqueio, modificadores e limite do buffer. A fixture usa apenas video,

@@ -3025,6 +3025,48 @@
         "status": "AUTOMATED",
         "surface_ids": []
       }
+    },
+    {
+      "id": "keyboard-host-dynamic",
+      "domain": "drivers-keyboard",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:drivers:keyboard"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/keyboard-host/coverage.json",
+      "coverage_sources": [
+        "src/drivers/keyboard.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-keyboard-host PASS com controlador PS/2, IRQ, fila de eventos e portas simulados, scancodes, tabelas ABNT2, inicializacao, reset, metricas e falhas de registro no relatorio instrumentado",
+      "case_definition": {
+        "id": "host:drivers:keyboard",
+        "scenario": "Contrato host-only do driver de teclado PS/2",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "ps2-controller-port-stub"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "compilar e executar o driver teclado real com controlador PS/2 e dependencias registradas simulados",
+        "expected": "scancodes, inicializacao, filtros, reset, metricas e falhas preservam o contrato sem executar CLI, STI ou I/O privilegiado no host",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente filas, metricas e portas estaticas do processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": []
+      }
     }
   ]
 }

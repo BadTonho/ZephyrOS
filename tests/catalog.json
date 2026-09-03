@@ -8365,12 +8365,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:keyboard",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/keyboard.h:keyboard_controller_reset_available",
@@ -8388,12 +8389,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:keyboard",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/keyboard.h:keyboard_get_metrics",
@@ -8411,12 +8413,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:keyboard",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/keyboard.h:keyboard_handler",
@@ -8434,12 +8437,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:keyboard",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/keyboard.h:keyboard_init",
@@ -8457,12 +8461,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:keyboard",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/keyboard.h:keyboard_process_events",
@@ -8480,12 +8485,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:keyboard",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/keyboard.h:keyboard_scancode_to_ascii",
@@ -8503,12 +8509,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:keyboard",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/keyboard.h:keyboard_scancode_to_ascii_shifted",
@@ -8526,12 +8533,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:keyboard",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/keyboard.h:keyboard_set_focus_cancel_filter",
@@ -8549,12 +8557,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:keyboard",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/log.h:log_clear_buffer",
@@ -89083,12 +89092,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:keyboard",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/keyboard.c:keyboard_bottom_half",
@@ -89127,9 +89137,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:keyboard"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/keyboard.c:keyboard_controller_reset_available",
@@ -89145,9 +89158,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:keyboard"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/keyboard.c:keyboard_enqueue_scancodes",
@@ -89186,9 +89202,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:keyboard"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/keyboard.c:keyboard_handler",
@@ -89227,9 +89246,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:keyboard"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/keyboard.c:keyboard_input_sink",
@@ -89406,9 +89428,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:keyboard"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/keyboard.c:keyboard_scancode_to_ascii_shifted",
@@ -89426,12 +89451,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:keyboard",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/keyboard.c:keyboard_set_focus_cancel_filter",
@@ -89447,9 +89473,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:keyboard"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/keyboard.c:keyboard_usage_scancode",
@@ -89488,9 +89517,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:keyboard"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/mouse.c:draw_cursor",
@@ -153064,6 +153096,50 @@
         "drivers",
         "font",
         "coverage"
+      ]
+    },
+    {
+      "id": "host:drivers:keyboard",
+      "scenario": "Contrato host-only do driver de teclado PS/2",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "hardware": "ps2-controller-port-stub"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "compilar e executar o driver teclado real com controlador PS/2 e dependencias registradas simulados",
+      "expected": "scancodes, inicializacao, filtros, reset, metricas e falhas preservam o contrato sem executar CLI, STI ou I/O privilegiado no host",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente filas, metricas e portas estaticas do processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/keyboard.h:keyboard_controller_reset",
+        "api:src/include/core/keyboard.h:keyboard_controller_reset_available",
+        "api:src/include/core/keyboard.h:keyboard_get_metrics",
+        "api:src/include/core/keyboard.h:keyboard_handler",
+        "api:src/include/core/keyboard.h:keyboard_init",
+        "api:src/include/core/keyboard.h:keyboard_process_events",
+        "api:src/include/core/keyboard.h:keyboard_scancode_to_ascii",
+        "api:src/include/core/keyboard.h:keyboard_scancode_to_ascii_shifted",
+        "api:src/include/core/keyboard.h:keyboard_set_focus_cancel_filter",
+        "c:src/drivers/keyboard.c:inb",
+        "c:src/drivers/keyboard.c:keyboard_controller_reset",
+        "c:src/drivers/keyboard.c:keyboard_controller_reset_available",
+        "c:src/drivers/keyboard.c:keyboard_get_metrics",
+        "c:src/drivers/keyboard.c:keyboard_init",
+        "c:src/drivers/keyboard.c:keyboard_scancode_to_ascii",
+        "c:src/drivers/keyboard.c:keyboard_scancode_to_ascii_shifted",
+        "c:src/drivers/keyboard.c:keyboard_set_focus_cancel_filter",
+        "c:src/drivers/keyboard.c:outb"
       ]
     },
     {

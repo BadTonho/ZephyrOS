@@ -201,6 +201,10 @@ class Tst7RunnerContractTests(unittest.TestCase):
         self.assertEqual(runner.HOST_CASE_TARGETS["host:drivers:speaker"],
                          "test-speaker-host")
 
+    def test_keyboard_host_case_is_mapped(self):
+        self.assertEqual(runner.HOST_CASE_TARGETS["host:drivers:keyboard"],
+                         "test-keyboard-host")
+
     def test_seed_is_reproducible(self):
         self.assertEqual(runner.stable_seed("qemu:tst6:stress:kernel"),
                          runner.stable_seed("qemu:tst6:stress:kernel"))

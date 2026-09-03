@@ -44,24 +44,42 @@ static irq_deferred_work_t keyboard_bottom_half_work;
 static void keyboard_bottom_half(void* context);
 
 static uint32_t keyboard_irq_save(void) {
+#if defined(ZEPHYROS_HOST_TEST)
+    return 0U;
+#else
     uint32_t flags;
 
     asm volatile("pushf\n\tpop %0\n\tcli" : "=r"(flags) : : "memory");
     return flags;
+#endif
 }
 
 static void keyboard_irq_restore(uint32_t flags) {
+#if !defined(ZEPHYROS_HOST_TEST)
     if (flags & (1U << 9U)) asm volatile("sti" : : : "memory");
+#else
+    (void)flags;
+#endif
 }
 
 static uint8_t inb(uint16_t port) {
+#if defined(ZEPHYROS_HOST_TEST)
+    extern uint8_t keyboard_host_inb(uint16_t port);
+    return keyboard_host_inb(port);
+#else
     uint8_t result;
     asm volatile("inb %1, %0" : "=a"(result) : "Nd"(port));
     return result;
+#endif
 }
 
 static void outb(uint16_t port, uint8_t value) {
+#if defined(ZEPHYROS_HOST_TEST)
+    extern void keyboard_host_outb(uint16_t port, uint8_t value);
+    keyboard_host_outb(port, value);
+#else
     asm volatile("outb %0, %1" : : "a"(value), "Nd"(port));
+#endif
 }
 
 static const char scancode_table[128] = {
@@ -444,12 +462,16 @@ int keyboard_controller_reset(void) {
          count++) {
         if (!(inb(KEYBOARD_CONTROLLER_STATUS_PORT) &
               KEYBOARD_CONTROLLER_INPUT_FULL)) {
+#if !defined(ZEPHYROS_HOST_TEST)
             asm volatile("cli" : : : "memory");
+#endif
             outb(KEYBOARD_CONTROLLER_STATUS_PORT,
                  KEYBOARD_CONTROLLER_RESET_COMMAND);
             for (uint32_t wait = 0U; wait < KEYBOARD_CONTROLLER_WAIT_LIMIT;
                  wait++) {
+#if !defined(ZEPHYROS_HOST_TEST)
                 asm volatile("pause");
+#endif
             }
             LOG_ERROR("KBD", "Controlador PS/2 retornou apos reset");
             return ERR_TIMEOUT;
