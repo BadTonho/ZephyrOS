@@ -4598,3 +4598,14 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   com 7.196 superficies, 4.278 `COVERED`, 2.918 `PENDING` e 102 casos. O
   fechamento integral, o gate estrito e a validacao TST7 completa continuam
   pendentes.
+
+- Incremento Core/test_coverage concluido em 2026-09-03: foi criado o caso
+  host-only `host:core:test-coverage` e o alvo `make test-coverage-host` com
+  serial falso. A fixture exercitou escrita parcial, retorno sem progresso,
+  truncamento de identificador, tabela hash, callbacks de instrumentacao e
+  emissao ZCOV. A execucao terminou `PASS`, sem enderecos desconhecidos ou
+  ambiguos, resolvendo as 11 superficies de `src/core/test_coverage.c`; a
+  cobertura passou a emitir enderecos de 64 bits somente no host, mantendo o
+  caminho freestanding de 32 bits. O catalogo foi sincronizado com 7.197
+  superficies, 4.290 `COVERED`, 2.907 `PENDING` e 103 casos. O fechamento
+  integral, o gate estrito e a validacao TST7 completa continuam pendentes.

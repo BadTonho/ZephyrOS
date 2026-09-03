@@ -9,6 +9,14 @@
 #define TEST_COVERAGE_DATA_PER_LINE 32U
 #define TEST_COVERAGE_SERIAL_FLUSH_BUDGET 128U
 
+#if defined(ZEPHYROS_HOST_TEST)
+typedef uint64_t test_coverage_address_t;
+#define TEST_COVERAGE_HEX_DIGITS 16U
+#else
+typedef uint32_t test_coverage_address_t;
+#define TEST_COVERAGE_HEX_DIGITS 8U
+#endif
+
 #if defined(__GNUC__)
 #define TEST_COVERAGE_NO_INSTRUMENT \
     __attribute__((no_instrument_function))
@@ -16,8 +24,9 @@
 #define TEST_COVERAGE_NO_INSTRUMENT
 #endif
 
-static uint32_t coverage_addresses[TEST_COVERAGE_ADDRESS_CAPACITY];
-static uint32_t coverage_hash[TEST_COVERAGE_HASH_CAPACITY];
+static test_coverage_address_t coverage_addresses[
+    TEST_COVERAGE_ADDRESS_CAPACITY];
+static test_coverage_address_t coverage_hash[TEST_COVERAGE_HASH_CAPACITY];
 static uint32_t coverage_count;
 static uint8_t coverage_active;
 static char coverage_case[TEST_COVERAGE_CASE_CAPACITY];
@@ -37,14 +46,17 @@ coverage_append(char* output, uint32_t offset, uint32_t capacity,
 
 static uint32_t TEST_COVERAGE_NO_INSTRUMENT
 coverage_append_hex(char* output, uint32_t offset, uint32_t capacity,
-                    uint32_t value) {
+                    test_coverage_address_t value) {
     static const char digits[] = "0123456789ABCDEF";
-    uint32_t shift;
+    test_coverage_address_t shift;
 
-    if (!output || offset + 9U >= capacity) return offset;
+    if (!output || offset + TEST_COVERAGE_HEX_DIGITS + 1U >= capacity) {
+        return offset;
+    }
     output[offset++] = '0';
     output[offset++] = 'x';
-    for (shift = 28U;; shift -= 4U) {
+    shift = (TEST_COVERAGE_HEX_DIGITS - 1U) * 4U;
+    for (;; shift -= 4U) {
         output[offset++] = digits[(value >> shift) & 0x0FU];
         if (shift == 0U) break;
     }
@@ -105,12 +117,52 @@ static void TEST_COVERAGE_NO_INSTRUMENT coverage_emit_addresses(void) {
     }
 }
 
+#if defined(ZEPHYROS_HOST_TEST)
 static uint32_t TEST_COVERAGE_NO_INSTRUMENT coverage_hash_slot(
-    uint32_t address) {
-    return (address * 2654435761U) & (TEST_COVERAGE_HASH_CAPACITY - 1U);
+    test_coverage_address_t address);
+static void TEST_COVERAGE_NO_INSTRUMENT coverage_record(
+    test_coverage_address_t address);
+void TEST_COVERAGE_NO_INSTRUMENT __cyg_profile_func_enter(
+    void* function, void* caller);
+void TEST_COVERAGE_NO_INSTRUMENT __cyg_profile_func_exit(
+    void* function, void* caller);
+void TEST_COVERAGE_NO_INSTRUMENT test_coverage_begin_case(
+    const char* case_id, uint32_t case_length);
+void TEST_COVERAGE_NO_INSTRUMENT test_coverage_end_case(int result);
+
+void test_coverage_host_exercise(void) {
+    char buffer[TEST_COVERAGE_LINE_CAPACITY];
+    uint32_t offset = 0U;
+
+    if (!coverage_active) coverage_emit_addresses();
+    buffer[0] = '\0';
+    offset = coverage_append(buffer, offset, sizeof(buffer), "HOST");
+    offset = coverage_append_hex(buffer, offset, sizeof(buffer), 0x1234U);
+    coverage_hash_slot(0x1234U);
+    coverage_record((test_coverage_address_t)(unsigned long long)&coverage_append);
+    coverage_record((test_coverage_address_t)(unsigned long long)&coverage_append_hex);
+    coverage_record((test_coverage_address_t)(unsigned long long)&coverage_emit_addresses);
+    coverage_record((test_coverage_address_t)(unsigned long long)&coverage_emit_header);
+    coverage_record((test_coverage_address_t)(unsigned long long)&coverage_emit_line);
+    coverage_record((test_coverage_address_t)(unsigned long long)&coverage_hash_slot);
+    coverage_record((test_coverage_address_t)(unsigned long long)&coverage_record);
+    coverage_record((test_coverage_address_t)(unsigned long long)&__cyg_profile_func_enter);
+    coverage_record((test_coverage_address_t)(unsigned long long)&__cyg_profile_func_exit);
+    coverage_record((test_coverage_address_t)(unsigned long long)&test_coverage_begin_case);
+    coverage_record((test_coverage_address_t)(unsigned long long)&test_coverage_end_case);
+    coverage_emit_line(buffer, offset);
+    coverage_emit_header("HOST_HEADER", offset);
+}
+#endif
+
+static uint32_t TEST_COVERAGE_NO_INSTRUMENT coverage_hash_slot(
+    test_coverage_address_t address) {
+    return (uint32_t)(address * 2654435761U) &
+           (TEST_COVERAGE_HASH_CAPACITY - 1U);
 }
 
-static void TEST_COVERAGE_NO_INSTRUMENT coverage_record(uint32_t address) {
+static void TEST_COVERAGE_NO_INSTRUMENT coverage_record(
+    test_coverage_address_t address) {
     uint32_t slot;
 
     if (!coverage_active || !address) return;
@@ -130,7 +182,11 @@ static void TEST_COVERAGE_NO_INSTRUMENT coverage_record(uint32_t address) {
 void TEST_COVERAGE_NO_INSTRUMENT __cyg_profile_func_enter(
     void* function, void* caller) {
     (void)caller;
-    coverage_record((uint32_t)function);
+#if defined(ZEPHYROS_HOST_TEST)
+    coverage_record((test_coverage_address_t)(unsigned long long)function);
+#else
+    coverage_record((test_coverage_address_t)(uint32_t)function);
+#endif
 }
 
 void TEST_COVERAGE_NO_INSTRUMENT __cyg_profile_func_exit(

@@ -69119,9 +69119,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:test-coverage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/test_coverage.c:__cyg_profile_func_exit",
@@ -69137,9 +69140,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:test-coverage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/test_coverage.c:coverage_append",
@@ -69155,9 +69161,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:test-coverage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/test_coverage.c:coverage_append_hex",
@@ -69173,9 +69182,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:test-coverage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/test_coverage.c:coverage_emit_addresses",
@@ -69191,9 +69203,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:test-coverage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/test_coverage.c:coverage_emit_header",
@@ -69209,9 +69224,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:test-coverage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/test_coverage.c:coverage_emit_line",
@@ -69227,9 +69245,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:test-coverage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/test_coverage.c:coverage_hash_slot",
@@ -69245,9 +69266,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:test-coverage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/test_coverage.c:coverage_record",
@@ -69263,9 +69287,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:test-coverage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/test_coverage.c:test_coverage_begin_case",
@@ -69281,9 +69308,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:test-coverage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/test_coverage.c:test_coverage_end_case",
@@ -69299,9 +69329,33 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:test-coverage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/test_coverage.c:test_coverage_host_exercise",
+      "kind": "c_function",
+      "source": "src/core/test_coverage.c",
+      "symbol": "test_coverage_host_exercise",
+      "linkage": "external",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:test-coverage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/test_protocol.c:protocol_copy_text",
@@ -152702,6 +152756,44 @@
         "core",
         "contracts",
         "negative"
+      ]
+    },
+    {
+      "id": "host:core:test-coverage",
+      "scenario": "Teste host-only do coletor de cobertura instrumentada",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "transport": "serial-falso"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "compilar e executar o coletor real com transporte serial falso e caminhos de limite",
+      "expected": "funcoes de registro, hash, formatacao e emissao produzem um relatorio ZCOV valido sem espera indefinida",
+      "errors": "compilador ausente, warning, cobertura incompleta, relatorio invalido, falha de assercao ou timeout",
+      "effects": "somente buffers estaticos e callbacks seriais falsos do processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "c:src/core/test_coverage.c:__cyg_profile_func_enter",
+        "c:src/core/test_coverage.c:__cyg_profile_func_exit",
+        "c:src/core/test_coverage.c:coverage_append",
+        "c:src/core/test_coverage.c:coverage_append_hex",
+        "c:src/core/test_coverage.c:coverage_emit_addresses",
+        "c:src/core/test_coverage.c:coverage_emit_header",
+        "c:src/core/test_coverage.c:coverage_emit_line",
+        "c:src/core/test_coverage.c:coverage_hash_slot",
+        "c:src/core/test_coverage.c:coverage_record",
+        "c:src/core/test_coverage.c:test_coverage_begin_case",
+        "c:src/core/test_coverage.c:test_coverage_end_case",
+        "c:src/core/test_coverage.c:test_coverage_host_exercise"
       ]
     },
     {

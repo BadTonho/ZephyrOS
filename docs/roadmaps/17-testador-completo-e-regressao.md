@@ -1412,6 +1412,17 @@ pendente.
   `PENDING` e 102 casos. O fechamento integral, o gate estrito e a validacao
   TST7 completa continuam pendentes.
 
+- Incremento Core/test_coverage concluido em 2026-09-03: foi criado o caso
+  host-only `host:core:test-coverage` com transporte serial falso e o alvo
+  `make test-coverage-host`. A fixture exercitou escrita parcial, ausencia de
+  progresso, identificador nulo e truncado, tabela hash, callbacks de
+  instrumentacao e emissao ZCOV. O relatorio instrumentado terminou `PASS`, sem
+  enderecos desconhecidos ou ambiguos, resolvendo as 11 superficies pendentes
+  de `src/core/test_coverage.c`; a variante host usa enderecos de 64 bits e o
+  caminho freestanding permanece em 32 bits. O catalogo registra 7.197
+  superficies, 4.290 `COVERED`, 2.907 `PENDING` e 103 casos. O fechamento
+  integral, o gate estrito e a validacao TST7 completa continuam pendentes.
+
 - Incremento Core/wifi_manager concluido em 2026-09-02: foi criado o caso
   host-only `host:core:wifi-manager` com fixtures estaticos de PCI, USB e
   RTL8811CU. A fixture exercitou formatacao e busca case-insensitive de IDs,

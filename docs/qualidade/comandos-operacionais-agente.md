@@ -483,6 +483,15 @@ sem acessar QEMU ou hardware; o relatorio fica em
 make test-blackbox-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-coverage-host` compila o coletor de cobertura real com transporte
+serial falso. A fixture cobre escrita parcial, falta de progresso, truncamento
+de identificador, tabela hash, callbacks de instrumentacao e relatorio ZCOV;
+o relatorio fica em `build/test-results/test-coverage-host/`:
+
+```text
+make test-coverage-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O caso `test-shell-input-host` exercita a entrada do Shell com terminal,
 historico, navegacao para cima/baixo, edicao, teclas de rolagem, cancelamento,
 bloqueio, modificadores e limite do buffer. A fixture usa apenas video,
