@@ -4981,6 +4981,21 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   2.352 `PENDING` e 127 casos. O fechamento integral, o gate estrito e a
   validacao TST7 completa continuam pendentes.
 
+- Incremento Network/socket runtime — fechamento de cobertura — concluido em
+  2026-09-03. O caso host-only `host:network:socket-runtime` foi ampliado
+  para fechar o caminho de remocao de um cliente UNIX conectado, mas ainda
+  nao aceito, antes do `accept`; a fila pendente e o estado global sao
+  validados apos o fechamento.
+
+  `make test-socket-runtime-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
+  passou. O relatorio instrumentado
+  `build/test-results/socket-runtime-host/coverage.json` resolveu as 65
+  funcoes de `src/core/socket.c`, com `unknown_addresses=[]` e
+  `ambiguous_symbols=[]`; a sincronizacao e a renderizacao do catalogo
+  tambem passaram. O catalogo registra 7.219 superficies, 4.896 `COVERED`,
+  2.323 `PENDING` e 128 casos. O fechamento integral, o gate estrito e a
+  validacao TST7 completa continuam pendentes.
+
 - Incremento Storage/sysfs concluido em 2026-09-03. Foi criado o caso
   host-only `host:storage:sysfs` com o alvo `make test-sysfs-host`. A fixture
   liga o provider `src/fs/sysfs.c` real a inventarios falsos de PCI, rede,

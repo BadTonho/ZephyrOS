@@ -1569,7 +1569,7 @@
         "src/core/socket.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-socket-runtime-host PASS com backend TCP, adaptadores VFS, filas UNIX, espera cancelada, limites de capacidade, autoteste e limpeza; coverage.json instrumentado confirmou as funcoes de src/core/socket.c",
+      "evidence": "make test-socket-runtime-host PASS com backend TCP, adaptadores VFS, filas UNIX, remocao de cliente pendente antes do accept, espera cancelada, limites de capacidade, autoteste e limpeza; coverage.json instrumentado confirmou as 65 funcoes de src/core/socket.c, sem enderecos desconhecidos ou ambiguos",
       "case_definition": {
         "id": "host:network:socket-runtime",
         "scenario": "Runtime host-only dos sockets nativos com backends TCP, VFS e espera falsos",

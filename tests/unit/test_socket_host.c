@@ -881,6 +881,7 @@ int test_unix_and_wait(void) {
     socket_address_t address;
     int32_t listener = VFS_FD_INVALID;
     int32_t client = VFS_FD_INVALID;
+    int32_t abandoned_client = VFS_FD_INVALID;
     int32_t server = VFS_FD_INVALID;
     uint8_t buffer[8];
     uint32_t count = 0U;
@@ -896,6 +897,13 @@ int test_unix_and_wait(void) {
         socket_listen(listener, SOCKET_UNIX_BACKLOG_MAX) != OK) {
         return ERR_STATE;
     }
+    if (socket_create(SOCKET_FAMILY_UNIX, SOCKET_TYPE_STREAM,
+                      SOCKET_FLAG_NONBLOCK, &abandoned_client) != OK ||
+        socket_connect(abandoned_client, &address) != OK ||
+        socket_close(abandoned_client) != OK) {
+        return ERR_STATE;
+    }
+    abandoned_client = VFS_FD_INVALID;
     if (socket_create(SOCKET_FAMILY_UNIX, SOCKET_TYPE_STREAM,
                       SOCKET_FLAG_NONBLOCK, &client) != OK ||
         socket_connect(client, &address) != OK ||

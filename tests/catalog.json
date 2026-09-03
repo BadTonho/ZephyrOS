@@ -66690,9 +66690,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:network:socket-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/socket.c:socket_poll_revents",
@@ -158938,6 +158941,7 @@
         "c:src/core/socket.c:socket_init",
         "c:src/core/socket.c:socket_listen",
         "c:src/core/socket.c:socket_pending_pop_locked",
+        "c:src/core/socket.c:socket_pending_remove_locked",
         "c:src/core/socket.c:socket_poll_revents",
         "c:src/core/socket.c:socket_queue_clear",
         "c:src/core/socket.c:socket_queue_front_locked",

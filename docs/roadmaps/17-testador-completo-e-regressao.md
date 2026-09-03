@@ -1517,16 +1517,17 @@ pendente.
   real a backends falsos de TCP, VFS, filas de espera, SKB e processo, sem
   rede ou hardware. Foram exercitados inicializacao idempotente, criacao,
   bind/listen/connect/accept, envio e recepcao TCP, EOF, erros, polling,
-  adaptadores VFS, filas UNIX, cancelamento, capacidade e autoteste com
+  remocao de cliente UNIX pendente antes do `accept`, adaptadores VFS, filas
+  UNIX, cancelamento, capacidade e autoteste com
   limpeza do estado global.
 
   `make test-socket-runtime-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
   terminou `PASS`. O relatorio instrumentado
-  `build/test-results/socket-runtime-host/coverage.json` resolveu as 64
+  `build/test-results/socket-runtime-host/coverage.json` resolveu as 65
   funcoes de `src/core/socket.c`, sem enderecos desconhecidos ou ambiguos.
   Tambem passaram `make test-net-socket-host`, os testes unitarios dos
   runners, sincronizacao/renderizacao e `make catalog-test`. O catalogo
-  registra 7.219 superficies, 4.867 `COVERED`, 2.352 `PENDING` e 127 casos.
+  registra 7.219 superficies, 4.896 `COVERED`, 2.323 `PENDING` e 128 casos.
   O fechamento integral, o gate estrito e a validacao TST7 completa continuam
   pendentes.
 
