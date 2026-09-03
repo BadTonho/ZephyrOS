@@ -4904,3 +4904,19 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   passaram nesta etapa. O catalogo registra 7.209 superficies,
   4.717 `COVERED`, 2.492 `PENDING` e 122 casos. O fechamento integral, o gate
   estrito e a validacao TST7 completa continuam pendentes.
+
+- Incremento Drivers/ATA concluido em 2026-09-03. Foi criado o caso host-only
+  `host:drivers:ata` e o alvo `make test-ata-host`. A fixture substitui as
+  instrucoes privilegiadas por portas ATA falsas e exercita descoberta nos
+  quatro slots, parsing de IDENTIFY, limite LBA28, inventario, IRQ, leitura e
+  escrita PIO, contadores, flush, retries, limites, falhas de estado e
+  timeouts, sem acessar disco ou I/O real. O relatorio instrumentado
+  `build/test-results/ata-host/coverage.json` terminou `PASS`, resolveu as 30
+  funcoes observadas de `src/drivers/ata.c`, sem enderecos desconhecidos ou
+  ambiguos, e a fixture retornou os erros canonicos esperados. Foram executados
+  `make test-ata-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`,
+  `python tools/test_catalog.py sync`, `python tools/test_catalog.py render`,
+  `python tools/test_catalog.py validate` e `git diff --check`; todos passaram
+  nesta etapa. O catalogo registra 7.209 superficies, 4.757 `COVERED`, 2.452
+  `PENDING` e 124 casos. O fechamento integral, o gate estrito e a validacao
+  TST7 completa continuam pendentes.

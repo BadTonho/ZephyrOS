@@ -578,6 +578,12 @@ PCI_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_pci_host.c",
     ROOT / "src" / "drivers" / "pci.c",
 )
+ATA_RESULT_DIR = ROOT / "build" / "test-results" / "ata-host"
+ATA_BINARY = ROOT / "build" / "tests" / "test_ata_host.exe"
+ATA_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_ata_host.c",
+    ROOT / "src" / "drivers" / "ata.c",
+)
 ICONS_RESULT_DIR = ROOT / "build" / "test-results" / "icons-host"
 ICONS_BINARY = ROOT / "build" / "tests" / "test_icons_host.exe"
 ICONS_SOURCE_FILES = (
@@ -821,6 +827,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return PANIC_RESULT_DIR, PANIC_BINARY, PANIC_SOURCE_FILES, "panic-host"
     if case_id == "host:drivers:pci":
         return PCI_RESULT_DIR, PCI_BINARY, PCI_SOURCE_FILES, "pci-host"
+    if case_id == "host:drivers:ata":
+        return ATA_RESULT_DIR, ATA_BINARY, ATA_SOURCE_FILES, "ata-host"
     if case_id == "host:ui:icons":
         return ICONS_RESULT_DIR, ICONS_BINARY, ICONS_SOURCE_FILES, "icons-host"
     if case_id == "host:drivers:vesa":
@@ -1037,6 +1045,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:shell:commands-vfs",
                                  "host:boot:recovery-runtime",
                                  "host:kernel:panic", "host:drivers:pci",
+                                 "host:drivers:ata",
                                  "host:ui:icons", "host:drivers:vesa",
                                  "host:drivers:video", "host:drivers:acpi",
                                  "host:drivers:uhci", "host:drivers:ehci",

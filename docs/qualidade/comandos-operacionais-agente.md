@@ -592,6 +592,21 @@ de memoria, I/O e bus mastering com portas PCI falsas. O relatorio fica em
 make test-pci-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-ata-host` exercita a descoberta e identificacao ATA, inventario,
+IRQ, leitura e escrita PIO, flush, limites de LBA, retries, timeouts e falhas
+com portas, dados IDENTIFY e armazenamento falsos. Nenhum acesso a disco ou
+porta I/O real e executado pelo teste. O relatorio fica em
+`build/test-results/ata-host/`:
+
+```text
+make test-ata-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O alvo exige compilador C nativo e `nm`, compila com instrumentacao de funcoes
+e warnings tratados como erro. Uma execucao `PASS` deve resolver as funcoes
+de `src/drivers/ata.c` sem enderecos desconhecidos ou ambiguos e manter
+dispositivos, contadores, handlers e estado de portas confinados ao processo.
+
 O caso `test-icons-host` exercita o registro e o cache de icones com filesystem,
 BMP, memoria e VESA falsos. A fixture verifica fallback sem filesystem, carga
 valida, formato invalido, falha de memoria, mutacoes do registro e limites de

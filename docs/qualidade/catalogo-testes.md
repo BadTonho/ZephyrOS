@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7209**
-- Casos de teste: **123**
+- Casos de teste: **124**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4741 |
+| `COVERED` | 4757 |
 | `MANUAL` | 0 |
-| `PENDING` | 2468 |
+| `PENDING` | 2452 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 123 |
+| `AUTOMATED` | 124 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -901,18 +901,18 @@
 | `api:src/include/drivers/acpi.h:acpi_poweroff` | `src/include/drivers/acpi.h` | `acpi_poweroff` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/acpi.h:acpi_reset` | `src/include/drivers/acpi.h` | `acpi_reset` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/acpi.h:acpi_root_kind_name` | `src/include/drivers/acpi.h` | `acpi_root_kind_name` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/ata.h:ata_flush_device` | `src/include/drivers/ata.h` | `ata_flush_device` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/ata.h:ata_get_device` | `src/include/drivers/ata.h` | `ata_get_device` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/ata.h:ata_get_device_at` | `src/include/drivers/ata.h` | `ata_get_device_at` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/ata.h:ata_get_device_count` | `src/include/drivers/ata.h` | `ata_get_device_count` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/ata.h:ata_get_device_counters` | `src/include/drivers/ata.h` | `ata_get_device_counters` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/ata.h:ata_get_read_ops` | `src/include/drivers/ata.h` | `ata_get_read_ops` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/ata.h:ata_get_write_ops` | `src/include/drivers/ata.h` | `ata_get_write_ops` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/ata.h:ata_init` | `src/include/drivers/ata.h` | `ata_init` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/ata.h:ata_read_device_sectors` | `src/include/drivers/ata.h` | `ata_read_device_sectors` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/ata.h:ata_read_sectors` | `src/include/drivers/ata.h` | `ata_read_sectors` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/ata.h:ata_write_device_sectors` | `src/include/drivers/ata.h` | `ata_write_device_sectors` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/ata.h:ata_write_sectors` | `src/include/drivers/ata.h` | `ata_write_sectors` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/ata.h:ata_flush_device` | `src/include/drivers/ata.h` | `ata_flush_device` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/ata.h:ata_get_device` | `src/include/drivers/ata.h` | `ata_get_device` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/ata.h:ata_get_device_at` | `src/include/drivers/ata.h` | `ata_get_device_at` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/ata.h:ata_get_device_count` | `src/include/drivers/ata.h` | `ata_get_device_count` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/ata.h:ata_get_device_counters` | `src/include/drivers/ata.h` | `ata_get_device_counters` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/ata.h:ata_get_read_ops` | `src/include/drivers/ata.h` | `ata_get_read_ops` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/ata.h:ata_get_write_ops` | `src/include/drivers/ata.h` | `ata_get_write_ops` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/ata.h:ata_init` | `src/include/drivers/ata.h` | `ata_init` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/ata.h:ata_read_device_sectors` | `src/include/drivers/ata.h` | `ata_read_device_sectors` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/ata.h:ata_read_sectors` | `src/include/drivers/ata.h` | `ata_read_sectors` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/ata.h:ata_write_device_sectors` | `src/include/drivers/ata.h` | `ata_write_device_sectors` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/ata.h:ata_write_sectors` | `src/include/drivers/ata.h` | `ata_write_sectors` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/e1000.h:e1000_handler` | `src/include/drivers/e1000.h` | `e1000_handler` | `drivers` | `COVERED` | 1 |
 | `api:src/include/drivers/e1000.h:e1000_init` | `src/include/drivers/e1000.h` | `e1000_init` | `drivers` | `COVERED` | 1 |
 | `api:src/include/drivers/ehci.h:ehci_bulk_transfer` | `src/include/drivers/ehci.h` | `ehci_bulk_transfer` | `drivers` | `PENDING` | 0 |
@@ -4072,37 +4072,37 @@
 | `c:src/drivers/acpi.c:acpi_store_table` | `src/drivers/acpi.c` | `acpi_store_table` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/acpi.c:acpi_table_already_stored` | `src/drivers/acpi.c` | `acpi_table_already_stored` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/acpi.c:acpi_validate_sdt` | `src/drivers/acpi.c` | `acpi_validate_sdt` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/ata.c:ata_delay` | `src/drivers/ata.c` | `ata_delay` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/ata.c:ata_detect` | `src/drivers/ata.c` | `ata_detect` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ata.c:ata_first_present` | `src/drivers/ata.c` | `ata_first_present` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ata.c:ata_flush_device` | `src/drivers/ata.c` | `ata_flush_device` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ata.c:ata_get_device` | `src/drivers/ata.c` | `ata_get_device` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ata.c:ata_get_device_at` | `src/drivers/ata.c` | `ata_get_device_at` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/ata.c:ata_get_device_count` | `src/drivers/ata.c` | `ata_get_device_count` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ata.c:ata_get_device_counters` | `src/drivers/ata.c` | `ata_get_device_counters` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ata.c:ata_get_read_ops` | `src/drivers/ata.c` | `ata_get_read_ops` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ata.c:ata_get_write_ops` | `src/drivers/ata.c` | `ata_get_write_ops` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ata.c:ata_init` | `src/drivers/ata.c` | `ata_init` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ata.c:ata_prepare_transfer` | `src/drivers/ata.c` | `ata_prepare_transfer` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/ata.c:ata_primary_irq_handler` | `src/drivers/ata.c` | `ata_primary_irq_handler` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ata.c:ata_read_device_sectors` | `src/drivers/ata.c` | `ata_read_device_sectors` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/ata.c:ata_read_from_device` | `src/drivers/ata.c` | `ata_read_from_device` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/ata.c:ata_read_sectors` | `src/drivers/ata.c` | `ata_read_sectors` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ata.c:ata_secondary_irq_handler` | `src/drivers/ata.c` | `ata_secondary_irq_handler` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ata.c:ata_select_drive` | `src/drivers/ata.c` | `ata_select_drive` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ata.c:ata_soft_reset` | `src/drivers/ata.c` | `ata_soft_reset` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ata.c:ata_wait_data_ready` | `src/drivers/ata.c` | `ata_wait_data_ready` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/ata.c:ata_wait_drq` | `src/drivers/ata.c` | `ata_wait_drq` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/ata.c:ata_wait_identify` | `src/drivers/ata.c` | `ata_wait_identify` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ata.c:ata_wait_ready` | `src/drivers/ata.c` | `ata_wait_ready` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/ata.c:ata_wait_write_complete` | `src/drivers/ata.c` | `ata_wait_write_complete` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/ata.c:ata_write_device_sectors` | `src/drivers/ata.c` | `ata_write_device_sectors` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/ata.c:ata_write_sectors` | `src/drivers/ata.c` | `ata_write_sectors` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ata.c:ata_write_to_device` | `src/drivers/ata.c` | `ata_write_to_device` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/ata.c:inb` | `src/drivers/ata.c` | `inb` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/ata.c:inw` | `src/drivers/ata.c` | `inw` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/ata.c:outb` | `src/drivers/ata.c` | `outb` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/ata.c:outw` | `src/drivers/ata.c` | `outw` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ata.c:ata_delay` | `src/drivers/ata.c` | `ata_delay` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/ata.c:ata_detect` | `src/drivers/ata.c` | `ata_detect` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ata.c:ata_first_present` | `src/drivers/ata.c` | `ata_first_present` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ata.c:ata_flush_device` | `src/drivers/ata.c` | `ata_flush_device` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ata.c:ata_get_device` | `src/drivers/ata.c` | `ata_get_device` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ata.c:ata_get_device_at` | `src/drivers/ata.c` | `ata_get_device_at` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/ata.c:ata_get_device_count` | `src/drivers/ata.c` | `ata_get_device_count` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ata.c:ata_get_device_counters` | `src/drivers/ata.c` | `ata_get_device_counters` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ata.c:ata_get_read_ops` | `src/drivers/ata.c` | `ata_get_read_ops` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ata.c:ata_get_write_ops` | `src/drivers/ata.c` | `ata_get_write_ops` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ata.c:ata_init` | `src/drivers/ata.c` | `ata_init` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ata.c:ata_prepare_transfer` | `src/drivers/ata.c` | `ata_prepare_transfer` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/ata.c:ata_primary_irq_handler` | `src/drivers/ata.c` | `ata_primary_irq_handler` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ata.c:ata_read_device_sectors` | `src/drivers/ata.c` | `ata_read_device_sectors` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/ata.c:ata_read_from_device` | `src/drivers/ata.c` | `ata_read_from_device` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/ata.c:ata_read_sectors` | `src/drivers/ata.c` | `ata_read_sectors` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ata.c:ata_secondary_irq_handler` | `src/drivers/ata.c` | `ata_secondary_irq_handler` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ata.c:ata_select_drive` | `src/drivers/ata.c` | `ata_select_drive` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ata.c:ata_soft_reset` | `src/drivers/ata.c` | `ata_soft_reset` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ata.c:ata_wait_data_ready` | `src/drivers/ata.c` | `ata_wait_data_ready` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/ata.c:ata_wait_drq` | `src/drivers/ata.c` | `ata_wait_drq` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/ata.c:ata_wait_identify` | `src/drivers/ata.c` | `ata_wait_identify` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ata.c:ata_wait_ready` | `src/drivers/ata.c` | `ata_wait_ready` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/ata.c:ata_wait_write_complete` | `src/drivers/ata.c` | `ata_wait_write_complete` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/ata.c:ata_write_device_sectors` | `src/drivers/ata.c` | `ata_write_device_sectors` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/ata.c:ata_write_sectors` | `src/drivers/ata.c` | `ata_write_sectors` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ata.c:ata_write_to_device` | `src/drivers/ata.c` | `ata_write_to_device` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/ata.c:inb` | `src/drivers/ata.c` | `inb` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/ata.c:inw` | `src/drivers/ata.c` | `inw` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/ata.c:outb` | `src/drivers/ata.c` | `outb` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/ata.c:outw` | `src/drivers/ata.c` | `outw` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/e1000.c:e1000_allocate_device` | `src/drivers/e1000.c` | `e1000_allocate_device` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/e1000.c:e1000_allocate_dma` | `src/drivers/e1000.c` | `e1000_allocate_dma` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/e1000.c:e1000_bottom_half` | `src/drivers/e1000.c` | `e1000_bottom_half` | `drivers` | `COVERED` | 1 |
@@ -7328,6 +7328,7 @@
 | `host:drivers:rng` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver RNG real com capacidades e resultados RDRAND simulados | capacidade, estado, bytes gerados, falhas de hardware e codigos de erro preservam o contrato sem executar instrucoes privilegiadas no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado RNG e valores de entropia estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:rtc-status` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | consultar o estado inicial do RTC com destinos valido e nulo | rtc_get_status rejeita destino nulo e publica snapshot inicial estavel | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do RTC e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:rtl8139` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar PCI, portas I/O, reset, MAC, DMA, transmissoes, recepcoes, IRQ, bottom-half, erros, timeout, quiescencia e limpeza | operacoes validas preservam invariantes do controlador e fixtures invalidas retornam erros canonicos sem I/O privilegiado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente PCI, portas, memoria DMA, relogio, IRQ e controlador RTL8139 falso no processo host | controlador falso resetado, paginas DMA devolvidas e manifesto, logs e cobertura preservados |
+| `host:drivers:rtl8811cu` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar identificacao USB, revisao, descritores, endpoints Bulk, cabecalho de firmware, estados, callbacks Ethernet, scan, associacao e indisponibilidade segura | dispositivos incompatíveis e fixtures invalidas retornam erros canonicos; o dispositivo suportado permanece indisponivel sem firmware e transporte confirmados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estruturas USB, filesystem, interface Ethernet e estado do driver falso no processo host | estruturas de dispositivo, firmware falso, interface, estado global, manifesto, logs e cobertura permanecem confinados ao processo host |
 | `host:drivers:serial` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver serial real com registradores UART simulados | inicializacao, leitura, filtragem, enfileiramento e flush respeitam o contrato sem acessar portas I/O reais | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado UART e fila de transmissao do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:speaker` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver speaker real com portas PIT e PC speaker simuladas | inicializacao, desligamento, tons, melody e espera por ticks respeitam o contrato sem acessar I/O privilegiado ou executar hlt no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente registradores PIT e PC speaker estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:tss` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver TSS real com carregamento GDT e flush simulados | inicializacao, prontidao e atualizacao de stack preservam o contrato sem executar lgdt, troca de segmentos ou flush privilegiado no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente descritor TSS, GDT e contador de flush do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7417,7 +7418,7 @@
 | `qemu:tst6:stress:kernel` | `qemu` | `tst6` | `qemu:tst6:stress:kernel` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | paging, heap, SLAB, processos e threads estao READY | repetir ciclos deterministas de memoria e execucao sob teto obrigatorio | invariantes estaveis permanecem iguais e a primeira falha interrompe a suite | overflow, vazamento, deadlock, timeout, protocolo ou QEMU | alocacoes e objetos temporarios de cada ciclo em snapshot | devolver paginas, destruir objetos e registrar seed e iteracao |
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
-| `host:drivers:rtl8811cu` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar identificacao USB, revisao, descritores, endpoints Bulk, cabecalho de firmware, estados, callbacks Ethernet, scan, associacao e indisponibilidade segura | dispositivos incompatíveis e fixtures invalidas retornam erros canonicos; o dispositivo suportado permanece indisponivel sem firmware e transporte confirmados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estruturas USB, filesystem, interface Ethernet e estado do driver falso no processo host | estruturas de dispositivo, firmware falso, interface, estado global, manifesto, logs e cobertura permanecem confinados ao processo host |
+| `host:drivers:ata` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar descoberta, inventario, IRQ, leitura e escrita PIO, flush, limites, retries, timeouts e falhas | dispositivos ATA falsos publicam identificacao e contadores corretos; operacoes validas transferem setores; fixtures invalidas retornam erros canonicos e restauram o estado | compilador ausente, warning, cobertura incompleta, falha de assercao, acesso I/O real ou timeout | somente portas ATA, dados IDENTIFY, PIO, IRQ e armazenamento falso no processo host | estado de portas, handlers, dispositivos, contadores, manifesto, logs e cobertura permanecem confinados ao processo host |
 
 ## Superfícies sem caso associado
 
@@ -8501,22 +8502,6 @@
 - `c:src/desktop/desktop.c:desktop_update_drag_preview`
 - `c:src/desktop/desktop.c:desktop_update_selection`
 - `c:src/desktop/desktop.c:draw_single_icon_simple`
-- `c:src/drivers/ata.c:ata_detect`
-- `c:src/drivers/ata.c:ata_first_present`
-- `c:src/drivers/ata.c:ata_flush_device`
-- `c:src/drivers/ata.c:ata_get_device`
-- `c:src/drivers/ata.c:ata_get_device_count`
-- `c:src/drivers/ata.c:ata_get_device_counters`
-- `c:src/drivers/ata.c:ata_get_read_ops`
-- `c:src/drivers/ata.c:ata_get_write_ops`
-- `c:src/drivers/ata.c:ata_init`
-- `c:src/drivers/ata.c:ata_primary_irq_handler`
-- `c:src/drivers/ata.c:ata_read_sectors`
-- `c:src/drivers/ata.c:ata_secondary_irq_handler`
-- `c:src/drivers/ata.c:ata_select_drive`
-- `c:src/drivers/ata.c:ata_soft_reset`
-- `c:src/drivers/ata.c:ata_wait_identify`
-- `c:src/drivers/ata.c:ata_write_sectors`
 - `c:src/drivers/idt.c:idt_enable_user_syscall`
 - `c:src/drivers/idt.c:idt_get_irq_status`
 - `c:src/drivers/idt.c:idt_get_shared_irq_handler_count`

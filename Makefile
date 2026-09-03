@@ -1873,6 +1873,9 @@ test-panic-host: tools\core_host_runner.py tools\coverage_collector.py tests\uni
 test-pci-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_pci_host.c tests\catalog.json src\drivers\pci.c src\include\drivers\pci.h src\include\core\errors.h src\include\core\log.h src\include\process\process.h
 	python tools/core_host_runner.py --case host:drivers:pci --cc "$(HOST_CC)"
 
+test-ata-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_ata_host.c tests\catalog.json src\drivers\ata.c src\include\drivers\ata.h src\include\drivers\idt.h src\include\core\errors.h src\include\core\log.h src\include\core\string.h
+	python tools/core_host_runner.py --case host:drivers:ata --cc "$(HOST_CC)"
+
 test-icons-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_icons_host.c tests\catalog.json src\icons\icons.c src\include\ui\icons.h src\include\fs\bmp.h src\include\fs\fs.h src\include\drivers\vesa.h src\include\core\memory.h src\include\core\errors.h src\include\core\log.h
 	python tools/core_host_runner.py --case host:ui:icons --cc "$(HOST_CC)"
 
