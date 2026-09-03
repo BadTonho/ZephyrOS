@@ -197,6 +197,10 @@ class Tst7RunnerContractTests(unittest.TestCase):
         self.assertEqual(runner.HOST_CASE_TARGETS["host:drivers:tss"],
                          "test-tss-host")
 
+    def test_speaker_host_case_is_mapped(self):
+        self.assertEqual(runner.HOST_CASE_TARGETS["host:drivers:speaker"],
+                         "test-speaker-host")
+
     def test_seed_is_reproducible(self):
         self.assertEqual(runner.stable_seed("qemu:tst6:stress:kernel"),
                          runner.stable_seed("qemu:tst6:stress:kernel"))

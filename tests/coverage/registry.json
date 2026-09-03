@@ -2983,6 +2983,48 @@
       ],
       "include_public_apis": true,
       "evidence": "make test-workqueue-host PASS com autoteste interno, prioridades, FIFO, atrasos, coalescencia, rerun, cancelamento, fallback, quiescencia e worker limitado no host"
+    },
+    {
+      "id": "speaker-host-dynamic",
+      "domain": "drivers-speaker",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:drivers:speaker"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/speaker-host/coverage.json",
+      "coverage_sources": [
+        "src/drivers/speaker.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-speaker-host PASS com portas PIT e PC speaker simuladas, inicializacao, silencio, beep, melody, duracoes limitadas e cobertura instrumentada sem executar I/O privilegiado ou hlt no host",
+      "case_definition": {
+        "id": "host:drivers:speaker",
+        "scenario": "Contrato host-only do driver PC speaker",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "pit-and-speaker-port-stub"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "compilar e executar o driver speaker real com portas PIT e PC speaker simuladas",
+        "expected": "inicializacao, desligamento, tons, melody e espera por ticks respeitam o contrato sem acessar I/O privilegiado ou executar hlt no host",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente registradores PIT e PC speaker estaticos do processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": []
+      }
     }
   ]
 }

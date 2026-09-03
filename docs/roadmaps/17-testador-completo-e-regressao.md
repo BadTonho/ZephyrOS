@@ -1354,6 +1354,18 @@ pendente.
   `COVERED`, 2.940 `PENDING` e 98 casos. O fechamento integral, o gate estrito
   e a validacao TST7 completa continuam pendentes.
 
+- Incremento Drivers/Speaker concluido em 2026-09-02: foi criado o caso
+  host-only `host:drivers:speaker` com portas PIT e PC speaker simuladas e
+  instrumentacao dinamica. A fixture exercitou inicializacao, desligamento,
+  frequencia zero, beep, melody, duracoes e espera por ticks. `make
+  test-speaker-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` terminou `PASS`,
+  cobrindo as duas superficies pendentes de `src/drivers/speaker.c`, sem
+  enderecos desconhecidos ou ambiguos. O caminho freestanding preserva I/O de
+  portas e `hlt`; no host, apenas a fixture substitui essas operacoes. O
+  catalogo registra 7.196 superficies, 4.258 `COVERED`, 2.938 `PENDING` e 99
+  casos. O fechamento integral, o gate estrito e a validacao TST7 completa
+  continuam pendentes.
+
 - Incremento Core/wifi_manager concluido em 2026-09-02: foi criado o caso
   host-only `host:core:wifi-manager` com fixtures estaticos de PCI, USB e
   RTL8811CU. A fixture exercitou formatacao e busca case-insensitive de IDs,

@@ -2,14 +2,27 @@
 #include "core/timer.h"
 #include "core/log.h"
 
+#if defined(ZEPHYROS_HOST_TEST)
+extern uint8_t speaker_host_inb(uint16_t port);
+extern void speaker_host_outb(uint16_t port, uint8_t val);
+#endif
+
 static uint8_t inb(uint16_t port) {
+#if defined(ZEPHYROS_HOST_TEST)
+    return speaker_host_inb(port);
+#else
     uint8_t result;
     asm volatile("inb %1, %0" : "=a"(result) : "Nd"(port));
     return result;
+#endif
 }
 
 static void outb(uint16_t port, uint8_t val) {
+#if defined(ZEPHYROS_HOST_TEST)
+    speaker_host_outb(port, val);
+#else
     asm volatile("outb %0, %1" : : "a"(val), "Nd"(port));
+#endif
 }
 
 void speaker_init(void) {
@@ -38,7 +51,9 @@ void speaker_beep(uint32_t frequency, uint32_t duration_ms) {
     uint32_t start = timer_get_ticks();
     uint32_t end = start + (duration_ms * 50) / 1000;
     while (timer_get_ticks() < end) {
+#if !defined(ZEPHYROS_HOST_TEST)
         asm volatile("hlt");
+#endif
     }
 
     speaker_off();
@@ -55,7 +70,9 @@ void speaker_play_melody(const uint32_t* frequencies, const uint32_t* durations,
             uint32_t start = timer_get_ticks();
             uint32_t end = start + (durations[i] * 50) / 1000;
             while (timer_get_ticks() < end) {
+#if !defined(ZEPHYROS_HOST_TEST)
                 asm volatile("hlt");
+#endif
             }
         } else {
             speaker_beep(frequencies[i], durations[i]);
