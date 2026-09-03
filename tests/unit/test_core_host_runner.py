@@ -129,6 +129,16 @@ class CoreHostRunnerTests(unittest.TestCase):
         self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
                       "test_procfs_host.c", sources)
 
+    def test_wav_case_has_audio_fixture_sources(self):
+        result_dir, binary, sources, suite = core_host_runner.case_configuration(
+            "host:storage:wav")
+        self.assertEqual(suite, "wav-host")
+        self.assertEqual(result_dir, core_host_runner.WAV_RESULT_DIR)
+        self.assertEqual(binary, core_host_runner.WAV_BINARY)
+        self.assertIn(core_host_runner.ROOT / "src" / "fs" / "wav.c", sources)
+        self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
+                      "test_wav_host.c", sources)
+
 
 if __name__ == "__main__":
     unittest.main()

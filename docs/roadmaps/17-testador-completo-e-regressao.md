@@ -1294,6 +1294,18 @@ pendente.
   freestanding normal preserva o caminho Assembly original. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Storage/WAV concluido em 2026-09-02: foi criado o caso host-only
+  `host:storage:wav` com o parser e reprodutor reais, allocator estatico,
+  playback AC97 simulado e instrumentacao dinamica. A fixture exercitou
+  headers RIFF/WAVE, chunks `fmt` e `data`, metadados, duracao, playback,
+  ownership, double free, entradas invalidas, truncadas, taxa de amostragem
+  zero e limpeza. Foi corrigido o caminho de rejeicao de taxa de amostragem
+  zero para liberar o buffer ja adquirido. `make test-wav-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` terminou `PASS`, sem enderecos
+  desconhecidos ou ambiguos. O catalogo registra 7.196 superficies, 4.235
+  `COVERED`, 2.961 `PENDING` e 94 casos. O fechamento integral, o gate estrito
+  e a validacao TST7 completa continuam pendentes.
+
 - Incremento Core/wifi_manager concluido em 2026-09-02: foi criado o caso
   host-only `host:core:wifi-manager` com fixtures estaticos de PCI, USB e
   RTL8811CU. A fixture exercitou formatacao e busca case-insensitive de IDs,

@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7196**
-- Casos de teste: **93**
+- Casos de teste: **94**
 - Superfícies aposentadas: **22**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4222 |
+| `COVERED` | 4235 |
 | `MANUAL` | 0 |
-| `PENDING` | 2974 |
+| `PENDING` | 2961 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 93 |
+| `AUTOMATED` | 94 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -604,8 +604,8 @@
 | `api:src/include/core/spinlock.h:spinlock_acquire` | `src/include/core/spinlock.h` | `spinlock_acquire` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_init` | `src/include/core/spinlock.h` | `spinlock_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_release` | `src/include/core/spinlock.h` | `spinlock_release` | `core` | `PENDING` | 0 |
-| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 40 |
-| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 41 |
+| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 41 |
+| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 42 |
 | `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 34 |
 | `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 36 |
 | `api:src/include/core/syscall.h:syscall_enable_user_mode` | `src/include/core/syscall.h` | `syscall_enable_user_mode` | `core` | `COVERED` | 1 |
@@ -1303,11 +1303,11 @@
 | `api:src/include/fs/vfs_internal.h:vfs_stream_poll` | `src/include/fs/vfs_internal.h` | `vfs_stream_poll` | `fs` | `COVERED` | 8 |
 | `api:src/include/fs/vfs_internal.h:vfs_stream_read` | `src/include/fs/vfs_internal.h` | `vfs_stream_read` | `fs` | `COVERED` | 8 |
 | `api:src/include/fs/vfs_internal.h:vfs_stream_write` | `src/include/fs/vfs_internal.h` | `vfs_stream_write` | `fs` | `COVERED` | 8 |
-| `api:src/include/fs/wav.h:wav_free` | `src/include/fs/wav.h` | `wav_free` | `fs` | `PENDING` | 0 |
-| `api:src/include/fs/wav.h:wav_get_duration_ms` | `src/include/fs/wav.h` | `wav_get_duration_ms` | `fs` | `PENDING` | 0 |
-| `api:src/include/fs/wav.h:wav_init` | `src/include/fs/wav.h` | `wav_init` | `fs` | `PENDING` | 0 |
-| `api:src/include/fs/wav.h:wav_load` | `src/include/fs/wav.h` | `wav_load` | `fs` | `PENDING` | 0 |
-| `api:src/include/fs/wav.h:wav_play` | `src/include/fs/wav.h` | `wav_play` | `fs` | `PENDING` | 0 |
+| `api:src/include/fs/wav.h:wav_free` | `src/include/fs/wav.h` | `wav_free` | `fs` | `COVERED` | 1 |
+| `api:src/include/fs/wav.h:wav_get_duration_ms` | `src/include/fs/wav.h` | `wav_get_duration_ms` | `fs` | `COVERED` | 1 |
+| `api:src/include/fs/wav.h:wav_init` | `src/include/fs/wav.h` | `wav_init` | `fs` | `COVERED` | 1 |
+| `api:src/include/fs/wav.h:wav_load` | `src/include/fs/wav.h` | `wav_load` | `fs` | `COVERED` | 1 |
+| `api:src/include/fs/wav.h:wav_play` | `src/include/fs/wav.h` | `wav_play` | `fs` | `COVERED` | 1 |
 | `api:src/include/memory/compress.h:compress_data` | `src/include/memory/compress.h` | `compress_data` | `memory` | `COVERED` | 1 |
 | `api:src/include/memory/compress.h:compress_disable` | `src/include/memory/compress.h` | `compress_disable` | `memory` | `COVERED` | 1 |
 | `api:src/include/memory/compress.h:compress_enable` | `src/include/memory/compress.h` | `compress_enable` | `memory` | `COVERED` | 1 |
@@ -3076,8 +3076,8 @@
 | `c:src/core/socket.c:socket_wait_local` | `src/core/socket.c` | `socket_wait_local` | `core` | `PENDING` | 0 |
 | `c:src/core/socket.c:socket_wait_owner` | `src/core/socket.c` | `socket_wait_owner` | `core` | `COVERED` | 2 |
 | `c:src/core/socket.c:socket_wake` | `src/core/socket.c` | `socket_wake` | `core` | `COVERED` | 2 |
-| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 40 |
-| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 41 |
+| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 41 |
+| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 42 |
 | `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 34 |
 | `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 36 |
 | `c:src/core/syscall.c:syscall_copy_user_string` | `src/core/syscall.c` | `syscall_copy_user_string` | `core` | `PENDING` | 0 |
@@ -5469,14 +5469,14 @@
 | `c:src/fs/vfs_path.c:vfs_resolve_open_path` | `src/fs/vfs_path.c` | `vfs_resolve_open_path` | `fs` | `COVERED` | 5 |
 | `c:src/fs/vfs_path.c:vfs_sysfs_mount_fill` | `src/fs/vfs_path.c` | `vfs_sysfs_mount_fill` | `fs` | `COVERED` | 1 |
 | `c:src/fs/vfs_path.c:vfs_unmount_volume` | `src/fs/vfs_path.c` | `vfs_unmount_volume` | `fs` | `COVERED` | 2 |
-| `c:src/fs/wav.c:memcmp` | `src/fs/wav.c` | `memcmp` | `fs` | `PENDING` | 0 |
-| `c:src/fs/wav.c:read_u16` | `src/fs/wav.c` | `read_u16` | `fs` | `PENDING` | 0 |
-| `c:src/fs/wav.c:read_u32` | `src/fs/wav.c` | `read_u32` | `fs` | `PENDING` | 0 |
-| `c:src/fs/wav.c:wav_free` | `src/fs/wav.c` | `wav_free` | `fs` | `PENDING` | 0 |
-| `c:src/fs/wav.c:wav_get_duration_ms` | `src/fs/wav.c` | `wav_get_duration_ms` | `fs` | `PENDING` | 0 |
-| `c:src/fs/wav.c:wav_init` | `src/fs/wav.c` | `wav_init` | `fs` | `PENDING` | 0 |
-| `c:src/fs/wav.c:wav_load` | `src/fs/wav.c` | `wav_load` | `fs` | `PENDING` | 0 |
-| `c:src/fs/wav.c:wav_play` | `src/fs/wav.c` | `wav_play` | `fs` | `PENDING` | 0 |
+| `c:src/fs/wav.c:memcmp` | `src/fs/wav.c` | `memcmp` | `fs` | `COVERED` | 1 |
+| `c:src/fs/wav.c:read_u16` | `src/fs/wav.c` | `read_u16` | `fs` | `COVERED` | 1 |
+| `c:src/fs/wav.c:read_u32` | `src/fs/wav.c` | `read_u32` | `fs` | `COVERED` | 1 |
+| `c:src/fs/wav.c:wav_free` | `src/fs/wav.c` | `wav_free` | `fs` | `COVERED` | 1 |
+| `c:src/fs/wav.c:wav_get_duration_ms` | `src/fs/wav.c` | `wav_get_duration_ms` | `fs` | `COVERED` | 1 |
+| `c:src/fs/wav.c:wav_init` | `src/fs/wav.c` | `wav_init` | `fs` | `COVERED` | 1 |
+| `c:src/fs/wav.c:wav_load` | `src/fs/wav.c` | `wav_load` | `fs` | `COVERED` | 1 |
+| `c:src/fs/wav.c:wav_play` | `src/fs/wav.c` | `wav_play` | `fs` | `COVERED` | 1 |
 | `c:src/gui/display.c:display_apply_scale` | `src/gui/display.c` | `display_apply_scale` | `gui` | `PENDING` | 0 |
 | `c:src/gui/display.c:display_get_metrics` | `src/gui/display.c` | `display_get_metrics` | `gui` | `COVERED` | 2 |
 | `c:src/gui/display.c:display_init` | `src/gui/display.c` | `display_init` | `gui` | `PENDING` | 0 |
@@ -7337,6 +7337,7 @@
 | `host:storage:storage` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar inventario, MBR/BPB, montagem FAT12, cursores, leitura, espaco livre e rejeicao de mutacoes | o backend identifica e monta a particao, le fixtures sem hardware real e preserva o armazenamento somente-leitura | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente imagem FAT12 estatica e provider de bloco falso no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:storage:vfs` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar descritores, arquivos regulares, dispositivos, pipes, sockets, poll/select e quiescencia com dependencias estaticas | operacoes VFS retornam codigos canonicos, liberam descritores e preservam invariantes sem hardware ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas de descritores, caches estaticos e processo fixture do host | todos os descritores sao fechados, processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:storage:vfs-path` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar normalizacao, aliases, mounts, cwd, listagens e referencias VFS com volumes estaticos | caminhos canonicos, mounts virtuais, referencias, limites e estados de energia preservam o contrato sem disco real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas de mounts e fixtures estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:storage:wav` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar parser WAV real com dados RIFF estaticos e AC97 simulado | headers, chunks, metadados, duracao, playback e ownership preservam o contrato em entradas validas, truncadas e invalidas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers WAV estaticos, allocator de teste e contador de playback do processo host | dados liberados, playback sem hardware e manifesto, logs e cobertura preservados |
 | `host:tst2:protocol-core` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo disponivel | compilar e executar o fake transport do nucleo do protocolo | handshake, sequencia, CRC, entradas invalidas e eventos terminam sem bloqueio | compilador ausente, warning, falha de assercao ou timeout | somente buffers estaticos e transporte falso do teste | processo host encerrado e artefatos preservados pelo runner |
 | `host:tst3:string-compress` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo disponivel | compilar e executar buffers estaticos de strings e compressao | casos validos, vazios, limites, truncamento e overflow retornam o contrato esperado | compilador ausente, warning, falha de assercao ou timeout | somente buffers estaticos e stub de video_print | processo host encerrado e artefatos preservados pelo runner |
 | `qemu:tst2:boot-ready` | `qemu` | `smoke` | `qemu:tst2:boot-ready` | `AUTOMATED` | 30 | 5 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e o executavel qemu-system-i386 esta disponivel | iniciar o guest em snapshot, enviar HELLO e executar o caso de boot apos READY | o guest publica READY, HEARTBEAT e PASS para o caso solicitado | PANIC, TIMEOUT, ausencia de heartbeat, erro de protocolo ou encerramento inesperado do QEMU | cria um processo QEMU e artefatos temporarios da execucao | encerrar o QEMU via QMP e preservar o relatorio, serial e logs da execucao |
@@ -7528,11 +7529,6 @@
 - `api:src/include/drivers/tss.h:tss_init`
 - `api:src/include/drivers/tss.h:tss_is_ready`
 - `api:src/include/drivers/tss.h:tss_set_kernel_stack`
-- `api:src/include/fs/wav.h:wav_free`
-- `api:src/include/fs/wav.h:wav_get_duration_ms`
-- `api:src/include/fs/wav.h:wav_init`
-- `api:src/include/fs/wav.h:wav_load`
-- `api:src/include/fs/wav.h:wav_play`
 - `api:src/include/process/process.h:process_context_switch`
 - `api:src/include/process/process.h:process_user_enter`
 - `api:src/include/process/process.h:process_user_termination_enter`
@@ -9047,14 +9043,6 @@
 - `c:src/fs/sysfs.c:sysfs_render_pci`
 - `c:src/fs/sysfs.c:sysfs_sync`
 - `c:src/fs/sysfs.c:sysfs_write`
-- `c:src/fs/wav.c:memcmp`
-- `c:src/fs/wav.c:read_u16`
-- `c:src/fs/wav.c:read_u32`
-- `c:src/fs/wav.c:wav_free`
-- `c:src/fs/wav.c:wav_get_duration_ms`
-- `c:src/fs/wav.c:wav_init`
-- `c:src/fs/wav.c:wav_load`
-- `c:src/fs/wav.c:wav_play`
 - `c:src/gui/display.c:display_apply_scale`
 - `c:src/gui/display.c:display_init`
 - `c:src/gui/display.c:display_mode_supports`

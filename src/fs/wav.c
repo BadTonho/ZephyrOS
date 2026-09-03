@@ -67,7 +67,10 @@ int wav_load(const uint8_t* raw_data, uint32_t size, wav_file_t* out) {
     }
 
     if (!out->data) return -1;
-    if (out->sample_rate == 0) return -1;
+    if (out->sample_rate == 0) {
+        wav_free(out);
+        return -1;
+    }
 
     out->initialized = 1;
     return 0;
