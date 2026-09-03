@@ -4789,3 +4789,18 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   O catalogo registra 7.200 superficies, 4.463 `COVERED`, 2.737 `PENDING` e
   116 casos. O fechamento integral, o gate estrito e a validacao TST7 completa
   continuam pendentes.
+
+- Incremento Drivers/UHCI concluido em: 2026-09-03 (America/Sao_Paulo).
+  Foi criado o caso host-only `host:drivers:uhci` e o alvo
+  `make test-uhci-host`. A fixture simulou PCI, DMA, portas, IRQ, temporizador
+  e dispositivos USB para exercitar inicializacao, reset, enumeracao,
+  descritores, transfers de controle e bulk, interrupt, timeout, recuperacao,
+  entradas invalidas e limpeza. O relatorio instrumentado
+  `build/test-results/uhci-host/coverage.json` terminou `PASS`, observou 105
+  enderecos sem desconhecidos ou ambiguos e resolveu as 71 superficies de
+  `src/drivers/uhci.c`, sem I/O privilegiado ou hardware real. Foram executados
+  `make q3check`, `make clean`, `make`,
+  `make test-uhci-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` e
+  `make catalog-test`; todos passaram. O catalogo registra 7.202 superficies,
+  4.529 `COVERED`, 2.673 `PENDING` e 117 casos. O fechamento integral, o gate
+  estrito e a validacao TST7 completa continuam pendentes.

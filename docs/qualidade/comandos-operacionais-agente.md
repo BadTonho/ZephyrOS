@@ -1236,6 +1236,24 @@ screenshots disponiveis e `result.json`, incluindo perfil, capacidades,
 seed, fase, primeiro erro e iteracao. Hardware fisico nao e validado por
 esses alvos e permanece `BLOCKED` ate existir equipamento e evidencia real.
 
+## Driver UHCI: teste host-only
+
+O caso `host:drivers:uhci` usa PCI, DMA, portas, IRQ, temporizador e
+dispositivos USB falsos no processo host. Ele cobre inicializacao, reset,
+enumeracao, descritores, transfers de controle e bulk, interrupt, timeout,
+recuperacao, entradas invalidas e limpeza. Nenhuma instrucao de I/O
+privilegiado ou hardware real e executada pelo teste.
+
+```text
+make test-uhci-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O alvo exige compilador C nativo e `nm`, compila com instrumentacao de
+funcoes e warnings tratados como erro. O relatorio fica em
+`build/test-results/uhci-host/coverage.json`; uma execucao `PASS` deve ter
+status `PASS`, nenhum endereco desconhecido ou ambiguo e deixar o controlador
+falso, paginas DMA e filas restaurados.
+
 ## TST7: regressao continua
 
 O runner TST7 e independente do provedor de CI. O modo `quick` executa as

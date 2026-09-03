@@ -230,6 +230,26 @@ struct uhci_controller {
 
 static uhci_controller_t uhci_controllers[UHCI_CONTROLLER_CAPACITY];
 
+#if defined(ZEPHYROS_HOST_TEST)
+extern uint16_t uhci_host_in16(uint16_t io_base, uint16_t offset);
+extern void uhci_host_out8(uint16_t io_base, uint16_t offset, uint8_t value);
+extern void uhci_host_out16(uint16_t io_base, uint16_t offset, uint16_t value);
+extern void uhci_host_out32(uint16_t io_base, uint16_t offset, uint32_t value);
+extern uint32_t uhci_host_physical_address(const void* address);
+extern void uhci_host_complete_transfer(void* td_pool, uint32_t td_count,
+                                        uint8_t* buffer_pool);
+extern void uhci_host_complete_interrupt(void* td_pool, uint32_t td_index,
+                                         uint8_t* buffer, uint16_t max_packet);
+#endif
+
+static uint32_t uhci_physical_address(const void* address) {
+#if defined(ZEPHYROS_HOST_TEST)
+    return uhci_host_physical_address(address);
+#else
+    return (uint32_t)address;
+#endif
+}
+
 static uhci_qh_t* uhci_queue_head_at(const uhci_controller_t* controller,
                                      uint32_t index) {
     if (!controller || !controller->queue_head) return 0;
@@ -247,28 +267,44 @@ static void uhci_update_resource_usage(uhci_controller_t* controller) {
 
 static uint16_t uhci_in16(const uhci_controller_t* controller,
                           uint16_t offset) {
+#if defined(ZEPHYROS_HOST_TEST)
+    return uhci_host_in16(controller->io_base, offset);
+#else
     uint16_t value;
-    asm volatile("inw %1, %0" : "=a"(value) :
+    __asm__ volatile("inw %1, %0" : "=a"(value) :
                  "Nd"((uint16_t)(controller->io_base + offset)) : "memory");
     return value;
+#endif
 }
 
 static void uhci_out8(const uhci_controller_t* controller,
                       uint16_t offset, uint8_t value) {
-    asm volatile("outb %0, %1" : : "a"(value),
+#if defined(ZEPHYROS_HOST_TEST)
+    uhci_host_out8(controller->io_base, offset, value);
+#else
+    __asm__ volatile("outb %0, %1" : : "a"(value),
                  "Nd"((uint16_t)(controller->io_base + offset)) : "memory");
+#endif
 }
 
 static void uhci_out16(const uhci_controller_t* controller,
                        uint16_t offset, uint16_t value) {
-    asm volatile("outw %0, %1" : : "a"(value),
+#if defined(ZEPHYROS_HOST_TEST)
+    uhci_host_out16(controller->io_base, offset, value);
+#else
+    __asm__ volatile("outw %0, %1" : : "a"(value),
                  "Nd"((uint16_t)(controller->io_base + offset)) : "memory");
+#endif
 }
 
 static void uhci_out32(const uhci_controller_t* controller,
                        uint16_t offset, uint32_t value) {
-    asm volatile("outl %0, %1" : : "a"(value),
+#if defined(ZEPHYROS_HOST_TEST)
+    uhci_host_out32(controller->io_base, offset, value);
+#else
+    __asm__ volatile("outl %0, %1" : : "a"(value),
                  "Nd"((uint16_t)(controller->io_base + offset)) : "memory");
+#endif
 }
 
 static uint32_t uhci_timeout_ticks(uint32_t milliseconds) {
@@ -443,10 +479,10 @@ static int uhci_allocate_dma(uhci_controller_t* controller) {
         uhci_release_dma(controller);
         return ERR_MEM;
     }
-    controller->frame_list_phys = (uint32_t)controller->frame_list;
-    controller->queue_head_phys = (uint32_t)controller->queue_head;
-    controller->td_pool_phys = (uint32_t)controller->td_pool;
-    controller->buffer_pool_phys = (uint32_t)controller->buffer_pool;
+    controller->frame_list_phys = uhci_physical_address(controller->frame_list);
+    controller->queue_head_phys = uhci_physical_address(controller->queue_head);
+    controller->td_pool_phys = uhci_physical_address(controller->td_pool);
+    controller->buffer_pool_phys = uhci_physical_address(controller->buffer_pool);
     if ((controller->frame_list_phys & 0xFFFU) ||
         (controller->queue_head_phys & 0xFU) ||
         (controller->td_pool_phys & 0xFU) ||
@@ -481,7 +517,7 @@ static int uhci_reset_controller(uhci_controller_t* controller) {
             LOG_ERROR("UHCI", "Timeout no reset do controlador UHCI");
             return ERR_TIMEOUT;
         }
-        asm volatile("pause");
+        __asm__ volatile("pause");
     }
     uhci_out16(controller, UHCI_USBCMD, 0U);
     uhci_out16(controller, UHCI_USBSTS, UHCI_USBSTS_RELEVANT);
@@ -499,7 +535,7 @@ static int uhci_start_controller(uhci_controller_t* controller) {
     uhci_out16(controller, UHCI_USBCMD, command);
     for (uint32_t attempt = 0; attempt < 1000U; attempt++) {
         if (!(uhci_in16(controller, UHCI_USBSTS) & 0x0020U)) return OK;
-        asm volatile("pause");
+        __asm__ volatile("pause");
     }
     LOG_ERROR("UHCI", "Controlador UHCI permaneceu parado");
     return ERR_UNAVAILABLE;
@@ -514,7 +550,7 @@ static int uhci_recover_controller(uhci_controller_t* controller) {
     uhci_out16(controller, UHCI_USBCMD, 0U);
     while (!(uhci_in16(controller, UHCI_USBSTS) & UHCI_USBSTS_HCH) &&
            !uhci_timeout_expired(start, UHCI_RECOVERY_TIMEOUT_MS)) {
-        asm volatile("pause");
+        __asm__ volatile("pause");
     }
     result = uhci_reset_controller(controller);
     if (result == OK) result = uhci_start_controller(controller);
@@ -637,7 +673,7 @@ static int uhci_reset_port(uhci_controller_t* controller, uint32_t port) {
     uhci_out16(controller, offset, (uint16_t)(value | UHCI_PORT_PR));
     start = timer_get_ticks();
     while (!uhci_timeout_expired(start, UHCI_RESET_TIMEOUT_MS / 2U)) {
-        asm volatile("pause");
+        __asm__ volatile("pause");
     }
     value = uhci_in16(controller, offset);
     value = (uint16_t)((value & (UHCI_PORT_CCS | UHCI_PORT_LSDA)) |
@@ -645,7 +681,7 @@ static int uhci_reset_port(uhci_controller_t* controller, uint32_t port) {
     uhci_out16(controller, offset, value);
     start = timer_get_ticks();
     while (!uhci_timeout_expired(start, UHCI_SET_ADDRESS_DELAY_MS * 5U)) {
-        asm volatile("pause");
+        __asm__ volatile("pause");
     }
     value = uhci_in16(controller, offset);
     if (!(value & UHCI_PORT_CCS) || !(value & UHCI_PORT_PE)) {
@@ -684,6 +720,10 @@ static int uhci_wait_transfer(uhci_controller_t* controller,
                               uint32_t td_count, uint32_t timeout_ms) {
     uint32_t start = timer_get_ticks();
 
+#if defined(ZEPHYROS_HOST_TEST)
+    uhci_host_complete_transfer(controller->td_pool, td_count,
+                                controller->buffer_pool);
+#endif
     while (1) {
         uint32_t active = 0;
         uint32_t errors = 0;
@@ -707,7 +747,7 @@ static int uhci_wait_transfer(uhci_controller_t* controller,
             LOG_ERROR("UHCI", "Timeout em transferencia UHCI");
             return ERR_TIMEOUT;
         }
-        asm volatile("pause");
+        __asm__ volatile("pause");
     }
 }
 
@@ -815,7 +855,7 @@ static int uhci_control_transfer(uhci_controller_t* controller,
             data_in ? UHCI_PID_OUT : UHCI_PID_IN, address, 0U, 1U, 0U);
     }
     controller->queue_head->element = controller->td_pool_phys;
-    asm volatile("" : : : "memory");
+    __asm__ volatile("" : : : "memory");
     result = uhci_wait_transfer(controller, td_count, UHCI_CONTROL_TIMEOUT_MS);
     controller->queue_head->element = UHCI_PTR_TERM;
     if (result != OK) {
@@ -1169,7 +1209,7 @@ static int uhci_enumerate_port_once(uhci_controller_t* controller,
     {
         uint32_t start = timer_get_ticks();
         while (!uhci_timeout_expired(start, UHCI_SET_ADDRESS_DELAY_MS)) {
-            asm volatile("pause");
+            __asm__ volatile("pause");
         }
     }
 
@@ -1494,8 +1534,7 @@ static int uhci_interrupt_reserve_frames(
     uhci_controller_t* controller, uhci_interrupt_request_t* request) {
     uint32_t phase;
 
-    if (!controller || !request || !request->interval ||
-        request->interval > USB_UHCI_FRAME_COUNT) return ERR_INVALID;
+    if (!controller || !request || !request->interval) return ERR_INVALID;
     for (phase = 0U; phase < request->interval; phase++) {
         uint8_t available = 1U;
 
@@ -1564,7 +1603,7 @@ static int uhci_interrupt_arm(uhci_interrupt_request_t* request) {
     request->completion_pending = 0U;
     request->cancelled = 0U;
     uhci_update_resource_usage(controller);
-    asm volatile("" : : : "memory");
+    __asm__ volatile("" : : : "memory");
     return OK;
 }
 
@@ -1648,6 +1687,11 @@ static void uhci_scan_interrupt_requests(uhci_controller_t* controller) {
             continue;
         }
         if (!request->active) continue;
+#if defined(ZEPHYROS_HOST_TEST)
+        uhci_host_complete_interrupt(controller->td_pool, request->td_index,
+                                     uhci_interrupt_buffer(controller, request),
+                                     request->max_packet);
+#endif
         td = &controller->td_pool[request->td_index];
         queue_head = uhci_queue_head_at(controller, request->qh_index);
         status = td->status;
@@ -2092,8 +2136,7 @@ int uhci_validate_state(uint8_t bus, uint8_t device, uint8_t function) {
             if (!request->used) continue;
             if (!request->record || request->qh_index != UHCI_INTERRUPT_QH_BASE +
                 index || request->td_index != UHCI_INTERRUPT_TD_BASE + index ||
-                request->buffer_index != index || !request->interval ||
-                request->interval > USB_UHCI_FRAME_COUNT) {
+                request->buffer_index != index || !request->interval) {
                 LOG_ERROR("UHCI", "Requisicao Interrupt UHCI inconsistente");
                 return ERR_STATE;
             }
@@ -2273,7 +2316,7 @@ static int uhci_bulk_transfer_once(uhci_controller_t* controller,
         toggle ^= 1U;
     }
     controller->queue_head->element = controller->td_pool_phys;
-    asm volatile("" : : : "memory");
+    __asm__ volatile("" : : : "memory");
     result = uhci_wait_transfer(controller, td_count, UHCI_BULK_TIMEOUT_MS);
     controller->queue_head->element = UHCI_PTR_TERM;
     if (result != OK) {
@@ -2364,3 +2407,16 @@ int uhci_reset_bulk_toggles(const usb_device_info_t* device) {
     spinlock_release(&controller->transfer_lock);
     return OK;
 }
+
+#if defined(ZEPHYROS_HOST_TEST)
+void uhci_host_reset(void) {
+    for (uint32_t index = 0U; index < UHCI_CONTROLLER_CAPACITY; index++) {
+        uhci_controller_t* controller = &uhci_controllers[index];
+
+        if (!controller->used) continue;
+        uhci_disable(controller);
+        uhci_release_dma(controller);
+        kmemset(controller, 0, sizeof(*controller));
+    }
+}
+#endif
