@@ -1574,6 +1574,22 @@ pendente.
   121 casos. O fechamento integral, o gate estrito e a validacao TST7 completa
   continuam pendentes.
 
+- Incremento Drivers/AC97 concluido em 2026-09-03. Foi criado o caso
+  host-only `host:drivers:ac97` e o alvo `make test-ac97-host`. A fixture
+  simulou PCI, portas I/O, codec, reset, energia, playback, memoria, IRQ,
+  limites de amostras, parada e falhas de inicializacao. O relatorio
+  instrumentado `build/test-results/ac97-host/coverage.json` terminou `PASS`,
+  resolveu as 22 funcoes de `src/drivers/ac97.c` e as APIs publicas
+  correspondentes, sem enderecos desconhecidos ou ambiguos. Tambem foi
+  corrigido o calculo do buffer de playback para alocar espaco por amostra e
+  evitar escrita alem do buffer. Foram executados `make test-ac97-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`, `python tools/test_catalog.py
+  sync`, `python tools/test_catalog.py render`, `python tools/test_catalog.py
+  validate`, `make q3check`, `make clean`, `make` e `git diff --check`; todos
+  passaram nesta etapa. O catalogo registra 7.209 superficies,
+  4.717 `COVERED`, 2.492 `PENDING` e 122 casos. O fechamento integral, o gate
+  estrito e a validacao TST7 completa continuam pendentes.
+
 - Incremento Drivers/video concluido em 2026-09-03: foi criado o caso host-only
   `host:drivers:video` e o alvo `make test-video-host`. A fixture usa
   framebuffer, fonte, VESA, mouse e logs falsos para exercitar inicializacao,

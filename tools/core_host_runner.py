@@ -636,6 +636,12 @@ E1000_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_e1000_host.c",
     ROOT / "src" / "drivers" / "e1000.c",
 )
+AC97_RESULT_DIR = ROOT / "build" / "test-results" / "ac97-host"
+AC97_BINARY = ROOT / "build" / "tests" / "test_ac97_host.exe"
+AC97_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_ac97_host.c",
+    ROOT / "src" / "drivers" / "ac97.c",
+)
 SOURCE_FILES = CORE_SOURCE_FILES
 
 
@@ -827,6 +833,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return MOUSE_RESULT_DIR, MOUSE_BINARY, MOUSE_SOURCE_FILES, "mouse-host"
     if case_id == "host:drivers:e1000":
         return E1000_RESULT_DIR, E1000_BINARY, E1000_SOURCE_FILES, "e1000-host"
+    if case_id == "host:drivers:ac97":
+        return AC97_RESULT_DIR, AC97_BINARY, AC97_SOURCE_FILES, "ac97-host"
     raise ValueError(f"caso_host_invalido:{case_id}")
 
 
@@ -1024,7 +1032,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:drivers:video", "host:drivers:acpi",
                                  "host:drivers:uhci", "host:drivers:ehci",
                                  "host:drivers:rtl8139", "host:drivers:mouse",
-                                 "host:drivers:e1000"))
+                                 "host:drivers:e1000", "host:drivers:ac97"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
     return parser.parse_args()

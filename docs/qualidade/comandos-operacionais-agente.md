@@ -1327,6 +1327,24 @@ e warnings tratados como erro. O relatorio fica em
 status `PASS`, nenhum endereco desconhecido ou ambiguo e deixar o dispositivo,
 descritores, buffers DMA, fila IRQ e MMIO falsos restritos ao processo.
 
+## Driver AC97: teste host-only
+
+O caso `host:drivers:ac97` usa PCI, portas I/O, codec, playback, IRQ e memoria
+falsos no processo host. Ele cobre descoberta, reset, energia, sample rate,
+volume, copia de amostras, limite de buffer, parada, limpeza e falhas de
+inicializacao. Nenhuma porta I/O ou dispositivo de audio real e acessado pelo
+teste.
+
+```text
+make test-ac97-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O alvo exige compilador C nativo e `nm`, compila com instrumentacao de funcoes
+e warnings tratados como erro. O relatorio fica em
+`build/test-results/ac97-host/coverage.json`; uma execucao `PASS` deve ter
+status `PASS`, nenhum endereco desconhecido ou ambiguo e deixar o dispositivo,
+buffer de playback, handler IRQ e portas falsas restritos ao processo.
+
 ## TST7: regressao continua
 
 O runner TST7 e independente do provedor de CI. O modo `quick` executa as

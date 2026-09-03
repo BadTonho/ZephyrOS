@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **7206**
-- Casos de teste: **121**
+- Superfícies ativas: **7209**
+- Casos de teste: **122**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
 |---|---:|
 | `api_function` | 1541 |
 | `asm_entry` | 101 |
-| `c_function` | 5444 |
+| `c_function` | 5447 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4687 |
+| `COVERED` | 4717 |
 | `MANUAL` | 0 |
-| `PENDING` | 2519 |
+| `PENDING` | 2492 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 121 |
+| `AUTOMATED` | 122 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -39,7 +39,7 @@
 | `boot` | 136 |
 | `core` | 2771 |
 | `desktop` | 40 |
-| `drivers` | 923 |
+| `drivers` | 926 |
 | `filemanager` | 92 |
 | `fs` | 957 |
 | `gui` | 30 |
@@ -882,12 +882,12 @@
 | `api:src/include/core/workqueue.h:workqueue_state_name` | `src/include/core/workqueue.h` | `workqueue_state_name` | `core` | `COVERED` | 5 |
 | `api:src/include/core/workqueue.h:workqueue_validate_state` | `src/include/core/workqueue.h` | `workqueue_validate_state` | `core` | `COVERED` | 5 |
 | `api:src/include/core/workqueue.h:workqueue_worker_main` | `src/include/core/workqueue.h` | `workqueue_worker_main` | `core` | `COVERED` | 5 |
-| `api:src/include/drivers/ac97.h:ac97_get_device` | `src/include/drivers/ac97.h` | `ac97_get_device` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/ac97.h:ac97_handler` | `src/include/drivers/ac97.h` | `ac97_handler` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/ac97.h:ac97_init` | `src/include/drivers/ac97.h` | `ac97_init` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/ac97.h:ac97_play` | `src/include/drivers/ac97.h` | `ac97_play` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/ac97.h:ac97_set_volume` | `src/include/drivers/ac97.h` | `ac97_set_volume` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/ac97.h:ac97_stop` | `src/include/drivers/ac97.h` | `ac97_stop` | `drivers` | `PENDING` | 0 |
+| `api:src/include/drivers/ac97.h:ac97_get_device` | `src/include/drivers/ac97.h` | `ac97_get_device` | `drivers` | `COVERED` | 1 |
+| `api:src/include/drivers/ac97.h:ac97_handler` | `src/include/drivers/ac97.h` | `ac97_handler` | `drivers` | `COVERED` | 1 |
+| `api:src/include/drivers/ac97.h:ac97_init` | `src/include/drivers/ac97.h` | `ac97_init` | `drivers` | `COVERED` | 1 |
+| `api:src/include/drivers/ac97.h:ac97_play` | `src/include/drivers/ac97.h` | `ac97_play` | `drivers` | `COVERED` | 1 |
+| `api:src/include/drivers/ac97.h:ac97_set_volume` | `src/include/drivers/ac97.h` | `ac97_set_volume` | `drivers` | `COVERED` | 1 |
+| `api:src/include/drivers/ac97.h:ac97_stop` | `src/include/drivers/ac97.h` | `ac97_stop` | `drivers` | `COVERED` | 1 |
 | `api:src/include/drivers/acpi.h:acpi_enter_s5` | `src/include/drivers/acpi.h` | `acpi_enter_s5` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/acpi.h:acpi_find_table` | `src/include/drivers/acpi.h` | `acpi_find_table` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/acpi.h:acpi_get_madt_entry_at` | `src/include/drivers/acpi.h` | `acpi_get_madt_entry_at` | `drivers` | `COVERED` | 2 |
@@ -3990,25 +3990,28 @@
 | `c:src/desktop/desktop.c:desktop_update_selection` | `src/desktop/desktop.c` | `desktop_update_selection` | `desktop` | `PENDING` | 0 |
 | `c:src/desktop/desktop.c:draw_single_icon_classic` | `src/desktop/desktop.c` | `draw_single_icon_classic` | `desktop` | `COVERED` | 2 |
 | `c:src/desktop/desktop.c:draw_single_icon_simple` | `src/desktop/desktop.c` | `draw_single_icon_simple` | `desktop` | `PENDING` | 0 |
-| `c:src/drivers/ac97.c:ac97_delay` | `src/drivers/ac97.c` | `ac97_delay` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ac97.c:ac97_get_device` | `src/drivers/ac97.c` | `ac97_get_device` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ac97.c:ac97_get_sample_rate` | `src/drivers/ac97.c` | `ac97_get_sample_rate` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ac97.c:ac97_handler` | `src/drivers/ac97.c` | `ac97_handler` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ac97.c:ac97_init` | `src/drivers/ac97.c` | `ac97_init` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ac97.c:ac97_play` | `src/drivers/ac97.c` | `ac97_play` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ac97.c:ac97_power_down` | `src/drivers/ac97.c` | `ac97_power_down` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ac97.c:ac97_read` | `src/drivers/ac97.c` | `ac97_read` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ac97.c:ac97_reset` | `src/drivers/ac97.c` | `ac97_reset` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ac97.c:ac97_set_sample_rate` | `src/drivers/ac97.c` | `ac97_set_sample_rate` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ac97.c:ac97_set_volume` | `src/drivers/ac97.c` | `ac97_set_volume` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ac97.c:ac97_stop` | `src/drivers/ac97.c` | `ac97_stop` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ac97.c:ac97_write` | `src/drivers/ac97.c` | `ac97_write` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ac97.c:inb` | `src/drivers/ac97.c` | `inb` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ac97.c:inl` | `src/drivers/ac97.c` | `inl` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ac97.c:inw` | `src/drivers/ac97.c` | `inw` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ac97.c:outb` | `src/drivers/ac97.c` | `outb` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ac97.c:outl` | `src/drivers/ac97.c` | `outl` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/ac97.c:outw` | `src/drivers/ac97.c` | `outw` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/ac97.c:ac97_delay` | `src/drivers/ac97.c` | `ac97_delay` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ac97.c:ac97_get_device` | `src/drivers/ac97.c` | `ac97_get_device` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ac97.c:ac97_get_sample_rate` | `src/drivers/ac97.c` | `ac97_get_sample_rate` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ac97.c:ac97_handler` | `src/drivers/ac97.c` | `ac97_handler` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ac97.c:ac97_host_exercise_io` | `src/drivers/ac97.c` | `ac97_host_exercise_io` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ac97.c:ac97_host_get_sample_rate` | `src/drivers/ac97.c` | `ac97_host_get_sample_rate` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ac97.c:ac97_host_reset_devices` | `src/drivers/ac97.c` | `ac97_host_reset_devices` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ac97.c:ac97_init` | `src/drivers/ac97.c` | `ac97_init` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ac97.c:ac97_play` | `src/drivers/ac97.c` | `ac97_play` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ac97.c:ac97_power_down` | `src/drivers/ac97.c` | `ac97_power_down` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ac97.c:ac97_read` | `src/drivers/ac97.c` | `ac97_read` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ac97.c:ac97_reset` | `src/drivers/ac97.c` | `ac97_reset` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ac97.c:ac97_set_sample_rate` | `src/drivers/ac97.c` | `ac97_set_sample_rate` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ac97.c:ac97_set_volume` | `src/drivers/ac97.c` | `ac97_set_volume` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ac97.c:ac97_stop` | `src/drivers/ac97.c` | `ac97_stop` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ac97.c:ac97_write` | `src/drivers/ac97.c` | `ac97_write` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ac97.c:inb` | `src/drivers/ac97.c` | `inb` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ac97.c:inl` | `src/drivers/ac97.c` | `inl` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ac97.c:inw` | `src/drivers/ac97.c` | `inw` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ac97.c:outb` | `src/drivers/ac97.c` | `outb` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ac97.c:outl` | `src/drivers/ac97.c` | `outl` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ac97.c:outw` | `src/drivers/ac97.c` | `outw` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/acpi.c:acpi_aml_integer` | `src/drivers/acpi.c` | `acpi_aml_integer` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/acpi.c:acpi_aml_package_length` | `src/drivers/acpi.c` | `acpi_aml_package_length` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/acpi.c:acpi_build_sleep_value` | `src/drivers/acpi.c` | `acpi_build_sleep_value` | `drivers` | `COVERED` | 1 |
@@ -4112,8 +4115,8 @@
 | `c:src/drivers/e1000.c:e1000_get_driver_status` | `src/drivers/e1000.c` | `e1000_get_driver_status` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/e1000.c:e1000_handler` | `src/drivers/e1000.c` | `e1000_handler` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/e1000.c:e1000_has_pending_rx` | `src/drivers/e1000.c` | `e1000_has_pending_rx` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/e1000.c:e1000_host_inject_rx` | `src/drivers/e1000.c` | `e1000_host_inject_rx` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_host_reset_devices` | `src/drivers/e1000.c` | `e1000_host_reset_devices` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/e1000.c:e1000_host_inject_rx` | `src/drivers/e1000.c` | `e1000_host_inject_rx` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_host_reset_devices` | `src/drivers/e1000.c` | `e1000_host_reset_devices` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/e1000.c:e1000_init` | `src/drivers/e1000.c` | `e1000_init` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/e1000.c:e1000_irq_restore` | `src/drivers/e1000.c` | `e1000_irq_restore` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/e1000.c:e1000_irq_save` | `src/drivers/e1000.c` | `e1000_irq_save` | `drivers` | `COVERED` | 1 |
@@ -7314,7 +7317,9 @@
 | `host:core:usb-transport` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar entradas nulas, controladores desconhecidos e encaminhamento de controle, Bulk, toggles e Interrupt para EHCI e UHCI falsos | erros canonicos rejeitam entradas invalidas, controlador desconhecido retorna ERR_UNAVAILABLE e cada operacao chega ao backend selecionado sem hardware | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente contadores e argumentos estaticos dos backends EHCI e UHCI falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:wifi-manager` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inventariar candidatos PCI e USB, consultar interfaces, executar scan e conexao aberta com backends falsos | identificadores, estados, contadores, limites, indisponibilidade e recuperacao preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente fixtures estaticos PCI, USB e RTL8811CU no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:workqueue` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fixture de workqueue com espera controlada | autoteste, callbacks, filas, prioridades, limites e limpeza validos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico da workqueue e callbacks falsos no processo host | trabalhos destruidos, filas vazias, fallback restaurado e artefatos preservados |
+| `host:drivers:ac97` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar descoberta PCI, reset, energia, codec, sample rate, volume, playback, parada, IRQ e falhas de inicializacao | o dispositivo falso publica o estado correto, playback copia amostras sem overflow, IRQ limpa eventos e fixtures invalidas retornam com limpeza | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente portas I/O, PCI, memoria, IRQ e buffer de audio falsos no processo host | dispositivo falso, buffer de playback, estado de portas, handler IRQ e estado global sao restaurados; manifesto, logs e cobertura preservados |
 | `host:drivers:acpi` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar descoberta RSDP, RSDT/XSDT, FADT, MADT, FACS, AML _S5_, consultas e falhas de integridade | tabelas validas publicam estado consistente, fixtures ausentes ou corrompidas retornam erros canonicos e energia terminal nunca acessa hardware real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente firmware, mapa E820, portas I/O e callback de halt falsos no processo host | estado ACPI reiniciado no fixture e manifesto, logs e cobertura preservados |
+| `host:drivers:e1000` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar PCI, mapeamento MMIO, reset, MAC, DMA, configuracao de descritores, TX, RX, IRQ deferred, quiescencia e falhas de inicializacao | frames validos sao transmitidos e recebidos, eventos IRQ sao processados e fixtures invalidas retornam erros canonicos com limpeza | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente MMIO, DMA, PCI, IRQ deferred e frames Ethernet falsos no processo host | dispositivo falso, descritores, buffers DMA, fila IRQ e estado MMIO sao restaurados; manifesto, logs e cobertura preservados |
 | `host:drivers:ehci` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar PCI, MMIO, alinhamento DMA, reset, enumeracao, descritores, controle, bulk, interrupt, timeout, recuperacao e limpeza | operacoes validas preservam invariantes do controlador e fixtures invalidas retornam erros canonicos sem I/O privilegiado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente PCI, MMIO, memoria DMA, relogio e dispositivos USB falsos no processo host | controlador falso resetado, paginas DMA devolvidas e manifesto, logs e cobertura preservados |
 | `host:drivers:font` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inicializar o driver de fonte e consultar as dimensoes publicadas | font_init e idempotente e as dimensoes publicadas permanecem 8x16 | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabela estatica de fontes e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:keyboard` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver teclado real com controlador PS/2 e dependencias registradas simulados | scancodes, inicializacao, filtros, reset, metricas e falhas preservam o contrato sem executar CLI, STI ou I/O privilegiado no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente filas, metricas e portas estaticas do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7412,7 +7417,6 @@
 | `qemu:tst6:stress:kernel` | `qemu` | `tst6` | `qemu:tst6:stress:kernel` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | paging, heap, SLAB, processos e threads estao READY | repetir ciclos deterministas de memoria e execucao sob teto obrigatorio | invariantes estaveis permanecem iguais e a primeira falha interrompe a suite | overflow, vazamento, deadlock, timeout, protocolo ou QEMU | alocacoes e objetos temporarios de cada ciclo em snapshot | devolver paginas, destruir objetos e registrar seed e iteracao |
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
-| `host:drivers:e1000` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar PCI, mapeamento MMIO, reset, MAC, DMA, configuracao de descritores, TX, RX, IRQ deferred, quiescencia e falhas de inicializacao | frames validos sao transmitidos e recebidos, eventos IRQ sao processados e fixtures invalidas retornam erros canonicos com limpeza | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente MMIO, DMA, PCI, IRQ deferred e frames Ethernet falsos no processo host | dispositivo falso, descritores, buffers DMA, fila IRQ e estado MMIO sao restaurados; manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -7528,12 +7532,6 @@
 - `api:src/include/core/update_system_slots.h:update_system_slots_reboot_preflight`
 - `api:src/include/core/update_system_slots.h:update_system_slots_stage_file`
 - `api:src/include/core/update_system_slots.h:update_system_slots_state_name`
-- `api:src/include/drivers/ac97.h:ac97_get_device`
-- `api:src/include/drivers/ac97.h:ac97_handler`
-- `api:src/include/drivers/ac97.h:ac97_init`
-- `api:src/include/drivers/ac97.h:ac97_play`
-- `api:src/include/drivers/ac97.h:ac97_set_volume`
-- `api:src/include/drivers/ac97.h:ac97_stop`
 - `api:src/include/drivers/ehci.h:ehci_bulk_transfer`
 - `api:src/include/drivers/ehci.h:ehci_control_request`
 - `api:src/include/drivers/ehci.h:ehci_get_device`
@@ -8509,25 +8507,6 @@
 - `c:src/desktop/desktop.c:desktop_update_drag_preview`
 - `c:src/desktop/desktop.c:desktop_update_selection`
 - `c:src/desktop/desktop.c:draw_single_icon_simple`
-- `c:src/drivers/ac97.c:ac97_delay`
-- `c:src/drivers/ac97.c:ac97_get_device`
-- `c:src/drivers/ac97.c:ac97_get_sample_rate`
-- `c:src/drivers/ac97.c:ac97_handler`
-- `c:src/drivers/ac97.c:ac97_init`
-- `c:src/drivers/ac97.c:ac97_play`
-- `c:src/drivers/ac97.c:ac97_power_down`
-- `c:src/drivers/ac97.c:ac97_read`
-- `c:src/drivers/ac97.c:ac97_reset`
-- `c:src/drivers/ac97.c:ac97_set_sample_rate`
-- `c:src/drivers/ac97.c:ac97_set_volume`
-- `c:src/drivers/ac97.c:ac97_stop`
-- `c:src/drivers/ac97.c:ac97_write`
-- `c:src/drivers/ac97.c:inb`
-- `c:src/drivers/ac97.c:inl`
-- `c:src/drivers/ac97.c:inw`
-- `c:src/drivers/ac97.c:outb`
-- `c:src/drivers/ac97.c:outl`
-- `c:src/drivers/ac97.c:outw`
 - `c:src/drivers/ata.c:ata_detect`
 - `c:src/drivers/ata.c:ata_first_present`
 - `c:src/drivers/ata.c:ata_flush_device`
@@ -8544,8 +8523,6 @@
 - `c:src/drivers/ata.c:ata_soft_reset`
 - `c:src/drivers/ata.c:ata_wait_identify`
 - `c:src/drivers/ata.c:ata_write_sectors`
-- `c:src/drivers/e1000.c:e1000_host_inject_rx`
-- `c:src/drivers/e1000.c:e1000_host_reset_devices`
 - `c:src/drivers/idt.c:idt_enable_user_syscall`
 - `c:src/drivers/idt.c:idt_get_irq_status`
 - `c:src/drivers/idt.c:idt_get_shared_irq_handler_count`

@@ -4490,6 +4490,60 @@
         "status": "AUTOMATED"
       },
       "evidence": "make test-e1000-host PASS com MMIO, reset, MAC, DMA, TX/RX, IRQ deferred, quiescencia, falhas de inicializacao e cobertura instrumentada completa"
+    },
+    {
+      "id": "ac97-host-dynamic",
+      "domain": "drivers-ac97",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:drivers:ac97"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/ac97-host/coverage.json",
+      "coverage_sources": [
+        "src/drivers/ac97.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:drivers:ac97",
+        "scenario": "Contrato host-only do driver AC97 com portas, codec, playback e IRQ simulados",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "ac97-pci-ports-irq-falso"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "validar descoberta PCI, reset, energia, codec, sample rate, volume, playback, parada, IRQ e falhas de inicializacao",
+        "expected": "o dispositivo falso publica o estado correto, playback copia amostras sem overflow, IRQ limpa eventos e fixtures invalidas retornam com limpeza",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente portas I/O, PCI, memoria, IRQ e buffer de audio falsos no processo host",
+        "cleanup": "dispositivo falso, buffer de playback, estado de portas, handler IRQ e estado global sao restaurados; manifesto, logs e cobertura preservados",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "drivers",
+          "ac97",
+          "audio",
+          "pci",
+          "io",
+          "irq",
+          "limits",
+          "recovery",
+          "coverage"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "make test-ac97-host PASS com PCI, portas, reset, energia, sample rate, volume, playback, parada, IRQ e cobertura instrumentada completa"
     }
   ]
 }
