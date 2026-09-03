@@ -1559,6 +1559,21 @@ pendente.
   O fechamento integral, o gate estrito e a validacao TST7 completa continuam
   pendentes.
 
+- Incremento Drivers/E1000 concluido em 2026-09-03: foi criado o caso
+  host-only `host:drivers:e1000` e o alvo `make test-e1000-host`. A fixture
+  simulou PCI, MMIO, reset, MAC, DMA, IRQ deferred, descritores, transmissao,
+  recepcao, fila RX, quiescencia e falhas de inicializacao. O relatorio
+  instrumentado `build/test-results/e1000-host/coverage.json` terminou `PASS`,
+  resolveu as 34 funcoes de `src/drivers/e1000.c` e as duas APIs publicas
+  correspondentes, sem enderecos desconhecidos ou ambiguos. Foram executados
+  `make test-e1000-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`,
+  `python tools/test_catalog.py sync`, `python tools/test_catalog.py render`,
+  `python tools/test_catalog.py validate` e `git diff --check`; os gates de
+  `q3check`, build limpo e build completo ja haviam passado nesta sequencia.
+  O catalogo registra 7.206 superficies, 4.689 `COVERED`, 2.517 `PENDING` e
+  121 casos. O fechamento integral, o gate estrito e a validacao TST7 completa
+  continuam pendentes.
+
 - Incremento Drivers/video concluido em 2026-09-03: foi criado o caso host-only
   `host:drivers:video` e o alvo `make test-video-host`. A fixture usa
   framebuffer, fonte, VESA, mouse e logs falsos para exercitar inicializacao,

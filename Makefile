@@ -1897,6 +1897,9 @@ test-rtl8139-host: tools\core_host_runner.py tools\coverage_collector.py tests\u
 test-mouse-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_mouse_host.c tests\catalog.json src\drivers\mouse.c src\include\drivers\mouse.h src\include\core\input.h src\include\core\irq_deferred.h src\include\core\log.h src\include\core\errors.h src\include\drivers\idt.h src\include\drivers\vesa.h
 	python tools/core_host_runner.py --case host:drivers:mouse --cc "$(HOST_CC)"
 
+test-e1000-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_e1000_host.c tests\catalog.json src\drivers\e1000.c src\include\drivers\e1000.h src\include\core\ethernet.h src\include\core\errors.h src\include\core\irq_deferred.h src\include\core\memory.h src\include\core\string.h src\include\core\timer.h src\include\drivers\idt.h src\include\drivers\pci.h src\include\memory\paging.h
+	python tools/core_host_runner.py --case host:drivers:e1000 --cc "$(HOST_CC)"
+
 test-tst2-host: tools\tst2_host_runner.py tests\unit\test_protocol_core.c tests\unit\test_qemu_test_runner.py src\core\test_protocol_core.c src\core\test_protocol_core.h
 	python tools\tst2_host_runner.py --cc "$(HOST_CC)"
 
@@ -1989,4 +1992,4 @@ clean:
 .PHONY: test-uhci-host
 .PHONY: test-ehci-host
 .PHONY: test-rtl8139-host
-.PHONY: test-mouse-host
+.PHONY: test-mouse-host test-e1000-host

@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **7204**
-- Casos de teste: **120**
+- Superfícies ativas: **7206**
+- Casos de teste: **121**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
 |---|---:|
 | `api_function` | 1541 |
 | `asm_entry` | 101 |
-| `c_function` | 5442 |
+| `c_function` | 5444 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4653 |
+| `COVERED` | 4687 |
 | `MANUAL` | 0 |
-| `PENDING` | 2551 |
+| `PENDING` | 2519 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 120 |
+| `AUTOMATED` | 121 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -39,7 +39,7 @@
 | `boot` | 136 |
 | `core` | 2771 |
 | `desktop` | 40 |
-| `drivers` | 921 |
+| `drivers` | 923 |
 | `filemanager` | 92 |
 | `fs` | 957 |
 | `gui` | 30 |
@@ -913,8 +913,8 @@
 | `api:src/include/drivers/ata.h:ata_read_sectors` | `src/include/drivers/ata.h` | `ata_read_sectors` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/ata.h:ata_write_device_sectors` | `src/include/drivers/ata.h` | `ata_write_device_sectors` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/ata.h:ata_write_sectors` | `src/include/drivers/ata.h` | `ata_write_sectors` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/e1000.h:e1000_handler` | `src/include/drivers/e1000.h` | `e1000_handler` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/e1000.h:e1000_init` | `src/include/drivers/e1000.h` | `e1000_init` | `drivers` | `PENDING` | 0 |
+| `api:src/include/drivers/e1000.h:e1000_handler` | `src/include/drivers/e1000.h` | `e1000_handler` | `drivers` | `COVERED` | 1 |
+| `api:src/include/drivers/e1000.h:e1000_init` | `src/include/drivers/e1000.h` | `e1000_init` | `drivers` | `COVERED` | 1 |
 | `api:src/include/drivers/ehci.h:ehci_bulk_transfer` | `src/include/drivers/ehci.h` | `ehci_bulk_transfer` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/ehci.h:ehci_control_request` | `src/include/drivers/ehci.h` | `ehci_control_request` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/ehci.h:ehci_get_device` | `src/include/drivers/ehci.h` | `ehci_get_device` | `drivers` | `PENDING` | 0 |
@@ -4100,38 +4100,40 @@
 | `c:src/drivers/ata.c:inw` | `src/drivers/ata.c` | `inw` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/ata.c:outb` | `src/drivers/ata.c` | `outb` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/ata.c:outw` | `src/drivers/ata.c` | `outw` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/e1000.c:e1000_allocate_device` | `src/drivers/e1000.c` | `e1000_allocate_device` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_allocate_dma` | `src/drivers/e1000.c` | `e1000_allocate_dma` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_bottom_half` | `src/drivers/e1000.c` | `e1000_bottom_half` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_copy_interface_id` | `src/drivers/e1000.c` | `e1000_copy_interface_id` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_disable_hardware` | `src/drivers/e1000.c` | `e1000_disable_hardware` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_enqueue_rx` | `src/drivers/e1000.c` | `e1000_enqueue_rx` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_fail_init` | `src/drivers/e1000.c` | `e1000_fail_init` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_fill_interface` | `src/drivers/e1000.c` | `e1000_fill_interface` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_find_device` | `src/drivers/e1000.c` | `e1000_find_device` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_get_driver_status` | `src/drivers/e1000.c` | `e1000_get_driver_status` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_handler` | `src/drivers/e1000.c` | `e1000_handler` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_has_pending_rx` | `src/drivers/e1000.c` | `e1000_has_pending_rx` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_init` | `src/drivers/e1000.c` | `e1000_init` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_irq_restore` | `src/drivers/e1000.c` | `e1000_irq_restore` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_irq_save` | `src/drivers/e1000.c` | `e1000_irq_save` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_map_mmio` | `src/drivers/e1000.c` | `e1000_map_mmio` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_memory_barrier` | `src/drivers/e1000.c` | `e1000_memory_barrier` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_poll_rx_descriptors` | `src/drivers/e1000.c` | `e1000_poll_rx_descriptors` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_prepare_device` | `src/drivers/e1000.c` | `e1000_prepare_device` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_quiesce` | `src/drivers/e1000.c` | `e1000_quiesce` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_read` | `src/drivers/e1000.c` | `e1000_read` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_read_mac` | `src/drivers/e1000.c` | `e1000_read_mac` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_receive_frame` | `src/drivers/e1000.c` | `e1000_receive_frame` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_release_dma` | `src/drivers/e1000.c` | `e1000_release_dma` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_rx_queue_depth` | `src/drivers/e1000.c` | `e1000_rx_queue_depth` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_send_frame` | `src/drivers/e1000.c` | `e1000_send_frame` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_service_pending` | `src/drivers/e1000.c` | `e1000_service_pending` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_setup_rx` | `src/drivers/e1000.c` | `e1000_setup_rx` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_setup_tx` | `src/drivers/e1000.c` | `e1000_setup_tx` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_update_link` | `src/drivers/e1000.c` | `e1000_update_link` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_wait_reset` | `src/drivers/e1000.c` | `e1000_wait_reset` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/e1000.c:e1000_write` | `src/drivers/e1000.c` | `e1000_write` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/e1000.c:e1000_allocate_device` | `src/drivers/e1000.c` | `e1000_allocate_device` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_allocate_dma` | `src/drivers/e1000.c` | `e1000_allocate_dma` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_bottom_half` | `src/drivers/e1000.c` | `e1000_bottom_half` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_copy_interface_id` | `src/drivers/e1000.c` | `e1000_copy_interface_id` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_disable_hardware` | `src/drivers/e1000.c` | `e1000_disable_hardware` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_enqueue_rx` | `src/drivers/e1000.c` | `e1000_enqueue_rx` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_fail_init` | `src/drivers/e1000.c` | `e1000_fail_init` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_fill_interface` | `src/drivers/e1000.c` | `e1000_fill_interface` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_find_device` | `src/drivers/e1000.c` | `e1000_find_device` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_get_driver_status` | `src/drivers/e1000.c` | `e1000_get_driver_status` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_handler` | `src/drivers/e1000.c` | `e1000_handler` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_has_pending_rx` | `src/drivers/e1000.c` | `e1000_has_pending_rx` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_host_inject_rx` | `src/drivers/e1000.c` | `e1000_host_inject_rx` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/e1000.c:e1000_host_reset_devices` | `src/drivers/e1000.c` | `e1000_host_reset_devices` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/e1000.c:e1000_init` | `src/drivers/e1000.c` | `e1000_init` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_irq_restore` | `src/drivers/e1000.c` | `e1000_irq_restore` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_irq_save` | `src/drivers/e1000.c` | `e1000_irq_save` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_map_mmio` | `src/drivers/e1000.c` | `e1000_map_mmio` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_memory_barrier` | `src/drivers/e1000.c` | `e1000_memory_barrier` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_poll_rx_descriptors` | `src/drivers/e1000.c` | `e1000_poll_rx_descriptors` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_prepare_device` | `src/drivers/e1000.c` | `e1000_prepare_device` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_quiesce` | `src/drivers/e1000.c` | `e1000_quiesce` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_read` | `src/drivers/e1000.c` | `e1000_read` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_read_mac` | `src/drivers/e1000.c` | `e1000_read_mac` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_receive_frame` | `src/drivers/e1000.c` | `e1000_receive_frame` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_release_dma` | `src/drivers/e1000.c` | `e1000_release_dma` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_rx_queue_depth` | `src/drivers/e1000.c` | `e1000_rx_queue_depth` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_send_frame` | `src/drivers/e1000.c` | `e1000_send_frame` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_service_pending` | `src/drivers/e1000.c` | `e1000_service_pending` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_setup_rx` | `src/drivers/e1000.c` | `e1000_setup_rx` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_setup_tx` | `src/drivers/e1000.c` | `e1000_setup_tx` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_update_link` | `src/drivers/e1000.c` | `e1000_update_link` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_wait_reset` | `src/drivers/e1000.c` | `e1000_wait_reset` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/e1000.c:e1000_write` | `src/drivers/e1000.c` | `e1000_write` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/ehci.c:ehci_allocate_dma` | `src/drivers/ehci.c` | `ehci_allocate_dma` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/ehci.c:ehci_bulk_transfer` | `src/drivers/ehci.c` | `ehci_bulk_transfer` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/ehci.c:ehci_bulk_transfer_locked` | `src/drivers/ehci.c` | `ehci_bulk_transfer_locked` | `drivers` | `COVERED` | 1 |
@@ -7410,6 +7412,7 @@
 | `qemu:tst6:stress:kernel` | `qemu` | `tst6` | `qemu:tst6:stress:kernel` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | paging, heap, SLAB, processos e threads estao READY | repetir ciclos deterministas de memoria e execucao sob teto obrigatorio | invariantes estaveis permanecem iguais e a primeira falha interrompe a suite | overflow, vazamento, deadlock, timeout, protocolo ou QEMU | alocacoes e objetos temporarios de cada ciclo em snapshot | devolver paginas, destruir objetos e registrar seed e iteracao |
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
+| `host:drivers:e1000` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar PCI, mapeamento MMIO, reset, MAC, DMA, configuracao de descritores, TX, RX, IRQ deferred, quiescencia e falhas de inicializacao | frames validos sao transmitidos e recebidos, eventos IRQ sao processados e fixtures invalidas retornam erros canonicos com limpeza | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente MMIO, DMA, PCI, IRQ deferred e frames Ethernet falsos no processo host | dispositivo falso, descritores, buffers DMA, fila IRQ e estado MMIO sao restaurados; manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -7531,8 +7534,6 @@
 - `api:src/include/drivers/ac97.h:ac97_play`
 - `api:src/include/drivers/ac97.h:ac97_set_volume`
 - `api:src/include/drivers/ac97.h:ac97_stop`
-- `api:src/include/drivers/e1000.h:e1000_handler`
-- `api:src/include/drivers/e1000.h:e1000_init`
 - `api:src/include/drivers/ehci.h:ehci_bulk_transfer`
 - `api:src/include/drivers/ehci.h:ehci_control_request`
 - `api:src/include/drivers/ehci.h:ehci_get_device`
@@ -8543,38 +8544,8 @@
 - `c:src/drivers/ata.c:ata_soft_reset`
 - `c:src/drivers/ata.c:ata_wait_identify`
 - `c:src/drivers/ata.c:ata_write_sectors`
-- `c:src/drivers/e1000.c:e1000_allocate_device`
-- `c:src/drivers/e1000.c:e1000_allocate_dma`
-- `c:src/drivers/e1000.c:e1000_bottom_half`
-- `c:src/drivers/e1000.c:e1000_copy_interface_id`
-- `c:src/drivers/e1000.c:e1000_disable_hardware`
-- `c:src/drivers/e1000.c:e1000_enqueue_rx`
-- `c:src/drivers/e1000.c:e1000_fail_init`
-- `c:src/drivers/e1000.c:e1000_fill_interface`
-- `c:src/drivers/e1000.c:e1000_find_device`
-- `c:src/drivers/e1000.c:e1000_get_driver_status`
-- `c:src/drivers/e1000.c:e1000_handler`
-- `c:src/drivers/e1000.c:e1000_has_pending_rx`
-- `c:src/drivers/e1000.c:e1000_init`
-- `c:src/drivers/e1000.c:e1000_irq_restore`
-- `c:src/drivers/e1000.c:e1000_irq_save`
-- `c:src/drivers/e1000.c:e1000_map_mmio`
-- `c:src/drivers/e1000.c:e1000_memory_barrier`
-- `c:src/drivers/e1000.c:e1000_poll_rx_descriptors`
-- `c:src/drivers/e1000.c:e1000_prepare_device`
-- `c:src/drivers/e1000.c:e1000_quiesce`
-- `c:src/drivers/e1000.c:e1000_read`
-- `c:src/drivers/e1000.c:e1000_read_mac`
-- `c:src/drivers/e1000.c:e1000_receive_frame`
-- `c:src/drivers/e1000.c:e1000_release_dma`
-- `c:src/drivers/e1000.c:e1000_rx_queue_depth`
-- `c:src/drivers/e1000.c:e1000_send_frame`
-- `c:src/drivers/e1000.c:e1000_service_pending`
-- `c:src/drivers/e1000.c:e1000_setup_rx`
-- `c:src/drivers/e1000.c:e1000_setup_tx`
-- `c:src/drivers/e1000.c:e1000_update_link`
-- `c:src/drivers/e1000.c:e1000_wait_reset`
-- `c:src/drivers/e1000.c:e1000_write`
+- `c:src/drivers/e1000.c:e1000_host_inject_rx`
+- `c:src/drivers/e1000.c:e1000_host_reset_devices`
 - `c:src/drivers/idt.c:idt_enable_user_syscall`
 - `c:src/drivers/idt.c:idt_get_irq_status`
 - `c:src/drivers/idt.c:idt_get_shared_irq_handler_count`

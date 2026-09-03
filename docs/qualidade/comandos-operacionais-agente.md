@@ -1309,6 +1309,24 @@ e warnings tratados como erro. O relatorio fica em
 status `PASS`, nenhum endereco desconhecido ou ambiguo e deixar as filas,
 estado da controladora, cursor e framebuffer falsos restritos ao processo.
 
+## Driver E1000: teste host-only
+
+O caso `host:drivers:e1000` usa PCI, MMIO, reset, MAC, DMA, IRQ deferred,
+descritores e frames Ethernet falsos no processo host. Ele cobre transmissao,
+recepcao, fila RX, quiescencia, limites, timeouts, interrupcoes, falhas de
+inicializacao e limpeza. Nenhum acesso MMIO, DMA ou IRQ real e executado pelo
+teste.
+
+```text
+make test-e1000-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O alvo exige compilador C nativo e `nm`, compila com instrumentacao de funcoes
+e warnings tratados como erro. O relatorio fica em
+`build/test-results/e1000-host/coverage.json`; uma execucao `PASS` deve ter
+status `PASS`, nenhum endereco desconhecido ou ambiguo e deixar o dispositivo,
+descritores, buffers DMA, fila IRQ e MMIO falsos restritos ao processo.
+
 ## TST7: regressao continua
 
 O runner TST7 e independente do provedor de CI. O modo `quick` executa as
