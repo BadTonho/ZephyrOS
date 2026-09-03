@@ -642,6 +642,12 @@ AC97_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_ac97_host.c",
     ROOT / "src" / "drivers" / "ac97.c",
 )
+RTL8811CU_RESULT_DIR = ROOT / "build" / "test-results" / "rtl8811cu-host"
+RTL8811CU_BINARY = ROOT / "build" / "tests" / "test_rtl8811cu_host.exe"
+RTL8811CU_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_rtl8811cu_host.c",
+    ROOT / "src" / "drivers" / "rtl8811cu.c",
+)
 SOURCE_FILES = CORE_SOURCE_FILES
 
 
@@ -835,6 +841,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return E1000_RESULT_DIR, E1000_BINARY, E1000_SOURCE_FILES, "e1000-host"
     if case_id == "host:drivers:ac97":
         return AC97_RESULT_DIR, AC97_BINARY, AC97_SOURCE_FILES, "ac97-host"
+    if case_id == "host:drivers:rtl8811cu":
+        return (RTL8811CU_RESULT_DIR, RTL8811CU_BINARY,
+                RTL8811CU_SOURCE_FILES, "rtl8811cu-host")
     raise ValueError(f"caso_host_invalido:{case_id}")
 
 
@@ -1032,7 +1041,8 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:drivers:video", "host:drivers:acpi",
                                  "host:drivers:uhci", "host:drivers:ehci",
                                  "host:drivers:rtl8139", "host:drivers:mouse",
-                                 "host:drivers:e1000", "host:drivers:ac97"))
+                                 "host:drivers:e1000", "host:drivers:ac97",
+                                 "host:drivers:rtl8811cu"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
     return parser.parse_args()

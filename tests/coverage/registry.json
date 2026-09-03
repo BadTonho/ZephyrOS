@@ -4544,6 +4544,59 @@
         "status": "AUTOMATED"
       },
       "evidence": "make test-ac97-host PASS com PCI, portas, reset, energia, sample rate, volume, playback, parada, IRQ e cobertura instrumentada completa"
+    },
+    {
+      "id": "rtl8811cu-host-dynamic",
+      "domain": "drivers-rtl8811cu",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:drivers:rtl8811cu"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/rtl8811cu-host/coverage.json",
+      "coverage_sources": [
+        "src/drivers/rtl8811cu.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:drivers:rtl8811cu",
+        "scenario": "Contrato host-only do driver USB RTL8811CU com firmware e transporte indisponiveis simulados",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "usb-rtl8811cu-ehci-falso"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "validar identificacao USB, revisao, descritores, endpoints Bulk, cabecalho de firmware, estados, callbacks Ethernet, scan, associacao e indisponibilidade segura",
+        "expected": "dispositivos incompatíveis e fixtures invalidas retornam erros canonicos; o dispositivo suportado permanece indisponivel sem firmware e transporte confirmados",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente estruturas USB, filesystem, interface Ethernet e estado do driver falso no processo host",
+        "cleanup": "estruturas de dispositivo, firmware falso, interface, estado global, manifesto, logs e cobertura permanecem confinados ao processo host",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "drivers",
+          "network",
+          "wifi",
+          "usb",
+          "firmware",
+          "limits",
+          "recovery",
+          "coverage"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "make test-rtl8811cu-host PASS com probe USB, descritores, endpoints, firmware, estados, callbacks Ethernet, scan, associacao e cobertura instrumentada completa"
     }
   ]
 }

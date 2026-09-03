@@ -1345,6 +1345,26 @@ e warnings tratados como erro. O relatorio fica em
 status `PASS`, nenhum endereco desconhecido ou ambiguo e deixar o dispositivo,
 buffer de playback, handler IRQ e portas falsas restritos ao processo.
 
+## Driver RTL8811CU: teste host-only
+
+O caso `host:drivers:rtl8811cu` usa dispositivos USB, filesystem, firmware e
+interface Ethernet falsos no processo host. Ele cobre identificacao USB,
+revisao, descritores, endpoints Bulk, cabecalho de firmware, estados,
+callbacks Ethernet, scan, associacao aberta, limites de SSID e
+indisponibilidade segura sem firmware e transporte confirmados. Nenhum
+dispositivo USB, conexao de rede ou filesystem real e acessado pelo teste.
+
+```text
+make test-rtl8811cu-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O alvo exige compilador C nativo e `nm`, compila com instrumentacao de
+funcoes e warnings tratados como erro. O relatorio fica em
+`build/test-results/rtl8811cu-host/coverage.json`; uma execucao `PASS` deve
+ter status `PASS`, nenhum endereco desconhecido ou ambiguo e manter o
+firmware falso, interface, estruturas USB e estado global confinados ao
+processo.
+
 ## TST7: regressao continua
 
 O runner TST7 e independente do provedor de CI. O modo `quick` executa as

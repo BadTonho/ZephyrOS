@@ -21233,9 +21233,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8811cu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/rtl8811cu.h:rtl8811cu_get_status",
@@ -21251,9 +21254,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8811cu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/rtl8811cu.h:rtl8811cu_init",
@@ -21269,9 +21275,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8811cu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/rtl8811cu.h:rtl8811cu_probe",
@@ -21287,9 +21296,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8811cu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/rtl8811cu.h:rtl8811cu_scan",
@@ -21305,9 +21317,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8811cu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/rtl8811cu.h:rtl8811cu_state_name",
@@ -21323,9 +21338,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8811cu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/rtl8811cu.h:rtl8811cu_validate_state",
@@ -21341,9 +21359,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8811cu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/serial.h:serial_flush",
@@ -92987,9 +93008,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8811cu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8811cu.c:rtl8811cu_device_matches",
@@ -93005,9 +93029,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8811cu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8811cu.c:rtl8811cu_firmware_check",
@@ -93023,9 +93050,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8811cu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8811cu.c:rtl8811cu_get_driver_status",
@@ -93041,9 +93071,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8811cu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8811cu.c:rtl8811cu_get_status",
@@ -93059,9 +93092,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8811cu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8811cu.c:rtl8811cu_init",
@@ -93077,9 +93113,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8811cu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8811cu.c:rtl8811cu_prepare_interface",
@@ -93095,9 +93134,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8811cu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8811cu.c:rtl8811cu_probe",
@@ -93113,9 +93155,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8811cu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8811cu.c:rtl8811cu_quiesce",
@@ -93131,9 +93176,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8811cu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8811cu.c:rtl8811cu_read_le16",
@@ -93149,9 +93197,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8811cu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8811cu.c:rtl8811cu_receive_frame",
@@ -93167,9 +93218,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8811cu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8811cu.c:rtl8811cu_rx_pending",
@@ -93185,9 +93239,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8811cu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8811cu.c:rtl8811cu_scan",
@@ -93203,9 +93260,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8811cu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8811cu.c:rtl8811cu_send_frame",
@@ -93221,9 +93281,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8811cu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8811cu.c:rtl8811cu_service_pending",
@@ -93239,9 +93302,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8811cu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8811cu.c:rtl8811cu_state_name",
@@ -93257,9 +93323,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8811cu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8811cu.c:rtl8811cu_validate_state",
@@ -93275,9 +93344,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8811cu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/serial.c:serial_byte_allowed",
@@ -169717,6 +169789,67 @@
         "stress",
         "storage"
       ]
+    },
+    {
+      "id": "host:drivers:rtl8811cu",
+      "scenario": "Contrato host-only do driver USB RTL8811CU com firmware e transporte indisponiveis simulados",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "hardware": "usb-rtl8811cu-ehci-falso"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "validar identificacao USB, revisao, descritores, endpoints Bulk, cabecalho de firmware, estados, callbacks Ethernet, scan, associacao e indisponibilidade segura",
+      "expected": "dispositivos incompatíveis e fixtures invalidas retornam erros canonicos; o dispositivo suportado permanece indisponivel sem firmware e transporte confirmados",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente estruturas USB, filesystem, interface Ethernet e estado do driver falso no processo host",
+      "cleanup": "estruturas de dispositivo, firmware falso, interface, estado global, manifesto, logs e cobertura permanecem confinados ao processo host",
+      "surface_ids": [
+        "api:src/include/drivers/rtl8811cu.h:rtl8811cu_connect_open",
+        "api:src/include/drivers/rtl8811cu.h:rtl8811cu_get_status",
+        "api:src/include/drivers/rtl8811cu.h:rtl8811cu_init",
+        "api:src/include/drivers/rtl8811cu.h:rtl8811cu_probe",
+        "api:src/include/drivers/rtl8811cu.h:rtl8811cu_scan",
+        "api:src/include/drivers/rtl8811cu.h:rtl8811cu_state_name",
+        "api:src/include/drivers/rtl8811cu.h:rtl8811cu_validate_state",
+        "c:src/drivers/rtl8811cu.c:rtl8811cu_connect_open",
+        "c:src/drivers/rtl8811cu.c:rtl8811cu_device_matches",
+        "c:src/drivers/rtl8811cu.c:rtl8811cu_firmware_check",
+        "c:src/drivers/rtl8811cu.c:rtl8811cu_get_driver_status",
+        "c:src/drivers/rtl8811cu.c:rtl8811cu_get_status",
+        "c:src/drivers/rtl8811cu.c:rtl8811cu_init",
+        "c:src/drivers/rtl8811cu.c:rtl8811cu_prepare_interface",
+        "c:src/drivers/rtl8811cu.c:rtl8811cu_probe",
+        "c:src/drivers/rtl8811cu.c:rtl8811cu_quiesce",
+        "c:src/drivers/rtl8811cu.c:rtl8811cu_read_le16",
+        "c:src/drivers/rtl8811cu.c:rtl8811cu_receive_frame",
+        "c:src/drivers/rtl8811cu.c:rtl8811cu_rx_pending",
+        "c:src/drivers/rtl8811cu.c:rtl8811cu_scan",
+        "c:src/drivers/rtl8811cu.c:rtl8811cu_send_frame",
+        "c:src/drivers/rtl8811cu.c:rtl8811cu_service_pending",
+        "c:src/drivers/rtl8811cu.c:rtl8811cu_state_name",
+        "c:src/drivers/rtl8811cu.c:rtl8811cu_validate_state"
+      ],
+      "tags": [
+        "host",
+        "drivers",
+        "network",
+        "wifi",
+        "usb",
+        "firmware",
+        "limits",
+        "recovery",
+        "coverage"
+      ],
+      "status": "AUTOMATED"
     }
   ],
   "retired": [
