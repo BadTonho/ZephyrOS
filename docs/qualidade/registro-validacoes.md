@@ -5020,3 +5020,21 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   renderizacao do catalogo passaram; o catalogo registra 7.219 superficies,
   4.898 `COVERED`, 2.321 `PENDING` e 128 casos. O fechamento integral, o gate
   estrito e a validacao TST7 completa continuam pendentes.
+
+- Incremento Seguranca/tls_client concluido em 2026-09-03 19:37
+  (America/Sao_Paulo). Foi criado o caso host-only `host:security:tls-client`
+  com o alvo `make test-tls-client-host`. A fixture compila o
+  `src/core/tls_client.c` real contra um engine BearSSL falso e usa socket,
+  relogio e RNG deterministas para exercitar inicializacao, configuracao,
+  divisao de tempo, handshake, envio, recepcao, EOF, falhas de I/O,
+  indisponibilidade de entropia, limites de SNI, estados e limpeza, sem rede
+  externa. `make test-tls-client-host` passou com `HOST_CC` configurado e
+  warnings tratados como erro. O relatorio
+  `build/test-results/tls-client-host/coverage.json` terminou `PASS`, resolveu
+  as 12 superficies antes pendentes de `src/core/tls_client.c` e apresentou
+  `unknown_addresses=[]` e `ambiguous_symbols=[]`. Tambem passaram
+  `python tools/test_catalog.py sync`, `python tools/test_catalog.py render`,
+  `make catalog-test` e os 38 testes unitarios de `test_core_host_runner.py`.
+  O catalogo registra 7.219 superficies, 4.922 `COVERED`, 2.297 `PENDING` e
+  129 casos. O fechamento integral, o gate estrito e a validacao TST7 completa
+  continuam pendentes.

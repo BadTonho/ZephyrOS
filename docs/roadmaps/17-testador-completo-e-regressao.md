@@ -1507,6 +1507,20 @@ pendente.
   4.898 `COVERED`, 2.321 `PENDING` e 128 casos. O fechamento integral, o gate
   estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Seguranca/tls_client concluido em 2026-09-03. Foi criado o caso
+  host-only `host:security:tls-client` com o alvo
+  `make test-tls-client-host`. A fixture compila o `src/core/tls_client.c`
+  real contra um engine BearSSL falso e exercita inicializacao, configuracao,
+  conversao de tempo, handshake, envio, recepcao, EOF, falhas de I/O,
+  indisponibilidade de entropia, limites de SNI, validacao de estado e
+  limpeza, sem rede externa. O relatorio instrumentado terminou `PASS`,
+  resolveu as 12 superficies antes pendentes de `src/core/tls_client.c` e
+  nao apresentou enderecos desconhecidos ou ambiguos. A sincronizacao,
+  renderizacao, `make catalog-test` e os testes unitarios do runner passaram;
+  o catalogo registra 7.219 superficies, 4.922 `COVERED`, 2.297 `PENDING` e
+  129 casos. O fechamento integral, o gate estrito e a validacao TST7 completa
+  continuam pendentes.
+
 - Incremento Storage/sysfs concluido em 2026-09-03. Foi criado o caso
   host-only `host:storage:sysfs` com o alvo `make test-sysfs-host`. A fixture
   liga o provider `src/fs/sysfs.c` real a inventarios falsos de PCI, rede,

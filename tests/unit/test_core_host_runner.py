@@ -387,6 +387,17 @@ class CoreHostRunnerTests(unittest.TestCase):
         self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
                       "test_shell_host.c", sources)
 
+    def test_tls_client_case_has_adapter_fixture_sources(self):
+        result_dir, binary, sources, suite = core_host_runner.case_configuration(
+            "host:security:tls-client")
+        self.assertEqual(suite, "tls-client-host")
+        self.assertEqual(result_dir, core_host_runner.TLS_CLIENT_RESULT_DIR)
+        self.assertEqual(binary, core_host_runner.TLS_CLIENT_BINARY)
+        self.assertIn(core_host_runner.ROOT / "src" / "core" /
+                      "tls_client.c", sources)
+        self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
+                      "test_tls_client_host.c", sources)
+
 
 if __name__ == "__main__":
     unittest.main()

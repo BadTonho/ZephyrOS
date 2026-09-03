@@ -76,6 +76,7 @@ make test-bearssl-compat-host
 make test-ethernet-host
 make test-tcp-host
 make test-tls-host
+make test-tls-client-host
 make test-socket-runtime-host
 make test-sysfs-host
 ```
@@ -85,6 +86,12 @@ host com `ZEPHYROS_HOST_TEST=1`; o caminho freestanding continua sendo usado
 no build do kernel. Cada alvo preserva `manifest.json`, `result.json`,
 `coverage.json`, `coverage-symbols.json`, `stdout.log` e `stderr.log` em
 `build/test-results/<suite>/`.
+
+O caso `test-tls-client-host` compila o adaptador `tls_client.c` real com um
+engine BearSSL falso, socket, relogio e RNG deterministas. Ele exercita
+handshake, configuracao de data, envio, recepcao, EOF, falhas de I/O,
+indisponibilidade de entropia, limites de SNI, estado e limpeza sem rede
+externa; seu relatorio fica em `build/test-results/tls-client-host/`.
 
 O caso `test-crypto-host` valida os contratos SHA-256, SHA-512 e Ed25519,
 incluindo o ajuste de scalar para `uint32_t` e a rejeicao de entradas invalidas.
