@@ -4838,3 +4838,21 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   modulos. O catalogo registra 7.204 superficies, 4.619 `COVERED`, 2.585
   `PENDING` e 119 casos. O fechamento integral, o gate estrito e a validacao
   TST7 completa continuam pendentes.
+
+- Incremento Drivers/mouse concluido em 2026-09-03. Foi criado o caso
+  host-only `host:drivers:mouse` e o alvo `make test-mouse-host`. A fixture
+  simulou a controladora PS/2, IRQ12, fila de entrada, framebuffer VESA e
+  respostas Intellimouse para exercitar inicializacao, fallback de tres bytes,
+  eventos de movimento, botoes e roda, coalescencia, cursor, configuracao,
+  timeouts, ACK invalido, indisponibilidade, recuperacao e limpeza. O relatorio
+  instrumentado `build/test-results/mouse-host/coverage.json` terminou `PASS`,
+  resolveu as 46 superficies de `src/drivers/mouse.c` e as 13 APIs publicas
+  correspondentes, sem enderecos desconhecidos ou ambiguos. Foram executados
+  `make q3check`, `make clean`, `make`,
+  `make test-mouse-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`,
+  `python tools/test_catalog.py sync`, `python tools/test_catalog.py render`,
+  `python tools/test_catalog.py validate` e `git diff --check`; todos passaram.
+  O build completo manteve apenas warnings legados em modulos nao relacionados
+  ao mouse. O catalogo registra 7.204 superficies, 4.665 `COVERED`, 2.539
+  `PENDING` e 120 casos. O fechamento integral, o gate estrito e a validacao
+  TST7 completa continuam pendentes.
