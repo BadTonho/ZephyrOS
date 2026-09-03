@@ -9,6 +9,11 @@
 static rng_status_t rng_status;
 
 static uint8_t rng_cpu_has_cpuid(void) {
+#if defined(ZEPHYROS_HOST_TEST)
+    extern uint8_t rng_host_cpuid_available;
+
+    return rng_host_cpuid_available;
+#else
     uint32_t original;
     uint32_t toggled;
     uint32_t current;
@@ -19,9 +24,18 @@ static uint8_t rng_cpu_has_cpuid(void) {
     asm volatile("pushfl\n\tpopl %0" : "=r"(current));
     asm volatile("pushl %0\n\tpopfl" : : "r"(original) : "cc");
     return (uint8_t)(((current ^ original) & (1U << 21U)) != 0U);
+#endif
 }
 
 static int rng_cpuid(uint32_t leaf, uint32_t* out_ecx) {
+#if defined(ZEPHYROS_HOST_TEST)
+    extern uint8_t rng_host_rdrand_available;
+
+    if (!out_ecx) return ERR_NULL;
+    *out_ecx = (leaf == 1U && rng_host_rdrand_available) ?
+               RNG_CPUID_RDRAND_BIT : 0U;
+    return OK;
+#else
     uint32_t eax;
     uint32_t ebx;
     uint32_t ecx;
@@ -36,12 +50,29 @@ static int rng_cpuid(uint32_t leaf, uint32_t* out_ecx) {
     (void)edx;
     *out_ecx = ecx;
     return OK;
+#endif
 }
 
 static int rng_read_word(uint32_t* output) {
+#if defined(ZEPHYROS_HOST_TEST)
+    extern uint8_t rng_host_rdrand_ready;
+    extern uint32_t rng_host_word;
+#else
     uint8_t ready;
+#endif
 
     if (!output) return ERR_NULL;
+#if defined(ZEPHYROS_HOST_TEST)
+    if (!rng_host_rdrand_ready) {
+        rng_status.hardware_failures++;
+        rng_status.last_error = ERR_UNAVAILABLE;
+        LOG_ERROR("RNG", "RDRAND nao forneceu uma palavra apos as tentativas");
+        return ERR_UNAVAILABLE;
+    }
+    *output = rng_host_word++;
+    rng_status.words_generated++;
+    return OK;
+#else
     for (uint32_t attempt = 0; attempt < RNG_RDRAND_RETRIES; attempt++) {
         asm volatile(".byte 0x0f, 0xc7, 0xf0; setc %0"
                      : "=m"(ready), "=a"(*output) : : "cc");
@@ -54,6 +85,7 @@ static int rng_read_word(uint32_t* output) {
     rng_status.last_error = ERR_UNAVAILABLE;
     LOG_ERROR("RNG", "RDRAND nao forneceu uma palavra apos as tentativas");
     return ERR_UNAVAILABLE;
+#endif
 }
 
 int rng_init(void) {
@@ -67,10 +99,14 @@ int rng_init(void) {
         LOG_ERROR("RNG", "CPU sem instrucao CPUID; TLS sera bloqueado");
         return ERR_UNAVAILABLE;
     }
+#if defined(ZEPHYROS_HOST_TEST)
+    max_leaf = 1U;
+#else
     asm volatile("cpuid"
                  : "=a"(max_leaf)
                  : "a"(0)
                  : "ebx", "ecx", "edx");
+#endif
     rng_status.cpuid_available = (uint8_t)(max_leaf >= 1U);
     if (!rng_status.cpuid_available || rng_cpuid(1U, &features) != OK) {
         rng_status.last_error = ERR_UNAVAILABLE;

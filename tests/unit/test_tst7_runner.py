@@ -185,6 +185,10 @@ class Tst7RunnerContractTests(unittest.TestCase):
                                               "qemu_profile": "network"}),
                          "user,model=e1000,restrict=on")
 
+    def test_rng_host_case_is_mapped(self):
+        self.assertEqual(runner.HOST_CASE_TARGETS["host:drivers:rng"],
+                         "test-rng-host")
+
     def test_seed_is_reproducible(self):
         self.assertEqual(runner.stable_seed("qemu:tst6:stress:kernel"),
                          runner.stable_seed("qemu:tst6:stress:kernel"))

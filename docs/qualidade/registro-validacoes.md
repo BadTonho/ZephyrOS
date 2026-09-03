@@ -4501,3 +4501,16 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `src/fs/bmp.c`. O catalogo registra 7.196 superficies, 4.244 `COVERED`,
   2.952 `PENDING` e 95 casos. O fechamento integral, o gate estrito e a
   validacao TST7 completa continuam pendentes.
+
+- Concluida em: 2026-09-02
+
+  Incremento Drivers/RNG: foi criado o caso host-only `host:drivers:rng` e o
+  alvo `make test-rng-host` com backend deterministico de CPUID/RDRAND apenas no
+  host e cobertura dinamica. A fixture exercitou inicializacao com capacidade
+  ausente, inicializacao pronta, leitura de palavras, buffer nulo, leitura
+  vazia, falha de hardware e validacao do estado. A execucao terminou `PASS`,
+  sem enderecos desconhecidos ou ambiguos, resolvendo as cinco superficies
+  pendentes de `src/drivers/rng.c`; o build freestanding preserva o caminho
+  Assembly original. O catalogo registra 7.196 superficies, 4.244 `COVERED`,
+  2.952 `PENDING` e 96 casos. O fechamento integral, o gate estrito e a
+  validacao TST7 completa continuam pendentes.

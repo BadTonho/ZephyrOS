@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7196**
-- Casos de teste: **95**
+- Casos de teste: **96**
 - Superfícies aposentadas: **22**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4244 |
+| `COVERED` | 4249 |
 | `MANUAL` | 0 |
-| `PENDING` | 2952 |
+| `PENDING` | 2947 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 95 |
+| `AUTOMATED` | 96 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -605,7 +605,7 @@
 | `api:src/include/core/spinlock.h:spinlock_init` | `src/include/core/spinlock.h` | `spinlock_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_release` | `src/include/core/spinlock.h` | `spinlock_release` | `core` | `PENDING` | 0 |
 | `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 42 |
-| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 43 |
+| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 44 |
 | `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 34 |
 | `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 36 |
 | `api:src/include/core/syscall.h:syscall_enable_user_mode` | `src/include/core/syscall.h` | `syscall_enable_user_mode` | `core` | `COVERED` | 1 |
@@ -967,10 +967,10 @@
 | `api:src/include/drivers/pci.h:pci_init` | `src/include/drivers/pci.h` | `pci_init` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/pci.h:pci_read` | `src/include/drivers/pci.h` | `pci_read` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/pci.h:pci_write` | `src/include/drivers/pci.h` | `pci_write` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/rng.h:rng_get_bytes` | `src/include/drivers/rng.h` | `rng_get_bytes` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/rng.h:rng_get_status` | `src/include/drivers/rng.h` | `rng_get_status` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/rng.h:rng_init` | `src/include/drivers/rng.h` | `rng_init` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/rng.h:rng_validate_state` | `src/include/drivers/rng.h` | `rng_validate_state` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/rng.h:rng_get_bytes` | `src/include/drivers/rng.h` | `rng_get_bytes` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/rng.h:rng_get_status` | `src/include/drivers/rng.h` | `rng_get_status` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/rng.h:rng_init` | `src/include/drivers/rng.h` | `rng_init` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/rng.h:rng_validate_state` | `src/include/drivers/rng.h` | `rng_validate_state` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/rtc.h:rtc_get_status` | `src/include/drivers/rtc.h` | `rtc_get_status` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/rtc.h:rtc_init` | `src/include/drivers/rtc.h` | `rtc_init` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/rtc.h:rtc_read_utc` | `src/include/drivers/rtc.h` | `rtc_read_utc` | `drivers` | `COVERED` | 3 |
@@ -3077,7 +3077,7 @@
 | `c:src/core/socket.c:socket_wait_owner` | `src/core/socket.c` | `socket_wait_owner` | `core` | `COVERED` | 2 |
 | `c:src/core/socket.c:socket_wake` | `src/core/socket.c` | `socket_wake` | `core` | `COVERED` | 2 |
 | `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 42 |
-| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 43 |
+| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 44 |
 | `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 34 |
 | `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 36 |
 | `c:src/core/syscall.c:syscall_copy_user_string` | `src/core/syscall.c` | `syscall_copy_user_string` | `core` | `PENDING` | 0 |
@@ -4284,13 +4284,13 @@
 | `c:src/drivers/pci.c:pci_scan_device` | `src/drivers/pci.c` | `pci_scan_device` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/pci.c:pci_scan_function` | `src/drivers/pci.c` | `pci_scan_function` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/pci.c:pci_write` | `src/drivers/pci.c` | `pci_write` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rng.c:rng_cpu_has_cpuid` | `src/drivers/rng.c` | `rng_cpu_has_cpuid` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rng.c:rng_cpuid` | `src/drivers/rng.c` | `rng_cpuid` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rng.c:rng_get_bytes` | `src/drivers/rng.c` | `rng_get_bytes` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rng.c:rng_get_status` | `src/drivers/rng.c` | `rng_get_status` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/rng.c:rng_init` | `src/drivers/rng.c` | `rng_init` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rng.c:rng_read_word` | `src/drivers/rng.c` | `rng_read_word` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rng.c:rng_validate_state` | `src/drivers/rng.c` | `rng_validate_state` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/rng.c:rng_cpu_has_cpuid` | `src/drivers/rng.c` | `rng_cpu_has_cpuid` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rng.c:rng_cpuid` | `src/drivers/rng.c` | `rng_cpuid` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rng.c:rng_get_bytes` | `src/drivers/rng.c` | `rng_get_bytes` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rng.c:rng_get_status` | `src/drivers/rng.c` | `rng_get_status` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/rng.c:rng_init` | `src/drivers/rng.c` | `rng_init` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rng.c:rng_read_word` | `src/drivers/rng.c` | `rng_read_word` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rng.c:rng_validate_state` | `src/drivers/rng.c` | `rng_validate_state` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/rtc.c:rtc_datetime_valid` | `src/drivers/rtc.c` | `rtc_datetime_valid` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/rtc.c:rtc_days_in_month` | `src/drivers/rtc.c` | `rtc_days_in_month` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/rtc.c:rtc_decode_snapshot` | `src/drivers/rtc.c` | `rtc_decode_snapshot` | `drivers` | `COVERED` | 3 |
@@ -7377,6 +7377,7 @@
 | `qemu:tst6:stress:kernel` | `qemu` | `tst6` | `qemu:tst6:stress:kernel` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | paging, heap, SLAB, processos e threads estao READY | repetir ciclos deterministas de memoria e execucao sob teto obrigatorio | invariantes estaveis permanecem iguais e a primeira falha interrompe a suite | overflow, vazamento, deadlock, timeout, protocolo ou QEMU | alocacoes e objetos temporarios de cada ciclo em snapshot | devolver paginas, destruir objetos e registrar seed e iteracao |
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
+| `host:drivers:rng` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver RNG real com capacidades e resultados RDRAND simulados | capacidade, estado, bytes gerados, falhas de hardware e codigos de erro preservam o contrato sem executar instrucoes privilegiadas no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado RNG e valores de entropia estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -8761,11 +8762,6 @@
 - `c:src/drivers/pci.c:pci_scan_device`
 - `c:src/drivers/pci.c:pci_scan_function`
 - `c:src/drivers/pci.c:pci_write`
-- `c:src/drivers/rng.c:rng_cpu_has_cpuid`
-- `c:src/drivers/rng.c:rng_cpuid`
-- `c:src/drivers/rng.c:rng_get_bytes`
-- `c:src/drivers/rng.c:rng_init`
-- `c:src/drivers/rng.c:rng_read_word`
 - `c:src/drivers/rtl8139.c:rtl8139_advance_rx`
 - `c:src/drivers/rtl8139.c:rtl8139_allocate_device`
 - `c:src/drivers/rtl8139.c:rtl8139_allocate_dma`

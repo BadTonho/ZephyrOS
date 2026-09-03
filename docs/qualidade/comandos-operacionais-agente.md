@@ -414,6 +414,16 @@ alocacao usando somente framebuffer e VESA simulados; o relatorio fica em
 make test-bmp-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-rng-host` compila o driver RNG real com um backend deterministico
+de CPUID/RDRAND somente para o host. A fixture cobre inicializacao com e sem
+capacidade, leitura de palavras, falha de hardware, limites de buffer e
+validacao do estado publicado; o relatorio fica em
+`build/test-results/rng-host/`:
+
+```text
+make test-rng-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O caso `test-shell-input-host` exercita a entrada do Shell com terminal,
 historico, navegacao para cima/baixo, edicao, teclas de rolagem, cancelamento,
 bloqueio, modificadores e limite do buffer. A fixture usa apenas video,

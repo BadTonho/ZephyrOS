@@ -149,6 +149,17 @@ class CoreHostRunnerTests(unittest.TestCase):
         self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
                       "test_bmp_host.c", sources)
 
+    def test_rng_case_has_hardware_fixture_sources(self):
+        result_dir, binary, sources, suite = core_host_runner.case_configuration(
+            "host:drivers:rng")
+        self.assertEqual(suite, "rng-host")
+        self.assertEqual(result_dir, core_host_runner.RNG_RESULT_DIR)
+        self.assertEqual(binary, core_host_runner.RNG_BINARY)
+        self.assertIn(core_host_runner.ROOT / "src" / "drivers" / "rng.c",
+                      sources)
+        self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
+                      "test_rng_host.c", sources)
+
 
 if __name__ == "__main__":
     unittest.main()

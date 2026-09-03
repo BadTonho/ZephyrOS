@@ -1318,6 +1318,18 @@ pendente.
   `PENDING` e 95 casos. O fechamento integral, o gate estrito e a validacao
   TST7 completa continuam pendentes.
 
+- Incremento Drivers/RNG concluido em 2026-09-02: foi criado o caso host-only
+  `host:drivers:rng` com backend deterministico de CPUID/RDRAND somente para o
+  host e instrumentacao dinamica. A fixture exercitou inicializacao com CPU ou
+  RDRAND indisponivel, leitura de palavras, buffer nulo, leitura vazia, falha
+  de hardware e validacao do estado publicado. `make test-rng-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` terminou `PASS`, cobrindo as
+  cinco superficies pendentes de `src/drivers/rng.c`, sem enderecos desconhecidos
+  ou ambiguos. O caminho freestanding continua usando as instrucoes Assembly
+  originais. O catalogo registra 7.196 superficies, 4.244 `COVERED`, 2.952
+  `PENDING` e 96 casos. O fechamento integral, o gate estrito e a validacao
+  TST7 completa continuam pendentes.
+
 - Incremento Core/wifi_manager concluido em 2026-09-02: foi criado o caso
   host-only `host:core:wifi-manager` com fixtures estaticos de PCI, USB e
   RTL8811CU. A fixture exercitou formatacao e busca case-insensitive de IDs,
