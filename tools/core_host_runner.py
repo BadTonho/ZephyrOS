@@ -533,6 +533,12 @@ DISPLAY_SOURCE_FILES = (
     ROOT / "src" / "gui" / "display.c",
     ROOT / "src" / "core" / "string.c",
 )
+SHELL_CORE_RESULT_DIR = ROOT / "build" / "test-results" / "shell-core-host"
+SHELL_CORE_BINARY = ROOT / "build" / "tests" / "test_shell_host.exe"
+SHELL_CORE_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_shell_host.c",
+    ROOT / "src" / "shell" / "shell.c",
+)
 SOURCE_FILES = CORE_SOURCE_FILES
 
 
@@ -689,6 +695,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
                 SHELL_COMMAND_UTILS_SOURCE_FILES, "shell-command-utils-host")
     if case_id == "host:gui:display":
         return DISPLAY_RESULT_DIR, DISPLAY_BINARY, DISPLAY_SOURCE_FILES, "display-host"
+    if case_id == "host:shell:core":
+        return SHELL_CORE_RESULT_DIR, SHELL_CORE_BINARY, SHELL_CORE_SOURCE_FILES, "shell-core-host"
     raise ValueError(f"caso_host_invalido:{case_id}")
 
 
@@ -877,7 +885,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:core:test-coverage",
                                  "host:shell:input", "host:shell:hosted",
                                  "host:shell:command-utils",
-                                 "host:gui:display"))
+                                 "host:gui:display", "host:shell:core"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
     return parser.parse_args()

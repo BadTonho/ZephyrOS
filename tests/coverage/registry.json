@@ -2611,6 +2611,65 @@
       "evidence": "make test-shell-input-host PASS com historico, navegacao, scroll, edicao, cancelamento e limite do buffer no relatorio instrumentado"
     },
     {
+      "id": "shell-core-host-dynamic",
+      "domain": "shell-core",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:shell:core"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/shell-core-host/coverage.json",
+      "coverage_sources": [
+        "src/shell/shell.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:shell:core",
+        "scenario": "Contrato host-only do nucleo de ciclo de vida e terminal do Shell",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "inicializar o Shell, encaminhar mouse, suspender terminal, concluir comando e restaurar a cena visual",
+        "expected": "entradas invalidas e inativas sao rejeitadas, scroll ativo e encaminhado, ciclo de terminal restaura prompt e redraw",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente callbacks estaticos do Shell, terminal, taskbar, desktop e aplicativos falsos no processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": [
+          "api:src/include/apps/shell.h:shell_handle_mouse",
+          "api:src/include/apps/shell.h:shell_init",
+          "api:src/include/apps/shell_runtime.h:shell_runtime_finish_command",
+          "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal",
+          "c:src/shell/shell.c:shell_handle_mouse",
+          "c:src/shell/shell.c:shell_init",
+          "c:src/shell/shell.c:shell_redraw_after_overlay_close",
+          "c:src/shell/shell.c:shell_runtime_finish_command",
+          "c:src/shell/shell.c:shell_runtime_suspend_terminal"
+        ],
+        "tags": [
+          "host",
+          "shell",
+          "terminal",
+          "mouse",
+          "lifecycle",
+          "coverage"
+        ]
+      },
+      "evidence": "make test-shell-core-host PASS com inicializacao, scroll, suspensao, conclusao de comando e redraw de fallback no relatorio instrumentado"
+    },
+    {
       "id": "display-host-dynamic",
       "domain": "gui-display",
       "owner": "quality",

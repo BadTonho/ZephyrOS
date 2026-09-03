@@ -1495,6 +1495,16 @@ pendente.
   rodada. O fechamento integral, o gate estrito e a validacao TST7 completa
   continuam pendentes.
 
+- Incremento GUI/display e Shell/core concluido em 2026-09-03: os casos
+  host-only `host:gui:display` e `host:shell:core` passaram com fixtures
+  estaticas e cobertura dinamica real. Foram cobertos disponibilidade VESA,
+  escalas, limites, conversao de pixels, refresh/rollback de cenas,
+  inicializacao do Shell, mouse/scroll, suspensao do terminal, conclusao de
+  comando e redraw pelo fluxo de `shell_handle_key`. Os 65 casos host-only,
+  `make q3check`, build limpo, `make catalog-test` e os testes dos runners
+  passaram; `display.c` ficou sem pendencias e `shell.c` tambem. O fechamento
+  integral, o gate estrito e a validacao TST7 completa continuam pendentes.
+
 - Incremento Core/energia terminal concluido em 2026-09-03: o caso
   `host:core:power` passou a exercitar `power_reboot_commit`,
   `power_trigger_triple_fault` e `power_terminal_halt` por um seam exclusivo
