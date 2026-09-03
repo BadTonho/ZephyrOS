@@ -34,6 +34,16 @@ class CoreHostRunnerTests(unittest.TestCase):
         self.assertIn(core_host_runner.ROOT / "src" / "core" / "ipv4.c", sources)
         self.assertIn(core_host_runner.ROOT / "src" / "core" / "route.c", sources)
 
+    def test_socket_runtime_case_has_socket_fixture_sources(self):
+        result_dir, binary, sources, suite = core_host_runner.case_configuration(
+            "host:network:socket-runtime")
+        self.assertEqual(suite, "socket-runtime-host")
+        self.assertEqual(result_dir, core_host_runner.SOCKET_RUNTIME_RESULT_DIR)
+        self.assertEqual(binary, core_host_runner.SOCKET_RUNTIME_BINARY)
+        self.assertIn(core_host_runner.ROOT / "src" / "core" / "socket.c", sources)
+        self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
+                      "test_socket_host.c", sources)
+
     def test_crypto_case_has_direct_crypto_sources(self):
         result_dir, binary, sources, suite = core_host_runner.case_configuration(
             "host:core:crypto")

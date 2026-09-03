@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7219**
-- Casos de teste: **126**
+- Casos de teste: **127**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4842 |
+| `COVERED` | 4867 |
 | `MANUAL` | 0 |
-| `PENDING` | 2377 |
+| `PENDING` | 2352 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 126 |
+| `AUTOMATED` | 127 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -585,22 +585,22 @@
 | `api:src/include/core/sk_buff.h:skb_self_test` | `src/include/core/sk_buff.h` | `skb_self_test` | `core` | `COVERED` | 3 |
 | `api:src/include/core/sk_buff.h:skb_transition` | `src/include/core/sk_buff.h` | `skb_transition` | `core` | `COVERED` | 3 |
 | `api:src/include/core/sk_buff.h:skb_validate_state` | `src/include/core/sk_buff.h` | `skb_validate_state` | `core` | `COVERED` | 3 |
-| `api:src/include/core/socket.h:socket_accept` | `src/include/core/socket.h` | `socket_accept` | `core` | `COVERED` | 3 |
-| `api:src/include/core/socket.h:socket_bind` | `src/include/core/socket.h` | `socket_bind` | `core` | `COVERED` | 3 |
-| `api:src/include/core/socket.h:socket_close` | `src/include/core/socket.h` | `socket_close` | `core` | `COVERED` | 3 |
-| `api:src/include/core/socket.h:socket_connect` | `src/include/core/socket.h` | `socket_connect` | `core` | `COVERED` | 3 |
-| `api:src/include/core/socket.h:socket_create` | `src/include/core/socket.h` | `socket_create` | `core` | `COVERED` | 3 |
-| `api:src/include/core/socket.h:socket_family_name` | `src/include/core/socket.h` | `socket_family_name` | `core` | `COVERED` | 2 |
-| `api:src/include/core/socket.h:socket_get_info` | `src/include/core/socket.h` | `socket_get_info` | `core` | `COVERED` | 3 |
-| `api:src/include/core/socket.h:socket_get_status` | `src/include/core/socket.h` | `socket_get_status` | `core` | `COVERED` | 3 |
-| `api:src/include/core/socket.h:socket_init` | `src/include/core/socket.h` | `socket_init` | `core` | `COVERED` | 2 |
-| `api:src/include/core/socket.h:socket_listen` | `src/include/core/socket.h` | `socket_listen` | `core` | `COVERED` | 3 |
-| `api:src/include/core/socket.h:socket_recv` | `src/include/core/socket.h` | `socket_recv` | `core` | `COVERED` | 3 |
-| `api:src/include/core/socket.h:socket_self_test` | `src/include/core/socket.h` | `socket_self_test` | `core` | `COVERED` | 3 |
-| `api:src/include/core/socket.h:socket_send` | `src/include/core/socket.h` | `socket_send` | `core` | `COVERED` | 3 |
-| `api:src/include/core/socket.h:socket_set_nonblocking` | `src/include/core/socket.h` | `socket_set_nonblocking` | `core` | `COVERED` | 3 |
-| `api:src/include/core/socket.h:socket_state_name` | `src/include/core/socket.h` | `socket_state_name` | `core` | `COVERED` | 2 |
-| `api:src/include/core/socket.h:socket_validate_state` | `src/include/core/socket.h` | `socket_validate_state` | `core` | `COVERED` | 3 |
+| `api:src/include/core/socket.h:socket_accept` | `src/include/core/socket.h` | `socket_accept` | `core` | `COVERED` | 4 |
+| `api:src/include/core/socket.h:socket_bind` | `src/include/core/socket.h` | `socket_bind` | `core` | `COVERED` | 4 |
+| `api:src/include/core/socket.h:socket_close` | `src/include/core/socket.h` | `socket_close` | `core` | `COVERED` | 4 |
+| `api:src/include/core/socket.h:socket_connect` | `src/include/core/socket.h` | `socket_connect` | `core` | `COVERED` | 4 |
+| `api:src/include/core/socket.h:socket_create` | `src/include/core/socket.h` | `socket_create` | `core` | `COVERED` | 4 |
+| `api:src/include/core/socket.h:socket_family_name` | `src/include/core/socket.h` | `socket_family_name` | `core` | `COVERED` | 3 |
+| `api:src/include/core/socket.h:socket_get_info` | `src/include/core/socket.h` | `socket_get_info` | `core` | `COVERED` | 4 |
+| `api:src/include/core/socket.h:socket_get_status` | `src/include/core/socket.h` | `socket_get_status` | `core` | `COVERED` | 4 |
+| `api:src/include/core/socket.h:socket_init` | `src/include/core/socket.h` | `socket_init` | `core` | `COVERED` | 3 |
+| `api:src/include/core/socket.h:socket_listen` | `src/include/core/socket.h` | `socket_listen` | `core` | `COVERED` | 4 |
+| `api:src/include/core/socket.h:socket_recv` | `src/include/core/socket.h` | `socket_recv` | `core` | `COVERED` | 4 |
+| `api:src/include/core/socket.h:socket_self_test` | `src/include/core/socket.h` | `socket_self_test` | `core` | `COVERED` | 4 |
+| `api:src/include/core/socket.h:socket_send` | `src/include/core/socket.h` | `socket_send` | `core` | `COVERED` | 4 |
+| `api:src/include/core/socket.h:socket_set_nonblocking` | `src/include/core/socket.h` | `socket_set_nonblocking` | `core` | `COVERED` | 4 |
+| `api:src/include/core/socket.h:socket_state_name` | `src/include/core/socket.h` | `socket_state_name` | `core` | `COVERED` | 3 |
+| `api:src/include/core/socket.h:socket_validate_state` | `src/include/core/socket.h` | `socket_validate_state` | `core` | `COVERED` | 4 |
 | `api:src/include/core/spinlock.h:spinlock_acquire` | `src/include/core/spinlock.h` | `spinlock_acquire` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_init` | `src/include/core/spinlock.h` | `spinlock_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_release` | `src/include/core/spinlock.h` | `spinlock_release` | `core` | `PENDING` | 0 |
@@ -3014,72 +3014,72 @@
 | `c:src/core/sk_buff.c:skb_update_layout` | `src/core/sk_buff.c` | `skb_update_layout` | `core` | `COVERED` | 3 |
 | `c:src/core/sk_buff.c:skb_validate_locked` | `src/core/sk_buff.c` | `skb_validate_locked` | `core` | `COVERED` | 3 |
 | `c:src/core/sk_buff.c:skb_validate_state` | `src/core/sk_buff.c` | `skb_validate_state` | `core` | `COVERED` | 3 |
-| `c:src/core/socket.c:socket_accept` | `src/core/socket.c` | `socket_accept` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_address_clear` | `src/core/socket.c` | `socket_address_clear` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_address_equal` | `src/core/socket.c` | `socket_address_equal` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_address_valid` | `src/core/socket.c` | `socket_address_valid` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_allocate` | `src/core/socket.c` | `socket_allocate` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_bind` | `src/core/socket.c` | `socket_bind` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_close` | `src/core/socket.c` | `socket_close` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_connect` | `src/core/socket.c` | `socket_connect` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_copy_address` | `src/core/socket.c` | `socket_copy_address` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_create` | `src/core/socket.c` | `socket_create` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_destroy` | `src/core/socket.c` | `socket_destroy` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_drop_buffer` | `src/core/socket.c` | `socket_drop_buffer` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_family_name` | `src/core/socket.c` | `socket_family_name` | `core` | `PENDING` | 0 |
-| `c:src/core/socket.c:socket_fill_info` | `src/core/socket.c` | `socket_fill_info` | `core` | `COVERED` | 3 |
-| `c:src/core/socket.c:socket_find_fd` | `src/core/socket.c` | `socket_find_fd` | `core` | `PENDING` | 0 |
-| `c:src/core/socket.c:socket_get_info` | `src/core/socket.c` | `socket_get_info` | `core` | `COVERED` | 3 |
-| `c:src/core/socket.c:socket_get_status` | `src/core/socket.c` | `socket_get_status` | `core` | `COVERED` | 3 |
-| `c:src/core/socket.c:socket_index_locked` | `src/core/socket.c` | `socket_index_locked` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_init` | `src/core/socket.c` | `socket_init` | `core` | `PENDING` | 0 |
-| `c:src/core/socket.c:socket_listen` | `src/core/socket.c` | `socket_listen` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_pending_pop_locked` | `src/core/socket.c` | `socket_pending_pop_locked` | `core` | `PENDING` | 0 |
+| `c:src/core/socket.c:socket_accept` | `src/core/socket.c` | `socket_accept` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_address_clear` | `src/core/socket.c` | `socket_address_clear` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_address_equal` | `src/core/socket.c` | `socket_address_equal` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_address_valid` | `src/core/socket.c` | `socket_address_valid` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_allocate` | `src/core/socket.c` | `socket_allocate` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_bind` | `src/core/socket.c` | `socket_bind` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_close` | `src/core/socket.c` | `socket_close` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_connect` | `src/core/socket.c` | `socket_connect` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_copy_address` | `src/core/socket.c` | `socket_copy_address` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_create` | `src/core/socket.c` | `socket_create` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_destroy` | `src/core/socket.c` | `socket_destroy` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_drop_buffer` | `src/core/socket.c` | `socket_drop_buffer` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_family_name` | `src/core/socket.c` | `socket_family_name` | `core` | `COVERED` | 1 |
+| `c:src/core/socket.c:socket_fill_info` | `src/core/socket.c` | `socket_fill_info` | `core` | `COVERED` | 4 |
+| `c:src/core/socket.c:socket_find_fd` | `src/core/socket.c` | `socket_find_fd` | `core` | `COVERED` | 1 |
+| `c:src/core/socket.c:socket_get_info` | `src/core/socket.c` | `socket_get_info` | `core` | `COVERED` | 4 |
+| `c:src/core/socket.c:socket_get_status` | `src/core/socket.c` | `socket_get_status` | `core` | `COVERED` | 4 |
+| `c:src/core/socket.c:socket_index_locked` | `src/core/socket.c` | `socket_index_locked` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_init` | `src/core/socket.c` | `socket_init` | `core` | `COVERED` | 1 |
+| `c:src/core/socket.c:socket_listen` | `src/core/socket.c` | `socket_listen` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_pending_pop_locked` | `src/core/socket.c` | `socket_pending_pop_locked` | `core` | `COVERED` | 1 |
 | `c:src/core/socket.c:socket_pending_remove_locked` | `src/core/socket.c` | `socket_pending_remove_locked` | `core` | `PENDING` | 0 |
-| `c:src/core/socket.c:socket_poll_revents` | `src/core/socket.c` | `socket_poll_revents` | `core` | `PENDING` | 0 |
-| `c:src/core/socket.c:socket_queue_clear` | `src/core/socket.c` | `socket_queue_clear` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_queue_front_locked` | `src/core/socket.c` | `socket_queue_front_locked` | `core` | `PENDING` | 0 |
-| `c:src/core/socket.c:socket_queue_pop_locked` | `src/core/socket.c` | `socket_queue_pop_locked` | `core` | `PENDING` | 0 |
-| `c:src/core/socket.c:socket_queue_push_locked` | `src/core/socket.c` | `socket_queue_push_locked` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_record_failure_locked` | `src/core/socket.c` | `socket_record_failure_locked` | `core` | `PENDING` | 0 |
-| `c:src/core/socket.c:socket_recv` | `src/core/socket.c` | `socket_recv` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_self_test` | `src/core/socket.c` | `socket_self_test` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_send` | `src/core/socket.c` | `socket_send` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_set_nonblocking` | `src/core/socket.c` | `socket_set_nonblocking` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_state_name` | `src/core/socket.c` | `socket_state_name` | `core` | `PENDING` | 0 |
-| `c:src/core/socket.c:socket_tcp_accept` | `src/core/socket.c` | `socket_tcp_accept` | `core` | `PENDING` | 0 |
-| `c:src/core/socket.c:socket_tcp_close` | `src/core/socket.c` | `socket_tcp_close` | `core` | `PENDING` | 0 |
-| `c:src/core/socket.c:socket_tcp_connect` | `src/core/socket.c` | `socket_tcp_connect` | `core` | `PENDING` | 0 |
-| `c:src/core/socket.c:socket_tcp_listen` | `src/core/socket.c` | `socket_tcp_listen` | `core` | `PENDING` | 0 |
-| `c:src/core/socket.c:socket_tcp_recv` | `src/core/socket.c` | `socket_tcp_recv` | `core` | `PENDING` | 0 |
-| `c:src/core/socket.c:socket_tcp_send` | `src/core/socket.c` | `socket_tcp_send` | `core` | `PENDING` | 0 |
-| `c:src/core/socket.c:socket_tcp_unavailable` | `src/core/socket.c` | `socket_tcp_unavailable` | `core` | `PENDING` | 0 |
-| `c:src/core/socket.c:socket_tcp_wait` | `src/core/socket.c` | `socket_tcp_wait` | `core` | `PENDING` | 0 |
-| `c:src/core/socket.c:socket_test_block` | `src/core/socket.c` | `socket_test_block` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_test_count` | `src/core/socket.c` | `socket_test_count` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_test_wake` | `src/core/socket.c` | `socket_test_wake` | `core` | `COVERED` | 2 |
+| `c:src/core/socket.c:socket_poll_revents` | `src/core/socket.c` | `socket_poll_revents` | `core` | `COVERED` | 1 |
+| `c:src/core/socket.c:socket_queue_clear` | `src/core/socket.c` | `socket_queue_clear` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_queue_front_locked` | `src/core/socket.c` | `socket_queue_front_locked` | `core` | `COVERED` | 1 |
+| `c:src/core/socket.c:socket_queue_pop_locked` | `src/core/socket.c` | `socket_queue_pop_locked` | `core` | `COVERED` | 1 |
+| `c:src/core/socket.c:socket_queue_push_locked` | `src/core/socket.c` | `socket_queue_push_locked` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_record_failure_locked` | `src/core/socket.c` | `socket_record_failure_locked` | `core` | `COVERED` | 1 |
+| `c:src/core/socket.c:socket_recv` | `src/core/socket.c` | `socket_recv` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_self_test` | `src/core/socket.c` | `socket_self_test` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_send` | `src/core/socket.c` | `socket_send` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_set_nonblocking` | `src/core/socket.c` | `socket_set_nonblocking` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_state_name` | `src/core/socket.c` | `socket_state_name` | `core` | `COVERED` | 1 |
+| `c:src/core/socket.c:socket_tcp_accept` | `src/core/socket.c` | `socket_tcp_accept` | `core` | `COVERED` | 1 |
+| `c:src/core/socket.c:socket_tcp_close` | `src/core/socket.c` | `socket_tcp_close` | `core` | `COVERED` | 1 |
+| `c:src/core/socket.c:socket_tcp_connect` | `src/core/socket.c` | `socket_tcp_connect` | `core` | `COVERED` | 1 |
+| `c:src/core/socket.c:socket_tcp_listen` | `src/core/socket.c` | `socket_tcp_listen` | `core` | `COVERED` | 1 |
+| `c:src/core/socket.c:socket_tcp_recv` | `src/core/socket.c` | `socket_tcp_recv` | `core` | `COVERED` | 1 |
+| `c:src/core/socket.c:socket_tcp_send` | `src/core/socket.c` | `socket_tcp_send` | `core` | `COVERED` | 1 |
+| `c:src/core/socket.c:socket_tcp_unavailable` | `src/core/socket.c` | `socket_tcp_unavailable` | `core` | `COVERED` | 1 |
+| `c:src/core/socket.c:socket_tcp_wait` | `src/core/socket.c` | `socket_tcp_wait` | `core` | `COVERED` | 1 |
+| `c:src/core/socket.c:socket_test_block` | `src/core/socket.c` | `socket_test_block` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_test_count` | `src/core/socket.c` | `socket_test_count` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_test_wake` | `src/core/socket.c` | `socket_test_wake` | `core` | `COVERED` | 3 |
 | `c:src/core/socket.c:socket_test_yield` | `src/core/socket.c` | `socket_test_yield` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_unix_accept` | `src/core/socket.c` | `socket_unix_accept` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_unix_bind` | `src/core/socket.c` | `socket_unix_bind` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_unix_close` | `src/core/socket.c` | `socket_unix_close` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_unix_connect` | `src/core/socket.c` | `socket_unix_connect` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_unix_listen` | `src/core/socket.c` | `socket_unix_listen` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_unix_path_length` | `src/core/socket.c` | `socket_unix_path_length` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_unix_recv` | `src/core/socket.c` | `socket_unix_recv` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_unix_send` | `src/core/socket.c` | `socket_unix_send` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_validate_state` | `src/core/socket.c` | `socket_validate_state` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_vfs_close` | `src/core/socket.c` | `socket_vfs_close` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_vfs_ioctl` | `src/core/socket.c` | `socket_vfs_ioctl` | `core` | `PENDING` | 0 |
-| `c:src/core/socket.c:socket_vfs_lseek` | `src/core/socket.c` | `socket_vfs_lseek` | `core` | `PENDING` | 0 |
-| `c:src/core/socket.c:socket_vfs_open` | `src/core/socket.c` | `socket_vfs_open` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_vfs_poll` | `src/core/socket.c` | `socket_vfs_poll` | `core` | `PENDING` | 0 |
-| `c:src/core/socket.c:socket_vfs_read` | `src/core/socket.c` | `socket_vfs_read` | `core` | `PENDING` | 0 |
-| `c:src/core/socket.c:socket_vfs_sync` | `src/core/socket.c` | `socket_vfs_sync` | `core` | `PENDING` | 0 |
-| `c:src/core/socket.c:socket_vfs_write` | `src/core/socket.c` | `socket_vfs_write` | `core` | `PENDING` | 0 |
-| `c:src/core/socket.c:socket_wait_condition` | `src/core/socket.c` | `socket_wait_condition` | `core` | `PENDING` | 0 |
-| `c:src/core/socket.c:socket_wait_local` | `src/core/socket.c` | `socket_wait_local` | `core` | `PENDING` | 0 |
-| `c:src/core/socket.c:socket_wait_owner` | `src/core/socket.c` | `socket_wait_owner` | `core` | `COVERED` | 2 |
-| `c:src/core/socket.c:socket_wake` | `src/core/socket.c` | `socket_wake` | `core` | `COVERED` | 2 |
+| `c:src/core/socket.c:socket_unix_accept` | `src/core/socket.c` | `socket_unix_accept` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_unix_bind` | `src/core/socket.c` | `socket_unix_bind` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_unix_close` | `src/core/socket.c` | `socket_unix_close` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_unix_connect` | `src/core/socket.c` | `socket_unix_connect` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_unix_listen` | `src/core/socket.c` | `socket_unix_listen` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_unix_path_length` | `src/core/socket.c` | `socket_unix_path_length` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_unix_recv` | `src/core/socket.c` | `socket_unix_recv` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_unix_send` | `src/core/socket.c` | `socket_unix_send` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_validate_state` | `src/core/socket.c` | `socket_validate_state` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_vfs_close` | `src/core/socket.c` | `socket_vfs_close` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_vfs_ioctl` | `src/core/socket.c` | `socket_vfs_ioctl` | `core` | `COVERED` | 1 |
+| `c:src/core/socket.c:socket_vfs_lseek` | `src/core/socket.c` | `socket_vfs_lseek` | `core` | `COVERED` | 1 |
+| `c:src/core/socket.c:socket_vfs_open` | `src/core/socket.c` | `socket_vfs_open` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_vfs_poll` | `src/core/socket.c` | `socket_vfs_poll` | `core` | `COVERED` | 1 |
+| `c:src/core/socket.c:socket_vfs_read` | `src/core/socket.c` | `socket_vfs_read` | `core` | `COVERED` | 1 |
+| `c:src/core/socket.c:socket_vfs_sync` | `src/core/socket.c` | `socket_vfs_sync` | `core` | `COVERED` | 1 |
+| `c:src/core/socket.c:socket_vfs_write` | `src/core/socket.c` | `socket_vfs_write` | `core` | `COVERED` | 1 |
+| `c:src/core/socket.c:socket_wait_condition` | `src/core/socket.c` | `socket_wait_condition` | `core` | `COVERED` | 1 |
+| `c:src/core/socket.c:socket_wait_local` | `src/core/socket.c` | `socket_wait_local` | `core` | `COVERED` | 1 |
+| `c:src/core/socket.c:socket_wait_owner` | `src/core/socket.c` | `socket_wait_owner` | `core` | `COVERED` | 3 |
+| `c:src/core/socket.c:socket_wake` | `src/core/socket.c` | `socket_wake` | `core` | `COVERED` | 3 |
 | `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 42 |
 | `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 44 |
 | `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 34 |
@@ -7365,6 +7365,7 @@
 | `host:network:ipv4` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar configuraÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o, envio, broadcast, recepÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o, checksum e handlers IPv4 | datagramas validos sÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o entregues, entradas invÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡lidas sÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o recusadas e o estado ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â© restaurado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado IPv4, tabela de rotas e buffers falsos de ARP/Ethernet | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:network:route` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar rotas base, lookup, limites, overflow e restauracao | rotas validas e invalidas respeitam o contrato, sem residuos globais | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabela estatica de rotas no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:network:socket` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar handles geracionais, conexao, filas RX/TX, eventos, EOF, timeout, cancelamento, limites, reset e limpeza com TCP, timer e VFS falsos | operacoes validas preservam os eventos observaveis, entradas e transportes invalidos retornam codigos canonicos e nenhum socket residual permanece | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado dos sockets, filas de espera, buffers estaticos e transporte TCP falso no processo host | sockets, filas, callbacks TCP e estado de buffers reiniciados e artefatos preservados |
+| `host:network:socket-runtime` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar os caminhos TCP, adaptadores VFS, filas UNIX, espera cancelada, limites e autoteste dos sockets | operacoes validas preservam o estado publicado, erros canonicos permanecem observaveis e nenhum socket, fila ou buffer residual permanece | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico dos sockets e backends falsos no processo host | sockets, descritores, filas, SKBs falsos e estado global restaurados; manifestos, logs e cobertura preservados |
 | `host:network:tcp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar handshake, dados, ACK, FIN, RST, retransmissao, timeout e limpeza usando IPv4 e timer falsos | conexoes validas avancam no protocolo, segmentos invalidos falham com codigo canonico e nenhum estado residual permanece | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado TCP, callbacks, buffers estaticos e transporte IPv4 falso no processo host | conexoes, callbacks e estado TCP reiniciados e artefatos preservados |
 | `host:network:udp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar envio, reinjecao, checksum, listeners, broadcast e erros UDP com IPv4 simulado | datagramas validos sao entregues, entradas corrompidas sao rejeitadas e endpoints sao liberados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos, endpoints UDP e transporte IPv4 falso no processo host | todos os endpoints sao desvinculados e os artefatos sao preservados |
 | `host:process:ipc` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fixture de IPC com processos estaticos | mensagens, filas, espera, foco e limpeza validos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente processos estaticos e filas falsas no processo host | filas, foco e estado da fixture restaurados com artefatos preservados |
@@ -7868,32 +7869,7 @@
 - `c:src/core/app_remote.c:app_remote_write_record`
 - `c:src/core/app_remote.c:app_remote_write_u16`
 - `c:src/core/app_remote.c:app_remote_write_u32`
-- `c:src/core/socket.c:socket_family_name`
-- `c:src/core/socket.c:socket_find_fd`
-- `c:src/core/socket.c:socket_init`
-- `c:src/core/socket.c:socket_pending_pop_locked`
 - `c:src/core/socket.c:socket_pending_remove_locked`
-- `c:src/core/socket.c:socket_poll_revents`
-- `c:src/core/socket.c:socket_queue_front_locked`
-- `c:src/core/socket.c:socket_queue_pop_locked`
-- `c:src/core/socket.c:socket_record_failure_locked`
-- `c:src/core/socket.c:socket_state_name`
-- `c:src/core/socket.c:socket_tcp_accept`
-- `c:src/core/socket.c:socket_tcp_close`
-- `c:src/core/socket.c:socket_tcp_connect`
-- `c:src/core/socket.c:socket_tcp_listen`
-- `c:src/core/socket.c:socket_tcp_recv`
-- `c:src/core/socket.c:socket_tcp_send`
-- `c:src/core/socket.c:socket_tcp_unavailable`
-- `c:src/core/socket.c:socket_tcp_wait`
-- `c:src/core/socket.c:socket_vfs_ioctl`
-- `c:src/core/socket.c:socket_vfs_lseek`
-- `c:src/core/socket.c:socket_vfs_poll`
-- `c:src/core/socket.c:socket_vfs_read`
-- `c:src/core/socket.c:socket_vfs_sync`
-- `c:src/core/socket.c:socket_vfs_write`
-- `c:src/core/socket.c:socket_wait_condition`
-- `c:src/core/socket.c:socket_wait_local`
 - `c:src/core/syscall.c:syscall_copy_user_string`
 - `c:src/core/syscall.c:syscall_enable_user_mode`
 - `c:src/core/syscall.c:syscall_init`

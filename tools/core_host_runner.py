@@ -93,6 +93,8 @@ HTTP_RESULT_DIR = ROOT / "build" / "test-results" / "http-host"
 HTTP_BINARY = ROOT / "build" / "tests" / "test_http_host.exe"
 NET_SOCKET_RESULT_DIR = ROOT / "build" / "test-results" / "net-socket-host"
 NET_SOCKET_BINARY = ROOT / "build" / "tests" / "test_net_socket_host.exe"
+SOCKET_RUNTIME_RESULT_DIR = ROOT / "build" / "test-results" / "socket-runtime-host"
+SOCKET_RUNTIME_BINARY = ROOT / "build" / "tests" / "test_socket_host.exe"
 VMA_RESULT_DIR = ROOT / "build" / "test-results" / "vma-host"
 VMA_BINARY = ROOT / "build" / "tests" / "test_vma_host.exe"
 PAGING_RESULT_DIR = ROOT / "build" / "test-results" / "paging-host"
@@ -332,6 +334,11 @@ NET_SOCKET_SOURCE_FILES = (
     ROOT / "src" / "core" / "wait.c",
     ROOT / "src" / "core" / "net_buffer.c",
     ROOT / "src" / "core" / "log.c",
+    ROOT / "src" / "core" / "string.c",
+)
+SOCKET_RUNTIME_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_socket_host.c",
+    ROOT / "src" / "core" / "socket.c",
     ROOT / "src" / "core" / "string.c",
 )
 VMA_SOURCE_FILES = (
@@ -744,6 +751,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
     if case_id == "host:network:socket":
         return (NET_SOCKET_RESULT_DIR, NET_SOCKET_BINARY,
                 NET_SOCKET_SOURCE_FILES, "net-socket-host")
+    if case_id == "host:network:socket-runtime":
+        return (SOCKET_RUNTIME_RESULT_DIR, SOCKET_RUNTIME_BINARY,
+                SOCKET_RUNTIME_SOURCE_FILES, "socket-runtime-host")
     if case_id == "host:memory:vma":
         return VMA_RESULT_DIR, VMA_BINARY, VMA_SOURCE_FILES, "vma-host"
     if case_id == "host:memory:paging":
@@ -1024,7 +1034,8 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:network:dns", "host:network:dhcp",
                                  "host:network:ethernet", "host:network:tcp",
                                  "host:security:tls", "host:network:http",
-                                 "host:network:socket", "host:memory:vma",
+                                 "host:network:socket", "host:network:socket-runtime",
+                                 "host:memory:vma",
                                  "host:memory:paging", "host:memory:memory",
                                  "host:process:signals", "host:process:ipc",
                                  "host:core:workqueue", "host:core:bearssl-compat",

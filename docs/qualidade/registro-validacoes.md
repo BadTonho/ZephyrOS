@@ -4963,3 +4963,20 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   passaram nesta etapa. O catalogo registra 7.211 superficies, 4.794
   `COVERED`, 2.417 `PENDING` e 125 casos. O fechamento integral, o gate estrito
   e a validacao TST7 completa continuam pendentes.
+
+- Incremento Network/socket runtime concluido em 2026-09-03. Foi criado o caso
+  host-only `host:network:socket-runtime` com o alvo
+  `make test-socket-runtime-host`. A fixture liga o `src/core/socket.c` real a
+  backends falsos de TCP, VFS, filas UNIX, espera, SKB e processo; exercita
+  inicializacao, conexao, I/O, EOF, erros, polling, cancelamento, capacidade,
+  autoteste e limpeza sem rede ou hardware.
+
+  `make test-socket-runtime-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
+  passou. O relatorio instrumentado
+  `build/test-results/socket-runtime-host/coverage.json` resolveu as 64
+  funcoes de `src/core/socket.c`, com `unknown_addresses=[]` e
+  `ambiguous_symbols=[]`. A regressao `make test-net-socket-host`, os testes
+  unitarios dos runners, a sincronizacao/renderizacao e `make catalog-test`
+  tambem passaram. O catalogo registra 7.219 superficies, 4.867 `COVERED`,
+  2.352 `PENDING` e 127 casos. O fechamento integral, o gate estrito e a
+  validacao TST7 completa continuam pendentes.
