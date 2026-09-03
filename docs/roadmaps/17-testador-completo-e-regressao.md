@@ -1330,6 +1330,19 @@ pendente.
   `PENDING` e 96 casos. O fechamento integral, o gate estrito e a validacao
   TST7 completa continuam pendentes.
 
+- Incremento Drivers/Serial concluido em 2026-09-02: foi criado o caso host-only
+  `host:drivers:serial` com portas UART simuladas, instrumentacao dinamica e
+  isolamento de instrucoes privilegiadas no host. A fixture exercitou
+  inicializacao COM1, leitura sem dados e com dados, fila de transmissao,
+  filtragem de bytes, sequencias ANSI, estado do transmissor e limites de
+  `flush`. `make test-serial-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` terminou `PASS`, cobrindo as
+  duas superficies pendentes de `src/drivers/serial.c`, sem enderecos
+  desconhecidos ou ambiguos. O caminho freestanding preserva as operacoes de
+  portas e flags originais. O catalogo registra 7.196 superficies, 4.251
+  `COVERED`, 2.945 `PENDING` e 97 casos. O fechamento integral, o gate estrito
+  e a validacao TST7 completa continuam pendentes.
+
 - Incremento Core/wifi_manager concluido em 2026-09-02: foi criado o caso
   host-only `host:core:wifi-manager` com fixtures estaticos de PCI, USB e
   RTL8811CU. A fixture exercitou formatacao e busca case-insensitive de IDs,

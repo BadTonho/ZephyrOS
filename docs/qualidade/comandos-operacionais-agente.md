@@ -424,6 +424,16 @@ validacao do estado publicado; o relatorio fica em
 make test-rng-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-serial-host` compila o driver COM1 real com portas UART e flags de
+interrupcao simuladas. A fixture cobre inicializacao, leitura sem dados,
+recepcao, fila de transmissao, filtragem de bytes, sequencias ANSI e limites de
+flush sem acessar I/O privilegiado; o relatorio fica em
+`build/test-results/serial-host/`:
+
+```text
+make test-serial-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O caso `test-shell-input-host` exercita a entrada do Shell com terminal,
 historico, navegacao para cima/baixo, edicao, teclas de rolagem, cancelamento,
 bloqueio, modificadores e limite do buffer. A fixture usa apenas video,

@@ -30,27 +30,53 @@ static uint8_t serial_escape_state;
 static uint32_t serial_flush_locked(uint32_t budget);
 
 static uint32_t serial_suspend_interrupts(void) {
+#if defined(ZEPHYROS_HOST_TEST)
+    return 0U;
+#else
     uint32_t flags;
 
     asm volatile("pushf\n\tpop %0\n\tcli" : "=r"(flags) : : "memory");
     return flags;
+#endif
 }
 
 static void serial_restore_interrupts(uint32_t flags) {
+#if defined(ZEPHYROS_HOST_TEST)
+    (void)flags;
+#else
     if (flags & SERIAL_EFLAGS_INTERRUPT_ENABLE) {
         asm volatile("sti" : : : "memory");
     }
+#endif
 }
 
 static uint8_t serial_inb(uint16_t port) {
+#if defined(ZEPHYROS_HOST_TEST)
+    extern uint8_t serial_host_line_status;
+    extern uint8_t serial_host_data;
+
+    if (port == SERIAL_COM1_BASE + SERIAL_LINE_STATUS_OFFSET) {
+        return serial_host_line_status;
+    }
+    if (port == SERIAL_COM1_BASE + SERIAL_DATA_OFFSET) {
+        return serial_host_data;
+    }
+    return 0U;
+#else
     uint8_t value;
 
     asm volatile("inb %1, %0" : "=a"(value) : "Nd"(port));
     return value;
+#endif
 }
 
 static void serial_outb(uint16_t port, uint8_t value) {
+#if defined(ZEPHYROS_HOST_TEST)
+    (void)port;
+    (void)value;
+#else
     asm volatile("outb %0, %1" : : "a"(value), "Nd"(port));
+#endif
 }
 
 static uint16_t serial_next_index(uint16_t index) {

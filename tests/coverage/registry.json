@@ -992,6 +992,48 @@
       }
     },
     {
+      "id": "serial-host-dynamic",
+      "domain": "drivers-serial",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:drivers:serial"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/serial-host/coverage.json",
+      "coverage_sources": [
+        "src/drivers/serial.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-serial-host PASS com portas UART simuladas, inicializacao COM1, recepcao, fila de transmissao, filtragem de bytes, sequencias ANSI e limites de flush no relatorio instrumentado",
+      "case_definition": {
+        "id": "host:drivers:serial",
+        "scenario": "Contrato host-only do canal serial COM1",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "uart-port-stub"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "compilar e executar o driver serial real com registradores UART simulados",
+        "expected": "inicializacao, leitura, filtragem, enfileiramento e flush respeitam o contrato sem acessar portas I/O reais",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente estado UART e fila de transmissao do processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": []
+      }
+    },
+    {
       "id": "harness-apps-qemu-observed",
       "domain": "test-harness",
       "owner": "quality",
