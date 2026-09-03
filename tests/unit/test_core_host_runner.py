@@ -270,6 +270,16 @@ class CoreHostRunnerTests(unittest.TestCase):
         self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
                       "test_usb_transport_host.c", sources)
 
+    def test_gui_case_has_widget_fixture_sources(self):
+        result_dir, binary, sources, suite = core_host_runner.case_configuration(
+            "host:gui:widgets")
+        self.assertEqual(suite, "gui-host")
+        self.assertEqual(result_dir, core_host_runner.GUI_RESULT_DIR)
+        self.assertEqual(binary, core_host_runner.GUI_BINARY)
+        self.assertIn(core_host_runner.ROOT / "src" / "gui" / "gui.c", sources)
+        self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
+                      "test_gui_host.c", sources)
+
     def test_shell_core_case_has_shell_fixture_sources(self):
         result_dir, binary, sources, suite = core_host_runner.case_configuration(
             "host:shell:core")

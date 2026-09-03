@@ -543,6 +543,15 @@ hardware real. O relatorio fica em
 make test-usb-transport-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-gui-host` exercita as primitivas da GUI com framebuffer, fonte e
+metricas falsos. A fixture cobre temas, texto nativo e escalado, medicao,
+paineis, formas, gradientes, botoes, molduras e limites de tela, sem hardware
+real. O relatorio fica em `build/test-results/gui-host/`:
+
+```text
+make test-gui-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O caso `test-shell-command-utils-host` exercita os utilitarios de comandos do
 Shell com parsing de tokens e argumentos, comparacao de subcomandos,
 normalizacao para maiusculas, conversao numerica, limites, entradas invalidas
