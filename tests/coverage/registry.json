@@ -820,6 +820,49 @@
       }
     },
     {
+      "id": "procfs-host-dynamic",
+      "domain": "storage-procfs",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:storage:procfs"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/procfs-host/coverage.json",
+      "coverage_sources": [
+        "src/fs/procfs.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-procfs-host PASS com provider procfs real, VFS, processos, controles de log, snapshots, listagem, mapas, seeks, poll, ioctl, sync, limites e limpeza no relatorio instrumentado",
+      "case_definition": {
+        "id": "host:storage:procfs",
+        "scenario": "Contrato host-only da camada procfs",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "cpuinfo": "host-fallback"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "compilar e executar procfs real com VFS, processos, snapshots e controles de log estaticos",
+        "expected": "listagem, lookup, leitura, mapas, controles, permissoes, seeks, poll, ioctl, sync, indisponibilidade e invariantes preservam o contrato sem kernel ou hardware real",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente estruturas procfs, processos falsos e buffers estaticos do processo host",
+        "cleanup": "descritores fechados, snapshots liberados, processos falsos destruidos e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": []
+      }
+    },
+    {
       "id": "harness-apps-qemu-observed",
       "domain": "test-harness",
       "owner": "quality",

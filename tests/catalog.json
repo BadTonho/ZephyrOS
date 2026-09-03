@@ -12868,6 +12868,7 @@
         "host:storage:fat32",
         "host:storage:file-index",
         "host:storage:fs",
+        "host:storage:procfs",
         "host:storage:storage",
         "host:storage:vfs",
         "host:storage:vfs-path",
@@ -12928,6 +12929,7 @@
         "host:storage:fat32",
         "host:storage:file-index",
         "host:storage:fs",
+        "host:storage:procfs",
         "host:storage:storage",
         "host:storage:vfs",
         "host:storage:vfs-path",
@@ -12983,6 +12985,7 @@
         "host:network:udp",
         "host:security:tls",
         "host:storage:devfs",
+        "host:storage:procfs",
         "host:storage:vfs",
         "host:tst3:string-compress",
         "qemu:tst5:apps",
@@ -13036,6 +13039,7 @@
         "host:security:tls",
         "host:storage:file-index",
         "host:storage:fs",
+        "host:storage:procfs",
         "host:storage:storage",
         "host:storage:vfs",
         "host:storage:vfs-path",
@@ -26172,12 +26176,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/fs/procfs.h:procfs_is_ready",
@@ -26195,12 +26200,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/fs/procfs.h:procfs_list",
@@ -26218,12 +26224,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/fs/procfs.h:procfs_list_path",
@@ -26241,12 +26248,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/fs/procfs.h:procfs_lookup",
@@ -26264,12 +26272,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/fs/procfs.h:procfs_open_file",
@@ -26287,12 +26296,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/fs/procfs.h:procfs_reset_controls",
@@ -26310,12 +26320,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/fs/procfs.h:procfs_self_test",
@@ -26333,12 +26344,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/fs/procfs.h:procfs_validate_state",
@@ -26356,12 +26368,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/fs/storage.h:storage_atomic_write_file",
@@ -67055,6 +67068,7 @@
         "host:storage:fat32",
         "host:storage:file-index",
         "host:storage:fs",
+        "host:storage:procfs",
         "host:storage:storage",
         "host:storage:vfs",
         "host:storage:vfs-path",
@@ -67115,6 +67129,7 @@
         "host:storage:fat32",
         "host:storage:file-index",
         "host:storage:fs",
+        "host:storage:procfs",
         "host:storage:storage",
         "host:storage:vfs",
         "host:storage:vfs-path",
@@ -67170,6 +67185,7 @@
         "host:network:udp",
         "host:security:tls",
         "host:storage:devfs",
+        "host:storage:procfs",
         "host:storage:vfs",
         "host:tst3:string-compress",
         "qemu:tst5:apps",
@@ -67223,6 +67239,7 @@
         "host:security:tls",
         "host:storage:file-index",
         "host:storage:fs",
+        "host:storage:procfs",
         "host:storage:storage",
         "host:storage:vfs",
         "host:storage:vfs-path",
@@ -107811,12 +107828,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_append_decimal",
@@ -107834,12 +107852,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_append_hex",
@@ -107855,9 +107874,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:procfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_append_line_decimal",
@@ -107875,12 +107897,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_append_line_hex",
@@ -107896,9 +107919,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:procfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_append_line_text",
@@ -107916,12 +107942,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_append_text",
@@ -107939,12 +107966,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_buffer_contains",
@@ -107962,11 +107990,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_buffer_valid",
@@ -107984,11 +108013,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_build_pid_path",
@@ -108006,11 +108036,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_close",
@@ -108028,12 +108059,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_cmdline_read",
@@ -108051,11 +108083,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_control_get",
@@ -108073,11 +108106,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_control_parse_level",
@@ -108095,11 +108129,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_control_read",
@@ -108117,11 +108152,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_control_set",
@@ -108139,11 +108175,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_control_write",
@@ -108161,11 +108198,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_copy_text",
@@ -108183,12 +108221,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_cpuid",
@@ -108228,11 +108267,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_cpuinfo_read",
@@ -108250,11 +108290,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_entry_find",
@@ -108272,12 +108313,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_error_callback",
@@ -108295,11 +108337,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_global_read",
@@ -108317,12 +108360,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_init",
@@ -108338,9 +108382,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:procfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_ioctl",
@@ -108356,9 +108403,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:procfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_is_ready",
@@ -108374,9 +108424,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:procfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_list",
@@ -108392,9 +108445,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:procfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_list_path",
@@ -108412,12 +108468,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_log_level_name",
@@ -108435,10 +108492,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_lookup",
@@ -108456,12 +108514,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_lseek",
@@ -108479,11 +108538,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_meminfo_read",
@@ -108501,12 +108561,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_open",
@@ -108522,9 +108583,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:procfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_open_file",
@@ -108542,12 +108606,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_overflow_callback",
@@ -108565,11 +108630,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_parse_path",
@@ -108587,12 +108653,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_parse_pid",
@@ -108610,12 +108677,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_pid_name",
@@ -108633,12 +108701,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_poll",
@@ -108654,9 +108723,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:procfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_read",
@@ -108674,12 +108746,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_render_process",
@@ -108697,12 +108770,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_render_process_status",
@@ -108720,12 +108794,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_render_snapshot",
@@ -108743,12 +108818,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_reset_controls",
@@ -108766,11 +108842,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_self_test",
@@ -108788,11 +108865,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_sync",
@@ -108808,9 +108886,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:procfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_test_count",
@@ -108828,11 +108909,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_test_process_entry",
@@ -108848,9 +108930,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:procfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_test_read_path",
@@ -108868,11 +108953,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_test_write_path",
@@ -108890,11 +108976,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_uptime_read",
@@ -108912,11 +108999,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_validate_state",
@@ -108934,11 +109022,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_version_read",
@@ -108956,11 +109045,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_write",
@@ -108978,11 +109068,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/procfs.c:procfs_write_allowed",
@@ -109000,11 +109091,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:procfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_add_disk",
@@ -155426,6 +155518,71 @@
       ]
     },
     {
+      "id": "host:storage:devfs",
+      "scenario": "Contrato host-only da camada de dispositivos virtuais",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "compilar e executar dispositivos null, zero, tty, speaker e hda com transporte estatico",
+      "expected": "registro, permissoes, leituras, seeks, ioctl, indisponibilidade e invariantes preservam o contrato sem hardware real",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente estruturas devfs e buffers estaticos do processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/string.h:kmemset",
+        "api:src/include/core/string.h:kstrcmp",
+        "api:src/include/fs/devfs.h:devfs_copy_nodes",
+        "api:src/include/fs/devfs.h:devfs_get_status",
+        "api:src/include/fs/devfs.h:devfs_init",
+        "api:src/include/fs/devfs.h:devfs_is_ready",
+        "api:src/include/fs/devfs.h:devfs_list",
+        "api:src/include/fs/devfs.h:devfs_lookup",
+        "api:src/include/fs/devfs.h:devfs_open_file",
+        "api:src/include/fs/devfs.h:devfs_self_test",
+        "api:src/include/fs/devfs.h:devfs_validate_state",
+        "c:src/core/string.c:kmemset",
+        "c:src/core/string.c:kstrcmp",
+        "c:src/fs/devfs.c:devfs_copy_nodes",
+        "c:src/fs/devfs.c:devfs_copy_text",
+        "c:src/fs/devfs.c:devfs_find_hda",
+        "c:src/fs/devfs.c:devfs_generic_close",
+        "c:src/fs/devfs.c:devfs_generic_open",
+        "c:src/fs/devfs.c:devfs_get_status",
+        "c:src/fs/devfs.c:devfs_hda_capacity",
+        "c:src/fs/devfs.c:devfs_hda_lseek",
+        "c:src/fs/devfs.c:devfs_hda_read",
+        "c:src/fs/devfs.c:devfs_hda_sync",
+        "c:src/fs/devfs.c:devfs_init",
+        "c:src/fs/devfs.c:devfs_is_ready",
+        "c:src/fs/devfs.c:devfs_list",
+        "c:src/fs/devfs.c:devfs_lookup",
+        "c:src/fs/devfs.c:devfs_metric",
+        "c:src/fs/devfs.c:devfs_open_file",
+        "c:src/fs/devfs.c:devfs_operations",
+        "c:src/fs/devfs.c:devfs_path_node",
+        "c:src/fs/devfs.c:devfs_speaker_ioctl",
+        "c:src/fs/devfs.c:devfs_speaker_write",
+        "c:src/fs/devfs.c:devfs_tone_valid",
+        "c:src/fs/devfs.c:devfs_unavailable_ioctl",
+        "c:src/fs/devfs.c:devfs_unavailable_lseek",
+        "c:src/fs/devfs.c:devfs_unavailable_read",
+        "c:src/fs/devfs.c:devfs_unavailable_sync",
+        "c:src/fs/devfs.c:devfs_unavailable_write",
+        "c:src/fs/devfs.c:devfs_validate_state"
+      ]
+    },
+    {
       "id": "host:storage:fat12",
       "scenario": "Contrato host-only do driver FAT12 com imagem estatica",
       "owner": "quality",
@@ -155835,6 +155992,104 @@
         "storage",
         "fs",
         "negative"
+      ]
+    },
+    {
+      "id": "host:storage:procfs",
+      "scenario": "Contrato host-only da camada procfs",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "cpuinfo": "host-fallback"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "compilar e executar procfs real com VFS, processos, snapshots e controles de log estaticos",
+      "expected": "listagem, lookup, leitura, mapas, controles, permissoes, seeks, poll, ioctl, sync, indisponibilidade e invariantes preservam o contrato sem kernel ou hardware real",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente estruturas procfs, processos falsos e buffers estaticos do processo host",
+      "cleanup": "descritores fechados, snapshots liberados, processos falsos destruidos e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/string.h:kmemcpy",
+        "api:src/include/core/string.h:kmemset",
+        "api:src/include/core/string.h:kstrcmp",
+        "api:src/include/core/string.h:kstrlen",
+        "api:src/include/fs/procfs.h:procfs_init",
+        "api:src/include/fs/procfs.h:procfs_is_ready",
+        "api:src/include/fs/procfs.h:procfs_list",
+        "api:src/include/fs/procfs.h:procfs_list_path",
+        "api:src/include/fs/procfs.h:procfs_lookup",
+        "api:src/include/fs/procfs.h:procfs_open_file",
+        "api:src/include/fs/procfs.h:procfs_reset_controls",
+        "api:src/include/fs/procfs.h:procfs_self_test",
+        "api:src/include/fs/procfs.h:procfs_validate_state",
+        "c:src/core/string.c:kmemcpy",
+        "c:src/core/string.c:kmemset",
+        "c:src/core/string.c:kstrcmp",
+        "c:src/core/string.c:kstrlen",
+        "c:src/fs/procfs.c:procfs_append_char",
+        "c:src/fs/procfs.c:procfs_append_decimal",
+        "c:src/fs/procfs.c:procfs_append_hex",
+        "c:src/fs/procfs.c:procfs_append_line_decimal",
+        "c:src/fs/procfs.c:procfs_append_line_hex",
+        "c:src/fs/procfs.c:procfs_append_line_text",
+        "c:src/fs/procfs.c:procfs_append_text",
+        "c:src/fs/procfs.c:procfs_buffer_contains",
+        "c:src/fs/procfs.c:procfs_buffer_valid",
+        "c:src/fs/procfs.c:procfs_build_pid_path",
+        "c:src/fs/procfs.c:procfs_close",
+        "c:src/fs/procfs.c:procfs_cmdline_read",
+        "c:src/fs/procfs.c:procfs_control_get",
+        "c:src/fs/procfs.c:procfs_control_parse_level",
+        "c:src/fs/procfs.c:procfs_control_read",
+        "c:src/fs/procfs.c:procfs_control_set",
+        "c:src/fs/procfs.c:procfs_control_write",
+        "c:src/fs/procfs.c:procfs_copy_text",
+        "c:src/fs/procfs.c:procfs_cpuid_supported",
+        "c:src/fs/procfs.c:procfs_cpuinfo_read",
+        "c:src/fs/procfs.c:procfs_entry_find",
+        "c:src/fs/procfs.c:procfs_error_callback",
+        "c:src/fs/procfs.c:procfs_global_read",
+        "c:src/fs/procfs.c:procfs_init",
+        "c:src/fs/procfs.c:procfs_ioctl",
+        "c:src/fs/procfs.c:procfs_is_ready",
+        "c:src/fs/procfs.c:procfs_list",
+        "c:src/fs/procfs.c:procfs_list_path",
+        "c:src/fs/procfs.c:procfs_log_level_name",
+        "c:src/fs/procfs.c:procfs_lookup",
+        "c:src/fs/procfs.c:procfs_lseek",
+        "c:src/fs/procfs.c:procfs_meminfo_read",
+        "c:src/fs/procfs.c:procfs_open",
+        "c:src/fs/procfs.c:procfs_open_file",
+        "c:src/fs/procfs.c:procfs_overflow_callback",
+        "c:src/fs/procfs.c:procfs_parse_path",
+        "c:src/fs/procfs.c:procfs_parse_pid",
+        "c:src/fs/procfs.c:procfs_pid_name",
+        "c:src/fs/procfs.c:procfs_poll",
+        "c:src/fs/procfs.c:procfs_read",
+        "c:src/fs/procfs.c:procfs_render_process",
+        "c:src/fs/procfs.c:procfs_render_process_status",
+        "c:src/fs/procfs.c:procfs_render_snapshot",
+        "c:src/fs/procfs.c:procfs_reset_controls",
+        "c:src/fs/procfs.c:procfs_self_test",
+        "c:src/fs/procfs.c:procfs_sync",
+        "c:src/fs/procfs.c:procfs_test_count",
+        "c:src/fs/procfs.c:procfs_test_process_entry",
+        "c:src/fs/procfs.c:procfs_test_read_path",
+        "c:src/fs/procfs.c:procfs_test_write_path",
+        "c:src/fs/procfs.c:procfs_uptime_read",
+        "c:src/fs/procfs.c:procfs_validate_state",
+        "c:src/fs/procfs.c:procfs_version_read",
+        "c:src/fs/procfs.c:procfs_write",
+        "c:src/fs/procfs.c:procfs_write_allowed"
       ]
     },
     {
@@ -166032,71 +166287,6 @@
         "tst6",
         "stress",
         "storage"
-      ]
-    },
-    {
-      "id": "host:storage:devfs",
-      "scenario": "Contrato host-only da camada de dispositivos virtuais",
-      "owner": "quality",
-      "layer": "host",
-      "executor": "host",
-      "profile": "host-only",
-      "timeout_seconds": 120,
-      "heartbeat_timeout_seconds": 1,
-      "isolation": "fixture",
-      "parameters": {
-        "compiler": "HOST_CC",
-        "instrumentation": "-finstrument-functions",
-        "warnings": "error"
-      },
-      "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "compilar e executar dispositivos null, zero, tty, speaker e hda com transporte estatico",
-      "expected": "registro, permissoes, leituras, seeks, ioctl, indisponibilidade e invariantes preservam o contrato sem hardware real",
-      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
-      "effects": "somente estruturas devfs e buffers estaticos do processo host",
-      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
-      "status": "AUTOMATED",
-      "surface_ids": [
-        "api:src/include/core/string.h:kmemset",
-        "api:src/include/core/string.h:kstrcmp",
-        "api:src/include/fs/devfs.h:devfs_copy_nodes",
-        "api:src/include/fs/devfs.h:devfs_get_status",
-        "api:src/include/fs/devfs.h:devfs_init",
-        "api:src/include/fs/devfs.h:devfs_is_ready",
-        "api:src/include/fs/devfs.h:devfs_list",
-        "api:src/include/fs/devfs.h:devfs_lookup",
-        "api:src/include/fs/devfs.h:devfs_open_file",
-        "api:src/include/fs/devfs.h:devfs_self_test",
-        "api:src/include/fs/devfs.h:devfs_validate_state",
-        "c:src/core/string.c:kmemset",
-        "c:src/core/string.c:kstrcmp",
-        "c:src/fs/devfs.c:devfs_copy_nodes",
-        "c:src/fs/devfs.c:devfs_copy_text",
-        "c:src/fs/devfs.c:devfs_find_hda",
-        "c:src/fs/devfs.c:devfs_generic_close",
-        "c:src/fs/devfs.c:devfs_generic_open",
-        "c:src/fs/devfs.c:devfs_get_status",
-        "c:src/fs/devfs.c:devfs_hda_capacity",
-        "c:src/fs/devfs.c:devfs_hda_lseek",
-        "c:src/fs/devfs.c:devfs_hda_read",
-        "c:src/fs/devfs.c:devfs_hda_sync",
-        "c:src/fs/devfs.c:devfs_init",
-        "c:src/fs/devfs.c:devfs_is_ready",
-        "c:src/fs/devfs.c:devfs_list",
-        "c:src/fs/devfs.c:devfs_lookup",
-        "c:src/fs/devfs.c:devfs_metric",
-        "c:src/fs/devfs.c:devfs_open_file",
-        "c:src/fs/devfs.c:devfs_operations",
-        "c:src/fs/devfs.c:devfs_path_node",
-        "c:src/fs/devfs.c:devfs_speaker_ioctl",
-        "c:src/fs/devfs.c:devfs_speaker_write",
-        "c:src/fs/devfs.c:devfs_tone_valid",
-        "c:src/fs/devfs.c:devfs_unavailable_ioctl",
-        "c:src/fs/devfs.c:devfs_unavailable_lseek",
-        "c:src/fs/devfs.c:devfs_unavailable_read",
-        "c:src/fs/devfs.c:devfs_unavailable_sync",
-        "c:src/fs/devfs.c:devfs_unavailable_write",
-        "c:src/fs/devfs.c:devfs_validate_state"
       ]
     }
   ],

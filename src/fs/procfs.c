@@ -303,6 +303,9 @@ static int procfs_meminfo_read(char* buffer, uint32_t capacity,
 }
 
 static int procfs_cpuid_supported(void) {
+#if defined(ZEPHYROS_HOST_TEST)
+    return 0;
+#else
     uint32_t original;
     uint32_t toggled;
     uint32_t current;
@@ -313,13 +316,23 @@ static int procfs_cpuid_supported(void) {
     asm volatile("pushfl\n\tpopl %0" : "=r"(current));
     asm volatile("pushl %0\n\tpopfl" : : "r"(original) : "cc");
     return ((current ^ original) & (1U << 21U)) != 0U;
+#endif
 }
 
 static void procfs_cpuid(uint32_t leaf, uint32_t subleaf, uint32_t* eax,
                          uint32_t* ebx, uint32_t* ecx, uint32_t* edx) {
+#if defined(ZEPHYROS_HOST_TEST)
+    (void)leaf;
+    (void)subleaf;
+    if (eax) *eax = 0U;
+    if (ebx) *ebx = 0U;
+    if (ecx) *ecx = 0U;
+    if (edx) *edx = 0U;
+#else
     asm volatile("cpuid"
                  : "=a"(*eax), "=b"(*ebx), "=c"(*ecx), "=d"(*edx)
                  : "a"(leaf), "c"(subleaf));
+#endif
 }
 
 static int procfs_cpuinfo_read(char* buffer, uint32_t capacity,

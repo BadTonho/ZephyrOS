@@ -1281,6 +1281,19 @@ pendente.
   7.197 superficies, 3.898 `COVERED`, 3.299 `PENDING` e 85 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Storage/procfs concluido em 2026-09-02: foi criado o caso
+  host-only `host:storage:procfs` com o provider procfs real, VFS, processos,
+  snapshots e controles de log simulados. A fixture exercitou inicializacao,
+  listagem, lookup, leitura dos nos globais e de processo, mapas, seeks, poll,
+  ioctl, sync, permissoes, controles, limites, callbacks de erro e limpeza.
+  A execucao instrumentada terminou `PASS` e resolveu as 10 superficies
+  pendentes de `src/fs/procfs.c`, incluindo `procfs_test_process_entry`, sem
+  enderecos desconhecidos ou ambiguos. A sincronizacao registra 7.196
+  superficies, 4.222 `COVERED`, 2.974 `PENDING` e 93 casos. A variante de
+  CPU no host usa somente o fallback de teste `ZEPHYROS_HOST_TEST`; o build
+  freestanding normal preserva o caminho Assembly original. O fechamento
+  integral, o gate estrito e a validacao TST7 completa continuam pendentes.
+
 - Incremento Core/wifi_manager concluido em 2026-09-02: foi criado o caso
   host-only `host:core:wifi-manager` com fixtures estaticos de PCI, USB e
   RTL8811CU. A fixture exercitou formatacao e busca case-insensitive de IDs,

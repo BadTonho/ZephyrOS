@@ -386,6 +386,15 @@ relatorio fica em `build/test-results/devfs-host/`:
 make test-devfs-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-procfs-host` compila o provider procfs real com VFS, processos,
+snapshots e controles de log simulados. Ele cobre listagem, lookup, leitura,
+mapas, seeks, poll, ioctl, sync, permissoes, limites e limpeza sem kernel ou
+hardware real; o relatorio fica em `build/test-results/procfs-host/`:
+
+```text
+make test-procfs-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O caso `test-shell-input-host` exercita a entrada do Shell com terminal,
 historico, navegacao para cima/baixo, edicao, teclas de rolagem, cancelamento,
 bloqueio, modificadores e limite do buffer. A fixture usa apenas video,

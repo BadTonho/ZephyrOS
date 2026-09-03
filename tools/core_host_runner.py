@@ -434,6 +434,13 @@ DEVFS_SOURCE_FILES = (
     ROOT / "src" / "fs" / "devfs.c",
     ROOT / "src" / "core" / "string.c",
 )
+PROCFS_RESULT_DIR = ROOT / "build" / "test-results" / "procfs-host"
+PROCFS_BINARY = ROOT / "build" / "tests" / "test_procfs_host.exe"
+PROCFS_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_procfs_host.c",
+    ROOT / "src" / "fs" / "procfs.c",
+    ROOT / "src" / "core" / "string.c",
+)
 SHELL_INPUT_RESULT_DIR = ROOT / "build" / "test-results" / "shell-input-host"
 SHELL_INPUT_BINARY = ROOT / "build" / "tests" / "test_shell_input_host.exe"
 SHELL_INPUT_SOURCE_FILES = (
@@ -569,6 +576,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return USB_MSC_RESULT_DIR, USB_MSC_BINARY, USB_MSC_SOURCE_FILES, "usb-msc-host"
     if case_id == "host:storage:devfs":
         return DEVFS_RESULT_DIR, DEVFS_BINARY, DEVFS_SOURCE_FILES, "devfs-host"
+    if case_id == "host:storage:procfs":
+        return PROCFS_RESULT_DIR, PROCFS_BINARY, PROCFS_SOURCE_FILES, "procfs-host"
     if case_id == "host:shell:input":
         return (SHELL_INPUT_RESULT_DIR, SHELL_INPUT_BINARY,
                 SHELL_INPUT_SOURCE_FILES, "shell-input-host")
@@ -748,6 +757,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:drivers:usb-hid",
                                  "host:drivers:usb-msc",
                                  "host:storage:devfs",
+                                 "host:storage:procfs",
                                  "host:shell:input", "host:shell:command-utils"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
