@@ -2431,7 +2431,7 @@
           "coverage"
         ]
       },
-      "evidence": "make test-rtc-status-host PASS com CMOS simulado, inicializacao invalida e valida, leituras BCD/binaria e 12/24 horas, calendario invalido, leituras estaveis, autoteste, timeout de atualizacao e estado restaurado; 26 enderecos observados sem desconhecidos ou ambiguos"
+      "evidence": "make test-rtc-status-host PASS com CMOS simulado, inicializacao invalida e valida, leituras BCD/binaria e 12/24 horas, calendario invalido, leituras estaveis, autoteste, timeout de atualizacao e estado restaurado; coverage.json instrumentado resolveu as 17 funcoes de src/drivers/rtc.c e nao registrou enderecos desconhecidos ou ambiguos"
     },
     {
       "id": "wifi-manager-host-dynamic",

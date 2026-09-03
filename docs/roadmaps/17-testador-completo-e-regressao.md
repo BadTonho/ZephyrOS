@@ -1673,8 +1673,8 @@ pendente.
   O relatorio instrumentado terminou `PASS`, resolveu as 17 funcoes de
   `src/drivers/rtc.c` e a funcao `kmemset` usada pela fixture, sem enderecos
   desconhecidos ou ambiguos. O catalogo foi sincronizado, renderizado e
-  validado; agora registra 7.209 superficies, 4.766 `COVERED`, 2.443
-  `PENDING` e 124 casos. O fechamento integral, o gate estrito e a validacao
+  validado; agora registra 7.219 superficies, 4.910 `COVERED`, 2.309
+  `PENDING` e 128 casos. O fechamento integral, o gate estrito e a validacao
   TST7 completa continuam pendentes.
 
 - Incremento Drivers/IDT concluido em 2026-09-03. Foi criado o caso host-only
