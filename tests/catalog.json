@@ -34428,11 +34428,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:icons",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/icons.h:icons_draw_desktop_bitmap_resized",
@@ -34450,11 +34451,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:icons",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/icons.h:icons_get_desktop",
@@ -34472,11 +34474,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:icons",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/icons.h:icons_get_desktop_bitmap_status",
@@ -34494,11 +34497,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:icons",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/icons.h:icons_get_fm",
@@ -34516,11 +34520,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:icons",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/icons.h:icons_get_registry",
@@ -34538,11 +34543,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:icons",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/icons.h:icons_get_tb",
@@ -34560,11 +34566,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:icons",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/icons.h:icons_get_wm",
@@ -34582,11 +34589,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:icons",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/icons.h:icons_init",
@@ -34604,11 +34612,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:icons",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/icons.h:icons_reset_defaults",
@@ -34626,11 +34635,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:icons",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/icons.h:icons_set_desktop",
@@ -34648,11 +34658,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:icons",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/icons.h:icons_set_fm",
@@ -34670,11 +34681,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:icons",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/icons.h:icons_set_tb",
@@ -34692,11 +34704,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:icons",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/icons.h:icons_set_wm",
@@ -34714,11 +34727,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:icons",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/settings.h:settings_close",
@@ -117099,9 +117113,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:icons"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/icons/icons.c:icons_draw_desktop_bitmap_resized",
@@ -117119,11 +117136,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:icons",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/icons/icons.c:icons_get_desktop",
@@ -117139,9 +117157,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:icons"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/icons/icons.c:icons_get_desktop_bitmap_status",
@@ -117157,9 +117178,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:icons"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/icons/icons.c:icons_get_fm",
@@ -117175,9 +117199,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:icons"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/icons/icons.c:icons_get_registry",
@@ -117193,9 +117220,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:icons"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/icons/icons.c:icons_get_tb",
@@ -117211,9 +117241,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:icons"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/icons/icons.c:icons_get_wm",
@@ -117229,9 +117262,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:icons"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/icons/icons.c:icons_init",
@@ -117247,9 +117283,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:icons"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/icons/icons.c:icons_load_desktop_bmp",
@@ -117265,9 +117304,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:icons"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/icons/icons.c:icons_release_desktop_bmps",
@@ -117283,9 +117325,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:icons"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/icons/icons.c:icons_reset_defaults",
@@ -117301,9 +117346,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:icons"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/icons/icons.c:icons_set_defaults",
@@ -117319,9 +117367,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:icons"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/icons/icons.c:icons_set_desktop",
@@ -117337,9 +117388,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:icons"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/icons/icons.c:icons_set_fm",
@@ -117355,9 +117409,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:icons"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/icons/icons.c:icons_set_tb",
@@ -117373,9 +117430,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:icons"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/icons/icons.c:icons_set_wm",
@@ -117391,9 +117451,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:icons"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/icons/icons.c:icons_warn_once",
@@ -117409,9 +117472,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:icons"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/kernel/kernel.c:desktop_process_main",
@@ -153682,6 +153748,65 @@
       ]
     },
     {
+      "id": "host:drivers:pci",
+      "scenario": "Contrato host-only da varredura e configuracao PCI",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "hardware": "pci-config-space-stub",
+        "max_devices": 64
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "validar leitura, escrita, varredura, inventario, multifuncao, limites e habilitacao de recursos PCI",
+      "expected": "dispositivos validos sao registrados, ausentes sao ignorados, limite retorna ERR_OVERFLOW e comandos aceitos sao publicados",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao, acesso I/O real ou timeout",
+      "effects": "somente espaco de configuracao, inventario e contadores falsos no processo host; nenhum porto I/O real e acessado",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/drivers/pci.h:pci_enable_bus_mastering",
+        "api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering",
+        "api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering",
+        "api:src/include/drivers/pci.h:pci_get_device",
+        "api:src/include/drivers/pci.h:pci_get_device_at",
+        "api:src/include/drivers/pci.h:pci_get_device_by_id",
+        "api:src/include/drivers/pci.h:pci_get_device_count",
+        "api:src/include/drivers/pci.h:pci_init",
+        "api:src/include/drivers/pci.h:pci_read",
+        "api:src/include/drivers/pci.h:pci_write",
+        "c:src/drivers/pci.c:inl",
+        "c:src/drivers/pci.c:outl",
+        "c:src/drivers/pci.c:pci_enable_bus_mastering",
+        "c:src/drivers/pci.c:pci_enable_io_and_bus_mastering",
+        "c:src/drivers/pci.c:pci_enable_memory_and_bus_mastering",
+        "c:src/drivers/pci.c:pci_get_device",
+        "c:src/drivers/pci.c:pci_get_device_at",
+        "c:src/drivers/pci.c:pci_get_device_by_id",
+        "c:src/drivers/pci.c:pci_get_device_count",
+        "c:src/drivers/pci.c:pci_init",
+        "c:src/drivers/pci.c:pci_read",
+        "c:src/drivers/pci.c:pci_scan_device",
+        "c:src/drivers/pci.c:pci_scan_function",
+        "c:src/drivers/pci.c:pci_write"
+      ],
+      "tags": [
+        "host",
+        "drivers",
+        "pci",
+        "inventory",
+        "limits",
+        "coverage"
+      ]
+    },
+    {
       "id": "host:drivers:rng",
       "scenario": "Contrato host-only do estado e leitura de entropia RDRAND",
       "owner": "quality",
@@ -158028,6 +158153,72 @@
         "c:src/core/kernel_tests_blackbox.c:blackbox_snapshot",
         "c:src/core/kernel_tests_blackbox.c:blackbox_wait_for_marker",
         "c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox"
+      ]
+    },
+    {
+      "id": "host:ui:icons",
+      "scenario": "Contrato host-only do registro e cache de icones",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "hardware": "bmp-and-vesa-stubs"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "validar defaults, mutacoes, fallback, cache BMP, limites VESA e falhas controladas",
+      "expected": "registro vetorial permanece utilizavel sem filesystem e BMPs validos sao aceitos somente no formato esperado",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente registro, cache e dispositivos BMP/VESA falsos no processo host",
+      "cleanup": "processo host encerrado, cache liberado e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/ui/icons.h:icons_draw_desktop_bitmap",
+        "api:src/include/ui/icons.h:icons_draw_desktop_bitmap_resized",
+        "api:src/include/ui/icons.h:icons_get_desktop",
+        "api:src/include/ui/icons.h:icons_get_desktop_bitmap_status",
+        "api:src/include/ui/icons.h:icons_get_fm",
+        "api:src/include/ui/icons.h:icons_get_registry",
+        "api:src/include/ui/icons.h:icons_get_tb",
+        "api:src/include/ui/icons.h:icons_get_wm",
+        "api:src/include/ui/icons.h:icons_init",
+        "api:src/include/ui/icons.h:icons_reset_defaults",
+        "api:src/include/ui/icons.h:icons_set_desktop",
+        "api:src/include/ui/icons.h:icons_set_fm",
+        "api:src/include/ui/icons.h:icons_set_tb",
+        "api:src/include/ui/icons.h:icons_set_wm",
+        "c:src/icons/icons.c:icons_draw_desktop_bitmap",
+        "c:src/icons/icons.c:icons_draw_desktop_bitmap_resized",
+        "c:src/icons/icons.c:icons_get_desktop",
+        "c:src/icons/icons.c:icons_get_desktop_bitmap_status",
+        "c:src/icons/icons.c:icons_get_fm",
+        "c:src/icons/icons.c:icons_get_registry",
+        "c:src/icons/icons.c:icons_get_tb",
+        "c:src/icons/icons.c:icons_get_wm",
+        "c:src/icons/icons.c:icons_init",
+        "c:src/icons/icons.c:icons_load_desktop_bmp",
+        "c:src/icons/icons.c:icons_release_desktop_bmps",
+        "c:src/icons/icons.c:icons_reset_defaults",
+        "c:src/icons/icons.c:icons_set_defaults",
+        "c:src/icons/icons.c:icons_set_desktop",
+        "c:src/icons/icons.c:icons_set_fm",
+        "c:src/icons/icons.c:icons_set_tb",
+        "c:src/icons/icons.c:icons_set_wm",
+        "c:src/icons/icons.c:icons_warn_once"
+      ],
+      "tags": [
+        "host",
+        "ui",
+        "icons",
+        "bitmap",
+        "limits",
+        "coverage"
       ]
     },
     {
@@ -167699,65 +167890,6 @@
         "tst6",
         "stress",
         "storage"
-      ]
-    },
-    {
-      "id": "host:drivers:pci",
-      "scenario": "Contrato host-only da varredura e configuracao PCI",
-      "owner": "quality",
-      "layer": "host",
-      "executor": "host",
-      "profile": "host-only",
-      "timeout_seconds": 120,
-      "heartbeat_timeout_seconds": 1,
-      "isolation": "fixture",
-      "parameters": {
-        "compiler": "HOST_CC",
-        "instrumentation": "-finstrument-functions",
-        "warnings": "error",
-        "hardware": "pci-config-space-stub",
-        "max_devices": 64
-      },
-      "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "validar leitura, escrita, varredura, inventario, multifuncao, limites e habilitacao de recursos PCI",
-      "expected": "dispositivos validos sao registrados, ausentes sao ignorados, limite retorna ERR_OVERFLOW e comandos aceitos sao publicados",
-      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao, acesso I/O real ou timeout",
-      "effects": "somente espaco de configuracao, inventario e contadores falsos no processo host; nenhum porto I/O real e acessado",
-      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
-      "status": "AUTOMATED",
-      "surface_ids": [
-        "api:src/include/drivers/pci.h:pci_enable_bus_mastering",
-        "api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering",
-        "api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering",
-        "api:src/include/drivers/pci.h:pci_get_device",
-        "api:src/include/drivers/pci.h:pci_get_device_at",
-        "api:src/include/drivers/pci.h:pci_get_device_by_id",
-        "api:src/include/drivers/pci.h:pci_get_device_count",
-        "api:src/include/drivers/pci.h:pci_init",
-        "api:src/include/drivers/pci.h:pci_read",
-        "api:src/include/drivers/pci.h:pci_write",
-        "c:src/drivers/pci.c:inl",
-        "c:src/drivers/pci.c:outl",
-        "c:src/drivers/pci.c:pci_enable_bus_mastering",
-        "c:src/drivers/pci.c:pci_enable_io_and_bus_mastering",
-        "c:src/drivers/pci.c:pci_enable_memory_and_bus_mastering",
-        "c:src/drivers/pci.c:pci_get_device",
-        "c:src/drivers/pci.c:pci_get_device_at",
-        "c:src/drivers/pci.c:pci_get_device_by_id",
-        "c:src/drivers/pci.c:pci_get_device_count",
-        "c:src/drivers/pci.c:pci_init",
-        "c:src/drivers/pci.c:pci_read",
-        "c:src/drivers/pci.c:pci_scan_device",
-        "c:src/drivers/pci.c:pci_scan_function",
-        "c:src/drivers/pci.c:pci_write"
-      ],
-      "tags": [
-        "host",
-        "drivers",
-        "pci",
-        "inventory",
-        "limits",
-        "coverage"
       ]
     }
   ],

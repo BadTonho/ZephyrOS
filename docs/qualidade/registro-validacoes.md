@@ -4729,3 +4729,16 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   de `make test-pci-host` apos o build limpo, `make catalog-test` e 59 testes
   unitarios dos runners. O fechamento integral, o gate estrito e a validacao
   TST7 completa continuam pendentes.
+
+- Incremento UI/icones concluido em 2026-09-03: foi criado o caso host-only
+  `host:ui:icons` e o alvo `make test-icons-host`. A fixture exercitou defaults,
+  mutacoes, fallback sem filesystem, carga de BMP, formato invalido, falha de
+  memoria, cache, desenho e limites VESA com dependencias estaticas falsas. O
+  relatorio instrumentado terminou `PASS`, resolveu as 18 funcoes de
+  `src/icons/icons.c` sem enderecos desconhecidos ou ambiguos e nao acessou
+  hardware. Foram executados `make q3check`, `make clean`, `make`, o caso apos
+  o build limpo, 74 casos host compativeis do registro, a sincronizacao e
+  renderizacao do catalogo e `make catalog-test`; todos passaram. O catalogo
+  registra 7.198 superficies, 4.380 `COVERED`, 2.818 `PENDING` e 113 casos.
+  O fechamento integral, o gate estrito e a validacao TST7 completa continuam
+  pendentes.
