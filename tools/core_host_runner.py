@@ -469,6 +469,12 @@ WAV_SOURCE_FILES = (
     ROOT / "src" / "fs" / "wav.c",
     ROOT / "src" / "core" / "string.c",
 )
+MEDIAPLAYER_RESULT_DIR = ROOT / "build" / "test-results" / "mediaplayer-host"
+MEDIAPLAYER_BINARY = ROOT / "build" / "tests" / "test_mediaplayer_host.exe"
+MEDIAPLAYER_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_mediaplayer_host.c",
+    ROOT / "src" / "shell" / "mediaplayer.c",
+)
 BMP_RESULT_DIR = ROOT / "build" / "test-results" / "bmp-host"
 BMP_BINARY = ROOT / "build" / "tests" / "test_bmp_host.exe"
 BMP_SOURCE_FILES = (
@@ -814,6 +820,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return SYSFS_RESULT_DIR, SYSFS_BINARY, SYSFS_SOURCE_FILES, "sysfs-host"
     if case_id == "host:storage:wav":
         return WAV_RESULT_DIR, WAV_BINARY, WAV_SOURCE_FILES, "wav-host"
+    if case_id == "host:shell:mediaplayer":
+        return (MEDIAPLAYER_RESULT_DIR, MEDIAPLAYER_BINARY,
+                MEDIAPLAYER_SOURCE_FILES, "mediaplayer-host")
     if case_id == "host:storage:bmp":
         return BMP_RESULT_DIR, BMP_BINARY, BMP_SOURCE_FILES, "bmp-host"
     if case_id == "host:drivers:rng":
@@ -1069,6 +1078,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:storage:procfs",
                                  "host:storage:sysfs",
                                  "host:storage:wav",
+                                 "host:shell:mediaplayer",
                                  "host:storage:bmp",
                                  "host:drivers:rng",
                                  "host:drivers:serial",

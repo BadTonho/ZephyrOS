@@ -1028,6 +1028,49 @@
       }
     },
     {
+      "id": "mediaplayer-host-dynamic",
+      "domain": "shell-mediaplayer",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:shell:mediaplayer"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/mediaplayer-host/coverage.json",
+      "coverage_sources": [
+        "src/shell/mediaplayer.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-mediaplayer-host PASS com playback de audio e imagem, modo combinado, estados de pausa, retomada, parada, atualizacao, limites de nome, erros de arquivo, formatos invalidos, recursos indisponiveis e limpeza no relatorio instrumentado",
+      "case_definition": {
+        "id": "host:shell:mediaplayer",
+        "scenario": "Contrato host-only do Media Player",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "audio": "AC97 fake",
+          "video": "VESA fake"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "executar audio, imagem e reproducao combinada com arquivos estaticos e dependencias de hardware simuladas",
+        "expected": "o Media Player preserva estados, metadados, erros canonicos, limites e ownership sem hardware ou armazenamento real",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente buffers estaticos, allocator de teste, recovery fake e contadores de audio e video do processo host",
+        "cleanup": "dados de audio e imagem liberados, estado parado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": []
+      }
+    },
+    {
       "id": "bmp-host-dynamic",
       "domain": "storage-bmp",
       "owner": "quality",

@@ -160,6 +160,17 @@ class CoreHostRunnerTests(unittest.TestCase):
         self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
                       "test_wav_host.c", sources)
 
+    def test_mediaplayer_case_has_runtime_fixture_sources(self):
+        result_dir, binary, sources, suite = core_host_runner.case_configuration(
+            "host:shell:mediaplayer")
+        self.assertEqual(suite, "mediaplayer-host")
+        self.assertEqual(result_dir, core_host_runner.MEDIAPLAYER_RESULT_DIR)
+        self.assertEqual(binary, core_host_runner.MEDIAPLAYER_BINARY)
+        self.assertIn(core_host_runner.ROOT / "src" / "shell" /
+                      "mediaplayer.c", sources)
+        self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
+                      "test_mediaplayer_host.c", sources)
+
     def test_bmp_case_has_graphics_fixture_sources(self):
         result_dir, binary, sources, suite = core_host_runner.case_configuration(
             "host:storage:bmp")

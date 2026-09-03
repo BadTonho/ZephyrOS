@@ -1379,6 +1379,26 @@ pendente.
   O fechamento integral, o gate estrito e a validacao TST7 completa continuam
   pendentes.
 
+- Incremento Shell/Media Player concluido em 2026-09-03. Foi criado o caso
+  host-only `host:shell:mediaplayer` com o alvo
+  `make test-mediaplayer-host`. A fixture compila o
+  `src/shell/mediaplayer.c` real com arquivos, audio, imagem, AC97, VESA,
+  timer e recovery falsos; exercita playback individual e combinado, pausa,
+  retomada, parada, atualizacao, limite de nome, arquivos ausentes, formatos
+  invalidos, dependencias indisponiveis e limpeza.
+
+  `make test-mediaplayer-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
+  terminou `PASS`. O relatorio instrumentado
+  `build/test-results/mediaplayer-host/coverage.json` resolveu as 12
+  superficies de `src/shell/mediaplayer.c`, sem enderecos desconhecidos ou
+  ambiguos. Tambem passaram a sincronizacao/renderizacao do catalogo,
+  `make catalog-test`, `make q3check`, `make clean`, `make` e a execucao do
+  caso apos o build limpo. O catalogo registra 7.219 superficies, 4.929
+  `COVERED`, 2.290 `PENDING` e 130 casos. A declaracao de cobertura integral,
+  o gate estrito e a validacao TST7 completa continuam pendentes; `mp_main`,
+  que nao possui implementacao no codigo ativo, permanece pendente para
+  decisao de implementacao ou aposentadoria documentada.
+
 - Incremento Drivers/USB names concluido em 2026-09-02: os casos host-only
   existentes `host:drivers:usb-hid` e `host:drivers:usb-msc` passaram a ativar
   a instrumentacao tambem durante os contratos de nomes de estado e tipo. As

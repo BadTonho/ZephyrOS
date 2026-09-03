@@ -77,6 +77,7 @@ make test-ethernet-host
 make test-tcp-host
 make test-tls-host
 make test-tls-client-host
+make test-mediaplayer-host
 make test-socket-runtime-host
 make test-sysfs-host
 ```
@@ -92,6 +93,13 @@ engine BearSSL falso, socket, relogio e RNG deterministas. Ele exercita
 handshake, configuracao de data, envio, recepcao, EOF, falhas de I/O,
 indisponibilidade de entropia, limites de SNI, estado e limpeza sem rede
 externa; seu relatorio fica em `build/test-results/tls-client-host/`.
+
+O caso `test-mediaplayer-host` compila o `src/shell/mediaplayer.c` real com
+arquivos, audio, imagem, AC97, VESA, timer e recovery falsos. Ele exercita
+playback individual e combinado, pausa, retomada, parada, atualizacao,
+limites de nome, formatos invalidos, arquivos ausentes, dependencias
+indisponiveis e limpeza; seu relatorio fica em
+`build/test-results/mediaplayer-host/`.
 
 O caso `test-crypto-host` valida os contratos SHA-256, SHA-512 e Ed25519,
 incluindo o ajuste de scalar para `uint32_t` e a rejeicao de entradas invalidas.
