@@ -4621,3 +4621,14 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   sincronizado com 7.198 superficies, 4.294 `COVERED` e 2.904 `PENDING`.
   O fechamento integral, o gate estrito e a validacao TST7 completa continuam
   pendentes.
+
+- Incremento Shell/hosted concluido em 2026-09-03: foi criado o caso
+  host-only `host:shell:hosted` e o alvo `make test-shell-hosted-host` com
+  Window Manager, terminal e mouse falsos. A fixture exercitou modo Classic,
+  abertura, reabertura, callbacks de desenho/tecla/mouse, fechamento e
+  rollback quando o registro falha. A execucao terminou `PASS`, sem enderecos
+  desconhecidos ou ambiguos, resolvendo as tres superficies pendentes de
+  `src/shell/shell_hosted.c`. O catalogo foi sincronizado com 7.198
+  superficies, 4.294 `COVERED` e 2.904 `PENDING`; os 63 casos host-only do
+  registro passaram nesta rodada. O fechamento integral, o gate estrito e a
+  validacao TST7 completa continuam pendentes.

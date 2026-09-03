@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7198**
-- Casos de teste: **103**
+- Casos de teste: **104**
 - Superfícies aposentadas: **22**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4294 |
+| `COVERED` | 4297 |
 | `MANUAL` | 0 |
-| `PENDING` | 2904 |
+| `PENDING` | 2901 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 103 |
+| `AUTOMATED` | 104 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -169,13 +169,13 @@
 | `api:src/include/apps/shell_runtime.h:shell_diagnostics_reset` | `src/include/apps/shell_runtime.h` | `shell_diagnostics_reset` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_runtime.h:shell_diagnostics_run_device_scan` | `src/include/apps/shell_runtime.h` | `shell_diagnostics_run_device_scan` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_runtime.h:shell_diagnostics_run_memcheck` | `src/include/apps/shell_runtime.h` | `shell_diagnostics_run_memcheck` | `apps` | `COVERED` | 2 |
-| `api:src/include/apps/shell_runtime.h:shell_hosted_open` | `src/include/apps/shell_runtime.h` | `shell_hosted_open` | `apps` | `COVERED` | 3 |
-| `api:src/include/apps/shell_runtime.h:shell_hosted_present_progress` | `src/include/apps/shell_runtime.h` | `shell_hosted_present_progress` | `apps` | `COVERED` | 3 |
-| `api:src/include/apps/shell_runtime.h:shell_hosted_reset` | `src/include/apps/shell_runtime.h` | `shell_hosted_reset` | `apps` | `COVERED` | 3 |
+| `api:src/include/apps/shell_runtime.h:shell_hosted_open` | `src/include/apps/shell_runtime.h` | `shell_hosted_open` | `apps` | `COVERED` | 4 |
+| `api:src/include/apps/shell_runtime.h:shell_hosted_present_progress` | `src/include/apps/shell_runtime.h` | `shell_hosted_present_progress` | `apps` | `COVERED` | 4 |
+| `api:src/include/apps/shell_runtime.h:shell_hosted_reset` | `src/include/apps/shell_runtime.h` | `shell_hosted_reset` | `apps` | `COVERED` | 4 |
 | `api:src/include/apps/shell_runtime.h:shell_network_validate_for_checks` | `src/include/apps/shell_runtime.h` | `shell_network_validate_for_checks` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_finish_command` | `src/include/apps/shell_runtime.h` | `shell_runtime_finish_command` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key` | `src/include/apps/shell_runtime.h` | `shell_runtime_handle_terminal_key` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible` | `src/include/apps/shell_runtime.h` | `shell_runtime_is_hosted_visible` | `apps` | `COVERED` | 3 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible` | `src/include/apps/shell_runtime.h` | `shell_runtime_is_hosted_visible` | `apps` | `COVERED` | 4 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager` | `src/include/apps/shell_runtime.h` | `shell_runtime_prepare_filemanager` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_reset_input` | `src/include/apps/shell_runtime.h` | `shell_runtime_reset_input` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal` | `src/include/apps/shell_runtime.h` | `shell_runtime_resume_terminal` | `apps` | `COVERED` | 7 |
@@ -6728,14 +6728,14 @@
 | `c:src/shell/shell_commands_wifi.c:wifi_state_color` | `src/shell/shell_commands_wifi.c` | `wifi_state_color` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_dispatch.c:shell_dispatch_execute` | `src/shell/shell_dispatch.c` | `shell_dispatch_execute` | `shell` | `COVERED` | 6 |
 | `c:src/shell/shell_dispatch.c:shell_dispatch_print_unknown` | `src/shell/shell_dispatch.c` | `shell_dispatch_print_unknown` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_hosted.c:shell_hosted_close` | `src/shell/shell_hosted.c` | `shell_hosted_close` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_hosted.c:shell_hosted_draw` | `src/shell/shell_hosted.c` | `shell_hosted_draw` | `shell` | `COVERED` | 3 |
-| `c:src/shell/shell_hosted.c:shell_hosted_key` | `src/shell/shell_hosted.c` | `shell_hosted_key` | `shell` | `COVERED` | 3 |
-| `c:src/shell/shell_hosted.c:shell_hosted_mouse` | `src/shell/shell_hosted.c` | `shell_hosted_mouse` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_hosted.c:shell_hosted_open` | `src/shell/shell_hosted.c` | `shell_hosted_open` | `shell` | `COVERED` | 3 |
-| `c:src/shell/shell_hosted.c:shell_hosted_present_progress` | `src/shell/shell_hosted.c` | `shell_hosted_present_progress` | `shell` | `COVERED` | 3 |
-| `c:src/shell/shell_hosted.c:shell_hosted_reset` | `src/shell/shell_hosted.c` | `shell_hosted_reset` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_hosted.c:shell_runtime_is_hosted_visible` | `src/shell/shell_hosted.c` | `shell_runtime_is_hosted_visible` | `shell` | `COVERED` | 3 |
+| `c:src/shell/shell_hosted.c:shell_hosted_close` | `src/shell/shell_hosted.c` | `shell_hosted_close` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_hosted.c:shell_hosted_draw` | `src/shell/shell_hosted.c` | `shell_hosted_draw` | `shell` | `COVERED` | 4 |
+| `c:src/shell/shell_hosted.c:shell_hosted_key` | `src/shell/shell_hosted.c` | `shell_hosted_key` | `shell` | `COVERED` | 4 |
+| `c:src/shell/shell_hosted.c:shell_hosted_mouse` | `src/shell/shell_hosted.c` | `shell_hosted_mouse` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_hosted.c:shell_hosted_open` | `src/shell/shell_hosted.c` | `shell_hosted_open` | `shell` | `COVERED` | 4 |
+| `c:src/shell/shell_hosted.c:shell_hosted_present_progress` | `src/shell/shell_hosted.c` | `shell_hosted_present_progress` | `shell` | `COVERED` | 4 |
+| `c:src/shell/shell_hosted.c:shell_hosted_reset` | `src/shell/shell_hosted.c` | `shell_hosted_reset` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_hosted.c:shell_runtime_is_hosted_visible` | `src/shell/shell_hosted.c` | `shell_runtime_is_hosted_visible` | `shell` | `COVERED` | 4 |
 | `c:src/shell/shell_input.c:shell_input_cancel_extended` | `src/shell/shell_input.c` | `shell_input_cancel_extended` | `shell` | `COVERED` | 8 |
 | `c:src/shell/shell_input.c:shell_input_get_buffer` | `src/shell/shell_input.c` | `shell_input_get_buffer` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_input.c:shell_input_handle_key` | `src/shell/shell_input.c` | `shell_input_handle_key` | `shell` | `COVERED` | 8 |
@@ -7333,6 +7333,7 @@
 | `host:security:tls` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar politica, estados, validade, cadeia, SAN, pinning, rotacao, revogacao e autoteste TLS com relogio e RNG falsos | identidades validas sao aceitas, rejeicoes retornam motivo canonico e capacidades indisponiveis permanecem explicitas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado TLS, politica e dependencias falsas no processo host | estado TLS e dependencias falsas reiniciados e artefatos preservados |
 | `host:shell:command-utils` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar parsing, validacao de argumentos, normalizacao e formatacao | utilitarios aceitam entradas validas, rejeitam limites e formatam valores corretamente | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos de entrada, saida e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:dispatch` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar comandos desconhecidos, entrada normalizada, limite e comando conhecido | dispatcher retorna ERR_NULL para entrada nula e apresenta diagnostico deterministico para comando desconhecido | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e handlers falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:shell:hosted` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | abrir, reabrir, desenhar, encaminhar tecla e mouse, fechar e rejeitar registro do Shell Classic hospedado | o Shell hospedado publica visibilidade, encaminha callbacks e restaura o estado quando o registro falha | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do adaptador, callbacks do Window Manager e terminal falso no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:input` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enviar scancodes falsos para comandos, historico, scroll, edicao, cancelamento e limite | entrada, historico e terminal preservam o contrato e nao ultrapassam o buffer | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos do Shell e stubs de terminal no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:introspection` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar parser hexadecimal com limites e entradas invalidas | parse_hex_u32 aceita digitos validos e rejeita prefixo, digito e overflow com codigos canonicos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:storage:block` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar block_self_test e block_cache_self_test com providers estaticos | filas BIO, limites, cancelamento, failpoints, cache, writeback e sync passam e o inventario retorna ao estado inicial | compilador ausente, warning, cobertura incompleta, failpoint residual, falha de assercao ou timeout | somente estruturas globais do processo host e buffers estaticos de provider | autotestes removem dispositivos temporarios, limpam cache e deixam fila sem pendencias |
@@ -9898,9 +9899,6 @@
 - `c:src/shell/shell_commands_wifi.c:wifi_print_usb_location`
 - `c:src/shell/shell_commands_wifi.c:wifi_scan`
 - `c:src/shell/shell_commands_wifi.c:wifi_state_color`
-- `c:src/shell/shell_hosted.c:shell_hosted_close`
-- `c:src/shell/shell_hosted.c:shell_hosted_mouse`
-- `c:src/shell/shell_hosted.c:shell_hosted_reset`
 - `c:src/shell/shell_job.c:shell_dispatch_cmd_job`
 - `c:src/shell/shell_job.c:shell_job_begin_drain`
 - `c:src/shell/shell_job.c:shell_job_cancel_requested`

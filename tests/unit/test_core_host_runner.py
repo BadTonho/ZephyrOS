@@ -237,6 +237,17 @@ class CoreHostRunnerTests(unittest.TestCase):
         self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
                       "test_coverage_host.c", sources)
 
+    def test_shell_hosted_case_has_window_fixture_sources(self):
+        result_dir, binary, sources, suite = core_host_runner.case_configuration(
+            "host:shell:hosted")
+        self.assertEqual(suite, "shell-hosted-host")
+        self.assertEqual(result_dir, core_host_runner.SHELL_HOSTED_RESULT_DIR)
+        self.assertEqual(binary, core_host_runner.SHELL_HOSTED_BINARY)
+        self.assertIn(core_host_runner.ROOT / "src" / "shell" /
+                      "shell_hosted.c", sources)
+        self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
+                      "test_shell_hosted_host.c", sources)
+
 
 if __name__ == "__main__":
     unittest.main()

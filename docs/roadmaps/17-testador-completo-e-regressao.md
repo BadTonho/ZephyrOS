@@ -1484,6 +1484,17 @@ pendente.
   7.196 superficies, 3.953 `COVERED`, 3.243 `PENDING` e 86 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Shell/hosted concluido em 2026-09-03: foi criado o caso
+  host-only `host:shell:hosted` e o alvo `make test-shell-hosted-host` com
+  Window Manager, terminal e mouse falsos. A fixture exercitou modo Classic,
+  abertura, reabertura, callbacks de desenho/tecla/mouse, fechamento e
+  rollback quando o registro falha. A execucao terminou `PASS`, sem enderecos
+  desconhecidos ou ambiguos, resolvendo as tres superficies pendentes de
+  `src/shell/shell_hosted.c`. O catalogo registra 7.198 superficies, 4.294
+  `COVERED` e 2.904 `PENDING`; os 63 casos host-only do registro passaram nesta
+  rodada. O fechamento integral, o gate estrito e a validacao TST7 completa
+  continuam pendentes.
+
 - Incremento Core/energia terminal concluido em 2026-09-03: o caso
   `host:core:power` passou a exercitar `power_reboot_commit`,
   `power_trigger_triple_fault` e `power_terminal_halt` por um seam exclusivo
