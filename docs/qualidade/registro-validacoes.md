@@ -4413,6 +4413,24 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
 
 - Concluida em: 2026-09-02
 
+  Incremento Drivers/usb_msc: foi criado o caso host-only
+  `host:drivers:usb-msc` e o alvo `make test-usb-msc-host` com transporte
+  BOT/SCSI e registro de bloco somente leitura simulados. A fixture exercitou
+  inquiry, TUR, capacity, READ10, leituras de bloco, filtros, limites, retry,
+  reset recovery, CSW corrompido, falhas de controle e registro,
+  indisponibilidade e recuperacao. A execucao instrumentada terminou `PASS`,
+  resolveu 25 superficies pendentes de `src/drivers/usb_msc.c` e nao registrou
+  enderecos desconhecidos ou ambiguos. O catalogo foi sincronizado e validado
+  com 7.196 superficies, 4.206 `COVERED`, 2.990 `PENDING` e 91 casos.
+  `make q3check`, `make clean`, `make`, `make test-usb-msc-host` e
+  `make catalog-test` passaram; os 30 testes unitarios dos runners tambem
+  passaram. `make test-tst7-quick` confirmou todas as suites host-only e
+  permaneceu `BLOCKED` somente em `test-tst3-sanitize` pela
+  indisponibilidade/permissao do runtime LLVM. Nenhuma escrita real em
+  armazenamento foi realizada.
+
+- Concluida em: 2026-09-02
+
   Incremento Drivers/usb_hid: foi criado o caso host-only
   `host:drivers:usb-hid` e o alvo `make test-usb-hid-host` com dispositivos
   HID Boot UHCI simulados. A fixture exercitou teclado, mouse, relatorios

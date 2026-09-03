@@ -2024,6 +2024,55 @@
       "evidence": "make test-usb-manager-host PASS com inventario PCI, runtime UHCI/EHCI, portas, dispositivos, polling, formatos, limites, falhas de driver, indisponibilidade e recuperacao; relatorio instrumentado sem enderecos desconhecidos ou ambiguos"
     },
     {
+      "id": "usb-msc-host-dynamic",
+      "domain": "drivers-usb-msc",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:drivers:usb-msc"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/usb-msc-host/coverage.json",
+      "coverage_sources": [
+        "src/drivers/usb_msc.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:drivers:usb-msc",
+        "scenario": "Armazenamento USB Mass Storage host-only com transporte BOT simulado",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only-readonly",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "enumerar dispositivo MSC UHCI, executar inquiry, TUR, capacity e READ10 simulados, validar block readonly e exercitar recuperacao",
+        "expected": "protocolo BOT/SCSI, identificadores, capacidade, leituras, estados, limites e falhas preservam o contrato sem escrita",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente transporte USB MSC, registro de bloco e buffers estaticos no processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "drivers",
+          "usb",
+          "msc",
+          "readonly",
+          "coverage"
+        ]
+      },
+      "evidence": "make test-usb-msc-host PASS com inquiry, TUR, capacity, READ10, block readonly, filtros, limites, retry, reset recovery, corrupcao de CSW e indisponibilidade; relatorio instrumentado sem enderecos desconhecidos ou ambiguos"
+    },
+    {
       "id": "usb-hid-host-dynamic",
       "domain": "drivers-usb-hid",
       "owner": "quality",

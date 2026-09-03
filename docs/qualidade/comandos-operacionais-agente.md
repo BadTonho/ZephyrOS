@@ -366,6 +366,16 @@ falsos e o relatorio fica em `build/test-results/usb-hid-host/`:
 make test-usb-hid-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-usb-msc-host` exercita o driver USB Mass Storage com transporte
+BOT/SCSI simulado: inquiry, TUR, capacity, READ10, registro de bloco somente
+leitura, filtros, limites, retry, reset recovery, CSW corrompido e estados de
+indisponibilidade. Nenhuma escrita real e feita; o relatorio fica em
+`build/test-results/usb-msc-host/`:
+
+```text
+make test-usb-msc-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O caso `test-shell-input-host` exercita a entrada do Shell com terminal,
 historico, navegacao para cima/baixo, edicao, teclas de rolagem, cancelamento,
 bloqueio, modificadores e limite do buffer. A fixture usa apenas video,
