@@ -1366,6 +1366,16 @@ pendente.
   casos. O fechamento integral, o gate estrito e a validacao TST7 completa
   continuam pendentes.
 
+- Incremento Drivers/USB names concluido em 2026-09-02: os casos host-only
+  existentes `host:drivers:usb-hid` e `host:drivers:usb-msc` passaram a ativar
+  a instrumentacao tambem durante os contratos de nomes de estado e tipo. As
+  execucoes `make test-usb-hid-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
+  e `make test-usb-msc-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
+  terminaram `PASS`; os relatorios resolveram as tres superficies pendentes,
+  sem enderecos desconhecidos ou ambiguos. O catalogo registra 7.196
+  superficies, 4.261 `COVERED`, 2.935 `PENDING` e 99 casos. O fechamento
+  integral, o gate estrito e a validacao TST7 completa continuam pendentes.
+
 - Incremento Core/wifi_manager concluido em 2026-09-02: foi criado o caso
   host-only `host:core:wifi-manager` com fixtures estaticos de PCI, USB e
   RTL8811CU. A fixture exercitou formatacao e busca case-insensitive de IDs,
