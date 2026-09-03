@@ -139,6 +139,16 @@ class CoreHostRunnerTests(unittest.TestCase):
         self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
                       "test_wav_host.c", sources)
 
+    def test_bmp_case_has_graphics_fixture_sources(self):
+        result_dir, binary, sources, suite = core_host_runner.case_configuration(
+            "host:storage:bmp")
+        self.assertEqual(suite, "bmp-host")
+        self.assertEqual(result_dir, core_host_runner.BMP_RESULT_DIR)
+        self.assertEqual(binary, core_host_runner.BMP_BINARY)
+        self.assertIn(core_host_runner.ROOT / "src" / "fs" / "bmp.c", sources)
+        self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
+                      "test_bmp_host.c", sources)
+
 
 if __name__ == "__main__":
     unittest.main()

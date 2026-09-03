@@ -146,6 +146,9 @@ class Tst7RunnerContractTests(unittest.TestCase):
         self.assertEqual(
             runner.HOST_CASE_TARGETS["host:storage:wav"],
             "test-wav-host")
+        self.assertEqual(
+            runner.HOST_CASE_TARGETS["host:storage:bmp"],
+            "test-bmp-host")
 
     def test_strict_coverage_option_is_parseable(self):
         arguments = runner.parser().parse_args([

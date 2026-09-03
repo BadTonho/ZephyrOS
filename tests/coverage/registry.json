@@ -906,6 +906,49 @@
       }
     },
     {
+      "id": "bmp-host-dynamic",
+      "domain": "storage-bmp",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:storage:bmp"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/bmp-host/coverage.json",
+      "coverage_sources": [
+        "src/fs/bmp.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-bmp-host PASS com parsing BMP 1/4/8/24 bpp, paletas, orientacao, desenho, transparencia, redimensionamento, escala, limites, overflow, truncamento e falhas de alocacao no relatorio instrumentado",
+      "case_definition": {
+        "id": "host:storage:bmp",
+        "scenario": "Contrato host-only do parser e renderizador BMP",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "video": "vesa-stub"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "compilar e executar parser BMP real com imagens estaticas, framebuffer e VESA simulados",
+        "expected": "headers, paletas, pixels, orientacao, transparencia, redimensionamento, escala, ownership e erros preservam o contrato sem hardware real",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente imagens BMP, framebuffer e allocator estaticos do processo host",
+        "cleanup": "imagens liberadas, alocacoes devolvidas e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": []
+      }
+    },
+    {
       "id": "harness-apps-qemu-observed",
       "domain": "test-harness",
       "owner": "quality",

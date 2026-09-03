@@ -448,6 +448,13 @@ WAV_SOURCE_FILES = (
     ROOT / "src" / "fs" / "wav.c",
     ROOT / "src" / "core" / "string.c",
 )
+BMP_RESULT_DIR = ROOT / "build" / "test-results" / "bmp-host"
+BMP_BINARY = ROOT / "build" / "tests" / "test_bmp_host.exe"
+BMP_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_bmp_host.c",
+    ROOT / "src" / "fs" / "bmp.c",
+    ROOT / "src" / "core" / "string.c",
+)
 SHELL_INPUT_RESULT_DIR = ROOT / "build" / "test-results" / "shell-input-host"
 SHELL_INPUT_BINARY = ROOT / "build" / "tests" / "test_shell_input_host.exe"
 SHELL_INPUT_SOURCE_FILES = (
@@ -587,6 +594,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return PROCFS_RESULT_DIR, PROCFS_BINARY, PROCFS_SOURCE_FILES, "procfs-host"
     if case_id == "host:storage:wav":
         return WAV_RESULT_DIR, WAV_BINARY, WAV_SOURCE_FILES, "wav-host"
+    if case_id == "host:storage:bmp":
+        return BMP_RESULT_DIR, BMP_BINARY, BMP_SOURCE_FILES, "bmp-host"
     if case_id == "host:shell:input":
         return (SHELL_INPUT_RESULT_DIR, SHELL_INPUT_BINARY,
                 SHELL_INPUT_SOURCE_FILES, "shell-input-host")
@@ -770,6 +779,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:storage:devfs",
                                  "host:storage:procfs",
                                  "host:storage:wav",
+                                 "host:storage:bmp",
                                  "host:shell:input", "host:shell:command-utils"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
