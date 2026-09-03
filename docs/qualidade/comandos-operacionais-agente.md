@@ -78,6 +78,7 @@ make test-tcp-host
 make test-tls-host
 make test-tls-client-host
 make test-mediaplayer-host
+make test-shell-job-host
 make test-socket-runtime-host
 make test-sysfs-host
 ```
@@ -100,6 +101,12 @@ playback individual e combinado, pausa, retomada, parada, atualizacao,
 limites de nome, formatos invalidos, arquivos ausentes, dependencias
 indisponiveis e limpeza; seu relatorio fica em
 `build/test-results/mediaplayer-host/`.
+
+O caso `test-shell-job-host` compila o executor cooperativo do Shell com
+relogio, teclado, IPC, video e runtime falsos. Ele exercita sucesso, falha,
+cancelamento, drenagem, timeout, deadlines, wakeups, eventos bloqueados,
+geracoes obsoletas e o comando `job status`; seu relatorio fica em
+`build/test-results/shell-job-host/`.
 
 O caso `test-crypto-host` valida os contratos SHA-256, SHA-512 e Ed25519,
 incluindo o ajuste de scalar para `uint32_t` e a rejeicao de entradas invalidas.

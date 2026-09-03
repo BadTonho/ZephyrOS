@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7219**
-- Casos de teste: **130**
+- Casos de teste: **131**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4929 |
+| `COVERED` | 4955 |
 | `MANUAL` | 0 |
-| `PENDING` | 2290 |
+| `PENDING` | 2264 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 130 |
+| `AUTOMATED` | 131 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -120,30 +120,30 @@
 | `api:src/include/apps/shell_introspection.h:shell_introspection_parse_u32` | `src/include/apps/shell_introspection.h` | `shell_introspection_parse_u32` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_introspection.h:shell_introspection_read_file` | `src/include/apps/shell_introspection.h` | `shell_introspection_read_file` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_job.h:shell_checks_start_job` | `src/include/apps/shell_job.h` | `shell_checks_start_job` | `apps` | `COVERED` | 1 |
-| `api:src/include/apps/shell_job.h:shell_dispatch_cmd_job` | `src/include/apps/shell_job.h` | `shell_dispatch_cmd_job` | `apps` | `COVERED` | 6 |
-| `api:src/include/apps/shell_job.h:shell_job_cancel_requested` | `src/include/apps/shell_job.h` | `shell_job_cancel_requested` | `apps` | `COVERED` | 6 |
-| `api:src/include/apps/shell_job.h:shell_job_clear_next_wake` | `src/include/apps/shell_job.h` | `shell_job_clear_next_wake` | `apps` | `COVERED` | 6 |
-| `api:src/include/apps/shell_job.h:shell_job_clear_timeout` | `src/include/apps/shell_job.h` | `shell_job_clear_timeout` | `apps` | `COVERED` | 6 |
-| `api:src/include/apps/shell_job.h:shell_job_generation_matches` | `src/include/apps/shell_job.h` | `shell_job_generation_matches` | `apps` | `COVERED` | 6 |
-| `api:src/include/apps/shell_job.h:shell_job_get_generation` | `src/include/apps/shell_job.h` | `shell_job_get_generation` | `apps` | `COVERED` | 6 |
-| `api:src/include/apps/shell_job.h:shell_job_get_status` | `src/include/apps/shell_job.h` | `shell_job_get_status` | `apps` | `COVERED` | 6 |
-| `api:src/include/apps/shell_job.h:shell_job_get_wait_timeout` | `src/include/apps/shell_job.h` | `shell_job_get_wait_timeout` | `apps` | `COVERED` | 6 |
-| `api:src/include/apps/shell_job.h:shell_job_handle_key` | `src/include/apps/shell_job.h` | `shell_job_handle_key` | `apps` | `COVERED` | 6 |
-| `api:src/include/apps/shell_job.h:shell_job_input_blocked` | `src/include/apps/shell_job.h` | `shell_job_input_blocked` | `apps` | `COVERED` | 6 |
-| `api:src/include/apps/shell_job.h:shell_job_is_active` | `src/include/apps/shell_job.h` | `shell_job_is_active` | `apps` | `COVERED` | 6 |
-| `api:src/include/apps/shell_job.h:shell_job_kind_name` | `src/include/apps/shell_job.h` | `shell_job_kind_name` | `apps` | `COVERED` | 6 |
-| `api:src/include/apps/shell_job.h:shell_job_note_stale_event` | `src/include/apps/shell_job.h` | `shell_job_note_stale_event` | `apps` | `COVERED` | 6 |
-| `api:src/include/apps/shell_job.h:shell_job_poll` | `src/include/apps/shell_job.h` | `shell_job_poll` | `apps` | `COVERED` | 6 |
-| `api:src/include/apps/shell_job.h:shell_job_pump_events` | `src/include/apps/shell_job.h` | `shell_job_pump_events` | `apps` | `COVERED` | 6 |
-| `api:src/include/apps/shell_job.h:shell_job_request_cancel` | `src/include/apps/shell_job.h` | `shell_job_request_cancel` | `apps` | `COVERED` | 6 |
-| `api:src/include/apps/shell_job.h:shell_job_reset` | `src/include/apps/shell_job.h` | `shell_job_reset` | `apps` | `COVERED` | 6 |
-| `api:src/include/apps/shell_job.h:shell_job_set_deadline` | `src/include/apps/shell_job.h` | `shell_job_set_deadline` | `apps` | `COVERED` | 6 |
-| `api:src/include/apps/shell_job.h:shell_job_set_next_wake` | `src/include/apps/shell_job.h` | `shell_job_set_next_wake` | `apps` | `COVERED` | 6 |
-| `api:src/include/apps/shell_job.h:shell_job_set_phase` | `src/include/apps/shell_job.h` | `shell_job_set_phase` | `apps` | `COVERED` | 6 |
-| `api:src/include/apps/shell_job.h:shell_job_set_progress` | `src/include/apps/shell_job.h` | `shell_job_set_progress` | `apps` | `COVERED` | 6 |
-| `api:src/include/apps/shell_job.h:shell_job_set_timeout` | `src/include/apps/shell_job.h` | `shell_job_set_timeout` | `apps` | `COVERED` | 6 |
-| `api:src/include/apps/shell_job.h:shell_job_start` | `src/include/apps/shell_job.h` | `shell_job_start` | `apps` | `COVERED` | 6 |
-| `api:src/include/apps/shell_job.h:shell_job_state_name` | `src/include/apps/shell_job.h` | `shell_job_state_name` | `apps` | `COVERED` | 6 |
+| `api:src/include/apps/shell_job.h:shell_dispatch_cmd_job` | `src/include/apps/shell_job.h` | `shell_dispatch_cmd_job` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_job.h:shell_job_cancel_requested` | `src/include/apps/shell_job.h` | `shell_job_cancel_requested` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_job.h:shell_job_clear_next_wake` | `src/include/apps/shell_job.h` | `shell_job_clear_next_wake` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_job.h:shell_job_clear_timeout` | `src/include/apps/shell_job.h` | `shell_job_clear_timeout` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_job.h:shell_job_generation_matches` | `src/include/apps/shell_job.h` | `shell_job_generation_matches` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_job.h:shell_job_get_generation` | `src/include/apps/shell_job.h` | `shell_job_get_generation` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_job.h:shell_job_get_status` | `src/include/apps/shell_job.h` | `shell_job_get_status` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_job.h:shell_job_get_wait_timeout` | `src/include/apps/shell_job.h` | `shell_job_get_wait_timeout` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_job.h:shell_job_handle_key` | `src/include/apps/shell_job.h` | `shell_job_handle_key` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_job.h:shell_job_input_blocked` | `src/include/apps/shell_job.h` | `shell_job_input_blocked` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_job.h:shell_job_is_active` | `src/include/apps/shell_job.h` | `shell_job_is_active` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_job.h:shell_job_kind_name` | `src/include/apps/shell_job.h` | `shell_job_kind_name` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_job.h:shell_job_note_stale_event` | `src/include/apps/shell_job.h` | `shell_job_note_stale_event` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_job.h:shell_job_poll` | `src/include/apps/shell_job.h` | `shell_job_poll` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_job.h:shell_job_pump_events` | `src/include/apps/shell_job.h` | `shell_job_pump_events` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_job.h:shell_job_request_cancel` | `src/include/apps/shell_job.h` | `shell_job_request_cancel` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_job.h:shell_job_reset` | `src/include/apps/shell_job.h` | `shell_job_reset` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_job.h:shell_job_set_deadline` | `src/include/apps/shell_job.h` | `shell_job_set_deadline` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_job.h:shell_job_set_next_wake` | `src/include/apps/shell_job.h` | `shell_job_set_next_wake` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_job.h:shell_job_set_phase` | `src/include/apps/shell_job.h` | `shell_job_set_phase` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_job.h:shell_job_set_progress` | `src/include/apps/shell_job.h` | `shell_job_set_progress` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_job.h:shell_job_set_timeout` | `src/include/apps/shell_job.h` | `shell_job_set_timeout` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_job.h:shell_job_start` | `src/include/apps/shell_job.h` | `shell_job_start` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_job.h:shell_job_state_name` | `src/include/apps/shell_job.h` | `shell_job_state_name` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_job.h:shell_network_start_job` | `src/include/apps/shell_job.h` | `shell_network_start_job` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/shell_job.h:shell_packages_start_job` | `src/include/apps/shell_job.h` | `shell_packages_start_job` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/shell_job.h:shell_storage_start_job` | `src/include/apps/shell_job.h` | `shell_storage_start_job` | `apps` | `PENDING` | 0 |
@@ -6780,36 +6780,36 @@
 | `c:src/shell/shell_introspection.c:shell_introspection_parse_hex_u32` | `src/shell/shell_introspection.c` | `shell_introspection_parse_hex_u32` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_introspection.c:shell_introspection_parse_u32` | `src/shell/shell_introspection.c` | `shell_introspection_parse_u32` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_introspection.c:shell_introspection_read_file` | `src/shell/shell_introspection.c` | `shell_introspection_read_file` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_job.c:shell_dispatch_cmd_job` | `src/shell/shell_job.c` | `shell_dispatch_cmd_job` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_job.c:shell_job_begin_drain` | `src/shell/shell_job.c` | `shell_job_begin_drain` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_job.c:shell_job_cancel_requested` | `src/shell/shell_job.c` | `shell_job_cancel_requested` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_job.c:shell_job_clear_next_wake` | `src/shell/shell_job.c` | `shell_job_clear_next_wake` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_job.c:shell_job_clear_timeout` | `src/shell/shell_job.c` | `shell_job_clear_timeout` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_job.c:shell_job_complete` | `src/shell/shell_job.c` | `shell_job_complete` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_job.c:shell_job_copy_text` | `src/shell/shell_job.c` | `shell_job_copy_text` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_job.c:shell_job_generation_matches` | `src/shell/shell_job.c` | `shell_job_generation_matches` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_job.c:shell_job_get_generation` | `src/shell/shell_job.c` | `shell_job_get_generation` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_job.c:shell_job_get_status` | `src/shell/shell_job.c` | `shell_job_get_status` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_job.c:shell_job_get_wait_timeout` | `src/shell/shell_job.c` | `shell_job_get_wait_timeout` | `shell` | `COVERED` | 6 |
-| `c:src/shell/shell_job.c:shell_job_handle_key` | `src/shell/shell_job.c` | `shell_job_handle_key` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_job.c:shell_job_input_blocked` | `src/shell/shell_job.c` | `shell_job_input_blocked` | `shell` | `COVERED` | 5 |
-| `c:src/shell/shell_job.c:shell_job_is_active` | `src/shell/shell_job.c` | `shell_job_is_active` | `shell` | `COVERED` | 6 |
-| `c:src/shell/shell_job.c:shell_job_kind_name` | `src/shell/shell_job.c` | `shell_job_kind_name` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_job.c:shell_job_mark_cancel_requested` | `src/shell/shell_job.c` | `shell_job_mark_cancel_requested` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_job.c:shell_job_mark_timeout_requested` | `src/shell/shell_job.c` | `shell_job_mark_timeout_requested` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_job.c:shell_job_note_stale_event` | `src/shell/shell_job.c` | `shell_job_note_stale_event` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_job.c:shell_job_poll` | `src/shell/shell_job.c` | `shell_job_poll` | `shell` | `COVERED` | 6 |
-| `c:src/shell/shell_job.c:shell_job_poll_drain` | `src/shell/shell_job.c` | `shell_job_poll_drain` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_job.c:shell_job_pump_events` | `src/shell/shell_job.c` | `shell_job_pump_events` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_job.c:shell_job_request_cancel` | `src/shell/shell_job.c` | `shell_job_request_cancel` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_job.c:shell_job_reset` | `src/shell/shell_job.c` | `shell_job_reset` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_job.c:shell_job_set_deadline` | `src/shell/shell_job.c` | `shell_job_set_deadline` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_job.c:shell_job_set_next_wake` | `src/shell/shell_job.c` | `shell_job_set_next_wake` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_job.c:shell_job_set_phase` | `src/shell/shell_job.c` | `shell_job_set_phase` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_job.c:shell_job_set_progress` | `src/shell/shell_job.c` | `shell_job_set_progress` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_job.c:shell_job_set_timeout` | `src/shell/shell_job.c` | `shell_job_set_timeout` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_job.c:shell_job_start` | `src/shell/shell_job.c` | `shell_job_start` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_job.c:shell_job_state_name` | `src/shell/shell_job.c` | `shell_job_state_name` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_job.c:shell_dispatch_cmd_job` | `src/shell/shell_job.c` | `shell_dispatch_cmd_job` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_job.c:shell_job_begin_drain` | `src/shell/shell_job.c` | `shell_job_begin_drain` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_job.c:shell_job_cancel_requested` | `src/shell/shell_job.c` | `shell_job_cancel_requested` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_job.c:shell_job_clear_next_wake` | `src/shell/shell_job.c` | `shell_job_clear_next_wake` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_job.c:shell_job_clear_timeout` | `src/shell/shell_job.c` | `shell_job_clear_timeout` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_job.c:shell_job_complete` | `src/shell/shell_job.c` | `shell_job_complete` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_job.c:shell_job_copy_text` | `src/shell/shell_job.c` | `shell_job_copy_text` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_job.c:shell_job_generation_matches` | `src/shell/shell_job.c` | `shell_job_generation_matches` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_job.c:shell_job_get_generation` | `src/shell/shell_job.c` | `shell_job_get_generation` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_job.c:shell_job_get_status` | `src/shell/shell_job.c` | `shell_job_get_status` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_job.c:shell_job_get_wait_timeout` | `src/shell/shell_job.c` | `shell_job_get_wait_timeout` | `shell` | `COVERED` | 7 |
+| `c:src/shell/shell_job.c:shell_job_handle_key` | `src/shell/shell_job.c` | `shell_job_handle_key` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_job.c:shell_job_input_blocked` | `src/shell/shell_job.c` | `shell_job_input_blocked` | `shell` | `COVERED` | 6 |
+| `c:src/shell/shell_job.c:shell_job_is_active` | `src/shell/shell_job.c` | `shell_job_is_active` | `shell` | `COVERED` | 7 |
+| `c:src/shell/shell_job.c:shell_job_kind_name` | `src/shell/shell_job.c` | `shell_job_kind_name` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_job.c:shell_job_mark_cancel_requested` | `src/shell/shell_job.c` | `shell_job_mark_cancel_requested` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_job.c:shell_job_mark_timeout_requested` | `src/shell/shell_job.c` | `shell_job_mark_timeout_requested` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_job.c:shell_job_note_stale_event` | `src/shell/shell_job.c` | `shell_job_note_stale_event` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_job.c:shell_job_poll` | `src/shell/shell_job.c` | `shell_job_poll` | `shell` | `COVERED` | 7 |
+| `c:src/shell/shell_job.c:shell_job_poll_drain` | `src/shell/shell_job.c` | `shell_job_poll_drain` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_job.c:shell_job_pump_events` | `src/shell/shell_job.c` | `shell_job_pump_events` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_job.c:shell_job_request_cancel` | `src/shell/shell_job.c` | `shell_job_request_cancel` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_job.c:shell_job_reset` | `src/shell/shell_job.c` | `shell_job_reset` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_job.c:shell_job_set_deadline` | `src/shell/shell_job.c` | `shell_job_set_deadline` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_job.c:shell_job_set_next_wake` | `src/shell/shell_job.c` | `shell_job_set_next_wake` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_job.c:shell_job_set_phase` | `src/shell/shell_job.c` | `shell_job_set_phase` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_job.c:shell_job_set_progress` | `src/shell/shell_job.c` | `shell_job_set_progress` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_job.c:shell_job_set_timeout` | `src/shell/shell_job.c` | `shell_job_set_timeout` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_job.c:shell_job_start` | `src/shell/shell_job.c` | `shell_job_start` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_job.c:shell_job_state_name` | `src/shell/shell_job.c` | `shell_job_state_name` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_pipeline.c:shell_pipeline_all_finished` | `src/shell/shell_pipeline.c` | `shell_pipeline_all_finished` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_pipeline.c:shell_pipeline_close_fd` | `src/shell/shell_pipeline.c` | `shell_pipeline_close_fd` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_pipeline.c:shell_pipeline_close_resources` | `src/shell/shell_pipeline.c` | `shell_pipeline_close_resources` | `shell` | `PENDING` | 0 |
@@ -7379,6 +7379,7 @@
 | `host:shell:hosted` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | abrir, reabrir, desenhar, encaminhar tecla e mouse, fechar e rejeitar registro do Shell Classic hospedado | o Shell hospedado publica visibilidade, encaminha callbacks e restaura o estado quando o registro falha | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do adaptador, callbacks do Window Manager e terminal falso no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:input` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enviar scancodes falsos para comandos, historico, scroll, edicao, cancelamento e limite | entrada, historico e terminal preservam o contrato e nao ultrapassam o buffer | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos do Shell e stubs de terminal no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:introspection` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar parser hexadecimal com limites e entradas invalidas | parse_hex_u32 aceita digitos validos e rejeita prefixo, digito e overflow com codigos canonicos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:shell:mediaplayer` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar audio, imagem e reproducao combinada com arquivos estaticos e dependencias de hardware simuladas | o Media Player preserva estados, metadados, erros canonicos, limites e ownership sem hardware ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos, allocator de teste, recovery fake e contadores de audio e video do processo host | dados de audio e imagem liberados, estado parado e manifesto, logs e cobertura preservados |
 | `host:storage:block` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar block_self_test e block_cache_self_test com providers estaticos | filas BIO, limites, cancelamento, failpoints, cache, writeback e sync passam e o inventario retorna ao estado inicial | compilador ausente, warning, cobertura incompleta, failpoint residual, falha de assercao ou timeout | somente estruturas globais do processo host e buffers estaticos de provider | autotestes removem dispositivos temporarios, limpam cache e deixam fila sem pendencias |
 | `host:storage:bmp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar parser BMP real com imagens estaticas, framebuffer e VESA simulados | headers, paletas, pixels, orientacao, transparencia, redimensionamento, escala, ownership e erros preservam o contrato sem hardware real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente imagens BMP, framebuffer e allocator estaticos do processo host | imagens liberadas, alocacoes devolvidas e manifesto, logs e cobertura preservados |
 | `host:storage:devfs` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar dispositivos null, zero, tty, speaker e hda com transporte estatico | registro, permissoes, leituras, seeks, ioctl, indisponibilidade e invariantes preservam o contrato sem hardware real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estruturas devfs e buffers estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7434,7 +7435,7 @@
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
 | `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
-| `host:shell:mediaplayer` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar audio, imagem e reproducao combinada com arquivos estaticos e dependencias de hardware simuladas | o Media Player preserva estados, metadados, erros canonicos, limites e ownership sem hardware ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos, allocator de teste, recovery fake e contadores de audio e video do processo host | dados de audio e imagem liberados, estado parado e manifesto, logs e cobertura preservados |
+| `host:shell:job` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar ciclo de vida, deadlines, wakeups, progresso, cancelamento, drenagem, timeout, erros, eventos IPC e diagnostico job status | jobs completam, falham, cancelam ou expiram com estado, codigo, geracao e limpeza coerentes | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do executor, filas IPC, relogio, teclado, video e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -9335,32 +9336,6 @@
 - `c:src/shell/shell_hosted.c:shell_hosted_reset`
 - `c:src/shell/shell_input.c:shell_input_get_buffer`
 - `c:src/shell/shell_input.c:shell_input_init`
-- `c:src/shell/shell_job.c:shell_dispatch_cmd_job`
-- `c:src/shell/shell_job.c:shell_job_begin_drain`
-- `c:src/shell/shell_job.c:shell_job_cancel_requested`
-- `c:src/shell/shell_job.c:shell_job_clear_next_wake`
-- `c:src/shell/shell_job.c:shell_job_clear_timeout`
-- `c:src/shell/shell_job.c:shell_job_complete`
-- `c:src/shell/shell_job.c:shell_job_copy_text`
-- `c:src/shell/shell_job.c:shell_job_generation_matches`
-- `c:src/shell/shell_job.c:shell_job_get_generation`
-- `c:src/shell/shell_job.c:shell_job_get_status`
-- `c:src/shell/shell_job.c:shell_job_handle_key`
-- `c:src/shell/shell_job.c:shell_job_kind_name`
-- `c:src/shell/shell_job.c:shell_job_mark_cancel_requested`
-- `c:src/shell/shell_job.c:shell_job_mark_timeout_requested`
-- `c:src/shell/shell_job.c:shell_job_note_stale_event`
-- `c:src/shell/shell_job.c:shell_job_poll_drain`
-- `c:src/shell/shell_job.c:shell_job_pump_events`
-- `c:src/shell/shell_job.c:shell_job_request_cancel`
-- `c:src/shell/shell_job.c:shell_job_reset`
-- `c:src/shell/shell_job.c:shell_job_set_deadline`
-- `c:src/shell/shell_job.c:shell_job_set_next_wake`
-- `c:src/shell/shell_job.c:shell_job_set_phase`
-- `c:src/shell/shell_job.c:shell_job_set_progress`
-- `c:src/shell/shell_job.c:shell_job_set_timeout`
-- `c:src/shell/shell_job.c:shell_job_start`
-- `c:src/shell/shell_job.c:shell_job_state_name`
 - `c:src/shell/shell_pipeline.c:shell_pipeline_all_finished`
 - `c:src/shell/shell_pipeline.c:shell_pipeline_close_fd`
 - `c:src/shell/shell_pipeline.c:shell_pipeline_close_resources`

@@ -1517,6 +1517,20 @@ pendente.
   7.196 superficies, 3.953 `COVERED`, 3.243 `PENDING` e 86 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Shell/job concluido em 2026-09-03. Foi criado o caso host-only
+  `host:shell:job` com o alvo `make test-shell-job-host`. A fixture compilou o
+  `src/shell/shell_job.c` real com relogio, teclado, IPC, video e runtime
+  falsos; exercitou ciclo de sucesso, falha, cancelamento, drenagem, timeout,
+  deadlines, wakeups, geracoes obsoletas, eventos bloqueados e `job status`.
+
+  A primeira execucao terminou `PASS` com warnings tratados como erro. O
+  relatorio instrumentado `build/test-results/shell-job-host/coverage.json`
+  resolveu as 30 superficies C de `src/shell/shell_job.c` e nao apresentou
+  enderecos desconhecidos ou ambiguos. Tambem passaram a sincronizacao e
+  renderizacao do catalogo. O catalogo registra 7.219 superficies, 4.955
+  `COVERED`, 2.264 `PENDING` e 131 casos. O fechamento integral, o gate
+  estrito e a validacao TST7 completa continuam pendentes.
+
 - Incremento Shell/entrada — fechamento de cobertura — concluido em 2026-09-03.
   O caso host-only existente `host:shell:input` foi executado para registrar
   tambem os caminhos de inicializacao e consulta do buffer que ainda estavam

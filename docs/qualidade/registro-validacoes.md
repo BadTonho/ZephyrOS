@@ -5058,3 +5058,16 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   4.929 `COVERED`, 2.290 `PENDING` e 130 casos. `mp_main` permanece pendente
   porque nao possui implementacao no codigo ativo; o fechamento integral, o
   gate estrito e a validacao TST7 completa continuam pendentes.
+
+- Incremento Shell/job concluido em 2026-09-03. O caso host-only
+  `host:shell:job` foi adicionado com `make test-shell-job-host`, compilando
+  `src/shell/shell_job.c` real com relogio, teclado, IPC, video e runtime
+  falsos. A fixture exercitou sucesso, falha, cancelamento, drenagem,
+  timeout, deadlines, wakeups, geracoes obsoletas, eventos bloqueados e o
+  comando `job status`. A execucao terminou `PASS` com warnings tratados como
+  erro; o relatorio `build/test-results/shell-job-host/coverage.json` resolveu
+  as 30 superficies C do modulo sem enderecos desconhecidos ou ambiguos.
+  Tambem passaram `python tools/test_catalog.py sync` e
+  `python tools/test_catalog.py render`. O catalogo registra 7.219
+  superficies, 4.955 `COVERED`, 2.264 `PENDING` e 131 casos. O fechamento
+  integral, o gate estrito e a validacao TST7 completa continuam pendentes.
