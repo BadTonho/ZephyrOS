@@ -2611,6 +2611,58 @@
       "evidence": "make test-shell-input-host PASS com historico, navegacao, scroll, edicao, cancelamento e limite do buffer no relatorio instrumentado"
     },
     {
+      "id": "shell-hosted-host-dynamic",
+      "domain": "shell-hosted",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:shell:hosted"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/shell-hosted-host/coverage.json",
+      "coverage_sources": [
+        "src/shell/shell_hosted.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:shell:hosted",
+        "scenario": "Contrato host-only do Shell hospedado no Window Manager",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "abrir, reabrir, desenhar, encaminhar tecla e mouse, fechar e rejeitar registro do Shell Classic hospedado",
+        "expected": "o Shell hospedado publica visibilidade, encaminha callbacks e restaura o estado quando o registro falha",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente estado estatico do adaptador, callbacks do Window Manager e terminal falso no processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": [
+          "api:src/include/apps/shell_runtime.h:shell_hosted_open",
+          "api:src/include/apps/shell_runtime.h:shell_hosted_present_progress",
+          "api:src/include/apps/shell_runtime.h:shell_hosted_reset"
+        ],
+        "tags": [
+          "host",
+          "shell",
+          "hosted",
+          "window-manager",
+          "coverage"
+        ]
+      },
+      "evidence": "make test-shell-hosted-host PASS com modo Classic, reabertura, callbacks de desenho/tecla/mouse, fechamento e falha de registro no relatorio instrumentado"
+    },
+    {
       "id": "shell-command-utils-host-dynamic",
       "domain": "shell-command-utils",
       "owner": "quality",

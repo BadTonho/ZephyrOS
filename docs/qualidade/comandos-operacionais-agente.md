@@ -503,6 +503,16 @@ teclado e logs falsos; nao acessa hardware. O relatorio fica em
 make test-shell-input-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-shell-hosted-host` exercita a superficie Classic hospedada do
+Shell com Window Manager, incluindo modo indisponivel, abertura, reabertura,
+desenho, tecla, mouse valido/invalido, fechamento e rollback quando o registro
+falha. A fixture usa somente callbacks e terminal falsos; nao executa GUI ou
+hardware. O relatorio fica em `build/test-results/shell-hosted-host/`:
+
+```text
+make test-shell-hosted-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O caso `test-shell-command-utils-host` exercita os utilitarios de comandos do
 Shell com parsing de tokens e argumentos, comparacao de subcomandos,
 normalizacao para maiusculas, conversao numerica, limites, entradas invalidas

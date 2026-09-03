@@ -513,6 +513,12 @@ SHELL_INPUT_SOURCE_FILES = (
     ROOT / "src" / "shell" / "shell_input.c",
     ROOT / "src" / "core" / "string.c",
 )
+SHELL_HOSTED_RESULT_DIR = ROOT / "build" / "test-results" / "shell-hosted-host"
+SHELL_HOSTED_BINARY = ROOT / "build" / "tests" / "test_shell_hosted_host.exe"
+SHELL_HOSTED_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_shell_hosted_host.c",
+    ROOT / "src" / "shell" / "shell_hosted.c",
+)
 SHELL_COMMAND_UTILS_RESULT_DIR = ROOT / "build" / "test-results" / "shell-command-utils-host"
 SHELL_COMMAND_UTILS_BINARY = ROOT / "build" / "tests" / "test_shell_command_utils_host.exe"
 SHELL_COMMAND_UTILS_SOURCE_FILES = (
@@ -668,6 +674,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
     if case_id == "host:shell:input":
         return (SHELL_INPUT_RESULT_DIR, SHELL_INPUT_BINARY,
                 SHELL_INPUT_SOURCE_FILES, "shell-input-host")
+    if case_id == "host:shell:hosted":
+        return (SHELL_HOSTED_RESULT_DIR, SHELL_HOSTED_BINARY,
+                SHELL_HOSTED_SOURCE_FILES, "shell-hosted-host")
     if case_id == "host:shell:command-utils":
         return (SHELL_COMMAND_UTILS_RESULT_DIR, SHELL_COMMAND_UTILS_BINARY,
                 SHELL_COMMAND_UTILS_SOURCE_FILES, "shell-command-utils-host")
@@ -857,7 +866,8 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:tst2:protocol-adapter",
                                  "host:tst5:blackbox",
                                  "host:core:test-coverage",
-                                 "host:shell:input", "host:shell:command-utils"))
+                                 "host:shell:input", "host:shell:hosted",
+                                 "host:shell:command-utils"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
     return parser.parse_args()
