@@ -2611,6 +2611,70 @@
       "evidence": "make test-shell-input-host PASS com historico, navegacao, scroll, edicao, cancelamento e limite do buffer no relatorio instrumentado"
     },
     {
+      "id": "display-host-dynamic",
+      "domain": "gui-display",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:gui:display"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/display-host/coverage.json",
+      "coverage_sources": [
+        "src/gui/display.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:gui:display",
+        "scenario": "Contrato host-only das metricas, escalas e refresh do display",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "validar inicializacao, disponibilidade VESA, parsing de escala, conversao de pixels e refresh das cenas",
+        "expected": "metricas e escalas validas funcionam, limites retornam erros canonicos e falha de reflow restaura a escala anterior",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente estado estatico do display e callbacks falsos de VESA, desktop, taskbar e Window Manager",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": [
+          "api:src/include/ui/display.h:display_apply_scale",
+          "api:src/include/ui/display.h:display_get_metrics",
+          "api:src/include/ui/display.h:display_init",
+          "api:src/include/ui/display.h:display_parse_scale",
+          "api:src/include/ui/display.h:display_scale_name",
+          "api:src/include/ui/display.h:display_scale_px",
+          "c:src/gui/display.c:display_apply_scale",
+          "c:src/gui/display.c:display_get_metrics",
+          "c:src/gui/display.c:display_init",
+          "c:src/gui/display.c:display_mode_supports",
+          "c:src/gui/display.c:display_parse_scale",
+          "c:src/gui/display.c:display_refresh_scene",
+          "c:src/gui/display.c:display_scale_name",
+          "c:src/gui/display.c:display_scale_px"
+        ],
+        "tags": [
+          "host",
+          "gui",
+          "display",
+          "vesa",
+          "limits",
+          "coverage"
+        ]
+      },
+      "evidence": "make test-display-host PASS com disponibilidade VESA, escalas, parsing, pixels, refresh de cenas e rollback de reflow no relatorio instrumentado"
+    },
+    {
       "id": "shell-hosted-host-dynamic",
       "domain": "shell-hosted",
       "owner": "quality",

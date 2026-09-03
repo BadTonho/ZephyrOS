@@ -526,6 +526,13 @@ SHELL_COMMAND_UTILS_SOURCE_FILES = (
     ROOT / "src" / "shell" / "shell_command_utils.c",
     ROOT / "src" / "core" / "string.c",
 )
+DISPLAY_RESULT_DIR = ROOT / "build" / "test-results" / "display-host"
+DISPLAY_BINARY = ROOT / "build" / "tests" / "test_display_host.exe"
+DISPLAY_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_display_host.c",
+    ROOT / "src" / "gui" / "display.c",
+    ROOT / "src" / "core" / "string.c",
+)
 SOURCE_FILES = CORE_SOURCE_FILES
 
 
@@ -680,6 +687,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
     if case_id == "host:shell:command-utils":
         return (SHELL_COMMAND_UTILS_RESULT_DIR, SHELL_COMMAND_UTILS_BINARY,
                 SHELL_COMMAND_UTILS_SOURCE_FILES, "shell-command-utils-host")
+    if case_id == "host:gui:display":
+        return DISPLAY_RESULT_DIR, DISPLAY_BINARY, DISPLAY_SOURCE_FILES, "display-host"
     raise ValueError(f"caso_host_invalido:{case_id}")
 
 
@@ -867,7 +876,8 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:tst5:blackbox",
                                  "host:core:test-coverage",
                                  "host:shell:input", "host:shell:hosted",
-                                 "host:shell:command-utils"))
+                                 "host:shell:command-utils",
+                                 "host:gui:display"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
     return parser.parse_args()
