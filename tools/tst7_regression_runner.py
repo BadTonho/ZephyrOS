@@ -155,6 +155,7 @@ HOST_CASE_TARGETS = {
     "host:drivers:usb-msc": "test-usb-msc-host",
     "host:storage:devfs": "test-devfs-host",
     "host:storage:procfs": "test-procfs-host",
+    "host:storage:sysfs": "test-sysfs-host",
     "host:storage:wav": "test-wav-host",
     "host:storage:bmp": "test-bmp-host",
     "host:drivers:rng": "test-rng-host",

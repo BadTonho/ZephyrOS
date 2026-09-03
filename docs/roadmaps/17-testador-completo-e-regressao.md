@@ -1497,6 +1497,20 @@ pendente.
   7.196 superficies, 3.953 `COVERED`, 3.243 `PENDING` e 86 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Storage/sysfs concluido em 2026-09-03. Foi criado o caso
+  host-only `host:storage:sysfs` com o alvo `make test-sysfs-host`. A fixture
+  liga o provider `src/fs/sysfs.c` real a inventarios falsos de PCI, rede,
+  bloco e energia; exercita lookup, listagens, todos os atributos, snapshots
+  somente leitura, permissoes, seek, poll, overflow, fallback de energia,
+  autoteste e limpeza. O relatorio instrumentado
+  `build/test-results/sysfs-host/coverage.json` terminou `PASS`, resolveu as
+  58 funcoes e 8 APIs publicas de `src/fs/sysfs.c`, sem enderecos desconhecidos
+  ou ambiguos. Tambem passaram os testes unitarios dos runners,
+  `make catalog-test`, `make q3check`, `make clean`, `make` e o caso sysfs
+  apos o build limpo. O catalogo registra 7.219
+  superficies, 4.895 `COVERED`, 2.324 `PENDING` e 128 casos. O fechamento
+  integral, o gate estrito e a validacao TST7 completa continuam pendentes.
+
 - Incremento Network/socket runtime concluido em 2026-09-03: foi criado o caso
   host-only `host:network:socket-runtime` e o alvo
   `make test-socket-runtime-host`. A fixture conecta o `src/core/socket.c`

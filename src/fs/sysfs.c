@@ -508,7 +508,7 @@ static int sysfs_render_pci(char* buffer, uint32_t capacity,
     if (result != OK) return result;
     attribute = sysfs_attribute_index(node->attribute, sysfs_pci_attributes,
                                       SYSFS_PCI_ATTRIBUTE_COUNT);
-    if (attribute < 0 || attribute >= SYSFS_PCI_ATTRIBUTE_COUNT) {
+    if (attribute < 0 || (uint32_t)attribute >= SYSFS_PCI_ATTRIBUTE_COUNT) {
         LOG_ERROR("SYSFS", "Atributo PCI sysfs invalido");
         return ERR_INVALID;
     }
@@ -580,7 +580,7 @@ static int sysfs_render_network(char* buffer, uint32_t capacity,
     if (result != OK) return result;
     attribute = sysfs_attribute_index(node->attribute, sysfs_net_attributes,
                                       SYSFS_NET_ATTRIBUTE_COUNT);
-    if (attribute < 0 || attribute >= SYSFS_NET_ATTRIBUTE_COUNT) {
+    if (attribute < 0 || (uint32_t)attribute >= SYSFS_NET_ATTRIBUTE_COUNT) {
         LOG_ERROR("SYSFS", "Atributo de rede sysfs invalido");
         return ERR_INVALID;
     }
@@ -692,7 +692,7 @@ static int sysfs_render_block(char* buffer, uint32_t capacity,
     capacity_bytes = device.sector_count * device.sector_size;
     attribute = sysfs_attribute_index(node->attribute, sysfs_block_attributes,
                                       SYSFS_BLOCK_ATTRIBUTE_COUNT);
-    if (attribute < 0 || attribute >= SYSFS_BLOCK_ATTRIBUTE_COUNT) {
+    if (attribute < 0 || (uint32_t)attribute >= SYSFS_BLOCK_ATTRIBUTE_COUNT) {
         LOG_ERROR("SYSFS", "Atributo de bloco sysfs invalido");
         return ERR_INVALID;
     }
