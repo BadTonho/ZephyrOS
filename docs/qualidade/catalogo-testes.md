@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4258 |
+| `COVERED` | 4261 |
 | `MANUAL` | 0 |
-| `PENDING` | 2938 |
+| `PENDING` | 2935 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -4537,9 +4537,9 @@
 | `c:src/drivers/usb_hid.c:usb_hid_get_count` | `src/drivers/usb_hid.c` | `usb_hid_get_count` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/usb_hid.c:usb_hid_init` | `src/drivers/usb_hid.c` | `usb_hid_init` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/usb_hid.c:usb_hid_is_active` | `src/drivers/usb_hid.c` | `usb_hid_is_active` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/usb_hid.c:usb_hid_kind_name` | `src/drivers/usb_hid.c` | `usb_hid_kind_name` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/usb_hid.c:usb_hid_kind_name` | `src/drivers/usb_hid.c` | `usb_hid_kind_name` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/usb_hid.c:usb_hid_refresh` | `src/drivers/usb_hid.c` | `usb_hid_refresh` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/usb_hid.c:usb_hid_state_name` | `src/drivers/usb_hid.c` | `usb_hid_state_name` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/usb_hid.c:usb_hid_state_name` | `src/drivers/usb_hid.c` | `usb_hid_state_name` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/usb_hid.c:usb_hid_validate_state` | `src/drivers/usb_hid.c` | `usb_hid_validate_state` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/usb_msc.c:msc_block_read` | `src/drivers/usb_msc.c` | `msc_block_read` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/usb_msc.c:msc_block_submit` | `src/drivers/usb_msc.c` | `msc_block_submit` | `drivers` | `COVERED` | 1 |
@@ -4565,7 +4565,7 @@
 | `c:src/drivers/usb_msc.c:usb_msc_init` | `src/drivers/usb_msc.c` | `usb_msc_init` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/usb_msc.c:usb_msc_is_active` | `src/drivers/usb_msc.c` | `usb_msc_is_active` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/usb_msc.c:usb_msc_refresh` | `src/drivers/usb_msc.c` | `usb_msc_refresh` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/usb_msc.c:usb_msc_state_name` | `src/drivers/usb_msc.c` | `usb_msc_state_name` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/usb_msc.c:usb_msc_state_name` | `src/drivers/usb_msc.c` | `usb_msc_state_name` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/usb_msc.c:usb_msc_validate_state` | `src/drivers/usb_msc.c` | `usb_msc_validate_state` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/vesa.c:memset_simple` | `src/drivers/vesa.c` | `memset_simple` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/vesa.c:vesa_accumulate_region` | `src/drivers/vesa.c` | `vesa_accumulate_region` | `drivers` | `COVERED` | 4 |
@@ -7305,6 +7305,7 @@
 | `host:drivers:rng` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver RNG real com capacidades e resultados RDRAND simulados | capacidade, estado, bytes gerados, falhas de hardware e codigos de erro preservam o contrato sem executar instrucoes privilegiadas no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado RNG e valores de entropia estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:rtc-status` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | consultar o estado inicial do RTC com destinos valido e nulo | rtc_get_status rejeita destino nulo e publica snapshot inicial estavel | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do RTC e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:serial` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver serial real com registradores UART simulados | inicializacao, leitura, filtragem, enfileiramento e flush respeitam o contrato sem acessar portas I/O reais | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado UART e fila de transmissao do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:drivers:speaker` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver speaker real com portas PIT e PC speaker simuladas | inicializacao, desligamento, tons, melody e espera por ticks respeitam o contrato sem acessar I/O privilegiado ou executar hlt no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente registradores PIT e PC speaker estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:tss` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver TSS real com carregamento GDT e flush simulados | inicializacao, prontidao e atualizacao de stack preservam o contrato sem executar lgdt, troca de segmentos ou flush privilegiado no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente descritor TSS, GDT e contador de flush do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:usb-hid` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enumerar teclados e mouses UHCI, enviar relatorios Boot, publicar eventos de entrada e exercitar refresh, remocao e limites | parsing valido, rejeicao de reports corrompidos, estados, contadores, cancelamento e indisponibilidade preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente dispositivos USB HID e callbacks de entrada estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:usb-msc` | `host` | `host-only-readonly` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enumerar dispositivo MSC UHCI, executar inquiry, TUR, capacity e READ10 simulados, validar block readonly e exercitar recuperacao | protocolo BOT/SCSI, identificadores, capacidade, leituras, estados, limites e falhas preservam o contrato sem escrita | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente transporte USB MSC, registro de bloco e buffers estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7380,7 +7381,6 @@
 | `qemu:tst6:stress:kernel` | `qemu` | `tst6` | `qemu:tst6:stress:kernel` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | paging, heap, SLAB, processos e threads estao READY | repetir ciclos deterministas de memoria e execucao sob teto obrigatorio | invariantes estaveis permanecem iguais e a primeira falha interrompe a suite | overflow, vazamento, deadlock, timeout, protocolo ou QEMU | alocacoes e objetos temporarios de cada ciclo em snapshot | devolver paginas, destruir objetos e registrar seed e iteracao |
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
-| `host:drivers:speaker` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver speaker real com portas PIT e PC speaker simuladas | inicializacao, desligamento, tons, melody e espera por ticks respeitam o contrato sem acessar I/O privilegiado ou executar hlt no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente registradores PIT e PC speaker estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -8878,9 +8878,6 @@
 - `c:src/drivers/uhci.c:uhci_update_resource_usage`
 - `c:src/drivers/uhci.c:uhci_validate_pci`
 - `c:src/drivers/uhci.c:uhci_wait_transfer`
-- `c:src/drivers/usb_hid.c:usb_hid_kind_name`
-- `c:src/drivers/usb_hid.c:usb_hid_state_name`
-- `c:src/drivers/usb_msc.c:usb_msc_state_name`
 - `c:src/drivers/vesa.c:memset_simple`
 - `c:src/drivers/vesa.c:vesa_disable`
 - `c:src/drivers/vesa.c:vesa_draw_bitmap`

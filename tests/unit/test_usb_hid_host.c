@@ -513,8 +513,8 @@ static void __attribute__((no_instrument_function)) coverage_emit(int result) {
 int main(void) {
     int result = 0;
 
-    if (!result) result = test_contract_before_init();
     coverage_active = 1U;
+    if (!result) result = test_contract_before_init();
     if (!result) result = test_keyboard_reports();
     if (!result) result = test_mouse_reports();
     if (!result) result = test_refresh_and_removal();

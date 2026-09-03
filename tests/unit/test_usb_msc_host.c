@@ -532,8 +532,8 @@ static void __attribute__((no_instrument_function)) coverage_emit(int result) {
 int main(void) {
     int result = 0;
 
-    if (!result) result = test_contract_before_init();
     coverage_active = 1U;
+    if (!result) result = test_contract_before_init();
     if (!result) result = test_happy_path();
     if (!result) result = test_candidate_filters();
     if (!result) result = test_capacity_and_manager_paths();

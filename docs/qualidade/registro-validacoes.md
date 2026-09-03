@@ -4551,3 +4551,14 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   backend de portas falso. O catalogo registra 7.196 superficies, 4.258
   `COVERED`, 2.938 `PENDING` e 99 casos. O fechamento integral, o gate estrito
   e a validacao TST7 completa continuam pendentes.
+
+- Incremento Drivers/USB names concluido em 2026-09-02: os casos host-only
+  `host:drivers:usb-hid` e `host:drivers:usb-msc` passaram a iniciar a
+  instrumentacao antes dos contratos de nomes de estado e tipo. As execucoes
+  `make test-usb-hid-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` e
+  `make test-usb-msc-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
+  terminaram `PASS` e resolveram as tres superficies pendentes dos drivers,
+  sem enderecos desconhecidos ou ambiguos. O catalogo foi sincronizado e
+  validado com 7.196 superficies, 4.261 `COVERED`, 2.935 `PENDING` e 99 casos.
+  O fechamento integral, o gate estrito e a validacao TST7 completa continuam
+  pendentes.
