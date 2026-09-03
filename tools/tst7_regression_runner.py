@@ -177,6 +177,7 @@ HOST_CASE_TARGETS = {
     "host:drivers:pci": "test-pci-host",
     "host:ui:icons": "test-icons-host",
     "host:drivers:vesa": "test-vesa-host",
+    "host:drivers:video": "test-video-host",
     "host:tst2:protocol-core": "test-tst2-host",
     "host:tst3:string-compress": "test-tst3-host",
 }

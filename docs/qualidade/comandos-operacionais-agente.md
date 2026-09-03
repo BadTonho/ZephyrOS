@@ -611,6 +611,16 @@ metricas, flip, falha de alocacao e desativacao. O relatorio fica em
 make test-vesa-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-video-host` exercita o driver de video e o terminal hospedado
+com framebuffer, fonte, VESA, mouse e logs falsos. A fixture verifica desenho,
+cursor, flush, scrollback, snapshots validos e corrompidos, rolagem,
+inicializacao, suspensao, quiescencia e estados indisponiveis. O relatorio
+fica em `build/test-results/video-host/`:
+
+```text
+make test-video-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O caso `test-shell-command-utils-host` exercita os utilitarios de comandos do
 Shell com parsing de tokens e argumentos, comparacao de subcomandos,
 normalizacao para maiusculas, conversao numerica, limites, entradas invalidas

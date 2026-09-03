@@ -1497,6 +1497,20 @@ pendente.
   7.196 superficies, 3.953 `COVERED`, 3.243 `PENDING` e 86 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Drivers/video concluido em 2026-09-03: foi criado o caso host-only
+  `host:drivers:video` e o alvo `make test-video-host`. A fixture usa
+  framebuffer, fonte, VESA, mouse e logs falsos para exercitar inicializacao,
+  desenho, cursor, flush, terminal, scrollback, snapshots validos e
+  corrompidos, rolagem, suspensao, quiescencia e estados indisponiveis. O
+  relatorio instrumentado `build/test-results/video-host/coverage.json`
+  terminou `PASS`, observou 96 enderecos sem desconhecidos ou ambiguos e
+  resolveu as 30 superficies pendentes de `src/drivers/video.c`. Foram
+  executados `make q3check`, `make clean`, `make`, o caso apos o build limpo,
+  a sincronizacao e renderizacao do catalogo e `make catalog-test`; todos
+  passaram. O catalogo registra 7.198 superficies, 4.393 `COVERED`, 2.805
+  `PENDING` e 115 casos. O fechamento integral, o gate estrito e a validacao
+  TST7 completa continuam pendentes.
+
 - Incremento Shell/hosted concluido em 2026-09-03: foi criado o caso
   host-only `host:shell:hosted` e o alvo `make test-shell-hosted-host` com
   Window Manager, terminal e mouse falsos. A fixture exercitou modo Classic,
