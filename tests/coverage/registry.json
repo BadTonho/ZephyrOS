@@ -2692,7 +2692,7 @@
           "coverage"
         ]
       },
-      "evidence": "make test-shell-input-host PASS com historico, navegacao, scroll, edicao, cancelamento e limite do buffer no relatorio instrumentado"
+      "evidence": "make test-shell-input-host PASS com historico, navegacao, scroll, edicao, cancelamento e limite do buffer; coverage.json instrumentado resolveu as 16 funcoes de src/shell/shell_input.c sem enderecos desconhecidos ou ambiguos"
     },
     {
       "id": "shell-core-host-dynamic",
