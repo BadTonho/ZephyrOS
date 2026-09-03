@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7219**
-- Casos de teste: **127**
+- Casos de teste: **128**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4867 |
+| `COVERED` | 4895 |
 | `MANUAL` | 0 |
-| `PENDING` | 2352 |
+| `PENDING` | 2324 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 127 |
+| `AUTOMATED` | 128 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -1250,14 +1250,14 @@
 | `api:src/include/fs/storage.h:storage_unmount_after_sync` | `src/include/fs/storage.h` | `storage_unmount_after_sync` | `fs` | `COVERED` | 6 |
 | `api:src/include/fs/storage.h:storage_volume_state_name` | `src/include/fs/storage.h` | `storage_volume_state_name` | `fs` | `COVERED` | 6 |
 | `api:src/include/fs/storage.h:storage_write_file` | `src/include/fs/storage.h` | `storage_write_file` | `fs` | `COVERED` | 6 |
-| `api:src/include/fs/sysfs.h:sysfs_init` | `src/include/fs/sysfs.h` | `sysfs_init` | `fs` | `COVERED` | 2 |
-| `api:src/include/fs/sysfs.h:sysfs_is_ready` | `src/include/fs/sysfs.h` | `sysfs_is_ready` | `fs` | `COVERED` | 2 |
-| `api:src/include/fs/sysfs.h:sysfs_list` | `src/include/fs/sysfs.h` | `sysfs_list` | `fs` | `COVERED` | 2 |
-| `api:src/include/fs/sysfs.h:sysfs_list_path` | `src/include/fs/sysfs.h` | `sysfs_list_path` | `fs` | `COVERED` | 2 |
-| `api:src/include/fs/sysfs.h:sysfs_lookup` | `src/include/fs/sysfs.h` | `sysfs_lookup` | `fs` | `COVERED` | 2 |
-| `api:src/include/fs/sysfs.h:sysfs_open_file` | `src/include/fs/sysfs.h` | `sysfs_open_file` | `fs` | `COVERED` | 2 |
-| `api:src/include/fs/sysfs.h:sysfs_self_test` | `src/include/fs/sysfs.h` | `sysfs_self_test` | `fs` | `COVERED` | 2 |
-| `api:src/include/fs/sysfs.h:sysfs_validate_state` | `src/include/fs/sysfs.h` | `sysfs_validate_state` | `fs` | `COVERED` | 2 |
+| `api:src/include/fs/sysfs.h:sysfs_init` | `src/include/fs/sysfs.h` | `sysfs_init` | `fs` | `COVERED` | 3 |
+| `api:src/include/fs/sysfs.h:sysfs_is_ready` | `src/include/fs/sysfs.h` | `sysfs_is_ready` | `fs` | `COVERED` | 3 |
+| `api:src/include/fs/sysfs.h:sysfs_list` | `src/include/fs/sysfs.h` | `sysfs_list` | `fs` | `COVERED` | 3 |
+| `api:src/include/fs/sysfs.h:sysfs_list_path` | `src/include/fs/sysfs.h` | `sysfs_list_path` | `fs` | `COVERED` | 3 |
+| `api:src/include/fs/sysfs.h:sysfs_lookup` | `src/include/fs/sysfs.h` | `sysfs_lookup` | `fs` | `COVERED` | 3 |
+| `api:src/include/fs/sysfs.h:sysfs_open_file` | `src/include/fs/sysfs.h` | `sysfs_open_file` | `fs` | `COVERED` | 3 |
+| `api:src/include/fs/sysfs.h:sysfs_self_test` | `src/include/fs/sysfs.h` | `sysfs_self_test` | `fs` | `COVERED` | 3 |
+| `api:src/include/fs/sysfs.h:sysfs_validate_state` | `src/include/fs/sysfs.h` | `sysfs_validate_state` | `fs` | `COVERED` | 3 |
 | `api:src/include/fs/vfs.h:vfs_chdir` | `src/include/fs/vfs.h` | `vfs_chdir` | `fs` | `COVERED` | 6 |
 | `api:src/include/fs/vfs.h:vfs_close` | `src/include/fs/vfs.h` | `vfs_close` | `fs` | `COVERED` | 8 |
 | `api:src/include/fs/vfs.h:vfs_close_owner` | `src/include/fs/vfs.h` | `vfs_close_owner` | `fs` | `COVERED` | 8 |
@@ -5317,64 +5317,64 @@
 | `c:src/fs/storage.c:storage_write_fat32_file_unlocked` | `src/fs/storage.c` | `storage_write_fat32_file_unlocked` | `fs` | `COVERED` | 2 |
 | `c:src/fs/storage.c:storage_write_file` | `src/fs/storage.c` | `storage_write_file` | `fs` | `COVERED` | 1 |
 | `c:src/fs/storage.c:storage_write_relative` | `src/fs/storage.c` | `storage_write_relative` | `fs` | `COVERED` | 1 |
-| `c:src/fs/sysfs.c:sysfs_append_char` | `src/fs/sysfs.c` | `sysfs_append_char` | `fs` | `COVERED` | 2 |
-| `c:src/fs/sysfs.c:sysfs_append_decimal` | `src/fs/sysfs.c` | `sysfs_append_decimal` | `fs` | `PENDING` | 0 |
-| `c:src/fs/sysfs.c:sysfs_append_hex_digits` | `src/fs/sysfs.c` | `sysfs_append_hex_digits` | `fs` | `PENDING` | 0 |
-| `c:src/fs/sysfs.c:sysfs_append_hex_width` | `src/fs/sysfs.c` | `sysfs_append_hex_width` | `fs` | `PENDING` | 0 |
-| `c:src/fs/sysfs.c:sysfs_append_line_bool` | `src/fs/sysfs.c` | `sysfs_append_line_bool` | `fs` | `PENDING` | 0 |
-| `c:src/fs/sysfs.c:sysfs_append_line_decimal` | `src/fs/sysfs.c` | `sysfs_append_line_decimal` | `fs` | `PENDING` | 0 |
-| `c:src/fs/sysfs.c:sysfs_append_line_hex` | `src/fs/sysfs.c` | `sysfs_append_line_hex` | `fs` | `PENDING` | 0 |
-| `c:src/fs/sysfs.c:sysfs_append_line_signed` | `src/fs/sysfs.c` | `sysfs_append_line_signed` | `fs` | `PENDING` | 0 |
-| `c:src/fs/sysfs.c:sysfs_append_line_text` | `src/fs/sysfs.c` | `sysfs_append_line_text` | `fs` | `COVERED` | 2 |
-| `c:src/fs/sysfs.c:sysfs_append_mac` | `src/fs/sysfs.c` | `sysfs_append_mac` | `fs` | `PENDING` | 0 |
-| `c:src/fs/sysfs.c:sysfs_append_signed` | `src/fs/sysfs.c` | `sysfs_append_signed` | `fs` | `PENDING` | 0 |
-| `c:src/fs/sysfs.c:sysfs_append_text` | `src/fs/sysfs.c` | `sysfs_append_text` | `fs` | `COVERED` | 2 |
-| `c:src/fs/sysfs.c:sysfs_attribute_index` | `src/fs/sysfs.c` | `sysfs_attribute_index` | `fs` | `PENDING` | 0 |
-| `c:src/fs/sysfs.c:sysfs_block_copy` | `src/fs/sysfs.c` | `sysfs_block_copy` | `fs` | `PENDING` | 0 |
-| `c:src/fs/sysfs.c:sysfs_block_provider` | `src/fs/sysfs.c` | `sysfs_block_provider` | `fs` | `PENDING` | 0 |
-| `c:src/fs/sysfs.c:sysfs_buffer_contains` | `src/fs/sysfs.c` | `sysfs_buffer_contains` | `fs` | `COVERED` | 2 |
-| `c:src/fs/sysfs.c:sysfs_buffer_valid` | `src/fs/sysfs.c` | `sysfs_buffer_valid` | `fs` | `COVERED` | 2 |
-| `c:src/fs/sysfs.c:sysfs_close` | `src/fs/sysfs.c` | `sysfs_close` | `fs` | `COVERED` | 2 |
-| `c:src/fs/sysfs.c:sysfs_collect_block_ids` | `src/fs/sysfs.c` | `sysfs_collect_block_ids` | `fs` | `COVERED` | 2 |
-| `c:src/fs/sysfs.c:sysfs_collect_network_ids` | `src/fs/sysfs.c` | `sysfs_collect_network_ids` | `fs` | `COVERED` | 2 |
-| `c:src/fs/sysfs.c:sysfs_collect_pci_ids` | `src/fs/sysfs.c` | `sysfs_collect_pci_ids` | `fs` | `COVERED` | 2 |
-| `c:src/fs/sysfs.c:sysfs_copy_text` | `src/fs/sysfs.c` | `sysfs_copy_text` | `fs` | `COVERED` | 2 |
-| `c:src/fs/sysfs.c:sysfs_device_exists` | `src/fs/sysfs.c` | `sysfs_device_exists` | `fs` | `COVERED` | 2 |
-| `c:src/fs/sysfs.c:sysfs_format_pci_id` | `src/fs/sysfs.c` | `sysfs_format_pci_id` | `fs` | `COVERED` | 2 |
-| `c:src/fs/sysfs.c:sysfs_init` | `src/fs/sysfs.c` | `sysfs_init` | `fs` | `PENDING` | 0 |
-| `c:src/fs/sysfs.c:sysfs_ioctl` | `src/fs/sysfs.c` | `sysfs_ioctl` | `fs` | `PENDING` | 0 |
-| `c:src/fs/sysfs.c:sysfs_is_ready` | `src/fs/sysfs.c` | `sysfs_is_ready` | `fs` | `PENDING` | 0 |
-| `c:src/fs/sysfs.c:sysfs_list` | `src/fs/sysfs.c` | `sysfs_list` | `fs` | `PENDING` | 0 |
-| `c:src/fs/sysfs.c:sysfs_list_attributes` | `src/fs/sysfs.c` | `sysfs_list_attributes` | `fs` | `PENDING` | 0 |
-| `c:src/fs/sysfs.c:sysfs_list_name` | `src/fs/sysfs.c` | `sysfs_list_name` | `fs` | `COVERED` | 2 |
-| `c:src/fs/sysfs.c:sysfs_list_path` | `src/fs/sysfs.c` | `sysfs_list_path` | `fs` | `COVERED` | 2 |
-| `c:src/fs/sysfs.c:sysfs_lookup` | `src/fs/sysfs.c` | `sysfs_lookup` | `fs` | `COVERED` | 2 |
-| `c:src/fs/sysfs.c:sysfs_lseek` | `src/fs/sysfs.c` | `sysfs_lseek` | `fs` | `COVERED` | 2 |
-| `c:src/fs/sysfs.c:sysfs_network_copy` | `src/fs/sysfs.c` | `sysfs_network_copy` | `fs` | `COVERED` | 2 |
-| `c:src/fs/sysfs.c:sysfs_network_link` | `src/fs/sysfs.c` | `sysfs_network_link` | `fs` | `PENDING` | 0 |
-| `c:src/fs/sysfs.c:sysfs_network_model` | `src/fs/sysfs.c` | `sysfs_network_model` | `fs` | `PENDING` | 0 |
-| `c:src/fs/sysfs.c:sysfs_network_state` | `src/fs/sysfs.c` | `sysfs_network_state` | `fs` | `PENDING` | 0 |
-| `c:src/fs/sysfs.c:sysfs_open` | `src/fs/sysfs.c` | `sysfs_open` | `fs` | `PENDING` | 0 |
-| `c:src/fs/sysfs.c:sysfs_open_file` | `src/fs/sysfs.c` | `sysfs_open_file` | `fs` | `COVERED` | 2 |
-| `c:src/fs/sysfs.c:sysfs_parse_dynamic` | `src/fs/sysfs.c` | `sysfs_parse_dynamic` | `fs` | `COVERED` | 2 |
-| `c:src/fs/sysfs.c:sysfs_parse_path` | `src/fs/sysfs.c` | `sysfs_parse_path` | `fs` | `COVERED` | 2 |
-| `c:src/fs/sysfs.c:sysfs_path_equal` | `src/fs/sysfs.c` | `sysfs_path_equal` | `fs` | `COVERED` | 2 |
-| `c:src/fs/sysfs.c:sysfs_path_starts` | `src/fs/sysfs.c` | `sysfs_path_starts` | `fs` | `COVERED` | 2 |
-| `c:src/fs/sysfs.c:sysfs_pci_copy` | `src/fs/sysfs.c` | `sysfs_pci_copy` | `fs` | `COVERED` | 2 |
-| `c:src/fs/sysfs.c:sysfs_poll` | `src/fs/sysfs.c` | `sysfs_poll` | `fs` | `PENDING` | 0 |
-| `c:src/fs/sysfs.c:sysfs_power_capability` | `src/fs/sysfs.c` | `sysfs_power_capability` | `fs` | `COVERED` | 1 |
-| `c:src/fs/sysfs.c:sysfs_power_default` | `src/fs/sysfs.c` | `sysfs_power_default` | `fs` | `PENDING` | 0 |
-| `c:src/fs/sysfs.c:sysfs_read` | `src/fs/sysfs.c` | `sysfs_read` | `fs` | `COVERED` | 2 |
-| `c:src/fs/sysfs.c:sysfs_render_block` | `src/fs/sysfs.c` | `sysfs_render_block` | `fs` | `PENDING` | 0 |
-| `c:src/fs/sysfs.c:sysfs_render_network` | `src/fs/sysfs.c` | `sysfs_render_network` | `fs` | `PENDING` | 0 |
-| `c:src/fs/sysfs.c:sysfs_render_pci` | `src/fs/sysfs.c` | `sysfs_render_pci` | `fs` | `PENDING` | 0 |
-| `c:src/fs/sysfs.c:sysfs_render_power` | `src/fs/sysfs.c` | `sysfs_render_power` | `fs` | `COVERED` | 2 |
-| `c:src/fs/sysfs.c:sysfs_render_snapshot` | `src/fs/sysfs.c` | `sysfs_render_snapshot` | `fs` | `COVERED` | 2 |
-| `c:src/fs/sysfs.c:sysfs_self_test` | `src/fs/sysfs.c` | `sysfs_self_test` | `fs` | `COVERED` | 2 |
-| `c:src/fs/sysfs.c:sysfs_sync` | `src/fs/sysfs.c` | `sysfs_sync` | `fs` | `PENDING` | 0 |
-| `c:src/fs/sysfs.c:sysfs_test_count` | `src/fs/sysfs.c` | `sysfs_test_count` | `fs` | `COVERED` | 2 |
-| `c:src/fs/sysfs.c:sysfs_validate_state` | `src/fs/sysfs.c` | `sysfs_validate_state` | `fs` | `COVERED` | 2 |
-| `c:src/fs/sysfs.c:sysfs_write` | `src/fs/sysfs.c` | `sysfs_write` | `fs` | `PENDING` | 0 |
+| `c:src/fs/sysfs.c:sysfs_append_char` | `src/fs/sysfs.c` | `sysfs_append_char` | `fs` | `COVERED` | 3 |
+| `c:src/fs/sysfs.c:sysfs_append_decimal` | `src/fs/sysfs.c` | `sysfs_append_decimal` | `fs` | `COVERED` | 1 |
+| `c:src/fs/sysfs.c:sysfs_append_hex_digits` | `src/fs/sysfs.c` | `sysfs_append_hex_digits` | `fs` | `COVERED` | 1 |
+| `c:src/fs/sysfs.c:sysfs_append_hex_width` | `src/fs/sysfs.c` | `sysfs_append_hex_width` | `fs` | `COVERED` | 1 |
+| `c:src/fs/sysfs.c:sysfs_append_line_bool` | `src/fs/sysfs.c` | `sysfs_append_line_bool` | `fs` | `COVERED` | 1 |
+| `c:src/fs/sysfs.c:sysfs_append_line_decimal` | `src/fs/sysfs.c` | `sysfs_append_line_decimal` | `fs` | `COVERED` | 1 |
+| `c:src/fs/sysfs.c:sysfs_append_line_hex` | `src/fs/sysfs.c` | `sysfs_append_line_hex` | `fs` | `COVERED` | 1 |
+| `c:src/fs/sysfs.c:sysfs_append_line_signed` | `src/fs/sysfs.c` | `sysfs_append_line_signed` | `fs` | `COVERED` | 1 |
+| `c:src/fs/sysfs.c:sysfs_append_line_text` | `src/fs/sysfs.c` | `sysfs_append_line_text` | `fs` | `COVERED` | 3 |
+| `c:src/fs/sysfs.c:sysfs_append_mac` | `src/fs/sysfs.c` | `sysfs_append_mac` | `fs` | `COVERED` | 1 |
+| `c:src/fs/sysfs.c:sysfs_append_signed` | `src/fs/sysfs.c` | `sysfs_append_signed` | `fs` | `COVERED` | 1 |
+| `c:src/fs/sysfs.c:sysfs_append_text` | `src/fs/sysfs.c` | `sysfs_append_text` | `fs` | `COVERED` | 3 |
+| `c:src/fs/sysfs.c:sysfs_attribute_index` | `src/fs/sysfs.c` | `sysfs_attribute_index` | `fs` | `COVERED` | 1 |
+| `c:src/fs/sysfs.c:sysfs_block_copy` | `src/fs/sysfs.c` | `sysfs_block_copy` | `fs` | `COVERED` | 1 |
+| `c:src/fs/sysfs.c:sysfs_block_provider` | `src/fs/sysfs.c` | `sysfs_block_provider` | `fs` | `COVERED` | 1 |
+| `c:src/fs/sysfs.c:sysfs_buffer_contains` | `src/fs/sysfs.c` | `sysfs_buffer_contains` | `fs` | `COVERED` | 3 |
+| `c:src/fs/sysfs.c:sysfs_buffer_valid` | `src/fs/sysfs.c` | `sysfs_buffer_valid` | `fs` | `COVERED` | 3 |
+| `c:src/fs/sysfs.c:sysfs_close` | `src/fs/sysfs.c` | `sysfs_close` | `fs` | `COVERED` | 3 |
+| `c:src/fs/sysfs.c:sysfs_collect_block_ids` | `src/fs/sysfs.c` | `sysfs_collect_block_ids` | `fs` | `COVERED` | 3 |
+| `c:src/fs/sysfs.c:sysfs_collect_network_ids` | `src/fs/sysfs.c` | `sysfs_collect_network_ids` | `fs` | `COVERED` | 3 |
+| `c:src/fs/sysfs.c:sysfs_collect_pci_ids` | `src/fs/sysfs.c` | `sysfs_collect_pci_ids` | `fs` | `COVERED` | 3 |
+| `c:src/fs/sysfs.c:sysfs_copy_text` | `src/fs/sysfs.c` | `sysfs_copy_text` | `fs` | `COVERED` | 3 |
+| `c:src/fs/sysfs.c:sysfs_device_exists` | `src/fs/sysfs.c` | `sysfs_device_exists` | `fs` | `COVERED` | 3 |
+| `c:src/fs/sysfs.c:sysfs_format_pci_id` | `src/fs/sysfs.c` | `sysfs_format_pci_id` | `fs` | `COVERED` | 3 |
+| `c:src/fs/sysfs.c:sysfs_init` | `src/fs/sysfs.c` | `sysfs_init` | `fs` | `COVERED` | 1 |
+| `c:src/fs/sysfs.c:sysfs_ioctl` | `src/fs/sysfs.c` | `sysfs_ioctl` | `fs` | `COVERED` | 1 |
+| `c:src/fs/sysfs.c:sysfs_is_ready` | `src/fs/sysfs.c` | `sysfs_is_ready` | `fs` | `COVERED` | 1 |
+| `c:src/fs/sysfs.c:sysfs_list` | `src/fs/sysfs.c` | `sysfs_list` | `fs` | `COVERED` | 1 |
+| `c:src/fs/sysfs.c:sysfs_list_attributes` | `src/fs/sysfs.c` | `sysfs_list_attributes` | `fs` | `COVERED` | 1 |
+| `c:src/fs/sysfs.c:sysfs_list_name` | `src/fs/sysfs.c` | `sysfs_list_name` | `fs` | `COVERED` | 3 |
+| `c:src/fs/sysfs.c:sysfs_list_path` | `src/fs/sysfs.c` | `sysfs_list_path` | `fs` | `COVERED` | 3 |
+| `c:src/fs/sysfs.c:sysfs_lookup` | `src/fs/sysfs.c` | `sysfs_lookup` | `fs` | `COVERED` | 3 |
+| `c:src/fs/sysfs.c:sysfs_lseek` | `src/fs/sysfs.c` | `sysfs_lseek` | `fs` | `COVERED` | 3 |
+| `c:src/fs/sysfs.c:sysfs_network_copy` | `src/fs/sysfs.c` | `sysfs_network_copy` | `fs` | `COVERED` | 3 |
+| `c:src/fs/sysfs.c:sysfs_network_link` | `src/fs/sysfs.c` | `sysfs_network_link` | `fs` | `COVERED` | 1 |
+| `c:src/fs/sysfs.c:sysfs_network_model` | `src/fs/sysfs.c` | `sysfs_network_model` | `fs` | `COVERED` | 1 |
+| `c:src/fs/sysfs.c:sysfs_network_state` | `src/fs/sysfs.c` | `sysfs_network_state` | `fs` | `COVERED` | 1 |
+| `c:src/fs/sysfs.c:sysfs_open` | `src/fs/sysfs.c` | `sysfs_open` | `fs` | `COVERED` | 1 |
+| `c:src/fs/sysfs.c:sysfs_open_file` | `src/fs/sysfs.c` | `sysfs_open_file` | `fs` | `COVERED` | 3 |
+| `c:src/fs/sysfs.c:sysfs_parse_dynamic` | `src/fs/sysfs.c` | `sysfs_parse_dynamic` | `fs` | `COVERED` | 3 |
+| `c:src/fs/sysfs.c:sysfs_parse_path` | `src/fs/sysfs.c` | `sysfs_parse_path` | `fs` | `COVERED` | 3 |
+| `c:src/fs/sysfs.c:sysfs_path_equal` | `src/fs/sysfs.c` | `sysfs_path_equal` | `fs` | `COVERED` | 3 |
+| `c:src/fs/sysfs.c:sysfs_path_starts` | `src/fs/sysfs.c` | `sysfs_path_starts` | `fs` | `COVERED` | 3 |
+| `c:src/fs/sysfs.c:sysfs_pci_copy` | `src/fs/sysfs.c` | `sysfs_pci_copy` | `fs` | `COVERED` | 3 |
+| `c:src/fs/sysfs.c:sysfs_poll` | `src/fs/sysfs.c` | `sysfs_poll` | `fs` | `COVERED` | 1 |
+| `c:src/fs/sysfs.c:sysfs_power_capability` | `src/fs/sysfs.c` | `sysfs_power_capability` | `fs` | `COVERED` | 2 |
+| `c:src/fs/sysfs.c:sysfs_power_default` | `src/fs/sysfs.c` | `sysfs_power_default` | `fs` | `COVERED` | 1 |
+| `c:src/fs/sysfs.c:sysfs_read` | `src/fs/sysfs.c` | `sysfs_read` | `fs` | `COVERED` | 3 |
+| `c:src/fs/sysfs.c:sysfs_render_block` | `src/fs/sysfs.c` | `sysfs_render_block` | `fs` | `COVERED` | 1 |
+| `c:src/fs/sysfs.c:sysfs_render_network` | `src/fs/sysfs.c` | `sysfs_render_network` | `fs` | `COVERED` | 1 |
+| `c:src/fs/sysfs.c:sysfs_render_pci` | `src/fs/sysfs.c` | `sysfs_render_pci` | `fs` | `COVERED` | 1 |
+| `c:src/fs/sysfs.c:sysfs_render_power` | `src/fs/sysfs.c` | `sysfs_render_power` | `fs` | `COVERED` | 3 |
+| `c:src/fs/sysfs.c:sysfs_render_snapshot` | `src/fs/sysfs.c` | `sysfs_render_snapshot` | `fs` | `COVERED` | 3 |
+| `c:src/fs/sysfs.c:sysfs_self_test` | `src/fs/sysfs.c` | `sysfs_self_test` | `fs` | `COVERED` | 3 |
+| `c:src/fs/sysfs.c:sysfs_sync` | `src/fs/sysfs.c` | `sysfs_sync` | `fs` | `COVERED` | 1 |
+| `c:src/fs/sysfs.c:sysfs_test_count` | `src/fs/sysfs.c` | `sysfs_test_count` | `fs` | `COVERED` | 3 |
+| `c:src/fs/sysfs.c:sysfs_validate_state` | `src/fs/sysfs.c` | `sysfs_validate_state` | `fs` | `COVERED` | 3 |
+| `c:src/fs/sysfs.c:sysfs_write` | `src/fs/sysfs.c` | `sysfs_write` | `fs` | `COVERED` | 1 |
 | `c:src/fs/vfs.c:vfs_allocate_file` | `src/fs/vfs.c` | `vfs_allocate_file` | `fs` | `COVERED` | 5 |
 | `c:src/fs/vfs.c:vfs_begin_operation` | `src/fs/vfs.c` | `vfs_begin_operation` | `fs` | `COVERED` | 4 |
 | `c:src/fs/vfs.c:vfs_close` | `src/fs/vfs.c` | `vfs_close` | `fs` | `COVERED` | 5 |
@@ -7387,6 +7387,7 @@
 | `host:storage:fs` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar paths FAT32 de storage e legacy, cursores, operacoes atomicas, streaming e limites | a interface unificada preserva o contrato de leitura, escrita, cursor, streaming, erros e geracao sem hardware real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente fixtures estaticos de FAT32, storage e ATA no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:storage:procfs` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar procfs real com VFS, processos, snapshots e controles de log estaticos | listagem, lookup, leitura, mapas, controles, permissoes, seeks, poll, ioctl, sync, indisponibilidade e invariantes preservam o contrato sem kernel ou hardware real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estruturas procfs, processos falsos e buffers estaticos do processo host | descritores fechados, snapshots liberados, processos falsos destruidos e manifesto, logs e cobertura preservados |
 | `host:storage:storage` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar inventario, MBR/BPB, montagem FAT12, cursores, leitura, espaco livre e rejeicao de mutacoes | o backend identifica e monta a particao, le fixtures sem hardware real e preserva o armazenamento somente-leitura | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente imagem FAT12 estatica e provider de bloco falso no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:storage:sysfs` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar lookup, listagem, renderizacao de atributos, snapshots, permissoes, seek, poll, fallback e autoteste do sysfs | inventarios ordenados e atributos formatados permanecem somente leitura; erros de limite e indisponibilidade sao canonicos e nenhum snapshot ou referencia de montagem permanece | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente inventarios PCI, rede, bloco, estado de energia, snapshots e referencias de montagem falsos no processo host | snapshots, descritores, referencias de montagem, contadores, logs e estado global permanecem restaurados; manifesto, logs e cobertura preservados |
 | `host:storage:vfs` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar descritores, arquivos regulares, dispositivos, pipes, sockets, poll/select e quiescencia com dependencias estaticas | operacoes VFS retornam codigos canonicos, liberam descritores e preservam invariantes sem hardware ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas de descritores, caches estaticos e processo fixture do host | todos os descritores sao fechados, processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:storage:vfs-path` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar normalizacao, aliases, mounts, cwd, listagens e referencias VFS com volumes estaticos | caminhos canonicos, mounts virtuais, referencias, limites e estados de energia preservam o contrato sem disco real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas de mounts e fixtures estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:storage:wav` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar parser WAV real com dados RIFF estaticos e AC97 simulado | headers, chunks, metadados, duracao, playback e ownership preservam o contrato em entradas validas, truncadas e invalidas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers WAV estaticos, allocator de teste e contador de playback do processo host | dados liberados, playback sem hardware e manifesto, logs e cobertura preservados |
@@ -8511,34 +8512,6 @@
 - `c:src/fs/storage.c:storage_transaction_writer_finish`
 - `c:src/fs/storage.c:storage_transaction_writer_write`
 - `c:src/fs/storage.c:storage_write_cluster`
-- `c:src/fs/sysfs.c:sysfs_append_decimal`
-- `c:src/fs/sysfs.c:sysfs_append_hex_digits`
-- `c:src/fs/sysfs.c:sysfs_append_hex_width`
-- `c:src/fs/sysfs.c:sysfs_append_line_bool`
-- `c:src/fs/sysfs.c:sysfs_append_line_decimal`
-- `c:src/fs/sysfs.c:sysfs_append_line_hex`
-- `c:src/fs/sysfs.c:sysfs_append_line_signed`
-- `c:src/fs/sysfs.c:sysfs_append_mac`
-- `c:src/fs/sysfs.c:sysfs_append_signed`
-- `c:src/fs/sysfs.c:sysfs_attribute_index`
-- `c:src/fs/sysfs.c:sysfs_block_copy`
-- `c:src/fs/sysfs.c:sysfs_block_provider`
-- `c:src/fs/sysfs.c:sysfs_init`
-- `c:src/fs/sysfs.c:sysfs_ioctl`
-- `c:src/fs/sysfs.c:sysfs_is_ready`
-- `c:src/fs/sysfs.c:sysfs_list`
-- `c:src/fs/sysfs.c:sysfs_list_attributes`
-- `c:src/fs/sysfs.c:sysfs_network_link`
-- `c:src/fs/sysfs.c:sysfs_network_model`
-- `c:src/fs/sysfs.c:sysfs_network_state`
-- `c:src/fs/sysfs.c:sysfs_open`
-- `c:src/fs/sysfs.c:sysfs_poll`
-- `c:src/fs/sysfs.c:sysfs_power_default`
-- `c:src/fs/sysfs.c:sysfs_render_block`
-- `c:src/fs/sysfs.c:sysfs_render_network`
-- `c:src/fs/sysfs.c:sysfs_render_pci`
-- `c:src/fs/sysfs.c:sysfs_sync`
-- `c:src/fs/sysfs.c:sysfs_write`
 - `c:src/kernel/kernel.c:desktop_process_main`
 - `c:src/kernel/kernel.c:global_mouse_handler`
 - `c:src/kernel/kernel.c:kernel_cancel_foreground_app`

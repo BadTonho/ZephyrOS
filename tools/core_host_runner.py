@@ -448,6 +448,13 @@ PROCFS_SOURCE_FILES = (
     ROOT / "src" / "fs" / "procfs.c",
     ROOT / "src" / "core" / "string.c",
 )
+SYSFS_RESULT_DIR = ROOT / "build" / "test-results" / "sysfs-host"
+SYSFS_BINARY = ROOT / "build" / "tests" / "test_sysfs_host.exe"
+SYSFS_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_sysfs_host.c",
+    ROOT / "src" / "fs" / "sysfs.c",
+    ROOT / "src" / "core" / "string.c",
+)
 WAV_RESULT_DIR = ROOT / "build" / "test-results" / "wav-host"
 WAV_BINARY = ROOT / "build" / "tests" / "test_wav_host.exe"
 WAV_SOURCE_FILES = (
@@ -793,6 +800,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return DEVFS_RESULT_DIR, DEVFS_BINARY, DEVFS_SOURCE_FILES, "devfs-host"
     if case_id == "host:storage:procfs":
         return PROCFS_RESULT_DIR, PROCFS_BINARY, PROCFS_SOURCE_FILES, "procfs-host"
+    if case_id == "host:storage:sysfs":
+        return SYSFS_RESULT_DIR, SYSFS_BINARY, SYSFS_SOURCE_FILES, "sysfs-host"
     if case_id == "host:storage:wav":
         return WAV_RESULT_DIR, WAV_BINARY, WAV_SOURCE_FILES, "wav-host"
     if case_id == "host:storage:bmp":
@@ -1047,6 +1056,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:drivers:usb-msc",
                                  "host:storage:devfs",
                                  "host:storage:procfs",
+                                 "host:storage:sysfs",
                                  "host:storage:wav",
                                  "host:storage:bmp",
                                  "host:drivers:rng",

@@ -77,6 +77,7 @@ make test-ethernet-host
 make test-tcp-host
 make test-tls-host
 make test-socket-runtime-host
+make test-sysfs-host
 ```
 
 O caso de scheduling cobre `wait`, `workqueue` e `irq_deferred` em processo
@@ -240,6 +241,11 @@ O caso `test-socket-runtime-host` usa o `src/core/socket.c` real com TCP, VFS,
 filas UNIX, espera cancelada e SKBs falsos para exercitar o runtime completo,
 incluindo adaptadores de descritor, EOF, erros, limites e limpeza; seu
 relatorio instrumentado fica em `build/test-results/socket-runtime-host/`.
+O caso `test-sysfs-host` compila o provider sysfs real com inventarios PCI,
+rede, bloco e energia falsos. Ele exercita lookup, listagens ordenadas,
+renderizacao de todos os atributos, snapshots somente leitura, seek, poll,
+fallback de energia, overflow e limpeza; seu relatorio instrumentado fica em
+`build/test-results/sysfs-host/`.
 O caso `test-vma-host` usa processo ring 3, paging, PMM e VFS falsos para
 exercitar VMAs fixas e anonimas, materializacao lazy, page faults validos e
 invalidos, `mmap`, `munmap`, limites, estatisticas e limpeza; seu relatorio fica

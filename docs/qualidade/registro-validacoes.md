@@ -4980,3 +4980,18 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   tambem passaram. O catalogo registra 7.219 superficies, 4.867 `COVERED`,
   2.352 `PENDING` e 127 casos. O fechamento integral, o gate estrito e a
   validacao TST7 completa continuam pendentes.
+
+- Incremento Storage/sysfs concluido em 2026-09-03. Foi criado o caso
+  host-only `host:storage:sysfs` com o alvo `make test-sysfs-host`. A fixture
+  liga o provider `src/fs/sysfs.c` real a inventarios falsos de PCI, rede,
+  bloco e energia; exercita lookup, listagens, todos os atributos, snapshots
+  somente leitura, permissoes, seek, poll, overflow, fallback de energia,
+  autoteste e limpeza. O relatorio instrumentado
+  `build/test-results/sysfs-host/coverage.json` terminou `PASS`, resolveu as
+  58 funcoes e 8 APIs publicas de `src/fs/sysfs.c`, sem enderecos desconhecidos
+  ou ambiguos. A sincronizacao e a renderizacao do catalogo passaram nesta
+  etapa. Tambem passaram os testes unitarios dos runners, `make catalog-test`,
+  `make q3check`, `make clean`, `make` e uma nova execucao do sysfs apos o
+  build limpo. O catalogo registra 7.219 superficies, 4.895 `COVERED`,
+  2.324 `PENDING` e 128 casos. O fechamento integral, o gate estrito e a
+  validacao TST7 completa continuam pendentes.

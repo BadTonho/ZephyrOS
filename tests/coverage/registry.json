@@ -1597,6 +1597,48 @@
       }
     },
     {
+      "id": "sysfs-host-dynamic",
+      "domain": "storage-sysfs",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:storage:sysfs"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/sysfs-host/coverage.json",
+      "coverage_sources": [
+        "src/fs/sysfs.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-sysfs-host PASS com inventarios PCI, rede e bloco, atributos, snapshots somente leitura, fallback de energia, limites e limpeza; coverage.json instrumentado confirmou as 58 funcoes e 8 APIs publicas de src/fs/sysfs.c, sem enderecos desconhecidos ou ambiguos",
+      "case_definition": {
+        "id": "host:storage:sysfs",
+        "scenario": "Contrato host-only do sysfs somente leitura com inventarios e estado de energia falsos",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "isolation": "fixture",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "PCI/network/block/power fake"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "compilar e executar lookup, listagem, renderizacao de atributos, snapshots, permissoes, seek, poll, fallback e autoteste do sysfs",
+        "expected": "inventarios ordenados e atributos formatados permanecem somente leitura; erros de limite e indisponibilidade sao canonicos e nenhum snapshot ou referencia de montagem permanece",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente inventarios PCI, rede, bloco, estado de energia, snapshots e referencias de montagem falsos no processo host",
+        "cleanup": "snapshots, descritores, referencias de montagem, contadores, logs e estado global permanecem restaurados; manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": []
+      }
+    },
+    {
       "id": "network-ipv4-host",
       "domain": "network-ipv4",
       "owner": "quality",

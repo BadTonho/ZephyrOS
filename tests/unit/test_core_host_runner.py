@@ -119,6 +119,17 @@ class CoreHostRunnerTests(unittest.TestCase):
         self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
                       "test_usb_msc_host.c", sources)
 
+    def test_sysfs_case_has_inventory_fixture_sources(self):
+        result_dir, binary, sources, suite = core_host_runner.case_configuration(
+            "host:storage:sysfs")
+        self.assertEqual(suite, "sysfs-host")
+        self.assertEqual(result_dir, core_host_runner.SYSFS_RESULT_DIR)
+        self.assertEqual(binary, core_host_runner.SYSFS_BINARY)
+        self.assertIn(core_host_runner.ROOT / "src" / "fs" / "sysfs.c",
+                      sources)
+        self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
+                      "test_sysfs_host.c", sources)
+
     def test_devfs_case_has_filesystem_fixture_sources(self):
         result_dir, binary, sources, suite = core_host_runner.case_configuration(
             "host:storage:devfs")
