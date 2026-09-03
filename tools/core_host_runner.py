@@ -596,6 +596,13 @@ VIDEO_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_video_host.c",
     ROOT / "src" / "drivers" / "video.c",
 )
+ACPI_RESULT_DIR = ROOT / "build" / "test-results" / "acpi-host"
+ACPI_BINARY = ROOT / "build" / "tests" / "test_acpi_host.exe"
+ACPI_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_acpi_host.c",
+    ROOT / "src" / "drivers" / "acpi.c",
+    ROOT / "src" / "core" / "string.c",
+)
 SOURCE_FILES = CORE_SOURCE_FILES
 
 
@@ -775,6 +782,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return VESA_RESULT_DIR, VESA_BINARY, VESA_SOURCE_FILES, "vesa-host"
     if case_id == "host:drivers:video":
         return VIDEO_RESULT_DIR, VIDEO_BINARY, VIDEO_SOURCE_FILES, "video-host"
+    if case_id == "host:drivers:acpi":
+        return ACPI_RESULT_DIR, ACPI_BINARY, ACPI_SOURCE_FILES, "acpi-host"
     raise ValueError(f"caso_host_invalido:{case_id}")
 
 
@@ -969,7 +978,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:boot:recovery-runtime",
                                  "host:kernel:panic", "host:drivers:pci",
                                  "host:ui:icons", "host:drivers:vesa",
-                                 "host:drivers:video"))
+                                 "host:drivers:video", "host:drivers:acpi"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
     return parser.parse_args()

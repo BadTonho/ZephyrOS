@@ -4769,3 +4769,23 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   passaram. O catalogo registra 7.198 superficies, 4.393 `COVERED`, 2.805
   `PENDING` e 115 casos. O fechamento integral, o gate estrito e a validacao
   TST7 completa continuam pendentes.
+
+- Incremento Drivers/ACPI concluido em: 2026-09-03 14:16 (America/Sao_Paulo).
+  Foi
+  criado o caso host-only `host:drivers:acpi` e o alvo `make test-acpi-host`.
+  A fixture usa firmware, mapa E820, portas I/O e halt falsos para exercitar
+  RSDP, RSDT/XSDT, FADT, MADT, FACS, AML `_S5_`, consultas, checksums, tabelas
+  corrompidas e rotas de energia sem acesso a hardware real. O relatorio
+  instrumentado `build/test-results/acpi-host/coverage.json` terminou `PASS`,
+  observou 88 enderecos sem desconhecidos ou ambiguos e resolveu as 56
+  superficies pendentes originais de `src/drivers/acpi.c`, alem dos dois seams
+  exclusivos do build host. A sincronizacao foi ajustada para preservar
+  vinculos anteriores quando um relatorio dinamico ainda nao esta disponivel
+  depois de `make clean`, sem criar cobertura artificial. Foram executados
+  `make q3check`, `make clean`, `make`, `make test-acpi-host` apos o build
+  limpo, `make catalog-test`, `python -m unittest tests.unit.test_catalog
+  tests.unit.test_core_host_runner tests.unit.test_tst7_runner`,
+  `git diff --check` e a verificacao de processos residuais; todos passaram.
+  O catalogo registra 7.200 superficies, 4.463 `COVERED`, 2.737 `PENDING` e
+  116 casos. O fechamento integral, o gate estrito e a validacao TST7 completa
+  continuam pendentes.

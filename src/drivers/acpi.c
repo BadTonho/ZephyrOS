@@ -110,6 +110,23 @@ static uint32_t acpi_anomaly_logs = 0;
 static int acpi_initialized = 0;
 static int acpi_init_result = ERR_STATE;
 
+#if defined(ZEPHYROS_HOST_TEST)
+extern const void* acpi_host_resolve_address(uint32_t address);
+extern uint32_t acpi_host_physical_address(const void* address);
+extern uint16_t acpi_host_inw(uint16_t port);
+extern void acpi_host_outb(uint16_t port, uint8_t value);
+extern void acpi_host_outw(uint16_t port, uint16_t value);
+extern void acpi_host_halt(void) __attribute__((noreturn));
+#endif
+
+static const void* acpi_resolve_address(uint32_t address) {
+#if defined(ZEPHYROS_HOST_TEST)
+    return acpi_host_resolve_address(address);
+#else
+    return (const void*)address;
+#endif
+}
+
 static uint16_t acpi_read_u16(const void* address) {
     const uint8_t* bytes = (const uint8_t*)address;
     return (uint16_t)(bytes[0] | ((uint16_t)bytes[1] << 8));
@@ -130,17 +147,29 @@ static uint64_t acpi_read_u64(const void* address) {
 }
 
 static inline uint16_t acpi_inw(uint16_t port) {
+#if defined(ZEPHYROS_HOST_TEST)
+    return acpi_host_inw(port);
+#else
     uint16_t value;
     asm volatile("inw %1, %0" : "=a"(value) : "Nd"(port));
     return value;
+#endif
 }
 
 static inline void acpi_outb(uint16_t port, uint8_t value) {
+#if defined(ZEPHYROS_HOST_TEST)
+    acpi_host_outb(port, value);
+#else
     asm volatile("outb %0, %1" : : "a"(value), "Nd"(port));
+#endif
 }
 
 static inline void acpi_outw(uint16_t port, uint16_t value) {
+#if defined(ZEPHYROS_HOST_TEST)
+    acpi_host_outw(port, value);
+#else
     asm volatile("outw %0, %1" : : "a"(value), "Nd"(port));
+#endif
 }
 
 static int acpi_signature_equal(const char* left, const char* right,
@@ -225,7 +254,7 @@ static const acpi_rsdp_v1_t* acpi_find_rsdp_range(uint32_t start,
         uint32_t length;
 
         if (!acpi_range_in_memory_map(address, ACPI_RSDP_V1_LENGTH)) continue;
-        rsdp = (const acpi_rsdp_v1_t*)address;
+        rsdp = (const acpi_rsdp_v1_t*)acpi_resolve_address(address);
         if (!acpi_signature_equal(rsdp->signature, "RSD PTR ", 8U)) continue;
         if (!acpi_checksum_valid(rsdp, ACPI_RSDP_V1_LENGTH)) {
             acpi_status.malformed_tables++;
@@ -259,7 +288,8 @@ static const acpi_rsdp_v1_t* acpi_find_rsdp_range(uint32_t start,
 }
 
 static const acpi_rsdp_v1_t* acpi_find_rsdp(void) {
-    uint32_t ebda = (uint32_t)acpi_read_u16((const void*)ACPI_EBDA_POINTER)
+    uint32_t ebda = (uint32_t)acpi_read_u16(
+                        acpi_resolve_address(ACPI_EBDA_POINTER))
                     << 4;
     const acpi_rsdp_v1_t* rsdp = 0;
 
@@ -283,7 +313,7 @@ static const acpi_sdt_header_t* acpi_validate_sdt(uint32_t address,
         acpi_log_anomaly("Endereco de tabela fora do mapa E820");
         return 0;
     }
-    header = (const acpi_sdt_header_t*)address;
+    header = (const acpi_sdt_header_t*)acpi_resolve_address(address);
     if (signature &&
         !acpi_signature_equal(header->signature, signature, 4U)) {
         acpi_log_anomaly("Assinatura de tabela ACPI invalida");
@@ -958,8 +988,12 @@ static acpi_mode_t acpi_read_current_mode(uint16_t* out_pm1a,
 static void acpi_halt_forever(void) __attribute__((noreturn));
 
 static void acpi_halt_forever(void) {
+#if defined(ZEPHYROS_HOST_TEST)
+    acpi_host_halt();
+#else
     asm volatile("cli");
     for (;;) asm volatile("hlt");
+#endif
 }
 
 static void acpi_enable_mode_or_halt(void) {
@@ -972,7 +1006,7 @@ static void acpi_enable_mode_or_halt(void) {
             LOG_INFO("ACPI", "Modo ACPI habilitado para transicao S5");
             return;
         }
-        asm volatile("nop");
+        __asm__ volatile("nop");
     }
     LOG_ERROR("ACPI", "Timeout ao adquirir modo ACPI; estado terminal");
     acpi_halt_forever();
@@ -1060,7 +1094,8 @@ static void acpi_parse_fadt(uint32_t address,
 
     if (facs_address &&
         acpi_range_in_memory_map(facs_address, 8U)) {
-        const uint8_t* facs = (const uint8_t*)facs_address;
+        const uint8_t* facs =
+            (const uint8_t*)acpi_resolve_address(facs_address);
         uint32_t facs_length = acpi_read_u32(facs + 4U);
 
         if (acpi_signature_equal((const char*)facs, "FACS", 4U) &&
@@ -1134,7 +1169,11 @@ int acpi_init(const mmap_entry_t* memory_map, uint32_t entry_count) {
         LOG_WARN("ACPI", "RSDP nao encontrado");
         return acpi_finish_init(start_ticks, result);
     }
+#if defined(ZEPHYROS_HOST_TEST)
+    acpi_status.rsdp_address = acpi_host_physical_address(rsdp);
+#else
     acpi_status.rsdp_address = (uint32_t)rsdp;
+#endif
     acpi_status.revision = rsdp->revision;
     acpi_copy_text(acpi_status.oem_id, rsdp->oem_id, 6U);
 
@@ -1191,11 +1230,13 @@ int acpi_reset(void) {
         return ERR_UNAVAILABLE;
     }
     LOG_INFO("ACPI", "Solicitando reinicio pelo RESET_REG ACPI");
+#if !defined(ZEPHYROS_HOST_TEST)
     asm volatile("cli" : : : "memory");
+#endif
     acpi_outb((uint16_t)acpi_power_info.reset_register.address,
               acpi_power_info.reset_value);
     for (uint32_t i = 0; i < ACPI_RESET_RETURN_POLL_LIMIT; i++) {
-        asm volatile("pause");
+        __asm__ volatile("pause");
     }
     LOG_ERROR("ACPI", "RESET_REG ACPI retornou sem reiniciar");
     return ERR_TIMEOUT;
@@ -1223,7 +1264,9 @@ int acpi_poweroff(void) {
     }
 
     LOG_INFO("ACPI", "Iniciando transicao terminal para S5");
+#if !defined(ZEPHYROS_HOST_TEST)
     asm volatile("cli");
+#endif
     if (current_mode == ACPI_MODE_DISABLED) acpi_enable_mode_or_halt();
     current_mode = acpi_read_current_mode(&pm1a_value, &pm1b_value);
     if (current_mode != ACPI_MODE_ENABLED) {
@@ -1352,3 +1395,18 @@ const char* acpi_root_kind_name(acpi_root_kind_t kind) {
     if (kind == ACPI_ROOT_XSDT) return "XSDT";
     return "NENHUMA";
 }
+
+#if defined(ZEPHYROS_HOST_TEST)
+void acpi_host_reset(void) {
+    kmemset(&acpi_status, 0, sizeof(acpi_status));
+    kmemset(&acpi_power_info, 0, sizeof(acpi_power_info));
+    kmemset(acpi_tables, 0, sizeof(acpi_tables));
+    kmemset(&acpi_madt_info, 0, sizeof(acpi_madt_info));
+    kmemset(acpi_madt_entries, 0, sizeof(acpi_madt_entries));
+    acpi_memory_map = 0;
+    acpi_memory_map_count = 0;
+    acpi_anomaly_logs = 0;
+    acpi_initialized = 0;
+    acpi_init_result = ERR_STATE;
+}
+#endif

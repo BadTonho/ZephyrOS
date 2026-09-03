@@ -280,6 +280,28 @@ class CatalogContractTests(unittest.TestCase):
                 {item["id"]: item for item in catalog["surfaces"]}, root),
                 ["c:src/core/sample.c:sample"])
 
+    def test_registry_coverage_report_falls_back_to_previous_case_links(self):
+        catalog = sample_catalog()
+        entry = {
+            "id": "sample-report-fallback",
+            "domain": "core",
+            "owner": "quality",
+            "executor": "host",
+            "coverage_mode": "direct",
+            "case_ids": ["host:coverage:sample"],
+            "surface_selector": "coverage_report",
+            "coverage_report": "missing.json",
+            "evidence": "previous catalog link",
+        }
+        current_cases = {"host:coverage:sample": {"surface_ids": []}}
+        fallback_cases = {"host:coverage:sample": {
+            "surface_ids": ["c:src/core/sample.c:sample"]
+        }}
+        self.assertEqual(test_catalog.registry_surface_ids(
+            entry, current_cases,
+            {item["id"]: item for item in catalog["surfaces"]}, Path("."),
+            fallback_cases), ["c:src/core/sample.c:sample"])
+
     def test_registry_coverage_report_links_public_api_by_observed_symbol(self):
         catalog = sample_catalog()
         api = sample_surface(["host:coverage:sample"])

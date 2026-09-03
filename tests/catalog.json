@@ -532,7 +532,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -542,7 +541,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_handle_key",
@@ -560,7 +559,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -570,7 +568,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_handle_mouse",
@@ -644,7 +642,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -654,7 +651,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_process_command",
@@ -672,7 +669,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -682,7 +678,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_report_app_loader_result",
@@ -700,7 +696,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -710,7 +705,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_report_user_test_result",
@@ -728,7 +723,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -738,7 +732,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_update_hosted_terminal",
@@ -756,7 +750,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -766,7 +759,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_command_utils.h:shell_command_args_equal",
@@ -1050,7 +1043,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -1060,7 +1052,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_input.h:shell_input_get_buffer",
@@ -1078,7 +1070,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -1088,7 +1079,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_input.h:shell_input_handle_key",
@@ -1106,7 +1097,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -1116,7 +1106,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_input.h:shell_input_init",
@@ -1162,7 +1152,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -1172,7 +1161,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_input.h:shell_input_reset",
@@ -1190,7 +1179,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -1200,7 +1188,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_input.h:shell_input_reset_modifiers",
@@ -1218,7 +1206,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -1228,7 +1215,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_input.h:shell_input_resume_terminal",
@@ -1246,7 +1233,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -1256,7 +1242,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_introspection.h:shell_introspection_find_value",
@@ -2684,7 +2670,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -2694,7 +2679,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible",
@@ -2712,13 +2697,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:hosted",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:storage"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager",
@@ -2736,7 +2720,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -2746,7 +2729,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_reset_input",
@@ -2764,7 +2747,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -2774,7 +2756,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal",
@@ -2792,7 +2774,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -2802,7 +2783,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal",
@@ -2848,7 +2829,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -2858,7 +2838,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/taskmanager.h:taskmgr_close",
@@ -11148,12 +11128,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:kernel:panic"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "api:src/include/core/panic.h:panic_halt",
@@ -11169,12 +11146,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:kernel:panic"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "api:src/include/core/panic.h:panic_memory",
@@ -11190,12 +11164,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:kernel:panic"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "api:src/include/core/power.h:power_capability_name",
@@ -20762,12 +20733,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering",
@@ -20785,12 +20755,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering",
@@ -20808,12 +20777,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_get_device",
@@ -20831,12 +20799,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_get_device_at",
@@ -20854,12 +20821,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_get_device_by_id",
@@ -20877,12 +20843,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_get_device_count",
@@ -20900,12 +20865,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_init",
@@ -20923,12 +20887,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_read",
@@ -20946,12 +20909,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_write",
@@ -20969,12 +20931,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/rng.h:rng_get_bytes",
@@ -21107,12 +21068,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/rtc.h:rtc_read_utc",
@@ -21130,12 +21090,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/rtc.h:rtc_self_test",
@@ -21153,12 +21112,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/rtc.h:rtc_validate_state",
@@ -21176,12 +21134,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/rtl8139.h:rtl8139_handler",
@@ -85703,9 +85660,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_aml_package_length",
@@ -85721,9 +85681,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_build_sleep_value",
@@ -85739,9 +85702,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_checksum_valid",
@@ -85757,9 +85723,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_choose_32bit_address",
@@ -85775,9 +85744,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_copy_text",
@@ -85793,9 +85765,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_e820_type_readable",
@@ -85811,9 +85786,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_enable_mode_or_halt",
@@ -85829,9 +85807,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_enter_s5",
@@ -85847,9 +85828,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_finalize_s5_capability",
@@ -85865,9 +85849,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_find_rsdp",
@@ -85883,9 +85870,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_find_rsdp_range",
@@ -85901,9 +85891,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_find_table",
@@ -85919,9 +85912,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_finish_init",
@@ -85937,9 +85933,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_gas_valid",
@@ -85955,9 +85954,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_get_madt_entry_at",
@@ -85973,9 +85975,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_get_madt_entry_count",
@@ -85991,9 +85996,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_get_madt_info",
@@ -86009,9 +86017,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_get_power_info",
@@ -86071,9 +86082,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_get_table_count",
@@ -86089,9 +86103,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_halt_forever",
@@ -86107,9 +86124,33 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/drivers/acpi.c:acpi_host_reset",
+      "kind": "c_function",
+      "source": "src/drivers/acpi.c",
+      "symbol": "acpi_host_reset",
+      "linkage": "external",
+      "owner": "drivers",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_init",
@@ -86125,9 +86166,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_inw",
@@ -86143,9 +86187,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_log_anomaly",
@@ -86161,9 +86208,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_madt_count_entry",
@@ -86179,9 +86229,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_madt_entry_length_valid",
@@ -86197,9 +86250,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_note_partial",
@@ -86215,9 +86271,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_observe_pm1_mode",
@@ -86233,9 +86292,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_outb",
@@ -86251,9 +86313,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_outw",
@@ -86269,9 +86334,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_parse_fadt",
@@ -86287,9 +86355,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_parse_fadt_power",
@@ -86305,9 +86376,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_parse_fadt_reset",
@@ -86323,9 +86397,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_parse_madt",
@@ -86341,9 +86418,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_parse_root",
@@ -86359,9 +86439,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_parse_s5",
@@ -86377,9 +86460,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_parse_s5_package",
@@ -86395,9 +86481,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_pm_register_readable",
@@ -86413,9 +86502,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_poweroff",
@@ -86431,9 +86523,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_range_in_memory_map",
@@ -86449,9 +86544,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_read_current_mode",
@@ -86467,9 +86565,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_read_gas",
@@ -86485,9 +86586,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_read_u16",
@@ -86503,9 +86607,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_read_u32",
@@ -86521,9 +86628,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_read_u64",
@@ -86539,9 +86649,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_reset",
@@ -86557,9 +86670,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_reset_register_valid",
@@ -86575,9 +86691,33 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/drivers/acpi.c:acpi_resolve_address",
+      "kind": "c_function",
+      "source": "src/drivers/acpi.c",
+      "symbol": "acpi_resolve_address",
+      "linkage": "static",
+      "owner": "drivers",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_root_kind_name",
@@ -86593,9 +86733,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_s5_preflight",
@@ -86611,9 +86754,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_select_pm_register",
@@ -86629,9 +86775,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_select_root",
@@ -86647,9 +86796,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_set_legacy_register",
@@ -86665,9 +86817,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_signature_equal",
@@ -86683,9 +86838,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_store_table",
@@ -86701,9 +86859,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_table_already_stored",
@@ -86719,9 +86880,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/acpi.c:acpi_validate_sdt",
@@ -86737,9 +86901,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:acpi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/ata.c:ata_delay",
@@ -91140,12 +91307,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_days_in_month",
@@ -91163,12 +91329,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_decode_snapshot",
@@ -91186,12 +91351,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_decode_value",
@@ -91209,12 +91373,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_get_status",
@@ -91251,12 +91414,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_init",
@@ -91272,12 +91432,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_is_leap_year",
@@ -91295,12 +91452,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_outb",
@@ -91316,12 +91472,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_raw_equal",
@@ -91337,12 +91490,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_read_raw",
@@ -91358,12 +91508,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_read_raw_once",
@@ -91379,12 +91526,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_read_register",
@@ -91400,12 +91544,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_read_utc",
@@ -91421,12 +91562,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_self_test",
@@ -91444,12 +91582,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_validate_state",
@@ -91467,12 +91604,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_wait_update_complete",
@@ -91488,12 +91624,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_advance_rx",
@@ -127186,7 +127319,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -127196,7 +127328,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell.c:shell_handle_mouse",
@@ -127256,7 +127388,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -127266,7 +127397,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell.c:shell_process_command",
@@ -127453,7 +127584,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -127461,7 +127591,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell.c:shell_runtime_resume_terminal",
@@ -127546,7 +127676,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -127554,7 +127683,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell.c:shell_update_hosted_terminal",
@@ -140786,12 +140915,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:shell:hosted"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/shell/shell_hosted.c:shell_hosted_draw",
@@ -140809,13 +140935,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:hosted",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:storage"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_hosted.c:shell_hosted_key",
@@ -140833,13 +140958,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:hosted",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:storage"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_hosted.c:shell_hosted_mouse",
@@ -140855,12 +140979,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:shell:hosted"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/shell/shell_hosted.c:shell_hosted_open",
@@ -140878,13 +140999,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:hosted",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:storage"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_hosted.c:shell_hosted_present_progress",
@@ -140902,13 +141022,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:hosted",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:storage"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_hosted.c:shell_hosted_reset",
@@ -140924,12 +141043,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:shell:hosted"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/shell/shell_hosted.c:shell_runtime_is_hosted_visible",
@@ -140947,13 +141063,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:hosted",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:storage"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_cancel_extended",
@@ -140971,7 +141086,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -140981,7 +141095,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_get_buffer",
@@ -140997,12 +141111,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:shell:input"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_handle_key",
@@ -141020,7 +141131,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -141030,7 +141140,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_handle_terminal_scroll_key",
@@ -141069,7 +141179,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -141077,7 +141186,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_history_detach_for_edit",
@@ -141095,7 +141204,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -141105,7 +141213,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_history_navigate",
@@ -141144,7 +141252,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -141152,7 +141259,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_history_replace_input",
@@ -141191,7 +141298,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -141199,7 +141305,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_init",
@@ -141215,12 +141321,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:shell:input"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_print_prompt",
@@ -141238,7 +141341,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -141248,7 +141350,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_reset",
@@ -141266,7 +141368,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -141274,7 +141375,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_reset_modifiers",
@@ -141292,7 +141393,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -141300,7 +141400,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_resume_terminal",
@@ -141318,7 +141418,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -141328,7 +141427,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_return_to_terminal_tail",
@@ -141346,7 +141445,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -141356,7 +141454,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_introspection.c:shell_introspection_ascii_valid",
@@ -153800,6 +153898,98 @@
       ]
     },
     {
+      "id": "host:drivers:acpi",
+      "scenario": "Contrato host-only do parser ACPI e das capacidades de energia",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "hardware": "firmware-e820-io-falsos"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "validar descoberta RSDP, RSDT/XSDT, FADT, MADT, FACS, AML _S5_, consultas e falhas de integridade",
+      "expected": "tabelas validas publicam estado consistente, fixtures ausentes ou corrompidas retornam erros canonicos e energia terminal nunca acessa hardware real",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente firmware, mapa E820, portas I/O e callback de halt falsos no processo host",
+      "cleanup": "estado ACPI reiniciado no fixture e manifesto, logs e cobertura preservados",
+      "surface_ids": [
+        "c:src/drivers/acpi.c:acpi_aml_integer",
+        "c:src/drivers/acpi.c:acpi_aml_package_length",
+        "c:src/drivers/acpi.c:acpi_build_sleep_value",
+        "c:src/drivers/acpi.c:acpi_checksum_valid",
+        "c:src/drivers/acpi.c:acpi_choose_32bit_address",
+        "c:src/drivers/acpi.c:acpi_copy_text",
+        "c:src/drivers/acpi.c:acpi_e820_type_readable",
+        "c:src/drivers/acpi.c:acpi_enable_mode_or_halt",
+        "c:src/drivers/acpi.c:acpi_enter_s5",
+        "c:src/drivers/acpi.c:acpi_finalize_s5_capability",
+        "c:src/drivers/acpi.c:acpi_find_rsdp",
+        "c:src/drivers/acpi.c:acpi_find_rsdp_range",
+        "c:src/drivers/acpi.c:acpi_find_table",
+        "c:src/drivers/acpi.c:acpi_finish_init",
+        "c:src/drivers/acpi.c:acpi_gas_valid",
+        "c:src/drivers/acpi.c:acpi_get_madt_entry_at",
+        "c:src/drivers/acpi.c:acpi_get_madt_entry_count",
+        "c:src/drivers/acpi.c:acpi_get_madt_info",
+        "c:src/drivers/acpi.c:acpi_get_table_at",
+        "c:src/drivers/acpi.c:acpi_get_table_count",
+        "c:src/drivers/acpi.c:acpi_halt_forever",
+        "c:src/drivers/acpi.c:acpi_host_reset",
+        "c:src/drivers/acpi.c:acpi_init",
+        "c:src/drivers/acpi.c:acpi_inw",
+        "c:src/drivers/acpi.c:acpi_log_anomaly",
+        "c:src/drivers/acpi.c:acpi_madt_count_entry",
+        "c:src/drivers/acpi.c:acpi_madt_entry_length_valid",
+        "c:src/drivers/acpi.c:acpi_note_partial",
+        "c:src/drivers/acpi.c:acpi_observe_pm1_mode",
+        "c:src/drivers/acpi.c:acpi_outb",
+        "c:src/drivers/acpi.c:acpi_outw",
+        "c:src/drivers/acpi.c:acpi_parse_fadt",
+        "c:src/drivers/acpi.c:acpi_parse_fadt_power",
+        "c:src/drivers/acpi.c:acpi_parse_fadt_reset",
+        "c:src/drivers/acpi.c:acpi_parse_madt",
+        "c:src/drivers/acpi.c:acpi_parse_root",
+        "c:src/drivers/acpi.c:acpi_parse_s5",
+        "c:src/drivers/acpi.c:acpi_parse_s5_package",
+        "c:src/drivers/acpi.c:acpi_pm_register_readable",
+        "c:src/drivers/acpi.c:acpi_poweroff",
+        "c:src/drivers/acpi.c:acpi_range_in_memory_map",
+        "c:src/drivers/acpi.c:acpi_read_current_mode",
+        "c:src/drivers/acpi.c:acpi_read_gas",
+        "c:src/drivers/acpi.c:acpi_read_u16",
+        "c:src/drivers/acpi.c:acpi_read_u32",
+        "c:src/drivers/acpi.c:acpi_read_u64",
+        "c:src/drivers/acpi.c:acpi_reset",
+        "c:src/drivers/acpi.c:acpi_reset_register_valid",
+        "c:src/drivers/acpi.c:acpi_resolve_address",
+        "c:src/drivers/acpi.c:acpi_root_kind_name",
+        "c:src/drivers/acpi.c:acpi_s5_preflight",
+        "c:src/drivers/acpi.c:acpi_select_pm_register",
+        "c:src/drivers/acpi.c:acpi_select_root",
+        "c:src/drivers/acpi.c:acpi_set_legacy_register",
+        "c:src/drivers/acpi.c:acpi_signature_equal",
+        "c:src/drivers/acpi.c:acpi_store_table",
+        "c:src/drivers/acpi.c:acpi_table_already_stored",
+        "c:src/drivers/acpi.c:acpi_validate_sdt"
+      ],
+      "tags": [
+        "host",
+        "drivers",
+        "acpi",
+        "firmware",
+        "limits",
+        "coverage"
+      ],
+      "status": "AUTOMATED"
+    },
+    {
       "id": "host:drivers:font",
       "scenario": "Contrato host-only do driver de fonte",
       "owner": "quality",
@@ -153909,16 +154099,6 @@
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
       "surface_ids": [
-        "api:src/include/drivers/pci.h:pci_enable_bus_mastering",
-        "api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering",
-        "api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering",
-        "api:src/include/drivers/pci.h:pci_get_device",
-        "api:src/include/drivers/pci.h:pci_get_device_at",
-        "api:src/include/drivers/pci.h:pci_get_device_by_id",
-        "api:src/include/drivers/pci.h:pci_get_device_count",
-        "api:src/include/drivers/pci.h:pci_init",
-        "api:src/include/drivers/pci.h:pci_read",
-        "api:src/include/drivers/pci.h:pci_write",
         "c:src/drivers/pci.c:inl",
         "c:src/drivers/pci.c:outl",
         "c:src/drivers/pci.c:pci_enable_bus_mastering",
@@ -154006,27 +154186,7 @@
       "status": "AUTOMATED",
       "surface_ids": [
         "api:src/include/drivers/rtc.h:rtc_get_status",
-        "api:src/include/drivers/rtc.h:rtc_init",
-        "api:src/include/drivers/rtc.h:rtc_read_utc",
-        "api:src/include/drivers/rtc.h:rtc_self_test",
-        "api:src/include/drivers/rtc.h:rtc_validate_state",
-        "c:src/drivers/rtc.c:rtc_datetime_valid",
-        "c:src/drivers/rtc.c:rtc_days_in_month",
-        "c:src/drivers/rtc.c:rtc_decode_snapshot",
-        "c:src/drivers/rtc.c:rtc_decode_value",
-        "c:src/drivers/rtc.c:rtc_get_status",
-        "c:src/drivers/rtc.c:rtc_inb",
-        "c:src/drivers/rtc.c:rtc_init",
-        "c:src/drivers/rtc.c:rtc_is_leap_year",
-        "c:src/drivers/rtc.c:rtc_outb",
-        "c:src/drivers/rtc.c:rtc_raw_equal",
-        "c:src/drivers/rtc.c:rtc_read_raw",
-        "c:src/drivers/rtc.c:rtc_read_raw_once",
-        "c:src/drivers/rtc.c:rtc_read_register",
-        "c:src/drivers/rtc.c:rtc_read_utc",
-        "c:src/drivers/rtc.c:rtc_self_test",
-        "c:src/drivers/rtc.c:rtc_validate_state",
-        "c:src/drivers/rtc.c:rtc_wait_update_complete"
+        "c:src/drivers/rtc.c:rtc_get_status"
       ],
       "tags": [
         "host",
@@ -154338,6 +154498,70 @@
       ]
     },
     {
+      "id": "host:drivers:video",
+      "scenario": "Contrato host-only do driver de video e terminal hospedado",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "hardware": "vesa-mouse-font-falsos"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "validar framebuffer, cursor, desenho, terminal, scrollback, hosted terminal, dirty regions e estados indisponiveis",
+      "expected": "operacoes validas preservam o estado do terminal e estados de hardware ausente retornam erros canonicos sem acesso privilegiado",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente estado, contadores e callbacks VESA, fonte e mouse falsos no processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "surface_ids": [
+        "c:src/drivers/video.c:clear_visual_buffer_locked",
+        "c:src/drivers/video.c:terminal_append_number",
+        "c:src/drivers/video.c:terminal_draw_footer_locked",
+        "c:src/drivers/video.c:terminal_hosted_max_offset_locked",
+        "c:src/drivers/video.c:terminal_max_view_offset",
+        "c:src/drivers/video.c:terminal_render_view_locked",
+        "c:src/drivers/video.c:terminal_reset_locked",
+        "c:src/drivers/video.c:terminal_view_start_line",
+        "c:src/drivers/video.c:video_clear",
+        "c:src/drivers/video.c:video_disable_framebuffer",
+        "c:src/drivers/video.c:video_draw_box",
+        "c:src/drivers/video.c:video_draw_hline",
+        "c:src/drivers/video.c:video_draw_vline",
+        "c:src/drivers/video.c:video_fill_rect",
+        "c:src/drivers/video.c:video_flush_updates",
+        "c:src/drivers/video.c:video_get_cursor_x",
+        "c:src/drivers/video.c:video_get_cursor_y",
+        "c:src/drivers/video.c:video_init",
+        "c:src/drivers/video.c:video_power_quiesce",
+        "c:src/drivers/video.c:video_print_at",
+        "c:src/drivers/video.c:video_put_char_at",
+        "c:src/drivers/video.c:video_set_color",
+        "c:src/drivers/video.c:video_set_cursor",
+        "c:src/drivers/video.c:video_terminal_begin",
+        "c:src/drivers/video.c:video_terminal_clear",
+        "c:src/drivers/video.c:video_terminal_scroll",
+        "c:src/drivers/video.c:video_terminal_scroll_end",
+        "c:src/drivers/video.c:video_terminal_scroll_home",
+        "c:src/drivers/video.c:video_terminal_suspend",
+        "c:src/drivers/video.c:video_terminal_take_hosted_dirty"
+      ],
+      "tags": [
+        "host",
+        "drivers",
+        "video",
+        "terminal",
+        "limits",
+        "coverage"
+      ],
+      "status": "AUTOMATED"
+    },
+    {
       "id": "host:gui:display",
       "scenario": "Contrato host-only das metricas, escalas e refresh do display",
       "owner": "quality",
@@ -154482,9 +154706,6 @@
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
       "surface_ids": [
-        "api:src/include/core/panic.h:panic",
-        "api:src/include/core/panic.h:panic_halt",
-        "api:src/include/core/panic.h:panic_memory",
         "c:src/kernel/panic.c:panic",
         "c:src/kernel/panic.c:panic_draw_header",
         "c:src/kernel/panic.c:panic_halt",
@@ -156699,31 +156920,15 @@
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
       "surface_ids": [
-        "api:src/include/apps/shell.h:shell_handle_app_request",
-        "api:src/include/apps/shell.h:shell_handle_key",
         "api:src/include/apps/shell.h:shell_handle_mouse",
         "api:src/include/apps/shell.h:shell_init",
-        "api:src/include/apps/shell.h:shell_print_prompt",
-        "api:src/include/apps/shell.h:shell_process_command",
-        "api:src/include/apps/shell.h:shell_report_app_loader_result",
-        "api:src/include/apps/shell.h:shell_report_user_test_result",
-        "api:src/include/apps/shell.h:shell_update_hosted_terminal",
         "api:src/include/apps/shell_runtime.h:shell_runtime_finish_command",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_reset_input",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal",
         "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal_for_scene",
-        "c:src/shell/shell.c:shell_handle_key",
         "c:src/shell/shell.c:shell_handle_mouse",
         "c:src/shell/shell.c:shell_init",
-        "c:src/shell/shell.c:shell_print_prompt",
         "c:src/shell/shell.c:shell_redraw_after_overlay_close",
         "c:src/shell/shell.c:shell_runtime_finish_command",
-        "c:src/shell/shell.c:shell_runtime_reset_input",
-        "c:src/shell/shell.c:shell_runtime_suspend_terminal",
-        "c:src/shell/shell.c:shell_should_show_prompt"
+        "c:src/shell/shell.c:shell_runtime_suspend_terminal"
       ],
       "tags": [
         "host",
@@ -156793,16 +156998,7 @@
       "surface_ids": [
         "api:src/include/apps/shell_runtime.h:shell_hosted_open",
         "api:src/include/apps/shell_runtime.h:shell_hosted_present_progress",
-        "api:src/include/apps/shell_runtime.h:shell_hosted_reset",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible",
-        "c:src/shell/shell_hosted.c:shell_hosted_close",
-        "c:src/shell/shell_hosted.c:shell_hosted_draw",
-        "c:src/shell/shell_hosted.c:shell_hosted_key",
-        "c:src/shell/shell_hosted.c:shell_hosted_mouse",
-        "c:src/shell/shell_hosted.c:shell_hosted_open",
-        "c:src/shell/shell_hosted.c:shell_hosted_present_progress",
-        "c:src/shell/shell_hosted.c:shell_hosted_reset",
-        "c:src/shell/shell_hosted.c:shell_runtime_is_hosted_visible"
+        "api:src/include/apps/shell_runtime.h:shell_hosted_reset"
       ],
       "tags": [
         "host",
@@ -156835,30 +157031,10 @@
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
       "surface_ids": [
-        "api:src/include/apps/shell_input.h:shell_input_cancel_extended",
-        "api:src/include/apps/shell_input.h:shell_input_get_buffer",
-        "api:src/include/apps/shell_input.h:shell_input_handle_key",
         "api:src/include/apps/shell_input.h:shell_input_init",
-        "api:src/include/apps/shell_input.h:shell_input_print_prompt",
-        "api:src/include/apps/shell_input.h:shell_input_reset",
-        "api:src/include/apps/shell_input.h:shell_input_reset_modifiers",
-        "api:src/include/apps/shell_input.h:shell_input_resume_terminal",
-        "c:src/shell/shell_input.c:shell_input_cancel_extended",
-        "c:src/shell/shell_input.c:shell_input_get_buffer",
-        "c:src/shell/shell_input.c:shell_input_handle_key",
         "c:src/shell/shell_input.c:shell_input_handle_terminal_scroll_key",
-        "c:src/shell/shell_input.c:shell_input_history_copy",
-        "c:src/shell/shell_input.c:shell_input_history_detach_for_edit",
         "c:src/shell/shell_input.c:shell_input_history_navigate",
-        "c:src/shell/shell_input.c:shell_input_history_record",
-        "c:src/shell/shell_input.c:shell_input_history_replace_input",
-        "c:src/shell/shell_input.c:shell_input_history_reset_navigation",
-        "c:src/shell/shell_input.c:shell_input_init",
-        "c:src/shell/shell_input.c:shell_input_print_prompt",
-        "c:src/shell/shell_input.c:shell_input_reset",
-        "c:src/shell/shell_input.c:shell_input_reset_modifiers",
-        "c:src/shell/shell_input.c:shell_input_resume_terminal",
-        "c:src/shell/shell_input.c:shell_input_return_to_terminal_tail"
+        "c:src/shell/shell_input.c:shell_input_history_replace_input"
       ],
       "tags": [
         "host",
@@ -168085,70 +168261,6 @@
         "stress",
         "storage"
       ]
-    },
-    {
-      "id": "host:drivers:video",
-      "scenario": "Contrato host-only do driver de video e terminal hospedado",
-      "owner": "quality",
-      "layer": "host",
-      "executor": "host",
-      "profile": "host-only",
-      "timeout_seconds": 120,
-      "heartbeat_timeout_seconds": 1,
-      "isolation": "fixture",
-      "parameters": {
-        "compiler": "HOST_CC",
-        "instrumentation": "-finstrument-functions",
-        "warnings": "error",
-        "hardware": "vesa-mouse-font-falsos"
-      },
-      "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "validar framebuffer, cursor, desenho, terminal, scrollback, hosted terminal, dirty regions e estados indisponiveis",
-      "expected": "operacoes validas preservam o estado do terminal e estados de hardware ausente retornam erros canonicos sem acesso privilegiado",
-      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
-      "effects": "somente estado, contadores e callbacks VESA, fonte e mouse falsos no processo host",
-      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
-      "surface_ids": [
-        "c:src/drivers/video.c:clear_visual_buffer_locked",
-        "c:src/drivers/video.c:terminal_append_number",
-        "c:src/drivers/video.c:terminal_draw_footer_locked",
-        "c:src/drivers/video.c:terminal_hosted_max_offset_locked",
-        "c:src/drivers/video.c:terminal_max_view_offset",
-        "c:src/drivers/video.c:terminal_render_view_locked",
-        "c:src/drivers/video.c:terminal_reset_locked",
-        "c:src/drivers/video.c:terminal_view_start_line",
-        "c:src/drivers/video.c:video_clear",
-        "c:src/drivers/video.c:video_disable_framebuffer",
-        "c:src/drivers/video.c:video_draw_box",
-        "c:src/drivers/video.c:video_draw_hline",
-        "c:src/drivers/video.c:video_draw_vline",
-        "c:src/drivers/video.c:video_fill_rect",
-        "c:src/drivers/video.c:video_flush_updates",
-        "c:src/drivers/video.c:video_get_cursor_x",
-        "c:src/drivers/video.c:video_get_cursor_y",
-        "c:src/drivers/video.c:video_init",
-        "c:src/drivers/video.c:video_power_quiesce",
-        "c:src/drivers/video.c:video_print_at",
-        "c:src/drivers/video.c:video_put_char_at",
-        "c:src/drivers/video.c:video_set_color",
-        "c:src/drivers/video.c:video_set_cursor",
-        "c:src/drivers/video.c:video_terminal_begin",
-        "c:src/drivers/video.c:video_terminal_clear",
-        "c:src/drivers/video.c:video_terminal_scroll",
-        "c:src/drivers/video.c:video_terminal_scroll_end",
-        "c:src/drivers/video.c:video_terminal_scroll_home",
-        "c:src/drivers/video.c:video_terminal_suspend",
-        "c:src/drivers/video.c:video_terminal_take_hosted_dirty"
-      ],
-      "tags": [
-        "host",
-        "drivers",
-        "video",
-        "terminal",
-        "limits",
-        "coverage"
-      ],
-      "status": "AUTOMATED"
     }
   ],
   "retired": [
