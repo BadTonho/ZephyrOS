@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **7200**
-- Casos de teste: **116**
+- Superfícies ativas: **7202**
+- Casos de teste: **117**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
 |---|---:|
 | `api_function` | 1541 |
 | `asm_entry` | 101 |
-| `c_function` | 5438 |
+| `c_function` | 5440 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4463 |
+| `COVERED` | 4529 |
 | `MANUAL` | 0 |
-| `PENDING` | 2737 |
+| `PENDING` | 2673 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 116 |
+| `AUTOMATED` | 117 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -39,7 +39,7 @@
 | `boot` | 136 |
 | `core` | 2771 |
 | `desktop` | 40 |
-| `drivers` | 917 |
+| `drivers` | 919 |
 | `filemanager` | 92 |
 | `fs` | 957 |
 | `gui` | 30 |
@@ -4452,75 +4452,77 @@
 | `c:src/drivers/tss.c:tss_is_ready` | `src/drivers/tss.c` | `tss_is_ready` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/tss.c:tss_load_gdt` | `src/drivers/tss.c` | `tss_load_gdt` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/tss.c:tss_set_kernel_stack` | `src/drivers/tss.c` | `tss_set_kernel_stack` | `drivers` | `COVERED` | 4 |
-| `c:src/drivers/uhci.c:uhci_allocate` | `src/drivers/uhci.c` | `uhci_allocate` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_allocate_dma` | `src/drivers/uhci.c` | `uhci_allocate_dma` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_bulk_transfer` | `src/drivers/uhci.c` | `uhci_bulk_transfer` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_bulk_transfer_once` | `src/drivers/uhci.c` | `uhci_bulk_transfer_once` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_control_release_sync` | `src/drivers/uhci.c` | `uhci_control_release_sync` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_control_request` | `src/drivers/uhci.c` | `uhci_control_request` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_control_transfer` | `src/drivers/uhci.c` | `uhci_control_transfer` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_copy_status` | `src/drivers/uhci.c` | `uhci_copy_status` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/uhci.c:uhci_count_valid_devices` | `src/drivers/uhci.c` | `uhci_count_valid_devices` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/uhci.c:uhci_disable` | `src/drivers/uhci.c` | `uhci_disable` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_enumerate_port` | `src/drivers/uhci.c` | `uhci_enumerate_port` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_enumerate_port_once` | `src/drivers/uhci.c` | `uhci_enumerate_port_once` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_enumeration_reason` | `src/drivers/uhci.c` | `uhci_enumeration_reason` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_enumeration_retryable` | `src/drivers/uhci.c` | `uhci_enumeration_retryable` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_find` | `src/drivers/uhci.c` | `uhci_find` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_find_device_record` | `src/drivers/uhci.c` | `uhci_find_device_record` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_find_free_interrupt_request` | `src/drivers/uhci.c` | `uhci_find_free_interrupt_request` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_find_interrupt_request` | `src/drivers/uhci.c` | `uhci_find_interrupt_request` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_get_device` | `src/drivers/uhci.c` | `uhci_get_device` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_get_device_count` | `src/drivers/uhci.c` | `uhci_get_device_count` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_get_device_record_at` | `src/drivers/uhci.c` | `uhci_get_device_record_at` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_get_port` | `src/drivers/uhci.c` | `uhci_get_port` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_get_port_count` | `src/drivers/uhci.c` | `uhci_get_port_count` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_get_status` | `src/drivers/uhci.c` | `uhci_get_status` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/uhci.c:uhci_in16` | `src/drivers/uhci.c` | `uhci_in16` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_init` | `src/drivers/uhci.c` | `uhci_init` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_init_instance` | `src/drivers/uhci.c` | `uhci_init_instance` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_initialize_ports` | `src/drivers/uhci.c` | `uhci_initialize_ports` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_interrupt_arm` | `src/drivers/uhci.c` | `uhci_interrupt_arm` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_interrupt_buffer` | `src/drivers/uhci.c` | `uhci_interrupt_buffer` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_interrupt_cancel` | `src/drivers/uhci.c` | `uhci_interrupt_cancel` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_interrupt_completion` | `src/drivers/uhci.c` | `uhci_interrupt_completion` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_interrupt_deadline_expired` | `src/drivers/uhci.c` | `uhci_interrupt_deadline_expired` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_interrupt_release_frames` | `src/drivers/uhci.c` | `uhci_interrupt_release_frames` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_interrupt_reserve_frames` | `src/drivers/uhci.c` | `uhci_interrupt_reserve_frames` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_interrupt_submit` | `src/drivers/uhci.c` | `uhci_interrupt_submit` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_interrupt_try_schedule` | `src/drivers/uhci.c` | `uhci_interrupt_try_schedule` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_irq_handler` | `src/drivers/uhci.c` | `uhci_irq_handler` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_log_configuration_preview` | `src/drivers/uhci.c` | `uhci_log_configuration_preview` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_log_device_preview` | `src/drivers/uhci.c` | `uhci_log_device_preview` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_log_enumeration_failure` | `src/drivers/uhci.c` | `uhci_log_enumeration_failure` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_log_port_diagnostics` | `src/drivers/uhci.c` | `uhci_log_port_diagnostics` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_make_device_id` | `src/drivers/uhci.c` | `uhci_make_device_id` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_out16` | `src/drivers/uhci.c` | `uhci_out16` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_out32` | `src/drivers/uhci.c` | `uhci_out32` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_out8` | `src/drivers/uhci.c` | `uhci_out8` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_parse_configuration` | `src/drivers/uhci.c` | `uhci_parse_configuration` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_poll` | `src/drivers/uhci.c` | `uhci_poll` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_port_offset` | `src/drivers/uhci.c` | `uhci_port_offset` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_queue_head_at` | `src/drivers/uhci.c` | `uhci_queue_head_at` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_read_descriptor` | `src/drivers/uhci.c` | `uhci_read_descriptor` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_recover_controller` | `src/drivers/uhci.c` | `uhci_recover_controller` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_release_dma` | `src/drivers/uhci.c` | `uhci_release_dma` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_reset_bulk_toggles` | `src/drivers/uhci.c` | `uhci_reset_bulk_toggles` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_reset_controller` | `src/drivers/uhci.c` | `uhci_reset_controller` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_reset_port` | `src/drivers/uhci.c` | `uhci_reset_port` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_scan_interrupt_requests` | `src/drivers/uhci.c` | `uhci_scan_interrupt_requests` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_set_port_empty` | `src/drivers/uhci.c` | `uhci_set_port_empty` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_start_controller` | `src/drivers/uhci.c` | `uhci_start_controller` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_td_actual` | `src/drivers/uhci.c` | `uhci_td_actual` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_td_status` | `src/drivers/uhci.c` | `uhci_td_status` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_timeout_expired` | `src/drivers/uhci.c` | `uhci_timeout_expired` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_timeout_ticks` | `src/drivers/uhci.c` | `uhci_timeout_ticks` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_token` | `src/drivers/uhci.c` | `uhci_token` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_update_resource_usage` | `src/drivers/uhci.c` | `uhci_update_resource_usage` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_valid_control_packet_size` | `src/drivers/uhci.c` | `uhci_valid_control_packet_size` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/uhci.c:uhci_validate_pci` | `src/drivers/uhci.c` | `uhci_validate_pci` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/uhci.c:uhci_validate_state` | `src/drivers/uhci.c` | `uhci_validate_state` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/uhci.c:uhci_wait_transfer` | `src/drivers/uhci.c` | `uhci_wait_transfer` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/uhci.c:uhci_allocate` | `src/drivers/uhci.c` | `uhci_allocate` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_allocate_dma` | `src/drivers/uhci.c` | `uhci_allocate_dma` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_bulk_transfer` | `src/drivers/uhci.c` | `uhci_bulk_transfer` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_bulk_transfer_once` | `src/drivers/uhci.c` | `uhci_bulk_transfer_once` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_control_release_sync` | `src/drivers/uhci.c` | `uhci_control_release_sync` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_control_request` | `src/drivers/uhci.c` | `uhci_control_request` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_control_transfer` | `src/drivers/uhci.c` | `uhci_control_transfer` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_copy_status` | `src/drivers/uhci.c` | `uhci_copy_status` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/uhci.c:uhci_count_valid_devices` | `src/drivers/uhci.c` | `uhci_count_valid_devices` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/uhci.c:uhci_disable` | `src/drivers/uhci.c` | `uhci_disable` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_enumerate_port` | `src/drivers/uhci.c` | `uhci_enumerate_port` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_enumerate_port_once` | `src/drivers/uhci.c` | `uhci_enumerate_port_once` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_enumeration_reason` | `src/drivers/uhci.c` | `uhci_enumeration_reason` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_enumeration_retryable` | `src/drivers/uhci.c` | `uhci_enumeration_retryable` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_find` | `src/drivers/uhci.c` | `uhci_find` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_find_device_record` | `src/drivers/uhci.c` | `uhci_find_device_record` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_find_free_interrupt_request` | `src/drivers/uhci.c` | `uhci_find_free_interrupt_request` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_find_interrupt_request` | `src/drivers/uhci.c` | `uhci_find_interrupt_request` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_get_device` | `src/drivers/uhci.c` | `uhci_get_device` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_get_device_count` | `src/drivers/uhci.c` | `uhci_get_device_count` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_get_device_record_at` | `src/drivers/uhci.c` | `uhci_get_device_record_at` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_get_port` | `src/drivers/uhci.c` | `uhci_get_port` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_get_port_count` | `src/drivers/uhci.c` | `uhci_get_port_count` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_get_status` | `src/drivers/uhci.c` | `uhci_get_status` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/uhci.c:uhci_host_reset` | `src/drivers/uhci.c` | `uhci_host_reset` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_in16` | `src/drivers/uhci.c` | `uhci_in16` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_init` | `src/drivers/uhci.c` | `uhci_init` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_init_instance` | `src/drivers/uhci.c` | `uhci_init_instance` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_initialize_ports` | `src/drivers/uhci.c` | `uhci_initialize_ports` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_interrupt_arm` | `src/drivers/uhci.c` | `uhci_interrupt_arm` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_interrupt_buffer` | `src/drivers/uhci.c` | `uhci_interrupt_buffer` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_interrupt_cancel` | `src/drivers/uhci.c` | `uhci_interrupt_cancel` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_interrupt_completion` | `src/drivers/uhci.c` | `uhci_interrupt_completion` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_interrupt_deadline_expired` | `src/drivers/uhci.c` | `uhci_interrupt_deadline_expired` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_interrupt_release_frames` | `src/drivers/uhci.c` | `uhci_interrupt_release_frames` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_interrupt_reserve_frames` | `src/drivers/uhci.c` | `uhci_interrupt_reserve_frames` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_interrupt_submit` | `src/drivers/uhci.c` | `uhci_interrupt_submit` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_interrupt_try_schedule` | `src/drivers/uhci.c` | `uhci_interrupt_try_schedule` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_irq_handler` | `src/drivers/uhci.c` | `uhci_irq_handler` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_log_configuration_preview` | `src/drivers/uhci.c` | `uhci_log_configuration_preview` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_log_device_preview` | `src/drivers/uhci.c` | `uhci_log_device_preview` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_log_enumeration_failure` | `src/drivers/uhci.c` | `uhci_log_enumeration_failure` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_log_port_diagnostics` | `src/drivers/uhci.c` | `uhci_log_port_diagnostics` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_make_device_id` | `src/drivers/uhci.c` | `uhci_make_device_id` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_out16` | `src/drivers/uhci.c` | `uhci_out16` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_out32` | `src/drivers/uhci.c` | `uhci_out32` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_out8` | `src/drivers/uhci.c` | `uhci_out8` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_parse_configuration` | `src/drivers/uhci.c` | `uhci_parse_configuration` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_physical_address` | `src/drivers/uhci.c` | `uhci_physical_address` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_poll` | `src/drivers/uhci.c` | `uhci_poll` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_port_offset` | `src/drivers/uhci.c` | `uhci_port_offset` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_queue_head_at` | `src/drivers/uhci.c` | `uhci_queue_head_at` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_read_descriptor` | `src/drivers/uhci.c` | `uhci_read_descriptor` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_recover_controller` | `src/drivers/uhci.c` | `uhci_recover_controller` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_release_dma` | `src/drivers/uhci.c` | `uhci_release_dma` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_reset_bulk_toggles` | `src/drivers/uhci.c` | `uhci_reset_bulk_toggles` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_reset_controller` | `src/drivers/uhci.c` | `uhci_reset_controller` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_reset_port` | `src/drivers/uhci.c` | `uhci_reset_port` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_scan_interrupt_requests` | `src/drivers/uhci.c` | `uhci_scan_interrupt_requests` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_set_port_empty` | `src/drivers/uhci.c` | `uhci_set_port_empty` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_start_controller` | `src/drivers/uhci.c` | `uhci_start_controller` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_td_actual` | `src/drivers/uhci.c` | `uhci_td_actual` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_td_status` | `src/drivers/uhci.c` | `uhci_td_status` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_timeout_expired` | `src/drivers/uhci.c` | `uhci_timeout_expired` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_timeout_ticks` | `src/drivers/uhci.c` | `uhci_timeout_ticks` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_token` | `src/drivers/uhci.c` | `uhci_token` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_update_resource_usage` | `src/drivers/uhci.c` | `uhci_update_resource_usage` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_valid_control_packet_size` | `src/drivers/uhci.c` | `uhci_valid_control_packet_size` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/uhci.c:uhci_validate_pci` | `src/drivers/uhci.c` | `uhci_validate_pci` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/uhci.c:uhci_validate_state` | `src/drivers/uhci.c` | `uhci_validate_state` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/uhci.c:uhci_wait_transfer` | `src/drivers/uhci.c` | `uhci_wait_transfer` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/usb_hid.c:hid_activate` | `src/drivers/usb_hid.c` | `hid_activate` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/usb_hid.c:hid_deactivate` | `src/drivers/usb_hid.c` | `hid_deactivate` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/usb_hid.c:hid_interrupt_callback` | `src/drivers/usb_hid.c` | `hid_interrupt_callback` | `drivers` | `COVERED` | 1 |
@@ -7317,6 +7319,7 @@
 | `host:drivers:serial` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver serial real com registradores UART simulados | inicializacao, leitura, filtragem, enfileiramento e flush respeitam o contrato sem acessar portas I/O reais | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado UART e fila de transmissao do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:speaker` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver speaker real com portas PIT e PC speaker simuladas | inicializacao, desligamento, tons, melody e espera por ticks respeitam o contrato sem acessar I/O privilegiado ou executar hlt no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente registradores PIT e PC speaker estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:tss` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver TSS real com carregamento GDT e flush simulados | inicializacao, prontidao e atualizacao de stack preservam o contrato sem executar lgdt, troca de segmentos ou flush privilegiado no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente descritor TSS, GDT e contador de flush do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:drivers:uhci` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar PCI, alinhamento DMA, reset, enumeracao, descritores, controle, bulk, interrupt, timeout, recuperacao e limpeza | operacoes validas preservam invariantes do controlador e fixtures invalidas retornam erros canonicos sem I/O privilegiado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente PCI, portas, memoria DMA, relogio, IRQ e dispositivos USB falsos no processo host | controlador falso resetado, paginas devolvidas e manifesto, logs e cobertura preservados |
 | `host:drivers:usb-hid` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enumerar teclados e mouses UHCI, enviar relatorios Boot, publicar eventos de entrada e exercitar refresh, remocao e limites | parsing valido, rejeicao de reports corrompidos, estados, contadores, cancelamento e indisponibilidade preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente dispositivos USB HID e callbacks de entrada estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:usb-msc` | `host` | `host-only-readonly` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enumerar dispositivo MSC UHCI, executar inquiry, TUR, capacity e READ10 simulados, validar block readonly e exercitar recuperacao | protocolo BOT/SCSI, identificadores, capacidade, leituras, estados, limites e falhas preservam o contrato sem escrita | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente transporte USB MSC, registro de bloco e buffers estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:vesa` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar inicializacao, modos 24/32 bpp, backbuffer, desenho, clipping, frames, metricas e desativacao com framebuffer falso | parametros invalidos sao rejeitados, pixels e regioes sao copiados corretamente e o estado VESA e restaurado apos desativacao | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos, metricas e fixture de boot no processo host | processo host encerrado, backbuffer liberado e manifesto, logs e cobertura preservados |
@@ -8728,70 +8731,6 @@
 - `c:src/drivers/rtl8811cu.c:rtl8811cu_service_pending`
 - `c:src/drivers/rtl8811cu.c:rtl8811cu_state_name`
 - `c:src/drivers/rtl8811cu.c:rtl8811cu_validate_state`
-- `c:src/drivers/uhci.c:uhci_allocate`
-- `c:src/drivers/uhci.c:uhci_allocate_dma`
-- `c:src/drivers/uhci.c:uhci_bulk_transfer`
-- `c:src/drivers/uhci.c:uhci_bulk_transfer_once`
-- `c:src/drivers/uhci.c:uhci_control_release_sync`
-- `c:src/drivers/uhci.c:uhci_control_request`
-- `c:src/drivers/uhci.c:uhci_control_transfer`
-- `c:src/drivers/uhci.c:uhci_disable`
-- `c:src/drivers/uhci.c:uhci_enumerate_port`
-- `c:src/drivers/uhci.c:uhci_enumerate_port_once`
-- `c:src/drivers/uhci.c:uhci_enumeration_reason`
-- `c:src/drivers/uhci.c:uhci_enumeration_retryable`
-- `c:src/drivers/uhci.c:uhci_find`
-- `c:src/drivers/uhci.c:uhci_find_device_record`
-- `c:src/drivers/uhci.c:uhci_find_free_interrupt_request`
-- `c:src/drivers/uhci.c:uhci_find_interrupt_request`
-- `c:src/drivers/uhci.c:uhci_get_device`
-- `c:src/drivers/uhci.c:uhci_get_device_count`
-- `c:src/drivers/uhci.c:uhci_get_device_record_at`
-- `c:src/drivers/uhci.c:uhci_get_port`
-- `c:src/drivers/uhci.c:uhci_get_port_count`
-- `c:src/drivers/uhci.c:uhci_in16`
-- `c:src/drivers/uhci.c:uhci_init`
-- `c:src/drivers/uhci.c:uhci_init_instance`
-- `c:src/drivers/uhci.c:uhci_initialize_ports`
-- `c:src/drivers/uhci.c:uhci_interrupt_arm`
-- `c:src/drivers/uhci.c:uhci_interrupt_buffer`
-- `c:src/drivers/uhci.c:uhci_interrupt_cancel`
-- `c:src/drivers/uhci.c:uhci_interrupt_completion`
-- `c:src/drivers/uhci.c:uhci_interrupt_deadline_expired`
-- `c:src/drivers/uhci.c:uhci_interrupt_release_frames`
-- `c:src/drivers/uhci.c:uhci_interrupt_reserve_frames`
-- `c:src/drivers/uhci.c:uhci_interrupt_submit`
-- `c:src/drivers/uhci.c:uhci_interrupt_try_schedule`
-- `c:src/drivers/uhci.c:uhci_irq_handler`
-- `c:src/drivers/uhci.c:uhci_log_configuration_preview`
-- `c:src/drivers/uhci.c:uhci_log_device_preview`
-- `c:src/drivers/uhci.c:uhci_log_enumeration_failure`
-- `c:src/drivers/uhci.c:uhci_log_port_diagnostics`
-- `c:src/drivers/uhci.c:uhci_make_device_id`
-- `c:src/drivers/uhci.c:uhci_out16`
-- `c:src/drivers/uhci.c:uhci_out32`
-- `c:src/drivers/uhci.c:uhci_out8`
-- `c:src/drivers/uhci.c:uhci_parse_configuration`
-- `c:src/drivers/uhci.c:uhci_poll`
-- `c:src/drivers/uhci.c:uhci_port_offset`
-- `c:src/drivers/uhci.c:uhci_queue_head_at`
-- `c:src/drivers/uhci.c:uhci_read_descriptor`
-- `c:src/drivers/uhci.c:uhci_recover_controller`
-- `c:src/drivers/uhci.c:uhci_release_dma`
-- `c:src/drivers/uhci.c:uhci_reset_bulk_toggles`
-- `c:src/drivers/uhci.c:uhci_reset_controller`
-- `c:src/drivers/uhci.c:uhci_reset_port`
-- `c:src/drivers/uhci.c:uhci_scan_interrupt_requests`
-- `c:src/drivers/uhci.c:uhci_set_port_empty`
-- `c:src/drivers/uhci.c:uhci_start_controller`
-- `c:src/drivers/uhci.c:uhci_td_actual`
-- `c:src/drivers/uhci.c:uhci_td_status`
-- `c:src/drivers/uhci.c:uhci_timeout_expired`
-- `c:src/drivers/uhci.c:uhci_timeout_ticks`
-- `c:src/drivers/uhci.c:uhci_token`
-- `c:src/drivers/uhci.c:uhci_update_resource_usage`
-- `c:src/drivers/uhci.c:uhci_validate_pci`
-- `c:src/drivers/uhci.c:uhci_wait_transfer`
 - `c:src/filemanager/filemanager.c:fm_block_read_only_mutation`
 - `c:src/filemanager/filemanager.c:fm_classic_draw_help`
 - `c:src/filemanager/filemanager.c:fm_classic_draw_input_dialog`
