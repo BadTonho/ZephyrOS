@@ -1272,6 +1272,24 @@ funcoes e warnings tratados como erro. O relatorio fica em
 status `PASS`, nenhum endereco desconhecido ou ambiguo e deixar o controlador
 falso, paginas DMA e filas restaurados.
 
+## Driver RTL8139: teste host-only
+
+O caso `host:drivers:rtl8139` usa PCI, portas I/O, DMA, temporizador, IRQ e
+bottom-half falsos no processo host. Ele cobre inicializacao, reset, leitura
+de MAC, transmissao, recepcao, erros de ring, timeout, quiescencia,
+recuperacao e limpeza. Nenhuma instrucao de I/O privilegiado ou hardware real
+e executada pelo teste.
+
+```text
+make test-rtl8139-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O alvo exige compilador C nativo e `nm`, compila com instrumentacao de
+funcoes e warnings tratados como erro. O relatorio fica em
+`build/test-results/rtl8139-host/coverage.json`; uma execucao `PASS` deve ter
+status `PASS`, nenhum endereco desconhecido ou ambiguo e deixar o controlador
+falso, paginas DMA, filas e estado de IRQ restaurados.
+
 ## TST7: regressao continua
 
 O runner TST7 e independente do provedor de CI. O modo `quick` executa as

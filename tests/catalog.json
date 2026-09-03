@@ -21154,9 +21154,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/rtl8139.h:rtl8139_init",
@@ -21172,9 +21175,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/rtl8811cu.h:rtl8811cu_connect_open",
@@ -88489,9 +88495,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:ehci"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/ehci.c:ehci_init",
@@ -91813,9 +91822,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_allocate_device",
@@ -91831,9 +91843,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_allocate_dma",
@@ -91849,9 +91864,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_bottom_half",
@@ -91867,9 +91885,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_configure_dma",
@@ -91885,9 +91906,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_copy_interface_id",
@@ -91903,9 +91927,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_disable_hardware",
@@ -91921,9 +91948,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_drain_rx",
@@ -91939,9 +91969,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_fail_init",
@@ -91957,9 +91990,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_fill_interface",
@@ -91975,9 +92011,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_find_device",
@@ -91993,9 +92032,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_get_driver_status",
@@ -92011,9 +92053,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_handler",
@@ -92029,9 +92074,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_has_pending_rx",
@@ -92047,9 +92095,33 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/drivers/rtl8139.c:rtl8139_host_reset",
+      "kind": "c_function",
+      "source": "src/drivers/rtl8139.c",
+      "symbol": "rtl8139_host_reset",
+      "linkage": "external",
+      "owner": "drivers",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_in16",
@@ -92065,9 +92137,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_in32",
@@ -92083,9 +92158,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_in8",
@@ -92101,9 +92179,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_init",
@@ -92119,9 +92200,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_irq_restore",
@@ -92137,9 +92221,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_irq_save",
@@ -92155,9 +92242,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_memory_barrier",
@@ -92173,9 +92263,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_out16",
@@ -92191,9 +92284,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_out32",
@@ -92209,9 +92305,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_out8",
@@ -92227,9 +92326,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_prepare_pci",
@@ -92245,9 +92347,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_quiesce",
@@ -92263,9 +92368,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_read_mac",
@@ -92281,9 +92389,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_read_u16",
@@ -92299,9 +92410,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_receive_frame",
@@ -92317,9 +92431,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_release_dma",
@@ -92335,9 +92452,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_reset_receiver",
@@ -92353,9 +92473,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_send_frame",
@@ -92371,9 +92494,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_service_pending",
@@ -92389,9 +92515,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_update_link",
@@ -92407,9 +92536,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_wait_reset",
@@ -92425,9 +92557,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8811cu.c:rtl8811cu_connect_open",
@@ -154400,6 +154535,94 @@
       "status": "AUTOMATED"
     },
     {
+      "id": "host:drivers:ehci",
+      "scenario": "Contrato host-only do driver EHCI com PCI, MMIO, DMA, enumeracao e transfers simulados",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "hardware": "pci-ehci-mmio-dma-qtd-falso"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "validar PCI, MMIO, alinhamento DMA, reset, enumeracao, descritores, controle, bulk, interrupt, timeout, recuperacao e limpeza",
+      "expected": "operacoes validas preservam invariantes do controlador e fixtures invalidas retornam erros canonicos sem I/O privilegiado",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente PCI, MMIO, memoria DMA, relogio e dispositivos USB falsos no processo host",
+      "cleanup": "controlador falso resetado, paginas DMA devolvidas e manifesto, logs e cobertura preservados",
+      "surface_ids": [
+        "c:src/drivers/ehci.c:ehci_allocate_dma",
+        "c:src/drivers/ehci.c:ehci_bulk_transfer",
+        "c:src/drivers/ehci.c:ehci_bulk_transfer_locked",
+        "c:src/drivers/ehci.c:ehci_clear_sync",
+        "c:src/drivers/ehci.c:ehci_control_request",
+        "c:src/drivers/ehci.c:ehci_control_transfer",
+        "c:src/drivers/ehci.c:ehci_copy_status",
+        "c:src/drivers/ehci.c:ehci_deadline_expired",
+        "c:src/drivers/ehci.c:ehci_disable",
+        "c:src/drivers/ehci.c:ehci_enumerate_port",
+        "c:src/drivers/ehci.c:ehci_find",
+        "c:src/drivers/ehci.c:ehci_find_device_record",
+        "c:src/drivers/ehci.c:ehci_find_port_record",
+        "c:src/drivers/ehci.c:ehci_get_device",
+        "c:src/drivers/ehci.c:ehci_get_device_count",
+        "c:src/drivers/ehci.c:ehci_get_port",
+        "c:src/drivers/ehci.c:ehci_get_port_count",
+        "c:src/drivers/ehci.c:ehci_get_status",
+        "c:src/drivers/ehci.c:ehci_host_reset",
+        "c:src/drivers/ehci.c:ehci_init",
+        "c:src/drivers/ehci.c:ehci_init_instance",
+        "c:src/drivers/ehci.c:ehci_initialize_ports",
+        "c:src/drivers/ehci.c:ehci_interrupt_arm",
+        "c:src/drivers/ehci.c:ehci_interrupt_cancel",
+        "c:src/drivers/ehci.c:ehci_interrupt_poll",
+        "c:src/drivers/ehci.c:ehci_interrupt_submit",
+        "c:src/drivers/ehci.c:ehci_irq_handler",
+        "c:src/drivers/ehci.c:ehci_link_schedule",
+        "c:src/drivers/ehci.c:ehci_make_device_id",
+        "c:src/drivers/ehci.c:ehci_map_mmio",
+        "c:src/drivers/ehci.c:ehci_parse_configuration",
+        "c:src/drivers/ehci.c:ehci_poll",
+        "c:src/drivers/ehci.c:ehci_qh_configure",
+        "c:src/drivers/ehci.c:ehci_qtd_actual",
+        "c:src/drivers/ehci.c:ehci_qtd_error",
+        "c:src/drivers/ehci.c:ehci_qtd_prepare",
+        "c:src/drivers/ehci.c:ehci_qtd_set_buffers",
+        "c:src/drivers/ehci.c:ehci_read",
+        "c:src/drivers/ehci.c:ehci_read_descriptor",
+        "c:src/drivers/ehci.c:ehci_recover_controller",
+        "c:src/drivers/ehci.c:ehci_release_dma",
+        "c:src/drivers/ehci.c:ehci_reset_bulk_toggles",
+        "c:src/drivers/ehci.c:ehci_reset_controller",
+        "c:src/drivers/ehci.c:ehci_reset_port",
+        "c:src/drivers/ehci.c:ehci_set_port_empty",
+        "c:src/drivers/ehci.c:ehci_start_controller",
+        "c:src/drivers/ehci.c:ehci_submit_sync",
+        "c:src/drivers/ehci.c:ehci_timeout_ticks",
+        "c:src/drivers/ehci.c:ehci_validate_pci",
+        "c:src/drivers/ehci.c:ehci_validate_state",
+        "c:src/drivers/ehci.c:ehci_wait_qtds",
+        "c:src/drivers/ehci.c:ehci_write"
+      ],
+      "tags": [
+        "host",
+        "drivers",
+        "usb",
+        "ehci",
+        "mmio",
+        "limits",
+        "recovery",
+        "coverage"
+      ],
+      "status": "AUTOMATED"
+    },
+    {
       "id": "host:drivers:font",
       "scenario": "Contrato host-only do driver de fonte",
       "owner": "quality",
@@ -154604,6 +154827,79 @@
         "rtc",
         "coverage"
       ]
+    },
+    {
+      "id": "host:drivers:rtl8139",
+      "scenario": "Contrato host-only do driver RTL8139 com PCI, DMA, RX/TX, IRQ e limpeza simulados",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "hardware": "pci-rtl8139-io-dma-irq-falso"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "validar PCI, portas I/O, reset, MAC, DMA, transmissoes, recepcoes, IRQ, bottom-half, erros, timeout, quiescencia e limpeza",
+      "expected": "operacoes validas preservam invariantes do controlador e fixtures invalidas retornam erros canonicos sem I/O privilegiado",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente PCI, portas, memoria DMA, relogio, IRQ e controlador RTL8139 falso no processo host",
+      "cleanup": "controlador falso resetado, paginas DMA devolvidas e manifesto, logs e cobertura preservados",
+      "surface_ids": [
+        "api:src/include/drivers/rtl8139.h:rtl8139_handler",
+        "api:src/include/drivers/rtl8139.h:rtl8139_init",
+        "c:src/drivers/rtl8139.c:rtl8139_advance_rx",
+        "c:src/drivers/rtl8139.c:rtl8139_allocate_device",
+        "c:src/drivers/rtl8139.c:rtl8139_allocate_dma",
+        "c:src/drivers/rtl8139.c:rtl8139_bottom_half",
+        "c:src/drivers/rtl8139.c:rtl8139_configure_dma",
+        "c:src/drivers/rtl8139.c:rtl8139_copy_interface_id",
+        "c:src/drivers/rtl8139.c:rtl8139_disable_hardware",
+        "c:src/drivers/rtl8139.c:rtl8139_drain_rx",
+        "c:src/drivers/rtl8139.c:rtl8139_fail_init",
+        "c:src/drivers/rtl8139.c:rtl8139_fill_interface",
+        "c:src/drivers/rtl8139.c:rtl8139_find_device",
+        "c:src/drivers/rtl8139.c:rtl8139_get_driver_status",
+        "c:src/drivers/rtl8139.c:rtl8139_handler",
+        "c:src/drivers/rtl8139.c:rtl8139_has_pending_rx",
+        "c:src/drivers/rtl8139.c:rtl8139_host_reset",
+        "c:src/drivers/rtl8139.c:rtl8139_in16",
+        "c:src/drivers/rtl8139.c:rtl8139_in32",
+        "c:src/drivers/rtl8139.c:rtl8139_in8",
+        "c:src/drivers/rtl8139.c:rtl8139_init",
+        "c:src/drivers/rtl8139.c:rtl8139_irq_restore",
+        "c:src/drivers/rtl8139.c:rtl8139_irq_save",
+        "c:src/drivers/rtl8139.c:rtl8139_memory_barrier",
+        "c:src/drivers/rtl8139.c:rtl8139_out16",
+        "c:src/drivers/rtl8139.c:rtl8139_out32",
+        "c:src/drivers/rtl8139.c:rtl8139_out8",
+        "c:src/drivers/rtl8139.c:rtl8139_prepare_pci",
+        "c:src/drivers/rtl8139.c:rtl8139_quiesce",
+        "c:src/drivers/rtl8139.c:rtl8139_read_mac",
+        "c:src/drivers/rtl8139.c:rtl8139_read_u16",
+        "c:src/drivers/rtl8139.c:rtl8139_receive_frame",
+        "c:src/drivers/rtl8139.c:rtl8139_release_dma",
+        "c:src/drivers/rtl8139.c:rtl8139_reset_receiver",
+        "c:src/drivers/rtl8139.c:rtl8139_send_frame",
+        "c:src/drivers/rtl8139.c:rtl8139_service_pending",
+        "c:src/drivers/rtl8139.c:rtl8139_update_link",
+        "c:src/drivers/rtl8139.c:rtl8139_wait_reset"
+      ],
+      "tags": [
+        "host",
+        "drivers",
+        "network",
+        "rtl8139",
+        "limits",
+        "recovery",
+        "coverage"
+      ],
+      "status": "AUTOMATED"
     },
     {
       "id": "host:drivers:serial",
@@ -168777,93 +169073,6 @@
         "stress",
         "storage"
       ]
-    },
-    {
-      "id": "host:drivers:ehci",
-      "scenario": "Contrato host-only do driver EHCI com PCI, MMIO, DMA, enumeracao e transfers simulados",
-      "owner": "quality",
-      "layer": "host",
-      "executor": "host",
-      "profile": "host-only",
-      "timeout_seconds": 120,
-      "heartbeat_timeout_seconds": 1,
-      "isolation": "fixture",
-      "parameters": {
-        "compiler": "HOST_CC",
-        "instrumentation": "-finstrument-functions",
-        "warnings": "error",
-        "hardware": "pci-ehci-mmio-dma-qtd-falso"
-      },
-      "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "validar PCI, MMIO, alinhamento DMA, reset, enumeracao, descritores, controle, bulk, interrupt, timeout, recuperacao e limpeza",
-      "expected": "operacoes validas preservam invariantes do controlador e fixtures invalidas retornam erros canonicos sem I/O privilegiado",
-      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
-      "effects": "somente PCI, MMIO, memoria DMA, relogio e dispositivos USB falsos no processo host",
-      "cleanup": "controlador falso resetado, paginas DMA devolvidas e manifesto, logs e cobertura preservados",
-      "surface_ids": [
-        "c:src/drivers/ehci.c:ehci_allocate_dma",
-        "c:src/drivers/ehci.c:ehci_bulk_transfer",
-        "c:src/drivers/ehci.c:ehci_bulk_transfer_locked",
-        "c:src/drivers/ehci.c:ehci_clear_sync",
-        "c:src/drivers/ehci.c:ehci_control_request",
-        "c:src/drivers/ehci.c:ehci_control_transfer",
-        "c:src/drivers/ehci.c:ehci_copy_status",
-        "c:src/drivers/ehci.c:ehci_deadline_expired",
-        "c:src/drivers/ehci.c:ehci_disable",
-        "c:src/drivers/ehci.c:ehci_enumerate_port",
-        "c:src/drivers/ehci.c:ehci_find",
-        "c:src/drivers/ehci.c:ehci_find_device_record",
-        "c:src/drivers/ehci.c:ehci_find_port_record",
-        "c:src/drivers/ehci.c:ehci_get_device",
-        "c:src/drivers/ehci.c:ehci_get_device_count",
-        "c:src/drivers/ehci.c:ehci_get_port",
-        "c:src/drivers/ehci.c:ehci_get_port_count",
-        "c:src/drivers/ehci.c:ehci_get_status",
-        "c:src/drivers/ehci.c:ehci_init",
-        "c:src/drivers/ehci.c:ehci_init_instance",
-        "c:src/drivers/ehci.c:ehci_initialize_ports",
-        "c:src/drivers/ehci.c:ehci_interrupt_arm",
-        "c:src/drivers/ehci.c:ehci_interrupt_cancel",
-        "c:src/drivers/ehci.c:ehci_interrupt_poll",
-        "c:src/drivers/ehci.c:ehci_interrupt_submit",
-        "c:src/drivers/ehci.c:ehci_irq_handler",
-        "c:src/drivers/ehci.c:ehci_link_schedule",
-        "c:src/drivers/ehci.c:ehci_make_device_id",
-        "c:src/drivers/ehci.c:ehci_map_mmio",
-        "c:src/drivers/ehci.c:ehci_parse_configuration",
-        "c:src/drivers/ehci.c:ehci_poll",
-        "c:src/drivers/ehci.c:ehci_qh_configure",
-        "c:src/drivers/ehci.c:ehci_qtd_actual",
-        "c:src/drivers/ehci.c:ehci_qtd_error",
-        "c:src/drivers/ehci.c:ehci_qtd_prepare",
-        "c:src/drivers/ehci.c:ehci_qtd_set_buffers",
-        "c:src/drivers/ehci.c:ehci_read",
-        "c:src/drivers/ehci.c:ehci_read_descriptor",
-        "c:src/drivers/ehci.c:ehci_recover_controller",
-        "c:src/drivers/ehci.c:ehci_release_dma",
-        "c:src/drivers/ehci.c:ehci_reset_bulk_toggles",
-        "c:src/drivers/ehci.c:ehci_reset_controller",
-        "c:src/drivers/ehci.c:ehci_reset_port",
-        "c:src/drivers/ehci.c:ehci_set_port_empty",
-        "c:src/drivers/ehci.c:ehci_start_controller",
-        "c:src/drivers/ehci.c:ehci_submit_sync",
-        "c:src/drivers/ehci.c:ehci_timeout_ticks",
-        "c:src/drivers/ehci.c:ehci_validate_pci",
-        "c:src/drivers/ehci.c:ehci_validate_state",
-        "c:src/drivers/ehci.c:ehci_wait_qtds",
-        "c:src/drivers/ehci.c:ehci_write"
-      ],
-      "tags": [
-        "host",
-        "drivers",
-        "usb",
-        "ehci",
-        "mmio",
-        "limits",
-        "recovery",
-        "coverage"
-      ],
-      "status": "AUTOMATED"
     }
   ],
   "retired": [
