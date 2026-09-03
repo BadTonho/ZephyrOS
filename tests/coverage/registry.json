@@ -3260,7 +3260,7 @@
           "coverage"
         ]
       },
-      "evidence": "make test-shell-hosted-host PASS com modo Classic, reabertura, callbacks de desenho/tecla/mouse, fechamento e falha de registro no relatorio instrumentado"
+      "evidence": "make test-shell-hosted-host PASS com modo Classic, reabertura, callbacks de desenho/tecla/mouse, fechamento e falha de registro; coverage.json instrumentado resolveu as 8 funcoes de src/shell/shell_hosted.c sem enderecos desconhecidos ou ambiguos"
     },
     {
       "id": "shell-command-utils-host-dynamic",
