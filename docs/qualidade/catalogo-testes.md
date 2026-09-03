@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **7211**
-- Casos de teste: **125**
+- Superfícies ativas: **7219**
+- Casos de teste: **126**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
 |---|---:|
 | `api_function` | 1541 |
 | `asm_entry` | 101 |
-| `c_function` | 5449 |
+| `c_function` | 5457 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4794 |
+| `COVERED` | 4842 |
 | `MANUAL` | 0 |
-| `PENDING` | 2417 |
+| `PENDING` | 2377 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 125 |
+| `AUTOMATED` | 126 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -37,9 +37,9 @@
 | `apps` | 134 |
 | `appstore` | 88 |
 | `boot` | 136 |
-| `core` | 2771 |
+| `core` | 2775 |
 | `desktop` | 40 |
-| `drivers` | 928 |
+| `drivers` | 932 |
 | `filemanager` | 92 |
 | `fs` | 957 |
 | `gui` | 30 |
@@ -972,10 +972,10 @@
 | `api:src/include/drivers/rng.h:rng_init` | `src/include/drivers/rng.h` | `rng_init` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/rng.h:rng_validate_state` | `src/include/drivers/rng.h` | `rng_validate_state` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/rtc.h:rtc_get_status` | `src/include/drivers/rtc.h` | `rtc_get_status` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/rtc.h:rtc_init` | `src/include/drivers/rtc.h` | `rtc_init` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/rtc.h:rtc_read_utc` | `src/include/drivers/rtc.h` | `rtc_read_utc` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/rtc.h:rtc_self_test` | `src/include/drivers/rtc.h` | `rtc_self_test` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/rtc.h:rtc_validate_state` | `src/include/drivers/rtc.h` | `rtc_validate_state` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/rtc.h:rtc_init` | `src/include/drivers/rtc.h` | `rtc_init` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/rtc.h:rtc_read_utc` | `src/include/drivers/rtc.h` | `rtc_read_utc` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/rtc.h:rtc_self_test` | `src/include/drivers/rtc.h` | `rtc_self_test` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/rtc.h:rtc_validate_state` | `src/include/drivers/rtc.h` | `rtc_validate_state` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/rtl8139.h:rtl8139_handler` | `src/include/drivers/rtl8139.h` | `rtl8139_handler` | `drivers` | `COVERED` | 1 |
 | `api:src/include/drivers/rtl8139.h:rtl8139_init` | `src/include/drivers/rtl8139.h` | `rtl8139_init` | `drivers` | `COVERED` | 1 |
 | `api:src/include/drivers/rtl8811cu.h:rtl8811cu_connect_open` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_connect_open` | `drivers` | `COVERED` | 1 |
@@ -1653,55 +1653,55 @@
 | `asm:src/boot/system_boot.asm:start` | `src/boot/system_boot.asm` | `start` | `boot` | `PENDING` | 0 |
 | `asm:src/boot/system_stage2.asm:fail` | `src/boot/system_stage2.asm` | `fail` | `boot` | `PENDING` | 0 |
 | `asm:src/boot/system_stage2.asm:start` | `src/boot/system_stage2.asm` | `start` | `boot` | `PENDING` | 0 |
-| `asm:src/drivers/irq.asm:irq0` | `src/drivers/irq.asm` | `irq0` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/irq.asm:irq1` | `src/drivers/irq.asm` | `irq1` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/irq.asm:irq10` | `src/drivers/irq.asm` | `irq10` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/irq.asm:irq11` | `src/drivers/irq.asm` | `irq11` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/irq.asm:irq12` | `src/drivers/irq.asm` | `irq12` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/irq.asm:irq13` | `src/drivers/irq.asm` | `irq13` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/irq.asm:irq14` | `src/drivers/irq.asm` | `irq14` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/irq.asm:irq15` | `src/drivers/irq.asm` | `irq15` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/irq.asm:irq2` | `src/drivers/irq.asm` | `irq2` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/irq.asm:irq3` | `src/drivers/irq.asm` | `irq3` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/irq.asm:irq4` | `src/drivers/irq.asm` | `irq4` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/irq.asm:irq5` | `src/drivers/irq.asm` | `irq5` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/irq.asm:irq6` | `src/drivers/irq.asm` | `irq6` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/irq.asm:irq7` | `src/drivers/irq.asm` | `irq7` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/irq.asm:irq8` | `src/drivers/irq.asm` | `irq8` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/irq.asm:irq9` | `src/drivers/irq.asm` | `irq9` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr0` | `src/drivers/isr.asm` | `isr0` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr1` | `src/drivers/isr.asm` | `isr1` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr10` | `src/drivers/isr.asm` | `isr10` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr11` | `src/drivers/isr.asm` | `isr11` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr12` | `src/drivers/isr.asm` | `isr12` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr128` | `src/drivers/isr.asm` | `isr128` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr13` | `src/drivers/isr.asm` | `isr13` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr14` | `src/drivers/isr.asm` | `isr14` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr15` | `src/drivers/isr.asm` | `isr15` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr16` | `src/drivers/isr.asm` | `isr16` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr17` | `src/drivers/isr.asm` | `isr17` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr18` | `src/drivers/isr.asm` | `isr18` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr19` | `src/drivers/isr.asm` | `isr19` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr2` | `src/drivers/isr.asm` | `isr2` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr20` | `src/drivers/isr.asm` | `isr20` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr21` | `src/drivers/isr.asm` | `isr21` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr22` | `src/drivers/isr.asm` | `isr22` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr23` | `src/drivers/isr.asm` | `isr23` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr24` | `src/drivers/isr.asm` | `isr24` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr25` | `src/drivers/isr.asm` | `isr25` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr26` | `src/drivers/isr.asm` | `isr26` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr27` | `src/drivers/isr.asm` | `isr27` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr28` | `src/drivers/isr.asm` | `isr28` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr29` | `src/drivers/isr.asm` | `isr29` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr3` | `src/drivers/isr.asm` | `isr3` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr30` | `src/drivers/isr.asm` | `isr30` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr31` | `src/drivers/isr.asm` | `isr31` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr4` | `src/drivers/isr.asm` | `isr4` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr5` | `src/drivers/isr.asm` | `isr5` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr6` | `src/drivers/isr.asm` | `isr6` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr7` | `src/drivers/isr.asm` | `isr7` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr8` | `src/drivers/isr.asm` | `isr8` | `drivers` | `PENDING` | 0 |
-| `asm:src/drivers/isr.asm:isr9` | `src/drivers/isr.asm` | `isr9` | `drivers` | `PENDING` | 0 |
+| `asm:src/drivers/irq.asm:irq0` | `src/drivers/irq.asm` | `irq0` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/irq.asm:irq1` | `src/drivers/irq.asm` | `irq1` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/irq.asm:irq10` | `src/drivers/irq.asm` | `irq10` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/irq.asm:irq11` | `src/drivers/irq.asm` | `irq11` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/irq.asm:irq12` | `src/drivers/irq.asm` | `irq12` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/irq.asm:irq13` | `src/drivers/irq.asm` | `irq13` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/irq.asm:irq14` | `src/drivers/irq.asm` | `irq14` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/irq.asm:irq15` | `src/drivers/irq.asm` | `irq15` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/irq.asm:irq2` | `src/drivers/irq.asm` | `irq2` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/irq.asm:irq3` | `src/drivers/irq.asm` | `irq3` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/irq.asm:irq4` | `src/drivers/irq.asm` | `irq4` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/irq.asm:irq5` | `src/drivers/irq.asm` | `irq5` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/irq.asm:irq6` | `src/drivers/irq.asm` | `irq6` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/irq.asm:irq7` | `src/drivers/irq.asm` | `irq7` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/irq.asm:irq8` | `src/drivers/irq.asm` | `irq8` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/irq.asm:irq9` | `src/drivers/irq.asm` | `irq9` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr0` | `src/drivers/isr.asm` | `isr0` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr1` | `src/drivers/isr.asm` | `isr1` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr10` | `src/drivers/isr.asm` | `isr10` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr11` | `src/drivers/isr.asm` | `isr11` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr12` | `src/drivers/isr.asm` | `isr12` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr128` | `src/drivers/isr.asm` | `isr128` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr13` | `src/drivers/isr.asm` | `isr13` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr14` | `src/drivers/isr.asm` | `isr14` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr15` | `src/drivers/isr.asm` | `isr15` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr16` | `src/drivers/isr.asm` | `isr16` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr17` | `src/drivers/isr.asm` | `isr17` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr18` | `src/drivers/isr.asm` | `isr18` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr19` | `src/drivers/isr.asm` | `isr19` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr2` | `src/drivers/isr.asm` | `isr2` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr20` | `src/drivers/isr.asm` | `isr20` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr21` | `src/drivers/isr.asm` | `isr21` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr22` | `src/drivers/isr.asm` | `isr22` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr23` | `src/drivers/isr.asm` | `isr23` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr24` | `src/drivers/isr.asm` | `isr24` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr25` | `src/drivers/isr.asm` | `isr25` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr26` | `src/drivers/isr.asm` | `isr26` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr27` | `src/drivers/isr.asm` | `isr27` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr28` | `src/drivers/isr.asm` | `isr28` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr29` | `src/drivers/isr.asm` | `isr29` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr3` | `src/drivers/isr.asm` | `isr3` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr30` | `src/drivers/isr.asm` | `isr30` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr31` | `src/drivers/isr.asm` | `isr31` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr4` | `src/drivers/isr.asm` | `isr4` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr5` | `src/drivers/isr.asm` | `isr5` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr6` | `src/drivers/isr.asm` | `isr6` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr7` | `src/drivers/isr.asm` | `isr7` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr8` | `src/drivers/isr.asm` | `isr8` | `drivers` | `COVERED` | 1 |
+| `asm:src/drivers/isr.asm:isr9` | `src/drivers/isr.asm` | `isr9` | `drivers` | `COVERED` | 1 |
 | `asm:src/kernel/entry.asm:_start` | `src/kernel/entry.asm` | `_start` | `kernel` | `PENDING` | 0 |
 | `asm:src/kernel/switch.asm:process_context_switch` | `src/kernel/switch.asm` | `process_context_switch` | `kernel` | `PENDING` | 0 |
 | `asm:src/kernel/switch.asm:process_user_enter` | `src/kernel/switch.asm` | `process_user_enter` | `kernel` | `PENDING` | 0 |
@@ -2666,6 +2666,9 @@
 | `c:src/core/kernel_tests.c:kernel_tests_run_memory_slab` | `src/core/kernel_tests.c` | `kernel_tests_run_memory_slab` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests.c:kernel_tests_run_memory_slab_with_runtime` | `src/core/kernel_tests.c` | `kernel_tests_run_memory_slab_with_runtime` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests.c:kernel_tests_same_memory_state` | `src/core/kernel_tests.c` | `kernel_tests_same_memory_state` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_assembly.c:kernel_tests_run_assembly` | `src/core/kernel_tests_assembly.c` | `kernel_tests_run_assembly` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_assembly.c:kernel_tests_trigger_vector` | `src/core/kernel_tests_assembly.c` | `kernel_tests_trigger_vector` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_assembly.c:kernel_tests_validate_vectors` | `src/core/kernel_tests_assembly.c` | `kernel_tests_validate_vectors` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_contains` | `src/core/kernel_tests_blackbox.c` | `blackbox_contains` | `core` | `COVERED` | 4 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_equals` | `src/core/kernel_tests_blackbox.c` | `blackbox_equals` | `core` | `COVERED` | 4 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_length` | `src/core/kernel_tests_blackbox.c` | `blackbox_length` | `core` | `COVERED` | 4 |
@@ -3180,6 +3183,7 @@
 | `c:src/core/test_coverage.c:test_coverage_begin_case` | `src/core/test_coverage.c` | `test_coverage_begin_case` | `core` | `COVERED` | 1 |
 | `c:src/core/test_coverage.c:test_coverage_end_case` | `src/core/test_coverage.c` | `test_coverage_end_case` | `core` | `COVERED` | 1 |
 | `c:src/core/test_coverage.c:test_coverage_host_exercise` | `src/core/test_coverage.c` | `test_coverage_host_exercise` | `core` | `COVERED` | 1 |
+| `c:src/core/test_coverage.c:test_coverage_record_address` | `src/core/test_coverage.c` | `test_coverage_record_address` | `core` | `COVERED` | 1 |
 | `c:src/core/test_protocol.c:protocol_copy_text` | `src/core/test_protocol.c` | `protocol_copy_text` | `core` | `COVERED` | 1 |
 | `c:src/core/test_protocol.c:protocol_dispatch_case` | `src/core/test_protocol.c` | `protocol_dispatch_case` | `core` | `COVERED` | 8 |
 | `c:src/core/test_protocol.c:protocol_emit_event` | `src/core/test_protocol.c` | `protocol_emit_event` | `core` | `COVERED` | 4 |
@@ -4208,13 +4212,17 @@
 | `c:src/drivers/idt.c:idt_register_handler` | `src/drivers/idt.c` | `idt_register_handler` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/idt.c:idt_register_shared_irq_handler` | `src/drivers/idt.c` | `idt_register_shared_irq_handler` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/idt.c:idt_set_gate` | `src/drivers/idt.c` | `idt_set_gate` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/idt.c:idt_test_probe_begin` | `src/drivers/idt.c` | `idt_test_probe_begin` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/idt.c:idt_test_probe_end` | `src/drivers/idt.c` | `idt_test_probe_end` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/idt.c:idt_test_probe_get_count` | `src/drivers/idt.c` | `idt_test_probe_get_count` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/idt.c:idt_test_probe_handler` | `src/drivers/idt.c` | `idt_test_probe_handler` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/idt.c:idt_unmask_irq` | `src/drivers/idt.c` | `idt_unmask_irq` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/idt.c:idt_user_exception_handler` | `src/drivers/idt.c` | `idt_user_exception_handler` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/idt.c:idt_validate_irq_state` | `src/drivers/idt.c` | `idt_validate_irq_state` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/idt.c:inb` | `src/drivers/idt.c` | `inb` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/idt.c:irq_handler` | `src/drivers/idt.c` | `irq_handler` | `drivers` | `COVERED` | 4 |
-| `c:src/drivers/idt.c:isr_handler` | `src/drivers/idt.c` | `isr_handler` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/idt.c:outb` | `src/drivers/idt.c` | `outb` | `drivers` | `COVERED` | 4 |
+| `c:src/drivers/idt.c:irq_handler` | `src/drivers/idt.c` | `irq_handler` | `drivers` | `COVERED` | 5 |
+| `c:src/drivers/idt.c:isr_handler` | `src/drivers/idt.c` | `isr_handler` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/idt.c:outb` | `src/drivers/idt.c` | `outb` | `drivers` | `COVERED` | 5 |
 | `c:src/drivers/idt.c:pic_remap` | `src/drivers/idt.c` | `pic_remap` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/keyboard.c:inb` | `src/drivers/keyboard.c` | `inb` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/keyboard.c:keyboard_bottom_half` | `src/drivers/keyboard.c` | `keyboard_bottom_half` | `drivers` | `COVERED` | 3 |
@@ -4303,23 +4311,23 @@
 | `c:src/drivers/rng.c:rng_init` | `src/drivers/rng.c` | `rng_init` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/rng.c:rng_read_word` | `src/drivers/rng.c` | `rng_read_word` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/rng.c:rng_validate_state` | `src/drivers/rng.c` | `rng_validate_state` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/rtc.c:rtc_datetime_valid` | `src/drivers/rtc.c` | `rtc_datetime_valid` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/rtc.c:rtc_days_in_month` | `src/drivers/rtc.c` | `rtc_days_in_month` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/rtc.c:rtc_decode_snapshot` | `src/drivers/rtc.c` | `rtc_decode_snapshot` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/rtc.c:rtc_decode_value` | `src/drivers/rtc.c` | `rtc_decode_value` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/rtc.c:rtc_datetime_valid` | `src/drivers/rtc.c` | `rtc_datetime_valid` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/rtc.c:rtc_days_in_month` | `src/drivers/rtc.c` | `rtc_days_in_month` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/rtc.c:rtc_decode_snapshot` | `src/drivers/rtc.c` | `rtc_decode_snapshot` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/rtc.c:rtc_decode_value` | `src/drivers/rtc.c` | `rtc_decode_value` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/rtc.c:rtc_get_status` | `src/drivers/rtc.c` | `rtc_get_status` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/rtc.c:rtc_inb` | `src/drivers/rtc.c` | `rtc_inb` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/rtc.c:rtc_init` | `src/drivers/rtc.c` | `rtc_init` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/rtc.c:rtc_is_leap_year` | `src/drivers/rtc.c` | `rtc_is_leap_year` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/rtc.c:rtc_outb` | `src/drivers/rtc.c` | `rtc_outb` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/rtc.c:rtc_raw_equal` | `src/drivers/rtc.c` | `rtc_raw_equal` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/rtc.c:rtc_read_raw` | `src/drivers/rtc.c` | `rtc_read_raw` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/rtc.c:rtc_read_raw_once` | `src/drivers/rtc.c` | `rtc_read_raw_once` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/rtc.c:rtc_read_register` | `src/drivers/rtc.c` | `rtc_read_register` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/rtc.c:rtc_read_utc` | `src/drivers/rtc.c` | `rtc_read_utc` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/rtc.c:rtc_self_test` | `src/drivers/rtc.c` | `rtc_self_test` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/rtc.c:rtc_validate_state` | `src/drivers/rtc.c` | `rtc_validate_state` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/rtc.c:rtc_wait_update_complete` | `src/drivers/rtc.c` | `rtc_wait_update_complete` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtc.c:rtc_inb` | `src/drivers/rtc.c` | `rtc_inb` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/rtc.c:rtc_init` | `src/drivers/rtc.c` | `rtc_init` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/rtc.c:rtc_is_leap_year` | `src/drivers/rtc.c` | `rtc_is_leap_year` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/rtc.c:rtc_outb` | `src/drivers/rtc.c` | `rtc_outb` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/rtc.c:rtc_raw_equal` | `src/drivers/rtc.c` | `rtc_raw_equal` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/rtc.c:rtc_read_raw` | `src/drivers/rtc.c` | `rtc_read_raw` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/rtc.c:rtc_read_raw_once` | `src/drivers/rtc.c` | `rtc_read_raw_once` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/rtc.c:rtc_read_register` | `src/drivers/rtc.c` | `rtc_read_register` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/rtc.c:rtc_read_utc` | `src/drivers/rtc.c` | `rtc_read_utc` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/rtc.c:rtc_self_test` | `src/drivers/rtc.c` | `rtc_self_test` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/rtc.c:rtc_validate_state` | `src/drivers/rtc.c` | `rtc_validate_state` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/rtc.c:rtc_wait_update_complete` | `src/drivers/rtc.c` | `rtc_wait_update_complete` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/rtl8139.c:rtl8139_advance_rx` | `src/drivers/rtl8139.c` | `rtl8139_advance_rx` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/rtl8139.c:rtl8139_allocate_device` | `src/drivers/rtl8139.c` | `rtl8139_allocate_device` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/rtl8139.c:rtl8139_allocate_dma` | `src/drivers/rtl8139.c` | `rtl8139_allocate_dma` | `drivers` | `COVERED` | 1 |
@@ -7422,6 +7430,7 @@
 | `qemu:tst6:stress:kernel` | `qemu` | `tst6` | `qemu:tst6:stress:kernel` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | paging, heap, SLAB, processos e threads estao READY | repetir ciclos deterministas de memoria e execucao sob teto obrigatorio | invariantes estaveis permanecem iguais e a primeira falha interrompe a suite | overflow, vazamento, deadlock, timeout, protocolo ou QEMU | alocacoes e objetos temporarios de cada ciclo em snapshot | devolver paginas, destruir objetos e registrar seed e iteracao |
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
+| `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
 
 ## Superfícies sem caso associado
 
@@ -7587,55 +7596,6 @@
 - `asm:src/boot/system_boot.asm:start`
 - `asm:src/boot/system_stage2.asm:fail`
 - `asm:src/boot/system_stage2.asm:start`
-- `asm:src/drivers/irq.asm:irq0`
-- `asm:src/drivers/irq.asm:irq1`
-- `asm:src/drivers/irq.asm:irq10`
-- `asm:src/drivers/irq.asm:irq11`
-- `asm:src/drivers/irq.asm:irq12`
-- `asm:src/drivers/irq.asm:irq13`
-- `asm:src/drivers/irq.asm:irq14`
-- `asm:src/drivers/irq.asm:irq15`
-- `asm:src/drivers/irq.asm:irq2`
-- `asm:src/drivers/irq.asm:irq3`
-- `asm:src/drivers/irq.asm:irq4`
-- `asm:src/drivers/irq.asm:irq5`
-- `asm:src/drivers/irq.asm:irq6`
-- `asm:src/drivers/irq.asm:irq7`
-- `asm:src/drivers/irq.asm:irq8`
-- `asm:src/drivers/irq.asm:irq9`
-- `asm:src/drivers/isr.asm:isr0`
-- `asm:src/drivers/isr.asm:isr1`
-- `asm:src/drivers/isr.asm:isr10`
-- `asm:src/drivers/isr.asm:isr11`
-- `asm:src/drivers/isr.asm:isr12`
-- `asm:src/drivers/isr.asm:isr128`
-- `asm:src/drivers/isr.asm:isr13`
-- `asm:src/drivers/isr.asm:isr14`
-- `asm:src/drivers/isr.asm:isr15`
-- `asm:src/drivers/isr.asm:isr16`
-- `asm:src/drivers/isr.asm:isr17`
-- `asm:src/drivers/isr.asm:isr18`
-- `asm:src/drivers/isr.asm:isr19`
-- `asm:src/drivers/isr.asm:isr2`
-- `asm:src/drivers/isr.asm:isr20`
-- `asm:src/drivers/isr.asm:isr21`
-- `asm:src/drivers/isr.asm:isr22`
-- `asm:src/drivers/isr.asm:isr23`
-- `asm:src/drivers/isr.asm:isr24`
-- `asm:src/drivers/isr.asm:isr25`
-- `asm:src/drivers/isr.asm:isr26`
-- `asm:src/drivers/isr.asm:isr27`
-- `asm:src/drivers/isr.asm:isr28`
-- `asm:src/drivers/isr.asm:isr29`
-- `asm:src/drivers/isr.asm:isr3`
-- `asm:src/drivers/isr.asm:isr30`
-- `asm:src/drivers/isr.asm:isr31`
-- `asm:src/drivers/isr.asm:isr4`
-- `asm:src/drivers/isr.asm:isr5`
-- `asm:src/drivers/isr.asm:isr6`
-- `asm:src/drivers/isr.asm:isr7`
-- `asm:src/drivers/isr.asm:isr8`
-- `asm:src/drivers/isr.asm:isr9`
 - `asm:src/kernel/entry.asm:_start`
 - `asm:src/kernel/switch.asm:process_context_switch`
 - `asm:src/kernel/switch.asm:process_user_enter`
@@ -8492,6 +8452,15 @@
 - `c:src/desktop/desktop.c:desktop_update_drag_preview`
 - `c:src/desktop/desktop.c:desktop_update_selection`
 - `c:src/desktop/desktop.c:draw_single_icon_simple`
+- `c:src/drivers/rtc.c:rtc_inb`
+- `c:src/drivers/rtc.c:rtc_init`
+- `c:src/drivers/rtc.c:rtc_outb`
+- `c:src/drivers/rtc.c:rtc_raw_equal`
+- `c:src/drivers/rtc.c:rtc_read_raw`
+- `c:src/drivers/rtc.c:rtc_read_raw_once`
+- `c:src/drivers/rtc.c:rtc_read_register`
+- `c:src/drivers/rtc.c:rtc_read_utc`
+- `c:src/drivers/rtc.c:rtc_wait_update_complete`
 - `c:src/filemanager/filemanager.c:fm_block_read_only_mutation`
 - `c:src/filemanager/filemanager.c:fm_classic_draw_help`
 - `c:src/filemanager/filemanager.c:fm_classic_draw_input_dialog`

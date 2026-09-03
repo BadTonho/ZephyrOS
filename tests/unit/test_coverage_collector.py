@@ -79,6 +79,28 @@ class CoverageCollectorTests(unittest.TestCase):
         self.assertEqual(report["covered_surface_ids"], [
             "c:src/boot/recovery_runtime.c:log_print"])
 
+    def test_assembly_symbols_are_resolved_to_assembly_surfaces(self):
+        catalog = {"surfaces": [
+            {"id": "asm:src/drivers/isr.asm:isr14", "kind": "asm_entry",
+             "source": "src/drivers/isr.asm", "symbol": "isr14"},
+            {"id": "asm:src/drivers/irq.asm:irq0", "kind": "asm_entry",
+             "source": "src/drivers/irq.asm", "symbol": "irq0"},
+        ]}
+        symbols = [
+            {"address": 0x1000, "symbol": "isr14"},
+            {"address": 0x2000, "symbol": "irq0"},
+        ]
+        assembly_trace = trace().replace(
+            "qemu:tst4:memory-slab", "qemu:tst7:assembly").replace(
+                "0x00000002", "0x00000002").replace(
+                    "0x00001000,0x00002000", "0x00001000,0x00002000")
+        report = coverage_collector.collect_report(
+            assembly_trace, symbols, catalog)
+        self.assertEqual(report["status"], "PASS")
+        self.assertEqual(report["covered_surface_ids"], [
+            "asm:src/drivers/irq.asm:irq0",
+            "asm:src/drivers/isr.asm:isr14"])
+
     def test_addr2line_locations_are_parsed(self):
         locations = coverage_collector.parse_addr2line(
             "log_print\nsrc/core/log.c:42\n??\n??:0\n",

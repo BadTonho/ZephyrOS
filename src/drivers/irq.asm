@@ -1,10 +1,29 @@
 [BITS 32]
 [EXTERN irq_handler]
 
+%ifdef ZEPHYROS_TEST_COVERAGE
+[EXTERN test_coverage_record_address]
+%macro COVERAGE_ENTRY 1
+    push eax
+    push ecx
+    push edx
+    push dword %1
+    call test_coverage_record_address
+    add esp, 4
+    pop edx
+    pop ecx
+    pop eax
+%endmacro
+%else
+%macro COVERAGE_ENTRY 1
+%endmacro
+%endif
+
 %macro IRQ 1
 [GLOBAL irq%1]
 irq%1:
     cli
+    COVERAGE_ENTRY irq%1
     push dword 0
     push dword %1 + 32
     jmp irq_common_stub

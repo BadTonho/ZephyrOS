@@ -1,4 +1,5 @@
 #include "drivers/idt.h"
+#include "idt_internal.h"
 #include "core/video.h"
 #include "core/panic.h"
 #include "core/log.h"
@@ -34,6 +35,80 @@ static volatile uint32_t irq_occurrences[IDT_IRQ_LINE_COUNT];
 static int idt_ready = 0;
 static int user_syscall_enabled = 0;
 static void idt_panic_exception(registers_t* regs);
+static isr_handler_t idt_test_saved_handlers[256];
+static isr_handler_t idt_test_saved_shared_handlers[
+    IDT_IRQ_LINE_COUNT][IDT_SHARED_IRQ_HANDLER_CAPACITY];
+static uint8_t idt_test_saved_shared_counts[IDT_IRQ_LINE_COUNT];
+static uint32_t idt_test_saved_irq_occurrences[IDT_IRQ_LINE_COUNT];
+static volatile uint32_t idt_test_probe_counts[256];
+static uint8_t idt_test_probe_active;
+
+static void idt_test_probe_handler(registers_t* regs) {
+    if (!regs || regs->int_no >= 256U) return;
+    if (idt_test_probe_counts[regs->int_no] != 0xFFFFFFFFU) {
+        idt_test_probe_counts[regs->int_no]++;
+    }
+}
+
+int idt_test_probe_begin(void) {
+    if (!idt_ready) {
+        LOG_ERROR("IDT", "Fixture Assembly solicitada antes da IDT");
+        return ERR_STATE;
+    }
+    if (idt_test_probe_active) {
+        LOG_ERROR("IDT", "Fixture Assembly ja esta ativa");
+        return ERR_STATE;
+    }
+    for (uint32_t vector = 0U; vector < 256U; vector++) {
+        idt_test_saved_handlers[vector] = interrupt_handlers[vector];
+        idt_test_probe_counts[vector] = 0U;
+    }
+    for (uint32_t irq = 0U; irq < IDT_IRQ_LINE_COUNT; irq++) {
+        idt_test_saved_shared_counts[irq] = shared_irq_handler_counts[irq];
+        idt_test_saved_irq_occurrences[irq] = irq_occurrences[irq];
+        for (uint32_t slot = 0U; slot < IDT_SHARED_IRQ_HANDLER_CAPACITY;
+             slot++) {
+            idt_test_saved_shared_handlers[irq][slot] =
+                shared_irq_handlers[irq][slot];
+            shared_irq_handlers[irq][slot] = 0;
+        }
+        shared_irq_handler_counts[irq] = 0U;
+        irq_occurrences[irq] = 0U;
+    }
+    for (uint32_t vector = 0U; vector < 32U; vector++) {
+        interrupt_handlers[vector] = idt_test_probe_handler;
+        interrupt_handlers[32U + vector % IDT_IRQ_LINE_COUNT] =
+            idt_test_probe_handler;
+    }
+    interrupt_handlers[SYSCALL_VECTOR] = idt_test_probe_handler;
+    idt_test_probe_active = 1U;
+    return OK;
+}
+
+int idt_test_probe_end(void) {
+    if (!idt_test_probe_active) {
+        LOG_ERROR("IDT", "Finalizacao da fixture Assembly sem inicio");
+        return ERR_STATE;
+    }
+    for (uint32_t vector = 0U; vector < 256U; vector++) {
+        interrupt_handlers[vector] = idt_test_saved_handlers[vector];
+    }
+    for (uint32_t irq = 0U; irq < IDT_IRQ_LINE_COUNT; irq++) {
+        shared_irq_handler_counts[irq] = idt_test_saved_shared_counts[irq];
+        irq_occurrences[irq] = idt_test_saved_irq_occurrences[irq];
+        for (uint32_t slot = 0U; slot < IDT_SHARED_IRQ_HANDLER_CAPACITY;
+             slot++) {
+            shared_irq_handlers[irq][slot] =
+                idt_test_saved_shared_handlers[irq][slot];
+        }
+    }
+    idt_test_probe_active = 0U;
+    return OK;
+}
+
+uint32_t idt_test_probe_get_count(uint8_t vector) {
+    return idt_test_probe_counts[vector];
+}
 
 #ifdef ZEPHYROS_HOST_TEST
 static uint32_t idt_handler_address(void (*handler)(void)) {

@@ -1,10 +1,29 @@
 [BITS 32]
 [EXTERN isr_handler]
 
+%ifdef ZEPHYROS_TEST_COVERAGE
+[EXTERN test_coverage_record_address]
+%macro COVERAGE_ENTRY 1
+    push eax
+    push ecx
+    push edx
+    push dword %1
+    call test_coverage_record_address
+    add esp, 4
+    pop edx
+    pop ecx
+    pop eax
+%endmacro
+%else
+%macro COVERAGE_ENTRY 1
+%endmacro
+%endif
+
 %macro ISR_NOERRCODE 1
 [GLOBAL isr%1]
 isr%1:
     cli
+    COVERAGE_ENTRY isr%1
     push dword 0
     push dword %1
     jmp isr_common_stub
@@ -14,6 +33,7 @@ isr%1:
 [GLOBAL isr%1]
 isr%1:
     cli
+    COVERAGE_ENTRY isr%1
     push dword %1
     jmp isr_common_stub
 %endmacro
