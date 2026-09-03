@@ -5038,3 +5038,23 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   O catalogo registra 7.219 superficies, 4.922 `COVERED`, 2.297 `PENDING` e
   129 casos. O fechamento integral, o gate estrito e a validacao TST7 completa
   continuam pendentes.
+
+- Incremento Shell/Media Player concluido em 2026-09-03. Foi criado o caso
+  host-only `host:shell:mediaplayer` com o alvo
+  `make test-mediaplayer-host`. A fixture compilou o
+  `src/shell/mediaplayer.c` real com arquivos, audio, imagem, AC97, VESA,
+  timer e recovery falsos; exercitou playback individual e combinado, pausa,
+  retomada, parada, atualizacao, limite de nome, arquivos ausentes, formatos
+  invalidos, dependencias indisponiveis e limpeza.
+
+  `make test-mediaplayer-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
+  passou com warnings tratados como erro. O relatorio instrumentado
+  `build/test-results/mediaplayer-host/coverage.json` terminou `PASS`,
+  resolveu as 12 superficies de `src/shell/mediaplayer.c` e apresentou
+  `unknown_addresses=[]` e `ambiguous_symbols=[]`. Tambem passaram
+  `python tools/test_catalog.py sync`, `python tools/test_catalog.py render`,
+  `make catalog-test`, `make q3check`, `make clean`, `make` e uma nova
+  execucao do caso apos o build limpo. O catalogo registra 7.219 superficies,
+  4.929 `COVERED`, 2.290 `PENDING` e 130 casos. `mp_main` permanece pendente
+  porque nao possui implementacao no codigo ativo; o fechamento integral, o
+  gate estrito e a validacao TST7 completa continuam pendentes.
