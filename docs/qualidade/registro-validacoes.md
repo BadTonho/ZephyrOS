@@ -4587,3 +4587,14 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   7.196 superficies, 4.277 `COVERED`, 2.919 `PENDING` e 101 casos. O
   fechamento integral, o gate estrito e a validacao TST7 completa continuam
   pendentes.
+
+- Incremento TST5/black-box marker concluido em 2026-09-02: foi criado o caso
+  host-only `host:tst5:blackbox` e o alvo `make test-blackbox-host` com
+  observador de terminal estatico e `process_yield()` controlado. A fixture
+  exercitou os nove marcadores de cenarios TST5, snapshots com nova geracao,
+  progresso limitado e selecao invalida. A execucao terminou `PASS`, sem
+  enderecos desconhecidos ou ambiguos, resolvendo a superficie pendente de
+  `src/core/kernel_tests_blackbox.c`. O catalogo foi sincronizado e validado
+  com 7.196 superficies, 4.278 `COVERED`, 2.918 `PENDING` e 102 casos. O
+  fechamento integral, o gate estrito e a validacao TST7 completa continuam
+  pendentes.

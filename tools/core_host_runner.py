@@ -494,6 +494,12 @@ PROTOCOL_ADAPTER_SOURCE_FILES = (
     ROOT / "src" / "core" / "test_protocol.c",
     ROOT / "src" / "core" / "test_protocol_core.c",
 )
+BLACKBOX_RESULT_DIR = ROOT / "build" / "test-results" / "blackbox-host"
+BLACKBOX_BINARY = ROOT / "build" / "tests" / "test_kernel_tests_blackbox_host.exe"
+BLACKBOX_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_kernel_tests_blackbox_host.c",
+    ROOT / "src" / "core" / "kernel_tests_blackbox.c",
+)
 SHELL_INPUT_RESULT_DIR = ROOT / "build" / "test-results" / "shell-input-host"
 SHELL_INPUT_BINARY = ROOT / "build" / "tests" / "test_shell_input_host.exe"
 SHELL_INPUT_SOURCE_FILES = (
@@ -648,6 +654,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
     if case_id == "host:tst2:protocol-adapter":
         return (PROTOCOL_ADAPTER_RESULT_DIR, PROTOCOL_ADAPTER_BINARY,
                 PROTOCOL_ADAPTER_SOURCE_FILES, "protocol-adapter-host")
+    if case_id == "host:tst5:blackbox":
+        return BLACKBOX_RESULT_DIR, BLACKBOX_BINARY, BLACKBOX_SOURCE_FILES, "blackbox-host"
     if case_id == "host:shell:input":
         return (SHELL_INPUT_RESULT_DIR, SHELL_INPUT_BINARY,
                 SHELL_INPUT_SOURCE_FILES, "shell-input-host")
@@ -838,6 +846,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:drivers:speaker",
                                  "host:drivers:keyboard",
                                  "host:tst2:protocol-adapter",
+                                 "host:tst5:blackbox",
                                  "host:shell:input", "host:shell:command-utils"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)

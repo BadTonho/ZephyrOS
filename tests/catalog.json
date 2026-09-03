@@ -57751,6 +57751,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -57774,6 +57775,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -57797,6 +57799,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -57818,9 +57821,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst5:blackbox"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_report",
@@ -57838,6 +57844,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -57861,6 +57868,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -57884,6 +57892,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -57907,6 +57916,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -157182,6 +157192,39 @@
         "strings",
         "compression",
         "coverage"
+      ]
+    },
+    {
+      "id": "host:tst5:blackbox",
+      "scenario": "Teste host-only do harness black-box TST5",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "terminal": "observador-falso",
+        "process": "yield-falso"
+      },
+      "preconditions": "compilador C nativo disponivel",
+      "action": "compilar e executar o harness black-box com snapshots de terminal falsos",
+      "expected": "casos TST5 validos encontram o marcador apos nova geracao e caso invalido retorna ERR_NOT_FOUND",
+      "errors": "compilador ausente, warning, marcador ausente, caso invalido ou timeout",
+      "effects": "somente buffers estaticos e callbacks falsos do observador",
+      "cleanup": "processo host encerrado e relatorio de cobertura preservado",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "c:src/core/kernel_tests_blackbox.c:blackbox_contains",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_equals",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_length",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_marker",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_report",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_snapshot",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_wait_for_marker",
+        "c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox"
       ]
     },
     {
