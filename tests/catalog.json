@@ -21117,11 +21117,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/rtc.h:rtc_read_utc",
@@ -21139,11 +21140,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/rtc.h:rtc_self_test",
@@ -21161,11 +21163,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/rtc.h:rtc_validate_state",
@@ -21183,11 +21186,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/rtl8139.h:rtl8139_handler",
@@ -91992,11 +91996,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_days_in_month",
@@ -92014,11 +92019,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_decode_snapshot",
@@ -92036,11 +92042,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_decode_value",
@@ -92058,11 +92065,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_get_status",
@@ -92099,9 +92107,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtc-status"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_init",
@@ -92117,9 +92128,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtc-status"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_is_leap_year",
@@ -92137,11 +92151,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_outb",
@@ -92157,9 +92172,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtc-status"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_raw_equal",
@@ -92175,9 +92193,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtc-status"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_read_raw",
@@ -92193,9 +92214,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtc-status"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_read_raw_once",
@@ -92211,9 +92235,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtc-status"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_read_register",
@@ -92229,9 +92256,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtc-status"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_read_utc",
@@ -92247,9 +92277,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtc-status"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_self_test",
@@ -92267,11 +92300,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_validate_state",
@@ -92289,11 +92323,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_wait_update_complete",
@@ -92309,9 +92344,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:rtc-status"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_advance_rx",
@@ -155157,6 +155195,86 @@
       "status": "AUTOMATED"
     },
     {
+      "id": "host:drivers:ata",
+      "scenario": "Contrato host-only do driver ATA com portas, identificacao e PIO simulados",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "hardware": "ata-pio-ports-irq-falso"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "validar descoberta, inventario, IRQ, leitura e escrita PIO, flush, limites, retries, timeouts e falhas",
+      "expected": "dispositivos ATA falsos publicam identificacao e contadores corretos; operacoes validas transferem setores; fixtures invalidas retornam erros canonicos e restauram o estado",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao, acesso I/O real ou timeout",
+      "effects": "somente portas ATA, dados IDENTIFY, PIO, IRQ e armazenamento falso no processo host",
+      "cleanup": "estado de portas, handlers, dispositivos, contadores, manifesto, logs e cobertura permanecem confinados ao processo host",
+      "surface_ids": [
+        "api:src/include/drivers/ata.h:ata_flush_device",
+        "api:src/include/drivers/ata.h:ata_get_device",
+        "api:src/include/drivers/ata.h:ata_get_device_at",
+        "api:src/include/drivers/ata.h:ata_get_device_count",
+        "api:src/include/drivers/ata.h:ata_get_device_counters",
+        "api:src/include/drivers/ata.h:ata_get_read_ops",
+        "api:src/include/drivers/ata.h:ata_get_write_ops",
+        "api:src/include/drivers/ata.h:ata_init",
+        "api:src/include/drivers/ata.h:ata_read_device_sectors",
+        "api:src/include/drivers/ata.h:ata_read_sectors",
+        "api:src/include/drivers/ata.h:ata_write_device_sectors",
+        "api:src/include/drivers/ata.h:ata_write_sectors",
+        "c:src/drivers/ata.c:ata_delay",
+        "c:src/drivers/ata.c:ata_detect",
+        "c:src/drivers/ata.c:ata_first_present",
+        "c:src/drivers/ata.c:ata_flush_device",
+        "c:src/drivers/ata.c:ata_get_device",
+        "c:src/drivers/ata.c:ata_get_device_at",
+        "c:src/drivers/ata.c:ata_get_device_count",
+        "c:src/drivers/ata.c:ata_get_device_counters",
+        "c:src/drivers/ata.c:ata_get_read_ops",
+        "c:src/drivers/ata.c:ata_get_write_ops",
+        "c:src/drivers/ata.c:ata_init",
+        "c:src/drivers/ata.c:ata_prepare_transfer",
+        "c:src/drivers/ata.c:ata_primary_irq_handler",
+        "c:src/drivers/ata.c:ata_read_device_sectors",
+        "c:src/drivers/ata.c:ata_read_from_device",
+        "c:src/drivers/ata.c:ata_read_sectors",
+        "c:src/drivers/ata.c:ata_secondary_irq_handler",
+        "c:src/drivers/ata.c:ata_select_drive",
+        "c:src/drivers/ata.c:ata_soft_reset",
+        "c:src/drivers/ata.c:ata_wait_data_ready",
+        "c:src/drivers/ata.c:ata_wait_drq",
+        "c:src/drivers/ata.c:ata_wait_identify",
+        "c:src/drivers/ata.c:ata_wait_ready",
+        "c:src/drivers/ata.c:ata_wait_write_complete",
+        "c:src/drivers/ata.c:ata_write_device_sectors",
+        "c:src/drivers/ata.c:ata_write_sectors",
+        "c:src/drivers/ata.c:ata_write_to_device",
+        "c:src/drivers/ata.c:inb",
+        "c:src/drivers/ata.c:inw",
+        "c:src/drivers/ata.c:outb",
+        "c:src/drivers/ata.c:outw"
+      ],
+      "tags": [
+        "host",
+        "drivers",
+        "ata",
+        "storage",
+        "pio",
+        "irq",
+        "limits",
+        "recovery",
+        "coverage"
+      ],
+      "status": "AUTOMATED"
+    },
+    {
       "id": "host:drivers:e1000",
       "scenario": "Contrato host-only do driver E1000 com MMIO, DMA, IRQ, TX e RX simulados",
       "owner": "quality",
@@ -155610,7 +155728,27 @@
       "status": "AUTOMATED",
       "surface_ids": [
         "api:src/include/drivers/rtc.h:rtc_get_status",
-        "c:src/drivers/rtc.c:rtc_get_status"
+        "api:src/include/drivers/rtc.h:rtc_init",
+        "api:src/include/drivers/rtc.h:rtc_read_utc",
+        "api:src/include/drivers/rtc.h:rtc_self_test",
+        "api:src/include/drivers/rtc.h:rtc_validate_state",
+        "c:src/drivers/rtc.c:rtc_datetime_valid",
+        "c:src/drivers/rtc.c:rtc_days_in_month",
+        "c:src/drivers/rtc.c:rtc_decode_snapshot",
+        "c:src/drivers/rtc.c:rtc_decode_value",
+        "c:src/drivers/rtc.c:rtc_get_status",
+        "c:src/drivers/rtc.c:rtc_inb",
+        "c:src/drivers/rtc.c:rtc_init",
+        "c:src/drivers/rtc.c:rtc_is_leap_year",
+        "c:src/drivers/rtc.c:rtc_outb",
+        "c:src/drivers/rtc.c:rtc_raw_equal",
+        "c:src/drivers/rtc.c:rtc_read_raw",
+        "c:src/drivers/rtc.c:rtc_read_raw_once",
+        "c:src/drivers/rtc.c:rtc_read_register",
+        "c:src/drivers/rtc.c:rtc_read_utc",
+        "c:src/drivers/rtc.c:rtc_self_test",
+        "c:src/drivers/rtc.c:rtc_validate_state",
+        "c:src/drivers/rtc.c:rtc_wait_update_complete"
       ],
       "tags": [
         "host",
@@ -169925,86 +170063,6 @@
         "stress",
         "storage"
       ]
-    },
-    {
-      "id": "host:drivers:ata",
-      "scenario": "Contrato host-only do driver ATA com portas, identificacao e PIO simulados",
-      "owner": "quality",
-      "layer": "host",
-      "executor": "host",
-      "profile": "host-only",
-      "timeout_seconds": 120,
-      "heartbeat_timeout_seconds": 1,
-      "isolation": "fixture",
-      "parameters": {
-        "compiler": "HOST_CC",
-        "instrumentation": "-finstrument-functions",
-        "warnings": "error",
-        "hardware": "ata-pio-ports-irq-falso"
-      },
-      "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "validar descoberta, inventario, IRQ, leitura e escrita PIO, flush, limites, retries, timeouts e falhas",
-      "expected": "dispositivos ATA falsos publicam identificacao e contadores corretos; operacoes validas transferem setores; fixtures invalidas retornam erros canonicos e restauram o estado",
-      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao, acesso I/O real ou timeout",
-      "effects": "somente portas ATA, dados IDENTIFY, PIO, IRQ e armazenamento falso no processo host",
-      "cleanup": "estado de portas, handlers, dispositivos, contadores, manifesto, logs e cobertura permanecem confinados ao processo host",
-      "surface_ids": [
-        "api:src/include/drivers/ata.h:ata_flush_device",
-        "api:src/include/drivers/ata.h:ata_get_device",
-        "api:src/include/drivers/ata.h:ata_get_device_at",
-        "api:src/include/drivers/ata.h:ata_get_device_count",
-        "api:src/include/drivers/ata.h:ata_get_device_counters",
-        "api:src/include/drivers/ata.h:ata_get_read_ops",
-        "api:src/include/drivers/ata.h:ata_get_write_ops",
-        "api:src/include/drivers/ata.h:ata_init",
-        "api:src/include/drivers/ata.h:ata_read_device_sectors",
-        "api:src/include/drivers/ata.h:ata_read_sectors",
-        "api:src/include/drivers/ata.h:ata_write_device_sectors",
-        "api:src/include/drivers/ata.h:ata_write_sectors",
-        "c:src/drivers/ata.c:ata_delay",
-        "c:src/drivers/ata.c:ata_detect",
-        "c:src/drivers/ata.c:ata_first_present",
-        "c:src/drivers/ata.c:ata_flush_device",
-        "c:src/drivers/ata.c:ata_get_device",
-        "c:src/drivers/ata.c:ata_get_device_at",
-        "c:src/drivers/ata.c:ata_get_device_count",
-        "c:src/drivers/ata.c:ata_get_device_counters",
-        "c:src/drivers/ata.c:ata_get_read_ops",
-        "c:src/drivers/ata.c:ata_get_write_ops",
-        "c:src/drivers/ata.c:ata_init",
-        "c:src/drivers/ata.c:ata_prepare_transfer",
-        "c:src/drivers/ata.c:ata_primary_irq_handler",
-        "c:src/drivers/ata.c:ata_read_device_sectors",
-        "c:src/drivers/ata.c:ata_read_from_device",
-        "c:src/drivers/ata.c:ata_read_sectors",
-        "c:src/drivers/ata.c:ata_secondary_irq_handler",
-        "c:src/drivers/ata.c:ata_select_drive",
-        "c:src/drivers/ata.c:ata_soft_reset",
-        "c:src/drivers/ata.c:ata_wait_data_ready",
-        "c:src/drivers/ata.c:ata_wait_drq",
-        "c:src/drivers/ata.c:ata_wait_identify",
-        "c:src/drivers/ata.c:ata_wait_ready",
-        "c:src/drivers/ata.c:ata_wait_write_complete",
-        "c:src/drivers/ata.c:ata_write_device_sectors",
-        "c:src/drivers/ata.c:ata_write_sectors",
-        "c:src/drivers/ata.c:ata_write_to_device",
-        "c:src/drivers/ata.c:inb",
-        "c:src/drivers/ata.c:inw",
-        "c:src/drivers/ata.c:outb",
-        "c:src/drivers/ata.c:outw"
-      ],
-      "tags": [
-        "host",
-        "drivers",
-        "ata",
-        "storage",
-        "pio",
-        "irq",
-        "limits",
-        "recovery",
-        "coverage"
-      ],
-      "status": "AUTOMATED"
     }
   ],
   "retired": [

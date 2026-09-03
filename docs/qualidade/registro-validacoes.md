@@ -4920,3 +4920,18 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   nesta etapa. O catalogo registra 7.209 superficies, 4.757 `COVERED`, 2.452
   `PENDING` e 124 casos. O fechamento integral, o gate estrito e a validacao
   TST7 completa continuam pendentes.
+
+- Incremento Drivers/RTC concluido em 2026-09-03. O caso existente
+  `host:drivers:rtc-status` foi executado novamente apos o build limpo. A
+  fixture usa CMOS falso e exercita inicializacao, leitura de registradores,
+  snapshots estaveis, conversao BCD/binaria e 12/24 horas, calendario,
+  autoteste, timeout de atualizacao e estado publicado apos erro. O relatorio
+  `build/test-results/rtc-status-host/coverage.json` terminou `PASS`, observou
+  26 enderecos, resolveu as 17 funcoes de `src/drivers/rtc.c` e a dependencia
+  `kmemset`, sem enderecos desconhecidos ou ambiguos. Foram executados
+  `make test-rtc-status-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`,
+  `python tools/test_catalog.py sync`, `python tools/test_catalog.py render`,
+  `make catalog-test` e a contagem de pendencias; todos passaram nesta etapa.
+  O catalogo registra 7.209 superficies, 4.766 `COVERED`, 2.443 `PENDING` e
+  124 casos. O fechamento integral, o gate estrito e a validacao TST7 completa
+  continuam pendentes.
