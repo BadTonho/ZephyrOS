@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7196**
-- Casos de teste: **94**
+- Casos de teste: **95**
 - Superfícies aposentadas: **22**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4235 |
+| `COVERED` | 4244 |
 | `MANUAL` | 0 |
-| `PENDING` | 2961 |
+| `PENDING` | 2952 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 94 |
+| `AUTOMATED` | 95 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -604,8 +604,8 @@
 | `api:src/include/core/spinlock.h:spinlock_acquire` | `src/include/core/spinlock.h` | `spinlock_acquire` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_init` | `src/include/core/spinlock.h` | `spinlock_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_release` | `src/include/core/spinlock.h` | `spinlock_release` | `core` | `PENDING` | 0 |
-| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 41 |
-| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 42 |
+| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 42 |
+| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 43 |
 | `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 34 |
 | `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 36 |
 | `api:src/include/core/syscall.h:syscall_enable_user_mode` | `src/include/core/syscall.h` | `syscall_enable_user_mode` | `core` | `COVERED` | 1 |
@@ -1090,13 +1090,13 @@
 | `api:src/include/fs/block_cache.h:block_cache_validate_state` | `src/include/fs/block_cache.h` | `block_cache_validate_state` | `fs` | `COVERED` | 5 |
 | `api:src/include/fs/block_cache.h:block_cache_write` | `src/include/fs/block_cache.h` | `block_cache_write` | `fs` | `COVERED` | 5 |
 | `api:src/include/fs/block_cache.h:block_cache_writeback_step` | `src/include/fs/block_cache.h` | `block_cache_writeback_step` | `fs` | `COVERED` | 5 |
-| `api:src/include/fs/bmp.h:bmp_draw` | `src/include/fs/bmp.h` | `bmp_draw` | `fs` | `COVERED` | 2 |
-| `api:src/include/fs/bmp.h:bmp_draw_scaled` | `src/include/fs/bmp.h` | `bmp_draw_scaled` | `fs` | `COVERED` | 2 |
-| `api:src/include/fs/bmp.h:bmp_draw_transparent` | `src/include/fs/bmp.h` | `bmp_draw_transparent` | `fs` | `COVERED` | 2 |
-| `api:src/include/fs/bmp.h:bmp_draw_transparent_resized` | `src/include/fs/bmp.h` | `bmp_draw_transparent_resized` | `fs` | `COVERED` | 2 |
-| `api:src/include/fs/bmp.h:bmp_free` | `src/include/fs/bmp.h` | `bmp_free` | `fs` | `COVERED` | 2 |
-| `api:src/include/fs/bmp.h:bmp_init` | `src/include/fs/bmp.h` | `bmp_init` | `fs` | `COVERED` | 2 |
-| `api:src/include/fs/bmp.h:bmp_load` | `src/include/fs/bmp.h` | `bmp_load` | `fs` | `COVERED` | 2 |
+| `api:src/include/fs/bmp.h:bmp_draw` | `src/include/fs/bmp.h` | `bmp_draw` | `fs` | `COVERED` | 3 |
+| `api:src/include/fs/bmp.h:bmp_draw_scaled` | `src/include/fs/bmp.h` | `bmp_draw_scaled` | `fs` | `COVERED` | 3 |
+| `api:src/include/fs/bmp.h:bmp_draw_transparent` | `src/include/fs/bmp.h` | `bmp_draw_transparent` | `fs` | `COVERED` | 3 |
+| `api:src/include/fs/bmp.h:bmp_draw_transparent_resized` | `src/include/fs/bmp.h` | `bmp_draw_transparent_resized` | `fs` | `COVERED` | 3 |
+| `api:src/include/fs/bmp.h:bmp_free` | `src/include/fs/bmp.h` | `bmp_free` | `fs` | `COVERED` | 3 |
+| `api:src/include/fs/bmp.h:bmp_init` | `src/include/fs/bmp.h` | `bmp_init` | `fs` | `COVERED` | 3 |
+| `api:src/include/fs/bmp.h:bmp_load` | `src/include/fs/bmp.h` | `bmp_load` | `fs` | `COVERED` | 3 |
 | `api:src/include/fs/devfs.h:devfs_copy_nodes` | `src/include/fs/devfs.h` | `devfs_copy_nodes` | `fs` | `COVERED` | 3 |
 | `api:src/include/fs/devfs.h:devfs_get_status` | `src/include/fs/devfs.h` | `devfs_get_status` | `fs` | `COVERED` | 3 |
 | `api:src/include/fs/devfs.h:devfs_init` | `src/include/fs/devfs.h` | `devfs_init` | `fs` | `COVERED` | 3 |
@@ -3076,8 +3076,8 @@
 | `c:src/core/socket.c:socket_wait_local` | `src/core/socket.c` | `socket_wait_local` | `core` | `PENDING` | 0 |
 | `c:src/core/socket.c:socket_wait_owner` | `src/core/socket.c` | `socket_wait_owner` | `core` | `COVERED` | 2 |
 | `c:src/core/socket.c:socket_wake` | `src/core/socket.c` | `socket_wake` | `core` | `COVERED` | 2 |
-| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 41 |
-| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 42 |
+| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 42 |
+| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 43 |
 | `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 34 |
 | `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 36 |
 | `c:src/core/syscall.c:syscall_copy_user_string` | `src/core/syscall.c` | `syscall_copy_user_string` | `core` | `PENDING` | 0 |
@@ -4880,17 +4880,17 @@
 | `c:src/fs/block_cache.c:block_cache_writeback_step` | `src/fs/block_cache.c` | `block_cache_writeback_step` | `fs` | `COVERED` | 4 |
 | `c:src/fs/block_cache.c:block_cache_writeback_step_for_device` | `src/fs/block_cache.c` | `block_cache_writeback_step_for_device` | `fs` | `COVERED` | 4 |
 | `c:src/fs/block_cache.c:block_cache_writeback_step_for_device_until` | `src/fs/block_cache.c` | `block_cache_writeback_step_for_device_until` | `fs` | `COVERED` | 4 |
-| `c:src/fs/bmp.c:bmp_draw` | `src/fs/bmp.c` | `bmp_draw` | `fs` | `PENDING` | 0 |
-| `c:src/fs/bmp.c:bmp_draw_scaled` | `src/fs/bmp.c` | `bmp_draw_scaled` | `fs` | `PENDING` | 0 |
-| `c:src/fs/bmp.c:bmp_draw_transparent` | `src/fs/bmp.c` | `bmp_draw_transparent` | `fs` | `PENDING` | 0 |
-| `c:src/fs/bmp.c:bmp_draw_transparent_resized` | `src/fs/bmp.c` | `bmp_draw_transparent_resized` | `fs` | `COVERED` | 2 |
-| `c:src/fs/bmp.c:bmp_free` | `src/fs/bmp.c` | `bmp_free` | `fs` | `PENDING` | 0 |
-| `c:src/fs/bmp.c:bmp_get_pixel` | `src/fs/bmp.c` | `bmp_get_pixel` | `fs` | `COVERED` | 2 |
-| `c:src/fs/bmp.c:bmp_init` | `src/fs/bmp.c` | `bmp_init` | `fs` | `PENDING` | 0 |
-| `c:src/fs/bmp.c:bmp_load` | `src/fs/bmp.c` | `bmp_load` | `fs` | `PENDING` | 0 |
-| `c:src/fs/bmp.c:read_i32` | `src/fs/bmp.c` | `read_i32` | `fs` | `PENDING` | 0 |
-| `c:src/fs/bmp.c:read_u16` | `src/fs/bmp.c` | `read_u16` | `fs` | `PENDING` | 0 |
-| `c:src/fs/bmp.c:read_u32` | `src/fs/bmp.c` | `read_u32` | `fs` | `PENDING` | 0 |
+| `c:src/fs/bmp.c:bmp_draw` | `src/fs/bmp.c` | `bmp_draw` | `fs` | `COVERED` | 1 |
+| `c:src/fs/bmp.c:bmp_draw_scaled` | `src/fs/bmp.c` | `bmp_draw_scaled` | `fs` | `COVERED` | 1 |
+| `c:src/fs/bmp.c:bmp_draw_transparent` | `src/fs/bmp.c` | `bmp_draw_transparent` | `fs` | `COVERED` | 1 |
+| `c:src/fs/bmp.c:bmp_draw_transparent_resized` | `src/fs/bmp.c` | `bmp_draw_transparent_resized` | `fs` | `COVERED` | 3 |
+| `c:src/fs/bmp.c:bmp_free` | `src/fs/bmp.c` | `bmp_free` | `fs` | `COVERED` | 1 |
+| `c:src/fs/bmp.c:bmp_get_pixel` | `src/fs/bmp.c` | `bmp_get_pixel` | `fs` | `COVERED` | 3 |
+| `c:src/fs/bmp.c:bmp_init` | `src/fs/bmp.c` | `bmp_init` | `fs` | `COVERED` | 1 |
+| `c:src/fs/bmp.c:bmp_load` | `src/fs/bmp.c` | `bmp_load` | `fs` | `COVERED` | 1 |
+| `c:src/fs/bmp.c:read_i32` | `src/fs/bmp.c` | `read_i32` | `fs` | `COVERED` | 1 |
+| `c:src/fs/bmp.c:read_u16` | `src/fs/bmp.c` | `read_u16` | `fs` | `COVERED` | 1 |
+| `c:src/fs/bmp.c:read_u32` | `src/fs/bmp.c` | `read_u32` | `fs` | `COVERED` | 1 |
 | `c:src/fs/devfs.c:devfs_copy_nodes` | `src/fs/devfs.c` | `devfs_copy_nodes` | `fs` | `COVERED` | 3 |
 | `c:src/fs/devfs.c:devfs_copy_text` | `src/fs/devfs.c` | `devfs_copy_text` | `fs` | `COVERED` | 3 |
 | `c:src/fs/devfs.c:devfs_find_hda` | `src/fs/devfs.c` | `devfs_find_hda` | `fs` | `COVERED` | 3 |
@@ -7328,6 +7328,7 @@
 | `host:shell:input` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enviar scancodes falsos para comandos, historico, scroll, edicao, cancelamento e limite | entrada, historico e terminal preservam o contrato e nao ultrapassam o buffer | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos do Shell e stubs de terminal no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:introspection` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar parser hexadecimal com limites e entradas invalidas | parse_hex_u32 aceita digitos validos e rejeita prefixo, digito e overflow com codigos canonicos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:storage:block` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar block_self_test e block_cache_self_test com providers estaticos | filas BIO, limites, cancelamento, failpoints, cache, writeback e sync passam e o inventario retorna ao estado inicial | compilador ausente, warning, cobertura incompleta, failpoint residual, falha de assercao ou timeout | somente estruturas globais do processo host e buffers estaticos de provider | autotestes removem dispositivos temporarios, limpam cache e deixam fila sem pendencias |
+| `host:storage:bmp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar parser BMP real com imagens estaticas, framebuffer e VESA simulados | headers, paletas, pixels, orientacao, transparencia, redimensionamento, escala, ownership e erros preservam o contrato sem hardware real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente imagens BMP, framebuffer e allocator estaticos do processo host | imagens liberadas, alocacoes devolvidas e manifesto, logs e cobertura preservados |
 | `host:storage:devfs` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar dispositivos null, zero, tty, speaker e hda com transporte estatico | registro, permissoes, leituras, seeks, ioctl, indisponibilidade e invariantes preservam o contrato sem hardware real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estruturas devfs e buffers estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:storage:fat12` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar FAT12 sobre imagem estatica com raiz, subdiretorio e provider ATA falso | leitura, caminhos, metadados, operacoes atomicas, streaming, cancelamento e erros preservam a imagem fixture | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente imagem FAT12 e heap estatico do processo host | streaming encerrado, cadeias liberadas e processo host finalizado com artefatos preservados |
 | `host:storage:fat32` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar FAT32 sobre imagem estatica grande o suficiente para a classificacao FAT32 | leitura, paths, metadados, criacao, escrita, remocao e classificacao de clusters preservam a fixture | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente imagem FAT32 estatica e heap estatico do processo host | fixture encerrada e processo host finalizado com manifesto, logs e cobertura preservados |
@@ -8988,15 +8989,6 @@
 - `c:src/filemanager/filemanager.c:fm_select_mode`
 - `c:src/filemanager/filemanager.c:fm_update`
 - `c:src/filemanager/filemanager.c:fm_visible_side_items`
-- `c:src/fs/bmp.c:bmp_draw`
-- `c:src/fs/bmp.c:bmp_draw_scaled`
-- `c:src/fs/bmp.c:bmp_draw_transparent`
-- `c:src/fs/bmp.c:bmp_free`
-- `c:src/fs/bmp.c:bmp_init`
-- `c:src/fs/bmp.c:bmp_load`
-- `c:src/fs/bmp.c:read_i32`
-- `c:src/fs/bmp.c:read_u16`
-- `c:src/fs/bmp.c:read_u32`
 - `c:src/fs/storage.c:storage_buffers_equal`
 - `c:src/fs/storage.c:storage_check_chain`
 - `c:src/fs/storage.c:storage_check_directory_visitor`

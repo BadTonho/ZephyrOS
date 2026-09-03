@@ -4488,3 +4488,16 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   O catalogo registra 7.196 superficies, 4.235 `COVERED`, 2.961 `PENDING` e
   94 casos. O fechamento integral, o gate estrito e a validacao TST7 completa
   continuam pendentes.
+
+- Concluida em: 2026-09-02
+
+  Incremento Storage/BMP: foi criado o caso host-only `host:storage:bmp` e o
+  alvo `make test-bmp-host` com o parser e renderizador BMP reais, allocator
+  estatico, framebuffer e VESA simulados e cobertura dinamica. A fixture
+  exercitou formatos 1, 4, 8 e 24 bpp, paletas, orientacao, desenho,
+  transparencia, redimensionamento, escala, entradas invalidas, truncadas,
+  overflow e falhas de alocacao. A execucao terminou `PASS`, sem enderecos
+  desconhecidos ou ambiguos, resolvendo as nove superficies pendentes de
+  `src/fs/bmp.c`. O catalogo registra 7.196 superficies, 4.244 `COVERED`,
+  2.952 `PENDING` e 95 casos. O fechamento integral, o gate estrito e a
+  validacao TST7 completa continuam pendentes.

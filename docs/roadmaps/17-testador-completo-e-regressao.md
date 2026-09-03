@@ -1306,6 +1306,18 @@ pendente.
   `COVERED`, 2.961 `PENDING` e 94 casos. O fechamento integral, o gate estrito
   e a validacao TST7 completa continuam pendentes.
 
+- Incremento Storage/BMP concluido em 2026-09-02: foi criado o caso host-only
+  `host:storage:bmp` com o parser e renderizador reais, allocator estatico,
+  framebuffer e VESA simulados e instrumentacao dinamica. A fixture exercitou
+  formatos 1, 4, 8 e 24 bpp, paletas, orientacao, desenho, transparencia,
+  redimensionamento, escala, entradas invalidas, truncadas, overflow e falhas
+  de alocacao. `make test-bmp-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` terminou `PASS`, cobrindo as
+  nove superficies pendentes de `src/fs/bmp.c`, sem enderecos desconhecidos ou
+  ambiguos. O catalogo registra 7.196 superficies, 4.244 `COVERED`, 2.952
+  `PENDING` e 95 casos. O fechamento integral, o gate estrito e a validacao
+  TST7 completa continuam pendentes.
+
 - Incremento Core/wifi_manager concluido em 2026-09-02: foi criado o caso
   host-only `host:core:wifi-manager` com fixtures estaticos de PCI, USB e
   RTL8811CU. A fixture exercitou formatacao e busca case-insensitive de IDs,

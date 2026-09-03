@@ -404,6 +404,16 @@ fica em `build/test-results/wav-host/`:
 make test-wav-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-bmp-host` compila o parser e renderizador BMP reais com imagens
+estaticas de 1, 4, 8 e 24 bpp, paletas, orientacao, transparencia,
+redimensionamento e escala. A fixture cobre truncamento, overflow e falhas de
+alocacao usando somente framebuffer e VESA simulados; o relatorio fica em
+`build/test-results/bmp-host/`:
+
+```text
+make test-bmp-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O caso `test-shell-input-host` exercita a entrada do Shell com terminal,
 historico, navegacao para cima/baixo, edicao, teclas de rolagem, cancelamento,
 bloqueio, modificadores e limite do buffer. A fixture usa apenas video,
