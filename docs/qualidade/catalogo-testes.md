@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **7203**
-- Casos de teste: **118**
+- Superfícies ativas: **7204**
+- Casos de teste: **119**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
 |---|---:|
 | `api_function` | 1541 |
 | `asm_entry` | 101 |
-| `c_function` | 5441 |
+| `c_function` | 5442 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4580 |
+| `COVERED` | 4619 |
 | `MANUAL` | 0 |
-| `PENDING` | 2623 |
+| `PENDING` | 2585 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 118 |
+| `AUTOMATED` | 119 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -39,7 +39,7 @@
 | `boot` | 136 |
 | `core` | 2771 |
 | `desktop` | 40 |
-| `drivers` | 920 |
+| `drivers` | 921 |
 | `filemanager` | 92 |
 | `fs` | 957 |
 | `gui` | 30 |
@@ -976,8 +976,8 @@
 | `api:src/include/drivers/rtc.h:rtc_read_utc` | `src/include/drivers/rtc.h` | `rtc_read_utc` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/rtc.h:rtc_self_test` | `src/include/drivers/rtc.h` | `rtc_self_test` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/rtc.h:rtc_validate_state` | `src/include/drivers/rtc.h` | `rtc_validate_state` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/rtl8139.h:rtl8139_handler` | `src/include/drivers/rtl8139.h` | `rtl8139_handler` | `drivers` | `PENDING` | 0 |
-| `api:src/include/drivers/rtl8139.h:rtl8139_init` | `src/include/drivers/rtl8139.h` | `rtl8139_init` | `drivers` | `PENDING` | 0 |
+| `api:src/include/drivers/rtl8139.h:rtl8139_handler` | `src/include/drivers/rtl8139.h` | `rtl8139_handler` | `drivers` | `COVERED` | 1 |
+| `api:src/include/drivers/rtl8139.h:rtl8139_init` | `src/include/drivers/rtl8139.h` | `rtl8139_init` | `drivers` | `COVERED` | 1 |
 | `api:src/include/drivers/rtl8811cu.h:rtl8811cu_connect_open` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_connect_open` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/rtl8811cu.h:rtl8811cu_get_status` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_get_status` | `drivers` | `PENDING` | 0 |
 | `api:src/include/drivers/rtl8811cu.h:rtl8811cu_init` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_init` | `drivers` | `PENDING` | 0 |
@@ -4150,7 +4150,7 @@
 | `c:src/drivers/ehci.c:ehci_get_port` | `src/drivers/ehci.c` | `ehci_get_port` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/ehci.c:ehci_get_port_count` | `src/drivers/ehci.c` | `ehci_get_port_count` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/ehci.c:ehci_get_status` | `src/drivers/ehci.c` | `ehci_get_status` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/ehci.c:ehci_host_reset` | `src/drivers/ehci.c` | `ehci_host_reset` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/ehci.c:ehci_host_reset` | `src/drivers/ehci.c` | `ehci_host_reset` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/ehci.c:ehci_init` | `src/drivers/ehci.c` | `ehci_init` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/ehci.c:ehci_init_instance` | `src/drivers/ehci.c` | `ehci_init_instance` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/ehci.c:ehci_initialize_ports` | `src/drivers/ehci.c` | `ehci_initialize_ports` | `drivers` | `COVERED` | 1 |
@@ -4313,41 +4313,42 @@
 | `c:src/drivers/rtc.c:rtc_self_test` | `src/drivers/rtc.c` | `rtc_self_test` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/rtc.c:rtc_validate_state` | `src/drivers/rtc.c` | `rtc_validate_state` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/rtc.c:rtc_wait_update_complete` | `src/drivers/rtc.c` | `rtc_wait_update_complete` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_advance_rx` | `src/drivers/rtl8139.c` | `rtl8139_advance_rx` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_allocate_device` | `src/drivers/rtl8139.c` | `rtl8139_allocate_device` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_allocate_dma` | `src/drivers/rtl8139.c` | `rtl8139_allocate_dma` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_bottom_half` | `src/drivers/rtl8139.c` | `rtl8139_bottom_half` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_configure_dma` | `src/drivers/rtl8139.c` | `rtl8139_configure_dma` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_copy_interface_id` | `src/drivers/rtl8139.c` | `rtl8139_copy_interface_id` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_disable_hardware` | `src/drivers/rtl8139.c` | `rtl8139_disable_hardware` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_drain_rx` | `src/drivers/rtl8139.c` | `rtl8139_drain_rx` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_fail_init` | `src/drivers/rtl8139.c` | `rtl8139_fail_init` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_fill_interface` | `src/drivers/rtl8139.c` | `rtl8139_fill_interface` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_find_device` | `src/drivers/rtl8139.c` | `rtl8139_find_device` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_get_driver_status` | `src/drivers/rtl8139.c` | `rtl8139_get_driver_status` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_handler` | `src/drivers/rtl8139.c` | `rtl8139_handler` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_has_pending_rx` | `src/drivers/rtl8139.c` | `rtl8139_has_pending_rx` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_in16` | `src/drivers/rtl8139.c` | `rtl8139_in16` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_in32` | `src/drivers/rtl8139.c` | `rtl8139_in32` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_in8` | `src/drivers/rtl8139.c` | `rtl8139_in8` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_init` | `src/drivers/rtl8139.c` | `rtl8139_init` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_irq_restore` | `src/drivers/rtl8139.c` | `rtl8139_irq_restore` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_irq_save` | `src/drivers/rtl8139.c` | `rtl8139_irq_save` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_memory_barrier` | `src/drivers/rtl8139.c` | `rtl8139_memory_barrier` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_out16` | `src/drivers/rtl8139.c` | `rtl8139_out16` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_out32` | `src/drivers/rtl8139.c` | `rtl8139_out32` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_out8` | `src/drivers/rtl8139.c` | `rtl8139_out8` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_prepare_pci` | `src/drivers/rtl8139.c` | `rtl8139_prepare_pci` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_quiesce` | `src/drivers/rtl8139.c` | `rtl8139_quiesce` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_read_mac` | `src/drivers/rtl8139.c` | `rtl8139_read_mac` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_read_u16` | `src/drivers/rtl8139.c` | `rtl8139_read_u16` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_receive_frame` | `src/drivers/rtl8139.c` | `rtl8139_receive_frame` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_release_dma` | `src/drivers/rtl8139.c` | `rtl8139_release_dma` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_reset_receiver` | `src/drivers/rtl8139.c` | `rtl8139_reset_receiver` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_send_frame` | `src/drivers/rtl8139.c` | `rtl8139_send_frame` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_service_pending` | `src/drivers/rtl8139.c` | `rtl8139_service_pending` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_update_link` | `src/drivers/rtl8139.c` | `rtl8139_update_link` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/rtl8139.c:rtl8139_wait_reset` | `src/drivers/rtl8139.c` | `rtl8139_wait_reset` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/rtl8139.c:rtl8139_advance_rx` | `src/drivers/rtl8139.c` | `rtl8139_advance_rx` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_allocate_device` | `src/drivers/rtl8139.c` | `rtl8139_allocate_device` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_allocate_dma` | `src/drivers/rtl8139.c` | `rtl8139_allocate_dma` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_bottom_half` | `src/drivers/rtl8139.c` | `rtl8139_bottom_half` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_configure_dma` | `src/drivers/rtl8139.c` | `rtl8139_configure_dma` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_copy_interface_id` | `src/drivers/rtl8139.c` | `rtl8139_copy_interface_id` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_disable_hardware` | `src/drivers/rtl8139.c` | `rtl8139_disable_hardware` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_drain_rx` | `src/drivers/rtl8139.c` | `rtl8139_drain_rx` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_fail_init` | `src/drivers/rtl8139.c` | `rtl8139_fail_init` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_fill_interface` | `src/drivers/rtl8139.c` | `rtl8139_fill_interface` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_find_device` | `src/drivers/rtl8139.c` | `rtl8139_find_device` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_get_driver_status` | `src/drivers/rtl8139.c` | `rtl8139_get_driver_status` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_handler` | `src/drivers/rtl8139.c` | `rtl8139_handler` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_has_pending_rx` | `src/drivers/rtl8139.c` | `rtl8139_has_pending_rx` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_host_reset` | `src/drivers/rtl8139.c` | `rtl8139_host_reset` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_in16` | `src/drivers/rtl8139.c` | `rtl8139_in16` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_in32` | `src/drivers/rtl8139.c` | `rtl8139_in32` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_in8` | `src/drivers/rtl8139.c` | `rtl8139_in8` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_init` | `src/drivers/rtl8139.c` | `rtl8139_init` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_irq_restore` | `src/drivers/rtl8139.c` | `rtl8139_irq_restore` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_irq_save` | `src/drivers/rtl8139.c` | `rtl8139_irq_save` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_memory_barrier` | `src/drivers/rtl8139.c` | `rtl8139_memory_barrier` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_out16` | `src/drivers/rtl8139.c` | `rtl8139_out16` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_out32` | `src/drivers/rtl8139.c` | `rtl8139_out32` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_out8` | `src/drivers/rtl8139.c` | `rtl8139_out8` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_prepare_pci` | `src/drivers/rtl8139.c` | `rtl8139_prepare_pci` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_quiesce` | `src/drivers/rtl8139.c` | `rtl8139_quiesce` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_read_mac` | `src/drivers/rtl8139.c` | `rtl8139_read_mac` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_read_u16` | `src/drivers/rtl8139.c` | `rtl8139_read_u16` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_receive_frame` | `src/drivers/rtl8139.c` | `rtl8139_receive_frame` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_release_dma` | `src/drivers/rtl8139.c` | `rtl8139_release_dma` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_reset_receiver` | `src/drivers/rtl8139.c` | `rtl8139_reset_receiver` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_send_frame` | `src/drivers/rtl8139.c` | `rtl8139_send_frame` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_service_pending` | `src/drivers/rtl8139.c` | `rtl8139_service_pending` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_update_link` | `src/drivers/rtl8139.c` | `rtl8139_update_link` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtl8139.c:rtl8139_wait_reset` | `src/drivers/rtl8139.c` | `rtl8139_wait_reset` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/rtl8811cu.c:rtl8811cu_connect_open` | `src/drivers/rtl8811cu.c` | `rtl8811cu_connect_open` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/rtl8811cu.c:rtl8811cu_device_matches` | `src/drivers/rtl8811cu.c` | `rtl8811cu_device_matches` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/rtl8811cu.c:rtl8811cu_firmware_check` | `src/drivers/rtl8811cu.c` | `rtl8811cu_firmware_check` | `drivers` | `PENDING` | 0 |
@@ -7312,11 +7313,13 @@
 | `host:core:wifi-manager` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inventariar candidatos PCI e USB, consultar interfaces, executar scan e conexao aberta com backends falsos | identificadores, estados, contadores, limites, indisponibilidade e recuperacao preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente fixtures estaticos PCI, USB e RTL8811CU no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:workqueue` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fixture de workqueue com espera controlada | autoteste, callbacks, filas, prioridades, limites e limpeza validos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico da workqueue e callbacks falsos no processo host | trabalhos destruidos, filas vazias, fallback restaurado e artefatos preservados |
 | `host:drivers:acpi` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar descoberta RSDP, RSDT/XSDT, FADT, MADT, FACS, AML _S5_, consultas e falhas de integridade | tabelas validas publicam estado consistente, fixtures ausentes ou corrompidas retornam erros canonicos e energia terminal nunca acessa hardware real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente firmware, mapa E820, portas I/O e callback de halt falsos no processo host | estado ACPI reiniciado no fixture e manifesto, logs e cobertura preservados |
+| `host:drivers:ehci` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar PCI, MMIO, alinhamento DMA, reset, enumeracao, descritores, controle, bulk, interrupt, timeout, recuperacao e limpeza | operacoes validas preservam invariantes do controlador e fixtures invalidas retornam erros canonicos sem I/O privilegiado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente PCI, MMIO, memoria DMA, relogio e dispositivos USB falsos no processo host | controlador falso resetado, paginas DMA devolvidas e manifesto, logs e cobertura preservados |
 | `host:drivers:font` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inicializar o driver de fonte e consultar as dimensoes publicadas | font_init e idempotente e as dimensoes publicadas permanecem 8x16 | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabela estatica de fontes e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:keyboard` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver teclado real com controlador PS/2 e dependencias registradas simulados | scancodes, inicializacao, filtros, reset, metricas e falhas preservam o contrato sem executar CLI, STI ou I/O privilegiado no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente filas, metricas e portas estaticas do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:pci` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar leitura, escrita, varredura, inventario, multifuncao, limites e habilitacao de recursos PCI | dispositivos validos sao registrados, ausentes sao ignorados, limite retorna ERR_OVERFLOW e comandos aceitos sao publicados | compilador ausente, warning, cobertura incompleta, falha de assercao, acesso I/O real ou timeout | somente espaco de configuracao, inventario e contadores falsos no processo host; nenhum porto I/O real e acessado | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:rng` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver RNG real com capacidades e resultados RDRAND simulados | capacidade, estado, bytes gerados, falhas de hardware e codigos de erro preservam o contrato sem executar instrucoes privilegiadas no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado RNG e valores de entropia estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:rtc-status` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | consultar o estado inicial do RTC com destinos valido e nulo | rtc_get_status rejeita destino nulo e publica snapshot inicial estavel | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do RTC e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:drivers:rtl8139` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar PCI, portas I/O, reset, MAC, DMA, transmissoes, recepcoes, IRQ, bottom-half, erros, timeout, quiescencia e limpeza | operacoes validas preservam invariantes do controlador e fixtures invalidas retornam erros canonicos sem I/O privilegiado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente PCI, portas, memoria DMA, relogio, IRQ e controlador RTL8139 falso no processo host | controlador falso resetado, paginas DMA devolvidas e manifesto, logs e cobertura preservados |
 | `host:drivers:serial` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver serial real com registradores UART simulados | inicializacao, leitura, filtragem, enfileiramento e flush respeitam o contrato sem acessar portas I/O reais | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado UART e fila de transmissao do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:speaker` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver speaker real com portas PIT e PC speaker simuladas | inicializacao, desligamento, tons, melody e espera por ticks respeitam o contrato sem acessar I/O privilegiado ou executar hlt no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente registradores PIT e PC speaker estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:tss` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver TSS real com carregamento GDT e flush simulados | inicializacao, prontidao e atualizacao de stack preservam o contrato sem executar lgdt, troca de segmentos ou flush privilegiado no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente descritor TSS, GDT e contador de flush do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7406,7 +7409,6 @@
 | `qemu:tst6:stress:kernel` | `qemu` | `tst6` | `qemu:tst6:stress:kernel` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | paging, heap, SLAB, processos e threads estao READY | repetir ciclos deterministas de memoria e execucao sob teto obrigatorio | invariantes estaveis permanecem iguais e a primeira falha interrompe a suite | overflow, vazamento, deadlock, timeout, protocolo ou QEMU | alocacoes e objetos temporarios de cada ciclo em snapshot | devolver paginas, destruir objetos e registrar seed e iteracao |
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
-| `host:drivers:ehci` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar PCI, MMIO, alinhamento DMA, reset, enumeracao, descritores, controle, bulk, interrupt, timeout, recuperacao e limpeza | operacoes validas preservam invariantes do controlador e fixtures invalidas retornam erros canonicos sem I/O privilegiado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente PCI, MMIO, memoria DMA, relogio e dispositivos USB falsos no processo host | controlador falso resetado, paginas DMA devolvidas e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -7543,8 +7545,6 @@
 - `api:src/include/drivers/ehci.h:ehci_poll`
 - `api:src/include/drivers/ehci.h:ehci_reset_bulk_toggles`
 - `api:src/include/drivers/ehci.h:ehci_validate_state`
-- `api:src/include/drivers/rtl8139.h:rtl8139_handler`
-- `api:src/include/drivers/rtl8139.h:rtl8139_init`
 - `api:src/include/drivers/rtl8811cu.h:rtl8811cu_connect_open`
 - `api:src/include/drivers/rtl8811cu.h:rtl8811cu_get_status`
 - `api:src/include/drivers/rtl8811cu.h:rtl8811cu_init`
@@ -8574,7 +8574,6 @@
 - `c:src/drivers/e1000.c:e1000_update_link`
 - `c:src/drivers/e1000.c:e1000_wait_reset`
 - `c:src/drivers/e1000.c:e1000_write`
-- `c:src/drivers/ehci.c:ehci_host_reset`
 - `c:src/drivers/idt.c:idt_enable_user_syscall`
 - `c:src/drivers/idt.c:idt_get_irq_status`
 - `c:src/drivers/idt.c:idt_get_shared_irq_handler_count`
@@ -8631,41 +8630,6 @@
 - `c:src/drivers/rtc.c:rtc_read_register`
 - `c:src/drivers/rtc.c:rtc_read_utc`
 - `c:src/drivers/rtc.c:rtc_wait_update_complete`
-- `c:src/drivers/rtl8139.c:rtl8139_advance_rx`
-- `c:src/drivers/rtl8139.c:rtl8139_allocate_device`
-- `c:src/drivers/rtl8139.c:rtl8139_allocate_dma`
-- `c:src/drivers/rtl8139.c:rtl8139_bottom_half`
-- `c:src/drivers/rtl8139.c:rtl8139_configure_dma`
-- `c:src/drivers/rtl8139.c:rtl8139_copy_interface_id`
-- `c:src/drivers/rtl8139.c:rtl8139_disable_hardware`
-- `c:src/drivers/rtl8139.c:rtl8139_drain_rx`
-- `c:src/drivers/rtl8139.c:rtl8139_fail_init`
-- `c:src/drivers/rtl8139.c:rtl8139_fill_interface`
-- `c:src/drivers/rtl8139.c:rtl8139_find_device`
-- `c:src/drivers/rtl8139.c:rtl8139_get_driver_status`
-- `c:src/drivers/rtl8139.c:rtl8139_handler`
-- `c:src/drivers/rtl8139.c:rtl8139_has_pending_rx`
-- `c:src/drivers/rtl8139.c:rtl8139_in16`
-- `c:src/drivers/rtl8139.c:rtl8139_in32`
-- `c:src/drivers/rtl8139.c:rtl8139_in8`
-- `c:src/drivers/rtl8139.c:rtl8139_init`
-- `c:src/drivers/rtl8139.c:rtl8139_irq_restore`
-- `c:src/drivers/rtl8139.c:rtl8139_irq_save`
-- `c:src/drivers/rtl8139.c:rtl8139_memory_barrier`
-- `c:src/drivers/rtl8139.c:rtl8139_out16`
-- `c:src/drivers/rtl8139.c:rtl8139_out32`
-- `c:src/drivers/rtl8139.c:rtl8139_out8`
-- `c:src/drivers/rtl8139.c:rtl8139_prepare_pci`
-- `c:src/drivers/rtl8139.c:rtl8139_quiesce`
-- `c:src/drivers/rtl8139.c:rtl8139_read_mac`
-- `c:src/drivers/rtl8139.c:rtl8139_read_u16`
-- `c:src/drivers/rtl8139.c:rtl8139_receive_frame`
-- `c:src/drivers/rtl8139.c:rtl8139_release_dma`
-- `c:src/drivers/rtl8139.c:rtl8139_reset_receiver`
-- `c:src/drivers/rtl8139.c:rtl8139_send_frame`
-- `c:src/drivers/rtl8139.c:rtl8139_service_pending`
-- `c:src/drivers/rtl8139.c:rtl8139_update_link`
-- `c:src/drivers/rtl8139.c:rtl8139_wait_reset`
 - `c:src/drivers/rtl8811cu.c:rtl8811cu_connect_open`
 - `c:src/drivers/rtl8811cu.c:rtl8811cu_device_matches`
 - `c:src/drivers/rtl8811cu.c:rtl8811cu_firmware_check`

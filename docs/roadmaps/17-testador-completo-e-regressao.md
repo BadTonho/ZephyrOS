@@ -1497,6 +1497,21 @@ pendente.
   7.196 superficies, 3.953 `COVERED`, 3.243 `PENDING` e 86 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Drivers/RTL8139 concluido em: 2026-09-03 (America/Sao_Paulo).
+  Foi criado o caso host-only `host:drivers:rtl8139` e o alvo
+  `make test-rtl8139-host`. A fixture simulou PCI, portas I/O, DMA,
+  temporizador, IRQ e bottom-half para exercitar inicializacao, reset, leitura
+  de MAC, transmissao, recepcao, erros de ring, timeout, quiescencia,
+  recuperacao e limpeza. O relatorio instrumentado
+  `build/test-results/rtl8139-host/coverage.json` terminou `PASS`, observou 66
+  enderecos sem desconhecidos ou ambiguos e resolveu as 36 funcoes de
+  `src/drivers/rtl8139.c` e as duas APIs publicas correspondentes. Foram
+  executados `make q3check`, `make clean`, `make`,
+  `make test-rtl8139-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` e
+  `make catalog-test`; todos passaram. O catalogo registra 7.204 superficies,
+  4.619 `COVERED`, 2.585 `PENDING` e 119 casos. O fechamento integral, o gate
+  estrito e a validacao TST7 completa continuam pendentes.
+
 - Incremento Drivers/EHCI concluido em 2026-09-03: foi criado o caso
   host-only `host:drivers:ehci` e o alvo `make test-ehci-host`. A fixture usa
   PCI, MMIO, DMA, temporizador e dispositivos USB falsos para exercitar

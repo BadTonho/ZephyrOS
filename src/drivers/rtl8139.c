@@ -123,64 +123,115 @@ typedef struct {
 
 static rtl8139_device_t rtl8139_devices[RTL8139_DEVICE_CAPACITY];
 
+#if defined(ZEPHYROS_HOST_TEST)
+extern uint8_t rtl8139_host_in8(uint16_t port);
+extern uint16_t rtl8139_host_in16(uint16_t port);
+extern uint32_t rtl8139_host_in32(uint16_t port);
+extern void rtl8139_host_out8(uint16_t port, uint8_t value);
+extern void rtl8139_host_out16(uint16_t port, uint16_t value);
+extern void rtl8139_host_out32(uint16_t port, uint32_t value);
+extern uint32_t rtl8139_host_physical_address(const void* address);
+extern uint32_t rtl8139_host_irq_save(void);
+extern void rtl8139_host_irq_restore(uint32_t flags);
+#endif
+
 static uint8_t rtl8139_in8(const rtl8139_device_t* device,
                            uint16_t offset) {
-    uint8_t value;
     uint16_t port = (uint16_t)(device->io_base + offset);
+
+#if defined(ZEPHYROS_HOST_TEST)
+    return rtl8139_host_in8(port);
+#else
+    uint8_t value;
 
     asm volatile("inb %1, %0" : "=a"(value) : "Nd"(port));
     return value;
+#endif
 }
 
 static uint16_t rtl8139_in16(const rtl8139_device_t* device,
                              uint16_t offset) {
-    uint16_t value;
     uint16_t port = (uint16_t)(device->io_base + offset);
+
+#if defined(ZEPHYROS_HOST_TEST)
+    return rtl8139_host_in16(port);
+#else
+    uint16_t value;
 
     asm volatile("inw %1, %0" : "=a"(value) : "Nd"(port));
     return value;
+#endif
 }
 
 static uint32_t rtl8139_irq_save(void) {
+#if defined(ZEPHYROS_HOST_TEST)
+    return rtl8139_host_irq_save();
+#else
     uint32_t flags;
 
     asm volatile("pushf\n\tpop %0\n\tcli" : "=r"(flags) : : "memory");
     return flags;
+#endif
 }
 
 static void rtl8139_irq_restore(uint32_t flags) {
+#if defined(ZEPHYROS_HOST_TEST)
+    rtl8139_host_irq_restore(flags);
+#else
     if (flags & (1U << 9U)) asm volatile("sti" : : : "memory");
+#endif
 }
 
 static uint32_t rtl8139_in32(const rtl8139_device_t* device,
                              uint16_t offset) {
-    uint32_t value;
     uint16_t port = (uint16_t)(device->io_base + offset);
+
+#if defined(ZEPHYROS_HOST_TEST)
+    return rtl8139_host_in32(port);
+#else
+    uint32_t value;
 
     asm volatile("inl %1, %0" : "=a"(value) : "Nd"(port));
     return value;
+#endif
 }
 
 static void rtl8139_out8(const rtl8139_device_t* device,
                          uint16_t offset, uint8_t value) {
     uint16_t port = (uint16_t)(device->io_base + offset);
+#if defined(ZEPHYROS_HOST_TEST)
+    rtl8139_host_out8(port, value);
+#else
     asm volatile("outb %0, %1" : : "a"(value), "Nd"(port));
+#endif
 }
 
 static void rtl8139_out16(const rtl8139_device_t* device,
                           uint16_t offset, uint16_t value) {
     uint16_t port = (uint16_t)(device->io_base + offset);
+#if defined(ZEPHYROS_HOST_TEST)
+    rtl8139_host_out16(port, value);
+#else
     asm volatile("outw %0, %1" : : "a"(value), "Nd"(port));
+#endif
 }
 
 static void rtl8139_out32(const rtl8139_device_t* device,
                           uint16_t offset, uint32_t value) {
     uint16_t port = (uint16_t)(device->io_base + offset);
+#if defined(ZEPHYROS_HOST_TEST)
+    rtl8139_host_out32(port, value);
+#else
     asm volatile("outl %0, %1" : : "a"(value), "Nd"(port));
+#endif
 }
 
 static void rtl8139_memory_barrier(void) {
+#if defined(ZEPHYROS_HOST_TEST)
+    return;
+#else
     asm volatile("" : : : "memory");
+#endif
 }
 
 static uint16_t rtl8139_read_u16(const uint8_t* data) {
@@ -330,14 +381,21 @@ static int rtl8139_read_mac(rtl8139_device_t* device) {
 }
 
 static void rtl8139_configure_dma(rtl8139_device_t* device) {
+#if defined(ZEPHYROS_HOST_TEST)
+    uint32_t rx_physical = rtl8139_host_physical_address(device->rx_buffer);
+    uint32_t tx_physical = rtl8139_host_physical_address(device->tx_buffers);
+#else
+    uint32_t rx_physical = (uint32_t)device->rx_buffer;
+    uint32_t tx_physical = (uint32_t)device->tx_buffers;
+#endif
+
     rtl8139_out32(device, RTL8139_REG_RBSTART,
-                  (uint32_t)device->rx_buffer);
+                  rx_physical);
     for (uint32_t index = 0;
          index < RTL8139_TX_DESCRIPTOR_COUNT; index++) {
         rtl8139_out32(device,
             RTL8139_REG_TSAD0 + index * sizeof(uint32_t),
-            (uint32_t)(device->tx_buffers +
-                       index * RTL8139_TX_BUFFER_SIZE));
+            tx_physical + index * RTL8139_TX_BUFFER_SIZE);
     }
     device->rx_offset = 0;
     device->tx_next = 0;
@@ -359,10 +417,16 @@ static void rtl8139_disable_hardware(rtl8139_device_t* device) {
 static void rtl8139_reset_receiver(rtl8139_device_t* device) {
     uint8_t command = rtl8139_in8(device, RTL8139_REG_CR);
 
+#if defined(ZEPHYROS_HOST_TEST)
+    uint32_t rx_physical = rtl8139_host_physical_address(device->rx_buffer);
+#else
+    uint32_t rx_physical = (uint32_t)device->rx_buffer;
+#endif
+
     rtl8139_out8(device, RTL8139_REG_CR,
                  (uint8_t)(command & ~RTL8139_CR_RE));
     rtl8139_out32(device, RTL8139_REG_RBSTART,
-                  (uint32_t)device->rx_buffer);
+                  rx_physical);
     device->rx_offset = 0;
     rtl8139_out16(device, RTL8139_REG_CAPR,
                   RTL8139_CAPR_INITIAL);
@@ -373,9 +437,9 @@ static void rtl8139_reset_receiver(rtl8139_device_t* device) {
         device->rx_queue_head != device->rx_queue_tail;
     device->status.rx_queue_depth =
         device->rx_queue_tail >= device->rx_queue_head ?
-        device->rx_queue_tail - device->rx_queue_head :
-        RTL8139_RX_QUEUE_SLOT_COUNT - device->rx_queue_head +
-        device->rx_queue_tail;
+        (uint8_t)(device->rx_queue_tail - device->rx_queue_head) :
+        (uint8_t)(RTL8139_RX_QUEUE_SLOT_COUNT - device->rx_queue_head +
+                  device->rx_queue_tail);
     device->rx_needs_reset = 0;
 }
 
@@ -395,9 +459,9 @@ static int rtl8139_get_driver_status(
     rtl8139_update_link(device);
     device->status.rx_queue_depth =
         device->rx_queue_tail >= device->rx_queue_head ?
-        device->rx_queue_tail - device->rx_queue_head :
-        RTL8139_RX_QUEUE_SLOT_COUNT - device->rx_queue_head +
-        device->rx_queue_tail;
+        (uint8_t)(device->rx_queue_tail - device->rx_queue_head) :
+        (uint8_t)(RTL8139_RX_QUEUE_SLOT_COUNT - device->rx_queue_head +
+                  device->rx_queue_tail);
     if (device->status.rx_queue_depth >
         device->status.rx_queue_high_water) {
         device->status.rx_queue_high_water =
@@ -670,9 +734,9 @@ static void rtl8139_drain_rx(rtl8139_device_t* device) {
         device->rx_queue_head != device->rx_queue_tail;
     device->status.rx_queue_depth =
         device->rx_queue_tail >= device->rx_queue_head ?
-        device->rx_queue_tail - device->rx_queue_head :
-        RTL8139_RX_QUEUE_SLOT_COUNT - device->rx_queue_head +
-        device->rx_queue_tail;
+        (uint8_t)(device->rx_queue_tail - device->rx_queue_head) :
+        (uint8_t)(RTL8139_RX_QUEUE_SLOT_COUNT - device->rx_queue_head +
+                  device->rx_queue_tail);
     if (device->status.rx_queue_depth >
         device->status.rx_queue_high_water) {
         device->status.rx_queue_high_water =
@@ -713,9 +777,9 @@ static int rtl8139_receive_frame(void* driver_context, uint8_t* data,
         device->rx_queue_head != device->rx_queue_tail;
     device->status.rx_queue_depth =
         device->rx_queue_tail >= device->rx_queue_head ?
-        device->rx_queue_tail - device->rx_queue_head :
-        RTL8139_RX_QUEUE_SLOT_COUNT - device->rx_queue_head +
-        device->rx_queue_tail;
+        (uint8_t)(device->rx_queue_tail - device->rx_queue_head) :
+        (uint8_t)(RTL8139_RX_QUEUE_SLOT_COUNT - device->rx_queue_head +
+                  device->rx_queue_tail);
     device->status.last_error = OK;
     *out_length = frame_length;
     *out_received = 1;
@@ -793,3 +857,16 @@ void rtl8139_handler(registers_t* regs) {
         }
     }
 }
+
+#if defined(ZEPHYROS_HOST_TEST)
+void rtl8139_host_reset(void) {
+    for (uint32_t index = 0U; index < RTL8139_DEVICE_CAPACITY; index++) {
+        rtl8139_device_t* device = &rtl8139_devices[index];
+
+        if (!device->used) continue;
+        rtl8139_disable_hardware(device);
+        rtl8139_release_dma(device);
+        kmemset(device, 0, sizeof(*device));
+    }
+}
+#endif

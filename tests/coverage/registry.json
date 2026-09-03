@@ -4333,6 +4333,57 @@
         "status": "AUTOMATED"
       },
       "evidence": "make test-ehci-host PASS com PCI, MMIO, DMA, enumeracao, descritores, controle, bulk, interrupt, timeout, recuperacao, fixture invalida e cobertura instrumentada completa"
+    },
+    {
+      "id": "rtl8139-host-dynamic",
+      "domain": "drivers-rtl8139",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:drivers:rtl8139"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/rtl8139-host/coverage.json",
+      "coverage_sources": [
+        "src/drivers/rtl8139.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:drivers:rtl8139",
+        "scenario": "Contrato host-only do driver RTL8139 com PCI, DMA, RX/TX, IRQ e limpeza simulados",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "pci-rtl8139-io-dma-irq-falso"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "validar PCI, portas I/O, reset, MAC, DMA, transmissoes, recepcoes, IRQ, bottom-half, erros, timeout, quiescencia e limpeza",
+        "expected": "operacoes validas preservam invariantes do controlador e fixtures invalidas retornam erros canonicos sem I/O privilegiado",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente PCI, portas, memoria DMA, relogio, IRQ e controlador RTL8139 falso no processo host",
+        "cleanup": "controlador falso resetado, paginas DMA devolvidas e manifesto, logs e cobertura preservados",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "drivers",
+          "network",
+          "rtl8139",
+          "limits",
+          "recovery",
+          "coverage"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "make test-rtl8139-host PASS com PCI, portas I/O, MAC, DMA, RX/TX, IRQ, bottom-half, timeout, recuperacao, fixtures invalidas e cobertura instrumentada completa"
     }
   ]
 }

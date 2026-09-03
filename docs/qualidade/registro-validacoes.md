@@ -4819,3 +4819,22 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `make catalog-test`; todos passaram. O catalogo registra 7.202 superficies,
   4.529 `COVERED`, 2.673 `PENDING` e 117 casos. O fechamento integral, o gate
   estrito e a validacao TST7 completa continuam pendentes.
+
+- Incremento Drivers/RTL8139 concluido em: 2026-09-03 15:11:47 -03:00
+  (America/Sao_Paulo). Foi criado o caso host-only `host:drivers:rtl8139` e o
+  alvo `make test-rtl8139-host`. A fixture simulou PCI, portas I/O, DMA,
+  temporizador, IRQ e bottom-half para exercitar inicializacao, reset, leitura
+  de MAC, transmissao, recepcao, erros de ring, timeout, quiescencia,
+  recuperacao e limpeza. O relatorio instrumentado
+  `build/test-results/rtl8139-host/coverage.json` terminou `PASS`, observou 66
+  enderecos sem desconhecidos ou ambiguos e resolveu as 36 funcoes de
+  `src/drivers/rtl8139.c` e as duas APIs publicas correspondentes. Foram
+  executados `make q3check`, `make clean`, `make`,
+  `make test-rtl8139-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`,
+  `python tools/test_catalog.py sync`,
+  `python tools/test_catalog.py render`,
+  `python tools/test_catalog.py validate` e `git diff --check`; todos passaram.
+  O build completo passou com os warnings legados ja existentes em outros
+  modulos. O catalogo registra 7.204 superficies, 4.619 `COVERED`, 2.585
+  `PENDING` e 119 casos. O fechamento integral, o gate estrito e a validacao
+  TST7 completa continuam pendentes.
