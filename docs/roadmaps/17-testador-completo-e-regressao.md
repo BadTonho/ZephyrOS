@@ -1517,6 +1517,22 @@ pendente.
   7.196 superficies, 3.953 `COVERED`, 3.243 `PENDING` e 86 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Shell/pipeline concluido em 2026-09-03. Foi criado o caso
+  host-only `host:shell:pipeline` com o alvo
+  `make test-shell-pipeline-host`. A fixture compila o
+  `src/shell/shell_pipeline.c` real com VFS, threads, video e logs falsos;
+  exercita parsing, limites de segmentos e destinos, pipes, leitura, escrita,
+  redirecionamento, workers, autoteste de pipe, falhas de criacao, erros de
+  I/O, overflow e limpeza.
+
+  A execucao terminou `PASS` com warnings tratados como erro. O relatorio
+  instrumentado `build/test-results/shell-pipeline-host/coverage.json`
+  resolveu as 26 superficies C de `src/shell/shell_pipeline.c`, sem enderecos
+  desconhecidos ou ambiguos. O catalogo foi sincronizado e renderizado;
+  registra 7.219 superficies, 4.977 `COVERED`, 2.242 `PENDING` e 132 casos.
+  O fechamento integral, o gate estrito e a validacao TST7 completa continuam
+  pendentes.
+
 - Incremento Shell/job concluido em 2026-09-03. Foi criado o caso host-only
   `host:shell:job` com o alvo `make test-shell-job-host`. A fixture compilou o
   `src/shell/shell_job.c` real com relogio, teclado, IPC, video e runtime

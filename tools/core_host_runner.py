@@ -481,6 +481,12 @@ SHELL_JOB_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_shell_job_host.c",
     ROOT / "src" / "shell" / "shell_job.c",
 )
+SHELL_PIPELINE_RESULT_DIR = ROOT / "build" / "test-results" / "shell-pipeline-host"
+SHELL_PIPELINE_BINARY = ROOT / "build" / "tests" / "test_shell_pipeline_host.exe"
+SHELL_PIPELINE_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_shell_pipeline_host.c",
+    ROOT / "src" / "shell" / "shell_pipeline.c",
+)
 BMP_RESULT_DIR = ROOT / "build" / "test-results" / "bmp-host"
 BMP_BINARY = ROOT / "build" / "tests" / "test_bmp_host.exe"
 BMP_SOURCE_FILES = (
@@ -832,6 +838,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
     if case_id == "host:shell:job":
         return (SHELL_JOB_RESULT_DIR, SHELL_JOB_BINARY,
                 SHELL_JOB_SOURCE_FILES, "shell-job-host")
+    if case_id == "host:shell:pipeline":
+        return (SHELL_PIPELINE_RESULT_DIR, SHELL_PIPELINE_BINARY,
+                SHELL_PIPELINE_SOURCE_FILES, "shell-pipeline-host")
     if case_id == "host:storage:bmp":
         return BMP_RESULT_DIR, BMP_BINARY, BMP_SOURCE_FILES, "bmp-host"
     if case_id == "host:drivers:rng":
@@ -1089,6 +1098,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:storage:wav",
                                  "host:shell:mediaplayer",
                                  "host:shell:job",
+                                 "host:shell:pipeline",
                                  "host:storage:bmp",
                                  "host:drivers:rng",
                                  "host:drivers:serial",
