@@ -19,14 +19,27 @@ static int pci_scan_result = ERR_STATE;
 #define PCI_COMMAND_MEMORY_SPACE 0x02U
 #define PCI_COMMAND_BUS_MASTER 0x04U
 
+#ifdef ZEPHYROS_HOST_TEST
+extern void pci_host_outl(uint16_t port, uint32_t value);
+extern uint32_t pci_host_inl(uint16_t port);
+#endif
+
 static void outl(uint16_t port, uint32_t val) {
+#ifdef ZEPHYROS_HOST_TEST
+    pci_host_outl(port, val);
+#else
     asm volatile("outl %0, %1" : : "a"(val), "Nd"(port));
+#endif
 }
 
 static uint32_t inl(uint16_t port) {
+#ifdef ZEPHYROS_HOST_TEST
+    return pci_host_inl(port);
+#else
     uint32_t result;
     asm volatile("inl %1, %0" : "=a"(result) : "Nd"(port));
     return result;
+#endif
 }
 
 uint32_t pci_read(uint8_t bus, uint8_t device, uint8_t function,

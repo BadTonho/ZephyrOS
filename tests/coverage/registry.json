@@ -2934,6 +2934,72 @@
       "evidence": "make test-panic-host PASS com panic, panic_memory, diagnostico de metricas e halt capturado por fixture host"
     },
     {
+      "id": "pci-host-dynamic",
+      "domain": "drivers-pci",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:drivers:pci"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/pci-host/coverage.json",
+      "coverage_sources": [
+        "src/drivers/pci.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:drivers:pci",
+        "scenario": "Contrato host-only da varredura e configuracao PCI",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "pci-config-space-stub",
+          "max_devices": 64
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "validar leitura, escrita, varredura, inventario, multifuncao, limites e habilitacao de recursos PCI",
+        "expected": "dispositivos validos sao registrados, ausentes sao ignorados, limite retorna ERR_OVERFLOW e comandos aceitos sao publicados",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao, acesso I/O real ou timeout",
+        "effects": "somente espaco de configuracao, inventario e contadores falsos no processo host; nenhum porto I/O real e acessado",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": [
+          "c:src/drivers/pci.c:inl",
+          "c:src/drivers/pci.c:outl",
+          "c:src/drivers/pci.c:pci_enable_bus_mastering",
+          "c:src/drivers/pci.c:pci_enable_io_and_bus_mastering",
+          "c:src/drivers/pci.c:pci_enable_memory_and_bus_mastering",
+          "c:src/drivers/pci.c:pci_get_device",
+          "c:src/drivers/pci.c:pci_get_device_by_id",
+          "c:src/drivers/pci.c:pci_get_device_at",
+          "c:src/drivers/pci.c:pci_get_device_count",
+          "c:src/drivers/pci.c:pci_init",
+          "c:src/drivers/pci.c:pci_read",
+          "c:src/drivers/pci.c:pci_scan_device",
+          "c:src/drivers/pci.c:pci_scan_function",
+          "c:src/drivers/pci.c:pci_write"
+        ],
+        "tags": [
+          "host",
+          "drivers",
+          "pci",
+          "inventory",
+          "limits",
+          "coverage"
+        ]
+      },
+      "evidence": "make test-pci-host PASS com I/O PCI falso, varredura, multifuncao, limite de inventario, comandos e estados nao inicializados"
+    },
+    {
       "id": "usb-transport-host-dynamic",
       "domain": "core-usb",
       "owner": "quality",

@@ -4713,3 +4713,19 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   unitarios dos runners, `make q3check`, `make clean`, `make` e a repeticao de
   `make test-panic-host` apos o build limpo. O catalogo registra 7.198
   superficies, 4.351 `COVERED`, 2.847 `PENDING` e 111 casos.
+
+- Incremento Drivers/PCI concluido em 2026-09-03: foi criado o caso host-only
+  `host:drivers:pci` e o alvo `make test-pci-host`. A fixture usa um espaco de
+  configuracao PCI falso para exercitar leitura, escrita, varredura de
+  barramento, funcoes multifuncao, inventario, buscas por classe e ID,
+  habilitacao de memoria/I/O/DMA, recusas de comando, estado nao inicializado,
+  limite de 64 dispositivos e reinicializacao do inventario. O relatorio
+  instrumentado terminou `PASS`, resolveu as 14 funcoes de
+  `src/drivers/pci.c` sem enderecos desconhecidos ou ambiguos, e nao acessou
+  portas I/O reais. Foram regeneradas as 71 fixtures host-only do registro e
+  todas passaram; a sincronizacao e renderizacao do catalogo tambem passaram.
+  O catalogo registra 7.198 superficies, 4.363 `COVERED`, 2.835 `PENDING` e
+  112 casos. Tambem passaram `make q3check`, `make clean`, `make`, a repeticao
+  de `make test-pci-host` apos o build limpo, `make catalog-test` e 59 testes
+  unitarios dos runners. O fechamento integral, o gate estrito e a validacao
+  TST7 completa continuam pendentes.

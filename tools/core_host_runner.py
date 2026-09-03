@@ -572,6 +572,12 @@ PANIC_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_panic_host.c",
     ROOT / "src" / "kernel" / "panic.c",
 )
+PCI_RESULT_DIR = ROOT / "build" / "test-results" / "pci-host"
+PCI_BINARY = ROOT / "build" / "tests" / "test_pci_host.exe"
+PCI_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_pci_host.c",
+    ROOT / "src" / "drivers" / "pci.c",
+)
 SOURCE_FILES = CORE_SOURCE_FILES
 
 
@@ -743,6 +749,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
                 RECOVERY_RUNTIME_SOURCE_FILES, "recovery-runtime-host")
     if case_id == "host:kernel:panic":
         return PANIC_RESULT_DIR, PANIC_BINARY, PANIC_SOURCE_FILES, "panic-host"
+    if case_id == "host:drivers:pci":
+        return PCI_RESULT_DIR, PCI_BINARY, PCI_SOURCE_FILES, "pci-host"
     raise ValueError(f"caso_host_invalido:{case_id}")
 
 
@@ -935,7 +943,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:core:usb-transport", "host:gui:widgets",
                                  "host:shell:commands-vfs",
                                  "host:boot:recovery-runtime",
-                                 "host:kernel:panic"))
+                                 "host:kernel:panic", "host:drivers:pci"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
     return parser.parse_args()

@@ -20762,11 +20762,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering",
@@ -20784,11 +20785,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering",
@@ -20806,11 +20808,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_get_device",
@@ -20828,11 +20831,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_get_device_at",
@@ -20850,11 +20854,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_get_device_by_id",
@@ -20872,11 +20877,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_get_device_count",
@@ -20894,11 +20900,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_init",
@@ -20916,11 +20923,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_read",
@@ -20938,11 +20946,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_write",
@@ -20960,11 +20969,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/rng.h:rng_get_bytes",
@@ -90654,9 +90664,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:pci"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/pci.c:outl",
@@ -90672,9 +90685,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:pci"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/pci.c:pci_enable_bus_mastering",
@@ -90690,9 +90706,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:pci"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/pci.c:pci_enable_io_and_bus_mastering",
@@ -90708,9 +90727,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:pci"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/pci.c:pci_enable_memory_and_bus_mastering",
@@ -90726,9 +90748,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:pci"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/pci.c:pci_get_device",
@@ -90744,9 +90769,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:pci"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/pci.c:pci_get_device_at",
@@ -90764,11 +90792,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/pci.c:pci_get_device_by_id",
@@ -90784,9 +90813,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:pci"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/pci.c:pci_get_device_count",
@@ -90804,11 +90836,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/pci.c:pci_init",
@@ -90824,9 +90857,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:pci"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/pci.c:pci_read",
@@ -90842,9 +90878,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:pci"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/pci.c:pci_scan_device",
@@ -90860,9 +90899,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:pci"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/pci.c:pci_scan_function",
@@ -90878,9 +90920,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:pci"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/pci.c:pci_write",
@@ -90896,9 +90941,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:drivers:pci"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/rng.c:rng_cpu_has_cpuid",
@@ -154091,6 +154139,51 @@
       ]
     },
     {
+      "id": "host:kernel:panic",
+      "scenario": "Contrato host-only das rotas de panic e diagnostico de memoria",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "hardware": "video-protocol-stub",
+        "halt": "setjmp-longjmp"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "validar panic, panic_memory, mensagens padrao e explicitas, metricas zero e nao zero e encaminhamento ao protocolo",
+      "expected": "panic publica a razao correta, desenha o diagnostico completo, descarrega a tela e interrompe apenas o fluxo de teste",
+      "errors": "compilador ausente, warning, cobertura incompleta, retorno inesperado do halt, falha de assercao ou timeout",
+      "effects": "somente buffers, contadores de video e razao do protocolo no processo host; nenhum halt real e executado",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/panic.h:panic",
+        "api:src/include/core/panic.h:panic_halt",
+        "api:src/include/core/panic.h:panic_memory",
+        "c:src/kernel/panic.c:panic",
+        "c:src/kernel/panic.c:panic_draw_header",
+        "c:src/kernel/panic.c:panic_halt",
+        "c:src/kernel/panic.c:panic_memory",
+        "c:src/kernel/panic.c:panic_print_metric",
+        "c:src/kernel/panic.c:panic_print_number"
+      ],
+      "tags": [
+        "host",
+        "kernel",
+        "panic",
+        "diagnostics",
+        "halt",
+        "limits",
+        "coverage"
+      ]
+    },
+    {
       "id": "host:memory:memory",
       "scenario": "Contrato host-only de memoria com PMM, heap e estatisticas",
       "owner": "quality",
@@ -167609,8 +167702,8 @@
       ]
     },
     {
-      "id": "host:kernel:panic",
-      "scenario": "Contrato host-only das rotas de panic e diagnostico de memoria",
+      "id": "host:drivers:pci",
+      "scenario": "Contrato host-only da varredura e configuracao PCI",
       "owner": "quality",
       "layer": "host",
       "executor": "host",
@@ -167622,33 +167715,47 @@
         "compiler": "HOST_CC",
         "instrumentation": "-finstrument-functions",
         "warnings": "error",
-        "hardware": "video-protocol-stub",
-        "halt": "setjmp-longjmp"
+        "hardware": "pci-config-space-stub",
+        "max_devices": 64
       },
       "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "validar panic, panic_memory, mensagens padrao e explicitas, metricas zero e nao zero e encaminhamento ao protocolo",
-      "expected": "panic publica a razao correta, desenha o diagnostico completo, descarrega a tela e interrompe apenas o fluxo de teste",
-      "errors": "compilador ausente, warning, cobertura incompleta, retorno inesperado do halt, falha de assercao ou timeout",
-      "effects": "somente buffers, contadores de video e razao do protocolo no processo host; nenhum halt real e executado",
+      "action": "validar leitura, escrita, varredura, inventario, multifuncao, limites e habilitacao de recursos PCI",
+      "expected": "dispositivos validos sao registrados, ausentes sao ignorados, limite retorna ERR_OVERFLOW e comandos aceitos sao publicados",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao, acesso I/O real ou timeout",
+      "effects": "somente espaco de configuracao, inventario e contadores falsos no processo host; nenhum porto I/O real e acessado",
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
       "surface_ids": [
-        "api:src/include/core/panic.h:panic",
-        "api:src/include/core/panic.h:panic_halt",
-        "api:src/include/core/panic.h:panic_memory",
-        "c:src/kernel/panic.c:panic",
-        "c:src/kernel/panic.c:panic_draw_header",
-        "c:src/kernel/panic.c:panic_halt",
-        "c:src/kernel/panic.c:panic_memory",
-        "c:src/kernel/panic.c:panic_print_metric",
-        "c:src/kernel/panic.c:panic_print_number"
+        "api:src/include/drivers/pci.h:pci_enable_bus_mastering",
+        "api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering",
+        "api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering",
+        "api:src/include/drivers/pci.h:pci_get_device",
+        "api:src/include/drivers/pci.h:pci_get_device_at",
+        "api:src/include/drivers/pci.h:pci_get_device_by_id",
+        "api:src/include/drivers/pci.h:pci_get_device_count",
+        "api:src/include/drivers/pci.h:pci_init",
+        "api:src/include/drivers/pci.h:pci_read",
+        "api:src/include/drivers/pci.h:pci_write",
+        "c:src/drivers/pci.c:inl",
+        "c:src/drivers/pci.c:outl",
+        "c:src/drivers/pci.c:pci_enable_bus_mastering",
+        "c:src/drivers/pci.c:pci_enable_io_and_bus_mastering",
+        "c:src/drivers/pci.c:pci_enable_memory_and_bus_mastering",
+        "c:src/drivers/pci.c:pci_get_device",
+        "c:src/drivers/pci.c:pci_get_device_at",
+        "c:src/drivers/pci.c:pci_get_device_by_id",
+        "c:src/drivers/pci.c:pci_get_device_count",
+        "c:src/drivers/pci.c:pci_init",
+        "c:src/drivers/pci.c:pci_read",
+        "c:src/drivers/pci.c:pci_scan_device",
+        "c:src/drivers/pci.c:pci_scan_function",
+        "c:src/drivers/pci.c:pci_write"
       ],
       "tags": [
         "host",
-        "kernel",
-        "panic",
-        "diagnostics",
-        "halt",
+        "drivers",
+        "pci",
+        "inventory",
         "limits",
         "coverage"
       ]
