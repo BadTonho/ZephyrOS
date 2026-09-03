@@ -473,6 +473,16 @@ o relatorio fica em `build/test-results/protocol-adapter-host/`:
 make test-protocol-adapter-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-blackbox-host` compila o harness black-box TST5 real com
+observador de terminal falso. A fixture cobre os nove marcadores de cenário,
+mudança de geração do terminal, `process_yield()` limitado e seleção inválida
+sem acessar QEMU ou hardware; o relatorio fica em
+`build/test-results/blackbox-host/`:
+
+```text
+make test-blackbox-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O caso `test-shell-input-host` exercita a entrada do Shell com terminal,
 historico, navegacao para cima/baixo, edicao, teclas de rolagem, cancelamento,
 bloqueio, modificadores e limite do buffer. A fixture usa apenas video,

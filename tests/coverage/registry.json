@@ -508,6 +508,46 @@
       }
     },
     {
+      "id": "core-blackbox-host-dynamic",
+      "domain": "core",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "host:tst5:blackbox"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/blackbox-host/coverage.json",
+      "coverage_sources": [
+        "src/core/kernel_tests_blackbox.c"
+      ],
+      "evidence": "make test-blackbox-host aprovado com observador de terminal estatico, selecao de casos TST5 e geracoes controladas",
+      "case_definition": {
+        "id": "host:tst5:blackbox",
+        "scenario": "Teste host-only do harness black-box TST5",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "terminal": "observador-falso",
+          "process": "yield-falso"
+        },
+        "preconditions": "compilador C nativo disponivel",
+        "action": "compilar e executar o harness black-box com snapshots de terminal falsos",
+        "expected": "casos TST5 validos encontram o marcador apos nova geracao e caso invalido retorna ERR_NOT_FOUND",
+        "errors": "compilador ausente, warning, marcador ausente, caso invalido ou timeout",
+        "effects": "somente buffers estaticos e callbacks falsos do observador",
+        "cleanup": "processo host encerrado e relatorio de cobertura preservado",
+        "status": "AUTOMATED",
+        "surface_ids": []
+      }
+    },
+    {
       "id": "core-state-host-dynamic",
       "domain": "core-state",
       "owner": "quality",

@@ -215,6 +215,17 @@ class CoreHostRunnerTests(unittest.TestCase):
         self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
                       "test_protocol_host.c", sources)
 
+    def test_blackbox_case_has_terminal_fixture_sources(self):
+        result_dir, binary, sources, suite = core_host_runner.case_configuration(
+            "host:tst5:blackbox")
+        self.assertEqual(suite, "blackbox-host")
+        self.assertEqual(result_dir, core_host_runner.BLACKBOX_RESULT_DIR)
+        self.assertEqual(binary, core_host_runner.BLACKBOX_BINARY)
+        self.assertIn(core_host_runner.ROOT / "src" / "core" /
+                      "kernel_tests_blackbox.c", sources)
+        self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
+                      "test_kernel_tests_blackbox_host.c", sources)
+
 
 if __name__ == "__main__":
     unittest.main()

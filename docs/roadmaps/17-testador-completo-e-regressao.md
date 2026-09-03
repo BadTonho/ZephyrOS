@@ -1401,6 +1401,17 @@ pendente.
   `PENDING` e 101 casos. O fechamento integral, o gate estrito e a validacao
   TST7 completa continuam pendentes.
 
+- Incremento TST5/black-box marker concluido em 2026-09-02: foi criado o caso
+  host-only `host:tst5:blackbox` com observador de terminal estatico e
+  `process_yield()` controlado. A fixture exercitou os nove marcadores de
+  cenarios TST5, snapshots com nova geracao, progresso limitado e selecao
+  invalida. `make test-blackbox-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
+  terminou `PASS`; o relatorio instrumentado cobriu a superficie pendente de
+  `src/core/kernel_tests_blackbox.c`, sem enderecos desconhecidos ou
+  ambiguos. O catalogo registra 7.196 superficies, 4.278 `COVERED`, 2.918
+  `PENDING` e 102 casos. O fechamento integral, o gate estrito e a validacao
+  TST7 completa continuam pendentes.
+
 - Incremento Core/wifi_manager concluido em 2026-09-02: foi criado o caso
   host-only `host:core:wifi-manager` com fixtures estaticos de PCI, USB e
   RTL8811CU. A fixture exercitou formatacao e busca case-insensitive de IDs,
