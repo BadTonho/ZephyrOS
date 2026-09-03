@@ -4474,3 +4474,17 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   do runtime LLVM. O catalogo registra 7.196 superficies, 4.222 `COVERED`,
   2.974 `PENDING` e 93 casos. O fechamento integral, o gate estrito e a
   validacao TST7 completa continuam pendentes.
+
+- Concluida em: 2026-09-02
+
+  Incremento Storage/WAV: foi criado o caso host-only `host:storage:wav` e o
+  alvo `make test-wav-host` com o parser e reprodutor WAV reais, allocator
+  estatico, playback AC97 simulado e cobertura dinamica. A fixture exercitou
+  headers RIFF/WAVE, chunks `fmt` e `data`, metadados, duracao, playback,
+  ownership, double free, entradas invalidas, truncadas, taxa de amostragem
+  zero e limpeza. A correcao em `src/fs/wav.c` libera o buffer adquirido quando
+  a taxa de amostragem e zero. A execucao terminou `PASS`, sem enderecos
+  desconhecidos ou ambiguos, resolvendo 13 superficies pendentes do modulo.
+  O catalogo registra 7.196 superficies, 4.235 `COVERED`, 2.961 `PENDING` e
+  94 casos. O fechamento integral, o gate estrito e a validacao TST7 completa
+  continuam pendentes.

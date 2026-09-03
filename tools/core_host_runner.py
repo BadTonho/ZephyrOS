@@ -441,6 +441,13 @@ PROCFS_SOURCE_FILES = (
     ROOT / "src" / "fs" / "procfs.c",
     ROOT / "src" / "core" / "string.c",
 )
+WAV_RESULT_DIR = ROOT / "build" / "test-results" / "wav-host"
+WAV_BINARY = ROOT / "build" / "tests" / "test_wav_host.exe"
+WAV_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_wav_host.c",
+    ROOT / "src" / "fs" / "wav.c",
+    ROOT / "src" / "core" / "string.c",
+)
 SHELL_INPUT_RESULT_DIR = ROOT / "build" / "test-results" / "shell-input-host"
 SHELL_INPUT_BINARY = ROOT / "build" / "tests" / "test_shell_input_host.exe"
 SHELL_INPUT_SOURCE_FILES = (
@@ -578,6 +585,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return DEVFS_RESULT_DIR, DEVFS_BINARY, DEVFS_SOURCE_FILES, "devfs-host"
     if case_id == "host:storage:procfs":
         return PROCFS_RESULT_DIR, PROCFS_BINARY, PROCFS_SOURCE_FILES, "procfs-host"
+    if case_id == "host:storage:wav":
+        return WAV_RESULT_DIR, WAV_BINARY, WAV_SOURCE_FILES, "wav-host"
     if case_id == "host:shell:input":
         return (SHELL_INPUT_RESULT_DIR, SHELL_INPUT_BINARY,
                 SHELL_INPUT_SOURCE_FILES, "shell-input-host")
@@ -637,6 +646,8 @@ def compiler_command(compiler: str, binary: Path,
     if any(source.name == "crypto_ed25519.c" for source in selected_sources):
         compatibility_flags.append("-Wno-unused-const-variable")
     if any(source.name == "bearssl_compat.c" for source in selected_sources):
+        compatibility_flags.append("-fno-builtin")
+    if any(source.name == "wav.c" for source in selected_sources):
         compatibility_flags.append("-fno-builtin")
     return [
         compiler, "-std=c11", "-O0", "-fno-inline", "-ffunction-sections",
@@ -758,6 +769,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:drivers:usb-msc",
                                  "host:storage:devfs",
                                  "host:storage:procfs",
+                                 "host:storage:wav",
                                  "host:shell:input", "host:shell:command-utils"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)

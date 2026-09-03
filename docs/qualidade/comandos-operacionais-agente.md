@@ -395,6 +395,15 @@ hardware real; o relatorio fica em `build/test-results/procfs-host/`:
 make test-procfs-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-wav-host` compila o parser e reprodutor WAV reais com buffers
+estaticos, chunks RIFF/WAVE, metadados, duracao, playback simulado e entradas
+truncadas ou invalidas. A fixture nao acessa hardware de audio; o relatorio
+fica em `build/test-results/wav-host/`:
+
+```text
+make test-wav-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O caso `test-shell-input-host` exercita a entrada do Shell com terminal,
 historico, navegacao para cima/baixo, edicao, teclas de rolagem, cancelamento,
 bloqueio, modificadores e limite do buffer. A fixture usa apenas video,

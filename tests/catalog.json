@@ -12872,6 +12872,7 @@
         "host:storage:storage",
         "host:storage:vfs",
         "host:storage:vfs-path",
+        "host:storage:wav",
         "host:tst3:string-compress",
         "qemu:tst5:apps",
         "qemu:tst6:matrix:baseline"
@@ -12933,6 +12934,7 @@
         "host:storage:storage",
         "host:storage:vfs",
         "host:storage:vfs-path",
+        "host:storage:wav",
         "host:tst3:string-compress",
         "qemu:tst5:apps",
         "qemu:tst6:matrix:baseline"
@@ -29040,9 +29042,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:wav"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/fs/wav.h:wav_get_duration_ms",
@@ -29058,9 +29063,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:wav"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/fs/wav.h:wav_init",
@@ -29076,9 +29084,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:wav"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/fs/wav.h:wav_load",
@@ -29094,9 +29105,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:wav"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/fs/wav.h:wav_play",
@@ -29112,9 +29126,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:wav"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/memory/compress.h:compress_data",
@@ -67072,6 +67089,7 @@
         "host:storage:storage",
         "host:storage:vfs",
         "host:storage:vfs-path",
+        "host:storage:wav",
         "host:tst3:string-compress",
         "qemu:tst5:apps",
         "qemu:tst6:matrix:baseline"
@@ -67133,6 +67151,7 @@
         "host:storage:storage",
         "host:storage:vfs",
         "host:storage:vfs-path",
+        "host:storage:wav",
         "host:tst3:string-compress",
         "qemu:tst5:apps",
         "qemu:tst6:matrix:baseline"
@@ -115821,9 +115840,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:wav"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/wav.c:read_u16",
@@ -115839,9 +115861,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:wav"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/wav.c:read_u32",
@@ -115857,9 +115882,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:wav"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/wav.c:wav_free",
@@ -115875,9 +115903,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:wav"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/wav.c:wav_get_duration_ms",
@@ -115893,9 +115924,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:wav"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/wav.c:wav_init",
@@ -115911,9 +115945,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:wav"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/wav.c:wav_load",
@@ -115929,9 +115966,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:wav"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/wav.c:wav_play",
@@ -115947,9 +115987,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:wav"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/gui/display.c:display_apply_scale",
@@ -156500,6 +156543,49 @@
         "storage",
         "vfs",
         "negative"
+      ]
+    },
+    {
+      "id": "host:storage:wav",
+      "scenario": "Contrato host-only do parser e reprodutor WAV",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "audio": "ac97-stub"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "compilar e executar parser WAV real com dados RIFF estaticos e AC97 simulado",
+      "expected": "headers, chunks, metadados, duracao, playback e ownership preservam o contrato em entradas validas, truncadas e invalidas",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente buffers WAV estaticos, allocator de teste e contador de playback do processo host",
+      "cleanup": "dados liberados, playback sem hardware e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/string.h:kmemcpy",
+        "api:src/include/core/string.h:kmemset",
+        "api:src/include/fs/wav.h:wav_free",
+        "api:src/include/fs/wav.h:wav_get_duration_ms",
+        "api:src/include/fs/wav.h:wav_init",
+        "api:src/include/fs/wav.h:wav_load",
+        "api:src/include/fs/wav.h:wav_play",
+        "c:src/core/string.c:kmemcpy",
+        "c:src/core/string.c:kmemset",
+        "c:src/fs/wav.c:memcmp",
+        "c:src/fs/wav.c:read_u16",
+        "c:src/fs/wav.c:read_u32",
+        "c:src/fs/wav.c:wav_free",
+        "c:src/fs/wav.c:wav_get_duration_ms",
+        "c:src/fs/wav.c:wav_init",
+        "c:src/fs/wav.c:wav_load",
+        "c:src/fs/wav.c:wav_play"
       ]
     },
     {

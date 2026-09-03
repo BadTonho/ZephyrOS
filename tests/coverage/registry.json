@@ -863,6 +863,49 @@
       }
     },
     {
+      "id": "wav-host-dynamic",
+      "domain": "storage-wav",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:storage:wav"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/wav-host/coverage.json",
+      "coverage_sources": [
+        "src/fs/wav.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-wav-host PASS com parsing RIFF/WAVE, chunks fmt/data, limites, truncamento, duracao, playback simulado, limpeza e rejeicao de entradas invalidas no relatorio instrumentado",
+      "case_definition": {
+        "id": "host:storage:wav",
+        "scenario": "Contrato host-only do parser e reprodutor WAV",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "audio": "ac97-stub"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "compilar e executar parser WAV real com dados RIFF estaticos e AC97 simulado",
+        "expected": "headers, chunks, metadados, duracao, playback e ownership preservam o contrato em entradas validas, truncadas e invalidas",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente buffers WAV estaticos, allocator de teste e contador de playback do processo host",
+        "cleanup": "dados liberados, playback sem hardware e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": []
+      }
+    },
+    {
       "id": "harness-apps-qemu-observed",
       "domain": "test-harness",
       "owner": "quality",
