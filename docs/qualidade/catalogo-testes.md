@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7219**
-- Casos de teste: **128**
+- Casos de teste: **129**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4910 |
+| `COVERED` | 4922 |
 | `MANUAL` | 0 |
-| `PENDING` | 2309 |
+| `PENDING` | 2297 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 128 |
+| `AUTOMATED` | 129 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -604,10 +604,10 @@
 | `api:src/include/core/spinlock.h:spinlock_acquire` | `src/include/core/spinlock.h` | `spinlock_acquire` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_init` | `src/include/core/spinlock.h` | `spinlock_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_release` | `src/include/core/spinlock.h` | `spinlock_release` | `core` | `PENDING` | 0 |
-| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 42 |
-| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 44 |
-| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 34 |
-| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 36 |
+| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 43 |
+| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 45 |
+| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 35 |
+| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 37 |
 | `api:src/include/core/syscall.h:syscall_enable_user_mode` | `src/include/core/syscall.h` | `syscall_enable_user_mode` | `core` | `COVERED` | 1 |
 | `api:src/include/core/syscall.h:syscall_handler` | `src/include/core/syscall.h` | `syscall_handler` | `core` | `COVERED` | 1 |
 | `api:src/include/core/syscall.h:syscall_init` | `src/include/core/syscall.h` | `syscall_init` | `core` | `COVERED` | 1 |
@@ -661,14 +661,14 @@
 | `api:src/include/core/tls.h:tls_self_test` | `src/include/core/tls.h` | `tls_self_test` | `core` | `COVERED` | 3 |
 | `api:src/include/core/tls.h:tls_state_name` | `src/include/core/tls.h` | `tls_state_name` | `core` | `COVERED` | 2 |
 | `api:src/include/core/tls.h:tls_validate_state` | `src/include/core/tls.h` | `tls_validate_state` | `core` | `COVERED` | 3 |
-| `api:src/include/core/tls_client.h:tls_client_close` | `src/include/core/tls_client.h` | `tls_client_close` | `core` | `COVERED` | 1 |
-| `api:src/include/core/tls_client.h:tls_client_get_status` | `src/include/core/tls_client.h` | `tls_client_get_status` | `core` | `COVERED` | 2 |
-| `api:src/include/core/tls_client.h:tls_client_init` | `src/include/core/tls_client.h` | `tls_client_init` | `core` | `COVERED` | 1 |
-| `api:src/include/core/tls_client.h:tls_client_maintain` | `src/include/core/tls_client.h` | `tls_client_maintain` | `core` | `COVERED` | 1 |
-| `api:src/include/core/tls_client.h:tls_client_receive` | `src/include/core/tls_client.h` | `tls_client_receive` | `core` | `COVERED` | 1 |
-| `api:src/include/core/tls_client.h:tls_client_send` | `src/include/core/tls_client.h` | `tls_client_send` | `core` | `COVERED` | 1 |
-| `api:src/include/core/tls_client.h:tls_client_start` | `src/include/core/tls_client.h` | `tls_client_start` | `core` | `COVERED` | 1 |
-| `api:src/include/core/tls_client.h:tls_client_validate_state` | `src/include/core/tls_client.h` | `tls_client_validate_state` | `core` | `COVERED` | 2 |
+| `api:src/include/core/tls_client.h:tls_client_close` | `src/include/core/tls_client.h` | `tls_client_close` | `core` | `COVERED` | 2 |
+| `api:src/include/core/tls_client.h:tls_client_get_status` | `src/include/core/tls_client.h` | `tls_client_get_status` | `core` | `COVERED` | 3 |
+| `api:src/include/core/tls_client.h:tls_client_init` | `src/include/core/tls_client.h` | `tls_client_init` | `core` | `COVERED` | 2 |
+| `api:src/include/core/tls_client.h:tls_client_maintain` | `src/include/core/tls_client.h` | `tls_client_maintain` | `core` | `COVERED` | 2 |
+| `api:src/include/core/tls_client.h:tls_client_receive` | `src/include/core/tls_client.h` | `tls_client_receive` | `core` | `COVERED` | 2 |
+| `api:src/include/core/tls_client.h:tls_client_send` | `src/include/core/tls_client.h` | `tls_client_send` | `core` | `COVERED` | 2 |
+| `api:src/include/core/tls_client.h:tls_client_start` | `src/include/core/tls_client.h` | `tls_client_start` | `core` | `COVERED` | 2 |
+| `api:src/include/core/tls_client.h:tls_client_validate_state` | `src/include/core/tls_client.h` | `tls_client_validate_state` | `core` | `COVERED` | 3 |
 | `api:src/include/core/udp.h:udp_bind` | `src/include/core/udp.h` | `udp_bind` | `core` | `COVERED` | 2 |
 | `api:src/include/core/udp.h:udp_get_status` | `src/include/core/udp.h` | `udp_get_status` | `core` | `COVERED` | 3 |
 | `api:src/include/core/udp.h:udp_init` | `src/include/core/udp.h` | `udp_init` | `core` | `COVERED` | 2 |
@@ -3080,10 +3080,10 @@
 | `c:src/core/socket.c:socket_wait_local` | `src/core/socket.c` | `socket_wait_local` | `core` | `COVERED` | 1 |
 | `c:src/core/socket.c:socket_wait_owner` | `src/core/socket.c` | `socket_wait_owner` | `core` | `COVERED` | 3 |
 | `c:src/core/socket.c:socket_wake` | `src/core/socket.c` | `socket_wake` | `core` | `COVERED` | 3 |
-| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 42 |
-| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 44 |
-| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 34 |
-| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 36 |
+| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 43 |
+| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 45 |
+| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 35 |
+| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 37 |
 | `c:src/core/syscall.c:syscall_copy_user_string` | `src/core/syscall.c` | `syscall_copy_user_string` | `core` | `PENDING` | 0 |
 | `c:src/core/syscall.c:syscall_dispatch` | `src/core/syscall.c` | `syscall_dispatch` | `core` | `COVERED` | 1 |
 | `c:src/core/syscall.c:syscall_dispatch_user` | `src/core/syscall.c` | `syscall_dispatch_user` | `core` | `COVERED` | 1 |
@@ -3244,20 +3244,20 @@
 | `c:src/core/tls.c:tls_self_test_case` | `src/core/tls.c` | `tls_self_test_case` | `core` | `COVERED` | 3 |
 | `c:src/core/tls.c:tls_state_name` | `src/core/tls.c` | `tls_state_name` | `core` | `COVERED` | 1 |
 | `c:src/core/tls.c:tls_validate_state` | `src/core/tls.c` | `tls_validate_state` | `core` | `COVERED` | 3 |
-| `c:src/core/tls_client.c:tls_client_close` | `src/core/tls_client.c` | `tls_client_close` | `core` | `PENDING` | 0 |
-| `c:src/core/tls_client.c:tls_client_configure` | `src/core/tls_client.c` | `tls_client_configure` | `core` | `PENDING` | 0 |
-| `c:src/core/tls_client.c:tls_client_divide_u64` | `src/core/tls_client.c` | `tls_client_divide_u64` | `core` | `PENDING` | 0 |
-| `c:src/core/tls_client.c:tls_client_divide_word` | `src/core/tls_client.c` | `tls_client_divide_word` | `core` | `PENDING` | 0 |
-| `c:src/core/tls_client.c:tls_client_fail` | `src/core/tls_client.c` | `tls_client_fail` | `core` | `PENDING` | 0 |
-| `c:src/core/tls_client.c:tls_client_get_status` | `src/core/tls_client.c` | `tls_client_get_status` | `core` | `COVERED` | 2 |
-| `c:src/core/tls_client.c:tls_client_init` | `src/core/tls_client.c` | `tls_client_init` | `core` | `PENDING` | 0 |
-| `c:src/core/tls_client.c:tls_client_maintain` | `src/core/tls_client.c` | `tls_client_maintain` | `core` | `PENDING` | 0 |
-| `c:src/core/tls_client.c:tls_client_prepare_application` | `src/core/tls_client.c` | `tls_client_prepare_application` | `core` | `PENDING` | 0 |
-| `c:src/core/tls_client.c:tls_client_reason_for_error` | `src/core/tls_client.c` | `tls_client_reason_for_error` | `core` | `PENDING` | 0 |
-| `c:src/core/tls_client.c:tls_client_receive` | `src/core/tls_client.c` | `tls_client_receive` | `core` | `PENDING` | 0 |
-| `c:src/core/tls_client.c:tls_client_send` | `src/core/tls_client.c` | `tls_client_send` | `core` | `PENDING` | 0 |
-| `c:src/core/tls_client.c:tls_client_start` | `src/core/tls_client.c` | `tls_client_start` | `core` | `PENDING` | 0 |
-| `c:src/core/tls_client.c:tls_client_validate_state` | `src/core/tls_client.c` | `tls_client_validate_state` | `core` | `COVERED` | 2 |
+| `c:src/core/tls_client.c:tls_client_close` | `src/core/tls_client.c` | `tls_client_close` | `core` | `COVERED` | 1 |
+| `c:src/core/tls_client.c:tls_client_configure` | `src/core/tls_client.c` | `tls_client_configure` | `core` | `COVERED` | 1 |
+| `c:src/core/tls_client.c:tls_client_divide_u64` | `src/core/tls_client.c` | `tls_client_divide_u64` | `core` | `COVERED` | 1 |
+| `c:src/core/tls_client.c:tls_client_divide_word` | `src/core/tls_client.c` | `tls_client_divide_word` | `core` | `COVERED` | 1 |
+| `c:src/core/tls_client.c:tls_client_fail` | `src/core/tls_client.c` | `tls_client_fail` | `core` | `COVERED` | 1 |
+| `c:src/core/tls_client.c:tls_client_get_status` | `src/core/tls_client.c` | `tls_client_get_status` | `core` | `COVERED` | 3 |
+| `c:src/core/tls_client.c:tls_client_init` | `src/core/tls_client.c` | `tls_client_init` | `core` | `COVERED` | 1 |
+| `c:src/core/tls_client.c:tls_client_maintain` | `src/core/tls_client.c` | `tls_client_maintain` | `core` | `COVERED` | 1 |
+| `c:src/core/tls_client.c:tls_client_prepare_application` | `src/core/tls_client.c` | `tls_client_prepare_application` | `core` | `COVERED` | 1 |
+| `c:src/core/tls_client.c:tls_client_reason_for_error` | `src/core/tls_client.c` | `tls_client_reason_for_error` | `core` | `COVERED` | 1 |
+| `c:src/core/tls_client.c:tls_client_receive` | `src/core/tls_client.c` | `tls_client_receive` | `core` | `COVERED` | 1 |
+| `c:src/core/tls_client.c:tls_client_send` | `src/core/tls_client.c` | `tls_client_send` | `core` | `COVERED` | 1 |
+| `c:src/core/tls_client.c:tls_client_start` | `src/core/tls_client.c` | `tls_client_start` | `core` | `COVERED` | 1 |
+| `c:src/core/tls_client.c:tls_client_validate_state` | `src/core/tls_client.c` | `tls_client_validate_state` | `core` | `COVERED` | 3 |
 | `c:src/core/udp.c:udp_add_bytes` | `src/core/udp.c` | `udp_add_bytes` | `core` | `COVERED` | 3 |
 | `c:src/core/udp.c:udp_bind` | `src/core/udp.c` | `udp_bind` | `core` | `COVERED` | 1 |
 | `c:src/core/udp.c:udp_build_segment` | `src/core/udp.c` | `udp_build_segment` | `core` | `COVERED` | 1 |
@@ -7433,6 +7433,7 @@
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
 | `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
+| `host:security:tls-client` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar tls_client.c com engine BearSSL, socket, relogio e RNG falsos | handshake, envio, recepcao, EOF, estados de erro e limpeza preservam os contratos do adaptador | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do adaptador e fixtures do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -7895,18 +7896,6 @@
 - `c:src/core/syscall.c:syscall_user_signal_mask`
 - `c:src/core/syscall.c:syscall_user_sync`
 - `c:src/core/syscall.c:syscall_user_uptime`
-- `c:src/core/tls_client.c:tls_client_close`
-- `c:src/core/tls_client.c:tls_client_configure`
-- `c:src/core/tls_client.c:tls_client_divide_u64`
-- `c:src/core/tls_client.c:tls_client_divide_word`
-- `c:src/core/tls_client.c:tls_client_fail`
-- `c:src/core/tls_client.c:tls_client_init`
-- `c:src/core/tls_client.c:tls_client_maintain`
-- `c:src/core/tls_client.c:tls_client_prepare_application`
-- `c:src/core/tls_client.c:tls_client_reason_for_error`
-- `c:src/core/tls_client.c:tls_client_receive`
-- `c:src/core/tls_client.c:tls_client_send`
-- `c:src/core/tls_client.c:tls_client_start`
 - `c:src/core/update.c:update_action_fail`
 - `c:src/core/update.c:update_action_reason_name`
 - `c:src/core/update.c:update_apply_file`

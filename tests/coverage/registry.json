@@ -3660,6 +3660,49 @@
       "evidence": "make test-udp-host PASS com envio, reinjecao, checksum, listeners, broadcast, erros de protocolo, limites e limpeza usando IPv4 falso"
     },
     {
+      "id": "tls-client-host-dynamic",
+      "domain": "security-tls-client",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:security:tls-client"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/tls-client-host/coverage.json",
+      "coverage_sources": [
+        "src/core/tls_client.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-tls-client-host PASS com engine BearSSL, socket, relogio e RNG falsos, handshake, aplicacao, EOF, erros, limites e limpeza sem rede externa",
+      "case_definition": {
+        "id": "host:security:tls-client",
+        "scenario": "Adaptador TLS cliente com engine e transporte deterministas",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "bearssl": "fake-engine"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "compilar e executar tls_client.c com engine BearSSL, socket, relogio e RNG falsos",
+        "expected": "handshake, envio, recepcao, EOF, estados de erro e limpeza preservam os contratos do adaptador",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente estado estatico do adaptador e fixtures do processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": []
+      }
+    },
+    {
       "id": "update-recovery-qemu-tst5-dynamic",
       "domain": "update-recovery-shell",
       "owner": "quality",

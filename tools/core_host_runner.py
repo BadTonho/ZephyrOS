@@ -89,6 +89,8 @@ TCP_RESULT_DIR = ROOT / "build" / "test-results" / "tcp-host"
 TCP_BINARY = ROOT / "build" / "tests" / "test_tcp_host.exe"
 TLS_RESULT_DIR = ROOT / "build" / "test-results" / "tls-host"
 TLS_BINARY = ROOT / "build" / "tests" / "test_tls_host.exe"
+TLS_CLIENT_RESULT_DIR = ROOT / "build" / "test-results" / "tls-client-host"
+TLS_CLIENT_BINARY = ROOT / "build" / "tests" / "test_tls_client_host.exe"
 HTTP_RESULT_DIR = ROOT / "build" / "test-results" / "http-host"
 HTTP_BINARY = ROOT / "build" / "tests" / "test_http_host.exe"
 NET_SOCKET_RESULT_DIR = ROOT / "build" / "test-results" / "net-socket-host"
@@ -320,6 +322,11 @@ TLS_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_tls_host.c",
     ROOT / "src" / "core" / "tls.c",
     ROOT / "src" / "core" / "log.c",
+    ROOT / "src" / "core" / "string.c",
+)
+TLS_CLIENT_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_tls_client_host.c",
+    ROOT / "src" / "core" / "tls_client.c",
     ROOT / "src" / "core" / "string.c",
 )
 HTTP_SOURCE_FILES = (
@@ -753,6 +760,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return TCP_RESULT_DIR, TCP_BINARY, TCP_SOURCE_FILES, "tcp-host"
     if case_id == "host:security:tls":
         return TLS_RESULT_DIR, TLS_BINARY, TLS_SOURCE_FILES, "tls-host"
+    if case_id == "host:security:tls-client":
+        return (TLS_CLIENT_RESULT_DIR, TLS_CLIENT_BINARY,
+                TLS_CLIENT_SOURCE_FILES, "tls-client-host")
     if case_id == "host:network:http":
         return HTTP_RESULT_DIR, HTTP_BINARY, HTTP_SOURCE_FILES, "http-host"
     if case_id == "host:network:socket":
@@ -1042,7 +1052,8 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:network:arp", "host:network:icmp",
                                  "host:network:dns", "host:network:dhcp",
                                  "host:network:ethernet", "host:network:tcp",
-                                 "host:security:tls", "host:network:http",
+                                 "host:security:tls", "host:security:tls-client",
+                                 "host:network:http",
                                  "host:network:socket", "host:network:socket-runtime",
                                  "host:memory:vma",
                                  "host:memory:paging", "host:memory:memory",
