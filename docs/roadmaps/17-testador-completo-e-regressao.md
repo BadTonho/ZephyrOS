@@ -1359,6 +1359,22 @@ pendente.
   fechamento integral, o gate estrito e a validacao TST7 completa continuam
   pendentes.
 
+- Incremento Drivers/usb_msc concluido em 2026-09-02: foi criado o caso
+  host-only `host:drivers:usb-msc` com transporte BOT/SCSI e registro de
+  bloco somente leitura simulados. A fixture exercitou inquiry, TUR,
+  capacity, READ10, leituras de bloco, filtros de candidatos, limites,
+  retry, reset recovery, CSW corrompido, falhas de controle e registro,
+  indisponibilidade e recuperacao. A evidencia instrumentada resolveu as 25
+  superficies pendentes de `src/drivers/usb_msc.c`, sem enderecos
+  desconhecidos ou ambiguos. O catalogo foi sincronizado e validado com
+  7.196 superficies, 4.206 `COVERED`, 2.990 `PENDING` e 91 casos. Foram
+  executados `make q3check`, `make clean`, `make`, `make test-usb-msc-host`,
+  `make catalog-test` e os 30 testes unitarios dos runners; todos passaram.
+  O `make test-tst7-quick` confirmou todas as suites host-only, com resultado
+  geral `BLOCKED` somente em `test-tst3-sanitize` pela indisponibilidade/
+  permissao do runtime LLVM. O fechamento integral, o gate estrito e a
+  validacao TST7 completa continuam pendentes.
+
 - Incremento Core/usb_manager concluido em 2026-09-02: foi criado o caso
   host-only `host:core:usb-manager` com fixtures estaticos de PCI, UHCI, EHCI,
   MSC e HID. A fixture exercitou inventario de controladores, estados de

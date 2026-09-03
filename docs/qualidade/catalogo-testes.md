@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7196**
-- Casos de teste: **90**
+- Casos de teste: **91**
 - Superfícies aposentadas: **22**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4182 |
+| `COVERED` | 4206 |
 | `MANUAL` | 0 |
-| `PENDING` | 3014 |
+| `PENDING` | 2990 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 90 |
+| `AUTOMATED` | 91 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -1020,14 +1020,14 @@
 | `api:src/include/drivers/usb_hid.h:usb_hid_refresh` | `src/include/drivers/usb_hid.h` | `usb_hid_refresh` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/usb_hid.h:usb_hid_state_name` | `src/include/drivers/usb_hid.h` | `usb_hid_state_name` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/usb_hid.h:usb_hid_validate_state` | `src/include/drivers/usb_hid.h` | `usb_hid_validate_state` | `drivers` | `COVERED` | 4 |
-| `api:src/include/drivers/usb_msc.h:usb_msc_find` | `src/include/drivers/usb_msc.h` | `usb_msc_find` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/usb_msc.h:usb_msc_get_at` | `src/include/drivers/usb_msc.h` | `usb_msc_get_at` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/usb_msc.h:usb_msc_get_count` | `src/include/drivers/usb_msc.h` | `usb_msc_get_count` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/usb_msc.h:usb_msc_init` | `src/include/drivers/usb_msc.h` | `usb_msc_init` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/usb_msc.h:usb_msc_is_active` | `src/include/drivers/usb_msc.h` | `usb_msc_is_active` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/usb_msc.h:usb_msc_refresh` | `src/include/drivers/usb_msc.h` | `usb_msc_refresh` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/usb_msc.h:usb_msc_state_name` | `src/include/drivers/usb_msc.h` | `usb_msc_state_name` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/usb_msc.h:usb_msc_validate_state` | `src/include/drivers/usb_msc.h` | `usb_msc_validate_state` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/usb_msc.h:usb_msc_find` | `src/include/drivers/usb_msc.h` | `usb_msc_find` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/usb_msc.h:usb_msc_get_at` | `src/include/drivers/usb_msc.h` | `usb_msc_get_at` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/usb_msc.h:usb_msc_get_count` | `src/include/drivers/usb_msc.h` | `usb_msc_get_count` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/usb_msc.h:usb_msc_init` | `src/include/drivers/usb_msc.h` | `usb_msc_init` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/usb_msc.h:usb_msc_is_active` | `src/include/drivers/usb_msc.h` | `usb_msc_is_active` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/usb_msc.h:usb_msc_refresh` | `src/include/drivers/usb_msc.h` | `usb_msc_refresh` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/usb_msc.h:usb_msc_state_name` | `src/include/drivers/usb_msc.h` | `usb_msc_state_name` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/usb_msc.h:usb_msc_validate_state` | `src/include/drivers/usb_msc.h` | `usb_msc_validate_state` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/vesa.h:vesa_clear` | `src/include/drivers/vesa.h` | `vesa_clear` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/vesa.h:vesa_disable` | `src/include/drivers/vesa.h` | `vesa_disable` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/vesa.h:vesa_draw_bitmap` | `src/include/drivers/vesa.h` | `vesa_draw_bitmap` | `drivers` | `COVERED` | 4 |
@@ -4541,32 +4541,32 @@
 | `c:src/drivers/usb_hid.c:usb_hid_refresh` | `src/drivers/usb_hid.c` | `usb_hid_refresh` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/usb_hid.c:usb_hid_state_name` | `src/drivers/usb_hid.c` | `usb_hid_state_name` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/usb_hid.c:usb_hid_validate_state` | `src/drivers/usb_hid.c` | `usb_hid_validate_state` | `drivers` | `COVERED` | 4 |
-| `c:src/drivers/usb_msc.c:msc_block_read` | `src/drivers/usb_msc.c` | `msc_block_read` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_msc.c:msc_block_submit` | `src/drivers/usb_msc.c` | `msc_block_submit` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_msc.c:msc_bot_command` | `src/drivers/usb_msc.c` | `msc_bot_command` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_msc.c:msc_bot_command_once` | `src/drivers/usb_msc.c` | `msc_bot_command_once` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_msc.c:msc_build_block_id` | `src/drivers/usb_msc.c` | `msc_build_block_id` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_msc.c:msc_bulk_in` | `src/drivers/usb_msc.c` | `msc_bulk_in` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_msc.c:msc_bulk_out` | `src/drivers/usb_msc.c` | `msc_bulk_out` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_msc.c:msc_copy_field` | `src/drivers/usb_msc.c` | `msc_copy_field` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_msc.c:msc_is_candidate` | `src/drivers/usb_msc.c` | `msc_is_candidate` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_msc.c:msc_prepare_record` | `src/drivers/usb_msc.c` | `msc_prepare_record` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_msc.c:msc_read_u32_be` | `src/drivers/usb_msc.c` | `msc_read_u32_be` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_msc.c:msc_record_index` | `src/drivers/usb_msc.c` | `msc_record_index` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_msc.c:msc_register_device` | `src/drivers/usb_msc.c` | `msc_register_device` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_msc.c:msc_reset_recovery` | `src/drivers/usb_msc.c` | `msc_reset_recovery` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_msc.c:msc_scsi_prepare` | `src/drivers/usb_msc.c` | `msc_scsi_prepare` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_msc.c:msc_scsi_read_sector` | `src/drivers/usb_msc.c` | `msc_scsi_read_sector` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_msc.c:msc_text_equal` | `src/drivers/usb_msc.c` | `msc_text_equal` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_msc.c:msc_write_u32_be` | `src/drivers/usb_msc.c` | `msc_write_u32_be` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_msc.c:usb_msc_find` | `src/drivers/usb_msc.c` | `usb_msc_find` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_msc.c:usb_msc_get_at` | `src/drivers/usb_msc.c` | `usb_msc_get_at` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_msc.c:usb_msc_get_count` | `src/drivers/usb_msc.c` | `usb_msc_get_count` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_msc.c:usb_msc_init` | `src/drivers/usb_msc.c` | `usb_msc_init` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_msc.c:usb_msc_is_active` | `src/drivers/usb_msc.c` | `usb_msc_is_active` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_msc.c:usb_msc_refresh` | `src/drivers/usb_msc.c` | `usb_msc_refresh` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/usb_msc.c:msc_block_read` | `src/drivers/usb_msc.c` | `msc_block_read` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_msc.c:msc_block_submit` | `src/drivers/usb_msc.c` | `msc_block_submit` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_msc.c:msc_bot_command` | `src/drivers/usb_msc.c` | `msc_bot_command` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_msc.c:msc_bot_command_once` | `src/drivers/usb_msc.c` | `msc_bot_command_once` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_msc.c:msc_build_block_id` | `src/drivers/usb_msc.c` | `msc_build_block_id` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_msc.c:msc_bulk_in` | `src/drivers/usb_msc.c` | `msc_bulk_in` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_msc.c:msc_bulk_out` | `src/drivers/usb_msc.c` | `msc_bulk_out` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_msc.c:msc_copy_field` | `src/drivers/usb_msc.c` | `msc_copy_field` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_msc.c:msc_is_candidate` | `src/drivers/usb_msc.c` | `msc_is_candidate` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_msc.c:msc_prepare_record` | `src/drivers/usb_msc.c` | `msc_prepare_record` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_msc.c:msc_read_u32_be` | `src/drivers/usb_msc.c` | `msc_read_u32_be` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_msc.c:msc_record_index` | `src/drivers/usb_msc.c` | `msc_record_index` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_msc.c:msc_register_device` | `src/drivers/usb_msc.c` | `msc_register_device` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_msc.c:msc_reset_recovery` | `src/drivers/usb_msc.c` | `msc_reset_recovery` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_msc.c:msc_scsi_prepare` | `src/drivers/usb_msc.c` | `msc_scsi_prepare` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_msc.c:msc_scsi_read_sector` | `src/drivers/usb_msc.c` | `msc_scsi_read_sector` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_msc.c:msc_text_equal` | `src/drivers/usb_msc.c` | `msc_text_equal` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_msc.c:msc_write_u32_be` | `src/drivers/usb_msc.c` | `msc_write_u32_be` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_msc.c:usb_msc_find` | `src/drivers/usb_msc.c` | `usb_msc_find` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_msc.c:usb_msc_get_at` | `src/drivers/usb_msc.c` | `usb_msc_get_at` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_msc.c:usb_msc_get_count` | `src/drivers/usb_msc.c` | `usb_msc_get_count` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_msc.c:usb_msc_init` | `src/drivers/usb_msc.c` | `usb_msc_init` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_msc.c:usb_msc_is_active` | `src/drivers/usb_msc.c` | `usb_msc_is_active` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_msc.c:usb_msc_refresh` | `src/drivers/usb_msc.c` | `usb_msc_refresh` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/usb_msc.c:usb_msc_state_name` | `src/drivers/usb_msc.c` | `usb_msc_state_name` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/usb_msc.c:usb_msc_validate_state` | `src/drivers/usb_msc.c` | `usb_msc_validate_state` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/usb_msc.c:usb_msc_validate_state` | `src/drivers/usb_msc.c` | `usb_msc_validate_state` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/vesa.c:memset_simple` | `src/drivers/vesa.c` | `memset_simple` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/vesa.c:vesa_accumulate_region` | `src/drivers/vesa.c` | `vesa_accumulate_region` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/vesa.c:vesa_clear` | `src/drivers/vesa.c` | `vesa_clear` | `drivers` | `COVERED` | 2 |
@@ -7303,6 +7303,7 @@
 | `host:core:workqueue` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fixture de workqueue com espera controlada | autoteste, callbacks, filas, prioridades, limites e limpeza validos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico da workqueue e callbacks falsos no processo host | trabalhos destruidos, filas vazias, fallback restaurado e artefatos preservados |
 | `host:drivers:font` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inicializar o driver de fonte e consultar as dimensoes publicadas | font_init e idempotente e as dimensoes publicadas permanecem 8x16 | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabela estatica de fontes e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:rtc-status` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | consultar o estado inicial do RTC com destinos valido e nulo | rtc_get_status rejeita destino nulo e publica snapshot inicial estavel | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do RTC e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:drivers:usb-hid` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enumerar teclados e mouses UHCI, enviar relatorios Boot, publicar eventos de entrada e exercitar refresh, remocao e limites | parsing valido, rejeicao de reports corrompidos, estados, contadores, cancelamento e indisponibilidade preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente dispositivos USB HID e callbacks de entrada estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:memory:memory` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar inicializacao E820, alocacao e liberacao PMM por zona, heap, alinhamento e estatisticas | PMM e heap rejeitam limites invalidos, contabilizam falhas e restauram todas as paginas e blocos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente mapa E820, bitmap PMM e heap estaticos no processo host | paginas e blocos liberados, estatisticas restauradas e artefatos preservados |
 | `host:memory:paging` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar init, mapeamento, diretorios de usuario, faults lazy, copias, limites e cleanup com PMM falso | o paging respeita os limites de usuario, rejeita estados invalidos e restaura os recursos da fixture | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente diretorios, tabelas e paginas estaticos no processo host | diretorios e tabelas liberados, pagina de usuario coletada e artefatos preservados |
 | `host:memory:slab-metadata` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar inicializacao, limites, metadados, estatisticas e limpeza do registrador SLAB sem alocar paginas reais | estado publicado, informacoes por indice, duplicidade e limpeza respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas de metadados no processo host; nenhuma pagina real e alocada | cache temporario destruido e manifesto, logs e cobertura preservados |
@@ -7371,7 +7372,7 @@
 | `qemu:tst6:stress:kernel` | `qemu` | `tst6` | `qemu:tst6:stress:kernel` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | paging, heap, SLAB, processos e threads estao READY | repetir ciclos deterministas de memoria e execucao sob teto obrigatorio | invariantes estaveis permanecem iguais e a primeira falha interrompe a suite | overflow, vazamento, deadlock, timeout, protocolo ou QEMU | alocacoes e objetos temporarios de cada ciclo em snapshot | devolver paginas, destruir objetos e registrar seed e iteracao |
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
-| `host:drivers:usb-hid` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enumerar teclados e mouses UHCI, enviar relatorios Boot, publicar eventos de entrada e exercitar refresh, remocao e limites | parsing valido, rejeicao de reports corrompidos, estados, contadores, cancelamento e indisponibilidade preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente dispositivos USB HID e callbacks de entrada estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:drivers:usb-msc` | `host` | `host-only-readonly` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enumerar dispositivo MSC UHCI, executar inquiry, TUR, capacity e READ10 simulados, validar block readonly e exercitar recuperacao | protocolo BOT/SCSI, identificadores, capacidade, leituras, estados, limites e falhas preservam o contrato sem escrita | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente transporte USB MSC, registro de bloco e buffers estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -8890,30 +8891,6 @@
 - `c:src/drivers/uhci.c:uhci_wait_transfer`
 - `c:src/drivers/usb_hid.c:usb_hid_kind_name`
 - `c:src/drivers/usb_hid.c:usb_hid_state_name`
-- `c:src/drivers/usb_msc.c:msc_block_read`
-- `c:src/drivers/usb_msc.c:msc_block_submit`
-- `c:src/drivers/usb_msc.c:msc_bot_command`
-- `c:src/drivers/usb_msc.c:msc_bot_command_once`
-- `c:src/drivers/usb_msc.c:msc_build_block_id`
-- `c:src/drivers/usb_msc.c:msc_bulk_in`
-- `c:src/drivers/usb_msc.c:msc_bulk_out`
-- `c:src/drivers/usb_msc.c:msc_copy_field`
-- `c:src/drivers/usb_msc.c:msc_is_candidate`
-- `c:src/drivers/usb_msc.c:msc_prepare_record`
-- `c:src/drivers/usb_msc.c:msc_read_u32_be`
-- `c:src/drivers/usb_msc.c:msc_record_index`
-- `c:src/drivers/usb_msc.c:msc_register_device`
-- `c:src/drivers/usb_msc.c:msc_reset_recovery`
-- `c:src/drivers/usb_msc.c:msc_scsi_prepare`
-- `c:src/drivers/usb_msc.c:msc_scsi_read_sector`
-- `c:src/drivers/usb_msc.c:msc_text_equal`
-- `c:src/drivers/usb_msc.c:msc_write_u32_be`
-- `c:src/drivers/usb_msc.c:usb_msc_find`
-- `c:src/drivers/usb_msc.c:usb_msc_get_at`
-- `c:src/drivers/usb_msc.c:usb_msc_get_count`
-- `c:src/drivers/usb_msc.c:usb_msc_init`
-- `c:src/drivers/usb_msc.c:usb_msc_is_active`
-- `c:src/drivers/usb_msc.c:usb_msc_refresh`
 - `c:src/drivers/usb_msc.c:usb_msc_state_name`
 - `c:src/drivers/vesa.c:memset_simple`
 - `c:src/drivers/vesa.c:vesa_disable`
