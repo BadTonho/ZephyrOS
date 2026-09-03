@@ -4672,3 +4672,17 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   todos passaram. O catalogo registra 7.198 superficies, 4.331 `COVERED`,
   2.867 `PENDING` e 108 casos. O fechamento integral, o gate estrito e a
   validacao TST7 completa continuam pendentes.
+
+- Incremento Shell/VFS concluido em 2026-09-03: foi criado o caso host-only
+  `host:shell:commands-vfs` e o alvo `make test-shell-commands-vfs-host`. A
+  fixture exercitou `grep` com entrada fragmentada, comparacao sem diferenca
+  de maiusculas, argumentos invalidos, falha de leitura/escrita e linha acima
+  do limite; tambem validou `pipetest` em sucesso, erro e argumento invalido.
+  O relatorio instrumentado terminou `PASS`, com 23 superficies resolvidas e
+  nenhum endereco desconhecido ou ambiguo; as seis funcoes de
+  `src/shell/shell_commands_vfs.c` foram exercitadas por chamadas reais. Foram
+  executados `make test-shell-commands-vfs-host`, a sincronizacao e
+  renderizacao do catalogo, `make catalog-test` e os testes dos runners. O
+  catalogo registra 7.198 superficies, 4.337 `COVERED`, 2.861 `PENDING` e 109
+  casos. O fechamento integral, o gate estrito e a validacao TST7 completa
+  continuam pendentes.

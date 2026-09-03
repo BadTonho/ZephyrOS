@@ -2760,6 +2760,64 @@
       "evidence": "make test-gui-host PASS com temas, texto nativo/escalado, medicao e primitivas de widgets no relatorio instrumentado"
     },
     {
+      "id": "shell-commands-vfs-host-dynamic",
+      "domain": "shell-vfs",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:shell:commands-vfs"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/shell-commands-vfs-host/coverage.json",
+      "coverage_sources": [
+        "src/shell/shell_commands_vfs.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:shell:commands-vfs",
+        "scenario": "Contrato host-only dos comandos grep e pipetest do Shell",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "pipeline-video-stub"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "validar grep com entrada fragmentada, comparacao sem diferenca de maiusculas, limites, erros de pipeline e o autoteste pipetest",
+        "expected": "linhas correspondentes sao encaminhadas, entradas invalidas e limites exibem diagnostico e pipetest preserva resultado e codigo canonico",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente buffers estaticos de entrada, saida e logs falsos no processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": [
+          "c:src/shell/shell_commands_vfs.c:cmd_grep",
+          "c:src/shell/shell_commands_vfs.c:cmd_pipetest",
+          "c:src/shell/shell_commands_vfs.c:shell_dispatch_cmd_grep",
+          "c:src/shell/shell_commands_vfs.c:shell_dispatch_cmd_pipetest",
+          "c:src/shell/shell_commands_vfs.c:shell_grep_contains",
+          "c:src/shell/shell_commands_vfs.c:shell_grep_emit"
+        ],
+        "tags": [
+          "host",
+          "shell",
+          "vfs",
+          "pipeline",
+          "grep",
+          "limits",
+          "coverage"
+        ]
+      },
+      "evidence": "make test-shell-commands-vfs-host PASS com grep, pipetest, erros de pipeline e limites no relatorio instrumentado"
+    },
+    {
       "id": "usb-transport-host-dynamic",
       "domain": "core-usb",
       "owner": "quality",

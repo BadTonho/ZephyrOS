@@ -140104,9 +140104,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-vfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_vfs.c:cmd_pipetest",
@@ -140122,9 +140125,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-vfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_vfs.c:shell_dispatch_cmd_grep",
@@ -140140,9 +140146,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-vfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_vfs.c:shell_dispatch_cmd_pipetest",
@@ -140158,9 +140167,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-vfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_vfs.c:shell_grep_contains",
@@ -140176,9 +140188,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-vfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_vfs.c:shell_grep_emit",
@@ -140194,9 +140209,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-vfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_wifi.c:shell_dispatch_cmd_wifi",
@@ -167465,6 +167483,47 @@
         "tst6",
         "stress",
         "storage"
+      ]
+    },
+    {
+      "id": "host:shell:commands-vfs",
+      "scenario": "Contrato host-only dos comandos grep e pipetest do Shell",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "hardware": "pipeline-video-stub"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "validar grep com entrada fragmentada, comparacao sem diferenca de maiusculas, limites, erros de pipeline e o autoteste pipetest",
+      "expected": "linhas correspondentes sao encaminhadas, entradas invalidas e limites exibem diagnostico e pipetest preserva resultado e codigo canonico",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente buffers estaticos de entrada, saida e logs falsos no processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "c:src/shell/shell_commands_vfs.c:cmd_grep",
+        "c:src/shell/shell_commands_vfs.c:cmd_pipetest",
+        "c:src/shell/shell_commands_vfs.c:shell_dispatch_cmd_grep",
+        "c:src/shell/shell_commands_vfs.c:shell_dispatch_cmd_pipetest",
+        "c:src/shell/shell_commands_vfs.c:shell_grep_contains",
+        "c:src/shell/shell_commands_vfs.c:shell_grep_emit"
+      ],
+      "tags": [
+        "host",
+        "shell",
+        "vfs",
+        "pipeline",
+        "grep",
+        "limits",
+        "coverage"
       ]
     }
   ],
