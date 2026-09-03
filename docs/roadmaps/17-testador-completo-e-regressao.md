@@ -1511,6 +1511,24 @@ pendente.
   `PENDING` e 115 casos. O fechamento integral, o gate estrito e a validacao
   TST7 completa continuam pendentes.
 
+- Incremento Drivers/ACPI concluido em 2026-09-03: foi criado o caso host-only
+  `host:drivers:acpi` e o alvo `make test-acpi-host`. A fixture usa firmware,
+  mapa E820, portas I/O e halt falsos para exercitar RSDP, RSDT/XSDT, FADT,
+  MADT, FACS, AML `_S5_`, consultas, checksums, tabelas corrompidas e rotas
+  de energia sem acesso a hardware real. O relatorio instrumentado
+  `build/test-results/acpi-host/coverage.json` terminou `PASS`, observou 88
+  enderecos sem desconhecidos ou ambiguos e resolveu as 56 superficies
+  pendentes originais de `src/drivers/acpi.c`, alem dos dois seams exclusivos
+  do build host. Tambem foi corrigida a sincronizacao para preservar os
+  vinculos anteriores quando um relatorio dinamico ainda nao esta disponivel
+  depois de `make clean`, sem promover associacoes novas. Foram executados
+  `make q3check`, `make clean`, `make`, `make test-acpi-host` apos o build
+  limpo, `make catalog-test`, os testes unitarios do catalogo e dos runners,
+  `git diff --check` e a verificacao de processos residuais; todos passaram.
+  O catalogo registra 7.200 superficies, 4.463 `COVERED`, 2.737 `PENDING` e
+  116 casos. O fechamento integral, o gate estrito e a validacao TST7 completa
+  continuam pendentes.
+
 - Incremento Shell/hosted concluido em 2026-09-03: foi criado o caso
   host-only `host:shell:hosted` e o alvo `make test-shell-hosted-host` com
   Window Manager, terminal e mouse falsos. A fixture exercitou modo Classic,

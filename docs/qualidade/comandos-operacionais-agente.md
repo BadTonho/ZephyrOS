@@ -621,6 +621,15 @@ fica em `build/test-results/video-host/`:
 make test-video-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-acpi-host` exercita a descoberta ACPI com firmware e mapa E820
+falsos, cobrindo RSDP, RSDT/XSDT, FADT, MADT, FACS, AML `_S5_`, consultas,
+checksums, tabelas corrompidas e rotas de energia sem I/O real. O relatorio
+fica em `build/test-results/acpi-host/`:
+
+```text
+make test-acpi-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O caso `test-shell-command-utils-host` exercita os utilitarios de comandos do
 Shell com parsing de tokens e argumentos, comparacao de subcomandos,
 normalizacao para maiusculas, conversao numerica, limites, entradas invalidas
