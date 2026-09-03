@@ -1375,6 +1375,17 @@ pendente.
   permissao do runtime LLVM. O fechamento integral, o gate estrito e a
   validacao TST7 completa continuam pendentes.
 
+- Incremento Storage/devfs concluido em 2026-09-02: foi criado o caso
+  host-only `host:storage:devfs` com ATA e speaker simulados, sem VFS ou
+  hardware real. A fixture exercitou inicializacao idempotente, registro,
+  listagem, lookup, permissoes, dispositivos null/zero, speaker, hda,
+  leituras, seeks, ioctl, sincronizacao, caminhos indisponiveis e invariantes.
+  O relatorio instrumentado terminou `PASS`, resolveu as seis superficies
+  pendentes de `src/fs/devfs.c` e nao registrou enderecos desconhecidos ou
+  ambiguos. O catalogo foi sincronizado e validado com 7.196 superficies,
+  4.212 `COVERED`, 2.984 `PENDING` e 92 casos. O fechamento integral, o gate
+  estrito e a validacao TST7 completa continuam pendentes.
+
 - Incremento Core/usb_manager concluido em 2026-09-02: foi criado o caso
   host-only `host:core:usb-manager` com fixtures estaticos de PCI, UHCI, EHCI,
   MSC e HID. A fixture exercitou inventario de controladores, estados de

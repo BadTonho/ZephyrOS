@@ -778,6 +778,48 @@
       "evidence": "make test-fs-host PASS com fixture FAT32, paths legacy e storage, cursores, operacoes atomicas, streaming e erros canonicos no relatorio instrumentado"
     },
     {
+      "id": "devfs-host-dynamic",
+      "domain": "storage-devfs",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:storage:devfs"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/devfs-host/coverage.json",
+      "coverage_sources": [
+        "src/fs/devfs.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-devfs-host PASS com ATA e speaker simulados, registro e listagem de dispositivos, leituras, seeks, ioctl, permissoes, caminhos indisponiveis e invariantes no relatorio instrumentado",
+      "case_definition": {
+        "id": "host:storage:devfs",
+        "scenario": "Contrato host-only da camada de dispositivos virtuais",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "compilar e executar dispositivos null, zero, tty, speaker e hda com transporte estatico",
+        "expected": "registro, permissoes, leituras, seeks, ioctl, indisponibilidade e invariantes preservam o contrato sem hardware real",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente estruturas devfs e buffers estaticos do processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": []
+      }
+    },
+    {
       "id": "harness-apps-qemu-observed",
       "domain": "test-harness",
       "owner": "quality",

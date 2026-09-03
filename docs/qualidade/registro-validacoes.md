@@ -4444,3 +4444,17 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   unitarios dos runners passaram, e `make test-tst7-quick` confirmou todas as
   suites host-only; o resultado geral permaneceu `BLOCKED` somente em
   `test-tst3-sanitize` pela indisponibilidade/permissao do runtime LLVM.
+
+- Concluida em: 2026-09-02
+
+  Incremento Storage/devfs: foi criado o caso host-only
+  `host:storage:devfs` e o alvo `make test-devfs-host` com ATA e speaker
+  simulados, sem VFS ou hardware real. A fixture exercitou inicializacao
+  idempotente, registro, listagem, lookup, permissoes, dispositivos null/zero,
+  speaker, hda, leituras, seeks, ioctl, sincronizacao, caminhos indisponiveis
+  e invariantes. A execucao instrumentada terminou `PASS`, resolveu as seis
+  superficies pendentes de `src/fs/devfs.c` e nao registrou enderecos
+  desconhecidos ou ambiguos. O catalogo foi sincronizado e validado com 7.196
+  superficies, 4.212 `COVERED`, 2.984 `PENDING` e 92 casos. Nenhum hardware,
+  VFS real ou armazenamento real foi acessado; o fechamento integral, o gate
+  estrito e a validacao TST7 completa continuam pendentes.

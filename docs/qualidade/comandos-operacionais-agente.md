@@ -376,6 +376,16 @@ indisponibilidade. Nenhuma escrita real e feita; o relatorio fica em
 make test-usb-msc-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-devfs-host` exercita a camada de dispositivos virtuais com ATA e
+speaker simulados: inicializacao, registro, listagem, lookup, permissoes,
+null/zero, speaker, hda, leituras, seeks, ioctl, sincronizacao e caminhos
+indisponiveis. Nenhum hardware, VFS real ou armazenamento real e acessado; o
+relatorio fica em `build/test-results/devfs-host/`:
+
+```text
+make test-devfs-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O caso `test-shell-input-host` exercita a entrada do Shell com terminal,
 historico, navegacao para cima/baixo, edicao, teclas de rolagem, cancelamento,
 bloqueio, modificadores e limite do buffer. A fixture usa apenas video,

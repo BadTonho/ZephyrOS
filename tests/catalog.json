@@ -12923,6 +12923,7 @@
         "host:network:udp",
         "host:security:tls",
         "host:storage:block",
+        "host:storage:devfs",
         "host:storage:fat12",
         "host:storage:fat32",
         "host:storage:file-index",
@@ -12981,6 +12982,7 @@
         "host:network:tcp",
         "host:network:udp",
         "host:security:tls",
+        "host:storage:devfs",
         "host:storage:vfs",
         "host:tst3:string-compress",
         "qemu:tst5:apps",
@@ -23898,11 +23900,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:devfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/fs/devfs.h:devfs_get_status",
@@ -23920,11 +23923,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:devfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/fs/devfs.h:devfs_init",
@@ -23942,11 +23946,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:devfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/fs/devfs.h:devfs_is_ready",
@@ -23964,11 +23969,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:devfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/fs/devfs.h:devfs_list",
@@ -23986,11 +23992,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:devfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/fs/devfs.h:devfs_lookup",
@@ -24008,11 +24015,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:devfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/fs/devfs.h:devfs_open_file",
@@ -24030,11 +24038,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:devfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/fs/devfs.h:devfs_self_test",
@@ -24052,11 +24061,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:devfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/fs/devfs.h:devfs_validate_state",
@@ -24074,11 +24084,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:devfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/fs/fat12.h:fat12_atomic_delete_file_in_dir",
@@ -67099,6 +67110,7 @@
         "host:network:udp",
         "host:security:tls",
         "host:storage:block",
+        "host:storage:devfs",
         "host:storage:fat12",
         "host:storage:fat32",
         "host:storage:file-index",
@@ -67157,6 +67169,7 @@
         "host:network:tcp",
         "host:network:udp",
         "host:security:tls",
+        "host:storage:devfs",
         "host:storage:vfs",
         "host:tst3:string-compress",
         "qemu:tst5:apps",
@@ -103168,11 +103181,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:devfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/devfs.c:devfs_copy_text",
@@ -103190,11 +103204,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:devfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/devfs.c:devfs_find_hda",
@@ -103212,11 +103227,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:devfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/devfs.c:devfs_generic_close",
@@ -103234,11 +103250,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:devfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/devfs.c:devfs_generic_open",
@@ -103256,11 +103273,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:devfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/devfs.c:devfs_get_status",
@@ -103278,11 +103296,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:devfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/devfs.c:devfs_hda_capacity",
@@ -103300,11 +103319,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:devfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/devfs.c:devfs_hda_lseek",
@@ -103322,11 +103342,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:devfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/devfs.c:devfs_hda_read",
@@ -103344,11 +103365,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:devfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/devfs.c:devfs_hda_sync",
@@ -103366,11 +103388,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:devfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/devfs.c:devfs_init",
@@ -103386,9 +103409,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:devfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/devfs.c:devfs_is_ready",
@@ -103404,9 +103430,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:devfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/devfs.c:devfs_list",
@@ -103424,11 +103453,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:devfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/devfs.c:devfs_lookup",
@@ -103446,11 +103476,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:devfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/devfs.c:devfs_metric",
@@ -103468,11 +103499,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:devfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/devfs.c:devfs_null_read",
@@ -103534,11 +103566,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:devfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/devfs.c:devfs_operations",
@@ -103556,10 +103589,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:devfs",
         "qemu:tst4:storage-vfs"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/devfs.c:devfs_path_node",
@@ -103577,11 +103611,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:devfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/devfs.c:devfs_self_test",
@@ -103621,11 +103656,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:devfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/devfs.c:devfs_speaker_write",
@@ -103643,11 +103679,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:devfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/devfs.c:devfs_test_count",
@@ -103687,11 +103724,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:devfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/devfs.c:devfs_unavailable_ioctl",
@@ -103707,9 +103745,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:devfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/devfs.c:devfs_unavailable_lseek",
@@ -103725,9 +103766,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:devfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/devfs.c:devfs_unavailable_read",
@@ -103743,9 +103787,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:devfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/devfs.c:devfs_unavailable_sync",
@@ -103763,11 +103810,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:devfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/devfs.c:devfs_unavailable_write",
@@ -103783,9 +103831,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:devfs"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/devfs.c:devfs_validate_state",
@@ -103803,11 +103854,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:devfs",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/devfs.c:devfs_zero_read",
@@ -152871,6 +152923,72 @@
       ]
     },
     {
+      "id": "host:drivers:usb-msc",
+      "scenario": "Armazenamento USB Mass Storage host-only com transporte BOT simulado",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only-readonly",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "enumerar dispositivo MSC UHCI, executar inquiry, TUR, capacity e READ10 simulados, validar block readonly e exercitar recuperacao",
+      "expected": "protocolo BOT/SCSI, identificadores, capacidade, leituras, estados, limites e falhas preservam o contrato sem escrita",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente transporte USB MSC, registro de bloco e buffers estaticos no processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/drivers/usb_msc.h:usb_msc_find",
+        "api:src/include/drivers/usb_msc.h:usb_msc_get_at",
+        "api:src/include/drivers/usb_msc.h:usb_msc_get_count",
+        "api:src/include/drivers/usb_msc.h:usb_msc_init",
+        "api:src/include/drivers/usb_msc.h:usb_msc_is_active",
+        "api:src/include/drivers/usb_msc.h:usb_msc_refresh",
+        "api:src/include/drivers/usb_msc.h:usb_msc_state_name",
+        "api:src/include/drivers/usb_msc.h:usb_msc_validate_state",
+        "c:src/drivers/usb_msc.c:msc_block_read",
+        "c:src/drivers/usb_msc.c:msc_block_submit",
+        "c:src/drivers/usb_msc.c:msc_bot_command",
+        "c:src/drivers/usb_msc.c:msc_bot_command_once",
+        "c:src/drivers/usb_msc.c:msc_build_block_id",
+        "c:src/drivers/usb_msc.c:msc_bulk_in",
+        "c:src/drivers/usb_msc.c:msc_bulk_out",
+        "c:src/drivers/usb_msc.c:msc_copy_field",
+        "c:src/drivers/usb_msc.c:msc_is_candidate",
+        "c:src/drivers/usb_msc.c:msc_prepare_record",
+        "c:src/drivers/usb_msc.c:msc_read_u32_be",
+        "c:src/drivers/usb_msc.c:msc_record_index",
+        "c:src/drivers/usb_msc.c:msc_register_device",
+        "c:src/drivers/usb_msc.c:msc_reset_recovery",
+        "c:src/drivers/usb_msc.c:msc_scsi_prepare",
+        "c:src/drivers/usb_msc.c:msc_scsi_read_sector",
+        "c:src/drivers/usb_msc.c:msc_text_equal",
+        "c:src/drivers/usb_msc.c:msc_write_u32_be",
+        "c:src/drivers/usb_msc.c:usb_msc_find",
+        "c:src/drivers/usb_msc.c:usb_msc_get_at",
+        "c:src/drivers/usb_msc.c:usb_msc_get_count",
+        "c:src/drivers/usb_msc.c:usb_msc_init",
+        "c:src/drivers/usb_msc.c:usb_msc_is_active",
+        "c:src/drivers/usb_msc.c:usb_msc_refresh",
+        "c:src/drivers/usb_msc.c:usb_msc_validate_state"
+      ],
+      "tags": [
+        "host",
+        "drivers",
+        "usb",
+        "msc",
+        "readonly",
+        "coverage"
+      ]
+    },
+    {
       "id": "host:memory:memory",
       "scenario": "Contrato host-only de memoria com PMM, heap e estatisticas",
       "owner": "quality",
@@ -165917,12 +166035,12 @@
       ]
     },
     {
-      "id": "host:drivers:usb-msc",
-      "scenario": "Armazenamento USB Mass Storage host-only com transporte BOT simulado",
+      "id": "host:storage:devfs",
+      "scenario": "Contrato host-only da camada de dispositivos virtuais",
       "owner": "quality",
       "layer": "host",
       "executor": "host",
-      "profile": "host-only-readonly",
+      "profile": "host-only",
       "timeout_seconds": 120,
       "heartbeat_timeout_seconds": 1,
       "isolation": "fixture",
@@ -165932,54 +166050,53 @@
         "warnings": "error"
       },
       "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "enumerar dispositivo MSC UHCI, executar inquiry, TUR, capacity e READ10 simulados, validar block readonly e exercitar recuperacao",
-      "expected": "protocolo BOT/SCSI, identificadores, capacidade, leituras, estados, limites e falhas preservam o contrato sem escrita",
+      "action": "compilar e executar dispositivos null, zero, tty, speaker e hda com transporte estatico",
+      "expected": "registro, permissoes, leituras, seeks, ioctl, indisponibilidade e invariantes preservam o contrato sem hardware real",
       "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
-      "effects": "somente transporte USB MSC, registro de bloco e buffers estaticos no processo host",
+      "effects": "somente estruturas devfs e buffers estaticos do processo host",
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
       "surface_ids": [
-        "api:src/include/drivers/usb_msc.h:usb_msc_find",
-        "api:src/include/drivers/usb_msc.h:usb_msc_get_at",
-        "api:src/include/drivers/usb_msc.h:usb_msc_get_count",
-        "api:src/include/drivers/usb_msc.h:usb_msc_init",
-        "api:src/include/drivers/usb_msc.h:usb_msc_is_active",
-        "api:src/include/drivers/usb_msc.h:usb_msc_refresh",
-        "api:src/include/drivers/usb_msc.h:usb_msc_state_name",
-        "api:src/include/drivers/usb_msc.h:usb_msc_validate_state",
-        "c:src/drivers/usb_msc.c:msc_block_read",
-        "c:src/drivers/usb_msc.c:msc_block_submit",
-        "c:src/drivers/usb_msc.c:msc_bot_command",
-        "c:src/drivers/usb_msc.c:msc_bot_command_once",
-        "c:src/drivers/usb_msc.c:msc_build_block_id",
-        "c:src/drivers/usb_msc.c:msc_bulk_in",
-        "c:src/drivers/usb_msc.c:msc_bulk_out",
-        "c:src/drivers/usb_msc.c:msc_copy_field",
-        "c:src/drivers/usb_msc.c:msc_is_candidate",
-        "c:src/drivers/usb_msc.c:msc_prepare_record",
-        "c:src/drivers/usb_msc.c:msc_read_u32_be",
-        "c:src/drivers/usb_msc.c:msc_record_index",
-        "c:src/drivers/usb_msc.c:msc_register_device",
-        "c:src/drivers/usb_msc.c:msc_reset_recovery",
-        "c:src/drivers/usb_msc.c:msc_scsi_prepare",
-        "c:src/drivers/usb_msc.c:msc_scsi_read_sector",
-        "c:src/drivers/usb_msc.c:msc_text_equal",
-        "c:src/drivers/usb_msc.c:msc_write_u32_be",
-        "c:src/drivers/usb_msc.c:usb_msc_find",
-        "c:src/drivers/usb_msc.c:usb_msc_get_at",
-        "c:src/drivers/usb_msc.c:usb_msc_get_count",
-        "c:src/drivers/usb_msc.c:usb_msc_init",
-        "c:src/drivers/usb_msc.c:usb_msc_is_active",
-        "c:src/drivers/usb_msc.c:usb_msc_refresh",
-        "c:src/drivers/usb_msc.c:usb_msc_validate_state"
-      ],
-      "tags": [
-        "host",
-        "drivers",
-        "usb",
-        "msc",
-        "readonly",
-        "coverage"
+        "api:src/include/core/string.h:kmemset",
+        "api:src/include/core/string.h:kstrcmp",
+        "api:src/include/fs/devfs.h:devfs_copy_nodes",
+        "api:src/include/fs/devfs.h:devfs_get_status",
+        "api:src/include/fs/devfs.h:devfs_init",
+        "api:src/include/fs/devfs.h:devfs_is_ready",
+        "api:src/include/fs/devfs.h:devfs_list",
+        "api:src/include/fs/devfs.h:devfs_lookup",
+        "api:src/include/fs/devfs.h:devfs_open_file",
+        "api:src/include/fs/devfs.h:devfs_self_test",
+        "api:src/include/fs/devfs.h:devfs_validate_state",
+        "c:src/core/string.c:kmemset",
+        "c:src/core/string.c:kstrcmp",
+        "c:src/fs/devfs.c:devfs_copy_nodes",
+        "c:src/fs/devfs.c:devfs_copy_text",
+        "c:src/fs/devfs.c:devfs_find_hda",
+        "c:src/fs/devfs.c:devfs_generic_close",
+        "c:src/fs/devfs.c:devfs_generic_open",
+        "c:src/fs/devfs.c:devfs_get_status",
+        "c:src/fs/devfs.c:devfs_hda_capacity",
+        "c:src/fs/devfs.c:devfs_hda_lseek",
+        "c:src/fs/devfs.c:devfs_hda_read",
+        "c:src/fs/devfs.c:devfs_hda_sync",
+        "c:src/fs/devfs.c:devfs_init",
+        "c:src/fs/devfs.c:devfs_is_ready",
+        "c:src/fs/devfs.c:devfs_list",
+        "c:src/fs/devfs.c:devfs_lookup",
+        "c:src/fs/devfs.c:devfs_metric",
+        "c:src/fs/devfs.c:devfs_open_file",
+        "c:src/fs/devfs.c:devfs_operations",
+        "c:src/fs/devfs.c:devfs_path_node",
+        "c:src/fs/devfs.c:devfs_speaker_ioctl",
+        "c:src/fs/devfs.c:devfs_speaker_write",
+        "c:src/fs/devfs.c:devfs_tone_valid",
+        "c:src/fs/devfs.c:devfs_unavailable_ioctl",
+        "c:src/fs/devfs.c:devfs_unavailable_lseek",
+        "c:src/fs/devfs.c:devfs_unavailable_read",
+        "c:src/fs/devfs.c:devfs_unavailable_sync",
+        "c:src/fs/devfs.c:devfs_unavailable_write",
+        "c:src/fs/devfs.c:devfs_validate_state"
       ]
     }
   ],
