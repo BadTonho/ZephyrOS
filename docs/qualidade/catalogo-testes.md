@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7196**
-- Casos de teste: **100**
+- Casos de teste: **101**
 - Superfícies aposentadas: **22**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4268 |
+| `COVERED` | 4277 |
 | `MANUAL` | 0 |
-| `PENDING` | 2928 |
+| `PENDING` | 2919 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 100 |
+| `AUTOMATED` | 101 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -3178,22 +3178,22 @@
 | `c:src/core/test_coverage.c:coverage_record` | `src/core/test_coverage.c` | `coverage_record` | `core` | `PENDING` | 0 |
 | `c:src/core/test_coverage.c:test_coverage_begin_case` | `src/core/test_coverage.c` | `test_coverage_begin_case` | `core` | `PENDING` | 0 |
 | `c:src/core/test_coverage.c:test_coverage_end_case` | `src/core/test_coverage.c` | `test_coverage_end_case` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol.c:protocol_copy_text` | `src/core/test_protocol.c` | `protocol_copy_text` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol.c:protocol_dispatch_case` | `src/core/test_protocol.c` | `protocol_dispatch_case` | `core` | `COVERED` | 7 |
-| `c:src/core/test_protocol.c:protocol_emit_event` | `src/core/test_protocol.c` | `protocol_emit_event` | `core` | `COVERED` | 3 |
-| `c:src/core/test_protocol.c:protocol_error_name` | `src/core/test_protocol.c` | `protocol_error_name` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol.c:protocol_length` | `src/core/test_protocol.c` | `protocol_length` | `core` | `COVERED` | 7 |
-| `c:src/core/test_protocol.c:protocol_receive` | `src/core/test_protocol.c` | `protocol_receive` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol.c:protocol_report_phase` | `src/core/test_protocol.c` | `protocol_report_phase` | `core` | `COVERED` | 2 |
-| `c:src/core/test_protocol.c:protocol_run_case` | `src/core/test_protocol.c` | `protocol_run_case` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol.c:protocol_test_progress` | `src/core/test_protocol.c` | `protocol_test_progress` | `core` | `COVERED` | 7 |
-| `c:src/core/test_protocol.c:protocol_token_equals` | `src/core/test_protocol.c` | `protocol_token_equals` | `core` | `COVERED` | 7 |
-| `c:src/core/test_protocol.c:test_protocol_init` | `src/core/test_protocol.c` | `test_protocol_init` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol.c:test_protocol_is_active` | `src/core/test_protocol.c` | `test_protocol_is_active` | `core` | `COVERED` | 3 |
-| `c:src/core/test_protocol.c:test_protocol_panic` | `src/core/test_protocol.c` | `test_protocol_panic` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol.c:test_protocol_poll` | `src/core/test_protocol.c` | `test_protocol_poll` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol.c:test_protocol_set_boot_ready` | `src/core/test_protocol.c` | `test_protocol_set_boot_ready` | `core` | `PENDING` | 0 |
-| `c:src/core/test_protocol.c:test_protocol_timeout` | `src/core/test_protocol.c` | `test_protocol_timeout` | `core` | `PENDING` | 0 |
+| `c:src/core/test_protocol.c:protocol_copy_text` | `src/core/test_protocol.c` | `protocol_copy_text` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol.c:protocol_dispatch_case` | `src/core/test_protocol.c` | `protocol_dispatch_case` | `core` | `COVERED` | 8 |
+| `c:src/core/test_protocol.c:protocol_emit_event` | `src/core/test_protocol.c` | `protocol_emit_event` | `core` | `COVERED` | 4 |
+| `c:src/core/test_protocol.c:protocol_error_name` | `src/core/test_protocol.c` | `protocol_error_name` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol.c:protocol_length` | `src/core/test_protocol.c` | `protocol_length` | `core` | `COVERED` | 8 |
+| `c:src/core/test_protocol.c:protocol_receive` | `src/core/test_protocol.c` | `protocol_receive` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol.c:protocol_report_phase` | `src/core/test_protocol.c` | `protocol_report_phase` | `core` | `COVERED` | 3 |
+| `c:src/core/test_protocol.c:protocol_run_case` | `src/core/test_protocol.c` | `protocol_run_case` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol.c:protocol_test_progress` | `src/core/test_protocol.c` | `protocol_test_progress` | `core` | `COVERED` | 8 |
+| `c:src/core/test_protocol.c:protocol_token_equals` | `src/core/test_protocol.c` | `protocol_token_equals` | `core` | `COVERED` | 8 |
+| `c:src/core/test_protocol.c:test_protocol_init` | `src/core/test_protocol.c` | `test_protocol_init` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol.c:test_protocol_is_active` | `src/core/test_protocol.c` | `test_protocol_is_active` | `core` | `COVERED` | 4 |
+| `c:src/core/test_protocol.c:test_protocol_panic` | `src/core/test_protocol.c` | `test_protocol_panic` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol.c:test_protocol_poll` | `src/core/test_protocol.c` | `test_protocol_poll` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol.c:test_protocol_set_boot_ready` | `src/core/test_protocol.c` | `test_protocol_set_boot_ready` | `core` | `COVERED` | 1 |
+| `c:src/core/test_protocol.c:test_protocol_timeout` | `src/core/test_protocol.c` | `test_protocol_timeout` | `core` | `COVERED` | 1 |
 | `c:src/core/test_protocol_core.c:core_append_hex` | `src/core/test_protocol_core.c` | `core_append_hex` | `core` | `COVERED` | 2 |
 | `c:src/core/test_protocol_core.c:core_append_text` | `src/core/test_protocol_core.c` | `core_append_text` | `core` | `COVERED` | 2 |
 | `c:src/core/test_protocol_core.c:core_append_uint` | `src/core/test_protocol_core.c` | `core_append_uint` | `core` | `COVERED` | 2 |
@@ -7344,6 +7344,7 @@
 | `host:storage:vfs` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar descritores, arquivos regulares, dispositivos, pipes, sockets, poll/select e quiescencia com dependencias estaticas | operacoes VFS retornam codigos canonicos, liberam descritores e preservam invariantes sem hardware ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas de descritores, caches estaticos e processo fixture do host | todos os descritores sao fechados, processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:storage:vfs-path` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar normalizacao, aliases, mounts, cwd, listagens e referencias VFS com volumes estaticos | caminhos canonicos, mounts virtuais, referencias, limites e estados de energia preservam o contrato sem disco real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas de mounts e fixtures estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:storage:wav` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar parser WAV real com dados RIFF estaticos e AC97 simulado | headers, chunks, metadados, duracao, playback e ownership preservam o contrato em entradas validas, truncadas e invalidas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers WAV estaticos, allocator de teste e contador de playback do processo host | dados liberados, playback sem hardware e manifesto, logs e cobertura preservados |
+| `host:tst2:protocol-adapter` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo disponivel | compilar e executar o adaptador real com transporte, relogio e casos do kernel falsos | inicializacao, recepcao fragmentada, READY, HEARTBEAT, BEGIN, PASS, FAIL, panic, timeout e bloqueios terminam sem espera indefinida | compilador ausente, warning, falha de assercao, erro de protocolo ou timeout | somente filas estaticas de entrada e saida e callbacks falsos do kernel | processo host encerrado, filas descartadas e relatorio de cobertura preservado |
 | `host:tst2:protocol-core` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo disponivel | compilar e executar o fake transport do nucleo do protocolo | handshake, sequencia, CRC, entradas invalidas e eventos terminam sem bloqueio | compilador ausente, warning, falha de assercao ou timeout | somente buffers estaticos e transporte falso do teste | processo host encerrado e artefatos preservados pelo runner |
 | `host:tst3:string-compress` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo disponivel | compilar e executar buffers estaticos de strings e compressao | casos validos, vazios, limites, truncamento e overflow retornam o contrato esperado | compilador ausente, warning, falha de assercao ou timeout | somente buffers estaticos e stub de video_print | processo host encerrado e artefatos preservados pelo runner |
 | `qemu:tst2:boot-ready` | `qemu` | `smoke` | `qemu:tst2:boot-ready` | `AUTOMATED` | 30 | 5 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e o executavel qemu-system-i386 esta disponivel | iniciar o guest em snapshot, enviar HELLO e executar o caso de boot apos READY | o guest publica READY, HEARTBEAT e PASS para o caso solicitado | PANIC, TIMEOUT, ausencia de heartbeat, erro de protocolo ou encerramento inesperado do QEMU | cria um processo QEMU e artefatos temporarios da execucao | encerrar o QEMU via QMP e preservar o relatorio, serial e logs da execucao |
@@ -7974,15 +7975,6 @@
 - `c:src/core/test_coverage.c:coverage_record`
 - `c:src/core/test_coverage.c:test_coverage_begin_case`
 - `c:src/core/test_coverage.c:test_coverage_end_case`
-- `c:src/core/test_protocol.c:protocol_copy_text`
-- `c:src/core/test_protocol.c:protocol_error_name`
-- `c:src/core/test_protocol.c:protocol_receive`
-- `c:src/core/test_protocol.c:protocol_run_case`
-- `c:src/core/test_protocol.c:test_protocol_init`
-- `c:src/core/test_protocol.c:test_protocol_panic`
-- `c:src/core/test_protocol.c:test_protocol_poll`
-- `c:src/core/test_protocol.c:test_protocol_set_boot_ready`
-- `c:src/core/test_protocol.c:test_protocol_timeout`
 - `c:src/core/tls_client.c:tls_client_close`
 - `c:src/core/tls_client.c:tls_client_configure`
 - `c:src/core/tls_client.c:tls_client_divide_u64`

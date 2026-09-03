@@ -4574,3 +4574,16 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   host usa somente stubs estaticos. O catalogo registra 7.196 superficies,
   4.268 `COVERED`, 2.928 `PENDING` e 100 casos. O fechamento integral, o gate
   estrito e a validacao TST7 completa continuam pendentes.
+
+- Incremento Core/ZTEST adapter concluido em 2026-09-02: foi criado o caso
+  host-only `host:tst2:protocol-adapter` e o alvo
+  `make test-protocol-adapter-host` com transporte serial, relogio e
+  executores de kernel simulados. A fixture cobriu inicializacao sem serial,
+  recepcao fragmentada, handshake, `READY`, `HEARTBEAT`, `RUN`, `ABORT`,
+  panic, timeout, roteamento TST4/TST5/TST6, falha com fase e bloqueios antes
+  de `READY`. A execucao terminou `PASS`, sem enderecos desconhecidos ou
+  ambiguos, resolvendo as nove superficies pendentes de
+  `src/core/test_protocol.c`. O catalogo foi sincronizado e validado com
+  7.196 superficies, 4.277 `COVERED`, 2.919 `PENDING` e 101 casos. O
+  fechamento integral, o gate estrito e a validacao TST7 completa continuam
+  pendentes.

@@ -467,6 +467,47 @@
       "evidence": "make test-tst2-host aprovado com teste publico de contrato e tratamento de estados"
     },
     {
+      "id": "core-protocol-adapter-host-dynamic",
+      "domain": "core",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:tst2:protocol-adapter"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/protocol-adapter-host/coverage.json",
+      "coverage_sources": [
+        "src/core/test_protocol.c"
+      ],
+      "evidence": "make test-protocol-adapter-host aprovado com transporte serial falso, handshake, RUN, falha por fase e eventos de diagnostico",
+      "case_definition": {
+        "id": "host:tst2:protocol-adapter",
+        "scenario": "Teste host-only do adaptador de protocolo ZTEST",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "protocol": "ZTEST/1",
+          "transport": "serial-falso",
+          "runtime": "kernel-tests-falso"
+        },
+        "preconditions": "compilador C nativo disponivel",
+        "action": "compilar e executar o adaptador real com transporte, relogio e casos do kernel falsos",
+        "expected": "inicializacao, recepcao fragmentada, READY, HEARTBEAT, BEGIN, PASS, FAIL, panic, timeout e bloqueios terminam sem espera indefinida",
+        "errors": "compilador ausente, warning, falha de assercao, erro de protocolo ou timeout",
+        "effects": "somente filas estaticas de entrada e saida e callbacks falsos do kernel",
+        "cleanup": "processo host encerrado, filas descartadas e relatorio de cobertura preservado",
+        "status": "AUTOMATED",
+        "surface_ids": []
+      }
+    },
+    {
       "id": "core-state-host-dynamic",
       "domain": "core-state",
       "owner": "quality",
