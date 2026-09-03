@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7198**
-- Casos de teste: **113**
+- Casos de teste: **114**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4380 |
+| `COVERED` | 4392 |
 | `MANUAL` | 0 |
-| `PENDING` | 2818 |
+| `PENDING` | 2806 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 113 |
+| `AUTOMATED` | 114 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -1029,36 +1029,36 @@
 | `api:src/include/drivers/usb_msc.h:usb_msc_state_name` | `src/include/drivers/usb_msc.h` | `usb_msc_state_name` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/usb_msc.h:usb_msc_validate_state` | `src/include/drivers/usb_msc.h` | `usb_msc_validate_state` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/vesa.h:vesa_clear` | `src/include/drivers/vesa.h` | `vesa_clear` | `drivers` | `COVERED` | 4 |
-| `api:src/include/drivers/vesa.h:vesa_disable` | `src/include/drivers/vesa.h` | `vesa_disable` | `drivers` | `COVERED` | 4 |
-| `api:src/include/drivers/vesa.h:vesa_draw_bitmap` | `src/include/drivers/vesa.h` | `vesa_draw_bitmap` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/vesa.h:vesa_disable` | `src/include/drivers/vesa.h` | `vesa_disable` | `drivers` | `COVERED` | 5 |
+| `api:src/include/drivers/vesa.h:vesa_draw_bitmap` | `src/include/drivers/vesa.h` | `vesa_draw_bitmap` | `drivers` | `COVERED` | 5 |
 | `api:src/include/drivers/vesa.h:vesa_draw_char` | `src/include/drivers/vesa.h` | `vesa_draw_char` | `drivers` | `COVERED` | 4 |
-| `api:src/include/drivers/vesa.h:vesa_draw_circle` | `src/include/drivers/vesa.h` | `vesa_draw_circle` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/vesa.h:vesa_draw_circle` | `src/include/drivers/vesa.h` | `vesa_draw_circle` | `drivers` | `COVERED` | 5 |
 | `api:src/include/drivers/vesa.h:vesa_draw_glyph8x16` | `src/include/drivers/vesa.h` | `vesa_draw_glyph8x16` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/vesa.h:vesa_draw_hline` | `src/include/drivers/vesa.h` | `vesa_draw_hline` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/vesa.h:vesa_draw_line` | `src/include/drivers/vesa.h` | `vesa_draw_line` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/vesa.h:vesa_draw_rect` | `src/include/drivers/vesa.h` | `vesa_draw_rect` | `drivers` | `COVERED` | 4 |
-| `api:src/include/drivers/vesa.h:vesa_draw_string` | `src/include/drivers/vesa.h` | `vesa_draw_string` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/vesa.h:vesa_draw_string` | `src/include/drivers/vesa.h` | `vesa_draw_string` | `drivers` | `COVERED` | 5 |
 | `api:src/include/drivers/vesa.h:vesa_draw_vline` | `src/include/drivers/vesa.h` | `vesa_draw_vline` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/vesa.h:vesa_fill_circle` | `src/include/drivers/vesa.h` | `vesa_fill_circle` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/vesa.h:vesa_fill_rect` | `src/include/drivers/vesa.h` | `vesa_fill_rect` | `drivers` | `COVERED` | 4 |
-| `api:src/include/drivers/vesa.h:vesa_flip` | `src/include/drivers/vesa.h` | `vesa_flip` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/vesa.h:vesa_flip` | `src/include/drivers/vesa.h` | `vesa_flip` | `drivers` | `COVERED` | 5 |
 | `api:src/include/drivers/vesa.h:vesa_flip_region` | `src/include/drivers/vesa.h` | `vesa_flip_region` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/vesa.h:vesa_frame_begin` | `src/include/drivers/vesa.h` | `vesa_frame_begin` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/vesa.h:vesa_frame_begin_region` | `src/include/drivers/vesa.h` | `vesa_frame_begin_region` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/vesa.h:vesa_frame_end` | `src/include/drivers/vesa.h` | `vesa_frame_end` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/vesa.h:vesa_frame_mark_region` | `src/include/drivers/vesa.h` | `vesa_frame_mark_region` | `drivers` | `COVERED` | 4 |
-| `api:src/include/drivers/vesa.h:vesa_get_metrics` | `src/include/drivers/vesa.h` | `vesa_get_metrics` | `drivers` | `COVERED` | 4 |
-| `api:src/include/drivers/vesa.h:vesa_get_mode` | `src/include/drivers/vesa.h` | `vesa_get_mode` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/vesa.h:vesa_get_metrics` | `src/include/drivers/vesa.h` | `vesa_get_metrics` | `drivers` | `COVERED` | 5 |
+| `api:src/include/drivers/vesa.h:vesa_get_mode` | `src/include/drivers/vesa.h` | `vesa_get_mode` | `drivers` | `COVERED` | 5 |
 | `api:src/include/drivers/vesa.h:vesa_get_pixel` | `src/include/drivers/vesa.h` | `vesa_get_pixel` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/vesa.h:vesa_has_backbuffer` | `src/include/drivers/vesa.h` | `vesa_has_backbuffer` | `drivers` | `COVERED` | 4 |
-| `api:src/include/drivers/vesa.h:vesa_init` | `src/include/drivers/vesa.h` | `vesa_init` | `drivers` | `COVERED` | 4 |
-| `api:src/include/drivers/vesa.h:vesa_init_backbuffer` | `src/include/drivers/vesa.h` | `vesa_init_backbuffer` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/vesa.h:vesa_init` | `src/include/drivers/vesa.h` | `vesa_init` | `drivers` | `COVERED` | 5 |
+| `api:src/include/drivers/vesa.h:vesa_init_backbuffer` | `src/include/drivers/vesa.h` | `vesa_init_backbuffer` | `drivers` | `COVERED` | 5 |
 | `api:src/include/drivers/vesa.h:vesa_put_pixel` | `src/include/drivers/vesa.h` | `vesa_put_pixel` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/vesa.h:vesa_reset_clip_rect` | `src/include/drivers/vesa.h` | `vesa_reset_clip_rect` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/vesa.h:vesa_rgb` | `src/include/drivers/vesa.h` | `vesa_rgb` | `drivers` | `COVERED` | 4 |
-| `api:src/include/drivers/vesa.h:vesa_rgba` | `src/include/drivers/vesa.h` | `vesa_rgba` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/vesa.h:vesa_rgba` | `src/include/drivers/vesa.h` | `vesa_rgba` | `drivers` | `COVERED` | 5 |
 | `api:src/include/drivers/vesa.h:vesa_set_clip_rect` | `src/include/drivers/vesa.h` | `vesa_set_clip_rect` | `drivers` | `COVERED` | 4 |
-| `api:src/include/drivers/vesa.h:vesa_set_mode` | `src/include/drivers/vesa.h` | `vesa_set_mode` | `drivers` | `COVERED` | 4 |
+| `api:src/include/drivers/vesa.h:vesa_set_mode` | `src/include/drivers/vesa.h` | `vesa_set_mode` | `drivers` | `COVERED` | 5 |
 | `api:src/include/fs/block.h:block_cancel` | `src/include/fs/block.h` | `block_cancel` | `fs` | `COVERED` | 5 |
 | `api:src/include/fs/block.h:block_dispatch` | `src/include/fs/block.h` | `block_dispatch` | `fs` | `COVERED` | 5 |
 | `api:src/include/fs/block.h:block_find` | `src/include/fs/block.h` | `block_find` | `fs` | `COVERED` | 5 |
@@ -4569,44 +4569,44 @@
 | `c:src/drivers/usb_msc.c:usb_msc_refresh` | `src/drivers/usb_msc.c` | `usb_msc_refresh` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/usb_msc.c:usb_msc_state_name` | `src/drivers/usb_msc.c` | `usb_msc_state_name` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/usb_msc.c:usb_msc_validate_state` | `src/drivers/usb_msc.c` | `usb_msc_validate_state` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/vesa.c:memset_simple` | `src/drivers/vesa.c` | `memset_simple` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/vesa.c:memset_simple` | `src/drivers/vesa.c` | `memset_simple` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/vesa.c:vesa_accumulate_region` | `src/drivers/vesa.c` | `vesa_accumulate_region` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/vesa.c:vesa_clear` | `src/drivers/vesa.c` | `vesa_clear` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/vesa.c:vesa_clip_rect` | `src/drivers/vesa.c` | `vesa_clip_rect` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/vesa.c:vesa_copy_region` | `src/drivers/vesa.c` | `vesa_copy_region` | `drivers` | `COVERED` | 4 |
-| `c:src/drivers/vesa.c:vesa_disable` | `src/drivers/vesa.c` | `vesa_disable` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/vesa.c:vesa_draw_bitmap` | `src/drivers/vesa.c` | `vesa_draw_bitmap` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/vesa.c:vesa_disable` | `src/drivers/vesa.c` | `vesa_disable` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/vesa.c:vesa_draw_bitmap` | `src/drivers/vesa.c` | `vesa_draw_bitmap` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/vesa.c:vesa_draw_char` | `src/drivers/vesa.c` | `vesa_draw_char` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/vesa.c:vesa_draw_circle` | `src/drivers/vesa.c` | `vesa_draw_circle` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/vesa.c:vesa_draw_circle` | `src/drivers/vesa.c` | `vesa_draw_circle` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/vesa.c:vesa_draw_glyph8x16` | `src/drivers/vesa.c` | `vesa_draw_glyph8x16` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/vesa.c:vesa_draw_hline` | `src/drivers/vesa.c` | `vesa_draw_hline` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/vesa.c:vesa_draw_line` | `src/drivers/vesa.c` | `vesa_draw_line` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/vesa.c:vesa_draw_rect` | `src/drivers/vesa.c` | `vesa_draw_rect` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/vesa.c:vesa_draw_string` | `src/drivers/vesa.c` | `vesa_draw_string` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/vesa.c:vesa_draw_string` | `src/drivers/vesa.c` | `vesa_draw_string` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/vesa.c:vesa_draw_vline` | `src/drivers/vesa.c` | `vesa_draw_vline` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/vesa.c:vesa_fill_circle` | `src/drivers/vesa.c` | `vesa_fill_circle` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/vesa.c:vesa_fill_rect` | `src/drivers/vesa.c` | `vesa_fill_rect` | `drivers` | `COVERED` | 4 |
-| `c:src/drivers/vesa.c:vesa_flip` | `src/drivers/vesa.c` | `vesa_flip` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/vesa.c:vesa_flip` | `src/drivers/vesa.c` | `vesa_flip` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/vesa.c:vesa_flip_region` | `src/drivers/vesa.c` | `vesa_flip_region` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/vesa.c:vesa_frame_begin` | `src/drivers/vesa.c` | `vesa_frame_begin` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/vesa.c:vesa_frame_begin_region` | `src/drivers/vesa.c` | `vesa_frame_begin_region` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/vesa.c:vesa_frame_end` | `src/drivers/vesa.c` | `vesa_frame_end` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/vesa.c:vesa_frame_mark_region` | `src/drivers/vesa.c` | `vesa_frame_mark_region` | `drivers` | `COVERED` | 4 |
-| `c:src/drivers/vesa.c:vesa_get_metrics` | `src/drivers/vesa.c` | `vesa_get_metrics` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/vesa.c:vesa_get_mode` | `src/drivers/vesa.c` | `vesa_get_mode` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/vesa.c:vesa_get_metrics` | `src/drivers/vesa.c` | `vesa_get_metrics` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/vesa.c:vesa_get_mode` | `src/drivers/vesa.c` | `vesa_get_mode` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/vesa.c:vesa_get_pixel` | `src/drivers/vesa.c` | `vesa_get_pixel` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/vesa.c:vesa_has_backbuffer` | `src/drivers/vesa.c` | `vesa_has_backbuffer` | `drivers` | `COVERED` | 4 |
-| `c:src/drivers/vesa.c:vesa_init` | `src/drivers/vesa.c` | `vesa_init` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/vesa.c:vesa_init_backbuffer` | `src/drivers/vesa.c` | `vesa_init_backbuffer` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/vesa.c:vesa_init` | `src/drivers/vesa.c` | `vesa_init` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/vesa.c:vesa_init_backbuffer` | `src/drivers/vesa.c` | `vesa_init_backbuffer` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/vesa.c:vesa_metrics_add` | `src/drivers/vesa.c` | `vesa_metrics_add` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/vesa.c:vesa_metrics_record_copy` | `src/drivers/vesa.c` | `vesa_metrics_record_copy` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/vesa.c:vesa_point_in_clip` | `src/drivers/vesa.c` | `vesa_point_in_clip` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/vesa.c:vesa_put_pixel` | `src/drivers/vesa.c` | `vesa_put_pixel` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/vesa.c:vesa_reset_clip_rect` | `src/drivers/vesa.c` | `vesa_reset_clip_rect` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/vesa.c:vesa_rgb` | `src/drivers/vesa.c` | `vesa_rgb` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/vesa.c:vesa_rgba` | `src/drivers/vesa.c` | `vesa_rgba` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/vesa.c:vesa_rgba` | `src/drivers/vesa.c` | `vesa_rgba` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/vesa.c:vesa_set_clip_rect` | `src/drivers/vesa.c` | `vesa_set_clip_rect` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/vesa.c:vesa_set_mode` | `src/drivers/vesa.c` | `vesa_set_mode` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/vesa.c:vesa_set_mode` | `src/drivers/vesa.c` | `vesa_set_mode` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/video.c:clear_visual_buffer_locked` | `src/drivers/video.c` | `clear_visual_buffer_locked` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/video.c:render_char_at` | `src/drivers/video.c` | `render_char_at` | `drivers` | `COVERED` | 5 |
 | `c:src/drivers/video.c:render_output_cell_locked` | `src/drivers/video.c` | `render_output_cell_locked` | `drivers` | `COVERED` | 5 |
@@ -7397,6 +7397,7 @@
 | `qemu:tst6:stress:kernel` | `qemu` | `tst6` | `qemu:tst6:stress:kernel` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | paging, heap, SLAB, processos e threads estao READY | repetir ciclos deterministas de memoria e execucao sob teto obrigatorio | invariantes estaveis permanecem iguais e a primeira falha interrompe a suite | overflow, vazamento, deadlock, timeout, protocolo ou QEMU | alocacoes e objetos temporarios de cada ciclo em snapshot | devolver paginas, destruir objetos e registrar seed e iteracao |
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
+| `host:drivers:vesa` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar inicializacao, modos 24/32 bpp, backbuffer, desenho, clipping, frames, metricas e desativacao com framebuffer falso | parametros invalidos sao rejeitados, pixels e regioes sao copiados corretamente e o estado VESA e restaurado apos desativacao | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos, metricas e fixture de boot no processo host | processo host encerrado, backbuffer liberado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -8831,18 +8832,6 @@
 - `c:src/drivers/uhci.c:uhci_update_resource_usage`
 - `c:src/drivers/uhci.c:uhci_validate_pci`
 - `c:src/drivers/uhci.c:uhci_wait_transfer`
-- `c:src/drivers/vesa.c:memset_simple`
-- `c:src/drivers/vesa.c:vesa_disable`
-- `c:src/drivers/vesa.c:vesa_draw_bitmap`
-- `c:src/drivers/vesa.c:vesa_draw_circle`
-- `c:src/drivers/vesa.c:vesa_draw_string`
-- `c:src/drivers/vesa.c:vesa_flip`
-- `c:src/drivers/vesa.c:vesa_get_metrics`
-- `c:src/drivers/vesa.c:vesa_get_mode`
-- `c:src/drivers/vesa.c:vesa_init`
-- `c:src/drivers/vesa.c:vesa_init_backbuffer`
-- `c:src/drivers/vesa.c:vesa_rgba`
-- `c:src/drivers/vesa.c:vesa_set_mode`
 - `c:src/drivers/video.c:clear_visual_buffer_locked`
 - `c:src/drivers/video.c:terminal_append_number`
 - `c:src/drivers/video.c:terminal_draw_footer_locked`
