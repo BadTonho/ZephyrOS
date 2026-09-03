@@ -949,6 +949,49 @@
       }
     },
     {
+      "id": "rng-host-dynamic",
+      "domain": "drivers-rng",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:drivers:rng"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/rng-host/coverage.json",
+      "coverage_sources": [
+        "src/drivers/rng.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-rng-host PASS com simulacao deterministica de CPUID/RDRAND, inicializacao indisponivel, leitura, falha de hardware, limites de buffer e validacao de estado no relatorio instrumentado",
+      "case_definition": {
+        "id": "host:drivers:rng",
+        "scenario": "Contrato host-only do estado e leitura de entropia RDRAND",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "cpuid-rdrand-stub"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "compilar e executar o driver RNG real com capacidades e resultados RDRAND simulados",
+        "expected": "capacidade, estado, bytes gerados, falhas de hardware e codigos de erro preservam o contrato sem executar instrucoes privilegiadas no host",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente estado RNG e valores de entropia estaticos do processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": []
+      }
+    },
+    {
       "id": "harness-apps-qemu-observed",
       "domain": "test-harness",
       "owner": "quality",
