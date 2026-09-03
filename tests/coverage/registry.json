@@ -4436,6 +4436,60 @@
         "status": "AUTOMATED"
       },
       "evidence": "make test-mouse-host PASS com inicializacao PS/2, Intellimouse, fallback, IRQ12, eventos, cursor, configuracao, timeouts, erros de ACK, recuperacao e cobertura instrumentada completa"
+    },
+    {
+      "id": "e1000-host-dynamic",
+      "domain": "drivers-e1000",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:drivers:e1000"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/e1000-host/coverage.json",
+      "coverage_sources": [
+        "src/drivers/e1000.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:drivers:e1000",
+        "scenario": "Contrato host-only do driver E1000 com MMIO, DMA, IRQ, TX e RX simulados",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "e1000-mmio-dma-irq-falso"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "validar PCI, mapeamento MMIO, reset, MAC, DMA, configuracao de descritores, TX, RX, IRQ deferred, quiescencia e falhas de inicializacao",
+        "expected": "frames validos sao transmitidos e recebidos, eventos IRQ sao processados e fixtures invalidas retornam erros canonicos com limpeza",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente MMIO, DMA, PCI, IRQ deferred e frames Ethernet falsos no processo host",
+        "cleanup": "dispositivo falso, descritores, buffers DMA, fila IRQ e estado MMIO sao restaurados; manifesto, logs e cobertura preservados",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "drivers",
+          "e1000",
+          "ethernet",
+          "mmio",
+          "dma",
+          "irq",
+          "limits",
+          "recovery",
+          "coverage"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "make test-e1000-host PASS com MMIO, reset, MAC, DMA, TX/RX, IRQ deferred, quiescencia, falhas de inicializacao e cobertura instrumentada completa"
     }
   ]
 }

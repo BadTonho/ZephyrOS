@@ -75,6 +75,12 @@
     (E1000_INT_TXDW | E1000_INT_LSC | E1000_INT_RXSEQ | \
      E1000_INT_RXO | E1000_INT_RXT0)
 
+#if defined(ZEPHYROS_HOST_TEST)
+#define E1000_DMA_ADDRESS(value) ((uint32_t)(uint64_t)(value))
+#else
+#define E1000_DMA_ADDRESS(value) ((uint32_t)(value))
+#endif
+
 typedef struct {
     uint64_t address;
     uint16_t length;
@@ -127,27 +133,51 @@ typedef struct {
 static e1000_device_t e1000_devices[E1000_DEVICE_CAPACITY];
 
 static uint32_t e1000_read(e1000_device_t* device, uint32_t offset) {
+#if defined(ZEPHYROS_HOST_TEST)
+    extern uint32_t e1000_host_read_mmio(volatile uint32_t* mmio,
+                                         uint32_t offset);
+    return e1000_host_read_mmio(device->mmio, offset);
+#else
     return device->mmio[offset / sizeof(uint32_t)];
+#endif
 }
 
 static void e1000_write(e1000_device_t* device, uint32_t offset,
                         uint32_t value) {
+#if defined(ZEPHYROS_HOST_TEST)
+    extern void e1000_host_write_mmio(volatile uint32_t* mmio,
+                                      uint32_t offset, uint32_t value);
+    e1000_host_write_mmio(device->mmio, offset, value);
+#else
     device->mmio[offset / sizeof(uint32_t)] = value;
+#endif
 }
 
 static void e1000_memory_barrier(void) {
+#if defined(ZEPHYROS_HOST_TEST)
+    return;
+#else
     asm volatile("" : : : "memory");
+#endif
 }
 
 static uint32_t e1000_irq_save(void) {
+#if defined(ZEPHYROS_HOST_TEST)
+    return 0U;
+#else
     uint32_t flags;
 
     asm volatile("pushf\n\tpop %0\n\tcli" : "=r"(flags) : : "memory");
     return flags;
+#endif
 }
 
 static void e1000_irq_restore(uint32_t flags) {
+#if !defined(ZEPHYROS_HOST_TEST)
     if (flags & (1U << 9U)) asm volatile("sti" : : : "memory");
+#else
+    (void)flags;
+#endif
 }
 
 static void e1000_update_link(e1000_device_t* device) {
@@ -243,7 +273,16 @@ static int e1000_map_mmio(e1000_device_t* device, uint32_t bar0) {
             return ERR_MEM;
         }
     }
+#if defined(ZEPHYROS_HOST_TEST)
+    {
+        extern volatile uint32_t* e1000_host_map_mmio(uint32_t base);
+
+        device->mmio = e1000_host_map_mmio(base);
+        if (!device->mmio) return ERR_MEM;
+    }
+#else
     device->mmio = (volatile uint32_t*)base;
+#endif
     return OK;
 }
 
@@ -284,13 +323,13 @@ static int e1000_read_mac(e1000_device_t* device) {
 static void e1000_setup_rx(e1000_device_t* device) {
     for (uint32_t index = 0; index < E1000_DESCRIPTOR_COUNT; index++) {
         device->rx_ring[index].address =
-            (uint32_t)(device->rx_buffers +
-                       index * E1000_FRAME_BUFFER_SIZE);
+            E1000_DMA_ADDRESS(device->rx_buffers +
+                              index * E1000_FRAME_BUFFER_SIZE);
         device->rx_ring[index].status = 0;
         device->rx_ring[index].errors = 0;
     }
     e1000_memory_barrier();
-    e1000_write(device, E1000_REG_RDBAL, (uint32_t)device->rx_ring);
+    e1000_write(device, E1000_REG_RDBAL, E1000_DMA_ADDRESS(device->rx_ring));
     e1000_write(device, E1000_REG_RDBAH, 0);
     e1000_write(device, E1000_REG_RDLEN,
                 E1000_DESCRIPTOR_COUNT *
@@ -303,7 +342,7 @@ static void e1000_setup_rx(e1000_device_t* device) {
 
 static void e1000_setup_tx(e1000_device_t* device) {
     e1000_memory_barrier();
-    e1000_write(device, E1000_REG_TDBAL, (uint32_t)device->tx_ring);
+    e1000_write(device, E1000_REG_TDBAL, E1000_DMA_ADDRESS(device->tx_ring));
     e1000_write(device, E1000_REG_TDBAH, 0);
     e1000_write(device, E1000_REG_TDLEN,
                 E1000_DESCRIPTOR_COUNT *
@@ -547,8 +586,8 @@ static int e1000_send_frame(void* driver_context,
     kmemcpy(device->tx_buffers +
             descriptor * E1000_FRAME_BUFFER_SIZE, data, length);
     device->tx_ring[descriptor].address =
-        (uint32_t)(device->tx_buffers +
-                   descriptor * E1000_FRAME_BUFFER_SIZE);
+        E1000_DMA_ADDRESS(device->tx_buffers +
+                          descriptor * E1000_FRAME_BUFFER_SIZE);
     device->tx_ring[descriptor].length = length;
     device->tx_ring[descriptor].checksum_offset = 0;
     device->tx_ring[descriptor].command =
@@ -564,6 +603,16 @@ static int e1000_send_frame(void* driver_context,
     start = timer_get_ticks();
     while (!(device->tx_ring[descriptor].status &
              E1000_TX_STATUS_DD)) {
+#if defined(ZEPHYROS_HOST_TEST)
+        {
+            extern uint8_t e1000_host_tx_complete(void* device,
+                                                  uint8_t descriptor);
+
+            if (e1000_host_tx_complete(device, descriptor)) {
+                device->tx_ring[descriptor].status |= E1000_TX_STATUS_DD;
+            }
+        }
+#endif
         if (timer_get_ticks() - start >= E1000_RESET_TIMEOUT_TICKS) {
             device->status.tx_errors++;
             device->status.last_error = ERR_TIMEOUT;
@@ -722,6 +771,32 @@ static void e1000_bottom_half(void* context) {
         LOG_ERROR_CODE("E1000", result, "Bottom-Half E1000 falhou");
     }
 }
+
+#if defined(ZEPHYROS_HOST_TEST)
+void e1000_host_inject_rx(void* context, const uint8_t* data,
+                          uint16_t length, uint8_t status, uint8_t errors) {
+    e1000_device_t* device = (e1000_device_t*)context;
+    uint8_t descriptor;
+
+    if (!device || !device->rx_ring || !device->rx_buffers || !data ||
+        length > E1000_MAX_FRAME_SIZE) return;
+    descriptor = device->rx_next;
+    kmemcpy(device->rx_buffers + descriptor * E1000_FRAME_BUFFER_SIZE,
+            data, length);
+    device->rx_ring[descriptor].length = length;
+    device->rx_ring[descriptor].status = status;
+    device->rx_ring[descriptor].errors = errors;
+}
+
+void e1000_host_reset_devices(void) {
+    for (uint32_t index = 0U; index < E1000_DEVICE_CAPACITY; index++) {
+        if (!e1000_devices[index].used) continue;
+        e1000_disable_hardware(&e1000_devices[index]);
+        e1000_release_dma(&e1000_devices[index]);
+        kmemset(&e1000_devices[index], 0, sizeof(e1000_devices[index]));
+    }
+}
+#endif
 
 void e1000_handler(registers_t* regs) {
     uint8_t irq_line;
