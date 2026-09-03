@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7198**
-- Casos de teste: **114**
+- Casos de teste: **115**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4392 |
+| `COVERED` | 4422 |
 | `MANUAL` | 0 |
-| `PENDING` | 2806 |
+| `PENDING` | 2776 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 114 |
+| `AUTOMATED` | 115 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -4607,15 +4607,15 @@
 | `c:src/drivers/vesa.c:vesa_rgba` | `src/drivers/vesa.c` | `vesa_rgba` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/vesa.c:vesa_set_clip_rect` | `src/drivers/vesa.c` | `vesa_set_clip_rect` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/vesa.c:vesa_set_mode` | `src/drivers/vesa.c` | `vesa_set_mode` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/video.c:clear_visual_buffer_locked` | `src/drivers/video.c` | `clear_visual_buffer_locked` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/video.c:clear_visual_buffer_locked` | `src/drivers/video.c` | `clear_visual_buffer_locked` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/video.c:render_char_at` | `src/drivers/video.c` | `render_char_at` | `drivers` | `COVERED` | 5 |
 | `c:src/drivers/video.c:render_output_cell_locked` | `src/drivers/video.c` | `render_output_cell_locked` | `drivers` | `COVERED` | 5 |
 | `c:src/drivers/video.c:terminal_advance_line_locked` | `src/drivers/video.c` | `terminal_advance_line_locked` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/video.c:terminal_append_number` | `src/drivers/video.c` | `terminal_append_number` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/video.c:terminal_append_number` | `src/drivers/video.c` | `terminal_append_number` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/video.c:terminal_clear_line_locked` | `src/drivers/video.c` | `terminal_clear_line_locked` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/video.c:terminal_columns` | `src/drivers/video.c` | `terminal_columns` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/video.c:terminal_content_rows` | `src/drivers/video.c` | `terminal_content_rows` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/video.c:terminal_draw_footer_locked` | `src/drivers/video.c` | `terminal_draw_footer_locked` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/video.c:terminal_draw_footer_locked` | `src/drivers/video.c` | `terminal_draw_footer_locked` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/video.c:terminal_hosted_cursor_pixel_locked` | `src/drivers/video.c` | `terminal_hosted_cursor_pixel_locked` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/video.c:terminal_hosted_cursor_row_locked` | `src/drivers/video.c` | `terminal_hosted_cursor_row_locked` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/video.c:terminal_hosted_draw_cell_locked` | `src/drivers/video.c` | `terminal_hosted_draw_cell_locked` | `drivers` | `COVERED` | 3 |
@@ -4626,18 +4626,18 @@
 | `c:src/drivers/video.c:terminal_hosted_line_segments_locked` | `src/drivers/video.c` | `terminal_hosted_line_segments_locked` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/video.c:terminal_hosted_mark_full_locked` | `src/drivers/video.c` | `terminal_hosted_mark_full_locked` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/video.c:terminal_hosted_mark_region_locked` | `src/drivers/video.c` | `terminal_hosted_mark_region_locked` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/video.c:terminal_hosted_max_offset_locked` | `src/drivers/video.c` | `terminal_hosted_max_offset_locked` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/video.c:terminal_hosted_max_offset_locked` | `src/drivers/video.c` | `terminal_hosted_max_offset_locked` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/video.c:terminal_hosted_total_rows_locked` | `src/drivers/video.c` | `terminal_hosted_total_rows_locked` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/video.c:terminal_hosted_view_start_locked` | `src/drivers/video.c` | `terminal_hosted_view_start_locked` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/video.c:terminal_line_length_locked` | `src/drivers/video.c` | `terminal_line_length_locked` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/video.c:terminal_max_view_offset` | `src/drivers/video.c` | `terminal_max_view_offset` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/video.c:terminal_max_view_offset` | `src/drivers/video.c` | `terminal_max_view_offset` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/video.c:terminal_output_batch_begin` | `src/drivers/video.c` | `terminal_output_batch_begin` | `drivers` | `COVERED` | 5 |
 | `c:src/drivers/video.c:terminal_output_batch_end` | `src/drivers/video.c` | `terminal_output_batch_end` | `drivers` | `COVERED` | 5 |
 | `c:src/drivers/video.c:terminal_physical_line` | `src/drivers/video.c` | `terminal_physical_line` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/video.c:terminal_render_view_locked` | `src/drivers/video.c` | `terminal_render_view_locked` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/video.c:terminal_reset_locked` | `src/drivers/video.c` | `terminal_reset_locked` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/video.c:terminal_render_view_locked` | `src/drivers/video.c` | `terminal_render_view_locked` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/video.c:terminal_reset_locked` | `src/drivers/video.c` | `terminal_reset_locked` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/video.c:terminal_view_rows` | `src/drivers/video.c` | `terminal_view_rows` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/video.c:terminal_view_start_line` | `src/drivers/video.c` | `terminal_view_start_line` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/video.c:terminal_view_start_line` | `src/drivers/video.c` | `terminal_view_start_line` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/video.c:terminal_write_char_locked` | `src/drivers/video.c` | `terminal_write_char_locked` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/video.c:update_cursor` | `src/drivers/video.c` | `update_cursor` | `drivers` | `COVERED` | 5 |
 | `c:src/drivers/video.c:vga_bg_to_rgb` | `src/drivers/video.c` | `vga_bg_to_rgb` | `drivers` | `COVERED` | 5 |
@@ -4645,39 +4645,39 @@
 | `c:src/drivers/video.c:video_backspace` | `src/drivers/video.c` | `video_backspace` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/video.c:video_begin_update` | `src/drivers/video.c` | `video_begin_update` | `drivers` | `COVERED` | 5 |
 | `c:src/drivers/video.c:video_can_batch_updates` | `src/drivers/video.c` | `video_can_batch_updates` | `drivers` | `COVERED` | 5 |
-| `c:src/drivers/video.c:video_clear` | `src/drivers/video.c` | `video_clear` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/video.c:video_disable_framebuffer` | `src/drivers/video.c` | `video_disable_framebuffer` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/video.c:video_draw_box` | `src/drivers/video.c` | `video_draw_box` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/video.c:video_draw_hline` | `src/drivers/video.c` | `video_draw_hline` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/video.c:video_draw_vline` | `src/drivers/video.c` | `video_draw_vline` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/video.c:video_clear` | `src/drivers/video.c` | `video_clear` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/video.c:video_disable_framebuffer` | `src/drivers/video.c` | `video_disable_framebuffer` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/video.c:video_draw_box` | `src/drivers/video.c` | `video_draw_box` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/video.c:video_draw_hline` | `src/drivers/video.c` | `video_draw_hline` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/video.c:video_draw_vline` | `src/drivers/video.c` | `video_draw_vline` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/video.c:video_end_update` | `src/drivers/video.c` | `video_end_update` | `drivers` | `COVERED` | 5 |
-| `c:src/drivers/video.c:video_fill_rect` | `src/drivers/video.c` | `video_fill_rect` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/video.c:video_flush_updates` | `src/drivers/video.c` | `video_flush_updates` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/video.c:video_get_cursor_x` | `src/drivers/video.c` | `video_get_cursor_x` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/video.c:video_get_cursor_y` | `src/drivers/video.c` | `video_get_cursor_y` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/video.c:video_init` | `src/drivers/video.c` | `video_init` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/video.c:video_fill_rect` | `src/drivers/video.c` | `video_fill_rect` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/video.c:video_flush_updates` | `src/drivers/video.c` | `video_flush_updates` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/video.c:video_get_cursor_x` | `src/drivers/video.c` | `video_get_cursor_x` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/video.c:video_get_cursor_y` | `src/drivers/video.c` | `video_get_cursor_y` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/video.c:video_init` | `src/drivers/video.c` | `video_init` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/video.c:video_newline` | `src/drivers/video.c` | `video_newline` | `drivers` | `COVERED` | 5 |
-| `c:src/drivers/video.c:video_power_quiesce` | `src/drivers/video.c` | `video_power_quiesce` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/video.c:video_power_quiesce` | `src/drivers/video.c` | `video_power_quiesce` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/video.c:video_present_region` | `src/drivers/video.c` | `video_present_region` | `drivers` | `COVERED` | 5 |
 | `c:src/drivers/video.c:video_print` | `src/drivers/video.c` | `video_print` | `drivers` | `COVERED` | 5 |
-| `c:src/drivers/video.c:video_print_at` | `src/drivers/video.c` | `video_print_at` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/video.c:video_print_at` | `src/drivers/video.c` | `video_print_at` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/video.c:video_put_char` | `src/drivers/video.c` | `video_put_char` | `drivers` | `COVERED` | 5 |
-| `c:src/drivers/video.c:video_put_char_at` | `src/drivers/video.c` | `video_put_char_at` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/video.c:video_set_color` | `src/drivers/video.c` | `video_set_color` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/video.c:video_set_cursor` | `src/drivers/video.c` | `video_set_cursor` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/video.c:video_terminal_begin` | `src/drivers/video.c` | `video_terminal_begin` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/video.c:video_terminal_clear` | `src/drivers/video.c` | `video_terminal_clear` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/video.c:video_put_char_at` | `src/drivers/video.c` | `video_put_char_at` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/video.c:video_set_color` | `src/drivers/video.c` | `video_set_color` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/video.c:video_set_cursor` | `src/drivers/video.c` | `video_set_cursor` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/video.c:video_terminal_begin` | `src/drivers/video.c` | `video_terminal_begin` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/video.c:video_terminal_clear` | `src/drivers/video.c` | `video_terminal_clear` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/video.c:video_terminal_draw` | `src/drivers/video.c` | `video_terminal_draw` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/video.c:video_terminal_is_active` | `src/drivers/video.c` | `video_terminal_is_active` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/video.c:video_terminal_is_hosted` | `src/drivers/video.c` | `video_terminal_is_hosted` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/video.c:video_terminal_is_scrolled` | `src/drivers/video.c` | `video_terminal_is_scrolled` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/video.c:video_terminal_present_hosted_dirty` | `src/drivers/video.c` | `video_terminal_present_hosted_dirty` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/video.c:video_terminal_scroll` | `src/drivers/video.c` | `video_terminal_scroll` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/video.c:video_terminal_scroll_end` | `src/drivers/video.c` | `video_terminal_scroll_end` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/video.c:video_terminal_scroll_home` | `src/drivers/video.c` | `video_terminal_scroll_home` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/video.c:video_terminal_scroll` | `src/drivers/video.c` | `video_terminal_scroll` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/video.c:video_terminal_scroll_end` | `src/drivers/video.c` | `video_terminal_scroll_end` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/video.c:video_terminal_scroll_home` | `src/drivers/video.c` | `video_terminal_scroll_home` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/video.c:video_terminal_set_hosted` | `src/drivers/video.c` | `video_terminal_set_hosted` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/video.c:video_terminal_suspend` | `src/drivers/video.c` | `video_terminal_suspend` | `drivers` | `PENDING` | 0 |
-| `c:src/drivers/video.c:video_terminal_take_hosted_dirty` | `src/drivers/video.c` | `video_terminal_take_hosted_dirty` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/video.c:video_terminal_suspend` | `src/drivers/video.c` | `video_terminal_suspend` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/video.c:video_terminal_take_hosted_dirty` | `src/drivers/video.c` | `video_terminal_take_hosted_dirty` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/video.c:video_test_copy_terminal` | `src/drivers/video.c` | `video_test_copy_terminal` | `drivers` | `COVERED` | 3 |
 | `c:src/filemanager/filemanager.c:fm_block_read_only_mutation` | `src/filemanager/filemanager.c` | `fm_block_read_only_mutation` | `filemanager` | `PENDING` | 0 |
 | `c:src/filemanager/filemanager.c:fm_boot_directory_exists` | `src/filemanager/filemanager.c` | `fm_boot_directory_exists` | `filemanager` | `COVERED` | 1 |
@@ -7316,6 +7316,7 @@
 | `host:drivers:tss` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver TSS real com carregamento GDT e flush simulados | inicializacao, prontidao e atualizacao de stack preservam o contrato sem executar lgdt, troca de segmentos ou flush privilegiado no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente descritor TSS, GDT e contador de flush do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:usb-hid` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enumerar teclados e mouses UHCI, enviar relatorios Boot, publicar eventos de entrada e exercitar refresh, remocao e limites | parsing valido, rejeicao de reports corrompidos, estados, contadores, cancelamento e indisponibilidade preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente dispositivos USB HID e callbacks de entrada estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:usb-msc` | `host` | `host-only-readonly` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enumerar dispositivo MSC UHCI, executar inquiry, TUR, capacity e READ10 simulados, validar block readonly e exercitar recuperacao | protocolo BOT/SCSI, identificadores, capacidade, leituras, estados, limites e falhas preservam o contrato sem escrita | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente transporte USB MSC, registro de bloco e buffers estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:drivers:vesa` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar inicializacao, modos 24/32 bpp, backbuffer, desenho, clipping, frames, metricas e desativacao com framebuffer falso | parametros invalidos sao rejeitados, pixels e regioes sao copiados corretamente e o estado VESA e restaurado apos desativacao | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos, metricas e fixture de boot no processo host | processo host encerrado, backbuffer liberado e manifesto, logs e cobertura preservados |
 | `host:gui:display` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar inicializacao, disponibilidade VESA, parsing de escala, conversao de pixels e refresh das cenas | metricas e escalas validas funcionam, limites retornam erros canonicos e falha de reflow restaura a escala anterior | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do display e callbacks falsos de VESA, desktop, taskbar e Window Manager | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:gui:widgets` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar temas, desenho de texto nativo e escalado, medicao, paineis, formas, gradientes, botoes e molduras em framebuffer falso | temas invalidos e estados indisponiveis retornam ou preservam o contrato, limites nao escapam do framebuffer e as primitivas encaminham o desenho para VESA | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente metricas, fonte, framebuffer e contadores estaticos falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:kernel:panic` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar panic, panic_memory, mensagens padrao e explicitas, metricas zero e nao zero e encaminhamento ao protocolo | panic publica a razao correta, desenha o diagnostico completo, descarrega a tela e interrompe apenas o fluxo de teste | compilador ausente, warning, cobertura incompleta, retorno inesperado do halt, falha de assercao ou timeout | somente buffers, contadores de video e razao do protocolo no processo host; nenhum halt real e executado | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7397,7 +7398,7 @@
 | `qemu:tst6:stress:kernel` | `qemu` | `tst6` | `qemu:tst6:stress:kernel` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | paging, heap, SLAB, processos e threads estao READY | repetir ciclos deterministas de memoria e execucao sob teto obrigatorio | invariantes estaveis permanecem iguais e a primeira falha interrompe a suite | overflow, vazamento, deadlock, timeout, protocolo ou QEMU | alocacoes e objetos temporarios de cada ciclo em snapshot | devolver paginas, destruir objetos e registrar seed e iteracao |
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
-| `host:drivers:vesa` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar inicializacao, modos 24/32 bpp, backbuffer, desenho, clipping, frames, metricas e desativacao com framebuffer falso | parametros invalidos sao rejeitados, pixels e regioes sao copiados corretamente e o estado VESA e restaurado apos desativacao | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos, metricas e fixture de boot no processo host | processo host encerrado, backbuffer liberado e manifesto, logs e cobertura preservados |
+| `host:drivers:video` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar framebuffer, cursor, desenho, terminal, scrollback, hosted terminal, dirty regions e estados indisponiveis | operacoes validas preservam o estado do terminal e estados de hardware ausente retornam erros canonicos sem acesso privilegiado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado, contadores e callbacks VESA, fonte e mouse falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -8832,36 +8833,6 @@
 - `c:src/drivers/uhci.c:uhci_update_resource_usage`
 - `c:src/drivers/uhci.c:uhci_validate_pci`
 - `c:src/drivers/uhci.c:uhci_wait_transfer`
-- `c:src/drivers/video.c:clear_visual_buffer_locked`
-- `c:src/drivers/video.c:terminal_append_number`
-- `c:src/drivers/video.c:terminal_draw_footer_locked`
-- `c:src/drivers/video.c:terminal_hosted_max_offset_locked`
-- `c:src/drivers/video.c:terminal_max_view_offset`
-- `c:src/drivers/video.c:terminal_render_view_locked`
-- `c:src/drivers/video.c:terminal_reset_locked`
-- `c:src/drivers/video.c:terminal_view_start_line`
-- `c:src/drivers/video.c:video_clear`
-- `c:src/drivers/video.c:video_disable_framebuffer`
-- `c:src/drivers/video.c:video_draw_box`
-- `c:src/drivers/video.c:video_draw_hline`
-- `c:src/drivers/video.c:video_draw_vline`
-- `c:src/drivers/video.c:video_fill_rect`
-- `c:src/drivers/video.c:video_flush_updates`
-- `c:src/drivers/video.c:video_get_cursor_x`
-- `c:src/drivers/video.c:video_get_cursor_y`
-- `c:src/drivers/video.c:video_init`
-- `c:src/drivers/video.c:video_power_quiesce`
-- `c:src/drivers/video.c:video_print_at`
-- `c:src/drivers/video.c:video_put_char_at`
-- `c:src/drivers/video.c:video_set_color`
-- `c:src/drivers/video.c:video_set_cursor`
-- `c:src/drivers/video.c:video_terminal_begin`
-- `c:src/drivers/video.c:video_terminal_clear`
-- `c:src/drivers/video.c:video_terminal_scroll`
-- `c:src/drivers/video.c:video_terminal_scroll_end`
-- `c:src/drivers/video.c:video_terminal_scroll_home`
-- `c:src/drivers/video.c:video_terminal_suspend`
-- `c:src/drivers/video.c:video_terminal_take_hosted_dirty`
 - `c:src/filemanager/filemanager.c:fm_block_read_only_mutation`
 - `c:src/filemanager/filemanager.c:fm_classic_draw_help`
 - `c:src/filemanager/filemanager.c:fm_classic_draw_input_dialog`

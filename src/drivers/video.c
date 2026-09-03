@@ -160,11 +160,16 @@ static void update_cursor(void) {
     if (vga_x < 0) vga_x = 0;
     if (vga_y < 0) vga_y = 0;
 
+#if defined(ZEPHYROS_HOST_TEST)
+    extern void video_host_update_cursor(int x, int y);
+    video_host_update_cursor(vga_x, vga_y);
+#else
     uint16_t pos = vga_y * VGA_WIDTH + vga_x;
     asm volatile("outb %0, %1" : : "a"((uint8_t)(pos & 0xFF)), "Nd"((uint16_t)0x3D4));
     asm volatile("outb %0, %1" : : "a"((uint8_t)((pos >> 8) & 0xFF)), "Nd"((uint16_t)0x3D5));
     asm volatile("outb %0, %1" : : "a"((uint8_t)0x0E), "Nd"((uint16_t)0x3D4));
     asm volatile("outb %0, %1" : : "a"((uint8_t)((pos >> 8) & 0xFF)), "Nd"((uint16_t)0x3D5));
+#endif
 }
 
 static int terminal_columns(void) {

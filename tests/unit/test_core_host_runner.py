@@ -259,6 +259,17 @@ class CoreHostRunnerTests(unittest.TestCase):
         self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
                       "test_display_host.c", sources)
 
+    def test_video_case_has_driver_fixture_sources(self):
+        result_dir, binary, sources, suite = core_host_runner.case_configuration(
+            "host:drivers:video")
+        self.assertEqual(suite, "video-host")
+        self.assertEqual(result_dir, core_host_runner.VIDEO_RESULT_DIR)
+        self.assertEqual(binary, core_host_runner.VIDEO_BINARY)
+        self.assertIn(core_host_runner.ROOT / "src" / "drivers" / "video.c",
+                      sources)
+        self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
+                      "test_video_host.c", sources)
+
     def test_usb_transport_case_has_dispatch_fixture_sources(self):
         result_dir, binary, sources, suite = core_host_runner.case_configuration(
             "host:core:usb-transport")

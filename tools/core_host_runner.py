@@ -590,6 +590,12 @@ VESA_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_vesa_host.c",
     ROOT / "src" / "drivers" / "vesa.c",
 )
+VIDEO_RESULT_DIR = ROOT / "build" / "test-results" / "video-host"
+VIDEO_BINARY = ROOT / "build" / "tests" / "test_video_host.exe"
+VIDEO_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_video_host.c",
+    ROOT / "src" / "drivers" / "video.c",
+)
 SOURCE_FILES = CORE_SOURCE_FILES
 
 
@@ -767,6 +773,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return ICONS_RESULT_DIR, ICONS_BINARY, ICONS_SOURCE_FILES, "icons-host"
     if case_id == "host:drivers:vesa":
         return VESA_RESULT_DIR, VESA_BINARY, VESA_SOURCE_FILES, "vesa-host"
+    if case_id == "host:drivers:video":
+        return VIDEO_RESULT_DIR, VIDEO_BINARY, VIDEO_SOURCE_FILES, "video-host"
     raise ValueError(f"caso_host_invalido:{case_id}")
 
 
@@ -960,7 +968,8 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:shell:commands-vfs",
                                  "host:boot:recovery-runtime",
                                  "host:kernel:panic", "host:drivers:pci",
-                                 "host:ui:icons", "host:drivers:vesa"))
+                                 "host:ui:icons", "host:drivers:vesa",
+                                 "host:drivers:video"))
     parser.add_argument("--catalog", default=str(ROOT / "tests" / "catalog.json"))
     parser.add_argument("--timeout", type=float, default=DEFAULT_TIMEOUT)
     return parser.parse_args()
