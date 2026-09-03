@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7198**
-- Casos de teste: **108**
+- Casos de teste: **109**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4331 |
+| `COVERED` | 4337 |
 | `MANUAL` | 0 |
-| `PENDING` | 2867 |
+| `PENDING` | 2861 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 108 |
+| `AUTOMATED` | 109 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -6708,12 +6708,12 @@
 | `c:src/shell/shell_commands_storage.c:shell_index_job_finish` | `src/shell/shell_commands_storage.c` | `shell_index_job_finish` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_storage.c:shell_index_job_step` | `src/shell/shell_commands_storage.c` | `shell_index_job_step` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_storage.c:shell_storage_start_job` | `src/shell/shell_commands_storage.c` | `shell_storage_start_job` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_vfs.c:cmd_grep` | `src/shell/shell_commands_vfs.c` | `cmd_grep` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_vfs.c:cmd_pipetest` | `src/shell/shell_commands_vfs.c` | `cmd_pipetest` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_vfs.c:shell_dispatch_cmd_grep` | `src/shell/shell_commands_vfs.c` | `shell_dispatch_cmd_grep` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_vfs.c:shell_dispatch_cmd_pipetest` | `src/shell/shell_commands_vfs.c` | `shell_dispatch_cmd_pipetest` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_vfs.c:shell_grep_contains` | `src/shell/shell_commands_vfs.c` | `shell_grep_contains` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_vfs.c:shell_grep_emit` | `src/shell/shell_commands_vfs.c` | `shell_grep_emit` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_vfs.c:cmd_grep` | `src/shell/shell_commands_vfs.c` | `cmd_grep` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_vfs.c:cmd_pipetest` | `src/shell/shell_commands_vfs.c` | `cmd_pipetest` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_vfs.c:shell_dispatch_cmd_grep` | `src/shell/shell_commands_vfs.c` | `shell_dispatch_cmd_grep` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_vfs.c:shell_dispatch_cmd_pipetest` | `src/shell/shell_commands_vfs.c` | `shell_dispatch_cmd_pipetest` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_vfs.c:shell_grep_contains` | `src/shell/shell_commands_vfs.c` | `shell_grep_contains` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_vfs.c:shell_grep_emit` | `src/shell/shell_commands_vfs.c` | `shell_grep_emit` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_wifi.c:shell_dispatch_cmd_wifi` | `src/shell/shell_commands_wifi.c` | `shell_dispatch_cmd_wifi` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_wifi.c:wifi_command` | `src/shell/shell_commands_wifi.c` | `wifi_command` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_wifi.c:wifi_connect` | `src/shell/shell_commands_wifi.c` | `wifi_connect` | `shell` | `PENDING` | 0 |
@@ -7392,6 +7392,7 @@
 | `qemu:tst6:stress:kernel` | `qemu` | `tst6` | `qemu:tst6:stress:kernel` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | paging, heap, SLAB, processos e threads estao READY | repetir ciclos deterministas de memoria e execucao sob teto obrigatorio | invariantes estaveis permanecem iguais e a primeira falha interrompe a suite | overflow, vazamento, deadlock, timeout, protocolo ou QEMU | alocacoes e objetos temporarios de cada ciclo em snapshot | devolver paginas, destruir objetos e registrar seed e iteracao |
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
+| `host:shell:commands-vfs` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar grep com entrada fragmentada, comparacao sem diferenca de maiusculas, limites, erros de pipeline e o autoteste pipetest | linhas correspondentes sao encaminhadas, entradas invalidas e limites exibem diagnostico e pipetest preserva resultado e codigo canonico | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos de entrada, saida e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -9851,12 +9852,6 @@
 - `c:src/shell/shell_commands_storage.c:shell_index_job_finish`
 - `c:src/shell/shell_commands_storage.c:shell_index_job_step`
 - `c:src/shell/shell_commands_storage.c:shell_storage_start_job`
-- `c:src/shell/shell_commands_vfs.c:cmd_grep`
-- `c:src/shell/shell_commands_vfs.c:cmd_pipetest`
-- `c:src/shell/shell_commands_vfs.c:shell_dispatch_cmd_grep`
-- `c:src/shell/shell_commands_vfs.c:shell_dispatch_cmd_pipetest`
-- `c:src/shell/shell_commands_vfs.c:shell_grep_contains`
-- `c:src/shell/shell_commands_vfs.c:shell_grep_emit`
 - `c:src/shell/shell_commands_wifi.c:shell_dispatch_cmd_wifi`
 - `c:src/shell/shell_commands_wifi.c:wifi_command`
 - `c:src/shell/shell_commands_wifi.c:wifi_connect`

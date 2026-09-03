@@ -552,6 +552,17 @@ real. O relatorio fica em `build/test-results/gui-host/`:
 make test-gui-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-shell-commands-vfs-host` exercita `grep` e `pipetest` com
+entrada de pipeline, saida de video e autoteste falsos. A fixture cobre
+entrada fragmentada, comparacao sem diferenca de maiusculas, argumentos
+invalidos, erro de leitura/escrita, linha acima do limite e propagacao do
+codigo do pipetest. O relatorio fica em
+`build/test-results/shell-commands-vfs-host/`:
+
+```text
+make test-shell-commands-vfs-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 O caso `test-shell-command-utils-host` exercita os utilitarios de comandos do
 Shell com parsing de tokens e argumentos, comparacao de subcomandos,
 normalizacao para maiusculas, conversao numerica, limites, entradas invalidas

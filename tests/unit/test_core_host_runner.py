@@ -280,6 +280,17 @@ class CoreHostRunnerTests(unittest.TestCase):
         self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
                       "test_gui_host.c", sources)
 
+    def test_shell_commands_vfs_case_has_pipeline_fixture_sources(self):
+        result_dir, binary, sources, suite = core_host_runner.case_configuration(
+            "host:shell:commands-vfs")
+        self.assertEqual(suite, "shell-commands-vfs-host")
+        self.assertEqual(result_dir, core_host_runner.SHELL_COMMANDS_VFS_RESULT_DIR)
+        self.assertEqual(binary, core_host_runner.SHELL_COMMANDS_VFS_BINARY)
+        self.assertIn(core_host_runner.ROOT / "src" / "shell" /
+                      "shell_commands_vfs.c", sources)
+        self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
+                      "test_shell_commands_vfs_host.c", sources)
+
     def test_shell_core_case_has_shell_fixture_sources(self):
         result_dir, binary, sources, suite = core_host_runner.case_configuration(
             "host:shell:core")
