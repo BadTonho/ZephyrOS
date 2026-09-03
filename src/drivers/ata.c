@@ -10,6 +10,13 @@ static int driver_initialized = 0;
 static uint32_t ata_read_ops = 0;
 static uint32_t ata_write_ops = 0;
 
+#ifdef ZEPHYROS_HOST_TEST
+extern void ata_host_outb(uint16_t port, uint8_t value);
+extern uint8_t ata_host_inb(uint16_t port);
+extern uint16_t ata_host_inw(uint16_t port);
+extern void ata_host_outw(uint16_t port, uint16_t value);
+#endif
+
 static uint8_t inb(uint16_t port);
 
 static void ata_primary_irq_handler(registers_t* regs) {
@@ -27,19 +34,31 @@ static void ata_secondary_irq_handler(registers_t* regs) {
 #define ATA_RESET_DELAY_READS 64
 
 static void outb(uint16_t port, uint8_t val) {
+#ifdef ZEPHYROS_HOST_TEST
+    ata_host_outb(port, val);
+#else
     asm volatile("outb %0, %1" : : "a"(val), "Nd"(port));
+#endif
 }
 
 static uint8_t inb(uint16_t port) {
+#ifdef ZEPHYROS_HOST_TEST
+    return ata_host_inb(port);
+#else
     uint8_t result;
     asm volatile("inb %1, %0" : "=a"(result) : "Nd"(port));
     return result;
+#endif
 }
 
 static uint16_t inw(uint16_t port) {
+#ifdef ZEPHYROS_HOST_TEST
+    return ata_host_inw(port);
+#else
     uint16_t result;
     asm volatile("inw %1, %0" : "=a"(result) : "Nd"(port));
     return result;
+#endif
 }
 
 static void ata_delay(uint16_t port) {
@@ -241,7 +260,11 @@ static int ata_detect(uint8_t slot, uint16_t io, uint16_t ctrl,
 }
 
 static void outw(uint16_t port, uint16_t val) {
+#ifdef ZEPHYROS_HOST_TEST
+    ata_host_outw(port, val);
+#else
     asm volatile("outw %0, %1" : : "a"(val), "Nd"(port));
+#endif
 }
 
 static ata_device_t* ata_first_present(void) {

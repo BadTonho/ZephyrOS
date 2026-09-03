@@ -1607,6 +1607,21 @@ pendente.
   4.717 `COVERED`, 2.492 `PENDING` e 122 casos. O fechamento integral, o gate
   estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Drivers/ATA concluido em 2026-09-03. Foi criado o caso host-only
+  `host:drivers:ata` e o alvo `make test-ata-host`. A fixture usa portas,
+  dados IDENTIFY, PIO e IRQ falsos para exercitar descoberta, inventario,
+  parsing, limite LBA28, leitura, escrita, flush, contadores, retries,
+  timeouts, entradas invalidas e recuperacao. O relatorio instrumentado
+  `build/test-results/ata-host/coverage.json` terminou `PASS`, resolveu as 30
+  funcoes observadas de `src/drivers/ata.c`, sem enderecos desconhecidos ou
+  ambiguos, e nao acessou armazenamento ou I/O real. Foram executados
+  `make test-ata-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`, a
+  sincronizacao e renderizacao do catalogo, `python tools/test_catalog.py
+  validate` e `git diff --check`; todos passaram nesta etapa. O catalogo
+  registra 7.209 superficies, 4.757 `COVERED`, 2.452 `PENDING` e 124 casos.
+  O fechamento integral, o gate estrito e a validacao TST7 completa continuam
+  pendentes.
+
 - Incremento Drivers/video concluido em 2026-09-03: foi criado o caso host-only
   `host:drivers:video` e o alvo `make test-video-host`. A fixture usa
   framebuffer, fonte, VESA, mouse e logs falsos para exercitar inicializacao,

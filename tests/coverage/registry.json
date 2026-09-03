@@ -4597,6 +4597,59 @@
         "status": "AUTOMATED"
       },
       "evidence": "make test-rtl8811cu-host PASS com probe USB, descritores, endpoints, firmware, estados, callbacks Ethernet, scan, associacao e cobertura instrumentada completa"
+    },
+    {
+      "id": "ata-host-dynamic",
+      "domain": "drivers-ata",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:drivers:ata"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/ata-host/coverage.json",
+      "coverage_sources": [
+        "src/drivers/ata.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:drivers:ata",
+        "scenario": "Contrato host-only do driver ATA com portas, identificacao e PIO simulados",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "ata-pio-ports-irq-falso"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "validar descoberta, inventario, IRQ, leitura e escrita PIO, flush, limites, retries, timeouts e falhas",
+        "expected": "dispositivos ATA falsos publicam identificacao e contadores corretos; operacoes validas transferem setores; fixtures invalidas retornam erros canonicos e restauram o estado",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao, acesso I/O real ou timeout",
+        "effects": "somente portas ATA, dados IDENTIFY, PIO, IRQ e armazenamento falso no processo host",
+        "cleanup": "estado de portas, handlers, dispositivos, contadores, manifesto, logs e cobertura permanecem confinados ao processo host",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "drivers",
+          "ata",
+          "storage",
+          "pio",
+          "irq",
+          "limits",
+          "recovery",
+          "coverage"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "make test-ata-host PASS com descoberta ATA, identificacao, inventario, IRQ, PIO, flush, limites, retries, timeouts e cobertura instrumentada completa"
     }
   ]
 }
