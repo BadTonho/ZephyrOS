@@ -5148,3 +5148,15 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   processo real no QEMU; ela não foi coberta artificialmente pelo host-only.
   O catálogo atual registra 7.219 superfícies, 5.092 `COVERED`, 2.127
   `PENDING` e 132 casos.
+
+- Incremento Core/app_loader concluído em 2026-09-03. O novo caso
+  `host:core:app-loader` e o alvo `make test-app-loader-host` usam buffers
+  estáticos e dependências falsas para exercitar parsing, validação de ZAPP,
+  ciclo de vida de processos, cancelamento, resultados, caminhos inválidos e
+  propagação de erros do loader real. A execução instrumentada terminou
+  `PASS`; `coverage.json` resolveu todas as 24 superfícies de
+  `src/core/app_loader.c`, sem `unknown_addresses` ou `ambiguous_symbols`.
+  Também passaram `make q3check`, `make clean`, `make`, `make catalog-test` e
+  a suíte unitária dos runners. O catálogo atual registra 7.219 superfícies,
+  5.110 `COVERED`, 2.109 `PENDING` e 133 casos. O fechamento integral, o gate
+  estrito e a validação TST7 completa continuam pendentes.
