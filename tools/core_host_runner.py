@@ -694,6 +694,13 @@ SHELL_COMMANDS_CORE_SOURCE_FILES = (
     ROOT / "src" / "shell" / "shell_command_utils.c",
     ROOT / "src" / "core" / "string.c",
 )
+SHELL_DIAGNOSTICS_HELPERS_RESULT_DIR = ROOT / "build" / "test-results" / "shell-diagnostics-helpers-host"
+SHELL_DIAGNOSTICS_HELPERS_BINARY = ROOT / "build" / "tests" / "test_shell_diagnostics_helpers_host.exe"
+SHELL_DIAGNOSTICS_HELPERS_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_shell_diagnostics_helpers_host.c",
+    ROOT / "src" / "shell" / "shell_diagnostics_helpers.c",
+    ROOT / "src" / "core" / "string.c",
+)
 SHELL_WIFI_RESULT_DIR = ROOT / "build" / "test-results" / "shell-wifi-host"
 SHELL_WIFI_BINARY = ROOT / "build" / "tests" / "test_shell_commands_wifi_host.exe"
 SHELL_WIFI_SOURCE_FILES = (
@@ -1042,6 +1049,11 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
     if case_id == "host:shell:commands-core":
         return (SHELL_COMMANDS_CORE_RESULT_DIR, SHELL_COMMANDS_CORE_BINARY,
                 SHELL_COMMANDS_CORE_SOURCE_FILES, "shell-commands-core-host")
+    if case_id == "host:shell:diagnostics-helpers":
+        return (SHELL_DIAGNOSTICS_HELPERS_RESULT_DIR,
+                SHELL_DIAGNOSTICS_HELPERS_BINARY,
+                SHELL_DIAGNOSTICS_HELPERS_SOURCE_FILES,
+                "shell-diagnostics-helpers-host")
     if case_id == "host:shell:wifi":
         return (SHELL_WIFI_RESULT_DIR, SHELL_WIFI_BINARY,
                 SHELL_WIFI_SOURCE_FILES, "shell-wifi-host")
@@ -1213,6 +1225,11 @@ def attach_surface_ids(symbols: list[dict[str, Any]],
     return enriched
 
 
+def coverage_source_files(case_id: str,
+                          sources: tuple[Path, ...]) -> tuple[Path, ...]:
+    return sources
+
+
 def write_artifacts(result_dir: Path, manifest: dict[str, Any], result: dict[str, Any],
                     coverage: dict[str, Any] | None,
                     symbols: list[dict[str, Any]] | None) -> None:
@@ -1308,6 +1325,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:shell:command-utils",
                                  "host:gui:display", "host:shell:core",
                                  "host:shell:commands-core",
+                                 "host:shell:diagnostics-helpers",
                                  "host:shell:wifi",
                                  "host:core:usb-transport", "host:gui:widgets",
                                  "host:shell:commands-vfs",
@@ -1329,6 +1347,7 @@ def parse_arguments() -> argparse.Namespace:
 def main() -> int:
     arguments = parse_arguments()
     result_dir, default_binary, source_files, suite = case_configuration(arguments.case)
+    selected_coverage_sources = coverage_source_files(arguments.case, source_files)
     compiler = executable(arguments.cc)
     binary_value = arguments.binary
     if arguments.case != "host:core:contracts" and binary_value == str(DEFAULT_BINARY):
@@ -1345,6 +1364,8 @@ def main() -> int:
         "timeout_seconds": arguments.timeout,
         "instrumentation": "-finstrument-functions",
         "sources": [str(path.relative_to(ROOT)) for path in source_files],
+        "coverage_sources": [str(path.relative_to(ROOT))
+                             for path in selected_coverage_sources],
     }
     result: dict[str, Any] = {"suite": suite, "status": "PASS",
                               "steps": [], "cause": None}
@@ -1385,7 +1406,8 @@ def main() -> int:
     coverage = None
     if symbols is not None and run_result["stdout"]:
         try:
-            symbols = attach_surface_ids(symbols, catalog, source_files)
+            symbols = attach_surface_ids(symbols, catalog,
+                                         selected_coverage_sources)
             coverage = coverage_collector.collect_report(
                 run_result["stdout"], symbols)
         except (coverage_collector.CoverageError, OSError) as error:

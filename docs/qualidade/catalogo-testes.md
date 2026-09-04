@@ -4,13 +4,13 @@
 
 ## Resumo
 
-- Superfícies ativas: **7256**
-- Casos de teste: **150**
-- Superfícies aposentadas: **23**
+- Superfícies ativas: **7290**
+- Casos de teste: **151**
+- Superfícies aposentadas: **57**
 
 | Tipo | Quantidade |
 |---|---:|
-| `api_function` | 1541 |
+| `api_function` | 1575 |
 | `asm_entry` | 101 |
 | `c_function` | 5494 |
 | `shell_command` | 95 |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 5964 |
+| `COVERED` | 6032 |
 | `MANUAL` | 0 |
-| `PENDING` | 1292 |
+| `PENDING` | 1258 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 150 |
+| `AUTOMATED` | 151 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -34,7 +34,7 @@
 
 | Proprietario | Superficies |
 |---|---:|
-| `apps` | 134 |
+| `apps` | 168 |
 | `appstore` | 88 |
 | `boot` | 136 |
 | `core` | 2812 |
@@ -106,6 +106,40 @@
 | `api:src/include/apps/shell_command_utils.h:shell_command_read_token` | `src/include/apps/shell_command_utils.h` | `shell_command_read_token` | `apps` | `COVERED` | 6 |
 | `api:src/include/apps/shell_command_utils.h:shell_command_read_two_args` | `src/include/apps/shell_command_utils.h` | `shell_command_read_two_args` | `apps` | `COVERED` | 6 |
 | `api:src/include/apps/shell_command_utils.h:shell_command_uppercase` | `src/include/apps/shell_command_utils.h` | `shell_command_uppercase` | `apps` | `COVERED` | 6 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:cmd_acpi_mode_name` | `src/include/apps/shell_diagnostics_helpers.h` | `cmd_acpi_mode_name` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:cmd_acpi_s5_name` | `src/include/apps/shell_diagnostics_helpers.h` | `cmd_acpi_s5_name` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:cmd_acpi_space_name` | `src/include/apps/shell_diagnostics_helpers.h` | `cmd_acpi_space_name` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:cmd_device_status_color` | `src/include/apps/shell_diagnostics_helpers.h` | `cmd_device_status_color` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:cmd_health_check_tls_detail` | `src/include/apps/shell_diagnostics_helpers.h` | `cmd_health_check_tls_detail` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:cmd_health_remote_state_from_status` | `src/include/apps/shell_diagnostics_helpers.h` | `cmd_health_remote_state_from_status` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:cmd_health_update_apply_state` | `src/include/apps/shell_diagnostics_helpers.h` | `cmd_health_update_apply_state` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:cmd_health_update_history_state` | `src/include/apps/shell_diagnostics_helpers.h` | `cmd_health_update_history_state` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:cmd_health_update_local_state` | `src/include/apps/shell_diagnostics_helpers.h` | `cmd_health_update_local_state` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:cmd_log_level_name` | `src/include/apps/shell_diagnostics_helpers.h` | `cmd_log_level_name` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:cmd_log_parse_level` | `src/include/apps/shell_diagnostics_helpers.h` | `cmd_log_parse_level` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:cmd_log_parse_tail_count` | `src/include/apps/shell_diagnostics_helpers.h` | `cmd_log_parse_tail_count` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:cmd_mouse_has_extra_args` | `src/include/apps/shell_diagnostics_helpers.h` | `cmd_mouse_has_extra_args` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:cmd_mouse_parse_speed` | `src/include/apps/shell_diagnostics_helpers.h` | `cmd_mouse_parse_speed` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:cmd_mouse_read_token` | `src/include/apps/shell_diagnostics_helpers.h` | `cmd_mouse_read_token` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:cmd_proccheck_pid_path` | `src/include/apps/shell_diagnostics_helpers.h` | `cmd_proccheck_pid_path` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:cmd_signal_parse_name` | `src/include/apps/shell_diagnostics_helpers.h` | `cmd_signal_parse_name` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:cmd_signal_parse_uint` | `src/include/apps/shell_diagnostics_helpers.h` | `cmd_signal_parse_uint` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:cmd_sysfs_append` | `src/include/apps/shell_diagnostics_helpers.h` | `cmd_sysfs_append` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:cmd_sysfs_path_for_device` | `src/include/apps/shell_diagnostics_helpers.h` | `cmd_sysfs_path_for_device` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:cmd_sysfs_path_for_id` | `src/include/apps/shell_diagnostics_helpers.h` | `cmd_sysfs_path_for_id` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:cmd_usb_port_color` | `src/include/apps/shell_diagnostics_helpers.h` | `cmd_usb_port_color` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:cmd_usb_recovery_color` | `src/include/apps/shell_diagnostics_helpers.h` | `cmd_usb_recovery_color` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:cmd_usb_state_color` | `src/include/apps/shell_diagnostics_helpers.h` | `cmd_usb_state_color` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:cmd_vfs_node_name` | `src/include/apps/shell_diagnostics_helpers.h` | `cmd_vfs_node_name` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:cmd_vmamap_area_type` | `src/include/apps/shell_diagnostics_helpers.h` | `cmd_vmamap_area_type` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:cmd_vmamap_parse_pid` | `src/include/apps/shell_diagnostics_helpers.h` | `cmd_vmamap_parse_pid` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:shell_cpu_usage_percent` | `src/include/apps/shell_diagnostics_helpers.h` | `shell_cpu_usage_percent` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:shell_diagnostics_health_state_color` | `src/include/apps/shell_diagnostics_helpers.h` | `shell_diagnostics_health_state_color` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:shell_kmetrics_delta` | `src/include/apps/shell_diagnostics_helpers.h` | `shell_kmetrics_delta` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:shell_memcheck_same_layout` | `src/include/apps/shell_diagnostics_helpers.h` | `shell_memcheck_same_layout` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:shell_memcheck_same_memory_metrics` | `src/include/apps/shell_diagnostics_helpers.h` | `shell_memcheck_same_memory_metrics` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:shell_memcheck_valid_memory_metrics` | `src/include/apps/shell_diagnostics_helpers.h` | `shell_memcheck_valid_memory_metrics` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_diagnostics_helpers.h:shell_process_state_name` | `src/include/apps/shell_diagnostics_helpers.h` | `shell_process_state_name` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/shell_dispatch.h:shell_dispatch_execute` | `src/include/apps/shell_dispatch.h` | `shell_dispatch_execute` | `apps` | `COVERED` | 6 |
 | `api:src/include/apps/shell_input.h:shell_input_cancel_extended` | `src/include/apps/shell_input.h` | `shell_input_cancel_extended` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_input.h:shell_input_get_buffer` | `src/include/apps/shell_input.h` | `shell_input_get_buffer` | `apps` | `COVERED` | 7 |
@@ -164,7 +198,7 @@
 | `api:src/include/apps/shell_runtime.h:shell_core_migrated_builtin_is_ready` | `src/include/apps/shell_runtime.h` | `shell_core_migrated_builtin_is_ready` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_runtime.h:shell_core_reboot` | `src/include/apps/shell_runtime.h` | `shell_core_reboot` | `apps` | `COVERED` | 3 |
 | `api:src/include/apps/shell_runtime.h:shell_core_shutdown` | `src/include/apps/shell_runtime.h` | `shell_core_shutdown` | `apps` | `COVERED` | 3 |
-| `api:src/include/apps/shell_runtime.h:shell_diagnostics_health_state_color` | `src/include/apps/shell_runtime.h` | `shell_diagnostics_health_state_color` | `apps` | `COVERED` | 2 |
+| `api:src/include/apps/shell_runtime.h:shell_diagnostics_health_state_color` | `src/include/apps/shell_runtime.h` | `shell_diagnostics_health_state_color` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/shell_runtime.h:shell_diagnostics_print_usb_fixture_report` | `src/include/apps/shell_runtime.h` | `shell_diagnostics_print_usb_fixture_report` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_runtime.h:shell_diagnostics_reset` | `src/include/apps/shell_runtime.h` | `shell_diagnostics_reset` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_runtime.h:shell_diagnostics_run_device_scan` | `src/include/apps/shell_runtime.h` | `shell_diagnostics_run_device_scan` | `apps` | `COVERED` | 2 |
@@ -606,8 +640,8 @@
 | `api:src/include/core/spinlock.h:spinlock_release` | `src/include/core/spinlock.h` | `spinlock_release` | `core` | `PENDING` | 0 |
 | `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 54 |
 | `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 58 |
-| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 48 |
-| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 50 |
+| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 49 |
+| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 51 |
 | `api:src/include/core/syscall.h:syscall_enable_user_mode` | `src/include/core/syscall.h` | `syscall_enable_user_mode` | `core` | `COVERED` | 2 |
 | `api:src/include/core/syscall.h:syscall_handler` | `src/include/core/syscall.h` | `syscall_handler` | `core` | `COVERED` | 2 |
 | `api:src/include/core/syscall.h:syscall_init` | `src/include/core/syscall.h` | `syscall_init` | `core` | `COVERED` | 2 |
@@ -3082,8 +3116,8 @@
 | `c:src/core/socket.c:socket_wake` | `src/core/socket.c` | `socket_wake` | `core` | `COVERED` | 3 |
 | `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 54 |
 | `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 58 |
-| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 48 |
-| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 50 |
+| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 49 |
+| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 51 |
 | `c:src/core/syscall.c:syscall_copy_user_string` | `src/core/syscall.c` | `syscall_copy_user_string` | `core` | `COVERED` | 1 |
 | `c:src/core/syscall.c:syscall_dispatch` | `src/core/syscall.c` | `syscall_dispatch` | `core` | `COVERED` | 2 |
 | `c:src/core/syscall.c:syscall_dispatch_user` | `src/core/syscall.c` | `syscall_dispatch_user` | `core` | `COVERED` | 2 |
@@ -6260,14 +6294,11 @@
 | `c:src/shell/shell_commands_core.c:shell_report_builtin_failure` | `src/shell/shell_commands_core.c` | `shell_report_builtin_failure` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_core.c:shell_stack_print_info` | `src/shell/shell_commands_core.c` | `shell_stack_print_info` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_acpi` | `src/shell/shell_commands_diagnostics.c` | `cmd_acpi` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_mode_name` | `src/shell/shell_commands_diagnostics.c` | `cmd_acpi_mode_name` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_print_address` | `src/shell/shell_commands_diagnostics.c` | `cmd_acpi_print_address` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_print_power` | `src/shell/shell_commands_diagnostics.c` | `cmd_acpi_print_power` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_print_register` | `src/shell/shell_commands_diagnostics.c` | `cmd_acpi_print_register` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_print_snapshot_table` | `src/shell/shell_commands_diagnostics.c` | `cmd_acpi_print_snapshot_table` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_print_table` | `src/shell/shell_commands_diagnostics.c` | `cmd_acpi_print_table` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_s5_name` | `src/shell/shell_commands_diagnostics.c` | `cmd_acpi_s5_name` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_space_name` | `src/shell/shell_commands_diagnostics.c` | `cmd_acpi_space_name` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_tables` | `src/shell/shell_commands_diagnostics.c` | `cmd_acpi_tables` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_cd` | `src/shell/shell_commands_diagnostics.c` | `cmd_cd` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_clock` | `src/shell/shell_commands_diagnostics.c` | `cmd_clock` | `shell` | `PENDING` | 0 |
@@ -6278,7 +6309,6 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_devcheck` | `src/shell/shell_commands_diagnostics.c` | `cmd_devcheck` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_device_info` | `src/shell/shell_commands_diagnostics.c` | `cmd_device_info` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_device_scan` | `src/shell/shell_commands_diagnostics.c` | `cmd_device_scan` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_device_status_color` | `src/shell/shell_commands_diagnostics.c` | `cmd_device_status_color` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_devices` | `src/shell/shell_commands_diagnostics.c` | `cmd_devices` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_devices_print_entry` | `src/shell/shell_commands_diagnostics.c` | `cmd_devices_print_entry` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_diagnostics_print_test` | `src/shell/shell_commands_diagnostics.c` | `cmd_diagnostics_print_test` | `shell` | `PENDING` | 0 |
@@ -6298,7 +6328,6 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_signals` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_signals` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_sockets` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_sockets` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_tls` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_tls` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_tls_detail` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_tls_detail` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_update` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update_capabilities` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_update_capabilities` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update_remote` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_update_remote` | `shell` | `PENDING` | 0 |
@@ -6321,11 +6350,7 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_update_capabilities` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_update_capabilities` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_usb_hid` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_usb_hid` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_user_fault` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_user_fault` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_remote_state_from_status` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_remote_state_from_status` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_summary` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_summary` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_update_apply_state` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_update_apply_state` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_update_history_state` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_update_history_state` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_update_local_state` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_update_local_state` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_update_remote_state` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_update_remote_state` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_irqstat` | `src/shell/shell_commands_diagnostics.c` | `cmd_irqstat` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_irqstat_check` | `src/shell/shell_commands_diagnostics.c` | `cmd_irqstat_check` | `shell` | `PENDING` | 0 |
@@ -6343,9 +6368,6 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_log_check` | `src/shell/shell_commands_diagnostics.c` | `cmd_log_check` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_log_invalid` | `src/shell/shell_commands_diagnostics.c` | `cmd_log_invalid` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_log_level` | `src/shell/shell_commands_diagnostics.c` | `cmd_log_level` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_log_level_name` | `src/shell/shell_commands_diagnostics.c` | `cmd_log_level_name` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_log_parse_level` | `src/shell/shell_commands_diagnostics.c` | `cmd_log_parse_level` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_log_parse_tail_count` | `src/shell/shell_commands_diagnostics.c` | `cmd_log_parse_tail_count` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_log_print_levels` | `src/shell/shell_commands_diagnostics.c` | `cmd_log_print_levels` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_log_print_record` | `src/shell/shell_commands_diagnostics.c` | `cmd_log_print_record` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_log_print_signed` | `src/shell/shell_commands_diagnostics.c` | `cmd_log_print_signed` | `shell` | `PENDING` | 0 |
@@ -6358,34 +6380,25 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_mount` | `src/shell/shell_commands_diagnostics.c` | `cmd_mount` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_mouse` | `src/shell/shell_commands_diagnostics.c` | `cmd_mouse` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_mouse_apply` | `src/shell/shell_commands_diagnostics.c` | `cmd_mouse_apply` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_mouse_has_extra_args` | `src/shell/shell_commands_diagnostics.c` | `cmd_mouse_has_extra_args` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_mouse_parse_speed` | `src/shell/shell_commands_diagnostics.c` | `cmd_mouse_parse_speed` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_mouse_print_status` | `src/shell/shell_commands_diagnostics.c` | `cmd_mouse_print_status` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_mouse_print_usage` | `src/shell/shell_commands_diagnostics.c` | `cmd_mouse_print_usage` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_mouse_read_token` | `src/shell/shell_commands_diagnostics.c` | `cmd_mouse_read_token` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_pagefault` | `src/shell/shell_commands_diagnostics.c` | `cmd_pagefault` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_power` | `src/shell/shell_commands_diagnostics.c` | `cmd_power` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck` | `src/shell/shell_commands_diagnostics.c` | `cmd_proccheck` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck_controls` | `src/shell/shell_commands_diagnostics.c` | `cmd_proccheck_controls` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck_cursor` | `src/shell/shell_commands_diagnostics.c` | `cmd_proccheck_cursor` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck_directory` | `src/shell/shell_commands_diagnostics.c` | `cmd_proccheck_directory` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck_pid_path` | `src/shell/shell_commands_diagnostics.c` | `cmd_proccheck_pid_path` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck_read` | `src/shell/shell_commands_diagnostics.c` | `cmd_proccheck_read` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck_sysfs_attributes` | `src/shell/shell_commands_diagnostics.c` | `cmd_proccheck_sysfs_attributes` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck_write` | `src/shell/shell_commands_diagnostics.c` | `cmd_proccheck_write` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_pwd` | `src/shell/shell_commands_diagnostics.c` | `cmd_pwd` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_schedcheck` | `src/shell/shell_commands_diagnostics.c` | `cmd_schedcheck` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_schedcheck_print_result` | `src/shell/shell_commands_diagnostics.c` | `cmd_schedcheck_print_result` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_signal_parse_name` | `src/shell/shell_commands_diagnostics.c` | `cmd_signal_parse_name` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_signal_parse_uint` | `src/shell/shell_commands_diagnostics.c` | `cmd_signal_parse_uint` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_sigtest` | `src/shell/shell_commands_diagnostics.c` | `cmd_sigtest` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_sigtest_print` | `src/shell/shell_commands_diagnostics.c` | `cmd_sigtest_print` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_slabinfo` | `src/shell/shell_commands_diagnostics.c` | `cmd_slabinfo` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_slabtest` | `src/shell/shell_commands_diagnostics.c` | `cmd_slabtest` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_sysfs_append` | `src/shell/shell_commands_diagnostics.c` | `cmd_sysfs_append` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_sysfs_has_node` | `src/shell/shell_commands_diagnostics.c` | `cmd_sysfs_has_node` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_sysfs_path_for_device` | `src/shell/shell_commands_diagnostics.c` | `cmd_sysfs_path_for_device` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_sysfs_path_for_id` | `src/shell/shell_commands_diagnostics.c` | `cmd_sysfs_path_for_id` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_sysfs_print_device` | `src/shell/shell_commands_diagnostics.c` | `cmd_sysfs_print_device` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_sysfs_read_snapshot` | `src/shell/shell_commands_diagnostics.c` | `cmd_sysfs_read_snapshot` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_timer` | `src/shell/shell_commands_diagnostics.c` | `cmd_timer` | `shell` | `PENDING` | 0 |
@@ -6405,20 +6418,14 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_usb_devices` | `src/shell/shell_commands_diagnostics.c` | `cmd_usb_devices` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_usb_hid` | `src/shell/shell_commands_diagnostics.c` | `cmd_usb_hid` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_usb_list` | `src/shell/shell_commands_diagnostics.c` | `cmd_usb_list` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_usb_port_color` | `src/shell/shell_commands_diagnostics.c` | `cmd_usb_port_color` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_usb_ports` | `src/shell/shell_commands_diagnostics.c` | `cmd_usb_ports` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_usb_print_entry` | `src/shell/shell_commands_diagnostics.c` | `cmd_usb_print_entry` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_usb_recovery_color` | `src/shell/shell_commands_diagnostics.c` | `cmd_usb_recovery_color` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_usb_state_color` | `src/shell/shell_commands_diagnostics.c` | `cmd_usb_state_color` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_usb_status` | `src/shell/shell_commands_diagnostics.c` | `cmd_usb_status` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_usb_storage` | `src/shell/shell_commands_diagnostics.c` | `cmd_usb_storage` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_vfs` | `src/shell/shell_commands_diagnostics.c` | `cmd_vfs` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_vfs_node_name` | `src/shell/shell_commands_diagnostics.c` | `cmd_vfs_node_name` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_vfs_status` | `src/shell/shell_commands_diagnostics.c` | `cmd_vfs_status` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_vfs_test` | `src/shell/shell_commands_diagnostics.c` | `cmd_vfs_test` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_vmamap` | `src/shell/shell_commands_diagnostics.c` | `cmd_vmamap` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_vmamap_area_type` | `src/shell/shell_commands_diagnostics.c` | `cmd_vmamap_area_type` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_vmamap_parse_pid` | `src/shell/shell_commands_diagnostics.c` | `cmd_vmamap_parse_pid` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_vmamap_print_permissions` | `src/shell/shell_commands_diagnostics.c` | `cmd_vmamap_print_permissions` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_wait` | `src/shell/shell_commands_diagnostics.c` | `cmd_wait` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_wait_check` | `src/shell/shell_commands_diagnostics.c` | `cmd_wait_check` | `shell` | `PENDING` | 0 |
@@ -6436,8 +6443,6 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_workq_usage` | `src/shell/shell_commands_diagnostics.c` | `cmd_workq_usage` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_wqinfo` | `src/shell/shell_commands_diagnostics.c` | `cmd_wqinfo` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_core_migrated_builtin_is_ready` | `src/shell/shell_commands_diagnostics.c` | `shell_core_migrated_builtin_is_ready` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:shell_cpu_usage_percent` | `src/shell/shell_commands_diagnostics.c` | `shell_cpu_usage_percent` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_health_state_color` | `src/shell/shell_commands_diagnostics.c` | `shell_diagnostics_health_state_color` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_print_usb_fixture_report` | `src/shell/shell_commands_diagnostics.c` | `shell_diagnostics_print_usb_fixture_report` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_reset` | `src/shell/shell_commands_diagnostics.c` | `shell_diagnostics_reset` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_run_device_scan` | `src/shell/shell_commands_diagnostics.c` | `shell_diagnostics_run_device_scan` | `shell` | `PENDING` | 0 |
@@ -6474,12 +6479,7 @@
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_wait` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_wait` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_workq` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_workq` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_wqinfo` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_wqinfo` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:shell_kmetrics_delta` | `src/shell/shell_commands_diagnostics.c` | `shell_kmetrics_delta` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_kmetrics_take_snapshot` | `src/shell/shell_commands_diagnostics.c` | `shell_kmetrics_take_snapshot` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:shell_memcheck_same_layout` | `src/shell/shell_commands_diagnostics.c` | `shell_memcheck_same_layout` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:shell_memcheck_same_memory_metrics` | `src/shell/shell_commands_diagnostics.c` | `shell_memcheck_same_memory_metrics` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:shell_memcheck_valid_memory_metrics` | `src/shell/shell_commands_diagnostics.c` | `shell_memcheck_valid_memory_metrics` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:shell_process_state_name` | `src/shell/shell_commands_diagnostics.c` | `shell_process_state_name` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_dns_wait` | `src/shell/shell_commands_network.c` | `cmd_dns_wait` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_http` | `src/shell/shell_commands_network.c` | `cmd_http` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_http_execute` | `src/shell/shell_commands_network.c` | `cmd_http_execute` | `shell` | `PENDING` | 0 |
@@ -6784,6 +6784,40 @@
 | `c:src/shell/shell_commands_wifi.c:wifi_print_usb_location` | `src/shell/shell_commands_wifi.c` | `wifi_print_usb_location` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_wifi.c:wifi_scan` | `src/shell/shell_commands_wifi.c` | `wifi_scan` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_wifi.c:wifi_state_color` | `src/shell/shell_commands_wifi.c` | `wifi_state_color` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:cmd_acpi_mode_name` | `src/shell/shell_diagnostics_helpers.c` | `cmd_acpi_mode_name` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:cmd_acpi_s5_name` | `src/shell/shell_diagnostics_helpers.c` | `cmd_acpi_s5_name` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:cmd_acpi_space_name` | `src/shell/shell_diagnostics_helpers.c` | `cmd_acpi_space_name` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:cmd_device_status_color` | `src/shell/shell_diagnostics_helpers.c` | `cmd_device_status_color` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:cmd_health_check_tls_detail` | `src/shell/shell_diagnostics_helpers.c` | `cmd_health_check_tls_detail` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:cmd_health_remote_state_from_status` | `src/shell/shell_diagnostics_helpers.c` | `cmd_health_remote_state_from_status` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:cmd_health_update_apply_state` | `src/shell/shell_diagnostics_helpers.c` | `cmd_health_update_apply_state` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:cmd_health_update_history_state` | `src/shell/shell_diagnostics_helpers.c` | `cmd_health_update_history_state` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:cmd_health_update_local_state` | `src/shell/shell_diagnostics_helpers.c` | `cmd_health_update_local_state` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:cmd_log_level_name` | `src/shell/shell_diagnostics_helpers.c` | `cmd_log_level_name` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:cmd_log_parse_level` | `src/shell/shell_diagnostics_helpers.c` | `cmd_log_parse_level` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:cmd_log_parse_tail_count` | `src/shell/shell_diagnostics_helpers.c` | `cmd_log_parse_tail_count` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:cmd_mouse_has_extra_args` | `src/shell/shell_diagnostics_helpers.c` | `cmd_mouse_has_extra_args` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:cmd_mouse_parse_speed` | `src/shell/shell_diagnostics_helpers.c` | `cmd_mouse_parse_speed` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:cmd_mouse_read_token` | `src/shell/shell_diagnostics_helpers.c` | `cmd_mouse_read_token` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:cmd_proccheck_pid_path` | `src/shell/shell_diagnostics_helpers.c` | `cmd_proccheck_pid_path` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:cmd_signal_parse_name` | `src/shell/shell_diagnostics_helpers.c` | `cmd_signal_parse_name` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:cmd_signal_parse_uint` | `src/shell/shell_diagnostics_helpers.c` | `cmd_signal_parse_uint` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:cmd_sysfs_append` | `src/shell/shell_diagnostics_helpers.c` | `cmd_sysfs_append` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:cmd_sysfs_path_for_device` | `src/shell/shell_diagnostics_helpers.c` | `cmd_sysfs_path_for_device` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:cmd_sysfs_path_for_id` | `src/shell/shell_diagnostics_helpers.c` | `cmd_sysfs_path_for_id` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:cmd_usb_port_color` | `src/shell/shell_diagnostics_helpers.c` | `cmd_usb_port_color` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:cmd_usb_recovery_color` | `src/shell/shell_diagnostics_helpers.c` | `cmd_usb_recovery_color` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:cmd_usb_state_color` | `src/shell/shell_diagnostics_helpers.c` | `cmd_usb_state_color` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:cmd_vfs_node_name` | `src/shell/shell_diagnostics_helpers.c` | `cmd_vfs_node_name` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:cmd_vmamap_area_type` | `src/shell/shell_diagnostics_helpers.c` | `cmd_vmamap_area_type` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:cmd_vmamap_parse_pid` | `src/shell/shell_diagnostics_helpers.c` | `cmd_vmamap_parse_pid` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:shell_cpu_usage_percent` | `src/shell/shell_diagnostics_helpers.c` | `shell_cpu_usage_percent` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:shell_diagnostics_health_state_color` | `src/shell/shell_diagnostics_helpers.c` | `shell_diagnostics_health_state_color` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:shell_kmetrics_delta` | `src/shell/shell_diagnostics_helpers.c` | `shell_kmetrics_delta` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:shell_memcheck_same_layout` | `src/shell/shell_diagnostics_helpers.c` | `shell_memcheck_same_layout` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:shell_memcheck_same_memory_metrics` | `src/shell/shell_diagnostics_helpers.c` | `shell_memcheck_same_memory_metrics` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:shell_memcheck_valid_memory_metrics` | `src/shell/shell_diagnostics_helpers.c` | `shell_memcheck_valid_memory_metrics` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_diagnostics_helpers.c:shell_process_state_name` | `src/shell/shell_diagnostics_helpers.c` | `shell_process_state_name` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_dispatch.c:shell_dispatch_execute` | `src/shell/shell_dispatch.c` | `shell_dispatch_execute` | `shell` | `COVERED` | 6 |
 | `c:src/shell/shell_dispatch.c:shell_dispatch_print_unknown` | `src/shell/shell_dispatch.c` | `shell_dispatch_print_unknown` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_hosted.c:shell_hosted_close` | `src/shell/shell_hosted.c` | `shell_hosted_close` | `shell` | `PENDING` | 0 |
@@ -7427,6 +7461,7 @@
 | `host:shell:commands-core` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar handlers de ajuda, terminal, VFS, processos, threads, memoria, som, energia, compressao e resultados de loader com dependencias estaticas falsas | comandos validos e invalidos preservam seus retornos, mensagens, callbacks e limpeza sem hardware ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers e contadores estaticos da fixture host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:commands-vfs` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar grep com entrada fragmentada, comparacao sem diferenca de maiusculas, limites, erros de pipeline e o autoteste pipetest | linhas correspondentes sao encaminhadas, entradas invalidas e limites exibem diagnostico e pipetest preserva resultado e codigo canonico | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos de entrada, saida e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:core` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inicializar o Shell, encaminhar mouse, suspender terminal, concluir comando e restaurar a cena visual | entradas invalidas e inativas sao rejeitadas, scroll ativo e encaminhado, ciclo de terminal restaura prompt e redraw | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente callbacks estaticos do Shell, terminal, taskbar, desktop e aplicativos falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:shell:diagnostics-helpers` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar parsers de log, sinais, mouse e VMA, nomes de estados, cores, caminhos sysfs/proc e invariantes de memoria com dependencias estaticas falsas | entradas validas retornam resultados canonicos; entradas nulas, invalidas e fora dos limites sao rejeitadas sem hardware, allocator ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos, estado de filesystem e paginação falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:dispatch` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar comandos desconhecidos, entrada normalizada, limite e comando conhecido | dispatcher retorna ERR_NULL para entrada nula e apresenta diagnostico deterministico para comando desconhecido | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e handlers falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:hosted` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | abrir, reabrir, desenhar, encaminhar tecla e mouse, fechar e rejeitar registro do Shell Classic hospedado | o Shell hospedado publica visibilidade, encaminha callbacks e restaura o estado quando o registro falha | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do adaptador, callbacks do Window Manager e terminal falso no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:input` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enviar scancodes falsos para comandos, historico, scroll, edicao, cancelamento e limite | entrada, historico e terminal preservam o contrato e nao ultrapassam o buffer | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos do Shell e stubs de terminal no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -8090,14 +8125,11 @@
 - `c:src/shell/shell_commands_apps.c:shell_dispatch_cmd_view`
 - `c:src/shell/shell_commands_apps.c:shell_dispatch_cmd_wm`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_acpi`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_mode_name`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_print_address`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_print_power`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_print_register`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_print_snapshot_table`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_print_table`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_s5_name`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_space_name`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_tables`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_cd`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_clock`
@@ -8108,7 +8140,6 @@
 - `c:src/shell/shell_commands_diagnostics.c:cmd_devcheck`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_device_info`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_device_scan`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_device_status_color`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_devices`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_devices_print_entry`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_diagnostics_print_test`
@@ -8128,7 +8159,6 @@
 - `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_signals`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_sockets`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_tls`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_tls_detail`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update_capabilities`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update_remote`
@@ -8151,11 +8181,7 @@
 - `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_update_capabilities`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_usb_hid`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_user_fault`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_remote_state_from_status`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_health_summary`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_update_apply_state`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_update_history_state`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_update_local_state`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_health_update_remote_state`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_irqstat`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_irqstat_check`
@@ -8173,9 +8199,6 @@
 - `c:src/shell/shell_commands_diagnostics.c:cmd_log_check`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_log_invalid`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_log_level`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_log_level_name`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_log_parse_level`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_log_parse_tail_count`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_log_print_levels`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_log_print_record`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_log_print_signed`
@@ -8187,33 +8210,24 @@
 - `c:src/shell/shell_commands_diagnostics.c:cmd_memcheck_print_result`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_mouse`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_mouse_apply`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_mouse_has_extra_args`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_mouse_parse_speed`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_mouse_print_status`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_mouse_print_usage`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_mouse_read_token`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_pagefault`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_power`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck_controls`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck_cursor`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck_directory`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck_pid_path`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck_read`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck_sysfs_attributes`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck_write`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_schedcheck`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_schedcheck_print_result`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_signal_parse_name`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_signal_parse_uint`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_sigtest`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_sigtest_print`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_slabinfo`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_slabtest`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_sysfs_append`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_sysfs_has_node`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_sysfs_path_for_device`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_sysfs_path_for_id`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_sysfs_print_device`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_sysfs_read_snapshot`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_timer`
@@ -8233,20 +8247,14 @@
 - `c:src/shell/shell_commands_diagnostics.c:cmd_usb_devices`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_usb_hid`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_usb_list`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_usb_port_color`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_usb_ports`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_usb_print_entry`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_usb_recovery_color`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_usb_state_color`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_usb_status`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_usb_storage`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_vfs`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_vfs_node_name`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_vfs_status`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_vfs_test`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_vmamap`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_vmamap_area_type`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_vmamap_parse_pid`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_vmamap_print_permissions`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_wait`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_wait_check`
@@ -8264,8 +8272,6 @@
 - `c:src/shell/shell_commands_diagnostics.c:cmd_workq_usage`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_wqinfo`
 - `c:src/shell/shell_commands_diagnostics.c:shell_core_migrated_builtin_is_ready`
-- `c:src/shell/shell_commands_diagnostics.c:shell_cpu_usage_percent`
-- `c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_health_state_color`
 - `c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_reset`
 - `c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_run_device_scan`
 - `c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_run_memcheck`
@@ -8299,12 +8305,7 @@
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_wait`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_workq`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_wqinfo`
-- `c:src/shell/shell_commands_diagnostics.c:shell_kmetrics_delta`
 - `c:src/shell/shell_commands_diagnostics.c:shell_kmetrics_take_snapshot`
-- `c:src/shell/shell_commands_diagnostics.c:shell_memcheck_same_layout`
-- `c:src/shell/shell_commands_diagnostics.c:shell_memcheck_same_memory_metrics`
-- `c:src/shell/shell_commands_diagnostics.c:shell_memcheck_valid_memory_metrics`
-- `c:src/shell/shell_commands_diagnostics.c:shell_process_state_name`
 - `c:src/shell/shell_commands_network.c:cmd_dns_wait`
 - `c:src/shell/shell_commands_network.c:cmd_http`
 - `c:src/shell/shell_commands_network.c:cmd_http_execute`
@@ -8813,3 +8814,37 @@
 - `c:src/fs/fat12.c:to_upper` — surface ausente na fonte atual; confirmar remocao ou renomeacao
 - `c:src/fs/fat32.c:strncmp` — surface ausente na fonte atual; confirmar remocao ou renomeacao
 - `c:src/shell/shell.c:shell_test_redraw_after_overlay_close` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_mode_name` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_s5_name` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_space_name` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:cmd_device_status_color` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_tls_detail` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:cmd_health_remote_state_from_status` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:cmd_health_update_apply_state` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:cmd_health_update_history_state` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:cmd_health_update_local_state` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:cmd_log_level_name` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:cmd_log_parse_level` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:cmd_log_parse_tail_count` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:cmd_mouse_has_extra_args` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:cmd_mouse_parse_speed` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:cmd_mouse_read_token` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck_pid_path` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:cmd_signal_parse_name` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:cmd_signal_parse_uint` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:cmd_sysfs_append` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:cmd_sysfs_path_for_device` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:cmd_sysfs_path_for_id` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:cmd_usb_port_color` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:cmd_usb_recovery_color` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:cmd_usb_state_color` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:cmd_vfs_node_name` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:cmd_vmamap_area_type` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:cmd_vmamap_parse_pid` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:shell_cpu_usage_percent` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_health_state_color` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:shell_kmetrics_delta` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:shell_memcheck_same_layout` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:shell_memcheck_same_memory_metrics` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:shell_memcheck_valid_memory_metrics` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/shell/shell_commands_diagnostics.c:shell_process_state_name` — surface ausente na fonte atual; confirmar remocao ou renomeacao

@@ -1663,6 +1663,21 @@ O relatório instrumentado fica em
 `build/test-results/shell-commands-core-host/coverage.json`. O resultado deve
 terminar em `PASS`, com `unknown_addresses=[]` e `ambiguous_symbols=[]`.
 
+## Shell diagnostics helpers host-only
+
+O alvo `test-shell-diagnostics-helpers-host` compila a fixture dos helpers
+puros extraidos de `src/shell/shell_commands_diagnostics.c`. Ele valida parsers
+de log, sinais, mouse e VMA, estados, cores, caminhos sysfs/proc e invariantes
+de memoria com doubles estaticos, sem hardware ou armazenamento real:
+
+```text
+make test-shell-diagnostics-helpers-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O relatorio instrumentado fica em
+`build/test-results/shell-diagnostics-helpers-host/coverage.json` e deve
+terminar com `PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`.
+
 ## Shell Wi-Fi host-only
 
 O alvo `test-shell-commands-wifi-host` executa os handlers reais de

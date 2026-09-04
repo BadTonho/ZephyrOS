@@ -5847,6 +5847,57 @@
       "evidence": "make test-thread-host PASS com fixture estatica de threads, filas de espera, timeouts, cancelamento, limites e cobertura instrumentada"
     },
     {
+      "id": "shell-diagnostics-helpers-host-dynamic",
+      "domain": "shell-diagnostics-helpers",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:shell:diagnostics-helpers"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/shell-diagnostics-helpers-host/coverage.json",
+      "coverage_sources": [
+        "src/shell/shell_diagnostics_helpers.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:shell:diagnostics-helpers",
+        "scenario": "Helpers e parsers puros dos diagnosticos do Shell sobre fixtures estaticas",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "none"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "validar parsers de log, sinais, mouse e VMA, nomes de estados, cores, caminhos sysfs/proc e invariantes de memoria com dependencias estaticas falsas",
+        "expected": "entradas validas retornam resultados canonicos; entradas nulas, invalidas e fora dos limites sao rejeitadas sem hardware, allocator ou armazenamento real",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente buffers estaticos, estado de filesystem e paginação falsos no processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "shell",
+          "diagnostics",
+          "parser",
+          "limits",
+          "coverage"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "make test-shell-diagnostics-helpers-host PASS com parsers, estados, caminhos, limites e invariantes puras instrumentados"
+    },
+    {
       "id": "shell-commands-core-host-dynamic",
       "domain": "shell-core-commands",
       "owner": "quality",

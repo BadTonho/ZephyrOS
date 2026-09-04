@@ -29,6 +29,7 @@ novo; o handshake e inerte no boot normal ate a validacao de `HELLO`.
 | `src/include/apps/shell.h` | `docs/09-shell/shell.md` |
 | `src/include/apps/shell_dispatch.h` | `docs/09-shell/refatoracao-shell.md` |
 | `src/include/apps/shell_command_utils.h` | `docs/09-shell/refatoracao-shell.md` |
+| `src/include/apps/shell_diagnostics_helpers.h` | `docs/09-shell/refatoracao-shell.md` |
 | `src/include/apps/shell_input.h` | `docs/09-shell/refatoracao-shell.md` |
 | `src/include/apps/shell_runtime.h` | `docs/09-shell/refatoracao-shell.md` |
 | `src/include/apps/shell_job.h` | `docs/09-shell/refatoracao-shell.md` |
