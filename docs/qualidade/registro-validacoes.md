@@ -5599,3 +5599,14 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   catalogo tambem passaram; o estado atual registra 7.292 superficies, 6.039
   `COVERED`, 1.253 `PENDING` e 151 casos. O gate estrito continua pendente
   pelas superficies restantes sem evidencia especifica.
+
+- Incremento Drivers/RTC — fechamento das superfícies internas — concluido em
+  2026-09-04 (America/Sao_Paulo). O caso existente
+  `host:drivers:rtc-status` foi executado com CMOS simulado, cobrindo I/O,
+  leitura bruta, espera de atualização, conversão, inicialização e leitura UTC.
+  O relatório `build/test-results/rtc-status-host/coverage.json` terminou
+  `PASS`, sem endereços desconhecidos ou símbolos ambíguos, e confirmou as 17
+  funções de `src/drivers/rtc.c`. A sincronização e a renderização do catálogo
+  também passaram; o estado atual registra 7.292 superfícies, 6.048
+  `COVERED`, 1.244 `PENDING` e 151 casos. O gate estrito continua pendente
+  pelas superfícies restantes sem evidência específica.
