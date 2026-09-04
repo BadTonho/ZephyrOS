@@ -5587,3 +5587,15 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   catalogo tambem foram executadas; o estado atual registra 7.290 superficies,
   6.032 `COVERED`, 1.258 `PENDING` e 151 casos. O gate estrito continua
   pendente pelas superficies restantes sem evidencia especifica.
+
+- Incremento Process/runtime — helpers de stack — concluido em 2026-09-04
+  (America/Sao_Paulo). A fixture existente `host:process:runtime` passou a
+  exercitar o diagnostico de canario, os helpers de formatacao numerica/textual
+  da stack, o calculo de uso em metadados invalidos e uma chamada controlada do
+  idle no caminho `ZEPHYROS_HOST_TEST`, sem `hlt` ou contexto privilegiado.
+  Passou `make test-process-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`;
+  o relatorio terminou `PASS`, cobriu 87 simbolos e nao registrou enderecos
+  desconhecidos ou simbolos ambiguos. A sincronizacao e a renderizacao do
+  catalogo tambem passaram; o estado atual registra 7.292 superficies, 6.039
+  `COVERED`, 1.253 `PENDING` e 151 casos. O gate estrito continua pendente
+  pelas superficies restantes sem evidencia especifica.

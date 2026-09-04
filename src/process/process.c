@@ -492,11 +492,25 @@ static void process_copy_wait_text(char* destination, uint32_t capacity,
 }
 
 static void process_idle_main(void) {
+#if defined(ZEPHYROS_HOST_TEST)
+    process_yield();
+#else
     while (1) {
         asm volatile("sti\n\thlt" : : : "memory");
         process_yield();
     }
+#endif
 }
+
+#if defined(ZEPHYROS_HOST_TEST)
+void process_host_test_idle_once(void) {
+    process_idle_main();
+}
+
+void process_host_test_report_corruption(process_t* proc) {
+    process_stack_report_corruption(proc);
+}
+#endif
 
 static uint32_t process_allocate_pid(void) {
     if (free_pid_count == 0) {

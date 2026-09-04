@@ -56,10 +56,12 @@ Isso não significa declarar hardware físico validado sem equipamento.
 
 ### Atualizacao vigente — 2026-09-04
 
-O sincronizador mais recente registra 7.290 superficies, 6.032 `COVERED`,
-1.258 `PENDING` e 151 casos `AUTOMATED`. O incremento mais recente adicionou
-o caso host-only `host:shell:diagnostics-helpers`, com evidencia real para 34
-helpers extraidos de `shell_commands_diagnostics.c` e duas rotinas de string.
+O sincronizador mais recente registra 7.292 superficies, 6.039 `COVERED`,
+1.253 `PENDING` e 151 casos `AUTOMATED`. Os incrementos mais recentes
+adicionaram o caso host-only `host:shell:diagnostics-helpers`, com evidencia
+real para 34 helpers extraidos de `shell_commands_diagnostics.c` e duas rotinas
+de string, e ampliaram `host:process:runtime` com cinco helpers de stack e o
+idle controlado.
 O gate estrito e a cobertura integral permanecem pendentes para os demais
 subsistemas sem evidencia especifica.
 
