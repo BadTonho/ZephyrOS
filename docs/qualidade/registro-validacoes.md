@@ -5644,3 +5644,13 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   renderização passaram; o catálogo registra 7.293 superfícies, 6.080
   `COVERED`, 1.213 `PENDING` e 151 casos. O gate estrito continua pendente
   pelas superfícies restantes sem evidência específica.
+
+- Revalidação Kernel/panic — concluída em 2026-09-04 (America/Sao_Paulo). O
+  caso existente `host:kernel:panic` foi executado após o build limpo com
+  `HOST_CC`; a fixture capturou `panic`, `panic_halt` e `panic_memory`, incluindo
+  mensagens ausentes, razões customizadas, métricas de memória e retorno
+  controlado. O relatório instrumentado terminou `PASS`, sem endereços
+  desconhecidos ou símbolos ambíguos. A sincronização e a renderização passaram;
+  o catálogo registra 7.293 superfícies, 6.083 `COVERED`, 1.210 `PENDING` e
+  151 casos. O gate estrito continua pendente pelas superfícies restantes sem
+  evidência específica.
