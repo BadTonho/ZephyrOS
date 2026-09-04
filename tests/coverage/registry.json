@@ -2283,6 +2283,58 @@
       }
     },
     {
+      "id": "update-remote-host-dynamic",
+      "domain": "core-update-remote",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:update-remote"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/update-remote-host/coverage.json",
+      "coverage_sources": [
+        "src/core/update_remote.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-update-remote-host PASS com manifestos, registros redundantes, cache, transporte, estados e contratos publicos offline no relatorio instrumentado",
+      "case_definition": {
+        "id": "host:core:update-remote",
+        "scenario": "Contratos puros e estados offline da distribuicao remota",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "network": "stub offline",
+          "storage": "buffers estaticos FAT12"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "executar serializacao, validacao, cache redundante, download e contratos publicos com fixtures estaticos",
+        "expected": "entradas validas fazem round-trip e indisponibilidade, corrupcao, cancelamento e limites retornam erros canonicos sem rede ou armazenamento real",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente buffers estaticos no processo host; nenhuma rede ou armazenamento real",
+        "cleanup": "estado e arquivos simulados pertencem ao processo host; manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "update",
+          "remote",
+          "offline",
+          "negative",
+          "corruption"
+        ]
+      }
+    },
+    {
       "id": "update-remote-runtime-host-dynamic",
       "domain": "core-update-remote-runtime",
       "owner": "quality",

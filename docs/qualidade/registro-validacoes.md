@@ -5437,3 +5437,19 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   catalogo registra 7.245 superficies, 5.469 `COVERED`, 1.776 `PENDING` e
   143 casos; o gate estrito e a validacao TST7 completa continuam pendentes
   pelas superficies de software ainda sem evidencia.
+
+- Incremento Core/update remote concluido em 2026-09-04. Foi criada a fixture
+  host-only `host:core:update-remote`, com doubles estaticos de HTTP,
+  filesystem FAT12, crypto, processo e runtime. O caso exercita diretamente
+  os helpers e contratos publicos de `src/core/update_remote.c`, incluindo
+  manifestos, caminhos, registros redundantes, validacao de cache, download,
+  cancelamento, estados, erros e limites, sem rede ou armazenamento reais. O
+  relatorio `build/test-results/update-remote-host/coverage.json` terminou
+  `PASS`, resolveu 54 superficies do arquivo e nao registrou enderecos
+  desconhecidos ou simbolos ambiguos. Passaram `make test-update-remote-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`, sincronizacao, renderizacao,
+  `make catalog-test` e `git diff --check`; o build limpo e o `q3check` desta
+  etapa tambem passaram antes do commit. O catalogo registra 7.251
+  superficies, 5.546 `COVERED`, 1.705 `PENDING` e 144 casos. O gate estrito e
+  a validacao TST7 completa continuam pendentes pelas superficies sem
+  evidencia real.

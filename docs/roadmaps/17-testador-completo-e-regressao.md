@@ -2318,3 +2318,14 @@ pendente.
   sincronizacao, renderizacao e `make catalog-test`. O catalogo registra 7.245
   superficies, 5.469 `COVERED`, 1.776 `PENDING` e 143 casos; o restante da
   cobertura integral continua pendente e nao foi mascarado.
+
+- Incremento Core/update remote concluido em 2026-09-04. A fixture host-only
+  `host:core:update-remote` executa os helpers e contratos publicos reais de
+  `src/core/update_remote.c` com doubles estaticos, cobrindo manifestos,
+  registros redundantes, cache, download, cancelamento, estados, erros e
+  limites sem rede ou armazenamento reais. A evidencia instrumentada resolveu
+  54 superficies do arquivo sem enderecos desconhecidos ou simbolos
+  ambiguos. Passaram o alvo host-only com `HOST_CC`, sincronizacao,
+  renderizacao, `make catalog-test`, o build limpo e `q3check`. O catalogo
+  registra 7.251 superficies, 5.546 `COVERED`, 1.705 `PENDING` e 144 casos; o
+  restante da cobertura integral continua pendente e nao foi mascarado.
