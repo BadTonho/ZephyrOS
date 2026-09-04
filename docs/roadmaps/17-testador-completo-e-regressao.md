@@ -2294,3 +2294,15 @@ pendente.
   catalogo registra 7.231 superficies, 5.356 `COVERED`, 1.875 `PENDING` e 141
   casos. As operacoes transacionais completas ainda dependem de fixture
   integrada e permanecem pendentes.
+
+- Incremento Core/update — contrato publico de indisponibilidade concluido em
+  2026-09-04. A fixture `host:core:update` passou a chamar os contratos
+  publicos de inicializacao, capacidades, status, versao, verificacao,
+  aplicacao, rollback, sincronizacao e historico com filesystem ausente,
+  confirmando os retornos canonicos sem declarar uma atualizacao como sucesso.
+  A evidencia instrumentada resolveu 76 superficies reais de
+  `src/core/update.c`. Passaram `q3check`, build limpo, `make test-update-host`
+  com `C:\\msys64\\ucrt64\\bin\\gcc.exe` e `make catalog-test`. O catalogo
+  registra 7.240 superficies, 5.417 `COVERED`, 1.823 `PENDING` e 142 casos;
+  transacoes FAT12 com slots mutaveis continuam pendentes para fixture
+  integrada.

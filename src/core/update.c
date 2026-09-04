@@ -2585,6 +2585,79 @@ static int update_host_check_action_helpers(void) {
     return OK;
 }
 
+static int update_host_check_public_unavailable(void) {
+    update_capabilities_t capabilities;
+    update_status_t status;
+    update_verification_t verification;
+    update_action_result_t action;
+    update_history_entry_t history_entry;
+    update_version_t version;
+    uint32_t epoch = 0U;
+    uint32_t count = 0U;
+
+    if (update_init() != OK || !update_is_ready()) return 161;
+    if (update_get_capabilities(0) != ERR_NULL ||
+        update_get_capabilities(&capabilities) != OK ||
+        !capabilities.verifier_ready || capabilities.local_file_available ||
+        capabilities.apply_available || capabilities.rollback_available ||
+        capabilities.history_available || capabilities.remote_available) {
+        return 162;
+    }
+    if (update_get_status(0) != ERR_NULL || update_get_status(&status) != OK ||
+        status.state_store != UPDATE_STORE_UNAVAILABLE ||
+        status.current_files != UPDATE_STORE_UNAVAILABLE ||
+        status.history_store != UPDATE_STORE_UNAVAILABLE ||
+        status.transaction_pending || status.has_last_event) {
+        return 163;
+    }
+    if (update_get_installed_version(0, &epoch) != ERR_NULL ||
+        update_get_installed_version(&version, 0) != ERR_NULL ||
+        update_get_installed_version(&version, &epoch) != OK ||
+        version.major != ZEPHYROS_VERSION_MAJOR ||
+        version.minor != ZEPHYROS_VERSION_MINOR ||
+        version.patch != ZEPHYROS_VERSION_PATCH ||
+        epoch != ZEPHYROS_VERSION_EPOCH) {
+        return 164;
+    }
+    if (update_verify_file(0, &verification) != ERR_NULL ||
+        update_verify_file("MISSING.ZUP", &verification) != ERR_UNAVAILABLE ||
+        verification.reason != ZUPD_REASON_NONE) {
+        return 165;
+    }
+    if (update_apply_file(0, 0, &action) != ERR_NULL ||
+        update_apply_file("MISSING.ZUP", 0, &action) != ERR_UNAVAILABLE ||
+        action.reason != UPDATE_ACTION_UNSUPPORTED_FS) {
+        return 166;
+    }
+    if (update_rollback(0, &action) != ERR_UNAVAILABLE ||
+        action.reason != UPDATE_ACTION_UNSUPPORTED_FS ||
+        update_rollback(0, 0) != ERR_NULL) {
+        return 167;
+    }
+    version.major++;
+    if (update_sync_runtime_state(0, epoch) != ERR_NULL ||
+        update_sync_runtime_state(&version, epoch) != ERR_STATE) {
+        return 168;
+    }
+    if (update_get_history_count(0) != ERR_NULL ||
+        update_get_history_count(&count) != ERR_UNAVAILABLE ||
+        update_get_history_entry(0, 0) != ERR_NULL ||
+        update_get_history_entry(0, &history_entry) != ERR_UNAVAILABLE) {
+        return 169;
+    }
+    if (kstrcmp(zupd_reason_name(ZUPD_REASON_NONE), "NONE") != 0 ||
+        kstrcmp(update_action_reason_name(UPDATE_ACTION_NONE), "NONE") != 0 ||
+        kstrcmp(update_store_state_name(UPDATE_STORE_UNAVAILABLE),
+                "UNAVAILABLE") != 0 ||
+        kstrcmp(update_history_operation_name(UPDATE_HISTORY_OPERATION_APPLY),
+                "APPLY") != 0 ||
+        kstrcmp(update_history_outcome_name(UPDATE_HISTORY_OUTCOME_FAILED),
+                "FAILED") != 0) {
+        return 170;
+    }
+    return OK;
+}
+
 int update_host_test_contracts(void) {
     int result;
 
@@ -2594,6 +2667,7 @@ int update_host_test_contracts(void) {
     if (result == OK) result = update_host_check_history_record();
     if (result == OK) result = update_host_check_headers_and_paths();
     if (result == OK) result = update_host_check_action_helpers();
+    if (result == OK) result = update_host_check_public_unavailable();
     return result;
 }
 #endif

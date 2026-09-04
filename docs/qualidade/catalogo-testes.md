@@ -4,7 +4,7 @@
 
 ## Resumo
 
-- Superfícies ativas: **7239**
+- Superfícies ativas: **7240**
 - Casos de teste: **142**
 - Superfícies aposentadas: **23**
 
@@ -12,16 +12,16 @@
 |---|---:|
 | `api_function` | 1541 |
 | `asm_entry` | 101 |
-| `c_function` | 5477 |
+| `c_function` | 5478 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 5394 |
+| `COVERED` | 5417 |
 | `MANUAL` | 0 |
-| `PENDING` | 1845 |
+| `PENDING` | 1823 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -37,7 +37,7 @@
 | `apps` | 134 |
 | `appstore` | 88 |
 | `boot` | 136 |
-| `core` | 2795 |
+| `core` | 2796 |
 | `desktop` | 40 |
 | `drivers` | 932 |
 | `filemanager` | 92 |
@@ -3276,11 +3276,11 @@
 | `c:src/core/udp.c:udp_validate_state` | `src/core/udp.c` | `udp_validate_state` | `core` | `COVERED` | 3 |
 | `c:src/core/udp.c:udp_write_u16` | `src/core/udp.c` | `udp_write_u16` | `core` | `COVERED` | 3 |
 | `c:src/core/update.c:update_action_fail` | `src/core/update.c` | `update_action_fail` | `core` | `COVERED` | 1 |
-| `c:src/core/update.c:update_action_reason_name` | `src/core/update.c` | `update_action_reason_name` | `core` | `PENDING` | 0 |
-| `c:src/core/update.c:update_apply_file` | `src/core/update.c` | `update_apply_file` | `core` | `PENDING` | 0 |
+| `c:src/core/update.c:update_action_reason_name` | `src/core/update.c` | `update_action_reason_name` | `core` | `COVERED` | 1 |
+| `c:src/core/update.c:update_apply_file` | `src/core/update.c` | `update_apply_file` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_apply_recover_failure` | `src/core/update.c` | `update_apply_recover_failure` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_apply_state_from_journal` | `src/core/update.c` | `update_apply_state_from_journal` | `core` | `PENDING` | 0 |
-| `c:src/core/update.c:update_begin_operation` | `src/core/update.c` | `update_begin_operation` | `core` | `PENDING` | 0 |
+| `c:src/core/update.c:update_begin_operation` | `src/core/update.c` | `update_begin_operation` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_build_apply_journal` | `src/core/update.c` | `update_build_apply_journal` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_build_rollback_journal` | `src/core/update.c` | `update_build_rollback_journal` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_bytes_zero` | `src/core/update.c` | `update_bytes_zero` | `core` | `COVERED` | 1 |
@@ -3302,23 +3302,23 @@
 | `c:src/core/update.c:update_decode_journal_record` | `src/core/update.c` | `update_decode_journal_record` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_decode_path` | `src/core/update.c` | `update_decode_path` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_decode_state_record` | `src/core/update.c` | `update_decode_state_record` | `core` | `COVERED` | 1 |
-| `c:src/core/update.c:update_effective_history_store` | `src/core/update.c` | `update_effective_history_store` | `core` | `PENDING` | 0 |
+| `c:src/core/update.c:update_effective_history_store` | `src/core/update.c` | `update_effective_history_store` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_encode_file_state` | `src/core/update.c` | `update_encode_file_state` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_encode_history_entry` | `src/core/update.c` | `update_encode_history_entry` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_encode_history_record` | `src/core/update.c` | `update_encode_history_record` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_encode_journal_record` | `src/core/update.c` | `update_encode_journal_record` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_encode_state_record` | `src/core/update.c` | `update_encode_state_record` | `core` | `COVERED` | 1 |
-| `c:src/core/update.c:update_end_operation` | `src/core/update.c` | `update_end_operation` | `core` | `PENDING` | 0 |
+| `c:src/core/update.c:update_end_operation` | `src/core/update.c` | `update_end_operation` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_fail` | `src/core/update.c` | `update_fail` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_file_state_equal` | `src/core/update.c` | `update_file_state_equal` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_fill_action_result` | `src/core/update.c` | `update_fill_action_result` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_fill_result` | `src/core/update.c` | `update_fill_result` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_finalize_committed` | `src/core/update.c` | `update_finalize_committed` | `core` | `PENDING` | 0 |
-| `c:src/core/update.c:update_get_capabilities` | `src/core/update.c` | `update_get_capabilities` | `core` | `PENDING` | 0 |
-| `c:src/core/update.c:update_get_history_count` | `src/core/update.c` | `update_get_history_count` | `core` | `PENDING` | 0 |
-| `c:src/core/update.c:update_get_history_entry` | `src/core/update.c` | `update_get_history_entry` | `core` | `PENDING` | 0 |
-| `c:src/core/update.c:update_get_installed_version` | `src/core/update.c` | `update_get_installed_version` | `core` | `PENDING` | 0 |
-| `c:src/core/update.c:update_get_status` | `src/core/update.c` | `update_get_status` | `core` | `PENDING` | 0 |
+| `c:src/core/update.c:update_get_capabilities` | `src/core/update.c` | `update_get_capabilities` | `core` | `COVERED` | 1 |
+| `c:src/core/update.c:update_get_history_count` | `src/core/update.c` | `update_get_history_count` | `core` | `COVERED` | 1 |
+| `c:src/core/update.c:update_get_history_entry` | `src/core/update.c` | `update_get_history_entry` | `core` | `COVERED` | 1 |
+| `c:src/core/update.c:update_get_installed_version` | `src/core/update.c` | `update_get_installed_version` | `core` | `COVERED` | 1 |
+| `c:src/core/update.c:update_get_status` | `src/core/update.c` | `update_get_status` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_hash_chunk` | `src/core/update.c` | `update_hash_chunk` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_hash_content` | `src/core/update.c` | `update_hash_content` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_hash_payload` | `src/core/update.c` | `update_hash_payload` | `core` | `PENDING` | 0 |
@@ -3328,9 +3328,9 @@
 | `c:src/core/update.c:update_history_append` | `src/core/update.c` | `update_history_append` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_history_copy_alias` | `src/core/update.c` | `update_history_copy_alias` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_history_mark_invalid` | `src/core/update.c` | `update_history_mark_invalid` | `core` | `PENDING` | 0 |
-| `c:src/core/update.c:update_history_newest` | `src/core/update.c` | `update_history_newest` | `core` | `PENDING` | 0 |
-| `c:src/core/update.c:update_history_operation_name` | `src/core/update.c` | `update_history_operation_name` | `core` | `PENDING` | 0 |
-| `c:src/core/update.c:update_history_outcome_name` | `src/core/update.c` | `update_history_outcome_name` | `core` | `PENDING` | 0 |
+| `c:src/core/update.c:update_history_newest` | `src/core/update.c` | `update_history_newest` | `core` | `COVERED` | 1 |
+| `c:src/core/update.c:update_history_operation_name` | `src/core/update.c` | `update_history_operation_name` | `core` | `COVERED` | 1 |
+| `c:src/core/update.c:update_history_outcome_name` | `src/core/update.c` | `update_history_outcome_name` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_history_record_action` | `src/core/update.c` | `update_history_record_action` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_history_record_recovery` | `src/core/update.c` | `update_history_record_recovery` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_host_cancel` | `src/core/update.c` | `update_host_cancel` | `core` | `COVERED` | 1 |
@@ -3338,6 +3338,7 @@
 | `c:src/core/update.c:update_host_check_headers_and_paths` | `src/core/update.c` | `update_host_check_headers_and_paths` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_host_check_history_record` | `src/core/update.c` | `update_host_check_history_record` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_host_check_journal_record` | `src/core/update.c` | `update_host_check_journal_record` | `core` | `COVERED` | 1 |
+| `c:src/core/update.c:update_host_check_public_unavailable` | `src/core/update.c` | `update_host_check_public_unavailable` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_host_check_state_records` | `src/core/update.c` | `update_host_check_state_records` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_host_fill_file_state` | `src/core/update.c` | `update_host_fill_file_state` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_host_fill_header` | `src/core/update.c` | `update_host_fill_header` | `core` | `COVERED` | 1 |
@@ -3345,9 +3346,9 @@
 | `c:src/core/update.c:update_host_test_contracts` | `src/core/update.c` | `update_host_test_contracts` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_host_write_u16` | `src/core/update.c` | `update_host_write_u16` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_host_write_u32` | `src/core/update.c` | `update_host_write_u32` | `core` | `COVERED` | 1 |
-| `c:src/core/update.c:update_init` | `src/core/update.c` | `update_init` | `core` | `PENDING` | 0 |
+| `c:src/core/update.c:update_init` | `src/core/update.c` | `update_init` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_is_path_character` | `src/core/update.c` | `update_is_path_character` | `core` | `COVERED` | 1 |
-| `c:src/core/update.c:update_is_ready` | `src/core/update.c` | `update_is_ready` | `core` | `PENDING` | 0 |
+| `c:src/core/update.c:update_is_ready` | `src/core/update.c` | `update_is_ready` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_load_history_records` | `src/core/update.c` | `update_load_history_records` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_load_journal_records` | `src/core/update.c` | `update_load_journal_records` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_load_root_file` | `src/core/update.c` | `update_load_root_file` | `core` | `PENDING` | 0 |
@@ -3365,21 +3366,21 @@
 | `c:src/core/update.c:update_read_u32` | `src/core/update.c` | `update_read_u32` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_reason_error` | `src/core/update.c` | `update_reason_error` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_recover_pending` | `src/core/update.c` | `update_recover_pending` | `core` | `PENDING` | 0 |
-| `c:src/core/update.c:update_refresh_capabilities` | `src/core/update.c` | `update_refresh_capabilities` | `core` | `PENDING` | 0 |
+| `c:src/core/update.c:update_refresh_capabilities` | `src/core/update.c` | `update_refresh_capabilities` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_reject` | `src/core/update.c` | `update_reject` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_remove_if_present` | `src/core/update.c` | `update_remove_if_present` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_replace_apply_targets` | `src/core/update.c` | `update_replace_apply_targets` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_replace_from_alias` | `src/core/update.c` | `update_replace_from_alias` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_replace_rollback_targets` | `src/core/update.c` | `update_replace_rollback_targets` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_restore_interrupted_apply` | `src/core/update.c` | `update_restore_interrupted_apply` | `core` | `PENDING` | 0 |
-| `c:src/core/update.c:update_rollback` | `src/core/update.c` | `update_rollback` | `core` | `PENDING` | 0 |
+| `c:src/core/update.c:update_rollback` | `src/core/update.c` | `update_rollback` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_rollback_cancelled` | `src/core/update.c` | `update_rollback_cancelled` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_rollback_state_from_journal` | `src/core/update.c` | `update_rollback_state_from_journal` | `core` | `PENDING` | 0 |
-| `c:src/core/update.c:update_set_compile_time_version` | `src/core/update.c` | `update_set_compile_time_version` | `core` | `PENDING` | 0 |
+| `c:src/core/update.c:update_set_compile_time_version` | `src/core/update.c` | `update_set_compile_time_version` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_stage_apply_files` | `src/core/update.c` | `update_stage_apply_files` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_start_apply_transaction` | `src/core/update.c` | `update_start_apply_transaction` | `core` | `PENDING` | 0 |
-| `c:src/core/update.c:update_store_state_name` | `src/core/update.c` | `update_store_state_name` | `core` | `PENDING` | 0 |
-| `c:src/core/update.c:update_sync_runtime_state` | `src/core/update.c` | `update_sync_runtime_state` | `core` | `PENDING` | 0 |
+| `c:src/core/update.c:update_store_state_name` | `src/core/update.c` | `update_store_state_name` | `core` | `COVERED` | 1 |
+| `c:src/core/update.c:update_sync_runtime_state` | `src/core/update.c` | `update_sync_runtime_state` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_target_exists` | `src/core/update.c` | `update_target_exists` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_target_id` | `src/core/update.c` | `update_target_id` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_test_fail_after` | `src/core/update.c` | `update_test_fail_after` | `core` | `PENDING` | 0 |
@@ -3389,7 +3390,7 @@
 | `c:src/core/update.c:update_validate_header_layout` | `src/core/update.c` | `update_validate_header_layout` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_validate_header_limits` | `src/core/update.c` | `update_validate_header_limits` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_validate_path_syntax` | `src/core/update.c` | `update_validate_path_syntax` | `core` | `COVERED` | 1 |
-| `c:src/core/update.c:update_verify_file` | `src/core/update.c` | `update_verify_file` | `core` | `PENDING` | 0 |
+| `c:src/core/update.c:update_verify_file` | `src/core/update.c` | `update_verify_file` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_verify_internal` | `src/core/update.c` | `update_verify_internal` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_verify_loaded` | `src/core/update.c` | `update_verify_loaded` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_verify_root_file` | `src/core/update.c` | `update_verify_root_file` | `core` | `PENDING` | 0 |
@@ -3399,7 +3400,7 @@
 | `c:src/core/update.c:update_write_state_record` | `src/core/update.c` | `update_write_state_record` | `core` | `PENDING` | 0 |
 | `c:src/core/update.c:update_write_u16` | `src/core/update.c` | `update_write_u16` | `core` | `COVERED` | 1 |
 | `c:src/core/update.c:update_write_u32` | `src/core/update.c` | `update_write_u32` | `core` | `COVERED` | 1 |
-| `c:src/core/update.c:zupd_reason_name` | `src/core/update.c` | `zupd_reason_name` | `core` | `PENDING` | 0 |
+| `c:src/core/update.c:zupd_reason_name` | `src/core/update.c` | `zupd_reason_name` | `core` | `COVERED` | 1 |
 | `c:src/core/update_remote.c:update_remote_abort_pending` | `src/core/update_remote.c` | `update_remote_abort_pending` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote.c:update_remote_begin` | `src/core/update_remote.c` | `update_remote_begin` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote.c:update_remote_build_package_url` | `src/core/update_remote.c` | `update_remote_build_package_url` | `core` | `PENDING` | 0 |
@@ -7854,11 +7855,8 @@
 - `c:src/core/app_remote.c:app_remote_write_record`
 - `c:src/core/app_remote.c:app_remote_write_u16`
 - `c:src/core/app_remote.c:app_remote_write_u32`
-- `c:src/core/update.c:update_action_reason_name`
-- `c:src/core/update.c:update_apply_file`
 - `c:src/core/update.c:update_apply_recover_failure`
 - `c:src/core/update.c:update_apply_state_from_journal`
-- `c:src/core/update.c:update_begin_operation`
 - `c:src/core/update.c:update_build_apply_journal`
 - `c:src/core/update.c:update_build_rollback_journal`
 - `c:src/core/update.c:update_capture_baseline_state`
@@ -7869,16 +7867,9 @@
 - `c:src/core/update.c:update_clear_journal`
 - `c:src/core/update.c:update_commit_transaction`
 - `c:src/core/update.c:update_continue_interrupted_rollback`
-- `c:src/core/update.c:update_effective_history_store`
-- `c:src/core/update.c:update_end_operation`
 - `c:src/core/update.c:update_file_state_equal`
 - `c:src/core/update.c:update_fill_result`
 - `c:src/core/update.c:update_finalize_committed`
-- `c:src/core/update.c:update_get_capabilities`
-- `c:src/core/update.c:update_get_history_count`
-- `c:src/core/update.c:update_get_history_entry`
-- `c:src/core/update.c:update_get_installed_version`
-- `c:src/core/update.c:update_get_status`
 - `c:src/core/update.c:update_hash_chunk`
 - `c:src/core/update.c:update_hash_content`
 - `c:src/core/update.c:update_hash_payload`
@@ -7886,13 +7877,8 @@
 - `c:src/core/update.c:update_history_append`
 - `c:src/core/update.c:update_history_copy_alias`
 - `c:src/core/update.c:update_history_mark_invalid`
-- `c:src/core/update.c:update_history_newest`
-- `c:src/core/update.c:update_history_operation_name`
-- `c:src/core/update.c:update_history_outcome_name`
 - `c:src/core/update.c:update_history_record_action`
 - `c:src/core/update.c:update_history_record_recovery`
-- `c:src/core/update.c:update_init`
-- `c:src/core/update.c:update_is_ready`
 - `c:src/core/update.c:update_load_history_records`
 - `c:src/core/update.c:update_load_journal_records`
 - `c:src/core/update.c:update_load_root_file`
@@ -7904,32 +7890,25 @@
 - `c:src/core/update.c:update_read_exact`
 - `c:src/core/update.c:update_read_payload`
 - `c:src/core/update.c:update_recover_pending`
-- `c:src/core/update.c:update_refresh_capabilities`
 - `c:src/core/update.c:update_remove_if_present`
 - `c:src/core/update.c:update_replace_apply_targets`
 - `c:src/core/update.c:update_replace_from_alias`
 - `c:src/core/update.c:update_replace_rollback_targets`
 - `c:src/core/update.c:update_restore_interrupted_apply`
-- `c:src/core/update.c:update_rollback`
 - `c:src/core/update.c:update_rollback_cancelled`
 - `c:src/core/update.c:update_rollback_state_from_journal`
-- `c:src/core/update.c:update_set_compile_time_version`
 - `c:src/core/update.c:update_stage_apply_files`
 - `c:src/core/update.c:update_start_apply_transaction`
-- `c:src/core/update.c:update_store_state_name`
-- `c:src/core/update.c:update_sync_runtime_state`
 - `c:src/core/update.c:update_target_exists`
 - `c:src/core/update.c:update_test_fail_after`
 - `c:src/core/update.c:update_validate_applicability`
 - `c:src/core/update.c:update_validate_current_state`
-- `c:src/core/update.c:update_verify_file`
 - `c:src/core/update.c:update_verify_internal`
 - `c:src/core/update.c:update_verify_loaded`
 - `c:src/core/update.c:update_verify_root_file`
 - `c:src/core/update.c:update_write_history_record`
 - `c:src/core/update.c:update_write_journal_record`
 - `c:src/core/update.c:update_write_state_record`
-- `c:src/core/update.c:zupd_reason_name`
 - `c:src/core/update_remote.c:update_remote_abort_pending`
 - `c:src/core/update_remote.c:update_remote_begin`
 - `c:src/core/update_remote.c:update_remote_build_package_url`

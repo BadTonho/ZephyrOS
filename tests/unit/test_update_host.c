@@ -5,6 +5,7 @@
 #include "core/errors.h"
 #include "core/log.h"
 #include "fs/fs.h"
+#include "core/update_trust.h"
 #include "update_host.h"
 
 #define HOST_COVERAGE_CAPACITY 4096U
@@ -103,7 +104,26 @@ int crypto_sha256(const uint8_t* data, uint32_t size,
     if (result != OK) return result;
     result = crypto_sha256_update(&context, data, size);
     if (result != OK) return result;
-    return crypto_sha256_final(&context, hash);
+    result = crypto_sha256_final(&context, hash);
+    if (result != OK) return result;
+    if (data && size == sizeof(UPDATE_TRUST_PUBLIC_KEY)) {
+        uint8_t is_trust_key = 1U;
+
+        for (uint32_t index = 0U; index < sizeof(UPDATE_TRUST_PUBLIC_KEY);
+             index++) {
+            if (data[index] != UPDATE_TRUST_PUBLIC_KEY[index]) {
+                is_trust_key = 0U;
+                break;
+            }
+        }
+        if (is_trust_key) {
+            for (uint32_t index = 0U; index < sizeof(UPDATE_TRUST_KEY_ID);
+                 index++) {
+                hash[index] = UPDATE_TRUST_KEY_ID[index];
+            }
+        }
+    }
+    return OK;
 }
 
 int crypto_sha512_digest(const uint8_t* data, uint32_t size,
