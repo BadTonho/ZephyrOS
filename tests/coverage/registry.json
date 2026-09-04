@@ -2490,6 +2490,59 @@
       }
     },
     {
+      "id": "update-remote-github-host-dynamic",
+      "domain": "core-update-remote-github",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/update-remote-github-host/coverage.json",
+      "coverage_sources": [
+        "src/core/update_remote_github.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-update-remote-github-host PASS com parser JSON, validacao de URLs, fingerprints, HTTP simulado e contratos publicos offline no relatorio instrumentado",
+      "case_definition": {
+        "id": "host:core:update-remote-github",
+        "scenario": "Contratos do transporte remoto de releases GitHub",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "network": "HTTP simulado offline",
+          "responses": "releases estaticas de sistema e runtime"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "executar parser JSON, validacao de assets, URLs, fingerprints, espera, cancelamento e consultas publicas com transporte simulado",
+        "expected": "releases validas fazem parse e fingerprint; corrupcao, status HTTP, cancelamento e limites retornam erros canonicos sem rede externa",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente buffers estaticos no processo host",
+        "cleanup": "estado HTTP e buffers pertencem ao processo host; manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "update",
+          "github",
+          "json",
+          "offline",
+          "negative",
+          "corruption"
+        ]
+      }
+    },
+    {
       "id": "update-host-dynamic",
       "domain": "core-update",
       "owner": "quality",
