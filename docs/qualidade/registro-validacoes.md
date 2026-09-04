@@ -5222,3 +5222,12 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   O catálogo registra 7.219 superfícies, 5.203 `COVERED`, 2.016 `PENDING` e
   137 casos. `thread_context_switch` e a entrada Assembly correspondente
   permanecem pendentes por exigirem execução freestanding/QEMU.
+
+- Reconciliação de cobertura Shell/entrada concluída em 2026-09-04. O caso
+  existente `host:shell:input` foi executado novamente e o relatório
+  `build/test-results/shell-input-host/coverage.json` confirmou a execução de
+  `shell_input_init` e `shell_input_get_buffer`, que ainda estavam pendentes
+  no catálogo apesar de já serem exercitadas pela fixture. A sincronização e
+  a renderização marcaram essas duas superfícies C como `COVERED`; não houve
+  alteração no código do Shell. O catálogo registra 7.219 superfícies, 5.205
+  `COVERED`, 2.014 `PENDING` e 137 casos.
