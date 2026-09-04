@@ -806,6 +806,7 @@
       "case_ids": [
         "host:shell:command-utils",
         "host:shell:commands-core",
+        "host:shell:wifi",
         "qemu:tst5:network",
         "qemu:tst5:storage",
         "qemu:tst5:update-recovery"
@@ -831,6 +832,7 @@
       "case_ids": [
         "host:shell:command-utils",
         "host:shell:commands-core",
+        "host:shell:wifi",
         "qemu:tst5:network",
         "qemu:tst5:storage",
         "qemu:tst5:update-recovery"
@@ -856,6 +858,7 @@
       "case_ids": [
         "host:shell:command-utils",
         "host:shell:commands-core",
+        "host:shell:wifi",
         "qemu:tst5:network",
         "qemu:tst5:storage",
         "qemu:tst5:update-recovery"
@@ -881,6 +884,7 @@
       "case_ids": [
         "host:shell:command-utils",
         "host:shell:commands-core",
+        "host:shell:wifi",
         "qemu:tst5:network",
         "qemu:tst5:storage",
         "qemu:tst5:update-recovery"
@@ -906,6 +910,7 @@
       "case_ids": [
         "host:shell:command-utils",
         "host:shell:commands-core",
+        "host:shell:wifi",
         "qemu:tst5:network",
         "qemu:tst5:storage",
         "qemu:tst5:update-recovery"
@@ -931,6 +936,7 @@
       "case_ids": [
         "host:shell:command-utils",
         "host:shell:commands-core",
+        "host:shell:wifi",
         "qemu:tst5:network",
         "qemu:tst5:storage",
         "qemu:tst5:update-recovery"
@@ -956,6 +962,7 @@
       "case_ids": [
         "host:shell:command-utils",
         "host:shell:commands-core",
+        "host:shell:wifi",
         "qemu:tst5:network",
         "qemu:tst5:storage",
         "qemu:tst5:update-recovery"
@@ -981,6 +988,7 @@
       "case_ids": [
         "host:shell:command-utils",
         "host:shell:commands-core",
+        "host:shell:wifi",
         "qemu:tst5:network",
         "qemu:tst5:storage",
         "qemu:tst5:update-recovery"
@@ -1006,6 +1014,7 @@
       "case_ids": [
         "host:shell:command-utils",
         "host:shell:commands-core",
+        "host:shell:wifi",
         "qemu:tst5:network",
         "qemu:tst5:storage",
         "qemu:tst5:update-recovery"
@@ -1031,6 +1040,7 @@
       "case_ids": [
         "host:shell:command-utils",
         "host:shell:commands-core",
+        "host:shell:wifi",
         "qemu:tst5:network",
         "qemu:tst5:storage",
         "qemu:tst5:update-recovery"
@@ -13046,6 +13056,7 @@
         "host:security:tls",
         "host:security:tls-client",
         "host:shell:commands-core",
+        "host:shell:wifi",
         "host:storage:block",
         "host:storage:bmp",
         "host:storage:devfs",
@@ -13111,6 +13122,7 @@
         "host:security:tls",
         "host:security:tls-client",
         "host:shell:commands-core",
+        "host:shell:wifi",
         "host:storage:devfs",
         "host:storage:procfs",
         "host:storage:vfs",
@@ -13166,6 +13178,7 @@
         "host:security:tls",
         "host:security:tls-client",
         "host:shell:commands-core",
+        "host:shell:wifi",
         "host:storage:file-index",
         "host:storage:fs",
         "host:storage:procfs",
@@ -68066,6 +68079,7 @@
         "host:security:tls",
         "host:security:tls-client",
         "host:shell:commands-core",
+        "host:shell:wifi",
         "host:storage:block",
         "host:storage:bmp",
         "host:storage:devfs",
@@ -68131,6 +68145,7 @@
         "host:security:tls",
         "host:security:tls-client",
         "host:shell:commands-core",
+        "host:shell:wifi",
         "host:storage:devfs",
         "host:storage:procfs",
         "host:storage:vfs",
@@ -68186,6 +68201,7 @@
         "host:security:tls",
         "host:security:tls-client",
         "host:shell:commands-core",
+        "host:shell:wifi",
         "host:storage:file-index",
         "host:storage:fs",
         "host:storage:procfs",
@@ -132232,6 +132248,7 @@
       "case_ids": [
         "host:shell:command-utils",
         "host:shell:commands-core",
+        "host:shell:wifi",
         "qemu:tst5:network"
       ],
       "tags": [],
@@ -132253,7 +132270,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:command-utils"
+        "host:shell:command-utils",
+        "host:shell:wifi"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -132296,7 +132314,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:command-utils"
+        "host:shell:command-utils",
+        "host:shell:wifi"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -132319,6 +132338,7 @@
       "case_ids": [
         "host:shell:command-utils",
         "host:shell:commands-core",
+        "host:shell:wifi",
         "qemu:tst5:network",
         "qemu:tst5:storage"
       ],
@@ -143219,9 +143239,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:wifi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_wifi.c:wifi_command",
@@ -143237,9 +143260,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:wifi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_wifi.c:wifi_connect",
@@ -143255,9 +143281,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:wifi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_wifi.c:wifi_ensure_initialized",
@@ -143273,9 +143302,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:wifi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_wifi.c:wifi_print_interface",
@@ -143291,9 +143323,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:wifi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_wifi.c:wifi_print_inventory",
@@ -143309,9 +143344,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:wifi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_wifi.c:wifi_print_pci_location",
@@ -143327,9 +143365,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:wifi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_wifi.c:wifi_print_scan_result",
@@ -143345,9 +143386,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:wifi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_wifi.c:wifi_print_status",
@@ -143363,9 +143407,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:wifi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_wifi.c:wifi_print_usb_location",
@@ -143381,9 +143428,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:wifi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_wifi.c:wifi_scan",
@@ -143399,9 +143449,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:wifi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_wifi.c:wifi_state_color",
@@ -143417,9 +143470,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:wifi"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_dispatch.c:shell_dispatch_execute",
@@ -173473,6 +173529,73 @@
         "interrupts",
         "coverage",
         "snapshot"
+      ],
+      "status": "AUTOMATED"
+    },
+    {
+      "id": "host:shell:wifi",
+      "scenario": "Comando Wi-Fi do Shell sobre inventário PCI/USB e rádio indisponível",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "hardware": "wifi-manager-static-fixture"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "executar status, inventario PCI/USB, scan, conexao, argumentos invalidos, erros e estados indisponiveis",
+      "expected": "o Shell formata estados, locais, resultados e erros sem aceitar senha ou abrir conexao externa",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente buffers estaticos de saida e fixtures do gerenciador Wi-Fi no processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "surface_ids": [
+        "api:src/include/apps/shell_command_utils.h:shell_command_args_equal",
+        "api:src/include/apps/shell_command_utils.h:shell_command_match_subcommand",
+        "api:src/include/apps/shell_command_utils.h:shell_command_parse_number",
+        "api:src/include/apps/shell_command_utils.h:shell_command_print_hex",
+        "api:src/include/apps/shell_command_utils.h:shell_command_print_num",
+        "api:src/include/apps/shell_command_utils.h:shell_command_read_four_args",
+        "api:src/include/apps/shell_command_utils.h:shell_command_read_single_arg",
+        "api:src/include/apps/shell_command_utils.h:shell_command_read_token",
+        "api:src/include/apps/shell_command_utils.h:shell_command_read_two_args",
+        "api:src/include/apps/shell_command_utils.h:shell_command_uppercase",
+        "api:src/include/core/string.h:kmemset",
+        "api:src/include/core/string.h:kstrcmp",
+        "api:src/include/core/string.h:kstrlen",
+        "c:src/core/string.c:kmemset",
+        "c:src/core/string.c:kstrcmp",
+        "c:src/core/string.c:kstrlen",
+        "c:src/shell/shell_command_utils.c:shell_command_args_equal",
+        "c:src/shell/shell_command_utils.c:shell_command_match_subcommand",
+        "c:src/shell/shell_command_utils.c:shell_command_print_hex",
+        "c:src/shell/shell_command_utils.c:shell_command_print_num",
+        "c:src/shell/shell_commands_wifi.c:shell_dispatch_cmd_wifi",
+        "c:src/shell/shell_commands_wifi.c:wifi_command",
+        "c:src/shell/shell_commands_wifi.c:wifi_connect",
+        "c:src/shell/shell_commands_wifi.c:wifi_ensure_initialized",
+        "c:src/shell/shell_commands_wifi.c:wifi_print_interface",
+        "c:src/shell/shell_commands_wifi.c:wifi_print_inventory",
+        "c:src/shell/shell_commands_wifi.c:wifi_print_pci_location",
+        "c:src/shell/shell_commands_wifi.c:wifi_print_scan_result",
+        "c:src/shell/shell_commands_wifi.c:wifi_print_status",
+        "c:src/shell/shell_commands_wifi.c:wifi_print_usb_location",
+        "c:src/shell/shell_commands_wifi.c:wifi_scan",
+        "c:src/shell/shell_commands_wifi.c:wifi_state_color"
+      ],
+      "tags": [
+        "host",
+        "shell",
+        "wifi",
+        "pci",
+        "usb",
+        "offline",
+        "coverage"
       ],
       "status": "AUTOMATED"
     }

@@ -617,6 +617,14 @@ SHELL_COMMANDS_CORE_SOURCE_FILES = (
     ROOT / "src" / "shell" / "shell_command_utils.c",
     ROOT / "src" / "core" / "string.c",
 )
+SHELL_WIFI_RESULT_DIR = ROOT / "build" / "test-results" / "shell-wifi-host"
+SHELL_WIFI_BINARY = ROOT / "build" / "tests" / "test_shell_commands_wifi_host.exe"
+SHELL_WIFI_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_shell_commands_wifi_host.c",
+    ROOT / "src" / "shell" / "shell_commands_wifi.c",
+    ROOT / "src" / "shell" / "shell_command_utils.c",
+    ROOT / "src" / "core" / "string.c",
+)
 USB_TRANSPORT_RESULT_DIR = ROOT / "build" / "test-results" / "usb-transport-host"
 USB_TRANSPORT_BINARY = ROOT / "build" / "tests" / "test_usb_transport_host.exe"
 USB_TRANSPORT_SOURCE_FILES = (
@@ -926,6 +934,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
     if case_id == "host:shell:commands-core":
         return (SHELL_COMMANDS_CORE_RESULT_DIR, SHELL_COMMANDS_CORE_BINARY,
                 SHELL_COMMANDS_CORE_SOURCE_FILES, "shell-commands-core-host")
+    if case_id == "host:shell:wifi":
+        return (SHELL_WIFI_RESULT_DIR, SHELL_WIFI_BINARY,
+                SHELL_WIFI_SOURCE_FILES, "shell-wifi-host")
     if case_id == "host:core:usb-transport":
         return (USB_TRANSPORT_RESULT_DIR, USB_TRANSPORT_BINARY,
                 USB_TRANSPORT_SOURCE_FILES, "usb-transport-host")
@@ -1178,6 +1189,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:shell:command-utils",
                                  "host:gui:display", "host:shell:core",
                                  "host:shell:commands-core",
+                                 "host:shell:wifi",
                                  "host:core:usb-transport", "host:gui:widgets",
                                  "host:shell:commands-vfs",
                                  "host:boot:recovery-runtime",

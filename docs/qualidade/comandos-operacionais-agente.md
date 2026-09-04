@@ -1646,5 +1646,21 @@ make test-shell-commands-core-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 O relatório instrumentado fica em
 `build/test-results/shell-commands-core-host/coverage.json`. O resultado deve
 terminar em `PASS`, com `unknown_addresses=[]` e `ambiguous_symbols=[]`.
+
+## Shell Wi-Fi host-only
+
+O alvo `test-shell-commands-wifi-host` executa os handlers reais de
+`src/shell/shell_commands_wifi.c` com inventario PCI/USB e radio simulados.
+Exercita status, scan, conexao, argumentos invalidos, erros e indisponibilidade
+sem hardware ou rede externa:
+
+```text
+make test-shell-commands-wifi-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O relatorio fica em `build/test-results/shell-wifi-host/coverage.json` e deve
+terminar em `PASS`, com `unknown_addresses=[]` e `ambiguous_symbols=[]`.
+Sincronize o catalogo somente apos a execucao real e valide com
+`make catalog-test`.
 Depois de alterar o handler ou a fixture, sincronize o catálogo somente após a
 execução real e valide com `make catalog-test`.

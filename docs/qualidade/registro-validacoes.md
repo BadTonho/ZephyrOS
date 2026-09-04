@@ -5345,3 +5345,12 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   esse bloqueio de ambiente permaneceu explícito e o baseline não foi alterado.
   A sincronização também restaurou `coverage_mode=integration` nos comandos
   cobertos pelo dispatcher, preservando o contrato real de cobertura.
+
+- Incremento Shell/Wi-Fi concluido em 2026-09-04 11:32 (America/Sao_Paulo).
+  Foi adicionada uma fixture host-only que executa os handlers reais de
+  `src/shell/shell_commands_wifi.c` sobre um gerenciador PCI/USB estatico,
+  cobrindo status, inventario, locais PCI/USB, estados de interface, scan,
+  conexao, entradas invalidas, erros e indisponibilidade do radio. O teste
+  terminou `PASS` com cobertura instrumentada e sem hardware ou rede externa.
+  A sincronizacao, renderizacao e `make catalog-test` passaram. O catalogo
+  registra 7.219 superficies, 5.267 `COVERED`, 1.952 `PENDING` e 139 casos.

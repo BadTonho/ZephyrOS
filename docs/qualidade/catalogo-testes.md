@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7219**
-- Casos de teste: **138**
+- Casos de teste: **139**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 5255 |
+| `COVERED` | 5267 |
 | `MANUAL` | 0 |
-| `PENDING` | 1964 |
+| `PENDING` | 1952 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 138 |
+| `AUTOMATED` | 139 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -96,16 +96,16 @@
 | `api:src/include/apps/shell.h:shell_report_app_loader_result` | `src/include/apps/shell.h` | `shell_report_app_loader_result` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell.h:shell_report_user_test_result` | `src/include/apps/shell.h` | `shell_report_user_test_result` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell.h:shell_update_hosted_terminal` | `src/include/apps/shell.h` | `shell_update_hosted_terminal` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell_command_utils.h:shell_command_args_equal` | `src/include/apps/shell_command_utils.h` | `shell_command_args_equal` | `apps` | `COVERED` | 5 |
-| `api:src/include/apps/shell_command_utils.h:shell_command_match_subcommand` | `src/include/apps/shell_command_utils.h` | `shell_command_match_subcommand` | `apps` | `COVERED` | 5 |
-| `api:src/include/apps/shell_command_utils.h:shell_command_parse_number` | `src/include/apps/shell_command_utils.h` | `shell_command_parse_number` | `apps` | `COVERED` | 5 |
-| `api:src/include/apps/shell_command_utils.h:shell_command_print_hex` | `src/include/apps/shell_command_utils.h` | `shell_command_print_hex` | `apps` | `COVERED` | 5 |
-| `api:src/include/apps/shell_command_utils.h:shell_command_print_num` | `src/include/apps/shell_command_utils.h` | `shell_command_print_num` | `apps` | `COVERED` | 5 |
-| `api:src/include/apps/shell_command_utils.h:shell_command_read_four_args` | `src/include/apps/shell_command_utils.h` | `shell_command_read_four_args` | `apps` | `COVERED` | 5 |
-| `api:src/include/apps/shell_command_utils.h:shell_command_read_single_arg` | `src/include/apps/shell_command_utils.h` | `shell_command_read_single_arg` | `apps` | `COVERED` | 5 |
-| `api:src/include/apps/shell_command_utils.h:shell_command_read_token` | `src/include/apps/shell_command_utils.h` | `shell_command_read_token` | `apps` | `COVERED` | 5 |
-| `api:src/include/apps/shell_command_utils.h:shell_command_read_two_args` | `src/include/apps/shell_command_utils.h` | `shell_command_read_two_args` | `apps` | `COVERED` | 5 |
-| `api:src/include/apps/shell_command_utils.h:shell_command_uppercase` | `src/include/apps/shell_command_utils.h` | `shell_command_uppercase` | `apps` | `COVERED` | 5 |
+| `api:src/include/apps/shell_command_utils.h:shell_command_args_equal` | `src/include/apps/shell_command_utils.h` | `shell_command_args_equal` | `apps` | `COVERED` | 6 |
+| `api:src/include/apps/shell_command_utils.h:shell_command_match_subcommand` | `src/include/apps/shell_command_utils.h` | `shell_command_match_subcommand` | `apps` | `COVERED` | 6 |
+| `api:src/include/apps/shell_command_utils.h:shell_command_parse_number` | `src/include/apps/shell_command_utils.h` | `shell_command_parse_number` | `apps` | `COVERED` | 6 |
+| `api:src/include/apps/shell_command_utils.h:shell_command_print_hex` | `src/include/apps/shell_command_utils.h` | `shell_command_print_hex` | `apps` | `COVERED` | 6 |
+| `api:src/include/apps/shell_command_utils.h:shell_command_print_num` | `src/include/apps/shell_command_utils.h` | `shell_command_print_num` | `apps` | `COVERED` | 6 |
+| `api:src/include/apps/shell_command_utils.h:shell_command_read_four_args` | `src/include/apps/shell_command_utils.h` | `shell_command_read_four_args` | `apps` | `COVERED` | 6 |
+| `api:src/include/apps/shell_command_utils.h:shell_command_read_single_arg` | `src/include/apps/shell_command_utils.h` | `shell_command_read_single_arg` | `apps` | `COVERED` | 6 |
+| `api:src/include/apps/shell_command_utils.h:shell_command_read_token` | `src/include/apps/shell_command_utils.h` | `shell_command_read_token` | `apps` | `COVERED` | 6 |
+| `api:src/include/apps/shell_command_utils.h:shell_command_read_two_args` | `src/include/apps/shell_command_utils.h` | `shell_command_read_two_args` | `apps` | `COVERED` | 6 |
+| `api:src/include/apps/shell_command_utils.h:shell_command_uppercase` | `src/include/apps/shell_command_utils.h` | `shell_command_uppercase` | `apps` | `COVERED` | 6 |
 | `api:src/include/apps/shell_dispatch.h:shell_dispatch_execute` | `src/include/apps/shell_dispatch.h` | `shell_dispatch_execute` | `apps` | `COVERED` | 6 |
 | `api:src/include/apps/shell_input.h:shell_input_cancel_extended` | `src/include/apps/shell_input.h` | `shell_input_cancel_extended` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell_input.h:shell_input_get_buffer` | `src/include/apps/shell_input.h` | `shell_input_get_buffer` | `apps` | `COVERED` | 8 |
@@ -605,9 +605,9 @@
 | `api:src/include/core/spinlock.h:spinlock_init` | `src/include/core/spinlock.h` | `spinlock_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_release` | `src/include/core/spinlock.h` | `spinlock_release` | `core` | `PENDING` | 0 |
 | `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 43 |
-| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 46 |
-| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 36 |
-| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 38 |
+| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 47 |
+| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 37 |
+| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 39 |
 | `api:src/include/core/syscall.h:syscall_enable_user_mode` | `src/include/core/syscall.h` | `syscall_enable_user_mode` | `core` | `COVERED` | 2 |
 | `api:src/include/core/syscall.h:syscall_handler` | `src/include/core/syscall.h` | `syscall_handler` | `core` | `COVERED` | 2 |
 | `api:src/include/core/syscall.h:syscall_init` | `src/include/core/syscall.h` | `syscall_init` | `core` | `COVERED` | 2 |
@@ -3081,9 +3081,9 @@
 | `c:src/core/socket.c:socket_wait_owner` | `src/core/socket.c` | `socket_wait_owner` | `core` | `COVERED` | 3 |
 | `c:src/core/socket.c:socket_wake` | `src/core/socket.c` | `socket_wake` | `core` | `COVERED` | 3 |
 | `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 43 |
-| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 46 |
-| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 36 |
-| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 38 |
+| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 47 |
+| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 37 |
+| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 39 |
 | `c:src/core/syscall.c:syscall_copy_user_string` | `src/core/syscall.c` | `syscall_copy_user_string` | `core` | `COVERED` | 1 |
 | `c:src/core/syscall.c:syscall_dispatch` | `src/core/syscall.c` | `syscall_dispatch` | `core` | `COVERED` | 2 |
 | `c:src/core/syscall.c:syscall_dispatch_user` | `src/core/syscall.c` | `syscall_dispatch_user` | `core` | `COVERED` | 2 |
@@ -6139,11 +6139,11 @@
 | `c:src/shell/shell_checks.c:shell_regcheck_validate_usb_entry` | `src/shell/shell_checks.c` | `shell_regcheck_validate_usb_entry` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_remove_image` | `src/shell/shell_checks.c` | `shell_remove_image` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_verify_image` | `src/shell/shell_checks.c` | `shell_verify_image` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_command_utils.c:shell_command_args_equal` | `src/shell/shell_command_utils.c` | `shell_command_args_equal` | `shell` | `COVERED` | 3 |
-| `c:src/shell/shell_command_utils.c:shell_command_match_subcommand` | `src/shell/shell_command_utils.c` | `shell_command_match_subcommand` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_command_utils.c:shell_command_args_equal` | `src/shell/shell_command_utils.c` | `shell_command_args_equal` | `shell` | `COVERED` | 4 |
+| `c:src/shell/shell_command_utils.c:shell_command_match_subcommand` | `src/shell/shell_command_utils.c` | `shell_command_match_subcommand` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_command_utils.c:shell_command_parse_number` | `src/shell/shell_command_utils.c` | `shell_command_parse_number` | `shell` | `COVERED` | 2 |
-| `c:src/shell/shell_command_utils.c:shell_command_print_hex` | `src/shell/shell_command_utils.c` | `shell_command_print_hex` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_command_utils.c:shell_command_print_num` | `src/shell/shell_command_utils.c` | `shell_command_print_num` | `shell` | `COVERED` | 4 |
+| `c:src/shell/shell_command_utils.c:shell_command_print_hex` | `src/shell/shell_command_utils.c` | `shell_command_print_hex` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_command_utils.c:shell_command_print_num` | `src/shell/shell_command_utils.c` | `shell_command_print_num` | `shell` | `COVERED` | 5 |
 | `c:src/shell/shell_command_utils.c:shell_command_read_four_args` | `src/shell/shell_command_utils.c` | `shell_command_read_four_args` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_command_utils.c:shell_command_read_single_arg` | `src/shell/shell_command_utils.c` | `shell_command_read_single_arg` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_command_utils.c:shell_command_read_token` | `src/shell/shell_command_utils.c` | `shell_command_read_token` | `shell` | `COVERED` | 2 |
@@ -6735,18 +6735,18 @@
 | `c:src/shell/shell_commands_vfs.c:shell_dispatch_cmd_pipetest` | `src/shell/shell_commands_vfs.c` | `shell_dispatch_cmd_pipetest` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_vfs.c:shell_grep_contains` | `src/shell/shell_commands_vfs.c` | `shell_grep_contains` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_vfs.c:shell_grep_emit` | `src/shell/shell_commands_vfs.c` | `shell_grep_emit` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_wifi.c:shell_dispatch_cmd_wifi` | `src/shell/shell_commands_wifi.c` | `shell_dispatch_cmd_wifi` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_wifi.c:wifi_command` | `src/shell/shell_commands_wifi.c` | `wifi_command` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_wifi.c:wifi_connect` | `src/shell/shell_commands_wifi.c` | `wifi_connect` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_wifi.c:wifi_ensure_initialized` | `src/shell/shell_commands_wifi.c` | `wifi_ensure_initialized` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_wifi.c:wifi_print_interface` | `src/shell/shell_commands_wifi.c` | `wifi_print_interface` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_wifi.c:wifi_print_inventory` | `src/shell/shell_commands_wifi.c` | `wifi_print_inventory` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_wifi.c:wifi_print_pci_location` | `src/shell/shell_commands_wifi.c` | `wifi_print_pci_location` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_wifi.c:wifi_print_scan_result` | `src/shell/shell_commands_wifi.c` | `wifi_print_scan_result` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_wifi.c:wifi_print_status` | `src/shell/shell_commands_wifi.c` | `wifi_print_status` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_wifi.c:wifi_print_usb_location` | `src/shell/shell_commands_wifi.c` | `wifi_print_usb_location` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_wifi.c:wifi_scan` | `src/shell/shell_commands_wifi.c` | `wifi_scan` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_wifi.c:wifi_state_color` | `src/shell/shell_commands_wifi.c` | `wifi_state_color` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_wifi.c:shell_dispatch_cmd_wifi` | `src/shell/shell_commands_wifi.c` | `shell_dispatch_cmd_wifi` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_wifi.c:wifi_command` | `src/shell/shell_commands_wifi.c` | `wifi_command` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_wifi.c:wifi_connect` | `src/shell/shell_commands_wifi.c` | `wifi_connect` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_wifi.c:wifi_ensure_initialized` | `src/shell/shell_commands_wifi.c` | `wifi_ensure_initialized` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_wifi.c:wifi_print_interface` | `src/shell/shell_commands_wifi.c` | `wifi_print_interface` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_wifi.c:wifi_print_inventory` | `src/shell/shell_commands_wifi.c` | `wifi_print_inventory` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_wifi.c:wifi_print_pci_location` | `src/shell/shell_commands_wifi.c` | `wifi_print_pci_location` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_wifi.c:wifi_print_scan_result` | `src/shell/shell_commands_wifi.c` | `wifi_print_scan_result` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_wifi.c:wifi_print_status` | `src/shell/shell_commands_wifi.c` | `wifi_print_status` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_wifi.c:wifi_print_usb_location` | `src/shell/shell_commands_wifi.c` | `wifi_print_usb_location` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_wifi.c:wifi_scan` | `src/shell/shell_commands_wifi.c` | `wifi_scan` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_wifi.c:wifi_state_color` | `src/shell/shell_commands_wifi.c` | `wifi_state_color` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_dispatch.c:shell_dispatch_execute` | `src/shell/shell_dispatch.c` | `shell_dispatch_execute` | `shell` | `COVERED` | 6 |
 | `c:src/shell/shell_dispatch.c:shell_dispatch_print_unknown` | `src/shell/shell_dispatch.c` | `shell_dispatch_print_unknown` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_hosted.c:shell_hosted_close` | `src/shell/shell_hosted.c` | `shell_hosted_close` | `shell` | `COVERED` | 1 |
@@ -7443,6 +7443,7 @@
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
 | `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
+| `host:shell:wifi` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar status, inventario PCI/USB, scan, conexao, argumentos invalidos, erros e estados indisponiveis | o Shell formata estados, locais, resultados e erros sem aceitar senha ou abrir conexao externa | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos de saida e fixtures do gerenciador Wi-Fi no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -9192,18 +9193,6 @@
 - `c:src/shell/shell_commands_storage.c:shell_index_job_finish`
 - `c:src/shell/shell_commands_storage.c:shell_index_job_step`
 - `c:src/shell/shell_commands_storage.c:shell_storage_start_job`
-- `c:src/shell/shell_commands_wifi.c:shell_dispatch_cmd_wifi`
-- `c:src/shell/shell_commands_wifi.c:wifi_command`
-- `c:src/shell/shell_commands_wifi.c:wifi_connect`
-- `c:src/shell/shell_commands_wifi.c:wifi_ensure_initialized`
-- `c:src/shell/shell_commands_wifi.c:wifi_print_interface`
-- `c:src/shell/shell_commands_wifi.c:wifi_print_inventory`
-- `c:src/shell/shell_commands_wifi.c:wifi_print_pci_location`
-- `c:src/shell/shell_commands_wifi.c:wifi_print_scan_result`
-- `c:src/shell/shell_commands_wifi.c:wifi_print_status`
-- `c:src/shell/shell_commands_wifi.c:wifi_print_usb_location`
-- `c:src/shell/shell_commands_wifi.c:wifi_scan`
-- `c:src/shell/shell_commands_wifi.c:wifi_state_color`
 - `c:src/shell/taskmanager.c:draw_bar`
 - `c:src/shell/taskmanager.c:draw_box`
 - `c:src/shell/taskmanager.c:draw_header`

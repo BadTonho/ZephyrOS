@@ -2242,3 +2242,13 @@ pendente.
   sanitizador LLVM por dependência de ambiente ausente; os demais casos e
   `q3check` passaram. A sincronização restaurou ainda o modo `integration` dos
   comandos cobertos pelo dispatcher. O baseline permaneceu inalterado.
+
+- Incremento Shell/Wi-Fi concluido em 2026-09-04 11:32.
+  A nova fixture `host:shell:wifi` executa os handlers reais de
+  `src/shell/shell_commands_wifi.c` com inventario PCI/USB e radio simulados.
+  Foram exercitados os fluxos de status, scan, conexao, formatacao de
+  interfaces, argumentos invalidos e falhas controladas. O alvo host-only,
+  os testes do runner e o catalogo passaram; a cobertura foi vinculada por
+  evidencia instrumentada real. O catalogo registra 7.219 superficies,
+  5.267 `COVERED`, 1.952 `PENDING` e 139 casos. A cobertura integral ainda
+  depende das pendencias restantes.
