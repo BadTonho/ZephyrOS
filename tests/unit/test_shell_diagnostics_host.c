@@ -12,6 +12,7 @@
 void shell_dispatch_cmd_pwd(const char* arguments);
 void shell_dispatch_cmd_cd(const char* arguments);
 void shell_dispatch_cmd_mouse(const char* arguments);
+void shell_dispatch_cmd_log(const char* arguments);
 
 #define HOST_COVERAGE_CAPACITY 512U
 #define HOST_COVERAGE_LINE_SIZE 32U
@@ -36,6 +37,20 @@ static uint32_t fixture_chdir_calls;
 static uint32_t fixture_speed_calls;
 static uint32_t fixture_primary_calls;
 static uint32_t fixture_acceleration_calls;
+static log_stats_t fixture_log_stats;
+static log_record_t fixture_log_records[2];
+static log_self_test_result_t fixture_log_test;
+static int fixture_log_stats_result;
+static int fixture_log_copy_result;
+static int fixture_log_set_console_result;
+static int fixture_log_set_buffer_result;
+static int fixture_log_test_result;
+static uint32_t fixture_log_copy_count;
+static uint32_t fixture_log_clear_calls;
+static uint32_t fixture_log_console_calls;
+static uint32_t fixture_log_buffer_calls;
+static log_level_t fixture_log_console_level;
+static log_level_t fixture_log_buffer_level;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -122,6 +137,56 @@ static void fixture_reset(void) {
     fixture_speed_calls = 0U;
     fixture_primary_calls = 0U;
     fixture_acceleration_calls = 0U;
+    fixture_log_stats_result = OK;
+    fixture_log_copy_result = OK;
+    fixture_log_set_console_result = OK;
+    fixture_log_set_buffer_result = OK;
+    fixture_log_test_result = OK;
+    fixture_log_copy_count = 0U;
+    fixture_log_clear_calls = 0U;
+    fixture_log_console_calls = 0U;
+    fixture_log_buffer_calls = 0U;
+    fixture_log_console_level = LOG_LEVEL_INFO;
+    fixture_log_buffer_level = LOG_LEVEL_DEBUG;
+    kmemset(&fixture_log_stats, 0, sizeof(fixture_log_stats));
+    kmemset(fixture_log_records, 0, sizeof(fixture_log_records));
+    kmemset(&fixture_log_test, 0, sizeof(fixture_log_test));
+    fixture_log_stats.capacity = LOG_RECORD_CAPACITY;
+    fixture_log_stats.occupancy = 2U;
+    fixture_log_stats.console_level = LOG_LEVEL_INFO;
+    fixture_log_stats.buffer_level = LOG_LEVEL_DEBUG;
+    fixture_log_stats.next_sequence = 12U;
+    fixture_log_stats.overwritten_records = 3U;
+    fixture_log_stats.grouped_events = 4U;
+    fixture_log_stats.truncated_events = 5U;
+    fixture_log_stats.dropped_events = 6U;
+    fixture_log_stats.clear_count = 7U;
+    fixture_log_copy_count = 2U;
+    fixture_log_records[0].sequence = 10U;
+    fixture_log_records[0].first_tick = 100U;
+    fixture_log_records[0].last_tick = 110U;
+    fixture_log_records[0].level = LOG_LEVEL_ERROR;
+    fixture_log_records[0].error_code = -4;
+    fixture_log_records[0].occurrences = 2U;
+    fixture_log_records[0].flags = LOG_RECORD_FLAG_HAS_ERROR_CODE;
+    copy_text(fixture_log_records[0].module, sizeof(fixture_log_records[0].module),
+              "TEST");
+    copy_text(fixture_log_records[0].message,
+              sizeof(fixture_log_records[0].message), "falha");
+    fixture_log_records[1] = fixture_log_records[0];
+    fixture_log_records[1].sequence = 11U;
+    fixture_log_records[1].level = LOG_LEVEL_DEBUG;
+    fixture_log_records[1].flags = 0U;
+    fixture_log_test.passed = 8U;
+    fixture_log_test.failed = 0U;
+    fixture_log_test.order_and_metadata = 1U;
+    fixture_log_test.wrap_and_overwrite = 1U;
+    fixture_log_test.repetition_grouping = 1U;
+    fixture_log_test.safe_truncation = 1U;
+    fixture_log_test.optional_error_code = 1U;
+    fixture_log_test.clear_behavior = 1U;
+    fixture_log_test.text_serialization = 1U;
+    fixture_log_test.level_filtering = 1U;
     kmemset(&fixture_mouse_status, 0, sizeof(fixture_mouse_status));
     fixture_mouse_status.initialized = 1U;
     fixture_mouse_status.x = 12;
@@ -170,6 +235,67 @@ void log_print(log_level_t level, const char* module, const char* message) {
     (void)level;
     (void)module;
     (void)message;
+}
+
+void log_print_code(log_level_t level, const char* module, int32_t error_code,
+                    const char* message) {
+    (void)level;
+    (void)module;
+    (void)error_code;
+    (void)message;
+}
+
+int log_get_stats(log_stats_t* stats) {
+    if (!stats) return ERR_NULL;
+    if (fixture_log_stats_result != OK) return fixture_log_stats_result;
+    *stats = fixture_log_stats;
+    return OK;
+}
+
+int log_copy_recent(log_record_t* records, uint32_t max_records,
+                    uint32_t* count) {
+    if (!records || !count) return ERR_NULL;
+    if (fixture_log_copy_result != OK) return fixture_log_copy_result;
+    if (max_records < fixture_log_copy_count) return ERR_OVERFLOW;
+    for (uint32_t index = 0U; index < fixture_log_copy_count; index++) {
+        records[index] = fixture_log_records[index];
+    }
+    *count = fixture_log_copy_count;
+    return OK;
+}
+
+void log_clear_buffer(void) {
+    fixture_log_clear_calls++;
+}
+
+int log_set_console_level(log_level_t level) {
+    fixture_log_console_calls++;
+    if (fixture_log_set_console_result == OK) {
+        fixture_log_console_level = level;
+    }
+    return fixture_log_set_console_result;
+}
+
+int log_set_buffer_level(log_level_t level) {
+    fixture_log_buffer_calls++;
+    if (fixture_log_set_buffer_result == OK) {
+        fixture_log_buffer_level = level;
+    }
+    return fixture_log_set_buffer_result;
+}
+
+int log_self_test(log_self_test_result_t* result) {
+    if (!result) return ERR_NULL;
+    *result = fixture_log_test;
+    return fixture_log_test_result;
+}
+
+const char* log_level_str(log_level_t level) {
+    if (level == LOG_LEVEL_ERROR) return "ERROR";
+    if (level == LOG_LEVEL_WARN) return "WARN";
+    if (level == LOG_LEVEL_INFO) return "INFO";
+    if (level == LOG_LEVEL_DEBUG) return "DEBUG";
+    return "INVALID";
 }
 
 int vfs_getcwd(char* path, uint32_t capacity) {
@@ -324,11 +450,74 @@ static int test_mouse(void) {
     return failures;
 }
 
+static int test_log(void) {
+    int failures = 0;
+
+    fixture_reset();
+    shell_dispatch_cmd_log("status");
+    failures += expect_contains("Log circular: 2/32 registros\n");
+    failures += expect_contains("Niveis do log: console=info buffer=debug\n");
+    fixture_reset();
+    fixture_log_stats_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_log("");
+    failures += expect_text("Erro: estatisticas do log indisponiveis.\n");
+    fixture_reset();
+    shell_dispatch_cmd_log("clear");
+    if (fixture_log_clear_calls != 1U ||
+        expect_text("Log circular limpo.\n")) failures++;
+    fixture_reset();
+    fixture_log_copy_count = 0U;
+    shell_dispatch_cmd_log("tail");
+    failures += expect_text("Log vazio.\n");
+    fixture_reset();
+    shell_dispatch_cmd_log("tail 2");
+    failures += expect_contains("seq=10 ticks=100..110 [ERROR] [TEST] falha");
+    failures += expect_contains("erro=-4");
+    failures += expect_contains("seq=11 ticks=100..110 [DEBUG] [TEST] falha");
+    fixture_reset();
+    fixture_log_copy_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_log("tail 1");
+    failures += expect_text("Erro: historico do log indisponivel.\n");
+    fixture_reset();
+    shell_dispatch_cmd_log("tail 33");
+    failures += expect_contains("Uso: log [status|tail [1-16]|clear|level|check]");
+    fixture_reset();
+    shell_dispatch_cmd_log("level");
+    failures += expect_contains("Niveis do log: console=info buffer=debug\n");
+    fixture_reset();
+    shell_dispatch_cmd_log("level console debug");
+    if (fixture_log_console_calls != 1U ||
+        fixture_log_console_level != LOG_LEVEL_DEBUG) {
+        fprintf(stderr, "diagnostics-host: nivel console nao aplicado\n");
+        failures++;
+    }
+    failures += expect_contains("Nivel console alterado para debug.\n");
+    fixture_reset();
+    fixture_log_set_buffer_result = ERR_INVALID;
+    shell_dispatch_cmd_log("level buffer error");
+    failures += expect_contains("Erro: o buffer deve ser tao detalhado quanto o console.\n");
+    fixture_reset();
+    shell_dispatch_cmd_log("level invalid info");
+    failures += expect_contains("Uso: log [status|tail [1-16]|clear|level|check]");
+    fixture_reset();
+    shell_dispatch_cmd_log("check");
+    failures += expect_contains("Resultado: OK (8 aprovados, 0 falhos)\n");
+    fixture_reset();
+    fixture_log_test_result = ERR_STATE;
+    fixture_log_test.failed = 1U;
+    shell_dispatch_cmd_log("check");
+    failures += expect_contains("Resultado: ERRO (8 aprovados, 1 falhos)\n");
+    fixture_reset();
+    shell_dispatch_cmd_log("unknown");
+    failures += expect_contains("Uso: log [status|tail [1-16]|clear|level|check]");
+    return failures;
+}
+
 int main(void) {
     int result;
 
     coverage_active = 1U;
-    result = test_pwd() + test_cd() + test_mouse();
+    result = test_pwd() + test_cd() + test_mouse() + test_log();
     coverage_active = 0U;
     coverage_emit(result);
     return result ? 1 : 0;
