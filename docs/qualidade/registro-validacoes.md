@@ -5243,3 +5243,13 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   Também passaram a sincronização/renderização do catálogo e
   `make catalog-test`. O catálogo registra 7.219 superfícies, 5.214
   `COVERED`, 2.005 `PENDING` e 137 casos.
+
+- Incremento Shell/hosted — fechamento final concluído em 2026-09-04 10:04
+  (America/Sao_Paulo). O caso existente `host:shell:hosted` foi executado
+  novamente e o relatório `build/test-results/shell-hosted-host/coverage.json`
+  confirmou as três superfícies que ainda estavam `PENDING`, sem endereços
+  desconhecidos ou símbolos ambíguos. A sincronização e a renderização do
+  catálogo passaram sem alteração no código do Shell.
+
+  O catálogo registra 7.219 superfícies, 5.217 `COVERED`, 2.002 `PENDING` e
+  137 casos.
