@@ -13566,9 +13566,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst2:protocol-adapter"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/test_protocol.h:test_protocol_is_active",
@@ -13584,9 +13587,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst2:protocol-adapter"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/test_protocol.h:test_protocol_panic",
@@ -13602,9 +13608,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst2:protocol-adapter"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/test_protocol.h:test_protocol_poll",
@@ -13620,9 +13629,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst2:protocol-adapter"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/test_protocol.h:test_protocol_set_boot_ready",
@@ -13638,9 +13650,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst2:protocol-adapter"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/test_protocol.h:test_protocol_timeout",
@@ -13656,9 +13671,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst2:protocol-adapter"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/timer.h:timer_cancel",
@@ -151288,7 +151306,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:app",
@@ -151310,7 +151328,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:appcheck",
@@ -151334,7 +151352,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:beep",
@@ -151356,7 +151374,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:blkcheck",
@@ -151380,7 +151398,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:blkstat",
@@ -151402,7 +151420,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:cache",
@@ -151424,7 +151442,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:cachestat",
@@ -151446,7 +151464,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:cat",
@@ -151468,7 +151486,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:cd",
@@ -151490,7 +151508,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:clear",
@@ -151512,7 +151530,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:clock",
@@ -151536,7 +151554,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:compress",
@@ -151558,7 +151576,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:cpu",
@@ -151580,7 +151598,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:desktop",
@@ -151602,7 +151620,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:devcheck",
@@ -151626,7 +151644,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:device-info",
@@ -151648,7 +151666,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:device-scan",
@@ -151670,7 +151688,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:devices",
@@ -151692,7 +151710,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:display",
@@ -151714,7 +151732,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:echo",
@@ -151736,7 +151754,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:edit",
@@ -151758,7 +151776,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:explorer",
@@ -151780,7 +151798,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:grep",
@@ -151802,7 +151820,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:guimode",
@@ -151824,7 +151842,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:guitest",
@@ -151846,7 +151864,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:health",
@@ -151870,7 +151888,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:help",
@@ -151892,7 +151910,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:http",
@@ -151914,7 +151932,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:icons",
@@ -151936,7 +151954,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:index",
@@ -151958,7 +151976,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:irqstat",
@@ -151982,7 +152000,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:job",
@@ -152004,7 +152022,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:kill",
@@ -152026,7 +152044,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:kmetrics",
@@ -152050,7 +152068,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:log",
@@ -152072,7 +152090,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:ls",
@@ -152094,7 +152112,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:melody",
@@ -152116,7 +152134,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:mem",
@@ -152138,7 +152156,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:memcheck",
@@ -152162,7 +152180,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:mount",
@@ -152184,7 +152202,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:mouse",
@@ -152206,7 +152224,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:net",
@@ -152230,7 +152248,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:netstat",
@@ -152252,7 +152270,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:nslookup",
@@ -152274,7 +152292,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:pagefault",
@@ -152296,7 +152314,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:ping",
@@ -152318,7 +152336,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:pipetest",
@@ -152340,7 +152358,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:pkg",
@@ -152362,7 +152380,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:pkgcheck",
@@ -152384,7 +152402,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:play",
@@ -152406,7 +152424,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:power",
@@ -152428,7 +152446,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:poweroff",
@@ -152450,7 +152468,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:proccheck",
@@ -152474,7 +152492,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:procs",
@@ -152496,7 +152514,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:pwd",
@@ -152518,7 +152536,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:q2check",
@@ -152540,7 +152558,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:reboot",
@@ -152562,7 +152580,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:regcheck",
@@ -152586,7 +152604,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:route",
@@ -152610,7 +152628,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:schedcheck",
@@ -152634,7 +152652,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:search",
@@ -152656,7 +152674,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:selecttest",
@@ -152678,7 +152696,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:settings",
@@ -152700,7 +152718,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:shutdown",
@@ -152722,7 +152740,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:sigtest",
@@ -152744,7 +152762,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:skbstat",
@@ -152766,7 +152784,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:slabinfo",
@@ -152788,7 +152806,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:slabtest",
@@ -152812,7 +152830,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:sockstat",
@@ -152836,7 +152854,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:stack",
@@ -152858,7 +152876,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:stats",
@@ -152880,7 +152898,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:stop",
@@ -152902,7 +152920,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:storage",
@@ -152926,7 +152944,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:store",
@@ -152948,7 +152966,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:sync",
@@ -152970,7 +152988,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:taskcfg",
@@ -152992,7 +153010,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:taskmgr",
@@ -153014,7 +153032,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:threads",
@@ -153036,7 +153054,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:threadtest",
@@ -153058,7 +153076,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:timer",
@@ -153082,7 +153100,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:tls",
@@ -153106,7 +153124,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:update",
@@ -153128,7 +153146,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:updater",
@@ -153150,7 +153168,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:uptime",
@@ -153172,7 +153190,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:usb",
@@ -153194,7 +153212,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:usertest",
@@ -153216,7 +153234,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:vfs",
@@ -153240,7 +153258,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:view",
@@ -153262,7 +153280,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:vmamap",
@@ -153284,7 +153302,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:wait",
@@ -153308,7 +153326,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:wifi",
@@ -153330,7 +153348,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:wm",
@@ -153352,7 +153370,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:workq",
@@ -153376,7 +153394,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:wqinfo",
@@ -153400,7 +153418,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "syscall:0",
@@ -162155,6 +162173,12 @@
       "cleanup": "processo host encerrado, filas descartadas e relatorio de cobertura preservado",
       "status": "AUTOMATED",
       "surface_ids": [
+        "api:src/include/core/test_protocol.h:test_protocol_init",
+        "api:src/include/core/test_protocol.h:test_protocol_is_active",
+        "api:src/include/core/test_protocol.h:test_protocol_panic",
+        "api:src/include/core/test_protocol.h:test_protocol_poll",
+        "api:src/include/core/test_protocol.h:test_protocol_set_boot_ready",
+        "api:src/include/core/test_protocol.h:test_protocol_timeout",
         "c:src/core/test_protocol.c:protocol_copy_text",
         "c:src/core/test_protocol.c:protocol_dispatch_case",
         "c:src/core/test_protocol.c:protocol_emit_event",

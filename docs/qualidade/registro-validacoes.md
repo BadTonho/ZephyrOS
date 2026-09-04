@@ -5131,3 +5131,20 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   cobertura. Tambem passaram `python tools/test_catalog.py sync`,
   `python tools/test_catalog.py render` e `make catalog-test`. O catalogo atual
   registra 7.219 superficies, 5.086 `COVERED`, 2.133 `PENDING` e 132 casos.
+
+- Incremento Core/ZTEST adapter - correção da fixture e APIs públicas - concluído
+  em 2026-09-03. A primeira execução revelou falha de link por ausência do
+  símbolo `kernel_tests_run_assembly()` na fixture host-only. O teste foi
+  corrigido com um executor falso controlado e passou a enviar a rota
+  `qemu:tst7:assembly`, além das rotas TST4/TST5/TST6, sem incluir o harness
+  freestanding no binário host. `make test-protocol-adapter-host`, executado
+  antes e depois de `make clean` seguido de `make`, terminou `PASS`.
+  `make q3check` e `make catalog-test` também passaram. O relatório
+  `build/test-results/protocol-adapter-host/coverage.json` terminou `PASS`,
+  com `unknown_addresses=[]`, `ambiguous_symbols=[]` e as seis APIs públicas
+  de `src/include/core/test_protocol.h` vinculadas por `include_public_apis`.
+  O único pendente do entorno é a função estática
+  `c:src/kernel/kernel.c:test_protocol_process_main`, que requer evidência do
+  processo real no QEMU; ela não foi coberta artificialmente pelo host-only.
+  O catálogo atual registra 7.219 superfícies, 5.092 `COVERED`, 2.127
+  `PENDING` e 132 casos.

@@ -1517,6 +1517,21 @@ pendente.
   7.196 superficies, 3.953 `COVERED`, 3.243 `PENDING` e 86 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Core/ZTEST adapter - correção da fixture e APIs públicas - concluído
+  em 2026-09-03. O caso `host:tst2:protocol-adapter` passou a incluir o stub
+  controlado de `kernel_tests_run_assembly()` e exercita também a rota
+  `qemu:tst7:assembly`, sem vincular o kernel real ao host-only. Depois do build
+  limpo, `make test-protocol-adapter-host`, `make q3check`, `make clean`, `make`
+  e `make catalog-test` terminaram com sucesso. O relatório instrumentado
+  `build/test-results/protocol-adapter-host/coverage.json` terminou `PASS`, sem
+  endereços desconhecidos ou símbolos ambíguos; as seis APIs públicas de
+  `src/include/core/test_protocol.h` foram vinculadas aos seus símbolos C
+  observados. O único pendente relacionado é
+  `c:src/kernel/kernel.c:test_protocol_process_main`, que exige evidência QEMU
+  do processo do protocolo e não foi marcado por este fixture host-only. O
+  catálogo atual registra 7.219 superfícies, 5.092 `COVERED`, 2.127 `PENDING`
+  e 132 casos.
+
 - Incremento Shell/hosted — evidencia final — concluido em 2026-09-03. O caso
   existente `host:shell:hosted` foi executado novamente após o build limpo com
   Window Manager, terminal e mouse falsos. O relatorio
