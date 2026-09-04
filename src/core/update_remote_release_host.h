@@ -1,0 +1,33 @@
+#ifndef UPDATE_REMOTE_RELEASE_HOST_H
+#define UPDATE_REMOTE_RELEASE_HOST_H
+
+#include "types.h"
+
+#define UPDATE_REMOTE_RELEASE_HOST_HTTP_COMPLETE 0U
+#define UPDATE_REMOTE_RELEASE_HOST_HTTP_NOT_FOUND 1U
+#define UPDATE_REMOTE_RELEASE_HOST_HTTP_FAILED 2U
+#define UPDATE_REMOTE_RELEASE_HOST_HTTP_WAIT 3U
+
+extern const uint8_t update_remote_release_host_descriptor[];
+extern const uint32_t update_remote_release_host_descriptor_size;
+extern const uint8_t* update_remote_release_host_http_body;
+extern uint32_t update_remote_release_host_http_body_size;
+extern uint8_t update_remote_release_host_http_mode;
+extern uint16_t update_remote_release_host_http_status_code;
+extern uint8_t update_remote_release_host_http_has_content_length;
+extern uint32_t update_remote_release_host_http_content_length;
+extern int update_remote_release_host_http_start_result;
+extern int update_remote_release_host_http_status_result;
+extern int update_remote_release_host_http_body_result;
+extern int update_remote_release_host_http_error;
+extern int update_remote_release_host_status_result;
+extern uint8_t update_remote_release_host_enabled;
+extern uint8_t update_remote_release_host_network_ready;
+extern uint8_t update_remote_release_host_package_cached;
+extern int update_remote_release_host_github_result;
+extern uint8_t update_remote_release_host_cancel;
+
+int update_remote_release_host_cancel_check(void* context);
+int update_remote_release_host_test_contracts(void);
+
+#endif

@@ -12971,6 +12971,7 @@
         "host:core:update",
         "host:core:update-remote",
         "host:core:update-remote-github",
+        "host:core:update-remote-release",
         "host:core:update-remote-runtime",
         "host:core:update-remote-system",
         "host:core:update-runtime",
@@ -13042,6 +13043,7 @@
         "host:core:update",
         "host:core:update-remote",
         "host:core:update-remote-github",
+        "host:core:update-remote-release",
         "host:core:update-remote-runtime",
         "host:core:update-remote-system",
         "host:core:update-runtime",
@@ -13117,6 +13119,7 @@
         "host:core:update",
         "host:core:update-remote",
         "host:core:update-remote-github",
+        "host:core:update-remote-release",
         "host:core:update-remote-runtime",
         "host:core:update-remote-system",
         "host:core:update-runtime",
@@ -13182,6 +13185,7 @@
         "host:core:update",
         "host:core:update-remote",
         "host:core:update-remote-github",
+        "host:core:update-remote-release",
         "host:core:update-remote-runtime",
         "host:core:update-remote-system",
         "host:core:update-runtime",
@@ -15326,9 +15330,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_remote.h:update_remote_release_fetch",
@@ -15344,9 +15351,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_remote.h:update_remote_state_name",
@@ -68247,6 +68257,7 @@
         "host:core:update",
         "host:core:update-remote",
         "host:core:update-remote-github",
+        "host:core:update-remote-release",
         "host:core:update-remote-runtime",
         "host:core:update-remote-system",
         "host:core:update-runtime",
@@ -68318,6 +68329,7 @@
         "host:core:update",
         "host:core:update-remote",
         "host:core:update-remote-github",
+        "host:core:update-remote-release",
         "host:core:update-remote-runtime",
         "host:core:update-remote-system",
         "host:core:update-runtime",
@@ -68393,6 +68405,7 @@
         "host:core:update",
         "host:core:update-remote",
         "host:core:update-remote-github",
+        "host:core:update-remote-release",
         "host:core:update-remote-runtime",
         "host:core:update-remote-system",
         "host:core:update-runtime",
@@ -68458,6 +68471,7 @@
         "host:core:update",
         "host:core:update-remote",
         "host:core:update-remote-github",
+        "host:core:update-remote-release",
         "host:core:update-remote-runtime",
         "host:core:update-remote-system",
         "host:core:update-runtime",
@@ -77251,9 +77265,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_release_build_descriptor_url",
@@ -77269,9 +77286,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_release_build_manifest_url",
@@ -77287,9 +77307,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_release_candidate_matches",
@@ -77305,9 +77328,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_release_channel_ready",
@@ -77323,9 +77349,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_release_copy_text",
@@ -77341,9 +77370,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_release_fetch_descriptor",
@@ -77359,9 +77391,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_release_has_suffix",
@@ -77377,9 +77412,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_release_hex_value",
@@ -77395,9 +77433,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_release_http_options",
@@ -77413,9 +77454,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_release_json_asset",
@@ -77431,9 +77475,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_release_json_expect",
@@ -77449,9 +77496,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_release_json_key",
@@ -77467,9 +77517,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_release_json_skip_space",
@@ -77485,9 +77538,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_release_json_string",
@@ -77503,9 +77559,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_release_mark_cache_preserved",
@@ -77521,9 +77580,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_release_parse_descriptor",
@@ -77539,9 +77601,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_release_parse_hash",
@@ -77557,9 +77622,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_release_parse_u32",
@@ -77575,9 +77643,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_release_parse_version",
@@ -77593,9 +77664,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_release_prepare_options",
@@ -77611,9 +77685,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_release_reject",
@@ -77629,9 +77706,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_release_resolve_descriptor",
@@ -77647,9 +77727,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_release_validate_asset_name",
@@ -77665,9 +77748,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_release_validate_identifier",
@@ -77683,9 +77769,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_release_validate_source_commit",
@@ -77701,9 +77790,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_release_validate_tag",
@@ -77719,9 +77811,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_release_versions_equal",
@@ -77737,9 +77832,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_release_wait_http",
@@ -77755,9 +77853,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_remote_release_check",
@@ -77773,15 +77874,39 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_remote_release_fetch",
       "kind": "c_function",
       "source": "src/core/update_remote_release.c",
       "symbol": "update_remote_release_fetch",
+      "linkage": "external",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/update_remote_release.c:update_remote_release_host_test_contracts",
+      "kind": "c_function",
+      "source": "src/core/update_remote_release.c",
+      "symbol": "update_remote_release_host_test_contracts",
       "linkage": "external",
       "owner": "core",
       "layer": "kernel-source",
@@ -176590,6 +176715,83 @@
         "snapshot"
       ],
       "status": "AUTOMATED"
+    },
+    {
+      "id": "host:core:update-remote-release",
+      "scenario": "Contratos do resolver de Releases por tag exata",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "network": "HTTP simulado offline",
+        "descriptor": "ep6-alt.json estatico"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "executar parser JSON, version lock, assets, URLs, espera, cancelamento, status HTTP e consultas publicas por tag com transporte simulado",
+      "expected": "descritores validos fazem parse; tags, limites, corrupcao, HTTP e pre-condicoes retornam erros canonicos sem rede externa",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente buffers estaticos no processo host",
+      "cleanup": "estado HTTP e buffers pertencem ao processo host; manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/string.h:kmemcpy",
+        "api:src/include/core/string.h:kmemset",
+        "api:src/include/core/string.h:kstrcmp",
+        "api:src/include/core/string.h:kstrlen",
+        "api:src/include/core/update_remote.h:update_remote_release_check",
+        "api:src/include/core/update_remote.h:update_remote_release_fetch",
+        "c:src/core/string.c:kmemcpy",
+        "c:src/core/string.c:kmemset",
+        "c:src/core/string.c:kstrcmp",
+        "c:src/core/string.c:kstrlen",
+        "c:src/core/update_remote_release.c:update_release_basename",
+        "c:src/core/update_remote_release.c:update_release_build_descriptor_url",
+        "c:src/core/update_remote_release.c:update_release_build_manifest_url",
+        "c:src/core/update_remote_release.c:update_release_candidate_matches",
+        "c:src/core/update_remote_release.c:update_release_channel_ready",
+        "c:src/core/update_remote_release.c:update_release_copy_text",
+        "c:src/core/update_remote_release.c:update_release_fetch_descriptor",
+        "c:src/core/update_remote_release.c:update_release_has_suffix",
+        "c:src/core/update_remote_release.c:update_release_hex_value",
+        "c:src/core/update_remote_release.c:update_release_http_options",
+        "c:src/core/update_remote_release.c:update_release_json_asset",
+        "c:src/core/update_remote_release.c:update_release_json_expect",
+        "c:src/core/update_remote_release.c:update_release_json_key",
+        "c:src/core/update_remote_release.c:update_release_json_skip_space",
+        "c:src/core/update_remote_release.c:update_release_json_string",
+        "c:src/core/update_remote_release.c:update_release_mark_cache_preserved",
+        "c:src/core/update_remote_release.c:update_release_parse_descriptor",
+        "c:src/core/update_remote_release.c:update_release_parse_hash",
+        "c:src/core/update_remote_release.c:update_release_parse_u32",
+        "c:src/core/update_remote_release.c:update_release_parse_version",
+        "c:src/core/update_remote_release.c:update_release_prepare_options",
+        "c:src/core/update_remote_release.c:update_release_reject",
+        "c:src/core/update_remote_release.c:update_release_resolve_descriptor",
+        "c:src/core/update_remote_release.c:update_release_validate_asset_name",
+        "c:src/core/update_remote_release.c:update_release_validate_identifier",
+        "c:src/core/update_remote_release.c:update_release_validate_source_commit",
+        "c:src/core/update_remote_release.c:update_release_validate_tag",
+        "c:src/core/update_remote_release.c:update_release_versions_equal",
+        "c:src/core/update_remote_release.c:update_release_wait_http",
+        "c:src/core/update_remote_release.c:update_remote_release_check",
+        "c:src/core/update_remote_release.c:update_remote_release_fetch"
+      ],
+      "tags": [
+        "host",
+        "update",
+        "release",
+        "json",
+        "http",
+        "offline",
+        "negative"
+      ]
     }
   ],
   "retired": [

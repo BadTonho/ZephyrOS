@@ -2543,6 +2543,59 @@
       }
     },
     {
+      "id": "update-remote-release-host-dynamic",
+      "domain": "core-update-remote-release",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/update-remote-release-host/coverage.json",
+      "coverage_sources": [
+        "src/core/update_remote_release.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-update-remote-release-host PASS com parser de descritor, version lock, assets, URLs, HTTP simulado, cancelamento e contratos publicos offline no relatorio instrumentado",
+      "case_definition": {
+        "id": "host:core:update-remote-release",
+        "scenario": "Contratos do resolver de Releases por tag exata",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "network": "HTTP simulado offline",
+          "descriptor": "ep6-alt.json estatico"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "executar parser JSON, version lock, assets, URLs, espera, cancelamento, status HTTP e consultas publicas por tag com transporte simulado",
+        "expected": "descritores validos fazem parse; tags, limites, corrupcao, HTTP e pre-condicoes retornam erros canonicos sem rede externa",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente buffers estaticos no processo host",
+        "cleanup": "estado HTTP e buffers pertencem ao processo host; manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "update",
+          "release",
+          "json",
+          "http",
+          "offline",
+          "negative"
+        ]
+      }
+    },
+    {
       "id": "update-host-dynamic",
       "domain": "core-update",
       "owner": "quality",
