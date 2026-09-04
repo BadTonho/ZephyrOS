@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 4977 |
+| `COVERED` | 5072 |
 | `MANUAL` | 0 |
-| `PENDING` | 2242 |
+| `PENDING` | 2147 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -7175,101 +7175,101 @@
 
 | ID | Fonte | Símbolo | Proprietário | Status | Casos |
 |---|---|---|---|---|---:|
-| `command:acpi` | `src/shell/shell_dispatch.c` | `acpi` | `shell` | `PENDING` | 0 |
-| `command:app` | `src/shell/shell_dispatch.c` | `app` | `shell` | `PENDING` | 0 |
-| `command:appcheck` | `src/shell/shell_dispatch.c` | `appcheck` | `shell` | `PENDING` | 0 |
-| `command:beep` | `src/shell/shell_dispatch.c` | `beep` | `shell` | `PENDING` | 0 |
-| `command:blkcheck` | `src/shell/shell_dispatch.c` | `blkcheck` | `shell` | `PENDING` | 0 |
-| `command:blkstat` | `src/shell/shell_dispatch.c` | `blkstat` | `shell` | `PENDING` | 0 |
-| `command:cache` | `src/shell/shell_dispatch.c` | `cache` | `shell` | `PENDING` | 0 |
-| `command:cachestat` | `src/shell/shell_dispatch.c` | `cachestat` | `shell` | `PENDING` | 0 |
-| `command:cat` | `src/shell/shell_dispatch.c` | `cat` | `shell` | `PENDING` | 0 |
-| `command:cd` | `src/shell/shell_dispatch.c` | `cd` | `shell` | `PENDING` | 0 |
-| `command:clear` | `src/shell/shell_dispatch.c` | `clear` | `shell` | `PENDING` | 0 |
-| `command:clock` | `src/shell/shell_dispatch.c` | `clock` | `shell` | `PENDING` | 0 |
-| `command:compress` | `src/shell/shell_dispatch.c` | `compress` | `shell` | `PENDING` | 0 |
-| `command:cpu` | `src/shell/shell_dispatch.c` | `cpu` | `shell` | `PENDING` | 0 |
-| `command:desktop` | `src/shell/shell_dispatch.c` | `desktop` | `shell` | `PENDING` | 0 |
-| `command:devcheck` | `src/shell/shell_dispatch.c` | `devcheck` | `shell` | `PENDING` | 0 |
-| `command:device-info` | `src/shell/shell_dispatch.c` | `device-info` | `shell` | `PENDING` | 0 |
-| `command:device-scan` | `src/shell/shell_dispatch.c` | `device-scan` | `shell` | `PENDING` | 0 |
-| `command:devices` | `src/shell/shell_dispatch.c` | `devices` | `shell` | `PENDING` | 0 |
-| `command:display` | `src/shell/shell_dispatch.c` | `display` | `shell` | `PENDING` | 0 |
-| `command:echo` | `src/shell/shell_dispatch.c` | `echo` | `shell` | `PENDING` | 0 |
-| `command:edit` | `src/shell/shell_dispatch.c` | `edit` | `shell` | `PENDING` | 0 |
-| `command:explorer` | `src/shell/shell_dispatch.c` | `explorer` | `shell` | `PENDING` | 0 |
-| `command:grep` | `src/shell/shell_dispatch.c` | `grep` | `shell` | `PENDING` | 0 |
-| `command:guimode` | `src/shell/shell_dispatch.c` | `guimode` | `shell` | `PENDING` | 0 |
-| `command:guitest` | `src/shell/shell_dispatch.c` | `guitest` | `shell` | `PENDING` | 0 |
-| `command:health` | `src/shell/shell_dispatch.c` | `health` | `shell` | `PENDING` | 0 |
-| `command:help` | `src/shell/shell_dispatch.c` | `help` | `shell` | `PENDING` | 0 |
-| `command:http` | `src/shell/shell_dispatch.c` | `http` | `shell` | `PENDING` | 0 |
-| `command:icons` | `src/shell/shell_dispatch.c` | `icons` | `shell` | `PENDING` | 0 |
-| `command:index` | `src/shell/shell_dispatch.c` | `index` | `shell` | `PENDING` | 0 |
-| `command:irqstat` | `src/shell/shell_dispatch.c` | `irqstat` | `shell` | `PENDING` | 0 |
-| `command:job` | `src/shell/shell_dispatch.c` | `job` | `shell` | `PENDING` | 0 |
-| `command:kill` | `src/shell/shell_dispatch.c` | `kill` | `shell` | `PENDING` | 0 |
-| `command:kmetrics` | `src/shell/shell_dispatch.c` | `kmetrics` | `shell` | `PENDING` | 0 |
-| `command:log` | `src/shell/shell_dispatch.c` | `log` | `shell` | `PENDING` | 0 |
-| `command:ls` | `src/shell/shell_dispatch.c` | `ls` | `shell` | `PENDING` | 0 |
-| `command:melody` | `src/shell/shell_dispatch.c` | `melody` | `shell` | `PENDING` | 0 |
-| `command:mem` | `src/shell/shell_dispatch.c` | `mem` | `shell` | `PENDING` | 0 |
-| `command:memcheck` | `src/shell/shell_dispatch.c` | `memcheck` | `shell` | `PENDING` | 0 |
-| `command:mount` | `src/shell/shell_dispatch.c` | `mount` | `shell` | `PENDING` | 0 |
-| `command:mouse` | `src/shell/shell_dispatch.c` | `mouse` | `shell` | `PENDING` | 0 |
-| `command:net` | `src/shell/shell_dispatch.c` | `net` | `shell` | `PENDING` | 0 |
-| `command:netstat` | `src/shell/shell_dispatch.c` | `netstat` | `shell` | `PENDING` | 0 |
-| `command:nslookup` | `src/shell/shell_dispatch.c` | `nslookup` | `shell` | `PENDING` | 0 |
-| `command:pagefault` | `src/shell/shell_dispatch.c` | `pagefault` | `shell` | `PENDING` | 0 |
-| `command:ping` | `src/shell/shell_dispatch.c` | `ping` | `shell` | `PENDING` | 0 |
-| `command:pipetest` | `src/shell/shell_dispatch.c` | `pipetest` | `shell` | `PENDING` | 0 |
-| `command:pkg` | `src/shell/shell_dispatch.c` | `pkg` | `shell` | `PENDING` | 0 |
-| `command:pkgcheck` | `src/shell/shell_dispatch.c` | `pkgcheck` | `shell` | `PENDING` | 0 |
-| `command:play` | `src/shell/shell_dispatch.c` | `play` | `shell` | `PENDING` | 0 |
-| `command:power` | `src/shell/shell_dispatch.c` | `power` | `shell` | `PENDING` | 0 |
-| `command:poweroff` | `src/shell/shell_dispatch.c` | `poweroff` | `shell` | `PENDING` | 0 |
-| `command:proccheck` | `src/shell/shell_dispatch.c` | `proccheck` | `shell` | `PENDING` | 0 |
-| `command:procs` | `src/shell/shell_dispatch.c` | `procs` | `shell` | `PENDING` | 0 |
-| `command:pwd` | `src/shell/shell_dispatch.c` | `pwd` | `shell` | `PENDING` | 0 |
-| `command:q2check` | `src/shell/shell_dispatch.c` | `q2check` | `shell` | `PENDING` | 0 |
-| `command:reboot` | `src/shell/shell_dispatch.c` | `reboot` | `shell` | `PENDING` | 0 |
-| `command:regcheck` | `src/shell/shell_dispatch.c` | `regcheck` | `shell` | `PENDING` | 0 |
-| `command:route` | `src/shell/shell_dispatch.c` | `route` | `shell` | `PENDING` | 0 |
-| `command:schedcheck` | `src/shell/shell_dispatch.c` | `schedcheck` | `shell` | `PENDING` | 0 |
-| `command:search` | `src/shell/shell_dispatch.c` | `search` | `shell` | `PENDING` | 0 |
-| `command:selecttest` | `src/shell/shell_dispatch.c` | `selecttest` | `shell` | `PENDING` | 0 |
-| `command:settings` | `src/shell/shell_dispatch.c` | `settings` | `shell` | `PENDING` | 0 |
-| `command:shutdown` | `src/shell/shell_dispatch.c` | `shutdown` | `shell` | `PENDING` | 0 |
-| `command:sigtest` | `src/shell/shell_dispatch.c` | `sigtest` | `shell` | `PENDING` | 0 |
-| `command:skbstat` | `src/shell/shell_dispatch.c` | `skbstat` | `shell` | `PENDING` | 0 |
-| `command:slabinfo` | `src/shell/shell_dispatch.c` | `slabinfo` | `shell` | `PENDING` | 0 |
-| `command:slabtest` | `src/shell/shell_dispatch.c` | `slabtest` | `shell` | `PENDING` | 0 |
-| `command:sockstat` | `src/shell/shell_dispatch.c` | `sockstat` | `shell` | `PENDING` | 0 |
-| `command:stack` | `src/shell/shell_dispatch.c` | `stack` | `shell` | `PENDING` | 0 |
-| `command:stats` | `src/shell/shell_dispatch.c` | `stats` | `shell` | `PENDING` | 0 |
-| `command:stop` | `src/shell/shell_dispatch.c` | `stop` | `shell` | `PENDING` | 0 |
-| `command:storage` | `src/shell/shell_dispatch.c` | `storage` | `shell` | `PENDING` | 0 |
-| `command:store` | `src/shell/shell_dispatch.c` | `store` | `shell` | `PENDING` | 0 |
-| `command:sync` | `src/shell/shell_dispatch.c` | `sync` | `shell` | `PENDING` | 0 |
-| `command:taskcfg` | `src/shell/shell_dispatch.c` | `taskcfg` | `shell` | `PENDING` | 0 |
-| `command:taskmgr` | `src/shell/shell_dispatch.c` | `taskmgr` | `shell` | `PENDING` | 0 |
-| `command:threads` | `src/shell/shell_dispatch.c` | `threads` | `shell` | `PENDING` | 0 |
-| `command:threadtest` | `src/shell/shell_dispatch.c` | `threadtest` | `shell` | `PENDING` | 0 |
-| `command:timer` | `src/shell/shell_dispatch.c` | `timer` | `shell` | `PENDING` | 0 |
-| `command:tls` | `src/shell/shell_dispatch.c` | `tls` | `shell` | `PENDING` | 0 |
-| `command:update` | `src/shell/shell_dispatch.c` | `update` | `shell` | `PENDING` | 0 |
-| `command:updater` | `src/shell/shell_dispatch.c` | `updater` | `shell` | `PENDING` | 0 |
-| `command:uptime` | `src/shell/shell_dispatch.c` | `uptime` | `shell` | `PENDING` | 0 |
-| `command:usb` | `src/shell/shell_dispatch.c` | `usb` | `shell` | `PENDING` | 0 |
-| `command:usertest` | `src/shell/shell_dispatch.c` | `usertest` | `shell` | `PENDING` | 0 |
-| `command:vfs` | `src/shell/shell_dispatch.c` | `vfs` | `shell` | `PENDING` | 0 |
-| `command:view` | `src/shell/shell_dispatch.c` | `view` | `shell` | `PENDING` | 0 |
-| `command:vmamap` | `src/shell/shell_dispatch.c` | `vmamap` | `shell` | `PENDING` | 0 |
-| `command:wait` | `src/shell/shell_dispatch.c` | `wait` | `shell` | `PENDING` | 0 |
-| `command:wifi` | `src/shell/shell_dispatch.c` | `wifi` | `shell` | `PENDING` | 0 |
-| `command:wm` | `src/shell/shell_dispatch.c` | `wm` | `shell` | `PENDING` | 0 |
-| `command:workq` | `src/shell/shell_dispatch.c` | `workq` | `shell` | `PENDING` | 0 |
-| `command:wqinfo` | `src/shell/shell_dispatch.c` | `wqinfo` | `shell` | `PENDING` | 0 |
+| `command:acpi` | `src/shell/shell_dispatch.c` | `acpi` | `shell` | `COVERED` | 1 |
+| `command:app` | `src/shell/shell_dispatch.c` | `app` | `shell` | `COVERED` | 1 |
+| `command:appcheck` | `src/shell/shell_dispatch.c` | `appcheck` | `shell` | `COVERED` | 1 |
+| `command:beep` | `src/shell/shell_dispatch.c` | `beep` | `shell` | `COVERED` | 1 |
+| `command:blkcheck` | `src/shell/shell_dispatch.c` | `blkcheck` | `shell` | `COVERED` | 1 |
+| `command:blkstat` | `src/shell/shell_dispatch.c` | `blkstat` | `shell` | `COVERED` | 1 |
+| `command:cache` | `src/shell/shell_dispatch.c` | `cache` | `shell` | `COVERED` | 1 |
+| `command:cachestat` | `src/shell/shell_dispatch.c` | `cachestat` | `shell` | `COVERED` | 1 |
+| `command:cat` | `src/shell/shell_dispatch.c` | `cat` | `shell` | `COVERED` | 1 |
+| `command:cd` | `src/shell/shell_dispatch.c` | `cd` | `shell` | `COVERED` | 1 |
+| `command:clear` | `src/shell/shell_dispatch.c` | `clear` | `shell` | `COVERED` | 1 |
+| `command:clock` | `src/shell/shell_dispatch.c` | `clock` | `shell` | `COVERED` | 1 |
+| `command:compress` | `src/shell/shell_dispatch.c` | `compress` | `shell` | `COVERED` | 1 |
+| `command:cpu` | `src/shell/shell_dispatch.c` | `cpu` | `shell` | `COVERED` | 1 |
+| `command:desktop` | `src/shell/shell_dispatch.c` | `desktop` | `shell` | `COVERED` | 1 |
+| `command:devcheck` | `src/shell/shell_dispatch.c` | `devcheck` | `shell` | `COVERED` | 1 |
+| `command:device-info` | `src/shell/shell_dispatch.c` | `device-info` | `shell` | `COVERED` | 1 |
+| `command:device-scan` | `src/shell/shell_dispatch.c` | `device-scan` | `shell` | `COVERED` | 1 |
+| `command:devices` | `src/shell/shell_dispatch.c` | `devices` | `shell` | `COVERED` | 1 |
+| `command:display` | `src/shell/shell_dispatch.c` | `display` | `shell` | `COVERED` | 1 |
+| `command:echo` | `src/shell/shell_dispatch.c` | `echo` | `shell` | `COVERED` | 1 |
+| `command:edit` | `src/shell/shell_dispatch.c` | `edit` | `shell` | `COVERED` | 1 |
+| `command:explorer` | `src/shell/shell_dispatch.c` | `explorer` | `shell` | `COVERED` | 1 |
+| `command:grep` | `src/shell/shell_dispatch.c` | `grep` | `shell` | `COVERED` | 1 |
+| `command:guimode` | `src/shell/shell_dispatch.c` | `guimode` | `shell` | `COVERED` | 1 |
+| `command:guitest` | `src/shell/shell_dispatch.c` | `guitest` | `shell` | `COVERED` | 1 |
+| `command:health` | `src/shell/shell_dispatch.c` | `health` | `shell` | `COVERED` | 1 |
+| `command:help` | `src/shell/shell_dispatch.c` | `help` | `shell` | `COVERED` | 1 |
+| `command:http` | `src/shell/shell_dispatch.c` | `http` | `shell` | `COVERED` | 1 |
+| `command:icons` | `src/shell/shell_dispatch.c` | `icons` | `shell` | `COVERED` | 1 |
+| `command:index` | `src/shell/shell_dispatch.c` | `index` | `shell` | `COVERED` | 1 |
+| `command:irqstat` | `src/shell/shell_dispatch.c` | `irqstat` | `shell` | `COVERED` | 1 |
+| `command:job` | `src/shell/shell_dispatch.c` | `job` | `shell` | `COVERED` | 1 |
+| `command:kill` | `src/shell/shell_dispatch.c` | `kill` | `shell` | `COVERED` | 1 |
+| `command:kmetrics` | `src/shell/shell_dispatch.c` | `kmetrics` | `shell` | `COVERED` | 1 |
+| `command:log` | `src/shell/shell_dispatch.c` | `log` | `shell` | `COVERED` | 1 |
+| `command:ls` | `src/shell/shell_dispatch.c` | `ls` | `shell` | `COVERED` | 1 |
+| `command:melody` | `src/shell/shell_dispatch.c` | `melody` | `shell` | `COVERED` | 1 |
+| `command:mem` | `src/shell/shell_dispatch.c` | `mem` | `shell` | `COVERED` | 1 |
+| `command:memcheck` | `src/shell/shell_dispatch.c` | `memcheck` | `shell` | `COVERED` | 1 |
+| `command:mount` | `src/shell/shell_dispatch.c` | `mount` | `shell` | `COVERED` | 1 |
+| `command:mouse` | `src/shell/shell_dispatch.c` | `mouse` | `shell` | `COVERED` | 1 |
+| `command:net` | `src/shell/shell_dispatch.c` | `net` | `shell` | `COVERED` | 1 |
+| `command:netstat` | `src/shell/shell_dispatch.c` | `netstat` | `shell` | `COVERED` | 1 |
+| `command:nslookup` | `src/shell/shell_dispatch.c` | `nslookup` | `shell` | `COVERED` | 1 |
+| `command:pagefault` | `src/shell/shell_dispatch.c` | `pagefault` | `shell` | `COVERED` | 1 |
+| `command:ping` | `src/shell/shell_dispatch.c` | `ping` | `shell` | `COVERED` | 1 |
+| `command:pipetest` | `src/shell/shell_dispatch.c` | `pipetest` | `shell` | `COVERED` | 1 |
+| `command:pkg` | `src/shell/shell_dispatch.c` | `pkg` | `shell` | `COVERED` | 1 |
+| `command:pkgcheck` | `src/shell/shell_dispatch.c` | `pkgcheck` | `shell` | `COVERED` | 1 |
+| `command:play` | `src/shell/shell_dispatch.c` | `play` | `shell` | `COVERED` | 1 |
+| `command:power` | `src/shell/shell_dispatch.c` | `power` | `shell` | `COVERED` | 1 |
+| `command:poweroff` | `src/shell/shell_dispatch.c` | `poweroff` | `shell` | `COVERED` | 1 |
+| `command:proccheck` | `src/shell/shell_dispatch.c` | `proccheck` | `shell` | `COVERED` | 1 |
+| `command:procs` | `src/shell/shell_dispatch.c` | `procs` | `shell` | `COVERED` | 1 |
+| `command:pwd` | `src/shell/shell_dispatch.c` | `pwd` | `shell` | `COVERED` | 1 |
+| `command:q2check` | `src/shell/shell_dispatch.c` | `q2check` | `shell` | `COVERED` | 1 |
+| `command:reboot` | `src/shell/shell_dispatch.c` | `reboot` | `shell` | `COVERED` | 1 |
+| `command:regcheck` | `src/shell/shell_dispatch.c` | `regcheck` | `shell` | `COVERED` | 1 |
+| `command:route` | `src/shell/shell_dispatch.c` | `route` | `shell` | `COVERED` | 1 |
+| `command:schedcheck` | `src/shell/shell_dispatch.c` | `schedcheck` | `shell` | `COVERED` | 1 |
+| `command:search` | `src/shell/shell_dispatch.c` | `search` | `shell` | `COVERED` | 1 |
+| `command:selecttest` | `src/shell/shell_dispatch.c` | `selecttest` | `shell` | `COVERED` | 1 |
+| `command:settings` | `src/shell/shell_dispatch.c` | `settings` | `shell` | `COVERED` | 1 |
+| `command:shutdown` | `src/shell/shell_dispatch.c` | `shutdown` | `shell` | `COVERED` | 1 |
+| `command:sigtest` | `src/shell/shell_dispatch.c` | `sigtest` | `shell` | `COVERED` | 1 |
+| `command:skbstat` | `src/shell/shell_dispatch.c` | `skbstat` | `shell` | `COVERED` | 1 |
+| `command:slabinfo` | `src/shell/shell_dispatch.c` | `slabinfo` | `shell` | `COVERED` | 1 |
+| `command:slabtest` | `src/shell/shell_dispatch.c` | `slabtest` | `shell` | `COVERED` | 1 |
+| `command:sockstat` | `src/shell/shell_dispatch.c` | `sockstat` | `shell` | `COVERED` | 1 |
+| `command:stack` | `src/shell/shell_dispatch.c` | `stack` | `shell` | `COVERED` | 1 |
+| `command:stats` | `src/shell/shell_dispatch.c` | `stats` | `shell` | `COVERED` | 1 |
+| `command:stop` | `src/shell/shell_dispatch.c` | `stop` | `shell` | `COVERED` | 1 |
+| `command:storage` | `src/shell/shell_dispatch.c` | `storage` | `shell` | `COVERED` | 1 |
+| `command:store` | `src/shell/shell_dispatch.c` | `store` | `shell` | `COVERED` | 1 |
+| `command:sync` | `src/shell/shell_dispatch.c` | `sync` | `shell` | `COVERED` | 1 |
+| `command:taskcfg` | `src/shell/shell_dispatch.c` | `taskcfg` | `shell` | `COVERED` | 1 |
+| `command:taskmgr` | `src/shell/shell_dispatch.c` | `taskmgr` | `shell` | `COVERED` | 1 |
+| `command:threads` | `src/shell/shell_dispatch.c` | `threads` | `shell` | `COVERED` | 1 |
+| `command:threadtest` | `src/shell/shell_dispatch.c` | `threadtest` | `shell` | `COVERED` | 1 |
+| `command:timer` | `src/shell/shell_dispatch.c` | `timer` | `shell` | `COVERED` | 1 |
+| `command:tls` | `src/shell/shell_dispatch.c` | `tls` | `shell` | `COVERED` | 1 |
+| `command:update` | `src/shell/shell_dispatch.c` | `update` | `shell` | `COVERED` | 1 |
+| `command:updater` | `src/shell/shell_dispatch.c` | `updater` | `shell` | `COVERED` | 1 |
+| `command:uptime` | `src/shell/shell_dispatch.c` | `uptime` | `shell` | `COVERED` | 1 |
+| `command:usb` | `src/shell/shell_dispatch.c` | `usb` | `shell` | `COVERED` | 1 |
+| `command:usertest` | `src/shell/shell_dispatch.c` | `usertest` | `shell` | `COVERED` | 1 |
+| `command:vfs` | `src/shell/shell_dispatch.c` | `vfs` | `shell` | `COVERED` | 1 |
+| `command:view` | `src/shell/shell_dispatch.c` | `view` | `shell` | `COVERED` | 1 |
+| `command:vmamap` | `src/shell/shell_dispatch.c` | `vmamap` | `shell` | `COVERED` | 1 |
+| `command:wait` | `src/shell/shell_dispatch.c` | `wait` | `shell` | `COVERED` | 1 |
+| `command:wifi` | `src/shell/shell_dispatch.c` | `wifi` | `shell` | `COVERED` | 1 |
+| `command:wm` | `src/shell/shell_dispatch.c` | `wm` | `shell` | `COVERED` | 1 |
+| `command:workq` | `src/shell/shell_dispatch.c` | `workq` | `shell` | `COVERED` | 1 |
+| `command:wqinfo` | `src/shell/shell_dispatch.c` | `wqinfo` | `shell` | `COVERED` | 1 |
 
 ### syscall
 
@@ -7381,6 +7381,7 @@
 | `host:shell:introspection` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar parser hexadecimal com limites e entradas invalidas | parse_hex_u32 aceita digitos validos e rejeita prefixo, digito e overflow com codigos canonicos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:job` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar ciclo de vida, deadlines, wakeups, progresso, cancelamento, drenagem, timeout, erros, eventos IPC e diagnostico job status | jobs completam, falham, cancelam ou expiram com estado, codigo, geracao e limpeza coerentes | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do executor, filas IPC, relogio, teclado, video e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:mediaplayer` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar audio, imagem e reproducao combinada com arquivos estaticos e dependencias de hardware simuladas | o Media Player preserva estados, metadados, erros canonicos, limites e ownership sem hardware ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos, allocator de teste, recovery fake e contadores de audio e video do processo host | dados de audio e imagem liberados, estado parado e manifesto, logs e cobertura preservados |
+| `host:shell:pipeline` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar parsing, limites, pipes, redirecionamento, workers, leitura, escrita, autoteste e limpeza sob falhas controladas | pipelines validos concluem, entradas invalidas retornam codigo canonico e recursos sao restaurados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente pipes, threads, buffers, redirecionamento, video e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:storage:block` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar block_self_test e block_cache_self_test com providers estaticos | filas BIO, limites, cancelamento, failpoints, cache, writeback e sync passam e o inventario retorna ao estado inicial | compilador ausente, warning, cobertura incompleta, failpoint residual, falha de assercao ou timeout | somente estruturas globais do processo host e buffers estaticos de provider | autotestes removem dispositivos temporarios, limpam cache e deixam fila sem pendencias |
 | `host:storage:bmp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar parser BMP real com imagens estaticas, framebuffer e VESA simulados | headers, paletas, pixels, orientacao, transparencia, redimensionamento, escala, ownership e erros preservam o contrato sem hardware real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente imagens BMP, framebuffer e allocator estaticos do processo host | imagens liberadas, alocacoes devolvidas e manifesto, logs e cobertura preservados |
 | `host:storage:devfs` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar dispositivos null, zero, tty, speaker e hda com transporte estatico | registro, permissoes, leituras, seeks, ioctl, indisponibilidade e invariantes preservam o contrato sem hardware real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estruturas devfs e buffers estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7436,7 +7437,6 @@
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
 | `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
-| `host:shell:pipeline` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar parsing, limites, pipes, redirecionamento, workers, leitura, escrita, autoteste e limpeza sob falhas controladas | pipelines validos concluem, entradas invalidas retornam codigo canonico e recursos sao restaurados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente pipes, threads, buffers, redirecionamento, video e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -9562,101 +9562,6 @@
 - `c:src/wm/wm.c:wm_set_show_title`
 - `c:src/wm/wm.c:wm_toggle_window`
 - `c:src/wm/wm.c:wm_update_cpu_stats`
-- `command:acpi`
-- `command:app`
-- `command:appcheck`
-- `command:beep`
-- `command:blkcheck`
-- `command:blkstat`
-- `command:cache`
-- `command:cachestat`
-- `command:cat`
-- `command:cd`
-- `command:clear`
-- `command:clock`
-- `command:compress`
-- `command:cpu`
-- `command:desktop`
-- `command:devcheck`
-- `command:device-info`
-- `command:device-scan`
-- `command:devices`
-- `command:display`
-- `command:echo`
-- `command:edit`
-- `command:explorer`
-- `command:grep`
-- `command:guimode`
-- `command:guitest`
-- `command:health`
-- `command:help`
-- `command:http`
-- `command:icons`
-- `command:index`
-- `command:irqstat`
-- `command:job`
-- `command:kill`
-- `command:kmetrics`
-- `command:log`
-- `command:ls`
-- `command:melody`
-- `command:mem`
-- `command:memcheck`
-- `command:mount`
-- `command:mouse`
-- `command:net`
-- `command:netstat`
-- `command:nslookup`
-- `command:pagefault`
-- `command:ping`
-- `command:pipetest`
-- `command:pkg`
-- `command:pkgcheck`
-- `command:play`
-- `command:power`
-- `command:poweroff`
-- `command:proccheck`
-- `command:procs`
-- `command:pwd`
-- `command:q2check`
-- `command:reboot`
-- `command:regcheck`
-- `command:route`
-- `command:schedcheck`
-- `command:search`
-- `command:selecttest`
-- `command:settings`
-- `command:shutdown`
-- `command:sigtest`
-- `command:skbstat`
-- `command:slabinfo`
-- `command:slabtest`
-- `command:sockstat`
-- `command:stack`
-- `command:stats`
-- `command:stop`
-- `command:storage`
-- `command:store`
-- `command:sync`
-- `command:taskcfg`
-- `command:taskmgr`
-- `command:threads`
-- `command:threadtest`
-- `command:timer`
-- `command:tls`
-- `command:update`
-- `command:updater`
-- `command:uptime`
-- `command:usb`
-- `command:usertest`
-- `command:vfs`
-- `command:view`
-- `command:vmamap`
-- `command:wait`
-- `command:wifi`
-- `command:wm`
-- `command:workq`
-- `command:wqinfo`
 - `syscall:0`
 - `syscall:1`
 - `syscall:10`

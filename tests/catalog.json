@@ -151207,8 +151207,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:app",
@@ -151226,8 +151229,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:appcheck",
@@ -151247,8 +151253,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:beep",
@@ -151266,8 +151275,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:blkcheck",
@@ -151287,8 +151299,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:blkstat",
@@ -151306,8 +151321,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:cache",
@@ -151325,8 +151343,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:cachestat",
@@ -151344,8 +151365,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:cat",
@@ -151363,8 +151387,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:cd",
@@ -151382,8 +151409,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:clear",
@@ -151401,8 +151431,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:clock",
@@ -151422,8 +151455,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:compress",
@@ -151441,8 +151477,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:cpu",
@@ -151460,8 +151499,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:desktop",
@@ -151479,8 +151521,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:devcheck",
@@ -151500,8 +151545,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:device-info",
@@ -151519,8 +151567,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:device-scan",
@@ -151538,8 +151589,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:devices",
@@ -151557,8 +151611,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:display",
@@ -151576,8 +151633,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:echo",
@@ -151595,8 +151655,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:edit",
@@ -151614,8 +151677,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:explorer",
@@ -151633,8 +151699,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:grep",
@@ -151652,8 +151721,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:guimode",
@@ -151671,8 +151743,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:guitest",
@@ -151690,8 +151765,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:health",
@@ -151711,8 +151789,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:help",
@@ -151730,8 +151811,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:http",
@@ -151749,8 +151833,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:icons",
@@ -151768,8 +151855,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:index",
@@ -151787,8 +151877,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:irqstat",
@@ -151808,8 +151901,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:job",
@@ -151827,8 +151923,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:kill",
@@ -151846,8 +151945,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:kmetrics",
@@ -151867,8 +151969,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:log",
@@ -151886,8 +151991,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:ls",
@@ -151905,8 +152013,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:melody",
@@ -151924,8 +152035,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:mem",
@@ -151943,8 +152057,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:memcheck",
@@ -151964,8 +152081,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:mount",
@@ -151983,8 +152103,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:mouse",
@@ -152002,8 +152125,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:net",
@@ -152023,8 +152149,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:netstat",
@@ -152042,8 +152171,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:nslookup",
@@ -152061,8 +152193,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:pagefault",
@@ -152080,8 +152215,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:ping",
@@ -152099,8 +152237,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:pipetest",
@@ -152118,8 +152259,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:pkg",
@@ -152137,8 +152281,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:pkgcheck",
@@ -152156,8 +152303,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:play",
@@ -152175,8 +152325,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:power",
@@ -152194,8 +152347,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:poweroff",
@@ -152213,8 +152369,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:proccheck",
@@ -152234,8 +152393,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:procs",
@@ -152253,8 +152415,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:pwd",
@@ -152272,8 +152437,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:q2check",
@@ -152291,8 +152459,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:reboot",
@@ -152310,8 +152481,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:regcheck",
@@ -152331,8 +152505,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:route",
@@ -152352,8 +152529,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:schedcheck",
@@ -152373,8 +152553,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:search",
@@ -152392,8 +152575,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:selecttest",
@@ -152411,8 +152597,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:settings",
@@ -152430,8 +152619,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:shutdown",
@@ -152449,8 +152641,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:sigtest",
@@ -152468,8 +152663,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:skbstat",
@@ -152487,8 +152685,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:slabinfo",
@@ -152506,8 +152707,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:slabtest",
@@ -152527,8 +152731,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:sockstat",
@@ -152548,8 +152755,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:stack",
@@ -152567,8 +152777,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:stats",
@@ -152586,8 +152799,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:stop",
@@ -152605,8 +152821,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:storage",
@@ -152626,8 +152845,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:store",
@@ -152645,8 +152867,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:sync",
@@ -152664,8 +152889,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:taskcfg",
@@ -152683,8 +152911,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:taskmgr",
@@ -152702,8 +152933,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:threads",
@@ -152721,8 +152955,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:threadtest",
@@ -152740,8 +152977,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:timer",
@@ -152761,8 +153001,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:tls",
@@ -152782,8 +153025,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:update",
@@ -152801,8 +153047,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:updater",
@@ -152820,8 +153069,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:uptime",
@@ -152839,8 +153091,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:usb",
@@ -152858,8 +153113,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:usertest",
@@ -152877,8 +153135,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:vfs",
@@ -152898,8 +153159,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:view",
@@ -152917,8 +153181,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:vmamap",
@@ -152936,8 +153203,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:wait",
@@ -152957,8 +153227,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:wifi",
@@ -152976,8 +153249,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:wm",
@@ -152995,8 +153271,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:workq",
@@ -153016,8 +153295,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "command:wqinfo",
@@ -153037,8 +153319,11 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:dispatch"
+      ],
+      "coverage_mode": "integration"
     },
     {
       "id": "syscall:0",
@@ -159958,7 +160243,102 @@
       "surface_ids": [
         "api:src/include/apps/shell_dispatch.h:shell_dispatch_execute",
         "c:src/shell/shell_dispatch.c:shell_dispatch_execute",
-        "c:src/shell/shell_dispatch.c:shell_dispatch_print_unknown"
+        "c:src/shell/shell_dispatch.c:shell_dispatch_print_unknown",
+        "command:acpi",
+        "command:app",
+        "command:appcheck",
+        "command:beep",
+        "command:blkcheck",
+        "command:blkstat",
+        "command:cache",
+        "command:cachestat",
+        "command:cat",
+        "command:cd",
+        "command:clear",
+        "command:clock",
+        "command:compress",
+        "command:cpu",
+        "command:desktop",
+        "command:devcheck",
+        "command:device-info",
+        "command:device-scan",
+        "command:devices",
+        "command:display",
+        "command:echo",
+        "command:edit",
+        "command:explorer",
+        "command:grep",
+        "command:guimode",
+        "command:guitest",
+        "command:health",
+        "command:help",
+        "command:http",
+        "command:icons",
+        "command:index",
+        "command:irqstat",
+        "command:job",
+        "command:kill",
+        "command:kmetrics",
+        "command:log",
+        "command:ls",
+        "command:melody",
+        "command:mem",
+        "command:memcheck",
+        "command:mount",
+        "command:mouse",
+        "command:net",
+        "command:netstat",
+        "command:nslookup",
+        "command:pagefault",
+        "command:ping",
+        "command:pipetest",
+        "command:pkg",
+        "command:pkgcheck",
+        "command:play",
+        "command:power",
+        "command:poweroff",
+        "command:proccheck",
+        "command:procs",
+        "command:pwd",
+        "command:q2check",
+        "command:reboot",
+        "command:regcheck",
+        "command:route",
+        "command:schedcheck",
+        "command:search",
+        "command:selecttest",
+        "command:settings",
+        "command:shutdown",
+        "command:sigtest",
+        "command:skbstat",
+        "command:slabinfo",
+        "command:slabtest",
+        "command:sockstat",
+        "command:stack",
+        "command:stats",
+        "command:stop",
+        "command:storage",
+        "command:store",
+        "command:sync",
+        "command:taskcfg",
+        "command:taskmgr",
+        "command:threads",
+        "command:threadtest",
+        "command:timer",
+        "command:tls",
+        "command:update",
+        "command:updater",
+        "command:uptime",
+        "command:usb",
+        "command:usertest",
+        "command:vfs",
+        "command:view",
+        "command:vmamap",
+        "command:wait",
+        "command:wifi",
+        "command:wm",
+        "command:workq",
+        "command:wqinfo"
       ],
       "tags": [
         "host",
@@ -160210,6 +160590,74 @@
         "c:src/shell/mediaplayer.c:mp_stop",
         "c:src/shell/mediaplayer.c:mp_update",
         "c:src/shell/mediaplayer.c:str_copy"
+      ]
+    },
+    {
+      "id": "host:shell:pipeline",
+      "scenario": "Contrato host-only do executor de pipelines do Shell",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "hardware": "vfs-thread-video-stubs"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "validar parsing, limites, pipes, redirecionamento, workers, leitura, escrita, autoteste e limpeza sob falhas controladas",
+      "expected": "pipelines validos concluem, entradas invalidas retornam codigo canonico e recursos sao restaurados",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente pipes, threads, buffers, redirecionamento, video e logs falsos no processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/apps/shell_pipeline.h:shell_pipeline_is_active",
+        "api:src/include/apps/shell_pipeline.h:shell_pipeline_print_num",
+        "api:src/include/apps/shell_pipeline.h:shell_pipeline_read",
+        "api:src/include/apps/shell_pipeline.h:shell_pipeline_self_test",
+        "api:src/include/apps/shell_pipeline.h:shell_pipeline_try_execute",
+        "api:src/include/apps/shell_pipeline.h:shell_pipeline_write",
+        "c:src/shell/shell_pipeline.c:shell_pipeline_all_finished",
+        "c:src/shell/shell_pipeline.c:shell_pipeline_close_fd",
+        "c:src/shell/shell_pipeline.c:shell_pipeline_close_resources",
+        "c:src/shell/shell_pipeline.c:shell_pipeline_command_supported",
+        "c:src/shell/shell_pipeline.c:shell_pipeline_copy_segment",
+        "c:src/shell/shell_pipeline.c:shell_pipeline_copy_target",
+        "c:src/shell/shell_pipeline.c:shell_pipeline_copy_text",
+        "c:src/shell/shell_pipeline.c:shell_pipeline_create_resources",
+        "c:src/shell/shell_pipeline.c:shell_pipeline_current_stage",
+        "c:src/shell/shell_pipeline.c:shell_pipeline_destroy_threads",
+        "c:src/shell/shell_pipeline.c:shell_pipeline_has_operator",
+        "c:src/shell/shell_pipeline.c:shell_pipeline_is_active",
+        "c:src/shell/shell_pipeline.c:shell_pipeline_is_space",
+        "c:src/shell/shell_pipeline.c:shell_pipeline_parse",
+        "c:src/shell/shell_pipeline.c:shell_pipeline_print_num",
+        "c:src/shell/shell_pipeline.c:shell_pipeline_read",
+        "c:src/shell/shell_pipeline.c:shell_pipeline_record_error",
+        "c:src/shell/shell_pipeline.c:shell_pipeline_reject",
+        "c:src/shell/shell_pipeline.c:shell_pipeline_reset",
+        "c:src/shell/shell_pipeline.c:shell_pipeline_self_test",
+        "c:src/shell/shell_pipeline.c:shell_pipeline_sink_entry",
+        "c:src/shell/shell_pipeline.c:shell_pipeline_stage_entry",
+        "c:src/shell/shell_pipeline.c:shell_pipeline_test_consumer",
+        "c:src/shell/shell_pipeline.c:shell_pipeline_test_producer",
+        "c:src/shell/shell_pipeline.c:shell_pipeline_try_execute",
+        "c:src/shell/shell_pipeline.c:shell_pipeline_write"
+      ],
+      "tags": [
+        "host",
+        "shell",
+        "pipeline",
+        "vfs",
+        "threads",
+        "redirect",
+        "limits",
+        "coverage"
       ]
     },
     {
@@ -171583,74 +172031,6 @@
         "snapshot"
       ],
       "status": "AUTOMATED"
-    },
-    {
-      "id": "host:shell:pipeline",
-      "scenario": "Contrato host-only do executor de pipelines do Shell",
-      "owner": "quality",
-      "layer": "host",
-      "executor": "host",
-      "profile": "host-only",
-      "timeout_seconds": 120,
-      "heartbeat_timeout_seconds": 1,
-      "isolation": "fixture",
-      "parameters": {
-        "compiler": "HOST_CC",
-        "instrumentation": "-finstrument-functions",
-        "warnings": "error",
-        "hardware": "vfs-thread-video-stubs"
-      },
-      "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "validar parsing, limites, pipes, redirecionamento, workers, leitura, escrita, autoteste e limpeza sob falhas controladas",
-      "expected": "pipelines validos concluem, entradas invalidas retornam codigo canonico e recursos sao restaurados",
-      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
-      "effects": "somente pipes, threads, buffers, redirecionamento, video e logs falsos no processo host",
-      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
-      "status": "AUTOMATED",
-      "surface_ids": [
-        "api:src/include/apps/shell_pipeline.h:shell_pipeline_is_active",
-        "api:src/include/apps/shell_pipeline.h:shell_pipeline_print_num",
-        "api:src/include/apps/shell_pipeline.h:shell_pipeline_read",
-        "api:src/include/apps/shell_pipeline.h:shell_pipeline_self_test",
-        "api:src/include/apps/shell_pipeline.h:shell_pipeline_try_execute",
-        "api:src/include/apps/shell_pipeline.h:shell_pipeline_write",
-        "c:src/shell/shell_pipeline.c:shell_pipeline_all_finished",
-        "c:src/shell/shell_pipeline.c:shell_pipeline_close_fd",
-        "c:src/shell/shell_pipeline.c:shell_pipeline_close_resources",
-        "c:src/shell/shell_pipeline.c:shell_pipeline_command_supported",
-        "c:src/shell/shell_pipeline.c:shell_pipeline_copy_segment",
-        "c:src/shell/shell_pipeline.c:shell_pipeline_copy_target",
-        "c:src/shell/shell_pipeline.c:shell_pipeline_copy_text",
-        "c:src/shell/shell_pipeline.c:shell_pipeline_create_resources",
-        "c:src/shell/shell_pipeline.c:shell_pipeline_current_stage",
-        "c:src/shell/shell_pipeline.c:shell_pipeline_destroy_threads",
-        "c:src/shell/shell_pipeline.c:shell_pipeline_has_operator",
-        "c:src/shell/shell_pipeline.c:shell_pipeline_is_active",
-        "c:src/shell/shell_pipeline.c:shell_pipeline_is_space",
-        "c:src/shell/shell_pipeline.c:shell_pipeline_parse",
-        "c:src/shell/shell_pipeline.c:shell_pipeline_print_num",
-        "c:src/shell/shell_pipeline.c:shell_pipeline_read",
-        "c:src/shell/shell_pipeline.c:shell_pipeline_record_error",
-        "c:src/shell/shell_pipeline.c:shell_pipeline_reject",
-        "c:src/shell/shell_pipeline.c:shell_pipeline_reset",
-        "c:src/shell/shell_pipeline.c:shell_pipeline_self_test",
-        "c:src/shell/shell_pipeline.c:shell_pipeline_sink_entry",
-        "c:src/shell/shell_pipeline.c:shell_pipeline_stage_entry",
-        "c:src/shell/shell_pipeline.c:shell_pipeline_test_consumer",
-        "c:src/shell/shell_pipeline.c:shell_pipeline_test_producer",
-        "c:src/shell/shell_pipeline.c:shell_pipeline_try_execute",
-        "c:src/shell/shell_pipeline.c:shell_pipeline_write"
-      ],
-      "tags": [
-        "host",
-        "shell",
-        "pipeline",
-        "vfs",
-        "threads",
-        "redirect",
-        "limits",
-        "coverage"
-      ]
     }
   ],
   "retired": [

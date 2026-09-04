@@ -341,8 +341,9 @@ make test-workqueue-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 
 O caso `test-shell-dispatch-host` exercita o dispatcher com handlers falsos e
 verifica o diagnostico de comando desconhecido, a normalizacao de espacos e
-escape, o limite de 31 caracteres, o encaminhamento de um comando conhecido e
-o erro canonico para entrada nula. O relatorio fica em
+escape, o limite de 31 caracteres, o encaminhamento de um comando conhecido,
+o erro canonico para entrada nula e o despacho unico de cada comando da tabela
+com argumentos sentinela. O relatorio fica em
 `build/test-results/shell-dispatch-host/`:
 
 ```text

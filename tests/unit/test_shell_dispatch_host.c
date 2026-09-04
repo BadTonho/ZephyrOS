@@ -20,6 +20,8 @@ static char video_output[HOST_OUTPUT_CAPACITY];
 static uint32_t video_output_length;
 static uint32_t log_calls;
 static uint32_t echo_calls;
+static uint32_t handler_calls;
+static char handler_arguments[HOST_OUTPUT_CAPACITY];
 static char echo_arguments[HOST_OUTPUT_CAPACITY];
 
 static void __attribute__((no_instrument_function)) coverage_record(
@@ -85,6 +87,13 @@ static void copy_echo_arguments(const char* arguments) {
     uint32_t index = 0U;
 
     echo_calls++;
+    handler_calls++;
+    while (arguments[index] && index + 1U < HOST_OUTPUT_CAPACITY) {
+        handler_arguments[index] = arguments[index];
+        index++;
+    }
+    handler_arguments[index] = '\0';
+    index = 0U;
     while (arguments[index] && index + 1U < HOST_OUTPUT_CAPACITY) {
         echo_arguments[index] = arguments[index];
         index++;
@@ -110,8 +119,19 @@ int shell_pipeline_try_execute(const char* input, uint8_t* handled) {
     return OK;
 }
 
+static void record_handler_call(const char* arguments) {
+    uint32_t index = 0U;
+
+    handler_calls++;
+    while (arguments[index] && index + 1U < HOST_OUTPUT_CAPACITY) {
+        handler_arguments[index] = arguments[index];
+        index++;
+    }
+    handler_arguments[index] = '\0';
+}
+
 #define SHELL_STUB(name) \
-    void name(const char* arguments) { (void)arguments; }
+    void name(const char* arguments) { record_handler_call(arguments); }
 
 SHELL_STUB(shell_dispatch_cmd_job)
 SHELL_STUB(shell_dispatch_cmd_help)
@@ -263,6 +283,55 @@ static int check_known_command_and_null(void) {
     return 0;
 }
 
+static int check_registered_commands(void) {
+    static const char* commands[] = {
+        "job", "help", "clear", "ls", "cat", "echo", "grep",
+        "pipetest", "mem", "procs", "stack", "threads", "threadtest",
+        "uptime", "health", "log", "irqstat", "timer", "clock", "tls",
+        "wait", "wqinfo", "workq", "kill", "sigtest", "vfs", "devcheck",
+        "proccheck", "mount", "pwd", "cd", "devices", "device-info",
+        "device-scan", "usb", "net", "skbstat", "sockstat", "selecttest",
+        "netstat", "route", "wifi", "ping", "nslookup", "http", "acpi",
+        "power", "kmetrics", "cpu", "memcheck", "slabinfo", "slabtest",
+        "pagefault", "vmamap", "schedcheck", "q2check", "regcheck",
+        "appcheck", "blkcheck", "pkg", "store", "update", "pkgcheck", "app",
+        "usertest", "beep", "melody", "desktop", "guimode", "display",
+        "explorer", "reboot", "shutdown", "poweroff", "guitest", "taskmgr",
+        "taskcfg", "settings", "updater", "wm", "play", "view", "icons",
+        "stop", "compress", "stats", "edit", "storage", "blkstat", "cachestat",
+        "cache", "sync", "index", "search", "mouse"
+    };
+    char input[64];
+    uint32_t command_count =
+        sizeof(commands) / sizeof(commands[0]);
+
+    for (uint32_t index = 0U; index < command_count; index++) {
+        uint32_t input_length = 0U;
+        const char* command = commands[index];
+
+        while (command[input_length] && input_length + 1U < sizeof(input)) {
+            input[input_length] = command[input_length];
+            input_length++;
+        }
+        input[input_length++] = ' ';
+        input[input_length++] = 'p';
+        input[input_length++] = 'r';
+        input[input_length++] = 'o';
+        input[input_length++] = 'b';
+        input[input_length++] = 'e';
+        input[input_length] = '\0';
+
+        handler_calls = 0U;
+        handler_arguments[0] = '\0';
+        echo_calls = 0U;
+        if (shell_dispatch_execute(input) != OK) return 1;
+        if (handler_calls != 1U ||
+            kstrcmp(handler_arguments, "probe") != 0) return 2;
+        if (kstrcmp(command, "echo") == 0 && echo_calls != 1U) return 3;
+    }
+    return 0;
+}
+
 int main(void) {
     int result;
 
@@ -272,6 +341,7 @@ int main(void) {
     if (result == 0) result = check_input_normalization();
     if (result == 0) result = check_command_limit();
     if (result == 0) result = check_known_command_and_null();
+    if (result == 0) result = check_registered_commands();
     coverage_active = 0U;
     coverage_emit(result);
     return result;
