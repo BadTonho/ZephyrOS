@@ -651,6 +651,50 @@
       "evidence": "make test-state-host PASS com estados de recovery, cadeia de notificadores, callbacks opcionais, timeout e falhas canonicas no relatorio instrumentado"
     },
     {
+      "id": "core-spinlock-host",
+      "domain": "core-synchronization",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:spinlock"
+      ],
+      "surface_ids": [
+        "api:src/include/core/spinlock.h:spinlock_acquire",
+        "api:src/include/core/spinlock.h:spinlock_init",
+        "api:src/include/core/spinlock.h:spinlock_release"
+      ],
+      "case_definition": {
+        "id": "host:core:spinlock",
+        "scenario": "Contrato host-only do lock de exclusao mutua",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "inicializar, adquirir e liberar um spinlock em fixture estatica",
+        "expected": "as operacoes publicam os estados livre e adquirido sem residuos",
+        "errors": "compilador ausente, warning, falha de assercao ou timeout",
+        "effects": "somente a palavra de estado do lock no processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": [
+          "api:src/include/core/spinlock.h:spinlock_acquire",
+          "api:src/include/core/spinlock.h:spinlock_init",
+          "api:src/include/core/spinlock.h:spinlock_release"
+        ]
+      },
+      "evidence": "make test-spinlock-host PASS; a fixture chama spinlock_init, spinlock_acquire e spinlock_release e verifica o estado antes e depois"
+    },
+    {
       "id": "core-string-compress-host",
       "domain": "core-memory",
       "owner": "quality",

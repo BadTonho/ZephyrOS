@@ -2438,3 +2438,15 @@ pendente.
   superficies pendentes do arquivo foram zeradas. O catalogo registra 7.256
   superficies, 5.821 `COVERED`, 1.435 `PENDING` e 149 casos; o restante da
   cobertura integral continua pendente e nao foi mascarado.
+
+### Incremento Core/spinlock — 2026-09-04
+
+- [x] Fixture host-only criada para o contrato inline `spinlock_t`.
+- [x] `spinlock_init`, `spinlock_acquire` e `spinlock_release` foram chamados
+      diretamente e tiveram o estado livre/adquirido verificado.
+- [x] Caso `host:core:spinlock` integrado ao runner, Makefile e catálogo com
+      vínculos explícitos somente às três APIs exercitadas.
+- [x] Passaram o alvo host-only, `make catalog-test`, `make q3check`, build
+      limpo e os 164 testes Python unitários.
+- [x] O catálogo registra 7.293 superfícies, 6.086 `COVERED`, 1.207
+      `PENDING` e 152 casos; as pendências restantes continuam visíveis.

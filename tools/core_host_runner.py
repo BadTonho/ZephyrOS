@@ -131,6 +131,8 @@ BEARSSL_COMPAT_RESULT_DIR = ROOT / "build" / "test-results" / "bearssl-compat-ho
 BEARSSL_COMPAT_BINARY = ROOT / "build" / "tests" / "test_bearssl_compat_host.exe"
 SHELL_DISPATCH_RESULT_DIR = ROOT / "build" / "test-results" / "shell-dispatch-host"
 SHELL_DISPATCH_BINARY = ROOT / "build" / "tests" / "test_shell_dispatch_host.exe"
+SPINLOCK_RESULT_DIR = ROOT / "build" / "test-results" / "spinlock-host"
+SPINLOCK_BINARY = ROOT / "build" / "tests" / "test_spinlock_host.exe"
 DEFAULT_TIMEOUT = 120.0
 CORE_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_core_contracts.c",
@@ -982,6 +984,10 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
     if case_id == "host:shell:introspection":
         return (SHELL_INTROSPECTION_RESULT_DIR, SHELL_INTROSPECTION_BINARY,
                 SHELL_INTROSPECTION_SOURCE_FILES, "shell-introspection-host")
+    if case_id == "host:core:spinlock":
+        return (SPINLOCK_RESULT_DIR, SPINLOCK_BINARY,
+                (ROOT / "tests" / "unit" / "test_spinlock_host.c",),
+                "spinlock-host")
     if case_id == "host:drivers:font":
         return FONT_RESULT_DIR, FONT_BINARY, FONT_SOURCE_FILES, "font-host"
     if case_id == "host:drivers:rtc-status":
@@ -1299,6 +1305,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:memory:paging", "host:memory:memory",
                                  "host:process:signals", "host:process:ipc",
                                  "host:core:workqueue", "host:core:bearssl-compat",
+                                 "host:core:spinlock",
                                  "host:shell:dispatch", "host:shell:introspection",
                                  "host:drivers:font", "host:drivers:rtc-status",
                                  "host:core:wifi-manager",

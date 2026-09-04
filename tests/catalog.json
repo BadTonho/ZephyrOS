@@ -13691,9 +13691,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:spinlock"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/spinlock.h:spinlock_init",
@@ -13709,9 +13712,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:spinlock"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/spinlock.h:spinlock_release",
@@ -13727,9 +13733,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:spinlock"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/string.h:kmemcpy",
@@ -179124,6 +179133,34 @@
         "snapshot"
       ],
       "status": "AUTOMATED"
+    },
+    {
+      "id": "host:core:spinlock",
+      "scenario": "Contrato host-only do lock de exclusao mutua",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "inicializar, adquirir e liberar um spinlock em fixture estatica",
+      "expected": "as operacoes publicam os estados livre e adquirido sem residuos",
+      "errors": "compilador ausente, warning, falha de assercao ou timeout",
+      "effects": "somente a palavra de estado do lock no processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/spinlock.h:spinlock_acquire",
+        "api:src/include/core/spinlock.h:spinlock_init",
+        "api:src/include/core/spinlock.h:spinlock_release"
+      ]
     }
   ],
   "retired": [

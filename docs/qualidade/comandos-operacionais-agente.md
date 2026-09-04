@@ -1882,3 +1882,18 @@ O relatorio instrumentado fica em
 em `PASS`, com `unknown_addresses=[]` e `ambiguous_symbols=[]`. Depois da
 execucao real, sincronize o catalogo, renderize a visao e valide com
 `make catalog-test`.
+
+## Spinlock host-only
+
+O alvo `test-spinlock-host` executa uma fixture nativa que inicializa, adquire
+e libera um `spinlock_t`, verificando o estado livre e adquirido. O teste não
+cria threads nem depende de hardware; seu vínculo cobre somente as três
+operações inline declaradas em `src/include/core/spinlock.h`:
+
+```text
+make test-spinlock-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O caso automatizado é `host:core:spinlock`. A evidência declarativa fica em
+`tests/coverage/registry.json` porque funções `static inline` não formam um
+símbolo externo estável no relatório instrumentado.
