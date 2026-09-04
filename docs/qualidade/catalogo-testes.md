@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 5203 |
+| `COVERED` | 5205 |
 | `MANUAL` | 0 |
-| `PENDING` | 2016 |
+| `PENDING` | 2014 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -107,14 +107,14 @@
 | `api:src/include/apps/shell_command_utils.h:shell_command_read_two_args` | `src/include/apps/shell_command_utils.h` | `shell_command_read_two_args` | `apps` | `COVERED` | 4 |
 | `api:src/include/apps/shell_command_utils.h:shell_command_uppercase` | `src/include/apps/shell_command_utils.h` | `shell_command_uppercase` | `apps` | `COVERED` | 4 |
 | `api:src/include/apps/shell_dispatch.h:shell_dispatch_execute` | `src/include/apps/shell_dispatch.h` | `shell_dispatch_execute` | `apps` | `COVERED` | 6 |
-| `api:src/include/apps/shell_input.h:shell_input_cancel_extended` | `src/include/apps/shell_input.h` | `shell_input_cancel_extended` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell_input.h:shell_input_get_buffer` | `src/include/apps/shell_input.h` | `shell_input_get_buffer` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell_input.h:shell_input_handle_key` | `src/include/apps/shell_input.h` | `shell_input_handle_key` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_input.h:shell_input_cancel_extended` | `src/include/apps/shell_input.h` | `shell_input_cancel_extended` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_input.h:shell_input_get_buffer` | `src/include/apps/shell_input.h` | `shell_input_get_buffer` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_input.h:shell_input_handle_key` | `src/include/apps/shell_input.h` | `shell_input_handle_key` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell_input.h:shell_input_init` | `src/include/apps/shell_input.h` | `shell_input_init` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell_input.h:shell_input_print_prompt` | `src/include/apps/shell_input.h` | `shell_input_print_prompt` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell_input.h:shell_input_reset` | `src/include/apps/shell_input.h` | `shell_input_reset` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell_input.h:shell_input_reset_modifiers` | `src/include/apps/shell_input.h` | `shell_input_reset_modifiers` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell_input.h:shell_input_resume_terminal` | `src/include/apps/shell_input.h` | `shell_input_resume_terminal` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_input.h:shell_input_print_prompt` | `src/include/apps/shell_input.h` | `shell_input_print_prompt` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_input.h:shell_input_reset` | `src/include/apps/shell_input.h` | `shell_input_reset` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_input.h:shell_input_reset_modifiers` | `src/include/apps/shell_input.h` | `shell_input_reset_modifiers` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_input.h:shell_input_resume_terminal` | `src/include/apps/shell_input.h` | `shell_input_resume_terminal` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell_introspection.h:shell_introspection_find_value` | `src/include/apps/shell_introspection.h` | `shell_introspection_find_value` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_introspection.h:shell_introspection_parse_hex_u32` | `src/include/apps/shell_introspection.h` | `shell_introspection_parse_hex_u32` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_introspection.h:shell_introspection_parse_u32` | `src/include/apps/shell_introspection.h` | `shell_introspection_parse_u32` | `apps` | `COVERED` | 2 |
@@ -6757,22 +6757,22 @@
 | `c:src/shell/shell_hosted.c:shell_hosted_present_progress` | `src/shell/shell_hosted.c` | `shell_hosted_present_progress` | `shell` | `COVERED` | 3 |
 | `c:src/shell/shell_hosted.c:shell_hosted_reset` | `src/shell/shell_hosted.c` | `shell_hosted_reset` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_hosted.c:shell_runtime_is_hosted_visible` | `src/shell/shell_hosted.c` | `shell_runtime_is_hosted_visible` | `shell` | `COVERED` | 3 |
-| `c:src/shell/shell_input.c:shell_input_cancel_extended` | `src/shell/shell_input.c` | `shell_input_cancel_extended` | `shell` | `COVERED` | 7 |
-| `c:src/shell/shell_input.c:shell_input_get_buffer` | `src/shell/shell_input.c` | `shell_input_get_buffer` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_input.c:shell_input_handle_key` | `src/shell/shell_input.c` | `shell_input_handle_key` | `shell` | `COVERED` | 7 |
+| `c:src/shell/shell_input.c:shell_input_cancel_extended` | `src/shell/shell_input.c` | `shell_input_cancel_extended` | `shell` | `COVERED` | 8 |
+| `c:src/shell/shell_input.c:shell_input_get_buffer` | `src/shell/shell_input.c` | `shell_input_get_buffer` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_input.c:shell_input_handle_key` | `src/shell/shell_input.c` | `shell_input_handle_key` | `shell` | `COVERED` | 8 |
 | `c:src/shell/shell_input.c:shell_input_handle_terminal_scroll_key` | `src/shell/shell_input.c` | `shell_input_handle_terminal_scroll_key` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_input.c:shell_input_history_copy` | `src/shell/shell_input.c` | `shell_input_history_copy` | `shell` | `COVERED` | 5 |
-| `c:src/shell/shell_input.c:shell_input_history_detach_for_edit` | `src/shell/shell_input.c` | `shell_input_history_detach_for_edit` | `shell` | `COVERED` | 7 |
+| `c:src/shell/shell_input.c:shell_input_history_copy` | `src/shell/shell_input.c` | `shell_input_history_copy` | `shell` | `COVERED` | 6 |
+| `c:src/shell/shell_input.c:shell_input_history_detach_for_edit` | `src/shell/shell_input.c` | `shell_input_history_detach_for_edit` | `shell` | `COVERED` | 8 |
 | `c:src/shell/shell_input.c:shell_input_history_navigate` | `src/shell/shell_input.c` | `shell_input_history_navigate` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_input.c:shell_input_history_record` | `src/shell/shell_input.c` | `shell_input_history_record` | `shell` | `COVERED` | 5 |
+| `c:src/shell/shell_input.c:shell_input_history_record` | `src/shell/shell_input.c` | `shell_input_history_record` | `shell` | `COVERED` | 6 |
 | `c:src/shell/shell_input.c:shell_input_history_replace_input` | `src/shell/shell_input.c` | `shell_input_history_replace_input` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_input.c:shell_input_history_reset_navigation` | `src/shell/shell_input.c` | `shell_input_history_reset_navigation` | `shell` | `COVERED` | 5 |
-| `c:src/shell/shell_input.c:shell_input_init` | `src/shell/shell_input.c` | `shell_input_init` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_input.c:shell_input_print_prompt` | `src/shell/shell_input.c` | `shell_input_print_prompt` | `shell` | `COVERED` | 7 |
-| `c:src/shell/shell_input.c:shell_input_reset` | `src/shell/shell_input.c` | `shell_input_reset` | `shell` | `COVERED` | 5 |
-| `c:src/shell/shell_input.c:shell_input_reset_modifiers` | `src/shell/shell_input.c` | `shell_input_reset_modifiers` | `shell` | `COVERED` | 5 |
-| `c:src/shell/shell_input.c:shell_input_resume_terminal` | `src/shell/shell_input.c` | `shell_input_resume_terminal` | `shell` | `COVERED` | 7 |
-| `c:src/shell/shell_input.c:shell_input_return_to_terminal_tail` | `src/shell/shell_input.c` | `shell_input_return_to_terminal_tail` | `shell` | `COVERED` | 7 |
+| `c:src/shell/shell_input.c:shell_input_history_reset_navigation` | `src/shell/shell_input.c` | `shell_input_history_reset_navigation` | `shell` | `COVERED` | 6 |
+| `c:src/shell/shell_input.c:shell_input_init` | `src/shell/shell_input.c` | `shell_input_init` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_input.c:shell_input_print_prompt` | `src/shell/shell_input.c` | `shell_input_print_prompt` | `shell` | `COVERED` | 8 |
+| `c:src/shell/shell_input.c:shell_input_reset` | `src/shell/shell_input.c` | `shell_input_reset` | `shell` | `COVERED` | 6 |
+| `c:src/shell/shell_input.c:shell_input_reset_modifiers` | `src/shell/shell_input.c` | `shell_input_reset_modifiers` | `shell` | `COVERED` | 6 |
+| `c:src/shell/shell_input.c:shell_input_resume_terminal` | `src/shell/shell_input.c` | `shell_input_resume_terminal` | `shell` | `COVERED` | 8 |
+| `c:src/shell/shell_input.c:shell_input_return_to_terminal_tail` | `src/shell/shell_input.c` | `shell_input_return_to_terminal_tail` | `shell` | `COVERED` | 8 |
 | `c:src/shell/shell_introspection.c:shell_introspection_ascii_valid` | `src/shell/shell_introspection.c` | `shell_introspection_ascii_valid` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_introspection.c:shell_introspection_find_value` | `src/shell/shell_introspection.c` | `shell_introspection_find_value` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_introspection.c:shell_introspection_hex_digit` | `src/shell/shell_introspection.c` | `shell_introspection_hex_digit` | `shell` | `COVERED` | 1 |
@@ -7373,6 +7373,7 @@
 | `host:process:ipc` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fixture de IPC com processos estaticos | mensagens, filas, espera, foco e limpeza validos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente processos estaticos e filas falsas no processo host | filas, foco e estado da fixture restaurados com artefatos preservados |
 | `host:process:runtime` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, snapshots, scheduler, limites de criacao, transicoes, cancelamento, sinais, energia e filas de espera com processos estaticos | o gerenciador preserva codigos canonicos, estados, identidade, snapshots, limpeza e invariantes sem executar instrucoes privilegiadas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas, processos e buffers estaticos da fixture host | processo host encerrado, processos estaticos removidos e manifesto, logs e cobertura preservados |
 | `host:process:signals` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fixture de sinais com processos estaticos | mascaras, handlers, coalescencia, notificacao e invariantes validas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente processos estaticos e stubs de paging no processo host | estado de sinais restaurado e artefatos preservados |
+| `host:process:threads` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, criacao, selecao, yield, bloqueio, espera, cancelamento, desbloqueio, timeouts, limites e limpeza com threads e stacks estaticas | o scheduler preserva estados, identidade, filas de espera, codigos canonicos e limpeza sem executar troca de contexto Assembly | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas, threads e stacks estaticas da fixture host | processo host encerrado, threads estaticas removidas e manifesto, logs e cobertura preservados |
 | `host:security:tls` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar politica, estados, validade, cadeia, SAN, pinning, rotacao, revogacao e autoteste TLS com relogio e RNG falsos | identidades validas sao aceitas, rejeicoes retornam motivo canonico e capacidades indisponiveis permanecem explicitas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado TLS, politica e dependencias falsas no processo host | estado TLS e dependencias falsas reiniciados e artefatos preservados |
 | `host:security:tls-client` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar tls_client.c com engine BearSSL, socket, relogio e RNG falsos | handshake, envio, recepcao, EOF, estados de erro e limpeza preservam os contratos do adaptador | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do adaptador e fixtures do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:command-utils` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar parsing, validacao de argumentos, normalizacao e formatacao | utilitarios aceitam entradas validas, rejeitam limites e formatam valores corretamente | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos de entrada, saida e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7441,7 +7442,6 @@
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
 | `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
-| `host:process:threads` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, criacao, selecao, yield, bloqueio, espera, cancelamento, desbloqueio, timeouts, limites e limpeza com threads e stacks estaticas | o scheduler preserva estados, identidade, filas de espera, codigos canonicos e limpeza sem executar troca de contexto Assembly | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas, threads e stacks estaticas da fixture host | processo host encerrado, threads estaticas removidas e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -9253,8 +9253,6 @@
 - `c:src/shell/shell_hosted.c:shell_hosted_close`
 - `c:src/shell/shell_hosted.c:shell_hosted_mouse`
 - `c:src/shell/shell_hosted.c:shell_hosted_reset`
-- `c:src/shell/shell_input.c:shell_input_get_buffer`
-- `c:src/shell/shell_input.c:shell_input_init`
 - `c:src/shell/taskmanager.c:draw_bar`
 - `c:src/shell/taskmanager.c:draw_box`
 - `c:src/shell/taskmanager.c:draw_header`
