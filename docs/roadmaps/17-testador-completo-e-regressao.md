@@ -1517,6 +1517,23 @@ pendente.
   7.196 superficies, 3.953 `COVERED`, 3.243 `PENDING` e 86 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Shell/dispatcher — fechamento da tabela — concluido em 2026-09-03.
+  A fixture existente `host:shell:dispatch` passou a enviar cada um dos 95
+  comandos registrados com argumentos sentinela, confirmando despacho unico,
+  preservacao dos argumentos e retorno `OK`. Os handlers foram substituidos
+  por stubs somente nesta fixture, portanto a evidencia cobre a tabela e o
+  contrato do dispatcher, nao a implementacao interna de cada handler.
+
+  `make test-shell-dispatch-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
+  terminou `PASS`. O relatorio instrumentado manteve
+  `unknown_addresses=[]` e `ambiguous_symbols=[]`; o catalogo sincronizado e
+  renderizado passou a registrar todas as 97 superficies de
+  `src/shell/shell_dispatch.c` como `COVERED`, com os 95 comandos vinculados em
+  modo `integration` e as duas funcoes C vinculadas pelo relatorio direto. O
+  catalogo atual registra 7.219 superficies, 5.072 `COVERED`, 2.147
+  `PENDING` e 132 casos. O fechamento integral, o gate estrito e a validacao
+  TST7 completa continuam pendentes.
+
 - Incremento Shell/pipeline concluido em 2026-09-03. Foi criado o caso
   host-only `host:shell:pipeline` com o alvo
   `make test-shell-pipeline-host`. A fixture compila o

@@ -5087,3 +5087,18 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   e `python tools/test_catalog.py render`. O catalogo registra 7.219
   superficies, 4.977 `COVERED`, 2.242 `PENDING` e 132 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
+
+- Incremento Shell/dispatcher — fechamento da tabela — concluido em 2026-09-03.
+  A fixture host-only `host:shell:dispatch` passou a enviar os 95 comandos da
+  tabela com argumentos sentinela e confirmou despacho unico, preservacao dos
+  argumentos, retorno `OK`, normalizacao, limite e `ERR_NULL`. Os handlers
+  ficaram como stubs apenas no processo de teste, mantendo o escopo restrito
+  ao dispatcher.
+
+  `make test-shell-dispatch-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
+  terminou `PASS`. O relatorio instrumentado manteve
+  `unknown_addresses=[]` e `ambiguous_symbols=[]`; o catalogo sincronizado e
+  renderizado marcou as 97 superficies de `src/shell/shell_dispatch.c` como
+  `COVERED`, sendo os 95 comandos registrados por integracao e as duas funcoes
+  C resolvidas diretamente. O catalogo atual registra 7.219 superficies,
+  5.072 `COVERED`, 2.147 `PENDING` e 132 casos.
