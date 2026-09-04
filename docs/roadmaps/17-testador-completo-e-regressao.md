@@ -19,9 +19,9 @@ equipamento e evidência correspondente.
 
 A infraestrutura TST1–TST7 está concluída para a matriz automatizada existente,
 mas o programa de cobertura integral ainda não está concluído. O catálogo
-mantém 137 casos `AUTOMATED`; após a reconciliação da entrada do Shell e o
-lote de processos/threads, registra 7.219 superfícies, 5.205 `COVERED` e
-2.014 `PENDING`. O próximo objetivo deste
+mantém 137 casos `AUTOMATED`; após o fechamento de RTC, a reconciliação da
+entrada do Shell e o lote de processos/threads, registra 7.219 superfícies,
+5.214 `COVERED` e 2.005 `PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
 Isso não significa declarar hardware físico validado sem equipamento.
@@ -1548,6 +1548,19 @@ pendente.
   `make catalog-test`; todos terminaram com sucesso. O catalogo registra
   7.196 superficies, 3.953 `COVERED`, 3.243 `PENDING` e 86 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
+
+- Incremento Drivers/RTC — fechamento final concluído em 2026-09-04 10:01
+  (America/Sao_Paulo). O caso existente `host:drivers:rtc-status` foi executado
+  novamente após o build limpo. A fixture usa CMOS falso e resolveu as nove
+  superfícies que ainda estavam `PENDING`: I/O CMOS, validação de estado,
+  leituras estáveis, conversão e inicialização. O relatório
+  `build/test-results/rtc-status-host/coverage.json` terminou `PASS`, com
+  `unknown_addresses=[]` e `ambiguous_symbols=[]`.
+
+  Também passaram a sincronização/renderização do catálogo e
+  `make catalog-test`. O catálogo registra 7.219 superfícies, 5.214
+  `COVERED`, 2.005 `PENDING` e 137 casos. O fechamento integral, o gate estrito
+  e a validação TST7 completa continuam pendentes.
 
 - Reconciliação de cobertura Shell/entrada concluída em 2026-09-04. O caso
   existente `host:shell:input` foi executado novamente e o relatório
