@@ -7,7 +7,9 @@
 #include "core/string.h"
 #include "core/timer.h"
 #include "core/clock.h"
+#include "core/irq_deferred.h"
 #include "core/video.h"
+#include "drivers/idt.h"
 #include "drivers/rtc.h"
 #include "drivers/mouse.h"
 #include "fs/vfs.h"
@@ -18,6 +20,7 @@ void shell_dispatch_cmd_mouse(const char* arguments);
 void shell_dispatch_cmd_log(const char* arguments);
 void shell_dispatch_cmd_timer(const char* arguments);
 void shell_dispatch_cmd_clock(const char* arguments);
+void shell_dispatch_cmd_irqstat(const char* arguments);
 
 #define HOST_COVERAGE_CAPACITY 512U
 #define HOST_COVERAGE_LINE_SIZE 32U
@@ -75,6 +78,15 @@ static rtc_status_t fixture_rtc_status;
 static rtc_self_test_result_t fixture_rtc_test;
 static int fixture_rtc_status_result;
 static int fixture_rtc_test_result;
+static irq_deferred_status_t fixture_irq_status;
+static irq_deferred_irq_status_t fixture_irq_lines[IRQ_DEFERRED_IRQ_COUNT];
+static idt_irq_status_t fixture_idt_lines[IDT_IRQ_LINE_COUNT];
+static irq_deferred_self_test_result_t fixture_irq_test;
+static int fixture_irq_status_result;
+static int fixture_irq_line_result;
+static int fixture_irq_test_result;
+static int fixture_irq_validate_result;
+static int fixture_idt_validate_result;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -184,6 +196,11 @@ static void fixture_reset(void) {
     fixture_clock_utc = 1735689600ULL;
     fixture_rtc_status_result = OK;
     fixture_rtc_test_result = OK;
+    fixture_irq_status_result = OK;
+    fixture_irq_line_result = OK;
+    fixture_irq_test_result = OK;
+    fixture_irq_validate_result = OK;
+    fixture_idt_validate_result = OK;
     kmemset(&fixture_log_stats, 0, sizeof(fixture_log_stats));
     kmemset(fixture_log_records, 0, sizeof(fixture_log_records));
     kmemset(&fixture_log_test, 0, sizeof(fixture_log_test));
@@ -306,6 +323,41 @@ static void fixture_reset(void) {
     fixture_rtc_test.invalid_dates_rejected = 1U;
     fixture_rtc_test.passed = 5U;
     fixture_rtc_test.failed = 0U;
+    kmemset(&fixture_irq_status, 0, sizeof(fixture_irq_status));
+    kmemset(fixture_irq_lines, 0, sizeof(fixture_irq_lines));
+    kmemset(fixture_idt_lines, 0, sizeof(fixture_idt_lines));
+    kmemset(&fixture_irq_test, 0, sizeof(fixture_irq_test));
+    fixture_irq_status.initialized = 1U;
+    fixture_irq_status.queued = 2U;
+    fixture_irq_status.running = 1U;
+    fixture_irq_status.capacity = IRQ_DEFERRED_USABLE_CAPACITY;
+    fixture_irq_status.scheduled = 8U;
+    fixture_irq_status.dispatched = 7U;
+    fixture_irq_status.coalesced = 2U;
+    fixture_irq_status.reruns = 1U;
+    fixture_irq_status.cancelled = 3U;
+    fixture_irq_status.peak_queued = 4U;
+    fixture_irq_status.rejected = 1U;
+    fixture_irq_status.context_errors = 2U;
+    fixture_irq_status.last_error = ERR_INVALID;
+    fixture_irq_lines[1].scheduled = 4U;
+    fixture_irq_lines[1].dispatched = 3U;
+    fixture_irq_lines[1].coalesced = 1U;
+    fixture_irq_lines[1].rejected = 2U;
+    fixture_irq_lines[1].cancelled = 1U;
+    fixture_idt_lines[1].irq_line = 1U;
+    fixture_idt_lines[1].registered_handlers = 2U;
+    fixture_idt_lines[1].occurrences = 9U;
+    fixture_irq_test.lifecycle = 1U;
+    fixture_irq_test.coalescing = 1U;
+    fixture_irq_test.rerun = 1U;
+    fixture_irq_test.cancellation = 1U;
+    fixture_irq_test.capacity = 1U;
+    fixture_irq_test.attribution = 1U;
+    fixture_irq_test.interrupt_context = 1U;
+    fixture_irq_test.invariants = 1U;
+    fixture_irq_test.passed = 8U;
+    fixture_irq_test.failed = 0U;
     kmemset(&fixture_mouse_status, 0, sizeof(fixture_mouse_status));
     fixture_mouse_status.initialized = 1U;
     fixture_mouse_status.x = 12;
@@ -494,6 +546,44 @@ int rtc_self_test(rtc_self_test_result_t* result) {
     if (!result) return ERR_NULL;
     *result = fixture_rtc_test;
     return fixture_rtc_test_result;
+}
+
+int irq_deferred_get_status(irq_deferred_status_t* status) {
+    if (!status) return ERR_NULL;
+    if (fixture_irq_status_result != OK) return fixture_irq_status_result;
+    *status = fixture_irq_status;
+    return OK;
+}
+
+int irq_deferred_get_irq_status(uint8_t irq_line,
+                                irq_deferred_irq_status_t* status) {
+    if (!status) return ERR_NULL;
+    if (irq_line >= IRQ_DEFERRED_IRQ_COUNT) return ERR_INVALID;
+    if (fixture_irq_line_result != OK) return fixture_irq_line_result;
+    *status = fixture_irq_lines[irq_line];
+    return OK;
+}
+
+int irq_deferred_self_test(irq_deferred_self_test_result_t* result) {
+    if (!result) return ERR_NULL;
+    *result = fixture_irq_test;
+    return fixture_irq_test_result;
+}
+
+int irq_deferred_validate_state(void) {
+    return fixture_irq_validate_result;
+}
+
+int idt_get_irq_status(uint8_t irq_line, idt_irq_status_t* status) {
+    if (!status) return ERR_NULL;
+    if (irq_line >= IDT_IRQ_LINE_COUNT) return ERR_INVALID;
+    if (fixture_idt_validate_result != OK) return fixture_idt_validate_result;
+    *status = fixture_idt_lines[irq_line];
+    return OK;
+}
+
+int idt_validate_irq_state(void) {
+    return fixture_idt_validate_result;
 }
 
 int vfs_getcwd(char* path, uint32_t capacity) {
@@ -789,12 +879,52 @@ static int test_clock(void) {
     return failures;
 }
 
+static int test_irqstat(void) {
+    int failures = 0;
+
+    fixture_reset();
+    shell_dispatch_cmd_irqstat("status");
+    failures += expect_contains("Bottom-Half: fila=2/31 executando=1 pico=4\n");
+    failures += expect_contains("Agendados=8 executados=7 coalescidos=2 reexecucoes=1\n");
+    failures += expect_contains("Cancelados=3 rejeitados=1 contexto_invalido=2\n");
+    fixture_reset();
+    fixture_irq_status_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_irqstat("");
+    failures += expect_text("Erro: fila Bottom-Half indisponivel.\n");
+    fixture_reset();
+    shell_dispatch_cmd_irqstat("list");
+    failures += expect_contains("IRQs PIC ativas:\n  IRQ1 ocorrencias=9 handlers=2 BH=3/4 coalescidos=1 rejeitados=2\n");
+    fixture_reset();
+    fixture_irq_line_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_irqstat("list");
+    failures += expect_text("IRQs PIC ativas:\nErro ao consultar linha IRQ.\n");
+    fixture_reset();
+    shell_dispatch_cmd_irqstat("check");
+    failures += expect_contains("Autoteste de Bottom-Half (fila privada):\n");
+    failures += expect_contains("  ciclo: OK\n  coalescencia: OK\n");
+    failures += expect_contains("Resultado: OK\n");
+    fixture_reset();
+    fixture_irq_test_result = ERR_STATE;
+    fixture_irq_test.invariants = 0U;
+    fixture_irq_test.failed = 1U;
+    shell_dispatch_cmd_irqstat("check");
+    failures += expect_contains("  invariantes: ERRO\nResultado: ERRO\n");
+    fixture_reset();
+    fixture_irq_validate_result = ERR_STATE;
+    shell_dispatch_cmd_irqstat("check");
+    failures += expect_contains("Resultado: ERRO\n");
+    fixture_reset();
+    shell_dispatch_cmd_irqstat("invalid");
+    failures += expect_text("Uso: irqstat [status|list|check]\n");
+    return failures;
+}
+
 int main(void) {
     int result;
 
     coverage_active = 1U;
     result = test_pwd() + test_cd() + test_mouse() + test_log() +
-             test_timer() + test_clock();
+             test_timer() + test_clock() + test_irqstat();
     coverage_active = 0U;
     coverage_emit(result);
     return result ? 1 : 0;
