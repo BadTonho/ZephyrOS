@@ -5253,3 +5253,14 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
 
   O catálogo registra 7.219 superfícies, 5.217 `COVERED`, 2.002 `PENDING` e
   137 casos.
+
+- Reconciliação de cobertura Core/panic concluída em 2026-09-04 10:08
+  (America/Sao_Paulo). O caso existente `host:kernel:panic` foi executado para
+  gerar `build/test-results/panic-host/coverage.json`, que resolveu as rotas
+  reais de `src/kernel/panic.c`. A sincronização reconheceu também as três
+  APIs públicas correspondentes, `panic`, `panic_halt` e `panic_memory`, antes
+  pendentes porque o relatório da execução anterior não estava presente. Não
+  houve alteração no contrato do panic nem execução de halt real.
+
+  A sincronização, a renderização e `make catalog-test` passaram. O catálogo
+  registra 7.219 superfícies, 5.220 `COVERED`, 1.999 `PENDING` e 137 casos.

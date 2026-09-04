@@ -19,9 +19,10 @@ equipamento e evidência correspondente.
 
 A infraestrutura TST1–TST7 está concluída para a matriz automatizada existente,
 mas o programa de cobertura integral ainda não está concluído. O catálogo
-mantém 137 casos `AUTOMATED`; após o fechamento de Shell/hosted, RTC, a
-reconciliação da entrada do Shell e o lote de processos/threads, registra 7.219
-superfícies, 5.217 `COVERED` e 2.002 `PENDING`. O próximo objetivo deste
+mantém 137 casos `AUTOMATED`; após a reconciliação das APIs de panic, o
+fechamento de Shell/hosted, RTC, a reconciliação da entrada do Shell e o lote
+de processos/threads, registra 7.219 superfícies, 5.220 `COVERED` e 1.999
+`PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
 Isso não significa declarar hardware físico validado sem equipamento.
@@ -1281,6 +1282,17 @@ pendente.
   foi sincronizada sem enderecos desconhecidos ou ambiguos. O catalogo registra
   7.197 superficies, 3.898 `COVERED`, 3.299 `PENDING` e 85 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
+
+- Reconciliação de cobertura Core/panic concluída em 2026-09-04 10:08
+  (America/Sao_Paulo). O caso existente `host:kernel:panic` foi executado para
+  gerar o relatório `build/test-results/panic-host/coverage.json`, que resolveu
+  as rotas reais de `src/kernel/panic.c`. A sincronização reconheceu também as
+  três APIs públicas correspondentes, `panic`, `panic_halt` e `panic_memory`,
+  antes pendentes porque o relatório da execução anterior não estava presente.
+  Não houve alteração no contrato do panic nem execução de halt real.
+
+  A sincronização, a renderização e `make catalog-test` passaram. O catálogo
+  registra 7.219 superfícies, 5.220 `COVERED`, 1.999 `PENDING` e 137 casos.
 
 - Incremento Shell/hosted — fechamento final concluído em 2026-09-04 10:04
   (America/Sao_Paulo). O caso existente `host:shell:hosted` foi executado

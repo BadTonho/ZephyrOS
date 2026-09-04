@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 5217 |
+| `COVERED` | 5220 |
 | `MANUAL` | 0 |
-| `PENDING` | 2002 |
+| `PENDING` | 1999 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -529,9 +529,9 @@
 | `api:src/include/core/network_manager.h:network_manager_renew_dhcp` | `src/include/core/network_manager.h` | `network_manager_renew_dhcp` | `core` | `COVERED` | 3 |
 | `api:src/include/core/network_manager.h:network_manager_send_diagnostic` | `src/include/core/network_manager.h` | `network_manager_send_diagnostic` | `core` | `COVERED` | 3 |
 | `api:src/include/core/network_manager.h:network_manager_set_quiescing` | `src/include/core/network_manager.h` | `network_manager_set_quiescing` | `core` | `COVERED` | 3 |
-| `api:src/include/core/panic.h:panic` | `src/include/core/panic.h` | `panic` | `core` | `PENDING` | 0 |
-| `api:src/include/core/panic.h:panic_halt` | `src/include/core/panic.h` | `panic_halt` | `core` | `PENDING` | 0 |
-| `api:src/include/core/panic.h:panic_memory` | `src/include/core/panic.h` | `panic_memory` | `core` | `PENDING` | 0 |
+| `api:src/include/core/panic.h:panic` | `src/include/core/panic.h` | `panic` | `core` | `COVERED` | 1 |
+| `api:src/include/core/panic.h:panic_halt` | `src/include/core/panic.h` | `panic_halt` | `core` | `COVERED` | 1 |
+| `api:src/include/core/panic.h:panic_memory` | `src/include/core/panic.h` | `panic_memory` | `core` | `COVERED` | 1 |
 | `api:src/include/core/power.h:power_capability_name` | `src/include/core/power.h` | `power_capability_name` | `core` | `COVERED` | 4 |
 | `api:src/include/core/power.h:power_get_status` | `src/include/core/power.h` | `power_get_status` | `core` | `COVERED` | 4 |
 | `api:src/include/core/power.h:power_init` | `src/include/core/power.h` | `power_init` | `core` | `COVERED` | 4 |
@@ -7477,9 +7477,6 @@
 - `api:src/include/core/app_remote.h:app_remote_request_cancel`
 - `api:src/include/core/app_remote.h:app_remote_state_name`
 - `api:src/include/core/app_remote.h:app_remote_test_fail_after`
-- `api:src/include/core/panic.h:panic`
-- `api:src/include/core/panic.h:panic_halt`
-- `api:src/include/core/panic.h:panic_memory`
 - `api:src/include/core/spinlock.h:spinlock_acquire`
 - `api:src/include/core/spinlock.h:spinlock_init`
 - `api:src/include/core/spinlock.h:spinlock_release`
