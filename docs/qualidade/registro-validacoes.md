@@ -5122,3 +5122,12 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   Tambem passaram `python tools/test_catalog.py sync`,
   `python tools/test_catalog.py render` e `make catalog-test`. O catalogo atual
   registra 7.219 superficies, 5.081 `COVERED`, 2.138 `PENDING` e 132 casos.
+
+- Incremento Shell/hosted — evidencia final — concluido em 2026-09-03. O caso
+  existente `host:shell:hosted` foi executado novamente apos o build limpo com
+  Window Manager, terminal e mouse falsos. O relatorio
+  `build/test-results/shell-hosted-host/coverage.json` terminou `PASS`,
+  resolveu as 8 funcoes de `src/shell/shell_hosted.c` e nao registrou erros de
+  cobertura. Tambem passaram `python tools/test_catalog.py sync`,
+  `python tools/test_catalog.py render` e `make catalog-test`. O catalogo atual
+  registra 7.219 superficies, 5.086 `COVERED`, 2.133 `PENDING` e 132 casos.
