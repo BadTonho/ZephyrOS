@@ -17,6 +17,7 @@
 #include "drivers/mouse.h"
 #include "fs/vfs.h"
 #include "fs/storage.h"
+#include "fs/devfs.h"
 
 void shell_dispatch_cmd_pwd(const char* arguments);
 void shell_dispatch_cmd_cd(const char* arguments);
@@ -31,6 +32,7 @@ void shell_dispatch_cmd_workq(const char* arguments);
 void shell_dispatch_cmd_tls(const char* arguments);
 void shell_dispatch_cmd_vfs(const char* arguments);
 void shell_dispatch_cmd_mount(const char* arguments);
+void shell_dispatch_cmd_devcheck(const char* arguments);
 
 #define HOST_COVERAGE_CAPACITY 512U
 #define HOST_COVERAGE_LINE_SIZE 32U
@@ -133,6 +135,8 @@ static int fixture_vfs_mount_result;
 static int fixture_vfs_test_result;
 static uint32_t fixture_vfs_descriptor_count;
 static uint32_t fixture_vfs_mount_count;
+static devfs_test_result_t fixture_devfs_test;
+static int fixture_devfs_test_result;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -269,6 +273,7 @@ static void fixture_reset(void) {
     fixture_vfs_test_result = OK;
     fixture_vfs_descriptor_count = 1U;
     fixture_vfs_mount_count = 1U;
+    fixture_devfs_test_result = OK;
     kmemset(&fixture_log_stats, 0, sizeof(fixture_log_stats));
     kmemset(fixture_log_records, 0, sizeof(fixture_log_records));
     kmemset(&fixture_log_test, 0, sizeof(fixture_log_test));
@@ -655,6 +660,18 @@ static void fixture_reset(void) {
     fixture_vfs_test.pipes = 1U;
     fixture_vfs_test.procfs = 1U;
     fixture_vfs_test.sysfs = 1U;
+    kmemset(&fixture_devfs_test, 0, sizeof(fixture_devfs_test));
+    fixture_devfs_test.registry = 1U;
+    fixture_devfs_test.null_device = 1U;
+    fixture_devfs_test.zero_device = 1U;
+    fixture_devfs_test.tty_device = 1U;
+    fixture_devfs_test.speaker_device = 1U;
+    fixture_devfs_test.block_device = 1U;
+    fixture_devfs_test.permissions = 1U;
+    fixture_devfs_test.cleanup = 1U;
+    fixture_devfs_test.invariants = 1U;
+    fixture_devfs_test.passed = 9U;
+    fixture_devfs_test.total = 9U;
     kmemset(&fixture_mouse_status, 0, sizeof(fixture_mouse_status));
     fixture_mouse_status.initialized = 1U;
     fixture_mouse_status.x = 12;
@@ -1067,6 +1084,12 @@ const char* storage_fs_name(storage_fs_type_t type) {
     if (type == STORAGE_FS_FAT12) return "FAT12";
     if (type == STORAGE_FS_FAT32) return "FAT32";
     return "UNKNOWN";
+}
+
+int devfs_self_test(devfs_test_result_t* result) {
+    if (!result) return ERR_NULL;
+    *result = fixture_devfs_test;
+    return fixture_devfs_test_result;
 }
 
 int vfs_getcwd(char* path, uint32_t capacity) {
@@ -1622,6 +1645,25 @@ static int test_vfs(void) {
     return failures;
 }
 
+static int test_devcheck(void) {
+    int failures = 0;
+
+    fixture_reset();
+    shell_dispatch_cmd_devcheck("");
+    failures += expect_contains("DevCheck: recusas de permissao abaixo sao esperadas.\n");
+    failures += expect_contains("DevCheck: OK\n  Casos aprovados: 9/9\n");
+    fixture_reset();
+    fixture_devfs_test_result = ERR_STATE;
+    fixture_devfs_test.invariants = 0U;
+    fixture_devfs_test.passed = 8U;
+    shell_dispatch_cmd_devcheck("");
+    failures += expect_contains("DevCheck: ERRO\n  Casos aprovados: 8/9\n");
+    fixture_reset();
+    shell_dispatch_cmd_devcheck("extra");
+    failures += expect_text("Uso: devcheck\n");
+    return failures;
+}
+
 int main(void) {
     int result;
 
@@ -1629,6 +1671,7 @@ int main(void) {
     result = test_pwd() + test_cd() + test_mouse() + test_log() +
              test_timer() + test_clock() + test_irqstat() + test_wait() +
              test_wqinfo() + test_workq() + test_tls() + test_vfs();
+    result += test_devcheck();
     coverage_active = 0U;
     coverage_emit(result);
     return result ? 1 : 0;
