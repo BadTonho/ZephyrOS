@@ -5610,3 +5610,14 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   também passaram; o estado atual registra 7.292 superfícies, 6.048
   `COVERED`, 1.244 `PENDING` e 151 casos. O gate estrito continua pendente
   pelas superfícies restantes sem evidência específica.
+
+- Revalidação Shell/QEMU e fixtures host-only — concluída em 2026-09-04
+  (America/Sao_Paulo). O caso independente `qemu:tst5:shell` terminou `PASS`
+  em uma única iteração, com `READY`, `HEARTBEAT`, `BEGIN`, `PASS`, entrada
+  QMP registrada e artefatos preservados em
+  `build/test-results/qemu-20260904T201157Z-23988/`. Em seguida, as fixtures
+  `host:shell:hosted`, `host:shell:input` e `host:core:syscall` passaram com
+  `HOST_CC`; a sincronização dinâmica removeu as cinco superfícies restantes
+  desses arquivos. O catálogo agora registra 7.292 superfícies, 6.053
+  `COVERED`, 1.239 `PENDING` e 151 casos. O gate estrito continua pendente
+  pelas superfícies restantes sem evidência específica.
