@@ -2224,3 +2224,9 @@ pendente.
   e `make catalog-test` passaram. O catálogo atual registra 7.219 superfícies,
   5.243 `COVERED`, 1.976 `PENDING` e 138 casos; as pendências restantes não
   foram mascaradas.
+- Evidência Shell/hosted regenerada em 2026-09-04 11:03
+  (America/Sao_Paulo). O caso existente `host:shell:hosted` foi executado com
+  a fixture host-only real e cobriu as três superfícies pendentes de
+  `src/shell/shell_hosted.c`. `make test-shell-hosted-host` e
+  `make catalog-test` passaram. O catálogo atual registra 7.219 superfícies,
+  5.246 `COVERED`, 1.973 `PENDING` e 138 casos.
