@@ -7,6 +7,16 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## 2026-09-04 - Dispatcher de syscalls host-only
+
+- Caso: `host:core:syscall` / `make test-syscall-host`.
+- Fixture: dependencias falsas de IDT, TSS, paging, processo, IPC, sinais e
+  App API, com mapa estatico de enderecos de usuario.
+- Cobertura: 34 funcoes de `src/core/syscall.c` resolvidas pelo relatorio
+  instrumentado, sem `unknown_addresses` ou `ambiguous_symbols`.
+- Resultado: host-only `PASS`; o fechamento integral, o gate estrito e a
+  validacao TST7 completa continuam pendentes.
+
 ## PWR2 - Descoberta e validação ACPI
 
 Implementação registrada em: 2026-08-30 (horário não informado).

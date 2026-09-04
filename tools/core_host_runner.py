@@ -214,6 +214,12 @@ TASKBAR_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_taskbar_host.c",
     ROOT / "src" / "taskbar" / "taskbar.c",
 )
+SYSCALL_RESULT_DIR = ROOT / "build" / "test-results" / "syscall-host"
+SYSCALL_BINARY = ROOT / "build" / "tests" / "test_syscall_host.exe"
+SYSCALL_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_syscall_host.c",
+    ROOT / "src" / "core" / "syscall.c",
+)
 APP_CATALOG_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_app_catalog_host.c",
     ROOT / "src" / "core" / "app_catalog.c",
@@ -749,6 +755,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return APP_LOADER_RESULT_DIR, APP_LOADER_BINARY, APP_LOADER_SOURCE_FILES, "app-loader-host"
     if case_id == "host:ui:taskbar":
         return TASKBAR_RESULT_DIR, TASKBAR_BINARY, TASKBAR_SOURCE_FILES, "taskbar-host"
+    if case_id == "host:core:syscall":
+        return SYSCALL_RESULT_DIR, SYSCALL_BINARY, SYSCALL_SOURCE_FILES, "syscall-host"
     if case_id == "host:core:app-catalog":
         return (APP_CATALOG_RESULT_DIR, APP_CATALOG_BINARY,
                 APP_CATALOG_SOURCE_FILES, "app-catalog-host")
@@ -989,6 +997,8 @@ def compiler_command(compiler: str, binary: Path,
         compatibility_flags.append("-fno-builtin")
     if any(source.name == "wav.c" for source in selected_sources):
         compatibility_flags.append("-fno-builtin")
+    if any(source.name == "syscall.c" for source in selected_sources):
+        compatibility_flags.extend(["-Wno-int-to-pointer-cast", "-Dasm=__asm__"])
     return [
         compiler, "-std=c11", "-O0", "-fno-inline", "-ffunction-sections",
         "-fdata-sections", "-Wall", "-Wextra",
@@ -1085,6 +1095,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:core:device-manager", "host:core:app-api",
                                  "host:core:app-files", "host:core:app-builtin",
                                  "host:core:app-loader", "host:ui:taskbar",
+                                 "host:core:syscall",
                                  "host:core:app-catalog",
                                  "host:core:input",
                                  "host:core:power", "host:storage:vfs-path",

@@ -5179,6 +5179,57 @@
       "evidence": "make test-taskbar-host PASS com TUI e GUI falsos, layouts, menus, configuracao, cliques, janelas e cobertura instrumentada"
     },
     {
+      "id": "syscall-host-dynamic",
+      "domain": "core-syscall",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:syscall"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/syscall-host/coverage.json",
+      "coverage_sources": [
+        "src/core/syscall.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:core:syscall",
+        "scenario": "Contrato host-only do dispatcher de syscalls em ring 0 e ring 3",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "user_addresses": "mapa estatico sem hardware"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "exercitar inicializacao, habilitacao ring 3, dispatch de syscalls, limites, copias de usuario, IPC, sinais e rejeicoes ring 0",
+        "expected": "dispatcher preserva os codigos canonicos, rejeita chamadas fora de estado e completa os caminhos de usuario e kernel",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente estado do dispatcher e buffers estaticos da fixture host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "core",
+          "syscall",
+          "ring0",
+          "ring3",
+          "limits",
+          "coverage"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "make test-syscall-host PASS com fixture ring 0/ring 3, mapa de memoria de usuario estatico, limites, IPC, sinais e cobertura instrumentada completa"
+    },
+    {
       "id": "assembly-qemu-tst7-dynamic",
       "domain": "drivers-interrupt-assembly",
       "owner": "quality",

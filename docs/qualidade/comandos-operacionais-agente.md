@@ -1587,3 +1587,18 @@ make test-taskbar-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 O relatorio instrumentado fica em
 `build/test-results/taskbar-host/coverage.json`; ele deve terminar com `PASS`,
 sem `unknown_addresses` ou `ambiguous_symbols`.
+
+## Syscall host-only
+
+O caso `test-syscall-host` exercita o dispatcher real em ring 0 e ring 3 com
+dependencias falsas de IDT, TSS, paging, processo, IPC, sinais e App API. A
+fixture cobre inicializacao, limites, copias protegidas, VFS, IPC, sinais e
+rejeicoes de estado:
+
+```text
+make test-syscall-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O relatorio instrumentado fica em
+`build/test-results/syscall-host/coverage.json`; ele deve terminar com `PASS`,
+sem `unknown_addresses` ou `ambiguous_symbols`.
