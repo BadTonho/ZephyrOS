@@ -5409,3 +5409,15 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `COVERED`, 1.875 `PENDING` e 141 casos. As rotinas de transacao que exigem
   filesystem mutavel, slots e reboot continuam pendentes para uma fixture
   integrada, sem serem mascaradas.
+
+- Incremento Core/update — contrato publico de indisponibilidade concluido em
+  2026-09-04 (America/Sao_Paulo). A fixture existente foi ampliada para chamar
+  `update_init`, capacidades, status, versao instalada, verificacao, aplicacao,
+  rollback, sincronizacao, historico e nomes de estado com filesystem ausente.
+  O resultado permaneceu `PASS`, sem transformar `ERR_UNAVAILABLE` em sucesso de
+  atualizacao. Depois de `make q3check`, `make clean` e `make`, passaram
+  `make test-update-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`,
+  sincronizacao, renderizacao e `make catalog-test`. A evidencia dinamica agora
+  resolve 76 superficies de `src/core/update.c`; as transacoes FAT12 com slots
+  mutaveis continuam pendentes para uma fixture integrada. O catalogo registra
+  7.240 superficies, 5.417 `COVERED`, 1.823 `PENDING` e 142 casos.

@@ -2298,7 +2298,7 @@
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-update-host PASS com registros U3/U4, validacao de header, paths, tabela de entradas, limites, corrupcao e helpers de transacao no relatorio instrumentado",
+      "evidence": "make test-update-host PASS com registros U3/U4, validacao de header, paths, tabela de entradas, limites, corrupcao, contratos publicos em filesystem indisponivel e helpers de transacao no relatorio instrumentado",
       "case_definition": {
         "id": "host:core:update",
         "scenario": "Contratos puros do formato e da maquina de estado de atualizacao U3/U4",
