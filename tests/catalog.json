@@ -12975,6 +12975,7 @@
         "host:core:update-remote-runtime",
         "host:core:update-remote-system",
         "host:core:update-runtime",
+        "host:core:update-system",
         "host:core:update-system-slots",
         "host:memory:memory",
         "host:memory:paging",
@@ -13047,6 +13048,7 @@
         "host:core:update-remote-runtime",
         "host:core:update-remote-system",
         "host:core:update-runtime",
+        "host:core:update-system",
         "host:core:update-system-slots",
         "host:drivers:rng",
         "host:memory:memory",
@@ -13123,6 +13125,7 @@
         "host:core:update-remote-runtime",
         "host:core:update-remote-system",
         "host:core:update-runtime",
+        "host:core:update-system",
         "host:core:update-system-slots",
         "host:memory:memory",
         "host:memory:paging",
@@ -13189,6 +13192,7 @@
         "host:core:update-remote-runtime",
         "host:core:update-remote-system",
         "host:core:update-runtime",
+        "host:core:update-system",
         "host:core:update-system-slots",
         "host:memory:paging",
         "host:memory:slab-metadata",
@@ -16197,9 +16201,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_system.h:update_system_init",
@@ -16215,9 +16222,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_system.h:update_system_is_ready",
@@ -16233,9 +16243,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_system.h:update_system_reason_name",
@@ -16251,9 +16264,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_system.h:update_system_transfer_tag",
@@ -16269,9 +16285,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_system.h:update_system_verify_file",
@@ -16287,9 +16306,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_system.h:update_system_verify_file_for_slot",
@@ -16305,9 +16327,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_system_slots.h:update_system_slot_file_state_name",
@@ -68261,6 +68286,7 @@
         "host:core:update-remote-runtime",
         "host:core:update-remote-system",
         "host:core:update-runtime",
+        "host:core:update-system",
         "host:core:update-system-slots",
         "host:memory:memory",
         "host:memory:paging",
@@ -68333,6 +68359,7 @@
         "host:core:update-remote-runtime",
         "host:core:update-remote-system",
         "host:core:update-runtime",
+        "host:core:update-system",
         "host:core:update-system-slots",
         "host:drivers:rng",
         "host:memory:memory",
@@ -68409,6 +68436,7 @@
         "host:core:update-remote-runtime",
         "host:core:update-remote-system",
         "host:core:update-runtime",
+        "host:core:update-system",
         "host:core:update-system-slots",
         "host:memory:memory",
         "host:memory:paging",
@@ -68475,6 +68503,7 @@
         "host:core:update-remote-runtime",
         "host:core:update-remote-system",
         "host:core:update-runtime",
+        "host:core:update-system",
         "host:core:update-system-slots",
         "host:memory:paging",
         "host:memory:slab-metadata",
@@ -77916,9 +77945,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-release"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_runtime.c:runtime_remote_abort_pending",
@@ -81892,9 +81924,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system.c:update_system_base_equal",
@@ -81910,9 +81945,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system.c:update_system_check_tag",
@@ -81928,9 +81966,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system.c:update_system_copy_fixed_text",
@@ -81946,9 +81987,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system.c:update_system_hash_range",
@@ -81964,9 +82008,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system.c:update_system_hex_digit",
@@ -81974,6 +82021,27 @@
       "source": "src/core/update_system.c",
       "symbol": "update_system_hex_digit",
       "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/update_system.c:update_system_host_test_contracts",
+      "kind": "c_function",
+      "source": "src/core/update_system.c",
+      "symbol": "update_system_host_test_contracts",
+      "linkage": "external",
       "owner": "core",
       "layer": "kernel-source",
       "preconditions": "definir no caso de teste associado",
@@ -82000,9 +82068,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system.c:update_system_is_ready",
@@ -82018,9 +82089,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system.c:update_system_read_base",
@@ -82036,9 +82110,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system.c:update_system_read_u16",
@@ -82054,9 +82131,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system.c:update_system_read_u32",
@@ -82072,9 +82152,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system.c:update_system_reason_name",
@@ -82090,9 +82173,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system.c:update_system_reject",
@@ -82108,9 +82194,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system.c:update_system_remote_begin",
@@ -82126,9 +82215,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system.c:update_system_remote_compatible",
@@ -82144,9 +82236,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system.c:update_system_remote_contains",
@@ -82162,9 +82257,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system.c:update_system_remote_copy_text",
@@ -82180,9 +82278,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system.c:update_system_remote_decimal",
@@ -82198,9 +82299,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system.c:update_system_remote_descriptor_matches",
@@ -82216,9 +82320,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system.c:update_system_remote_finish",
@@ -82234,9 +82341,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system.c:update_system_remote_http_options",
@@ -82252,9 +82362,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system.c:update_system_remote_payload",
@@ -82270,9 +82383,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system.c:update_system_remote_sink",
@@ -82288,9 +82404,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system.c:update_system_remote_wait_http",
@@ -82306,9 +82425,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system.c:update_system_transfer_tag",
@@ -82324,9 +82446,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system.c:update_system_validate_components",
@@ -82342,9 +82467,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system.c:update_system_verify_file",
@@ -82360,9 +82488,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system.c:update_system_verify_file_for_slot",
@@ -82378,9 +82509,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system.c:update_system_verify_file_internal",
@@ -82396,9 +82530,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system.c:update_system_verify_signature",
@@ -82414,9 +82551,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system.c:update_system_version_compare",
@@ -82432,9 +82572,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_bytes_equal",
@@ -159541,6 +159684,84 @@
       ]
     },
     {
+      "id": "host:core:update-remote-release",
+      "scenario": "Contratos do resolver de Releases por tag exata",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "network": "HTTP simulado offline",
+        "descriptor": "ep6-alt.json estatico"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "executar parser JSON, version lock, assets, URLs, espera, cancelamento, status HTTP e consultas publicas por tag com transporte simulado",
+      "expected": "descritores validos fazem parse; tags, limites, corrupcao, HTTP e pre-condicoes retornam erros canonicos sem rede externa",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente buffers estaticos no processo host",
+      "cleanup": "estado HTTP e buffers pertencem ao processo host; manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/string.h:kmemcpy",
+        "api:src/include/core/string.h:kmemset",
+        "api:src/include/core/string.h:kstrcmp",
+        "api:src/include/core/string.h:kstrlen",
+        "api:src/include/core/update_remote.h:update_remote_release_check",
+        "api:src/include/core/update_remote.h:update_remote_release_fetch",
+        "c:src/core/string.c:kmemcpy",
+        "c:src/core/string.c:kmemset",
+        "c:src/core/string.c:kstrcmp",
+        "c:src/core/string.c:kstrlen",
+        "c:src/core/update_remote_release.c:update_release_basename",
+        "c:src/core/update_remote_release.c:update_release_build_descriptor_url",
+        "c:src/core/update_remote_release.c:update_release_build_manifest_url",
+        "c:src/core/update_remote_release.c:update_release_candidate_matches",
+        "c:src/core/update_remote_release.c:update_release_channel_ready",
+        "c:src/core/update_remote_release.c:update_release_copy_text",
+        "c:src/core/update_remote_release.c:update_release_fetch_descriptor",
+        "c:src/core/update_remote_release.c:update_release_has_suffix",
+        "c:src/core/update_remote_release.c:update_release_hex_value",
+        "c:src/core/update_remote_release.c:update_release_http_options",
+        "c:src/core/update_remote_release.c:update_release_json_asset",
+        "c:src/core/update_remote_release.c:update_release_json_expect",
+        "c:src/core/update_remote_release.c:update_release_json_key",
+        "c:src/core/update_remote_release.c:update_release_json_skip_space",
+        "c:src/core/update_remote_release.c:update_release_json_string",
+        "c:src/core/update_remote_release.c:update_release_mark_cache_preserved",
+        "c:src/core/update_remote_release.c:update_release_parse_descriptor",
+        "c:src/core/update_remote_release.c:update_release_parse_hash",
+        "c:src/core/update_remote_release.c:update_release_parse_u32",
+        "c:src/core/update_remote_release.c:update_release_parse_version",
+        "c:src/core/update_remote_release.c:update_release_prepare_options",
+        "c:src/core/update_remote_release.c:update_release_reject",
+        "c:src/core/update_remote_release.c:update_release_resolve_descriptor",
+        "c:src/core/update_remote_release.c:update_release_validate_asset_name",
+        "c:src/core/update_remote_release.c:update_release_validate_identifier",
+        "c:src/core/update_remote_release.c:update_release_validate_source_commit",
+        "c:src/core/update_remote_release.c:update_release_validate_tag",
+        "c:src/core/update_remote_release.c:update_release_versions_equal",
+        "c:src/core/update_remote_release.c:update_release_wait_http",
+        "c:src/core/update_remote_release.c:update_remote_release_check",
+        "c:src/core/update_remote_release.c:update_remote_release_fetch",
+        "c:src/core/update_remote_release.c:update_remote_release_host_test_contracts"
+      ],
+      "tags": [
+        "host",
+        "update",
+        "release",
+        "json",
+        "http",
+        "offline",
+        "negative"
+      ]
+    },
+    {
       "id": "host:core:update-remote-runtime",
       "scenario": "Contratos puros e estados offline do transporte remoto de runtime",
       "owner": "quality",
@@ -176717,8 +176938,8 @@
       "status": "AUTOMATED"
     },
     {
-      "id": "host:core:update-remote-release",
-      "scenario": "Contratos do resolver de Releases por tag exata",
+      "id": "host:core:update-system",
+      "scenario": "Contratos de imagem e transferencia remota ZSYS",
       "owner": "quality",
       "layer": "host",
       "executor": "host",
@@ -176731,67 +176952,71 @@
         "instrumentation": "-finstrument-functions",
         "warnings": "error",
         "network": "HTTP simulado offline",
-        "descriptor": "ep6-alt.json estatico"
+        "storage": "somente buffers estaticos"
       },
       "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "executar parser JSON, version lock, assets, URLs, espera, cancelamento, status HTTP e consultas publicas por tag com transporte simulado",
-      "expected": "descritores validos fazem parse; tags, limites, corrupcao, HTTP e pre-condicoes retornam erros canonicos sem rede externa",
+      "action": "executar validadores de header, compatibilidade, hashes, assinatura, transferencia e estados publicos com dependencias simuladas",
+      "expected": "entradas invalidas retornam erros canonicos; contratos e validadores nao acessam armazenamento ou rede reais",
       "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
       "effects": "somente buffers estaticos no processo host",
-      "cleanup": "estado HTTP e buffers pertencem ao processo host; manifesto, logs e cobertura preservados",
-      "status": "AUTOMATED",
+      "cleanup": "estado de transporte e buffers pertencem ao processo host; manifesto, logs e cobertura preservados",
       "surface_ids": [
         "api:src/include/core/string.h:kmemcpy",
         "api:src/include/core/string.h:kmemset",
         "api:src/include/core/string.h:kstrcmp",
         "api:src/include/core/string.h:kstrlen",
-        "api:src/include/core/update_remote.h:update_remote_release_check",
-        "api:src/include/core/update_remote.h:update_remote_release_fetch",
+        "api:src/include/core/update_system.h:update_system_check_tag",
+        "api:src/include/core/update_system.h:update_system_init",
+        "api:src/include/core/update_system.h:update_system_is_ready",
+        "api:src/include/core/update_system.h:update_system_reason_name",
+        "api:src/include/core/update_system.h:update_system_transfer_tag",
+        "api:src/include/core/update_system.h:update_system_verify_file",
+        "api:src/include/core/update_system.h:update_system_verify_file_for_slot",
         "c:src/core/string.c:kmemcpy",
         "c:src/core/string.c:kmemset",
         "c:src/core/string.c:kstrcmp",
         "c:src/core/string.c:kstrlen",
-        "c:src/core/update_remote_release.c:update_release_basename",
-        "c:src/core/update_remote_release.c:update_release_build_descriptor_url",
-        "c:src/core/update_remote_release.c:update_release_build_manifest_url",
-        "c:src/core/update_remote_release.c:update_release_candidate_matches",
-        "c:src/core/update_remote_release.c:update_release_channel_ready",
-        "c:src/core/update_remote_release.c:update_release_copy_text",
-        "c:src/core/update_remote_release.c:update_release_fetch_descriptor",
-        "c:src/core/update_remote_release.c:update_release_has_suffix",
-        "c:src/core/update_remote_release.c:update_release_hex_value",
-        "c:src/core/update_remote_release.c:update_release_http_options",
-        "c:src/core/update_remote_release.c:update_release_json_asset",
-        "c:src/core/update_remote_release.c:update_release_json_expect",
-        "c:src/core/update_remote_release.c:update_release_json_key",
-        "c:src/core/update_remote_release.c:update_release_json_skip_space",
-        "c:src/core/update_remote_release.c:update_release_json_string",
-        "c:src/core/update_remote_release.c:update_release_mark_cache_preserved",
-        "c:src/core/update_remote_release.c:update_release_parse_descriptor",
-        "c:src/core/update_remote_release.c:update_release_parse_hash",
-        "c:src/core/update_remote_release.c:update_release_parse_u32",
-        "c:src/core/update_remote_release.c:update_release_parse_version",
-        "c:src/core/update_remote_release.c:update_release_prepare_options",
-        "c:src/core/update_remote_release.c:update_release_reject",
-        "c:src/core/update_remote_release.c:update_release_resolve_descriptor",
-        "c:src/core/update_remote_release.c:update_release_validate_asset_name",
-        "c:src/core/update_remote_release.c:update_release_validate_identifier",
-        "c:src/core/update_remote_release.c:update_release_validate_source_commit",
-        "c:src/core/update_remote_release.c:update_release_validate_tag",
-        "c:src/core/update_remote_release.c:update_release_versions_equal",
-        "c:src/core/update_remote_release.c:update_release_wait_http",
-        "c:src/core/update_remote_release.c:update_remote_release_check",
-        "c:src/core/update_remote_release.c:update_remote_release_fetch"
+        "c:src/core/update_system.c:any_nonzero",
+        "c:src/core/update_system.c:update_system_base_equal",
+        "c:src/core/update_system.c:update_system_check_tag",
+        "c:src/core/update_system.c:update_system_copy_fixed_text",
+        "c:src/core/update_system.c:update_system_hash_range",
+        "c:src/core/update_system.c:update_system_hex_digit",
+        "c:src/core/update_system.c:update_system_init",
+        "c:src/core/update_system.c:update_system_is_ready",
+        "c:src/core/update_system.c:update_system_read_base",
+        "c:src/core/update_system.c:update_system_read_u16",
+        "c:src/core/update_system.c:update_system_read_u32",
+        "c:src/core/update_system.c:update_system_reason_name",
+        "c:src/core/update_system.c:update_system_reject",
+        "c:src/core/update_system.c:update_system_remote_begin",
+        "c:src/core/update_system.c:update_system_remote_compatible",
+        "c:src/core/update_system.c:update_system_remote_contains",
+        "c:src/core/update_system.c:update_system_remote_copy_text",
+        "c:src/core/update_system.c:update_system_remote_decimal",
+        "c:src/core/update_system.c:update_system_remote_descriptor_matches",
+        "c:src/core/update_system.c:update_system_remote_finish",
+        "c:src/core/update_system.c:update_system_remote_http_options",
+        "c:src/core/update_system.c:update_system_remote_payload",
+        "c:src/core/update_system.c:update_system_remote_sink",
+        "c:src/core/update_system.c:update_system_remote_wait_http",
+        "c:src/core/update_system.c:update_system_transfer_tag",
+        "c:src/core/update_system.c:update_system_validate_components",
+        "c:src/core/update_system.c:update_system_verify_file",
+        "c:src/core/update_system.c:update_system_verify_file_for_slot",
+        "c:src/core/update_system.c:update_system_verify_file_internal",
+        "c:src/core/update_system.c:update_system_verify_signature",
+        "c:src/core/update_system.c:update_system_version_compare"
       ],
       "tags": [
         "host",
         "update",
-        "release",
-        "json",
-        "http",
+        "system",
+        "zsys",
         "offline",
         "negative"
-      ]
+      ],
+      "status": "AUTOMATED"
     }
   ],
   "retired": [

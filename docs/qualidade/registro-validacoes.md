@@ -5486,6 +5486,23 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   O gate estrito e a validacao TST7 completa continuam pendentes pelas
   superficies sem evidencia real.
 
+- Incremento Core/update system concluido em 2026-09-04
+  (America/Sao_Paulo). Foi criada a fixture host-only
+  `host:core:update-system`, com filesystem, crypto, HTTP, processo e consulta
+  GitHub simulados em buffers estaticos. O caso exercita diretamente os
+  contratos de imagem ZSYS e transferencia remota de
+  `src/core/update_system.c`, incluindo headers, componentes, compatibilidade,
+  hashes, assinatura, limites, estados e callbacks de transferencia, sem rede
+  ou armazenamento reais. O relatorio
+  `build/test-results/update-system-host/coverage.json` terminou `PASS`,
+  resolveu 35 superficies reais e nao registrou enderecos desconhecidos ou
+  simbolos ambiguos. Passaram `make test-update-system-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`, sincronizacao, renderizacao,
+  `make catalog-test`, `q3check`, `make clean`, `make` e os testes unitarios de
+  catalogo, runner host e TST7. O catalogo registra 7.256 superficies, 5.766
+  `COVERED`, 1.490 `PENDING` e 149 casos. O gate estrito e a validacao TST7
+  completa continuam pendentes pelas superficies sem evidencia real.
+
 - Incremento Core/update remote GitHub concluido em 2026-09-04
   (America/Sao_Paulo). Foi criada a fixture host-only
   `host:core:update-remote-github`, com respostas JSON, HTTP, crypto e

@@ -19,9 +19,9 @@ equipamento e evidência correspondente.
 
 A infraestrutura TST1–TST7 está concluída para a matriz automatizada existente,
 mas o programa de cobertura integral ainda não está concluído. O catálogo
-mantém 142 casos `AUTOMATED`; após os incrementos de Shell, RTC,
-processos/threads, FAT32, update U3 e runtime U4, registra 7.239 superfícies,
-5.394 `COVERED` e 1.845 `PENDING`. O próximo objetivo deste
+mantém 149 casos `AUTOMATED`; após os incrementos de Shell, RTC,
+processos/threads, FAT32, update U3/U4 e os contratos remotos ZSYS, registra
+7.256 superfícies, 5.766 `COVERED` e 1.490 `PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
 Isso não significa declarar hardware físico validado sem equipamento.
@@ -2380,3 +2380,18 @@ pendente.
   e `git diff --check`. O catalogo registra 7.255 superficies, 5.729
   `COVERED`, 1.526 `PENDING` e 148 casos; o restante da cobertura integral
   continua pendente e nao foi mascarado.
+
+- Incremento Core/update system concluido em 2026-09-04. A fixture host-only
+  `host:core:update-system` executa os validadores e contratos publicos reais
+  de `src/core/update_system.c` com crypto, HTTP, filesystem, processo e
+  consulta GitHub simulados. O fluxo valido verifica uma imagem ZSYS completa,
+  incluindo componentes, compatibilidade, hashes, assinatura e transferencia
+  remota; os caminhos negativos cobrem nulos, limites, formatos invalidos e
+  estados incompletos sem rede ou armazenamento reais. A evidencia
+  `build/test-results/update-system-host/coverage.json` terminou `PASS`,
+  resolveu 35 superficies reais e nao registrou enderecos desconhecidos ou
+  simbolos ambiguos. Passaram o alvo host-only com `HOST_CC`, sincronizacao,
+  renderizacao, `make catalog-test`, `q3check`, `make clean`, `make`, os testes
+  unitarios de catalogo, runner host e TST7, e `git diff --check`. O catalogo
+  registra 7.256 superficies, 5.766 `COVERED`, 1.490 `PENDING` e 149 casos; o
+  restante da cobertura integral continua pendente e nao foi mascarado.

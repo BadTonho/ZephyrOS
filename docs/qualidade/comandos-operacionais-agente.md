@@ -1824,3 +1824,21 @@ O relatorio instrumentado fica em
 em `PASS`, com `unknown_addresses=[]` e `ambiguous_symbols=[]`. Depois da
 execucao real, sincronize o catalogo, renderize a visao e valide com
 `make catalog-test`.
+
+## Update system host-only
+
+O alvo `test-update-system-host` compila o
+`src/core/update_system.c` com crypto, HTTP, filesystem, processo e GitHub
+simulados em buffers estaticos. A fixture valida headers e componentes ZSYS,
+compatibilidade, hashes, assinatura, transporte, limites e contratos publicos
+sem armazenamento ou rede externa:
+
+```text
+make test-update-system-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O relatorio instrumentado fica em
+`build/test-results/update-system-host/coverage.json` e deve terminar
+em `PASS`, com `unknown_addresses=[]` e `ambiguous_symbols=[]`. Depois da
+execucao real, sincronize o catalogo, renderize a visao e valide com
+`make catalog-test`.
