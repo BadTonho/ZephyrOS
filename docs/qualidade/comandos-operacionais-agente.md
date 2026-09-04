@@ -1920,3 +1920,19 @@ O mesmo caso também exercita `blkstat`, `cachestat`, `cache`, `sync` e
 volumes, diagnóstico de IDs, limites, busca com resultados e callbacks do job
 cooperativo do índice. A fixture usa somente doubles estáticos no processo
 host e não acessa hardware ou armazenamento real.
+
+## Shell: comandos diagnósticos host-only
+
+O alvo `test-shell-diagnostics-host` executa os dispatchers reais de `pwd`,
+`cd` e `mouse` com VFS, mouse, vídeo e logs falsos. A fixture cobre caminhos
+válidos, argumentos extras, limites, estados indisponíveis e preservação da
+configuração quando uma preferência é recusada:
+
+```text
+make test-shell-diagnostics-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O caso automatizado é `host:shell:diagnostics`. O relatório instrumentado fica
+em `build/test-results/shell-diagnostics-host/coverage.json` e deve terminar
+em `PASS`, com `unknown_addresses=[]` e `ambiguous_symbols=[]`. O teste não
+acessa hardware, VFS real ou persistência.

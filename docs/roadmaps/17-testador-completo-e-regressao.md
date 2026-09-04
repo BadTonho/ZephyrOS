@@ -19,10 +19,10 @@ equipamento e evidência correspondente.
 
 A infraestrutura TST1–TST7 está concluída para a matriz automatizada existente,
 mas o programa de cobertura integral ainda não está concluído. O catálogo
-mantém 150 casos `AUTOMATED`; após os incrementos de Shell, RTC,
+mantém 154 casos `AUTOMATED`; após os incrementos de Shell, RTC,
 processos/threads, FAT32, update U3/U4, os contratos remotos ZSYS e o
 repositório remoto de aplicativos, registra 7.256 superfícies, 5.964
-`COVERED` e 1.292 `PENDING`. O próximo objetivo deste
+registra 7.293 superfícies, 6.135 `COVERED` e 1.158 `PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
 Isso não significa declarar hardware físico validado sem equipamento.
@@ -56,8 +56,8 @@ Isso não significa declarar hardware físico validado sem equipamento.
 
 ### Atualizacao vigente — 2026-09-04
 
-O sincronizador mais recente registra 7.293 superficies, 6.083 `COVERED`,
-1.210 `PENDING` e 151 casos `AUTOMATED`. Os incrementos mais recentes
+O sincronizador mais recente registra 7.293 superficies, 6.135 `COVERED`,
+1.158 `PENDING` e 154 casos `AUTOMATED`. Os incrementos mais recentes
 adicionaram o caso host-only `host:shell:diagnostics-helpers`, com evidencia
 real para 34 helpers extraidos de `shell_commands_diagnostics.c` e duas rotinas
 de string, ampliaram `host:process:runtime` com cinco helpers de stack e o
@@ -65,9 +65,25 @@ idle controlado, confirmaram as 17 funcoes do driver RTC pela fixture CMOS,
 revalidaram as fixtures host-only de Shell hosted, entrada e syscall e
 exercitaram o cancelamento real do transporte HTTP remoto e registraram a
 evidencia declarativa das 25 constantes da ABI de syscalls e revalidaram o
-caso de panic host-only apos o build limpo.
-O gate estrito e a cobertura integral permanecem pendentes para os demais
-subsistemas sem evidencia especifica.
+caso de panic host-only apos o build limpo. O caso adicional
+`host:shell:diagnostics` cobre diretamente os dispatchers de `pwd`, `cd` e
+`mouse` com VFS, mouse, video e logs falsos. O gate estrito e a cobertura
+integral permanecem pendentes para os demais subsistemas sem evidencia
+especifica.
+
+### Incremento Shell/diagnostics commands — 2026-09-04
+
+- [x] Fixture host-only criada para `src/shell/shell_commands_diagnostics.c`.
+- [x] Os dispatchers reais de `pwd`, `cd` e `mouse` foram exercitados com
+      caminhos válidos, argumentos extras, limites, estados indisponíveis e
+      preservação da configuração após rejeição.
+- [x] Caso `host:shell:diagnostics` integrado ao runner, Makefile e catálogo
+      com cobertura dinâmica, doubles estáticos e sem hardware real.
+- [x] O alvo passou com `HOST_CC`, warnings tratados como erro, sincronização
+      e renderização do catálogo; as superfícies cobertas foram vinculadas
+      somente às chamadas observadas.
+- [x] O catálogo registra 7.293 superfícies, 6.135 `COVERED`, 1.158
+      `PENDING` e 154 casos. As pendências restantes continuam explícitas.
 
 ## Objetivo
 

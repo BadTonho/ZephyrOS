@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7293**
-- Casos de teste: **153**
+- Casos de teste: **154**
 - Superfícies aposentadas: **57**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6128 |
+| `COVERED` | 6135 |
 | `MANUAL` | 0 |
-| `PENDING` | 1165 |
+| `PENDING` | 1158 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 153 |
+| `AUTOMATED` | 154 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -195,14 +195,14 @@
 | `api:src/include/apps/shell_runtime.h:shell_checks_should_cancel_focused_user` | `src/include/apps/shell_runtime.h` | `shell_checks_should_cancel_focused_user` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/shell_runtime.h:shell_core_builtin_app_name` | `src/include/apps/shell_runtime.h` | `shell_core_builtin_app_name` | `apps` | `COVERED` | 3 |
 | `api:src/include/apps/shell_runtime.h:shell_core_handle_loader_result` | `src/include/apps/shell_runtime.h` | `shell_core_handle_loader_result` | `apps` | `COVERED` | 3 |
-| `api:src/include/apps/shell_runtime.h:shell_core_migrated_builtin_is_ready` | `src/include/apps/shell_runtime.h` | `shell_core_migrated_builtin_is_ready` | `apps` | `COVERED` | 2 |
+| `api:src/include/apps/shell_runtime.h:shell_core_migrated_builtin_is_ready` | `src/include/apps/shell_runtime.h` | `shell_core_migrated_builtin_is_ready` | `apps` | `COVERED` | 3 |
 | `api:src/include/apps/shell_runtime.h:shell_core_reboot` | `src/include/apps/shell_runtime.h` | `shell_core_reboot` | `apps` | `COVERED` | 3 |
 | `api:src/include/apps/shell_runtime.h:shell_core_shutdown` | `src/include/apps/shell_runtime.h` | `shell_core_shutdown` | `apps` | `COVERED` | 3 |
 | `api:src/include/apps/shell_runtime.h:shell_diagnostics_health_state_color` | `src/include/apps/shell_runtime.h` | `shell_diagnostics_health_state_color` | `apps` | `COVERED` | 1 |
-| `api:src/include/apps/shell_runtime.h:shell_diagnostics_print_usb_fixture_report` | `src/include/apps/shell_runtime.h` | `shell_diagnostics_print_usb_fixture_report` | `apps` | `COVERED` | 2 |
-| `api:src/include/apps/shell_runtime.h:shell_diagnostics_reset` | `src/include/apps/shell_runtime.h` | `shell_diagnostics_reset` | `apps` | `COVERED` | 2 |
-| `api:src/include/apps/shell_runtime.h:shell_diagnostics_run_device_scan` | `src/include/apps/shell_runtime.h` | `shell_diagnostics_run_device_scan` | `apps` | `COVERED` | 2 |
-| `api:src/include/apps/shell_runtime.h:shell_diagnostics_run_memcheck` | `src/include/apps/shell_runtime.h` | `shell_diagnostics_run_memcheck` | `apps` | `COVERED` | 2 |
+| `api:src/include/apps/shell_runtime.h:shell_diagnostics_print_usb_fixture_report` | `src/include/apps/shell_runtime.h` | `shell_diagnostics_print_usb_fixture_report` | `apps` | `COVERED` | 3 |
+| `api:src/include/apps/shell_runtime.h:shell_diagnostics_reset` | `src/include/apps/shell_runtime.h` | `shell_diagnostics_reset` | `apps` | `COVERED` | 3 |
+| `api:src/include/apps/shell_runtime.h:shell_diagnostics_run_device_scan` | `src/include/apps/shell_runtime.h` | `shell_diagnostics_run_device_scan` | `apps` | `COVERED` | 3 |
+| `api:src/include/apps/shell_runtime.h:shell_diagnostics_run_memcheck` | `src/include/apps/shell_runtime.h` | `shell_diagnostics_run_memcheck` | `apps` | `COVERED` | 3 |
 | `api:src/include/apps/shell_runtime.h:shell_hosted_open` | `src/include/apps/shell_runtime.h` | `shell_hosted_open` | `apps` | `COVERED` | 4 |
 | `api:src/include/apps/shell_runtime.h:shell_hosted_present_progress` | `src/include/apps/shell_runtime.h` | `shell_hosted_present_progress` | `apps` | `COVERED` | 4 |
 | `api:src/include/apps/shell_runtime.h:shell_hosted_reset` | `src/include/apps/shell_runtime.h` | `shell_hosted_reset` | `apps` | `COVERED` | 4 |
@@ -6303,7 +6303,7 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_print_snapshot_table` | `src/shell/shell_commands_diagnostics.c` | `cmd_acpi_print_snapshot_table` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_print_table` | `src/shell/shell_commands_diagnostics.c` | `cmd_acpi_print_table` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_tables` | `src/shell/shell_commands_diagnostics.c` | `cmd_acpi_tables` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_cd` | `src/shell/shell_commands_diagnostics.c` | `cmd_cd` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_cd` | `src/shell/shell_commands_diagnostics.c` | `cmd_cd` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_clock` | `src/shell/shell_commands_diagnostics.c` | `cmd_clock` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_clock_check` | `src/shell/shell_commands_diagnostics.c` | `cmd_clock_check` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_clock_status` | `src/shell/shell_commands_diagnostics.c` | `cmd_clock_status` | `shell` | `PENDING` | 0 |
@@ -6381,10 +6381,10 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_memcheck` | `src/shell/shell_commands_diagnostics.c` | `cmd_memcheck` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_memcheck_print_result` | `src/shell/shell_commands_diagnostics.c` | `cmd_memcheck_print_result` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_mount` | `src/shell/shell_commands_diagnostics.c` | `cmd_mount` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_mouse` | `src/shell/shell_commands_diagnostics.c` | `cmd_mouse` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_mouse_apply` | `src/shell/shell_commands_diagnostics.c` | `cmd_mouse_apply` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_mouse_print_status` | `src/shell/shell_commands_diagnostics.c` | `cmd_mouse_print_status` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_mouse_print_usage` | `src/shell/shell_commands_diagnostics.c` | `cmd_mouse_print_usage` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_mouse` | `src/shell/shell_commands_diagnostics.c` | `cmd_mouse` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_mouse_apply` | `src/shell/shell_commands_diagnostics.c` | `cmd_mouse_apply` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_mouse_print_status` | `src/shell/shell_commands_diagnostics.c` | `cmd_mouse_print_status` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_mouse_print_usage` | `src/shell/shell_commands_diagnostics.c` | `cmd_mouse_print_usage` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_pagefault` | `src/shell/shell_commands_diagnostics.c` | `cmd_pagefault` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_power` | `src/shell/shell_commands_diagnostics.c` | `cmd_power` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck` | `src/shell/shell_commands_diagnostics.c` | `cmd_proccheck` | `shell` | `PENDING` | 0 |
@@ -6394,7 +6394,7 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck_read` | `src/shell/shell_commands_diagnostics.c` | `cmd_proccheck_read` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck_sysfs_attributes` | `src/shell/shell_commands_diagnostics.c` | `cmd_proccheck_sysfs_attributes` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck_write` | `src/shell/shell_commands_diagnostics.c` | `cmd_proccheck_write` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_pwd` | `src/shell/shell_commands_diagnostics.c` | `cmd_pwd` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_pwd` | `src/shell/shell_commands_diagnostics.c` | `cmd_pwd` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_schedcheck` | `src/shell/shell_commands_diagnostics.c` | `cmd_schedcheck` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_schedcheck_print_result` | `src/shell/shell_commands_diagnostics.c` | `cmd_schedcheck_print_result` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_sigtest` | `src/shell/shell_commands_diagnostics.c` | `cmd_sigtest` | `shell` | `PENDING` | 0 |
@@ -6451,7 +6451,7 @@
 | `c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_run_device_scan` | `src/shell/shell_commands_diagnostics.c` | `shell_diagnostics_run_device_scan` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_run_memcheck` | `src/shell/shell_commands_diagnostics.c` | `shell_diagnostics_run_memcheck` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_acpi` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_acpi` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_cd` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_cd` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_cd` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_cd` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_clock` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_clock` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_cpu_usage` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_cpu_usage` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_devcheck` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_devcheck` | `shell` | `PENDING` | 0 |
@@ -6465,11 +6465,11 @@
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_log` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_log` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_memcheck` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_memcheck` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_mount` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_mount` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_mouse` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_mouse` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_mouse` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_mouse` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_pagefault` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_pagefault` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_power` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_power` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_proccheck` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_proccheck` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_pwd` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_pwd` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_pwd` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_pwd` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_schedcheck` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_schedcheck` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_sigtest` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_sigtest` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_slabinfo` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_slabinfo` | `shell` | `PENDING` | 0 |
@@ -7463,9 +7463,10 @@
 | `host:security:tls-client` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar tls_client.c com engine BearSSL, socket, relogio e RNG falsos | handshake, envio, recepcao, EOF, estados de erro e limpeza preservam os contratos do adaptador | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do adaptador e fixtures do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:command-utils` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar parsing, validacao de argumentos, normalizacao e formatacao | utilitarios aceitam entradas validas, rejeitam limites e formatam valores corretamente | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos de entrada, saida e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:commands-core` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar handlers de ajuda, terminal, VFS, processos, threads, memoria, som, energia, compressao e resultados de loader com dependencias estaticas falsas | comandos validos e invalidos preservam seus retornos, mensagens, callbacks e limpeza sem hardware ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers e contadores estaticos da fixture host | processo host encerrado e manifesto, logs e cobertura preservados |
-| `host:shell:commands-storage` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enviar argumentos nulos, invalidos, vazios e uma pesquisa sem indice disponivel | dispatcher, parser e mensagens de erro preservam os limites e codigos canonicos | compilador ausente, warning, saida inesperada, falha de assercao ou timeout | somente buffers estaticos de saida e doubles do indice no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:shell:commands-storage` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar caminhos validos, negativos, limites, diagnostico, busca, sync e callbacks de job | dispatchers, parsers, formatacao e callbacks preservam limites, estados e codigos canonicos | compilador ausente, warning, saida inesperada, falha de assercao ou timeout | somente buffers estaticos de saida e doubles do indice no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:commands-vfs` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar grep com entrada fragmentada, comparacao sem diferenca de maiusculas, limites, erros de pipeline e o autoteste pipetest | linhas correspondentes sao encaminhadas, entradas invalidas e limites exibem diagnostico e pipetest preserva resultado e codigo canonico | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos de entrada, saida e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:core` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inicializar o Shell, encaminhar mouse, suspender terminal, concluir comando e restaurar a cena visual | entradas invalidas e inativas sao rejeitadas, scroll ativo e encaminhado, ciclo de terminal restaura prompt e redraw | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente callbacks estaticos do Shell, terminal, taskbar, desktop e aplicativos falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:shell:diagnostics` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar pwd, cd e mouse em caminhos validos, invalidos, indisponiveis e de limite | dispatchers preservam saida, estado, configuracao e codigos canonicos | compilador ausente, warning, saida inesperada, falha de assercao ou timeout | somente buffers estaticos de saida e doubles locais do VFS e mouse | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:diagnostics-helpers` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar parsers de log, sinais, mouse e VMA, nomes de estados, cores, caminhos sysfs/proc e invariantes de memoria com dependencias estaticas falsas | entradas validas retornam resultados canonicos; entradas nulas, invalidas e fora dos limites sao rejeitadas sem hardware, allocator ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos, estado de filesystem e paginação falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:dispatch` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar comandos desconhecidos, entrada normalizada, limite e comando conhecido | dispatcher retorna ERR_NULL para entrada nula e apresenta diagnostico deterministico para comando desconhecido | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e handlers falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:hosted` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | abrir, reabrir, desenhar, encaminhar tecla e mouse, fechar e rejeitar registro do Shell Classic hospedado | o Shell hospedado publica visibilidade, encaminha callbacks e restaura o estado quando o registro falha | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do adaptador, callbacks do Window Manager e terminal falso no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -8114,7 +8115,6 @@
 - `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_print_snapshot_table`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_print_table`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_tables`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_cd`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_clock`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_clock_check`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_clock_status`
@@ -8191,10 +8191,6 @@
 - `c:src/shell/shell_commands_diagnostics.c:cmd_log_usage`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_memcheck`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_memcheck_print_result`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_mouse`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_mouse_apply`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_mouse_print_status`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_mouse_print_usage`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_pagefault`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_power`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck`
@@ -8259,7 +8255,6 @@
 - `c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_run_device_scan`
 - `c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_run_memcheck`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_acpi`
-- `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_cd`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_clock`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_cpu_usage`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_devcheck`
@@ -8272,7 +8267,6 @@
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_kmetrics`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_log`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_memcheck`
-- `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_mouse`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_pagefault`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_power`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_proccheck`

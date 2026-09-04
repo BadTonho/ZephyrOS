@@ -3639,6 +3639,48 @@
       "evidence": "make test-shell-commands-storage-host PASS com bloco, cache, sync, storage, index, search e job; a fixture cobre diretamente os dispatchers e caminhos validos, negativos e de limite usando doubles estaticos"
     },
     {
+      "id": "shell-commands-diagnostics-host-dynamic",
+      "domain": "shell-diagnostics",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/shell-diagnostics-host/coverage.json",
+      "coverage_sources": [
+        "src/shell/shell_commands_diagnostics.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:shell:diagnostics",
+        "scenario": "Comandos diagnosticos deterministas do Shell com doubles estaticos",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "video, VFS e mouse falsos"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "executar pwd, cd e mouse em caminhos validos, invalidos, indisponiveis e de limite",
+        "expected": "dispatchers preservam saida, estado, configuracao e codigos canonicos",
+        "errors": "compilador ausente, warning, saida inesperada, falha de assercao ou timeout",
+        "effects": "somente buffers estaticos de saida e doubles locais do VFS e mouse",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": []
+      },
+      "evidence": "make test-shell-diagnostics-host PASS com pwd, cd e mouse; a fixture chama diretamente os dispatchers e caminhos validos, negativos, indisponiveis e de limite"
+    },
+    {
       "id": "shell-commands-vfs-host-dynamic",
       "domain": "shell-vfs",
       "owner": "quality",

@@ -133,6 +133,8 @@ SHELL_DISPATCH_RESULT_DIR = ROOT / "build" / "test-results" / "shell-dispatch-ho
 SHELL_DISPATCH_BINARY = ROOT / "build" / "tests" / "test_shell_dispatch_host.exe"
 SHELL_COMMANDS_STORAGE_RESULT_DIR = ROOT / "build" / "test-results" / "shell-commands-storage-host"
 SHELL_COMMANDS_STORAGE_BINARY = ROOT / "build" / "tests" / "test_shell_commands_storage_host.exe"
+SHELL_DIAGNOSTICS_RESULT_DIR = ROOT / "build" / "test-results" / "shell-diagnostics-host"
+SHELL_DIAGNOSTICS_BINARY = ROOT / "build" / "tests" / "test_shell_diagnostics_host.exe"
 SPINLOCK_RESULT_DIR = ROOT / "build" / "test-results" / "spinlock-host"
 SPINLOCK_BINARY = ROOT / "build" / "tests" / "test_spinlock_host.exe"
 DEFAULT_TIMEOUT = 120.0
@@ -990,6 +992,14 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
                  ROOT / "src" / "shell" / "shell_commands_storage.c",
                  ROOT / "src" / "core" / "string.c"),
                 "shell-commands-storage-host")
+    if case_id == "host:shell:diagnostics":
+        return (SHELL_DIAGNOSTICS_RESULT_DIR, SHELL_DIAGNOSTICS_BINARY,
+                (ROOT / "tests" / "unit" / "test_shell_diagnostics_host.c",
+                 ROOT / "src" / "shell" / "shell_commands_diagnostics.c",
+                 ROOT / "src" / "shell" / "shell_diagnostics_helpers.c",
+                 ROOT / "src" / "shell" / "shell_command_utils.c",
+                 ROOT / "src" / "core" / "string.c"),
+                "shell-diagnostics-host")
     if case_id == "host:shell:introspection":
         return (SHELL_INTROSPECTION_RESULT_DIR, SHELL_INTROSPECTION_BINARY,
                 SHELL_INTROSPECTION_SOURCE_FILES, "shell-introspection-host")
@@ -1182,7 +1192,8 @@ def compiler_command(compiler: str, binary: Path,
                                     "-Dasm=__asm__"])
     return [
         compiler, "-std=c11", "-O0", "-fno-inline", "-ffunction-sections",
-        "-fdata-sections", "-Wall", "-Wextra",
+        "-fdata-sections", "-fno-unwind-tables",
+        "-fno-asynchronous-unwind-tables", "-Wall", "-Wextra",
         "-Werror", "-DZEPHYROS_HOST_TEST=1", "-finstrument-functions",
         *compatibility_flags,
         "-I", str(ROOT / "tests" / "unit" / "host_include"),
@@ -1316,6 +1327,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:core:workqueue", "host:core:bearssl-compat",
                                  "host:core:spinlock",
                                  "host:shell:dispatch", "host:shell:commands-storage",
+                                 "host:shell:diagnostics",
                                  "host:shell:introspection",
                                  "host:drivers:font", "host:drivers:rtc-status",
                                  "host:core:wifi-manager",
