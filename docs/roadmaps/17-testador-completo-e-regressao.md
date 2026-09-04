@@ -2217,3 +2217,10 @@ pendente.
   `PENDING` nesse arquivo. O catálogo atual registra 7.219 superfícies, 5.241
   `COVERED`, 1.978 `PENDING` e 138 casos. O restante do fechamento integral
   continua pendente nos demais subsistemas.
+- Evidência Shell/input regenerada em 2026-09-04 11:01
+  (America/Sao_Paulo). O caso existente `host:shell:input` foi executado após o
+  build limpo, e suas funções de inicialização e leitura do buffer ficaram
+  novamente cobertas pelo relatório dinâmico real. `make test-shell-input-host`
+  e `make catalog-test` passaram. O catálogo atual registra 7.219 superfícies,
+  5.243 `COVERED`, 1.976 `PENDING` e 138 casos; as pendências restantes não
+  foram mascaradas.

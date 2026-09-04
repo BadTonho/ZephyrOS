@@ -5315,3 +5315,10 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `make test-shell-commands-core-host`, `make catalog-test` e os testes
   unitários dos runners. O catálogo agora registra 7.219 superfícies, 5.241
   `COVERED`, 1.978 `PENDING` e 138 casos.
+- Evidência Shell/input regenerada em 2026-09-04 11:01 (America/Sao_Paulo).
+  Após o build limpo, `make test-shell-input-host` terminou `PASS` e produziu
+  novamente `build/test-results/shell-input-host/coverage.json`, sem endereços
+  desconhecidos ou símbolos ambíguos. A sincronização, renderização e
+  `make catalog-test` passaram; `shell_input_init` e `shell_input_get_buffer`
+  voltaram a ser `COVERED` por execução real. O catálogo registra 7.219
+  superfícies, 5.243 `COVERED`, 1.976 `PENDING` e 138 casos.
