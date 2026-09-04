@@ -4493,12 +4493,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:app-loader",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_loader.h:app_loader_cancel_foreground",
@@ -4516,12 +4517,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:app-loader",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_loader.h:app_loader_get_foreground_pid",
@@ -4539,12 +4541,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:app-loader",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_loader.h:app_loader_init",
@@ -4562,12 +4565,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:app-loader",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_loader.h:app_loader_is_foreground_active",
@@ -4585,12 +4589,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:app-loader",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_loader.h:app_loader_is_ready",
@@ -4608,12 +4613,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:app-loader",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_loader.h:app_loader_reap_finished",
@@ -4631,12 +4637,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:app-loader",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_loader.h:app_loader_run_file",
@@ -4654,12 +4661,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:app-loader",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_loader.h:app_loader_run_file_with_launch",
@@ -4677,12 +4685,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:app-loader",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_loader.h:app_loader_run_image",
@@ -4700,12 +4709,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:app-loader",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_loader.h:app_loader_set_operation_generation",
@@ -4723,12 +4733,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:app-loader",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_loader.h:app_loader_take_finished_result",
@@ -4746,12 +4757,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:app-loader",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_loader.h:app_loader_validate_image",
@@ -4769,12 +4781,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:app-loader",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/app_package.h:app_package_action_reason_name",
@@ -44376,9 +44389,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-loader"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_loader.c:app_loader_cancel_foreground",
@@ -44394,9 +44410,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-loader"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_loader.c:app_loader_get_foreground_pid",
@@ -44412,9 +44431,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-loader"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_loader.c:app_loader_has_zap_extension",
@@ -44430,9 +44452,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-loader"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_loader.c:app_loader_init",
@@ -44448,9 +44473,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-loader"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_loader.c:app_loader_is_busy",
@@ -44468,11 +44496,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:app-loader",
         "qemu:tst5:apps",
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_loader.c:app_loader_is_foreground_active",
@@ -44490,11 +44519,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:app-loader",
         "qemu:tst5:apps",
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_loader.c:app_loader_is_launch_space",
@@ -44510,9 +44540,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-loader"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_loader.c:app_loader_is_ready",
@@ -44528,9 +44561,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-loader"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_loader.c:app_loader_magic_is_valid",
@@ -44546,9 +44582,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-loader"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_loader.c:app_loader_prepare_launch",
@@ -44564,9 +44603,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-loader"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_loader.c:app_loader_reap_active",
@@ -44584,12 +44626,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:app-loader",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_loader.c:app_loader_reap_finished",
@@ -44607,12 +44650,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:app-loader",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_loader.c:app_loader_release_process_resources",
@@ -44628,9 +44672,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-loader"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_loader.c:app_loader_run_file",
@@ -44646,9 +44693,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-loader"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_loader.c:app_loader_run_file_with_launch",
@@ -44664,9 +44714,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-loader"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_loader.c:app_loader_run_image",
@@ -44682,9 +44735,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-loader"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_loader.c:app_loader_set_operation_generation",
@@ -44700,9 +44756,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-loader"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_loader.c:app_loader_start_pending",
@@ -44720,12 +44779,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:app-loader",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_loader.c:app_loader_store_result",
@@ -44741,9 +44801,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-loader"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_loader.c:app_loader_take_finished_result",
@@ -44761,12 +44824,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:app-loader",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_loader.c:app_loader_validate_image",
@@ -44782,9 +44846,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-loader"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_loader.c:app_loader_validate_launch_info",
@@ -44800,9 +44867,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-loader"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_loader.c:app_loader_validate_layout",
@@ -44818,9 +44888,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-loader"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/app_package.c:app_package_action_fail",
@@ -172181,6 +172254,68 @@
         "snapshot"
       ],
       "status": "AUTOMATED"
+    },
+    {
+      "id": "host:core:app-loader",
+      "scenario": "Execucao host-only do carregador ZAPP com dependencias falsas",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "compilar e executar o app_loader.c real com processo, filesystem, paging e syscall falsos",
+      "expected": "parser, layout, lifecycle assincrono, cancelamento e codigos de erro preservam o contrato",
+      "errors": "compilador ausente, warning, fixture invalida, falha de assercao ou timeout",
+      "effects": "somente buffers estaticos e estado de dependencias falsas no processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/app_loader.h:app_loader_build_launch_info",
+        "api:src/include/core/app_loader.h:app_loader_cancel_foreground",
+        "api:src/include/core/app_loader.h:app_loader_get_foreground_pid",
+        "api:src/include/core/app_loader.h:app_loader_init",
+        "api:src/include/core/app_loader.h:app_loader_is_foreground_active",
+        "api:src/include/core/app_loader.h:app_loader_is_ready",
+        "api:src/include/core/app_loader.h:app_loader_reap_finished",
+        "api:src/include/core/app_loader.h:app_loader_run_file",
+        "api:src/include/core/app_loader.h:app_loader_run_file_with_launch",
+        "api:src/include/core/app_loader.h:app_loader_run_image",
+        "api:src/include/core/app_loader.h:app_loader_set_operation_generation",
+        "api:src/include/core/app_loader.h:app_loader_take_finished_result",
+        "api:src/include/core/app_loader.h:app_loader_validate_image",
+        "c:src/core/app_loader.c:app_loader_build_launch_info",
+        "c:src/core/app_loader.c:app_loader_cancel_foreground",
+        "c:src/core/app_loader.c:app_loader_get_foreground_pid",
+        "c:src/core/app_loader.c:app_loader_has_zap_extension",
+        "c:src/core/app_loader.c:app_loader_init",
+        "c:src/core/app_loader.c:app_loader_is_busy",
+        "c:src/core/app_loader.c:app_loader_is_foreground_active",
+        "c:src/core/app_loader.c:app_loader_is_launch_space",
+        "c:src/core/app_loader.c:app_loader_is_ready",
+        "c:src/core/app_loader.c:app_loader_magic_is_valid",
+        "c:src/core/app_loader.c:app_loader_prepare_launch",
+        "c:src/core/app_loader.c:app_loader_reap_active",
+        "c:src/core/app_loader.c:app_loader_reap_finished",
+        "c:src/core/app_loader.c:app_loader_release_process_resources",
+        "c:src/core/app_loader.c:app_loader_run_file",
+        "c:src/core/app_loader.c:app_loader_run_file_with_launch",
+        "c:src/core/app_loader.c:app_loader_run_image",
+        "c:src/core/app_loader.c:app_loader_set_operation_generation",
+        "c:src/core/app_loader.c:app_loader_start_pending",
+        "c:src/core/app_loader.c:app_loader_store_result",
+        "c:src/core/app_loader.c:app_loader_take_finished_result",
+        "c:src/core/app_loader.c:app_loader_validate_image",
+        "c:src/core/app_loader.c:app_loader_validate_launch_info",
+        "c:src/core/app_loader.c:app_loader_validate_layout"
+      ]
     }
   ],
   "retired": [
