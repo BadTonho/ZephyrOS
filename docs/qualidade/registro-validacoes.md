@@ -5621,3 +5621,16 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   desses arquivos. O catálogo agora registra 7.292 superfícies, 6.053
   `COVERED`, 1.239 `PENDING` e 151 casos. O gate estrito continua pendente
   pelas superfícies restantes sem evidência específica.
+
+- Incremento Core/update-remote — cancelamento do transporte — concluído em
+  2026-09-04 (America/Sao_Paulo). A fixture existente
+  `host:core:update-remote` passou a manter o HTTP falso em
+  `HTTP_STATE_RECEIVING_BODY`, armar `update_remote_host_cancel()` por meio
+  de um wrapper interno e verificar `ERR_TIMEOUT` com motivo
+  `UPDATE_REMOTE_REASON_CANCELLED`. O estado pendente foi limpo antes da
+  continuação dos contratos públicos; a execução terminou `PASS` e o relatório
+  não registrou endereços desconhecidos ou símbolos ambíguos. Após a segunda
+  execução, a sincronização confirmou o wrapper e o driver: o catálogo registra
+  7.293 superfícies, 6.055 `COVERED`, 1.238 `PENDING` e 151 casos. O gate
+  estrito continua pendente pelas superfícies restantes sem evidência
+  específica.

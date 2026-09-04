@@ -4,7 +4,7 @@
 
 ## Resumo
 
-- Superfícies ativas: **7292**
+- Superfícies ativas: **7293**
 - Casos de teste: **151**
 - Superfícies aposentadas: **57**
 
@@ -12,16 +12,16 @@
 |---|---:|
 | `api_function` | 1575 |
 | `asm_entry` | 101 |
-| `c_function` | 5496 |
+| `c_function` | 5497 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6053 |
+| `COVERED` | 6055 |
 | `MANUAL` | 0 |
-| `PENDING` | 1239 |
+| `PENDING` | 1238 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -37,7 +37,7 @@
 | `apps` | 168 |
 | `appstore` | 88 |
 | `boot` | 136 |
-| `core` | 2812 |
+| `core` | 2813 |
 | `desktop` | 40 |
 | `drivers` | 932 |
 | `filemanager` | 92 |
@@ -3457,11 +3457,12 @@
 | `c:src/core/update_remote.c:update_remote_get_cached_alias` | `src/core/update_remote.c` | `update_remote_get_cached_alias` | `core` | `COVERED` | 1 |
 | `c:src/core/update_remote.c:update_remote_get_status` | `src/core/update_remote.c` | `update_remote_get_status` | `core` | `COVERED` | 1 |
 | `c:src/core/update_remote.c:update_remote_hash_file` | `src/core/update_remote.c` | `update_remote_hash_file` | `core` | `COVERED` | 1 |
-| `c:src/core/update_remote.c:update_remote_host_cancel` | `src/core/update_remote.c` | `update_remote_host_cancel` | `core` | `PENDING` | 0 |
+| `c:src/core/update_remote.c:update_remote_host_cancel` | `src/core/update_remote.c` | `update_remote_host_cancel` | `core` | `COVERED` | 1 |
 | `c:src/core/update_remote.c:update_remote_host_check_public` | `src/core/update_remote.c` | `update_remote_host_check_public` | `core` | `COVERED` | 1 |
 | `c:src/core/update_remote.c:update_remote_host_check_scalars` | `src/core/update_remote.c` | `update_remote_host_check_scalars` | `core` | `COVERED` | 1 |
 | `c:src/core/update_remote.c:update_remote_host_check_storage` | `src/core/update_remote.c` | `update_remote_host_check_storage` | `core` | `COVERED` | 1 |
 | `c:src/core/update_remote.c:update_remote_host_manifest` | `src/core/update_remote.c` | `update_remote_host_manifest` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote.c:update_remote_host_test_cancel` | `src/core/update_remote.c` | `update_remote_host_test_cancel` | `core` | `COVERED` | 1 |
 | `c:src/core/update_remote.c:update_remote_host_test_contracts` | `src/core/update_remote.c` | `update_remote_host_test_contracts` | `core` | `COVERED` | 1 |
 | `c:src/core/update_remote.c:update_remote_http_reason` | `src/core/update_remote.c` | `update_remote_http_reason` | `core` | `COVERED` | 1 |
 | `c:src/core/update_remote.c:update_remote_init` | `src/core/update_remote.c` | `update_remote_init` | `core` | `COVERED` | 1 |
@@ -7777,7 +7778,6 @@
 - `c:src/boot/recovery_menu.c:recovery_menu_render_state`
 - `c:src/boot/recovery_menu.c:recovery_menu_run`
 - `c:src/boot/recovery_menu.c:recovery_menu_wait_f8`
-- `c:src/core/update_remote.c:update_remote_host_cancel`
 - `c:src/desktop/desktop.c:desktop_add_icon`
 - `c:src/desktop/desktop.c:desktop_drag_threshold_reached`
 - `c:src/desktop/desktop.c:desktop_draw`

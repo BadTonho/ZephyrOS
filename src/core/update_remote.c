@@ -1388,6 +1388,10 @@ static int update_remote_host_cancel(void* context) {
     return 1;
 }
 
+int update_remote_host_test_cancel(void* context) {
+    return update_remote_host_cancel(context);
+}
+
 static void update_remote_host_manifest(uint8_t raw[UPDATE_REMOTE_MANIFEST_SIZE]) {
     kmemset(raw, 0, UPDATE_REMOTE_MANIFEST_SIZE);
     raw[0] = 'Z';
@@ -1610,6 +1614,9 @@ static int update_remote_host_check_public(void) {
     update_remote_status_t status;
     update_remote_result_t result;
     update_remote_options_t options = {1U, 0, 0, 0, 0, 0, 0, 0};
+    update_remote_options_t cancel_options = {
+        1U, update_remote_host_test_cancel, 0, 0, 0, 0, 0, 0
+    };
     char alias[UPDATE_REMOTE_ALIAS_SIZE];
 
     update_remote_host_set_fs_type(FS_TYPE_NONE);
@@ -1627,16 +1634,21 @@ static int update_remote_host_check_public(void) {
         result.reason != UPDATE_REMOTE_REASON_DISABLED) return 305;
     if (update_remote_enable() != OK ||
         !update_remote_capability_available()) return 306;
+    update_remote_host_set_http_pending(1U);
+    if (update_remote_check("http://host/manifest.zum", &cancel_options,
+                           &result) != ERR_TIMEOUT ||
+        result.reason != UPDATE_REMOTE_REASON_CANCELLED) return 307;
+    update_remote_host_set_http_pending(0U);
     options.dry_run = 0U;
     if (update_remote_fetch(0, &options, &result) != ERR_STATE ||
-        result.reason != UPDATE_REMOTE_REASON_MANIFEST_FORMAT) return 307;
+        result.reason != UPDATE_REMOTE_REASON_MANIFEST_FORMAT) return 308;
     if (update_remote_clear(&options, &result) != ERR_UNAVAILABLE ||
-        result.reason != UPDATE_REMOTE_REASON_CACHE) return 308;
+        result.reason != UPDATE_REMOTE_REASON_CACHE) return 309;
     if (update_remote_disable() != OK ||
-        update_remote_disable() != OK) return 309;
+        update_remote_disable() != OK) return 310;
     if (update_remote_check(0, 0, 0) != ERR_NULL ||
         update_remote_fetch(0, 0, 0) != ERR_NULL ||
-        update_remote_clear(0, 0) != ERR_NULL) return 310;
+        update_remote_clear(0, 0) != ERR_NULL) return 311;
     return OK;
 }
 
