@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6234 |
+| `COVERED` | 6241 |
 | `MANUAL` | 0 |
-| `PENDING` | 1059 |
+| `PENDING` | 1052 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -6362,11 +6362,11 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_irqstat_status` | `src/shell/shell_commands_diagnostics.c` | `cmd_irqstat_status` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_irqstat_usage` | `src/shell/shell_commands_diagnostics.c` | `cmd_irqstat_usage` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_kill` | `src/shell/shell_commands_diagnostics.c` | `cmd_kill` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_kmetrics` | `src/shell/shell_commands_diagnostics.c` | `cmd_kmetrics` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_kmetrics_print_memory` | `src/shell/shell_commands_diagnostics.c` | `cmd_kmetrics_print_memory` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_kmetrics_print_queues` | `src/shell/shell_commands_diagnostics.c` | `cmd_kmetrics_print_queues` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_kmetrics_print_scheduler` | `src/shell/shell_commands_diagnostics.c` | `cmd_kmetrics_print_scheduler` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_kmetrics_print_vesa` | `src/shell/shell_commands_diagnostics.c` | `cmd_kmetrics_print_vesa` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_kmetrics` | `src/shell/shell_commands_diagnostics.c` | `cmd_kmetrics` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_kmetrics_print_memory` | `src/shell/shell_commands_diagnostics.c` | `cmd_kmetrics_print_memory` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_kmetrics_print_queues` | `src/shell/shell_commands_diagnostics.c` | `cmd_kmetrics_print_queues` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_kmetrics_print_scheduler` | `src/shell/shell_commands_diagnostics.c` | `cmd_kmetrics_print_scheduler` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_kmetrics_print_vesa` | `src/shell/shell_commands_diagnostics.c` | `cmd_kmetrics_print_vesa` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_log` | `src/shell/shell_commands_diagnostics.c` | `cmd_log` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_log_check` | `src/shell/shell_commands_diagnostics.c` | `cmd_log_check` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_log_invalid` | `src/shell/shell_commands_diagnostics.c` | `cmd_log_invalid` | `shell` | `COVERED` | 1 |
@@ -6461,7 +6461,7 @@
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_health` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_health` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_irqstat` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_irqstat` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_kill` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_kill` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_kmetrics` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_kmetrics` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_kmetrics` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_kmetrics` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_log` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_log` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_memcheck` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_memcheck` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_mount` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_mount` | `shell` | `COVERED` | 2 |
@@ -6482,7 +6482,7 @@
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_wait` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_wait` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_workq` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_workq` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_wqinfo` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_wqinfo` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_diagnostics.c:shell_kmetrics_take_snapshot` | `src/shell/shell_commands_diagnostics.c` | `shell_kmetrics_take_snapshot` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_diagnostics.c:shell_kmetrics_take_snapshot` | `src/shell/shell_commands_diagnostics.c` | `shell_kmetrics_take_snapshot` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:cmd_dns_wait` | `src/shell/shell_commands_network.c` | `cmd_dns_wait` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_http` | `src/shell/shell_commands_network.c` | `cmd_http` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_http_execute` | `src/shell/shell_commands_network.c` | `cmd_http_execute` | `shell` | `PENDING` | 0 |
@@ -8156,11 +8156,6 @@
 - `c:src/shell/shell_commands_diagnostics.c:cmd_health_summary`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_health_update_remote_state`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_kill`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_kmetrics`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_kmetrics_print_memory`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_kmetrics_print_queues`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_kmetrics_print_scheduler`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_kmetrics_print_vesa`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_power`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck_controls`
@@ -8179,11 +8174,9 @@
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_device_scan`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_health`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_kill`
-- `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_kmetrics`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_power`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_proccheck`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_sigtest`
-- `c:src/shell/shell_commands_diagnostics.c:shell_kmetrics_take_snapshot`
 - `c:src/shell/shell_commands_network.c:cmd_dns_wait`
 - `c:src/shell/shell_commands_network.c:cmd_http`
 - `c:src/shell/shell_commands_network.c:cmd_http_execute`

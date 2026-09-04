@@ -5771,3 +5771,15 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   do catálogo regenerada. O catálogo registra 7.293 superfícies, 6.234
   `COVERED`, 1.059 `PENDING` e 154 casos; as pendências restantes continuam
   explícitas.
+
+- Incremento Shell/diagnostics KMetrics — concluído em 2026-09-04
+  (America/Sao_Paulo). A fixture host-only `host:shell:diagnostics` passou a
+  chamar o dispatcher real de `kmetrics`, cobrindo a linha-base desde boot,
+  `kmetrics reset`, deltas de PIT, scheduler, teclado, IPC, PMM, heap, paging
+  user, paging boot e VESA. Também foram exercitados argumentos inválidos,
+  paging boot indisponível e VESA sem backbuffer, sem hardware ou estado real
+  do kernel. O alvo com `HOST_CC` passou com `-Wall -Wextra -Werror` e
+  instrumentação dinâmica; `make catalog-test` e `git diff --check` também
+  passaram. A evidência foi sincronizada e a visão renderizada. O catálogo
+  registra 7.293 superfícies, 6.241 `COVERED`, 1.052 `PENDING` e 154 casos;
+  as pendências restantes continuam explícitas.
