@@ -198,6 +198,16 @@ HOST_CASE_TARGETS = {
     "host:drivers:video": "test-video-host",
     "host:tst2:protocol-core": "test-tst2-host",
     "host:tst3:string-compress": "test-tst3-host",
+    "host:drivers:acpi": "test-acpi-host",
+    "host:drivers:ata": "test-ata-host",
+    "host:drivers:ac97": "test-ac97-host",
+    "host:drivers:e1000": "test-e1000-host",
+    "host:drivers:ehci": "test-ehci-host",
+    "host:drivers:idt": "test-idt-host",
+    "host:drivers:mouse": "test-mouse-host",
+    "host:drivers:rtl8139": "test-rtl8139-host",
+    "host:drivers:rtl8811cu": "test-rtl8811cu-host",
+    "host:drivers:uhci": "test-uhci-host",
 }
 QEMU_FIXTURE_ALLOWLIST = {"readonly", "readonly-update"}
 SCHEMA = "zephyros-tst7-result-v1"

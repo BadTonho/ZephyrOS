@@ -205,6 +205,26 @@ class Tst7RunnerContractTests(unittest.TestCase):
         self.assertEqual(runner.HOST_CASE_TARGETS["host:drivers:keyboard"],
                          "test-keyboard-host")
 
+    def test_ac97_host_case_is_mapped(self):
+        self.assertEqual(runner.HOST_CASE_TARGETS["host:drivers:ac97"],
+                         "test-ac97-host")
+
+    def test_remaining_driver_host_cases_are_mapped(self):
+        expected = {
+            "host:drivers:acpi": "test-acpi-host",
+            "host:drivers:ata": "test-ata-host",
+            "host:drivers:e1000": "test-e1000-host",
+            "host:drivers:ehci": "test-ehci-host",
+            "host:drivers:idt": "test-idt-host",
+            "host:drivers:mouse": "test-mouse-host",
+            "host:drivers:rtl8139": "test-rtl8139-host",
+            "host:drivers:rtl8811cu": "test-rtl8811cu-host",
+            "host:drivers:uhci": "test-uhci-host",
+        }
+        self.assertEqual(
+            {case_id: runner.HOST_CASE_TARGETS[case_id]
+             for case_id in expected}, expected)
+
     def test_protocol_adapter_host_case_is_mapped(self):
         self.assertEqual(runner.HOST_CASE_TARGETS[
             "host:tst2:protocol-adapter"], "test-protocol-adapter-host")
