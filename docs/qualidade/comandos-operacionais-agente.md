@@ -1701,10 +1701,11 @@ execução real e valide com `make catalog-test`.
 ## Update runtime host-only
 
 O alvo `test-update-runtime-host` compila `src/core/update_runtime.c` com
-filesystem, crypto e estado legado simulados em buffers estaticos. A fixture
-valida registros de estado e journal, manifestos ZUM2, entradas ZUPD,
-planejamento, comparacao de arquivos, motivos e rejeicoes sem acessar
-armazenamento real:
+filesystem FAT12, crypto e estado legado simulados em buffers estaticos. A
+fixture valida inicializacao e recuperacao de estado, manifestos ZUM2,
+entradas ZUPD, planejamento, staging, backups, journal, commit, rollback,
+cancelamento, failpoints, cache seletivo, comparacao de arquivos, motivos e
+rejeicoes sem acessar armazenamento real:
 
 ```text
 make test-update-runtime-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe

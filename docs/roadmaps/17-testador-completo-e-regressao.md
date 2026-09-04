@@ -21,7 +21,7 @@ A infraestrutura TST1–TST7 está concluída para a matriz automatizada existen
 mas o programa de cobertura integral ainda não está concluído. O catálogo
 mantém 149 casos `AUTOMATED`; após os incrementos de Shell, RTC,
 processos/threads, FAT32, update U3/U4 e os contratos remotos ZSYS, registra
-7.256 superfícies, 5.821 `COVERED` e 1.435 `PENDING`. O próximo objetivo deste
+7.256 superfícies, 5.867 `COVERED` e 1.389 `PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
 Isso não significa declarar hardware físico validado sem equipamento.
@@ -34,8 +34,9 @@ Isso não significa declarar hardware físico validado sem equipamento.
 - [x] Caso `host:core:update-runtime` integrado ao Makefile, TST7 e catálogo.
 - [x] Evidência real: `make test-update-runtime-host` e `make catalog-test`
       passaram; cobertura desconhecida e símbolos ambíguos permaneceram vazios.
-- [ ] Aplicação transacional completa, slots, filesystem mutável e reboot ainda
-      exigem fixture integrada e não foram marcados como cobertos.
+- [x] Aplicação transacional, slots, filesystem mutável, cache seletivo,
+      cancelamento, failpoints e recuperação foram exercitados em fixture
+      FAT12 em memória; as 46 superfícies pendentes do arquivo foram cobertas.
 
 ## Objetivo
 

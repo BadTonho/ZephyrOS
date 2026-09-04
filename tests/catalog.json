@@ -80103,9 +80103,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_apply_plan_locked",
@@ -80121,9 +80124,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_asset_name_valid",
@@ -80160,9 +80166,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_cancelled",
@@ -80220,9 +80229,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_clear_slot",
@@ -80238,9 +80250,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_clear_stage",
@@ -80256,9 +80271,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_commit_state_from_journal",
@@ -80274,9 +80292,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_control_valid",
@@ -80313,9 +80334,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_current_version",
@@ -80646,9 +80670,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_hash_file_range",
@@ -80664,9 +80691,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_identifier_valid",
@@ -80703,9 +80733,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_journal_old_state_raw_valid",
@@ -80742,9 +80775,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_load_control",
@@ -80760,9 +80796,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_load_journal_records",
@@ -80778,9 +80817,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_load_state_records",
@@ -80796,9 +80838,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_magic_equal",
@@ -80982,9 +81027,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_parse_package_header",
@@ -81000,9 +81048,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_path_valid",
@@ -81039,9 +81090,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_prune_slots",
@@ -81057,9 +81111,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_read_cache_entry",
@@ -81075,9 +81132,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_read_file_state",
@@ -81114,9 +81174,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_read_u16",
@@ -81174,9 +81237,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_refresh_current_files",
@@ -81213,9 +81279,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_restore_new_entry",
@@ -81231,9 +81300,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_restore_old_entry",
@@ -81249,9 +81321,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_space_available",
@@ -81267,9 +81342,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_stage_cache",
@@ -81285,9 +81363,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_stage_package",
@@ -81303,9 +81384,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_state_hash",
@@ -81344,10 +81428,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:update-runtime",
         "qemu:tst6:fault:update"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_state_seed",
@@ -81363,9 +81448,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_states_equal",
@@ -81381,9 +81469,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_verification_fail",
@@ -81420,9 +81511,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_verify_package_payloads",
@@ -81438,9 +81532,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_version_compare",
@@ -81498,9 +81595,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_write_journal",
@@ -81516,9 +81616,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_write_stage",
@@ -81534,9 +81637,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_write_state",
@@ -81552,9 +81658,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_write_target_from_stage",
@@ -81570,9 +81679,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_write_u16",
@@ -81630,9 +81742,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:update_runtime_apply_file",
@@ -81648,9 +81763,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:update_runtime_file_matches",
@@ -81666,9 +81784,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:update_runtime_get_cache",
@@ -81684,9 +81805,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:update_runtime_get_capabilities",
@@ -81704,10 +81828,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:update-runtime",
         "qemu:tst6:fault:update"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:update_runtime_get_installed_version",
@@ -81723,9 +81848,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:update_runtime_get_status",
@@ -81743,10 +81871,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:update-runtime",
         "qemu:tst6:fault:update"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:update_runtime_host_check_manifest",
@@ -81930,9 +82059,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:update_runtime_is_ready",
@@ -81950,10 +82082,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:update-runtime",
         "qemu:tst6:fault:update"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:update_runtime_parse_manifest",
@@ -82011,9 +82144,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:update_runtime_test_fail_after",
@@ -82031,10 +82167,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:update-runtime",
         "qemu:tst6:fault:update"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:update_runtime_verify_file",
@@ -82050,9 +82187,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:update_runtime_verify_file_for_manifest",
@@ -82068,9 +82208,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system.c:any_nonzero",
@@ -160178,7 +160321,7 @@
     },
     {
       "id": "host:core:update-runtime",
-      "scenario": "Contratos puros do runtime de atualizacao U4",
+      "scenario": "Fluxos transacionais U4 em FAT12 em memoria e contratos de indisponibilidade",
       "owner": "quality",
       "layer": "host",
       "executor": "host",
@@ -160193,8 +160336,8 @@
         "storage": "nenhum; arquivos estaticos em memoria"
       },
       "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "executar contratos de registros, manifestos, pacotes, planejamento e comparacao de arquivos runtime",
-      "expected": "entradas validas fazem round-trip e entradas invalidas retornam erros canonicos sem estado persistente",
+      "action": "inicializar o runtime, verificar e aplicar ZUPD, exercitar rollback, cancelamento, failpoints, recovery e cache seletivo",
+      "expected": "transacoes validas restauram estado e arquivos, falhas deixam journal recuperavel e entradas invalidas retornam erros canonicos",
       "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
       "effects": "somente buffers estaticos no processo host",
       "cleanup": "buffers locais descartados; manifesto, logs e cobertura preservados",
@@ -160225,10 +160368,18 @@
         "c:src/core/string.c:kstrlen",
         "c:src/core/update_runtime.c:runtime_action_fail",
         "c:src/core/update_runtime.c:runtime_alias",
+        "c:src/core/update_runtime.c:runtime_apply_plan",
+        "c:src/core/update_runtime.c:runtime_apply_plan_locked",
         "c:src/core/update_runtime.c:runtime_asset_name_valid",
+        "c:src/core/update_runtime.c:runtime_build_rollback_plan",
         "c:src/core/update_runtime.c:runtime_cancelled",
         "c:src/core/update_runtime.c:runtime_catalog_index",
+        "c:src/core/update_runtime.c:runtime_clear_journal",
+        "c:src/core/update_runtime.c:runtime_clear_slot",
+        "c:src/core/update_runtime.c:runtime_clear_stage",
+        "c:src/core/update_runtime.c:runtime_commit_state_from_journal",
         "c:src/core/update_runtime.c:runtime_control_valid",
+        "c:src/core/update_runtime.c:runtime_copy_current_to_backup",
         "c:src/core/update_runtime.c:runtime_current_version",
         "c:src/core/update_runtime.c:runtime_decode_file_state",
         "c:src/core/update_runtime.c:runtime_decode_journal",
@@ -160244,8 +160395,15 @@
         "c:src/core/update_runtime.c:runtime_file_state_raw_valid",
         "c:src/core/update_runtime.c:runtime_fill_action_result",
         "c:src/core/update_runtime.c:runtime_fixed_text",
+        "c:src/core/update_runtime.c:runtime_hash_file",
+        "c:src/core/update_runtime.c:runtime_hash_file_range",
         "c:src/core/update_runtime.c:runtime_identifier_valid",
+        "c:src/core/update_runtime.c:runtime_initial_version",
         "c:src/core/update_runtime.c:runtime_journal_old_state_raw_valid",
+        "c:src/core/update_runtime.c:runtime_legacy_transaction_pending",
+        "c:src/core/update_runtime.c:runtime_load_control",
+        "c:src/core/update_runtime.c:runtime_load_journal_records",
+        "c:src/core/update_runtime.c:runtime_load_state_records",
         "c:src/core/update_runtime.c:runtime_magic_equal",
         "c:src/core/update_runtime.c:runtime_manifest_applicable",
         "c:src/core/update_runtime.c:runtime_manifest_entry_valid",
@@ -160254,17 +160412,47 @@
         "c:src/core/update_runtime.c:runtime_manifest_signature",
         "c:src/core/update_runtime.c:runtime_package_entry",
         "c:src/core/update_runtime.c:runtime_package_plan",
+        "c:src/core/update_runtime.c:runtime_package_signature",
+        "c:src/core/update_runtime.c:runtime_parse_package_header",
         "c:src/core/update_runtime.c:runtime_path_valid",
+        "c:src/core/update_runtime.c:runtime_prepare_journal",
+        "c:src/core/update_runtime.c:runtime_prune_slots",
+        "c:src/core/update_runtime.c:runtime_read_cache_entry",
         "c:src/core/update_runtime.c:runtime_read_file_state",
+        "c:src/core/update_runtime.c:runtime_read_package_entry",
         "c:src/core/update_runtime.c:runtime_read_u16",
         "c:src/core/update_runtime.c:runtime_read_u32",
+        "c:src/core/update_runtime.c:runtime_recover_pending",
         "c:src/core/update_runtime.c:runtime_refresh_current_files",
+        "c:src/core/update_runtime.c:runtime_replace_from_plan",
+        "c:src/core/update_runtime.c:runtime_restore_new_entry",
+        "c:src/core/update_runtime.c:runtime_restore_old_entry",
+        "c:src/core/update_runtime.c:runtime_space_available",
+        "c:src/core/update_runtime.c:runtime_stage_cache",
+        "c:src/core/update_runtime.c:runtime_stage_package",
         "c:src/core/update_runtime.c:runtime_state_hash",
+        "c:src/core/update_runtime.c:runtime_state_healthy_now",
+        "c:src/core/update_runtime.c:runtime_state_seed",
+        "c:src/core/update_runtime.c:runtime_states_equal",
         "c:src/core/update_runtime.c:runtime_verification_fail",
+        "c:src/core/update_runtime.c:runtime_verify_package_file",
+        "c:src/core/update_runtime.c:runtime_verify_package_payloads",
         "c:src/core/update_runtime.c:runtime_version_compare",
         "c:src/core/update_runtime.c:runtime_version_is_newer",
+        "c:src/core/update_runtime.c:runtime_write_control",
+        "c:src/core/update_runtime.c:runtime_write_journal",
+        "c:src/core/update_runtime.c:runtime_write_stage",
+        "c:src/core/update_runtime.c:runtime_write_state",
+        "c:src/core/update_runtime.c:runtime_write_target_from_stage",
         "c:src/core/update_runtime.c:runtime_write_u16",
         "c:src/core/update_runtime.c:runtime_write_u32",
+        "c:src/core/update_runtime.c:update_runtime_apply_cached",
+        "c:src/core/update_runtime.c:update_runtime_apply_file",
+        "c:src/core/update_runtime.c:update_runtime_file_matches",
+        "c:src/core/update_runtime.c:update_runtime_get_cache",
+        "c:src/core/update_runtime.c:update_runtime_get_capabilities",
+        "c:src/core/update_runtime.c:update_runtime_get_installed_version",
+        "c:src/core/update_runtime.c:update_runtime_get_status",
         "c:src/core/update_runtime.c:update_runtime_host_check_manifest",
         "c:src/core/update_runtime.c:update_runtime_host_check_package_and_plan",
         "c:src/core/update_runtime.c:update_runtime_host_check_results",
@@ -160273,8 +160461,14 @@
         "c:src/core/update_runtime.c:update_runtime_host_fill_manifest_entry",
         "c:src/core/update_runtime.c:update_runtime_host_fill_state",
         "c:src/core/update_runtime.c:update_runtime_host_test_contracts",
+        "c:src/core/update_runtime.c:update_runtime_init",
+        "c:src/core/update_runtime.c:update_runtime_is_ready",
         "c:src/core/update_runtime.c:update_runtime_parse_manifest",
-        "c:src/core/update_runtime.c:update_runtime_reason_name"
+        "c:src/core/update_runtime.c:update_runtime_reason_name",
+        "c:src/core/update_runtime.c:update_runtime_rollback",
+        "c:src/core/update_runtime.c:update_runtime_test_fail_after",
+        "c:src/core/update_runtime.c:update_runtime_verify_file",
+        "c:src/core/update_runtime.c:update_runtime_verify_file_for_manifest"
       ],
       "tags": [
         "host",
