@@ -5757,3 +5757,17 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `git diff --check`. O catálogo registra 7.293 superfícies, 6.230
   `COVERED`, 1.063 `PENDING` e 154 casos; as pendências restantes continuam
   explícitas.
+
+- Incremento Shell/diagnostics MemCheck — concluído em 2026-09-04
+  (America/Sao_Paulo). A fixture host-only `host:shell:diagnostics` passou a
+  chamar o dispatcher real de `memcheck` e `shell_diagnostics_run_memcheck`.
+  Foram validadas as seis flags do resultado, argumentos inválidos, processo
+  ring 3 ou zumbi pendente, aplicação em foreground, falha de validação SLAB e
+  limpeza dos três blocos estáticos nos caminhos de sucesso e erro. O alvo
+  `make test-shell-diagnostics-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
+  passou com `-Wall -Wextra -Werror` e instrumentação dinâmica após
+  `make clean` seguido de `make`; `make q3check`, `make catalog-test` e
+  `git diff --check` também passaram. A evidência foi sincronizada e a visão
+  do catálogo regenerada. O catálogo registra 7.293 superfícies, 6.234
+  `COVERED`, 1.059 `PENDING` e 154 casos; as pendências restantes continuam
+  explícitas.

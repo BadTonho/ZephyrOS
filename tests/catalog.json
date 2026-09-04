@@ -139393,9 +139393,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_memcheck_print_result",
@@ -139411,9 +139414,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_mount",
@@ -140839,9 +140845,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_acpi",
@@ -141115,9 +141124,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_mount",
@@ -167468,6 +167480,8 @@
         "c:src/shell/shell_commands_diagnostics.c:cmd_log_status",
         "c:src/shell/shell_commands_diagnostics.c:cmd_log_tail",
         "c:src/shell/shell_commands_diagnostics.c:cmd_log_usage",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_memcheck",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_memcheck_print_result",
         "c:src/shell/shell_commands_diagnostics.c:cmd_mount",
         "c:src/shell/shell_commands_diagnostics.c:cmd_mouse",
         "c:src/shell/shell_commands_diagnostics.c:cmd_mouse_apply",
@@ -167522,6 +167536,7 @@
         "c:src/shell/shell_commands_diagnostics.c:cmd_workq_usage",
         "c:src/shell/shell_commands_diagnostics.c:cmd_wqinfo",
         "c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_reset",
+        "c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_run_memcheck",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_cd",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_clock",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_cpu_usage",
@@ -167530,6 +167545,7 @@
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_devices",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_irqstat",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_log",
+        "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_memcheck",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_mount",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_mouse",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_pagefault",

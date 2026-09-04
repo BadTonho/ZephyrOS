@@ -2522,3 +2522,17 @@ pendente.
 - [x] O catálogo registra 7.293 superfícies, 6.230 `COVERED`, 1.063
       `PENDING` e 154 casos. As superfícies sem evidência específica continuam
       explícitas; o gate estrito integral permanece pendente.
+
+### Incremento Shell/diagnostics MemCheck — 2026-09-04
+
+- [x] A fixture host-only `host:shell:diagnostics` foi ampliada para chamar o
+      dispatcher real de `memcheck` e o executor estruturado do diagnóstico.
+- [x] Foram exercitados os seis indicadores de integridade, argumentos
+      inválidos, processo ring 3 ou zumbi pendente, aplicação em foreground,
+      falha de validação SLAB e limpeza dos blocos estáticos em sucesso e erro.
+- [x] Passaram o alvo host-only com `HOST_CC`, o build limpo (`make clean`
+      seguido de `make`), `make q3check`, `make catalog-test`, a sincronização
+      e renderização da evidência, e `git diff --check`.
+- [x] O catálogo registra 7.293 superfícies, 6.234 `COVERED`, 1.059
+      `PENDING` e 154 casos. As superfícies sem evidência específica continuam
+      explícitas; o gate estrito integral permanece pendente.
