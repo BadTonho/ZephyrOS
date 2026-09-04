@@ -1753,6 +1753,24 @@ O relatorio instrumentado fica em
 execucao real, sincronize o catalogo, renderize a visao e valide com
 `make catalog-test`.
 
+## App remoto host-only
+
+O alvo `test-app-remote-host` compila `src/core/app_remote.c` com um
+filesystem FAT12, transporte HTTP, crypto e motor de pacotes simulados em
+buffers estaticos. A fixture valida catalogo ZAC1 autenticado, dependencias,
+planejamento, preflight, cache alternado, aplicacao, procedencia,
+cancelamento, failpoint de publicacao, recuperacao e traducao de motivos do
+motor de pacotes, sem rede ou armazenamento reais:
+
+```text
+make test-app-remote-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O relatorio instrumentado fica em
+`build/test-results/app-remote-host/coverage.json` e deve terminar em `PASS`,
+com `unknown_addresses=[]` e `ambiguous_symbols=[]`. Depois da execucao real,
+sincronize o catalogo, renderize a visao e valide com `make catalog-test`.
+
 ## Update system slots host-only
 
 O alvo `test-update-system-slots-host` compila o

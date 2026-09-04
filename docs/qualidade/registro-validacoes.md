@@ -5563,3 +5563,14 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   sincronizacao, renderizacao, `make catalog-test` e a cobertura resolveu as
   46 superficies pendentes de `src/core/update_runtime.c`, sem enderecos
   desconhecidos ou simbolos ambiguos.
+
+- Incremento Core/app-remote concluido em 2026-09-04 (America/Sao_Paulo).
+  Foi criada a fixture host-only `host:core:app-remote`, com filesystem FAT12,
+  catalogo ZAC1, HTTP, crypto e motor de pacotes simulados em buffers estaticos.
+  O caso exercita catalogo autenticado, dependencias, planejamento, preflight,
+  cache alternado, aplicacao, procedencia, cancelamento, failpoint,
+  recuperacao e traducao de motivos do motor AS4, sem rede ou armazenamento
+  reais. Passaram `make test-app-remote-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`, sincronizacao, renderizacao,
+  `make catalog-test` e a cobertura resolveu as 76 superficies de
+  `src/core/app_remote.c`, sem enderecos desconhecidos ou simbolos ambiguos.
