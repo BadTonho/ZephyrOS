@@ -5284,3 +5284,12 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   ajustado de `direct` para `integration` sem alterar `case_ids` ou adicionar
   vínculos artificiais. A renderização, `make catalog-test` e a validação
   bidirecional do TST7 permaneceram válidas.
+
+- Reconciliação de cobertura Shell/PCI concluída em 2026-09-04. Os relatórios
+  `build/test-results/shell-core-host/coverage.json` e
+  `build/test-results/pci-host/coverage.json` terminaram `PASS`, sem endereços
+  desconhecidos ou ambíguos. A sincronização associou 16 superfícies reais de
+  `src/shell/shell.c` a `host:shell:core` e 10 APIs reais de PCI a
+  `host:drivers:pci`; como as fixtures chamam diretamente essas funções, o
+  catálogo registrou `coverage_mode=direct`. Nenhuma associação por arquivo foi
+  criada e os vínculos bidirecionais continuam válidos.
