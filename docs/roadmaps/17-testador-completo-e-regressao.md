@@ -1517,6 +1517,17 @@ pendente.
   7.196 superficies, 3.953 `COVERED`, 3.243 `PENDING` e 86 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Core/app_loader concluido em 2026-09-03. O caso host-only
+  `host:core:app-loader` foi adicionado com fixture estatica de processo,
+  filesystem, paging e syscall. O teste cobre parser de argumentos, limites,
+  corrupcao de offsets, cabecalhos e layouts ZAPP invalidos, inicializacao,
+  execucao suspensa, foco, reap, cancelamento, leitura de arquivo e falhas
+  controladas. O relatorio instrumentado terminou `PASS`, sem enderecos
+  desconhecidos ou ambiguos, e o catalogo foi sincronizado, renderizado e
+  validado por `make catalog-test`. O catalogo atual registra 7.219
+  superficies, 5.110 `COVERED`, 2.109 `PENDING` e 133 casos. O fechamento
+  integral, o gate estrito e a validacao TST7 completa continuam pendentes.
+
 - Incremento Core/ZTEST adapter - correção da fixture e APIs públicas - concluído
   em 2026-09-03. O caso `host:tst2:protocol-adapter` passou a incluir o stub
   controlado de `kernel_tests_run_assembly()` e exercita também a rota

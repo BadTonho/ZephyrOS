@@ -127,6 +127,47 @@
       }
     },
     {
+      "id": "app-loader-host-dynamic",
+      "domain": "core-app-loader",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:app-loader"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/app-loader-host/coverage.json",
+      "coverage_sources": [
+        "src/core/app_loader.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-app-loader-host PASS com fixtures estaticas para parser de argumentos, validacao de imagens ZAPP, inicializacao, execucao, reap, cancelamento e falhas controladas do processo e do filesystem",
+      "case_definition": {
+        "id": "host:core:app-loader",
+        "scenario": "Execucao host-only do carregador ZAPP com dependencias falsas",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "compilar e executar o app_loader.c real com processo, filesystem, paging e syscall falsos",
+        "expected": "parser, layout, lifecycle assincrono, cancelamento e codigos de erro preservam o contrato",
+        "errors": "compilador ausente, warning, fixture invalida, falha de assercao ou timeout",
+        "effects": "somente buffers estaticos e estado de dependencias falsas no processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": []
+      }
+    },
+    {
       "id": "apps-qemu-tst5-dynamic",
       "domain": "applications-storage-shell",
       "owner": "quality",

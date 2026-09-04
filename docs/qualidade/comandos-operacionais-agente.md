@@ -1554,3 +1554,21 @@ momentos diferentes, registrar os dois eventos separadamente.
 ## Registro deste documento
 
 Memoria operacional geral criada em: 2026-08-22 14:52 (America/Sao_Paulo).
+
+## App loader host-only
+
+O caso `test-app-loader-host` compila o `src/core/app_loader.c` real com
+dependencias de paging, syscall, filesystem e processo falsas. A fixture
+estatica cobre parser de argumentos, validacao de cabecalho e layout ZAPP,
+inicializacao, execucao suspensa, foco, reap, cancelamento, leitura de arquivo
+e falhas controladas. Execute-o com um compilador C nativo:
+
+```text
+make test-app-loader-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O relatorio instrumentado fica em
+`build/test-results/app-loader-host/`; `coverage.json` deve terminar com
+`PASS`, sem `unknown_addresses` ou `ambiguous_symbols`. O teste usa somente
+buffers estaticos no processo host e nao substitui a validacao QEMU do fluxo
+completo de aplicacoes.

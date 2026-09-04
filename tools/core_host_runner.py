@@ -47,6 +47,8 @@ APP_FILES_RESULT_DIR = ROOT / "build" / "test-results" / "app-files-host"
 APP_FILES_BINARY = ROOT / "build" / "tests" / "test_app_files_host.exe"
 APP_BUILTIN_RESULT_DIR = ROOT / "build" / "test-results" / "app-builtin-host"
 APP_BUILTIN_BINARY = ROOT / "build" / "tests" / "test_app_builtin_host.exe"
+APP_LOADER_RESULT_DIR = ROOT / "build" / "test-results" / "app-loader-host"
+APP_LOADER_BINARY = ROOT / "build" / "tests" / "test_app_loader_host.exe"
 APP_CATALOG_RESULT_DIR = ROOT / "build" / "test-results" / "app-catalog-host"
 APP_CATALOG_BINARY = ROOT / "build" / "tests" / "test_app_catalog_host.exe"
 INPUT_RESULT_DIR = ROOT / "build" / "test-results" / "input-host"
@@ -199,6 +201,11 @@ APP_BUILTIN_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_app_builtin_host.c",
     ROOT / "src" / "core" / "app_builtin.c",
     ROOT / "src" / "core" / "log.c",
+    ROOT / "src" / "core" / "string.c",
+)
+APP_LOADER_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_app_loader_host.c",
+    ROOT / "src" / "core" / "app_loader.c",
     ROOT / "src" / "core" / "string.c",
 )
 APP_CATALOG_SOURCE_FILES = (
@@ -732,6 +739,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return APP_FILES_RESULT_DIR, APP_FILES_BINARY, APP_FILES_SOURCE_FILES, "app-files-host"
     if case_id == "host:core:app-builtin":
         return APP_BUILTIN_RESULT_DIR, APP_BUILTIN_BINARY, APP_BUILTIN_SOURCE_FILES, "app-builtin-host"
+    if case_id == "host:core:app-loader":
+        return APP_LOADER_RESULT_DIR, APP_LOADER_BINARY, APP_LOADER_SOURCE_FILES, "app-loader-host"
     if case_id == "host:core:app-catalog":
         return (APP_CATALOG_RESULT_DIR, APP_CATALOG_BINARY,
                 APP_CATALOG_SOURCE_FILES, "app-catalog-host")
@@ -1067,7 +1076,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:core:app-package", "host:core:state",
                                  "host:core:device-manager", "host:core:app-api",
                                  "host:core:app-files", "host:core:app-builtin",
-                                 "host:core:app-catalog",
+                                 "host:core:app-loader", "host:core:app-catalog",
                                  "host:core:input",
                                  "host:core:power", "host:storage:vfs-path",
                                  "host:storage:file-index", "host:storage:fs",

@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7219**
-- Casos de teste: **132**
+- Casos de teste: **133**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 5092 |
+| `COVERED` | 5110 |
 | `MANUAL` | 0 |
-| `PENDING` | 2127 |
+| `PENDING` | 2109 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 132 |
+| `AUTOMATED` | 133 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -254,19 +254,19 @@
 | `api:src/include/core/app_files.h:app_files_select` | `src/include/core/app_files.h` | `app_files_select` | `core` | `COVERED` | 1 |
 | `api:src/include/core/app_files.h:app_files_sync` | `src/include/core/app_files.h` | `app_files_sync` | `core` | `COVERED` | 1 |
 | `api:src/include/core/app_files.h:app_files_write` | `src/include/core/app_files.h` | `app_files_write` | `core` | `COVERED` | 1 |
-| `api:src/include/core/app_loader.h:app_loader_build_launch_info` | `src/include/core/app_loader.h` | `app_loader_build_launch_info` | `core` | `COVERED` | 3 |
-| `api:src/include/core/app_loader.h:app_loader_cancel_foreground` | `src/include/core/app_loader.h` | `app_loader_cancel_foreground` | `core` | `COVERED` | 3 |
-| `api:src/include/core/app_loader.h:app_loader_get_foreground_pid` | `src/include/core/app_loader.h` | `app_loader_get_foreground_pid` | `core` | `COVERED` | 3 |
-| `api:src/include/core/app_loader.h:app_loader_init` | `src/include/core/app_loader.h` | `app_loader_init` | `core` | `COVERED` | 3 |
-| `api:src/include/core/app_loader.h:app_loader_is_foreground_active` | `src/include/core/app_loader.h` | `app_loader_is_foreground_active` | `core` | `COVERED` | 3 |
-| `api:src/include/core/app_loader.h:app_loader_is_ready` | `src/include/core/app_loader.h` | `app_loader_is_ready` | `core` | `COVERED` | 3 |
-| `api:src/include/core/app_loader.h:app_loader_reap_finished` | `src/include/core/app_loader.h` | `app_loader_reap_finished` | `core` | `COVERED` | 3 |
-| `api:src/include/core/app_loader.h:app_loader_run_file` | `src/include/core/app_loader.h` | `app_loader_run_file` | `core` | `COVERED` | 3 |
-| `api:src/include/core/app_loader.h:app_loader_run_file_with_launch` | `src/include/core/app_loader.h` | `app_loader_run_file_with_launch` | `core` | `COVERED` | 3 |
-| `api:src/include/core/app_loader.h:app_loader_run_image` | `src/include/core/app_loader.h` | `app_loader_run_image` | `core` | `COVERED` | 3 |
-| `api:src/include/core/app_loader.h:app_loader_set_operation_generation` | `src/include/core/app_loader.h` | `app_loader_set_operation_generation` | `core` | `COVERED` | 3 |
-| `api:src/include/core/app_loader.h:app_loader_take_finished_result` | `src/include/core/app_loader.h` | `app_loader_take_finished_result` | `core` | `COVERED` | 3 |
-| `api:src/include/core/app_loader.h:app_loader_validate_image` | `src/include/core/app_loader.h` | `app_loader_validate_image` | `core` | `COVERED` | 3 |
+| `api:src/include/core/app_loader.h:app_loader_build_launch_info` | `src/include/core/app_loader.h` | `app_loader_build_launch_info` | `core` | `COVERED` | 4 |
+| `api:src/include/core/app_loader.h:app_loader_cancel_foreground` | `src/include/core/app_loader.h` | `app_loader_cancel_foreground` | `core` | `COVERED` | 4 |
+| `api:src/include/core/app_loader.h:app_loader_get_foreground_pid` | `src/include/core/app_loader.h` | `app_loader_get_foreground_pid` | `core` | `COVERED` | 4 |
+| `api:src/include/core/app_loader.h:app_loader_init` | `src/include/core/app_loader.h` | `app_loader_init` | `core` | `COVERED` | 4 |
+| `api:src/include/core/app_loader.h:app_loader_is_foreground_active` | `src/include/core/app_loader.h` | `app_loader_is_foreground_active` | `core` | `COVERED` | 4 |
+| `api:src/include/core/app_loader.h:app_loader_is_ready` | `src/include/core/app_loader.h` | `app_loader_is_ready` | `core` | `COVERED` | 4 |
+| `api:src/include/core/app_loader.h:app_loader_reap_finished` | `src/include/core/app_loader.h` | `app_loader_reap_finished` | `core` | `COVERED` | 4 |
+| `api:src/include/core/app_loader.h:app_loader_run_file` | `src/include/core/app_loader.h` | `app_loader_run_file` | `core` | `COVERED` | 4 |
+| `api:src/include/core/app_loader.h:app_loader_run_file_with_launch` | `src/include/core/app_loader.h` | `app_loader_run_file_with_launch` | `core` | `COVERED` | 4 |
+| `api:src/include/core/app_loader.h:app_loader_run_image` | `src/include/core/app_loader.h` | `app_loader_run_image` | `core` | `COVERED` | 4 |
+| `api:src/include/core/app_loader.h:app_loader_set_operation_generation` | `src/include/core/app_loader.h` | `app_loader_set_operation_generation` | `core` | `COVERED` | 4 |
+| `api:src/include/core/app_loader.h:app_loader_take_finished_result` | `src/include/core/app_loader.h` | `app_loader_take_finished_result` | `core` | `COVERED` | 4 |
+| `api:src/include/core/app_loader.h:app_loader_validate_image` | `src/include/core/app_loader.h` | `app_loader_validate_image` | `core` | `COVERED` | 4 |
 | `api:src/include/core/app_package.h:app_package_action_reason_name` | `src/include/core/app_package.h` | `app_package_action_reason_name` | `core` | `COVERED` | 2 |
 | `api:src/include/core/app_package.h:app_package_apply_plan_confirmed` | `src/include/core/app_package.h` | `app_package_apply_plan_confirmed` | `core` | `COVERED` | 2 |
 | `api:src/include/core/app_package.h:app_package_apply_plan_from_directory_confirmed` | `src/include/core/app_package.h` | `app_package_apply_plan_from_directory_confirmed` | `core` | `COVERED` | 2 |
@@ -2014,30 +2014,30 @@
 | `c:src/core/app_files.c:app_files_select` | `src/core/app_files.c` | `app_files_select` | `core` | `COVERED` | 1 |
 | `c:src/core/app_files.c:app_files_sync` | `src/core/app_files.c` | `app_files_sync` | `core` | `COVERED` | 1 |
 | `c:src/core/app_files.c:app_files_write` | `src/core/app_files.c` | `app_files_write` | `core` | `COVERED` | 1 |
-| `c:src/core/app_loader.c:app_loader_build_launch_info` | `src/core/app_loader.c` | `app_loader_build_launch_info` | `core` | `PENDING` | 0 |
-| `c:src/core/app_loader.c:app_loader_cancel_foreground` | `src/core/app_loader.c` | `app_loader_cancel_foreground` | `core` | `PENDING` | 0 |
-| `c:src/core/app_loader.c:app_loader_get_foreground_pid` | `src/core/app_loader.c` | `app_loader_get_foreground_pid` | `core` | `PENDING` | 0 |
-| `c:src/core/app_loader.c:app_loader_has_zap_extension` | `src/core/app_loader.c` | `app_loader_has_zap_extension` | `core` | `PENDING` | 0 |
-| `c:src/core/app_loader.c:app_loader_init` | `src/core/app_loader.c` | `app_loader_init` | `core` | `PENDING` | 0 |
-| `c:src/core/app_loader.c:app_loader_is_busy` | `src/core/app_loader.c` | `app_loader_is_busy` | `core` | `COVERED` | 2 |
-| `c:src/core/app_loader.c:app_loader_is_foreground_active` | `src/core/app_loader.c` | `app_loader_is_foreground_active` | `core` | `COVERED` | 2 |
-| `c:src/core/app_loader.c:app_loader_is_launch_space` | `src/core/app_loader.c` | `app_loader_is_launch_space` | `core` | `PENDING` | 0 |
-| `c:src/core/app_loader.c:app_loader_is_ready` | `src/core/app_loader.c` | `app_loader_is_ready` | `core` | `PENDING` | 0 |
-| `c:src/core/app_loader.c:app_loader_magic_is_valid` | `src/core/app_loader.c` | `app_loader_magic_is_valid` | `core` | `PENDING` | 0 |
-| `c:src/core/app_loader.c:app_loader_prepare_launch` | `src/core/app_loader.c` | `app_loader_prepare_launch` | `core` | `PENDING` | 0 |
-| `c:src/core/app_loader.c:app_loader_reap_active` | `src/core/app_loader.c` | `app_loader_reap_active` | `core` | `COVERED` | 3 |
-| `c:src/core/app_loader.c:app_loader_reap_finished` | `src/core/app_loader.c` | `app_loader_reap_finished` | `core` | `COVERED` | 3 |
-| `c:src/core/app_loader.c:app_loader_release_process_resources` | `src/core/app_loader.c` | `app_loader_release_process_resources` | `core` | `PENDING` | 0 |
-| `c:src/core/app_loader.c:app_loader_run_file` | `src/core/app_loader.c` | `app_loader_run_file` | `core` | `PENDING` | 0 |
-| `c:src/core/app_loader.c:app_loader_run_file_with_launch` | `src/core/app_loader.c` | `app_loader_run_file_with_launch` | `core` | `PENDING` | 0 |
-| `c:src/core/app_loader.c:app_loader_run_image` | `src/core/app_loader.c` | `app_loader_run_image` | `core` | `PENDING` | 0 |
-| `c:src/core/app_loader.c:app_loader_set_operation_generation` | `src/core/app_loader.c` | `app_loader_set_operation_generation` | `core` | `PENDING` | 0 |
-| `c:src/core/app_loader.c:app_loader_start_pending` | `src/core/app_loader.c` | `app_loader_start_pending` | `core` | `COVERED` | 3 |
-| `c:src/core/app_loader.c:app_loader_store_result` | `src/core/app_loader.c` | `app_loader_store_result` | `core` | `PENDING` | 0 |
-| `c:src/core/app_loader.c:app_loader_take_finished_result` | `src/core/app_loader.c` | `app_loader_take_finished_result` | `core` | `COVERED` | 3 |
-| `c:src/core/app_loader.c:app_loader_validate_image` | `src/core/app_loader.c` | `app_loader_validate_image` | `core` | `PENDING` | 0 |
-| `c:src/core/app_loader.c:app_loader_validate_launch_info` | `src/core/app_loader.c` | `app_loader_validate_launch_info` | `core` | `PENDING` | 0 |
-| `c:src/core/app_loader.c:app_loader_validate_layout` | `src/core/app_loader.c` | `app_loader_validate_layout` | `core` | `PENDING` | 0 |
+| `c:src/core/app_loader.c:app_loader_build_launch_info` | `src/core/app_loader.c` | `app_loader_build_launch_info` | `core` | `COVERED` | 1 |
+| `c:src/core/app_loader.c:app_loader_cancel_foreground` | `src/core/app_loader.c` | `app_loader_cancel_foreground` | `core` | `COVERED` | 1 |
+| `c:src/core/app_loader.c:app_loader_get_foreground_pid` | `src/core/app_loader.c` | `app_loader_get_foreground_pid` | `core` | `COVERED` | 1 |
+| `c:src/core/app_loader.c:app_loader_has_zap_extension` | `src/core/app_loader.c` | `app_loader_has_zap_extension` | `core` | `COVERED` | 1 |
+| `c:src/core/app_loader.c:app_loader_init` | `src/core/app_loader.c` | `app_loader_init` | `core` | `COVERED` | 1 |
+| `c:src/core/app_loader.c:app_loader_is_busy` | `src/core/app_loader.c` | `app_loader_is_busy` | `core` | `COVERED` | 3 |
+| `c:src/core/app_loader.c:app_loader_is_foreground_active` | `src/core/app_loader.c` | `app_loader_is_foreground_active` | `core` | `COVERED` | 3 |
+| `c:src/core/app_loader.c:app_loader_is_launch_space` | `src/core/app_loader.c` | `app_loader_is_launch_space` | `core` | `COVERED` | 1 |
+| `c:src/core/app_loader.c:app_loader_is_ready` | `src/core/app_loader.c` | `app_loader_is_ready` | `core` | `COVERED` | 1 |
+| `c:src/core/app_loader.c:app_loader_magic_is_valid` | `src/core/app_loader.c` | `app_loader_magic_is_valid` | `core` | `COVERED` | 1 |
+| `c:src/core/app_loader.c:app_loader_prepare_launch` | `src/core/app_loader.c` | `app_loader_prepare_launch` | `core` | `COVERED` | 1 |
+| `c:src/core/app_loader.c:app_loader_reap_active` | `src/core/app_loader.c` | `app_loader_reap_active` | `core` | `COVERED` | 4 |
+| `c:src/core/app_loader.c:app_loader_reap_finished` | `src/core/app_loader.c` | `app_loader_reap_finished` | `core` | `COVERED` | 4 |
+| `c:src/core/app_loader.c:app_loader_release_process_resources` | `src/core/app_loader.c` | `app_loader_release_process_resources` | `core` | `COVERED` | 1 |
+| `c:src/core/app_loader.c:app_loader_run_file` | `src/core/app_loader.c` | `app_loader_run_file` | `core` | `COVERED` | 1 |
+| `c:src/core/app_loader.c:app_loader_run_file_with_launch` | `src/core/app_loader.c` | `app_loader_run_file_with_launch` | `core` | `COVERED` | 1 |
+| `c:src/core/app_loader.c:app_loader_run_image` | `src/core/app_loader.c` | `app_loader_run_image` | `core` | `COVERED` | 1 |
+| `c:src/core/app_loader.c:app_loader_set_operation_generation` | `src/core/app_loader.c` | `app_loader_set_operation_generation` | `core` | `COVERED` | 1 |
+| `c:src/core/app_loader.c:app_loader_start_pending` | `src/core/app_loader.c` | `app_loader_start_pending` | `core` | `COVERED` | 4 |
+| `c:src/core/app_loader.c:app_loader_store_result` | `src/core/app_loader.c` | `app_loader_store_result` | `core` | `COVERED` | 1 |
+| `c:src/core/app_loader.c:app_loader_take_finished_result` | `src/core/app_loader.c` | `app_loader_take_finished_result` | `core` | `COVERED` | 4 |
+| `c:src/core/app_loader.c:app_loader_validate_image` | `src/core/app_loader.c` | `app_loader_validate_image` | `core` | `COVERED` | 1 |
+| `c:src/core/app_loader.c:app_loader_validate_launch_info` | `src/core/app_loader.c` | `app_loader_validate_launch_info` | `core` | `COVERED` | 1 |
+| `c:src/core/app_loader.c:app_loader_validate_layout` | `src/core/app_loader.c` | `app_loader_validate_layout` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_action_fail` | `src/core/app_package.c` | `app_package_action_fail` | `core` | `COVERED` | 2 |
 | `c:src/core/app_package.c:app_package_action_reason_name` | `src/core/app_package.c` | `app_package_action_reason_name` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_action_reset` | `src/core/app_package.c` | `app_package_action_reset` | `core` | `COVERED` | 2 |
@@ -7437,6 +7437,7 @@
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
 | `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
+| `host:core:app-loader` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o app_loader.c real com processo, filesystem, paging e syscall falsos | parser, layout, lifecycle assincrono, cancelamento e codigos de erro preservam o contrato | compilador ausente, warning, fixture invalida, falha de assercao ou timeout | somente buffers estaticos e estado de dependencias falsas no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -7765,24 +7766,6 @@
 - `c:src/boot/recovery_menu.c:recovery_menu_render_state`
 - `c:src/boot/recovery_menu.c:recovery_menu_run`
 - `c:src/boot/recovery_menu.c:recovery_menu_wait_f8`
-- `c:src/core/app_loader.c:app_loader_build_launch_info`
-- `c:src/core/app_loader.c:app_loader_cancel_foreground`
-- `c:src/core/app_loader.c:app_loader_get_foreground_pid`
-- `c:src/core/app_loader.c:app_loader_has_zap_extension`
-- `c:src/core/app_loader.c:app_loader_init`
-- `c:src/core/app_loader.c:app_loader_is_launch_space`
-- `c:src/core/app_loader.c:app_loader_is_ready`
-- `c:src/core/app_loader.c:app_loader_magic_is_valid`
-- `c:src/core/app_loader.c:app_loader_prepare_launch`
-- `c:src/core/app_loader.c:app_loader_release_process_resources`
-- `c:src/core/app_loader.c:app_loader_run_file`
-- `c:src/core/app_loader.c:app_loader_run_file_with_launch`
-- `c:src/core/app_loader.c:app_loader_run_image`
-- `c:src/core/app_loader.c:app_loader_set_operation_generation`
-- `c:src/core/app_loader.c:app_loader_store_result`
-- `c:src/core/app_loader.c:app_loader_validate_image`
-- `c:src/core/app_loader.c:app_loader_validate_launch_info`
-- `c:src/core/app_loader.c:app_loader_validate_layout`
 - `c:src/core/app_remote.c:app_remote_alias`
 - `c:src/core/app_remote.c:app_remote_apply_cached`
 - `c:src/core/app_remote.c:app_remote_begin`
