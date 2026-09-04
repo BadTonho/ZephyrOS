@@ -8,6 +8,7 @@
 #include "core/timer.h"
 #include "core/clock.h"
 #include "core/irq_deferred.h"
+#include "core/tls.h"
 #include "core/video.h"
 #include "core/wait.h"
 #include "core/workqueue.h"
@@ -26,6 +27,7 @@ void shell_dispatch_cmd_irqstat(const char* arguments);
 void shell_dispatch_cmd_wait(const char* arguments);
 void shell_dispatch_cmd_wqinfo(const char* arguments);
 void shell_dispatch_cmd_workq(const char* arguments);
+void shell_dispatch_cmd_tls(const char* arguments);
 
 #define HOST_COVERAGE_CAPACITY 512U
 #define HOST_COVERAGE_LINE_SIZE 32U
@@ -111,6 +113,13 @@ static int fixture_workq_probe_result;
 static uint32_t fixture_wait_queue_count;
 static uint32_t fixture_waiter_count;
 static uint32_t fixture_work_info_count;
+static tls_policy_t fixture_tls_policy;
+static tls_status_t fixture_tls_status;
+static tls_self_test_result_t fixture_tls_test;
+static int fixture_tls_policy_result;
+static int fixture_tls_status_result;
+static int fixture_tls_capability_result;
+static int fixture_tls_test_result;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -237,6 +246,10 @@ static void fixture_reset(void) {
     fixture_wait_queue_count = 1U;
     fixture_waiter_count = 1U;
     fixture_work_info_count = 1U;
+    fixture_tls_policy_result = OK;
+    fixture_tls_status_result = OK;
+    fixture_tls_capability_result = 1;
+    fixture_tls_test_result = OK;
     kmemset(&fixture_log_stats, 0, sizeof(fixture_log_stats));
     kmemset(fixture_log_records, 0, sizeof(fixture_log_records));
     kmemset(&fixture_log_test, 0, sizeof(fixture_log_test));
@@ -510,6 +523,47 @@ static void fixture_reset(void) {
     fixture_workq_test.invariants = 1U;
     fixture_workq_test.passed = 12U;
     fixture_workq_test.failed = 0U;
+    kmemset(&fixture_tls_policy, 0, sizeof(fixture_tls_policy));
+    kmemset(&fixture_tls_status, 0, sizeof(fixture_tls_status));
+    kmemset(&fixture_tls_test, 0, sizeof(fixture_tls_test));
+    fixture_tls_policy.minimum_version = TLS_VERSION_1_3;
+    fixture_tls_policy.require_static_ca = 1U;
+    fixture_tls_policy.require_hostname_san = 1U;
+    fixture_tls_policy.require_validity_window = 1U;
+    fixture_tls_policy.allow_spki_pin = 1U;
+    fixture_tls_policy.allow_http_fallback = 0U;
+    fixture_tls_policy.trust_current_version = 4U;
+    fixture_tls_policy.trust_next_version = 5U;
+    fixture_tls_policy.trust_revocation_version = 3U;
+    fixture_tls_status.initialized = 1U;
+    fixture_tls_status.policy_ready = 1U;
+    fixture_tls_status.handshake_available = 1U;
+    fixture_tls_status.x509_available = 1U;
+    fixture_tls_status.trusted_time_available = 1U;
+    fixture_tls_status.static_ca_required = 1U;
+    fixture_tls_status.spki_pinning_optional = 1U;
+    fixture_tls_status.http_fallback_forbidden = 1U;
+    fixture_tls_status.state = TLS_STATE_READY;
+    fixture_tls_status.last_reason = TLS_REASON_NONE;
+    fixture_tls_status.policy_checks = 10U;
+    fixture_tls_status.policy_rejections = 2U;
+    fixture_tls_status.last_error = OK;
+    fixture_tls_status.entropy_available = 1U;
+    fixture_tls_status.certificate_validation_available = 1U;
+    fixture_tls_test.valid_identity = 1U;
+    fixture_tls_test.time_unavailable = 1U;
+    fixture_tls_test.certificate_future = 1U;
+    fixture_tls_test.certificate_expired = 1U;
+    fixture_tls_test.untrusted_chain = 1U;
+    fixture_tls_test.san_mismatch = 1U;
+    fixture_tls_test.pin_absent = 1U;
+    fixture_tls_test.pin_match = 1U;
+    fixture_tls_test.pin_mismatch = 1U;
+    fixture_tls_test.trust_rotation = 1U;
+    fixture_tls_test.trust_revocation = 1U;
+    fixture_tls_test.invariants = 1U;
+    fixture_tls_test.passed = 12U;
+    fixture_tls_test.failed = 0U;
     kmemset(&fixture_mouse_status, 0, sizeof(fixture_mouse_status));
     fixture_mouse_status.initialized = 1U;
     fixture_mouse_status.x = 12;
@@ -841,6 +895,44 @@ const char* workqueue_context_name(work_context_t context) {
     if (context == WORK_CONTEXT_KWORKER) return "kworker";
     if (context == WORK_CONTEXT_SYSTEM_FALLBACK) return "fallback";
     return "nenhum";
+}
+
+int tls_get_policy(tls_policy_t* policy) {
+    if (!policy) return ERR_NULL;
+    if (fixture_tls_policy_result != OK) return fixture_tls_policy_result;
+    *policy = fixture_tls_policy;
+    return OK;
+}
+
+int tls_get_status(tls_status_t* status) {
+    if (!status) return ERR_NULL;
+    if (fixture_tls_status_result != OK) return fixture_tls_status_result;
+    *status = fixture_tls_status;
+    return OK;
+}
+
+int tls_capability_available(void) {
+    return fixture_tls_capability_result;
+}
+
+int tls_self_test(tls_self_test_result_t* result) {
+    if (!result) return ERR_NULL;
+    *result = fixture_tls_test;
+    return fixture_tls_test_result;
+}
+
+const char* tls_state_name(tls_state_t state) {
+    if (state == TLS_STATE_POLICY_ONLY) return "POLICY_ONLY";
+    if (state == TLS_STATE_UNAVAILABLE) return "UNAVAILABLE";
+    if (state == TLS_STATE_READY) return "READY";
+    return "UNINITIALIZED";
+}
+
+const char* tls_reason_name(tls_reason_t reason) {
+    if (reason == TLS_REASON_NONE) return "NONE";
+    if (reason == TLS_REASON_TIME_UNAVAILABLE) return "TIME_UNAVAILABLE";
+    if (reason == TLS_REASON_POLICY) return "POLICY";
+    return "UNKNOWN";
 }
 
 int vfs_getcwd(char* path, uint32_t capacity) {
@@ -1291,13 +1383,60 @@ static int test_workq(void) {
     return failures;
 }
 
+static int test_tls(void) {
+    int failures = 0;
+
+    fixture_reset();
+    shell_dispatch_cmd_tls("status");
+    failures += expect_contains("TLS: estado=READY tempo=TRUSTED capability=HTTPS_READY entropy=RDRAND x509=READY\n");
+    failures += expect_contains("min_version=0x0304 CA=REQUIRED SAN=REQUIRED validity=REQUIRED pin=OPTIONAL");
+    failures += expect_contains("trust=current/next=4/5 revoked<3 fallback_http=FORBIDDEN");
+    failures += expect_contains("handshake=AVAILABLE x509=AVAILABLE checks=10 rejects=2 last_reason=NONE");
+    fixture_reset();
+    fixture_tls_status.state = TLS_STATE_UNAVAILABLE;
+    fixture_tls_status.trusted_time_available = 0U;
+    fixture_tls_status.entropy_available = 0U;
+    fixture_tls_status.certificate_validation_available = 0U;
+    fixture_tls_status.handshake_available = 0U;
+    fixture_tls_status.x509_available = 0U;
+    fixture_tls_status.last_reason = TLS_REASON_TIME_UNAVAILABLE;
+    fixture_tls_capability_result = 0;
+    shell_dispatch_cmd_tls("");
+    failures += expect_contains("TLS: estado=UNAVAILABLE tempo=UNAVAILABLE capability=HTTPS_UNAVAILABLE entropy=UNAVAILABLE x509=UNAVAILABLE\n");
+    failures += expect_contains("handshake=DISABLED x509=DEFERRED checks=10 rejects=2 last_reason=TIME_UNAVAILABLE");
+    fixture_reset();
+    fixture_tls_policy_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_tls("status");
+    failures += expect_text("Erro: politica TLS indisponivel.\n");
+    fixture_reset();
+    fixture_tls_status_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_tls("status");
+    failures += expect_text("Erro: politica TLS indisponivel.\n");
+    fixture_reset();
+    shell_dispatch_cmd_tls("check");
+    failures += expect_contains("Autoteste da politica TLS:\n");
+    failures += expect_contains("  identidade valida: OK\n");
+    failures += expect_contains("  invariantes: OK\nResultado: OK\n");
+    fixture_reset();
+    fixture_tls_test_result = ERR_STATE;
+    fixture_tls_test.invariants = 0U;
+    fixture_tls_test.failed = 1U;
+    shell_dispatch_cmd_tls("check");
+    failures += expect_contains("  invariantes: ERRO");
+    failures += expect_contains("Resultado: ERRO");
+    fixture_reset();
+    shell_dispatch_cmd_tls("invalid");
+    failures += expect_text("Uso: tls [status|check]\n");
+    return failures;
+}
+
 int main(void) {
     int result;
 
     coverage_active = 1U;
     result = test_pwd() + test_cd() + test_mouse() + test_log() +
              test_timer() + test_clock() + test_irqstat() + test_wait() +
-             test_wqinfo() + test_workq();
+             test_wqinfo() + test_workq() + test_tls();
     coverage_active = 0U;
     coverage_emit(result);
     return result ? 1 : 0;
