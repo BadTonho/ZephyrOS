@@ -1587,6 +1587,16 @@ pendente.
   4.898 `COVERED`, 2.321 `PENDING` e 128 casos. O fechamento integral, o gate
   estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Shell/entrada — evidência final — concluido em 2026-09-03.
+  O caso existente `host:shell:input` foi executado após o build limpo. O
+  relatorio `build/test-results/shell-input-host/coverage.json` terminou
+  `PASS`, resolveu as 16 funcoes de `src/shell/shell_input.c`, incluindo
+  `shell_input_init` e `shell_input_get_buffer`, sem erros de cobertura.
+  Tambem passaram a sincronizacao/renderizacao do catalogo e `make
+  catalog-test`. O catalogo atual registra 7.219 superficies, 5.083
+  `COVERED`, 2.136 `PENDING` e 132 casos. O fechamento integral, o gate estrito
+  e a validacao TST7 completa continuam pendentes.
+
 - Incremento Seguranca/tls_client concluido em 2026-09-03. Foi criado o caso
   host-only `host:security:tls-client` com o alvo
   `make test-tls-client-host`. A fixture compila o `src/core/tls_client.c`
