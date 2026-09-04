@@ -5275,3 +5275,12 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `make catalog-test` passaram. A execução rápida completa anterior continua
   registrada como `FAIL` por `test-tst3-sanitize` `BLOCKED`; esse bloqueio de
   ambiente não foi mascarado.
+
+- Reconciliação do modo de cobertura do dispatcher concluída em 2026-09-04.
+  Após regenerar os relatórios reais da execução rápida, a sincronização do
+  catálogo aplicou o registro `shell-command-table-host` aos 95 comandos
+  associados ao dispatcher. Esses comandos são cobertos por integração pelo
+  fluxo de despacho, não por chamadas diretas individuais; o catálogo foi
+  ajustado de `direct` para `integration` sem alterar `case_ids` ou adicionar
+  vínculos artificiais. A renderização, `make catalog-test` e a validação
+  bidirecional do TST7 permaneceram válidas.
