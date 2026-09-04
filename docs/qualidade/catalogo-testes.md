@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6230 |
+| `COVERED` | 6234 |
 | `MANUAL` | 0 |
-| `PENDING` | 1063 |
+| `PENDING` | 1059 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -6378,8 +6378,8 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_log_status` | `src/shell/shell_commands_diagnostics.c` | `cmd_log_status` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_log_tail` | `src/shell/shell_commands_diagnostics.c` | `cmd_log_tail` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_log_usage` | `src/shell/shell_commands_diagnostics.c` | `cmd_log_usage` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_memcheck` | `src/shell/shell_commands_diagnostics.c` | `cmd_memcheck` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_memcheck_print_result` | `src/shell/shell_commands_diagnostics.c` | `cmd_memcheck_print_result` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_memcheck` | `src/shell/shell_commands_diagnostics.c` | `cmd_memcheck` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_memcheck_print_result` | `src/shell/shell_commands_diagnostics.c` | `cmd_memcheck_print_result` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_mount` | `src/shell/shell_commands_diagnostics.c` | `cmd_mount` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_mouse` | `src/shell/shell_commands_diagnostics.c` | `cmd_mouse` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_mouse_apply` | `src/shell/shell_commands_diagnostics.c` | `cmd_mouse_apply` | `shell` | `COVERED` | 1 |
@@ -6449,7 +6449,7 @@
 | `c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_print_usb_fixture_report` | `src/shell/shell_commands_diagnostics.c` | `shell_diagnostics_print_usb_fixture_report` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_reset` | `src/shell/shell_commands_diagnostics.c` | `shell_diagnostics_reset` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_run_device_scan` | `src/shell/shell_commands_diagnostics.c` | `shell_diagnostics_run_device_scan` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_run_memcheck` | `src/shell/shell_commands_diagnostics.c` | `shell_diagnostics_run_memcheck` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_run_memcheck` | `src/shell/shell_commands_diagnostics.c` | `shell_diagnostics_run_memcheck` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_acpi` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_acpi` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_cd` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_cd` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_clock` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_clock` | `shell` | `COVERED` | 1 |
@@ -6463,7 +6463,7 @@
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_kill` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_kill` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_kmetrics` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_kmetrics` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_log` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_log` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_memcheck` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_memcheck` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_memcheck` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_memcheck` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_mount` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_mount` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_mouse` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_mouse` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_pagefault` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_pagefault` | `shell` | `COVERED` | 1 |
@@ -8161,8 +8161,6 @@
 - `c:src/shell/shell_commands_diagnostics.c:cmd_kmetrics_print_queues`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_kmetrics_print_scheduler`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_kmetrics_print_vesa`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_memcheck`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_memcheck_print_result`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_power`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck_controls`
@@ -8177,13 +8175,11 @@
 - `c:src/shell/shell_commands_diagnostics.c:cmd_sysfs_read_snapshot`
 - `c:src/shell/shell_commands_diagnostics.c:shell_core_migrated_builtin_is_ready`
 - `c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_run_device_scan`
-- `c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_run_memcheck`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_acpi`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_device_scan`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_health`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_kill`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_kmetrics`
-- `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_memcheck`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_power`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_proccheck`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_sigtest`

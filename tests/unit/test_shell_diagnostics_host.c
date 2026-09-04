@@ -17,6 +17,7 @@
 #include "core/wait.h"
 #include "core/workqueue.h"
 #include "core/memory.h"
+#include "apps/shell_runtime.h"
 #include "drivers/idt.h"
 #include "drivers/rtc.h"
 #include "drivers/mouse.h"
@@ -52,6 +53,7 @@ void shell_dispatch_cmd_cpu_usage(const char* arguments);
 void shell_dispatch_cmd_pagefault(const char* arguments);
 void shell_dispatch_cmd_vmamap(const char* arguments);
 void shell_dispatch_cmd_schedcheck(const char* arguments);
+void shell_dispatch_cmd_memcheck(const char* arguments);
 void shell_diagnostics_reset(void);
 
 #define HOST_COVERAGE_CAPACITY 512U
@@ -207,6 +209,18 @@ static uint32_t fixture_user_area_count;
 static int fixture_process_lookup_result;
 static int fixture_process_is_user_result;
 static int fixture_process_vma_copy_result;
+static memory_heap_stats_t fixture_memcheck_heap_stats;
+static memory_pmm_stats_t fixture_memcheck_pmm_stats;
+static memory_detailed_stats_t fixture_memcheck_detailed_stats;
+static paging_user_stats_t fixture_memcheck_paging_stats;
+static int fixture_memcheck_detailed_result;
+static int fixture_memcheck_slab_validate_result;
+static uint8_t fixture_memcheck_blocks[3][224];
+static uint32_t fixture_memcheck_allocations;
+static uint32_t fixture_memcheck_frees;
+static uint32_t fixture_process_user_count;
+static uint32_t fixture_process_zombie_count;
+static int fixture_app_foreground_active;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -380,6 +394,13 @@ static void fixture_reset(void) {
     fixture_process_lookup_result = OK;
     fixture_process_is_user_result = 1;
     fixture_process_vma_copy_result = OK;
+    fixture_memcheck_detailed_result = OK;
+    fixture_memcheck_slab_validate_result = OK;
+    fixture_memcheck_allocations = 0U;
+    fixture_memcheck_frees = 0U;
+    fixture_process_user_count = 0U;
+    fixture_process_zombie_count = 0U;
+    fixture_app_foreground_active = 0;
     kmemset(&fixture_log_stats, 0, sizeof(fixture_log_stats));
     kmemset(fixture_log_records, 0, sizeof(fixture_log_records));
     kmemset(&fixture_log_test, 0, sizeof(fixture_log_test));
@@ -973,6 +994,38 @@ static void fixture_reset(void) {
     fixture_user_areas[1].start_addr = USER_STACK_BASE;
     fixture_user_areas[1].end_addr = USER_STACK_TOP;
     fixture_user_areas[1].flags = VM_READ | VM_WRITE;
+    kmemset(&fixture_memcheck_heap_stats, 0,
+            sizeof(fixture_memcheck_heap_stats));
+    fixture_memcheck_heap_stats.total_bytes = 4096U;
+    fixture_memcheck_heap_stats.used_bytes = 1024U;
+    fixture_memcheck_heap_stats.free_bytes = 3072U;
+    fixture_memcheck_heap_stats.allocated_blocks = 2U;
+    fixture_memcheck_heap_stats.free_blocks = 3U;
+    fixture_memcheck_heap_stats.largest_free_block = 2048U;
+    fixture_memcheck_heap_stats.fragmentation_percent = 5U;
+    fixture_memcheck_heap_stats.initialized = 1U;
+    fixture_memcheck_heap_stats.valid = 1U;
+    kmemset(&fixture_memcheck_pmm_stats, 0,
+            sizeof(fixture_memcheck_pmm_stats));
+    fixture_memcheck_pmm_stats.owned_pages = 50U;
+    fixture_memcheck_pmm_stats.initialized = 1U;
+    kmemset(&fixture_memcheck_detailed_stats, 0,
+            sizeof(fixture_memcheck_detailed_stats));
+    fixture_memcheck_detailed_stats.total_pages = 100U;
+    fixture_memcheck_detailed_stats.zone_pages[MEMORY_ZONE_KERNEL] = 10U;
+    fixture_memcheck_detailed_stats.zone_pages[MEMORY_ZONE_HEAP] = 20U;
+    fixture_memcheck_detailed_stats.zone_pages[MEMORY_ZONE_SLAB] = 5U;
+    fixture_memcheck_detailed_stats.zone_pages[MEMORY_ZONE_PROCESS] = 5U;
+    fixture_memcheck_detailed_stats.zone_pages[MEMORY_ZONE_BUFFER] = 10U;
+    fixture_memcheck_detailed_stats.zone_pages[MEMORY_ZONE_FREE] = 50U;
+    fixture_memcheck_detailed_stats.free_runs = 10U;
+    fixture_memcheck_detailed_stats.largest_free_run = 20U;
+    fixture_memcheck_detailed_stats.isolated_free_pages = 5U;
+    fixture_memcheck_detailed_stats.fragmentation_percent = 5U;
+    fixture_memcheck_detailed_stats.initialized = 1U;
+    fixture_memcheck_detailed_stats.valid = 1U;
+    kmemset(&fixture_memcheck_paging_stats, 0,
+            sizeof(fixture_memcheck_paging_stats));
     kmemset(&fixture_mouse_status, 0, sizeof(fixture_mouse_status));
     fixture_mouse_status.initialized = 1U;
     fixture_mouse_status.x = 12;
@@ -1677,6 +1730,58 @@ int kmem_cache_get_info_at(uint32_t index, kmem_cache_info_t* info) {
 
 int kmem_cache_self_test(void) {
     return fixture_slab_self_test_result;
+}
+
+int kmem_cache_validate(void) {
+    return fixture_memcheck_slab_validate_result;
+}
+
+void* kmalloc(uint32_t size) {
+    uint32_t index = fixture_memcheck_allocations;
+
+    if (size > sizeof(fixture_memcheck_blocks[0]) || index >= 3U) {
+        return 0;
+    }
+    fixture_memcheck_allocations++;
+    return fixture_memcheck_blocks[index];
+}
+
+void kfree(void* ptr) {
+    if (ptr) fixture_memcheck_frees++;
+}
+
+void memory_get_heap_stats(memory_heap_stats_t* stats) {
+    if (stats) *stats = fixture_memcheck_heap_stats;
+}
+
+void memory_get_pmm_stats(memory_pmm_stats_t* stats) {
+    if (stats) *stats = fixture_memcheck_pmm_stats;
+}
+
+int memory_get_detailed_stats(memory_detailed_stats_t* stats) {
+    if (!stats) return ERR_NULL;
+    *stats = fixture_memcheck_detailed_stats;
+    return fixture_memcheck_detailed_result;
+}
+
+uint32_t memory_get_free_pages(void) {
+    return fixture_memcheck_detailed_stats.zone_pages[MEMORY_ZONE_FREE];
+}
+
+void paging_get_user_stats(paging_user_stats_t* stats) {
+    if (stats) *stats = fixture_memcheck_paging_stats;
+}
+
+uint32_t process_get_user_count(void) {
+    return fixture_process_user_count;
+}
+
+uint32_t process_get_state_count(process_state_t state) {
+    return state == PROCESS_STATE_ZOMBIE ? fixture_process_zombie_count : 0U;
+}
+
+int app_loader_is_foreground_active(void) {
+    return fixture_app_foreground_active;
 }
 
 void scheduler_get_stats(scheduler_stats_t* stats) {
@@ -2505,6 +2610,60 @@ static int test_schedcheck(void) {
     return failures;
 }
 
+static int test_memcheck(void) {
+    int failures = 0;
+    shell_memcheck_result_t result;
+
+    fixture_reset();
+    shell_dispatch_cmd_memcheck("");
+    failures += expect_contains("MemCheck:\n");
+    failures += expect_contains("  heap_integridade OK\n");
+    failures += expect_contains("  coalescencia OK\n");
+    failures += expect_contains("  pmm_guardas OK\n");
+    failures += expect_contains("  diretorios_user OK\n");
+    failures += expect_contains("  slab_integridade OK\n");
+    failures += expect_contains("  memoria_detalhada OK\n");
+    failures += expect_contains("  resultado OK\n");
+    if (fixture_memcheck_allocations != 3U ||
+        fixture_memcheck_frees != 3U) {
+        fprintf(stderr, "diagnostics-host: memcheck nao restaurou blocos\n");
+        failures++;
+    }
+
+    fixture_reset();
+    shell_dispatch_cmd_memcheck("extra");
+    failures += expect_text("Uso: memcheck\n");
+    fixture_reset();
+    fixture_process_user_count = 1U;
+    shell_dispatch_cmd_memcheck("");
+    failures += expect_text("MemCheck indisponivel: processo ring 3 ou zumbi pendente.\n");
+    fixture_reset();
+    fixture_app_foreground_active = 1;
+    shell_dispatch_cmd_memcheck("");
+    failures += expect_text("MemCheck indisponivel: processo ring 3 ou zumbi pendente.\n");
+
+    fixture_reset();
+    fixture_memcheck_slab_validate_result = ERR_STATE;
+    result.heap_integrity = 0;
+    if (shell_diagnostics_run_memcheck(&result) != ERR_STATE ||
+        result.heap_integrity != 1 || result.coalescence != 1 ||
+        result.pmm_guards != 1 || result.user_directories != 1 ||
+        result.slab_integrity != 0 || result.memory_metrics != 1) {
+        fprintf(stderr, "diagnostics-host: memcheck nao propagou falha SLAB\n");
+        failures++;
+    }
+    if (fixture_memcheck_allocations != 3U ||
+        fixture_memcheck_frees != 3U) {
+        fprintf(stderr, "diagnostics-host: memcheck falho nao limpou blocos\n");
+        failures++;
+    }
+    if (shell_diagnostics_run_memcheck(0) != ERR_NULL) {
+        fprintf(stderr, "diagnostics-host: memcheck aceitou resultado nulo\n");
+        failures++;
+    }
+    return failures;
+}
+
 int main(void) {
     int result;
 
@@ -2517,6 +2676,7 @@ int main(void) {
     result += test_cpu_usage();
     result += test_pagefault_and_vmamap();
     result += test_schedcheck();
+    result += test_memcheck();
     coverage_active = 0U;
     coverage_emit(result);
     return result ? 1 : 0;

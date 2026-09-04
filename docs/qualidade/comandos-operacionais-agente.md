@@ -1955,3 +1955,12 @@ processos inexistentes, processos nao-usuario, VMA indisponivel, argumentos
 invalidos e falhas de invariantes. O relatorio deve continuar com
 `unknown_addresses=[]` e `ambiguous_symbols=[]`; a execucao nao acessa
 hardware, memoria do kernel ou processos reais.
+
+A mesma fixture tambem executa `memcheck` pelo dispatcher real. O caso valida
+as seis flags do resultado (`heap_integridade`, `coalescencia`, `pmm_guardas`,
+`diretorios_user`, `slab_integridade` e `memoria_detalhada`), argumentos
+invalidos, processos ring 3 ou zumbis pendentes, aplicacao em foreground,
+falha de validacao SLAB e liberacao dos tres blocos estaticos em caminhos de
+sucesso e erro. O relatorio instrumentado permanece em
+`build/test-results/shell-diagnostics-host/coverage.json`; a execucao usa
+somente doubles estaticos e nao acessa hardware, allocator ou memoria reais.
