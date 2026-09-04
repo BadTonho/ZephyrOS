@@ -139788,9 +139788,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_slabtest",
@@ -139806,9 +139809,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_sysfs_has_node",
@@ -141258,9 +141264,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_slabtest",
@@ -141276,9 +141285,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_timer",
@@ -167382,10 +167394,10 @@
         "hardware": "video, VFS e mouse falsos"
       },
       "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "executar pwd, cd, mouse, log, timer, clock, irqstat, wait, wqinfo, workq, tls, vfs, mount e devcheck em caminhos validos, invalidos, indisponiveis e de limite",
+      "action": "executar pwd, cd, mouse, log, timer, clock, irqstat, wait, wqinfo, workq, tls, vfs, mount, devcheck, devices, device-info, usb, slabinfo e slabtest em caminhos validos, invalidos, indisponiveis e de limite",
       "expected": "dispatchers preservam saida, estado, configuracao e codigos canonicos",
       "errors": "compilador ausente, warning, saida inesperada, falha de assercao ou timeout",
-      "effects": "somente buffers estaticos de saida e doubles locais de VFS, mouse, log, timer, RTC, clock, IRQ, IDT, wait, workqueue, TLS e devfs; sem armazenamento real",
+      "effects": "somente buffers estaticos de saida e doubles locais de VFS, mouse, log, timer, RTC, clock, IRQ, IDT, wait, workqueue, TLS, devfs, device manager, USB, HID, MSC e SLAB; sem armazenamento real",
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
       "surface_ids": [
@@ -167428,6 +167440,8 @@
         "c:src/shell/shell_commands_diagnostics.c:cmd_mouse_print_status",
         "c:src/shell/shell_commands_diagnostics.c:cmd_mouse_print_usage",
         "c:src/shell/shell_commands_diagnostics.c:cmd_pwd",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_slabinfo",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_slabtest",
         "c:src/shell/shell_commands_diagnostics.c:cmd_sysfs_has_node",
         "c:src/shell/shell_commands_diagnostics.c:cmd_timer",
         "c:src/shell/shell_commands_diagnostics.c:cmd_timer_check",
@@ -167478,6 +167492,8 @@
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_mount",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_mouse",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_pwd",
+        "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_slabinfo",
+        "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_slabtest",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_timer",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_tls",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_usb",

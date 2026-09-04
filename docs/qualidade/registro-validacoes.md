@@ -5730,3 +5730,16 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   16 superfícies observadas de `src/shell/shell_commands_diagnostics.c`, sem
   hardware ou armazenamento real: 7.293 superfícies, 6.215 `COVERED`, 1.078
   `PENDING` e 154 casos. As pendências restantes continuam explícitas.
+
+- Incremento Shell/diagnostics SLAB — concluído em 2026-09-04
+  (America/Sao_Paulo). A fixture host-only `host:shell:diagnostics` passou a
+  exercitar os dispatchers reais de `slabinfo` e `slabtest` com um registrador
+  SLAB estático. Foram validados metadados formatados, cache não inicializado,
+  registro vazio, indisponibilidade, execução bem-sucedida, falha do autoteste
+  e argumentos inválidos. O alvo `make test-shell-diagnostics-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` passou com `-Wall -Wextra -Werror`
+  e instrumentação dinâmica; os relatórios foram regenerados após o build
+  limpo, sincronizados e a visão do catálogo validada. O incremento resolveu
+  quatro superfícies observadas de `src/shell/shell_commands_diagnostics.c`,
+  sem tocar no allocator real: 7.293 superfícies, 6.219 `COVERED`, 1.074
+  `PENDING` e 154 casos. As pendências restantes continuam explícitas.
