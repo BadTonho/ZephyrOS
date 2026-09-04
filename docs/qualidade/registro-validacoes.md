@@ -5231,3 +5231,15 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   a renderização marcaram essas duas superfícies C como `COVERED`; não houve
   alteração no código do Shell. O catálogo registra 7.219 superfícies, 5.205
   `COVERED`, 2.014 `PENDING` e 137 casos.
+
+- Incremento Drivers/RTC — fechamento final concluído em 2026-09-04 10:01
+  (America/Sao_Paulo). O caso existente `host:drivers:rtc-status` foi executado
+  novamente após o build limpo. A fixture usa CMOS falso e resolveu as nove
+  superfícies que ainda estavam `PENDING`: I/O CMOS, validação de estado,
+  leituras estáveis, conversão e inicialização. O relatório
+  `build/test-results/rtc-status-host/coverage.json` terminou `PASS`, com
+  `unknown_addresses=[]` e `ambiguous_symbols=[]`.
+
+  Também passaram a sincronização/renderização do catálogo e
+  `make catalog-test`. O catálogo registra 7.219 superfícies, 5.214
+  `COVERED`, 2.005 `PENDING` e 137 casos.
