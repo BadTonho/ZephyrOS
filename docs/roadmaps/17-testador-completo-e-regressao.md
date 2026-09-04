@@ -2230,3 +2230,9 @@ pendente.
   `src/shell/shell_hosted.c`. `make test-shell-hosted-host` e
   `make catalog-test` passaram. O catálogo atual registra 7.219 superfícies,
   5.246 `COVERED`, 1.973 `PENDING` e 138 casos.
+- Evidência Drivers/RTC regenerada em 2026-09-04 11:11
+  (America/Sao_Paulo). O caso `host:drivers:rtc-status` foi executado com CMOS
+  falso após o build limpo e confirmou as nove superfícies internas pendentes
+  do driver por relatório dinâmico real. `make test-rtc-status-host` e
+  `make catalog-test` passaram. O catálogo atual registra 7.219 superfícies,
+  5.255 `COVERED`, 1.964 `PENDING` e 138 casos.
