@@ -12971,6 +12971,7 @@
         "host:core:update",
         "host:core:update-remote",
         "host:core:update-remote-runtime",
+        "host:core:update-remote-system",
         "host:core:update-runtime",
         "host:core:update-system-slots",
         "host:memory:memory",
@@ -13040,6 +13041,7 @@
         "host:core:update",
         "host:core:update-remote",
         "host:core:update-remote-runtime",
+        "host:core:update-remote-system",
         "host:core:update-runtime",
         "host:core:update-system-slots",
         "host:drivers:rng",
@@ -13113,6 +13115,7 @@
         "host:core:update",
         "host:core:update-remote",
         "host:core:update-remote-runtime",
+        "host:core:update-remote-system",
         "host:core:update-runtime",
         "host:core:update-system-slots",
         "host:memory:memory",
@@ -13176,6 +13179,7 @@
         "host:core:update",
         "host:core:update-remote",
         "host:core:update-remote-runtime",
+        "host:core:update-remote-system",
         "host:core:update-runtime",
         "host:core:update-system-slots",
         "host:memory:paging",
@@ -15696,9 +15700,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_remote_system.h:update_remote_system_fetch",
@@ -15714,9 +15721,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_remote_system.h:update_remote_system_get_cached_path",
@@ -15732,9 +15742,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_remote_system.h:update_remote_system_get_status",
@@ -15750,9 +15763,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_remote_system.h:update_remote_system_init",
@@ -15768,9 +15784,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_remote_system.h:update_remote_system_reason_name",
@@ -15786,9 +15805,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_remote_system.h:update_remote_system_state_name",
@@ -15804,9 +15826,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_runtime.h:update_runtime_apply_cached",
@@ -68212,6 +68237,7 @@
         "host:core:update",
         "host:core:update-remote",
         "host:core:update-remote-runtime",
+        "host:core:update-remote-system",
         "host:core:update-runtime",
         "host:core:update-system-slots",
         "host:memory:memory",
@@ -68281,6 +68307,7 @@
         "host:core:update",
         "host:core:update-remote",
         "host:core:update-remote-runtime",
+        "host:core:update-remote-system",
         "host:core:update-runtime",
         "host:core:update-system-slots",
         "host:drivers:rng",
@@ -68354,6 +68381,7 @@
         "host:core:update",
         "host:core:update-remote",
         "host:core:update-remote-runtime",
+        "host:core:update-remote-system",
         "host:core:update-runtime",
         "host:core:update-system-slots",
         "host:memory:memory",
@@ -68417,6 +68445,7 @@
         "host:core:update",
         "host:core:update-remote",
         "host:core:update-remote-runtime",
+        "host:core:update-remote-system",
         "host:core:update-runtime",
         "host:core:update-system-slots",
         "host:memory:paging",
@@ -78970,9 +78999,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_system.c:system_cache_decode",
@@ -78988,9 +79020,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_system.c:system_cache_decode_text",
@@ -79006,9 +79041,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_system.c:system_cache_encode",
@@ -79024,9 +79062,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_system.c:system_cache_hash_file",
@@ -79042,9 +79083,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_system.c:system_cache_load_control",
@@ -79060,9 +79104,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_system.c:system_cache_load_locked",
@@ -79078,9 +79125,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_system.c:system_cache_map_reason",
@@ -79096,9 +79146,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_system.c:system_cache_path",
@@ -79114,9 +79167,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_system.c:system_cache_read_u16",
@@ -79132,9 +79188,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_system.c:system_cache_read_u32",
@@ -79150,9 +79209,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_system.c:system_cache_refresh_status_locked",
@@ -79168,9 +79230,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_system.c:system_cache_transfer_abort",
@@ -79186,9 +79251,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_system.c:system_cache_transfer_begin",
@@ -79204,9 +79272,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_system.c:system_cache_transfer_finish",
@@ -79222,9 +79293,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_system.c:system_cache_transfer_write",
@@ -79240,9 +79314,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_system.c:system_cache_verify_locked",
@@ -79258,9 +79335,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_system.c:system_cache_write_record_locked",
@@ -79276,9 +79356,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_system.c:system_cache_write_u16",
@@ -79294,9 +79377,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_system.c:system_cache_write_u32",
@@ -79312,9 +79398,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_system.c:update_remote_system_clear",
@@ -79330,9 +79419,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_system.c:update_remote_system_fetch",
@@ -79348,9 +79440,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_system.c:update_remote_system_get_cached_path",
@@ -79366,9 +79461,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_system.c:update_remote_system_get_status",
@@ -79384,9 +79482,33 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/update_remote_system.c:update_remote_system_host_test_contracts",
+      "kind": "c_function",
+      "source": "src/core/update_remote_system.c",
+      "symbol": "update_remote_system_host_test_contracts",
+      "linkage": "external",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_system.c:update_remote_system_init",
@@ -79402,9 +79524,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_system.c:update_remote_system_reason_name",
@@ -79420,9 +79545,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_system.c:update_remote_system_state_name",
@@ -79438,9 +79566,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_action_fail",
@@ -159158,6 +159289,84 @@
         "offline",
         "negative",
         "corruption"
+      ]
+    },
+    {
+      "id": "host:core:update-remote-system",
+      "scenario": "Contratos do cache remoto de atualizacao do sistema",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "storage": "filesystem simulado com controles redundantes",
+        "network": "stub offline"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "executar serializacao, cache redundante, hash, transporte transacional e contratos publicos com buffers estaticos",
+      "expected": "estado valido faz round-trip e indisponibilidade, corrupcao e limites retornam erros canonicos sem rede ou armazenamento real",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente buffers estaticos no processo host",
+      "cleanup": "estado, controles e arquivos simulados pertencem ao processo host; manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/string.h:kmemcpy",
+        "api:src/include/core/string.h:kmemset",
+        "api:src/include/core/string.h:kstrcmp",
+        "api:src/include/core/string.h:kstrlen",
+        "api:src/include/core/update_remote_system.h:update_remote_system_clear",
+        "api:src/include/core/update_remote_system.h:update_remote_system_fetch",
+        "api:src/include/core/update_remote_system.h:update_remote_system_get_cached_path",
+        "api:src/include/core/update_remote_system.h:update_remote_system_get_status",
+        "api:src/include/core/update_remote_system.h:update_remote_system_init",
+        "api:src/include/core/update_remote_system.h:update_remote_system_reason_name",
+        "api:src/include/core/update_remote_system.h:update_remote_system_state_name",
+        "c:src/core/string.c:kmemcpy",
+        "c:src/core/string.c:kmemset",
+        "c:src/core/string.c:kstrcmp",
+        "c:src/core/string.c:kstrlen",
+        "c:src/core/update_remote_system.c:system_cache_copy_text",
+        "c:src/core/update_remote_system.c:system_cache_decode",
+        "c:src/core/update_remote_system.c:system_cache_decode_text",
+        "c:src/core/update_remote_system.c:system_cache_encode",
+        "c:src/core/update_remote_system.c:system_cache_hash_file",
+        "c:src/core/update_remote_system.c:system_cache_load_control",
+        "c:src/core/update_remote_system.c:system_cache_load_locked",
+        "c:src/core/update_remote_system.c:system_cache_map_reason",
+        "c:src/core/update_remote_system.c:system_cache_path",
+        "c:src/core/update_remote_system.c:system_cache_read_u16",
+        "c:src/core/update_remote_system.c:system_cache_read_u32",
+        "c:src/core/update_remote_system.c:system_cache_refresh_status_locked",
+        "c:src/core/update_remote_system.c:system_cache_transfer_abort",
+        "c:src/core/update_remote_system.c:system_cache_transfer_begin",
+        "c:src/core/update_remote_system.c:system_cache_transfer_finish",
+        "c:src/core/update_remote_system.c:system_cache_transfer_write",
+        "c:src/core/update_remote_system.c:system_cache_verify_locked",
+        "c:src/core/update_remote_system.c:system_cache_write_record_locked",
+        "c:src/core/update_remote_system.c:system_cache_write_u16",
+        "c:src/core/update_remote_system.c:system_cache_write_u32",
+        "c:src/core/update_remote_system.c:update_remote_system_clear",
+        "c:src/core/update_remote_system.c:update_remote_system_fetch",
+        "c:src/core/update_remote_system.c:update_remote_system_get_cached_path",
+        "c:src/core/update_remote_system.c:update_remote_system_get_status",
+        "c:src/core/update_remote_system.c:update_remote_system_host_test_contracts",
+        "c:src/core/update_remote_system.c:update_remote_system_init",
+        "c:src/core/update_remote_system.c:update_remote_system_reason_name",
+        "c:src/core/update_remote_system.c:update_remote_system_state_name"
+      ],
+      "tags": [
+        "host",
+        "update",
+        "remote-system",
+        "cache",
+        "recovery",
+        "negative"
       ]
     },
     {

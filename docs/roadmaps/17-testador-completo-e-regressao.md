@@ -2340,3 +2340,16 @@ pendente.
   os testes unitarios selecionados. O catalogo registra 7.252 superficies,
   5.616 `COVERED`, 1.636 `PENDING` e 145 casos; o restante da cobertura
   integral continua pendente e nao foi mascarado.
+
+- Incremento Core/update remote system concluido em 2026-09-04. A fixture
+  host-only `host:core:update-remote-system` executa os helpers e contratos
+  publicos reais de `src/core/update_remote_system.c` com filesystem, volume,
+  crypto, armazenamento e transporte simulados em buffers estaticos. A
+  evidencia instrumentada resolveu 56 superficies reais sem enderecos
+  desconhecidos ou simbolos ambiguos, cobrindo serializacao do controle,
+  cache redundante, hash, verificacao, transferencia transacional, limpeza,
+  estados e limites. Passaram o alvo host-only com `HOST_CC`, sincronizacao,
+  renderizacao, `make catalog-test`, `q3check`, build limpo e os testes
+  unitarios selecionados. O catalogo registra 7.253 superficies, 5.651
+  `COVERED`, 1.602 `PENDING` e 146 casos; o restante da cobertura integral
+  continua pendente e nao foi mascarado.

@@ -2387,6 +2387,58 @@
       }
     },
     {
+      "id": "update-remote-system-host-dynamic",
+      "domain": "core-update-remote-system",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:update-remote-system"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/update-remote-system-host/coverage.json",
+      "coverage_sources": [
+        "src/core/update_remote_system.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-update-remote-system-host PASS com cache redundante, transporte, verificacao e contratos publicos em filesystem simulado no relatorio instrumentado",
+      "case_definition": {
+        "id": "host:core:update-remote-system",
+        "scenario": "Contratos do cache remoto de atualizacao do sistema",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "storage": "filesystem simulado com controles redundantes",
+          "network": "stub offline"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "executar serializacao, cache redundante, hash, transporte transacional e contratos publicos com buffers estaticos",
+        "expected": "estado valido faz round-trip e indisponibilidade, corrupcao e limites retornam erros canonicos sem rede ou armazenamento real",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente buffers estaticos no processo host",
+        "cleanup": "estado, controles e arquivos simulados pertencem ao processo host; manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "update",
+          "remote-system",
+          "cache",
+          "recovery",
+          "negative"
+        ]
+      }
+    },
+    {
       "id": "update-remote-runtime-host-dynamic",
       "domain": "core-update-remote-runtime",
       "owner": "quality",
