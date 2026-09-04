@@ -16,6 +16,7 @@
 #include "drivers/rtc.h"
 #include "drivers/mouse.h"
 #include "fs/vfs.h"
+#include "fs/storage.h"
 
 void shell_dispatch_cmd_pwd(const char* arguments);
 void shell_dispatch_cmd_cd(const char* arguments);
@@ -28,6 +29,8 @@ void shell_dispatch_cmd_wait(const char* arguments);
 void shell_dispatch_cmd_wqinfo(const char* arguments);
 void shell_dispatch_cmd_workq(const char* arguments);
 void shell_dispatch_cmd_tls(const char* arguments);
+void shell_dispatch_cmd_vfs(const char* arguments);
+void shell_dispatch_cmd_mount(const char* arguments);
 
 #define HOST_COVERAGE_CAPACITY 512U
 #define HOST_COVERAGE_LINE_SIZE 32U
@@ -120,6 +123,16 @@ static int fixture_tls_policy_result;
 static int fixture_tls_status_result;
 static int fixture_tls_capability_result;
 static int fixture_tls_test_result;
+static vfs_status_t fixture_vfs_status;
+static vfs_descriptor_info_t fixture_vfs_descriptors[2];
+static vfs_mount_info_t fixture_vfs_mounts[2];
+static vfs_test_result_t fixture_vfs_test;
+static int fixture_vfs_status_result;
+static int fixture_vfs_descriptor_result;
+static int fixture_vfs_mount_result;
+static int fixture_vfs_test_result;
+static uint32_t fixture_vfs_descriptor_count;
+static uint32_t fixture_vfs_mount_count;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -250,6 +263,12 @@ static void fixture_reset(void) {
     fixture_tls_status_result = OK;
     fixture_tls_capability_result = 1;
     fixture_tls_test_result = OK;
+    fixture_vfs_status_result = OK;
+    fixture_vfs_descriptor_result = OK;
+    fixture_vfs_mount_result = OK;
+    fixture_vfs_test_result = OK;
+    fixture_vfs_descriptor_count = 1U;
+    fixture_vfs_mount_count = 1U;
     kmemset(&fixture_log_stats, 0, sizeof(fixture_log_stats));
     kmemset(fixture_log_records, 0, sizeof(fixture_log_records));
     kmemset(&fixture_log_test, 0, sizeof(fixture_log_test));
@@ -564,6 +583,78 @@ static void fixture_reset(void) {
     fixture_tls_test.invariants = 1U;
     fixture_tls_test.passed = 12U;
     fixture_tls_test.failed = 0U;
+    kmemset(&fixture_vfs_status, 0, sizeof(fixture_vfs_status));
+    kmemset(fixture_vfs_descriptors, 0, sizeof(fixture_vfs_descriptors));
+    kmemset(fixture_vfs_mounts, 0, sizeof(fixture_vfs_mounts));
+    kmemset(&fixture_vfs_test, 0, sizeof(fixture_vfs_test));
+    fixture_vfs_status.initialized = 1U;
+    fixture_vfs_status.descriptor_capacity = VFS_MAX_FDS;
+    fixture_vfs_status.global_file_capacity = VFS_MAX_OPEN_FILES;
+    fixture_vfs_status.global_files_used = 3U;
+    fixture_vfs_status.processes_with_tables = 2U;
+    fixture_vfs_status.descriptors_open = 4U;
+    fixture_vfs_status.opens = 10U;
+    fixture_vfs_status.reads = 11U;
+    fixture_vfs_status.writes = 12U;
+    fixture_vfs_status.seeks = 13U;
+    fixture_vfs_status.closes = 14U;
+    fixture_vfs_status.failures = 1U;
+    fixture_vfs_status.mount_capacity = VFS_MAX_MOUNTS;
+    fixture_vfs_status.mounts_active = 2U;
+    fixture_vfs_status.lookups = 15U;
+    fixture_vfs_status.chdirs = 2U;
+    fixture_vfs_status.ioctls = 3U;
+    fixture_vfs_status.device_capacity = 8U;
+    fixture_vfs_status.devices_active = 4U;
+    fixture_vfs_status.pipe_capacity = VFS_MAX_PIPES;
+    fixture_vfs_status.pipes_active = 1U;
+    fixture_vfs_status.pipe_reads = 5U;
+    fixture_vfs_status.pipe_writes = 6U;
+    fixture_vfs_descriptors[0].pid = 42U;
+    fixture_vfs_descriptors[0].fd = 3;
+    fixture_vfs_descriptors[0].type = VFS_NODE_REGULAR;
+    fixture_vfs_descriptors[0].mode = VFS_MODE_READ;
+    fixture_vfs_descriptors[0].offset = 7U;
+    fixture_vfs_descriptors[0].size = 99U;
+    copy_text(fixture_vfs_descriptors[0].path,
+              sizeof(fixture_vfs_descriptors[0].path), "/etc/config");
+    fixture_vfs_mounts[0].slot = 1U;
+    fixture_vfs_mounts[0].generation = 4U;
+    fixture_vfs_mounts[0].open_files = 2U;
+    fixture_vfs_mounts[0].cwd_references = 1U;
+    fixture_vfs_mounts[0].fs_type = STORAGE_FS_FAT32;
+    fixture_vfs_mounts[0].used = 1U;
+    fixture_vfs_mounts[0].pinned = 1U;
+    fixture_vfs_mounts[0].read_only = 1U;
+    copy_text(fixture_vfs_mounts[0].mount_point,
+              sizeof(fixture_vfs_mounts[0].mount_point), "/");
+    copy_text(fixture_vfs_mounts[0].volume_id,
+              sizeof(fixture_vfs_mounts[0].volume_id), "ata0");
+    fixture_vfs_mounts[0].kind = VFS_MOUNT_STORAGE;
+    fixture_vfs_test.stdio = 1U;
+    fixture_vfs_test.lifecycle = 1U;
+    fixture_vfs_test.sequential_read = 1U;
+    fixture_vfs_test.seek = 1U;
+    fixture_vfs_test.permissions = 1U;
+    fixture_vfs_test.eof = 1U;
+    fixture_vfs_test.limits = 1U;
+    fixture_vfs_test.table_capacity = 1U;
+    fixture_vfs_test.closed_descriptor = 1U;
+    fixture_vfs_test.isolation = 1U;
+    fixture_vfs_test.cleanup = 1U;
+    fixture_vfs_test.normalization = 1U;
+    fixture_vfs_test.lookup = 1U;
+    fixture_vfs_test.cwd = 1U;
+    fixture_vfs_test.mount_busy = 1U;
+    fixture_vfs_test.invariants = 1U;
+    fixture_vfs_test.passed = 16U;
+    fixture_vfs_test.total = 16U;
+    fixture_vfs_test.directory_listing = 1U;
+    fixture_vfs_test.devices = 1U;
+    fixture_vfs_test.ioctl = 1U;
+    fixture_vfs_test.pipes = 1U;
+    fixture_vfs_test.procfs = 1U;
+    fixture_vfs_test.sysfs = 1U;
     kmemset(&fixture_mouse_status, 0, sizeof(fixture_mouse_status));
     fixture_mouse_status.initialized = 1U;
     fixture_mouse_status.x = 12;
@@ -932,6 +1023,49 @@ const char* tls_reason_name(tls_reason_t reason) {
     if (reason == TLS_REASON_NONE) return "NONE";
     if (reason == TLS_REASON_TIME_UNAVAILABLE) return "TIME_UNAVAILABLE";
     if (reason == TLS_REASON_POLICY) return "POLICY";
+    return "UNKNOWN";
+}
+
+int vfs_get_status(vfs_status_t* status) {
+    if (!status) return ERR_NULL;
+    if (fixture_vfs_status_result != OK) return fixture_vfs_status_result;
+    *status = fixture_vfs_status;
+    return OK;
+}
+
+int vfs_copy_descriptors(vfs_descriptor_info_t* output, uint32_t capacity,
+                         uint32_t* out_count) {
+    if (!output || !out_count) return ERR_NULL;
+    if (fixture_vfs_descriptor_result != OK) return fixture_vfs_descriptor_result;
+    if (capacity < fixture_vfs_descriptor_count) return ERR_OVERFLOW;
+    for (uint32_t index = 0U; index < fixture_vfs_descriptor_count; index++) {
+        output[index] = fixture_vfs_descriptors[index];
+    }
+    *out_count = fixture_vfs_descriptor_count;
+    return OK;
+}
+
+int vfs_copy_mounts(vfs_mount_info_t* output, uint32_t capacity,
+                    uint32_t* out_count) {
+    if (!output || !out_count) return ERR_NULL;
+    if (fixture_vfs_mount_result != OK) return fixture_vfs_mount_result;
+    if (capacity < fixture_vfs_mount_count) return ERR_OVERFLOW;
+    for (uint32_t index = 0U; index < fixture_vfs_mount_count; index++) {
+        output[index] = fixture_vfs_mounts[index];
+    }
+    *out_count = fixture_vfs_mount_count;
+    return OK;
+}
+
+int vfs_self_test(vfs_test_result_t* result) {
+    if (!result) return ERR_NULL;
+    *result = fixture_vfs_test;
+    return fixture_vfs_test_result;
+}
+
+const char* storage_fs_name(storage_fs_type_t type) {
+    if (type == STORAGE_FS_FAT12) return "FAT12";
+    if (type == STORAGE_FS_FAT32) return "FAT32";
     return "UNKNOWN";
 }
 
@@ -1430,13 +1564,71 @@ static int test_tls(void) {
     return failures;
 }
 
+static int test_vfs(void) {
+    int failures = 0;
+
+    fixture_reset();
+    shell_dispatch_cmd_vfs("status");
+    failures += expect_contains("VFS:\n  Estado: READY\n");
+    failures += expect_contains("Arquivos globais: 3/32  processos: 2  descritores: 4\n");
+    failures += expect_contains("open/read/write/seek/close/falhas: 10/11/12/13/14/1\n");
+    failures += expect_contains("montagens: 2/7  lookups/chdir: 15/2  ioctl: 3\n");
+    failures += expect_contains("Descritores do processo atual:");
+    failures += expect_contains("fd=3 tipo=FILE modo=1 offset=7 path=/etc/config");
+    fixture_reset();
+    fixture_vfs_status.initialized = 0U;
+    shell_dispatch_cmd_vfs("");
+    failures += expect_contains("Estado: DISABLED\n");
+    fixture_reset();
+    fixture_vfs_descriptor_count = 0U;
+    shell_dispatch_cmd_vfs("status");
+    failures += expect_contains("Descritores do processo atual:\n");
+    fixture_reset();
+    fixture_vfs_status_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_vfs("status");
+    failures += expect_text("Erro: estado VFS indisponivel.\n");
+    fixture_reset();
+    fixture_vfs_descriptor_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_vfs("status");
+    failures += expect_text("Erro: estado VFS indisponivel.\n");
+    fixture_reset();
+    shell_dispatch_cmd_vfs("test");
+    failures += expect_contains("VFS Test: OK\n  Casos aprovados: 16/16\n");
+    failures += expect_contains("  Pipes: OK\n  Procfs: OK\n  Sysfs: OK\n");
+    fixture_reset();
+    fixture_vfs_test_result = ERR_STATE;
+    fixture_vfs_test.pipes = 0U;
+    fixture_vfs_test.total = 17U;
+    shell_dispatch_cmd_vfs("test");
+    failures += expect_contains("VFS Test: ERRO\n  Casos aprovados: 16/17\n");
+    failures += expect_contains("  Pipes: ERRO\n");
+    fixture_reset();
+    shell_dispatch_cmd_vfs("invalid");
+    failures += expect_text("Uso: vfs status|test\n");
+    fixture_reset();
+    shell_dispatch_cmd_mount("");
+    failures += expect_text("Montagens VFS:\n  / -> ata0 tipo=FAT32 acesso=RO geracao=4 refs=3\n");
+    fixture_reset();
+    fixture_vfs_mount_count = 0U;
+    shell_dispatch_cmd_mount("");
+    failures += expect_text("Montagens VFS:\n");
+    fixture_reset();
+    fixture_vfs_mount_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_mount("");
+    failures += expect_text("Erro: montagens VFS indisponiveis.\n");
+    fixture_reset();
+    shell_dispatch_cmd_mount("extra");
+    failures += expect_text("Uso: mount\n");
+    return failures;
+}
+
 int main(void) {
     int result;
 
     coverage_active = 1U;
     result = test_pwd() + test_cd() + test_mouse() + test_log() +
              test_timer() + test_clock() + test_irqstat() + test_wait() +
-             test_wqinfo() + test_workq() + test_tls();
+             test_wqinfo() + test_workq() + test_tls() + test_vfs();
     coverage_active = 0U;
     coverage_emit(result);
     return result ? 1 : 0;
