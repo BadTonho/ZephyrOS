@@ -2262,3 +2262,15 @@ pendente.
   por evidencia dinamica; as rotinas de stack dependentes de enderecos 32-bit
   continuam pendentes sem uma fixture adequada. O catalogo registra 7.219
   superficies, 5.272 `COVERED`, 1.947 `PENDING` e 139 casos.
+
+- Incremento Storage/FAT32 concluido em 2026-09-04. A fixture
+  `host:storage:storage-fat32` usa uma imagem FAT32 minima em memoria, com duas
+  copias de FAT, sem hardware ou armazenamento persistente. O caso exercitou
+  validacao de BPB/FSInfo e FATs, estados de volume invalido, montagem,
+  cadeias de dois clusters, escrita/leitura, nomes longos, substituicao,
+  remocao e writers transacionais com finish e abort. A evidencia instrumentada
+  terminou `PASS` e removeu as 18 superficies reais de `src/fs/storage.c` que
+  estavam pendentes. A etapa passou `make test-storage-fat32-host`, `q3check`,
+  build limpo, a bateria host do TST7 e `make catalog-test`; o quick global ficou
+  `BLOCKED` somente pelo runtime LLVM ausente no sanitizador. O catalogo agora
+  registra 7.219 superficies, 5.290 `COVERED`, 1.929 `PENDING` e 140 casos.

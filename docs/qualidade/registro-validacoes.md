@@ -5366,3 +5366,19 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   endereco de 32 bits permanecem explicitamente pendentes para fixture QEMU.
   O catalogo registra 7.219 superficies, 5.272 `COVERED`, 1.947 `PENDING` e
   139 casos.
+
+- Incremento Storage/FAT32 concluido em 2026-09-04. Foi criada a fixture
+  host-only `host:storage:storage-fat32`, com uma imagem FAT32 minima em
+  memoria e duas copias de FAT, sem hardware ou armazenamento real. O caso
+  exercitou validacao de BPB, FSInfo e FATs, marcacao de volume invalido,
+  montagem, cadeias de dois clusters, escrita/leitura, nomes longos,
+  substituicao, remocao e os writers transacionais com finish e abort. O
+  relatorio instrumentado terminou `PASS`, sem enderecos desconhecidos ou
+  simbolos ambiguos. Passaram `make test-storage-fat32-host`, `make q3check`,
+  `make clean`, `make`, `make test-tst7-quick` para todos os casos host-only
+  (com resultado global `BLOCKED` somente por `test-tst3-sanitize` sem runtime
+  LLVM), sincronizacao, renderizacao e `make catalog-test`. As 18 superficies
+  reais de `src/fs/storage.c` que estavam `PENDING` deixaram esse estado; o
+  catalogo registra 7.219 superficies, 5.290 `COVERED`, 1.929 `PENDING` e
+  140 casos. O bloqueio do sanitizador permanece explicito e o baseline TST7
+  nao foi alterado.

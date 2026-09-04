@@ -190,6 +190,17 @@ subdiretorio e criacao de entradas de diretorio, com nomes codificados em
 O caso `test-fat32-host` exercita o driver FAT32 sobre uma imagem estatica com
 cadeia de clusters, leitura, paths, metadados, criacao, escrita, remocao e
 limites, incluindo as APIs publicas de leitura e escrita sobre nomes 8.3.
+O caso `test-storage-fat32-host` usa uma imagem FAT32 minima em memoria, sem
+hardware ou allocator real. Ele cobre validacao de BPB/FSInfo e das duas FATs,
+marcacao de volume com erro, alocacao e liberacao de cadeias com dois clusters,
+escrita/leitura, nomes longos, substituicao, remocao e os writers transacionais
+de storage, incluindo finish e abort. O relatorio fica em
+`build/test-results/storage-fat32-host/` e pode ser executado com:
+
+```text
+make test-storage-fat32-host
+```
+
 O caso `test-vfs-host` valida o nucleo de descritores e I/O da VFS,
 incluindo arquivos regulares, dispositivos, pipes, sockets, poll/select,
 quiescencia e invariantes. Os relatorios ficam em

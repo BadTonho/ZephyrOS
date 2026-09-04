@@ -3711,6 +3711,56 @@
       "evidence": "make test-storage-host PASS com imagem FAT12 estatica, MBR/BPB, inventario, mount, cursores, leitura, espaco livre, rejeicao somente-leitura e limpeza no relatorio instrumentado"
     },
     {
+      "id": "storage-fat32-host-dynamic",
+      "domain": "storage-block-fat32",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:storage:storage-fat32"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/storage-fat32-host/coverage.json",
+      "coverage_sources": [
+        "src/fs/storage.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-storage-fat32-host PASS com imagem FAT32 estatica gravavel, validacao de metadados e cadeias, escrita de dois clusters, remocao LFN e escritor transacional com abort",
+      "case_definition": {
+        "id": "host:storage:storage-fat32",
+        "scenario": "Contrato host-only do backend de storage FAT32 com imagem estatica gravavel",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "storage": "FAT32 in-memory read-write"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "compilar e executar storage FAT32 com validacao de metadados, cadeias, escrita, remocao LFN e escritor transacional",
+        "expected": "operacoes FAT32 validas preservam dados e cadeias, corrupcoes retornam erros canonicos e transacoes concluidas ou abortadas deixam a fixture consistente",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente imagem FAT32 estatica e provider de bloco falso no processo host",
+        "cleanup": "cadeias, entradas temporarias e escritor transacional encerrados; manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "storage",
+          "fat32",
+          "negative",
+          "transaction"
+        ]
+      }
+    },
+    {
       "id": "storage-qemu-tst4-dynamic",
       "domain": "storage-vfs",
       "owner": "quality",
