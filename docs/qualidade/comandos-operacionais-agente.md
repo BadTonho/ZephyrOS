@@ -1897,3 +1897,20 @@ make test-spinlock-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 O caso automatizado é `host:core:spinlock`. A evidência declarativa fica em
 `tests/coverage/registry.json` porque funções `static inline` não formam um
 símbolo externo estável no relatório instrumentado.
+
+## Shell: comandos de armazenamento host-only
+
+O alvo `test-shell-commands-storage-host` executa os dispatchers reais de
+`index` e `search` com doubles estáticos de índice, bloco, cache, storage e
+VFS. A fixture cobre entradas nulas, desconhecidas, extras e vazias, além do
+caminho de dependência indisponível, sem hardware ou armazenamento real:
+
+```text
+make test-shell-commands-storage-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O caso automatizado é `host:shell:commands-storage`. O relatório fica em
+`build/test-results/shell-commands-storage-host/coverage.json` e deve terminar
+em `PASS`, com `unknown_addresses=[]` e `ambiguous_symbols=[]`. O contrato
+observável usa `ERR_UNAVAILABLE=9`; após uma execução real, sincronize o
+catálogo e valide com `make catalog-test`.

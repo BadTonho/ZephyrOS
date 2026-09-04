@@ -2450,3 +2450,19 @@ pendente.
       limpo e os 164 testes Python unitários.
 - [x] O catálogo registra 7.293 superfícies, 6.086 `COVERED`, 1.207
       `PENDING` e 152 casos; as pendências restantes continuam visíveis.
+
+### Incremento Shell/storage commands — 2026-09-04
+
+- [x] Fixture host-only criada para os dispatchers de `index` e `search`.
+- [x] Foram exercitados argumentos nulos, desconhecidos, extras e vazios,
+      além da indisponibilidade do índice, preservando o código canônico
+      `ERR_UNAVAILABLE` (`9`) e as mensagens observáveis.
+- [x] O caso `host:shell:commands-storage` foi integrado ao runner, Makefile
+      e catálogo com evidência instrumentada e doubles estáticos para o
+      índice, armazenamento, cache, bloco e VFS.
+- [x] Passaram o alvo host-only com `HOST_CC`, a revalidação das fixtures
+      host-only existentes, a sincronização e renderização do catálogo e
+      `make catalog-test`; o gate estrito permanece pendente somente pelas
+      superfícies ainda sem evidência específica.
+- [x] O catálogo registra 7.293 superfícies, 6.095 `COVERED`, 1.198
+      `PENDING` e 153 casos; as pendências restantes continuam visíveis.

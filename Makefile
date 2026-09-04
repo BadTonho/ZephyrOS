@@ -1949,6 +1949,9 @@ test-shell-commands-core-host: tools\core_host_runner.py tools\coverage_collecto
 test-shell-diagnostics-helpers-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_shell_diagnostics_helpers_host.c tests\catalog.json src\shell\shell_diagnostics_helpers.c src\include\apps\shell_diagnostics_helpers.h src\include\core\errors.h src\include\core\log.h src\include\core\memory.h src\include\core\recovery.h src\include\core\tls.h src\include\core\update.h src\include\core\update_remote.h src\include\core\device_manager.h src\include\core\usb_manager.h src\include\drivers\acpi.h src\include\drivers\mouse.h src\include\fs\fs.h src\include\fs\vfs.h src\include\memory\paging.h src\include\process\process.h
 	python tools\core_host_runner.py --case host:shell:diagnostics-helpers --cc "$(HOST_CC)"
 
+test-shell-commands-storage-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_shell_commands_storage_host.c tests\catalog.json src\shell\shell_commands_storage.c src\core\string.c src\include\apps\shell_job.h src\include\fs\file_index.h
+	python tools\core_host_runner.py --case host:shell:commands-storage --cc "$(HOST_CC)"
+
 test-shell-commands-wifi-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_shell_commands_wifi_host.c tests\catalog.json src\shell\shell_commands_wifi.c src\shell\shell_command_utils.c src\core\string.c src\include\apps\shell_command_utils.h src\include\core\errors.h src\include\core\log.h src\include\core\string.h src\include\core\video.h src\include\core\wifi_manager.h src\include\core\usb_manager.h
 	python tools\core_host_runner.py --case host:shell:wifi --cc "$(HOST_CC)"
 
@@ -2108,3 +2111,4 @@ clean:
 .PHONY: test-shell-commands-core-host
 .PHONY: test-shell-diagnostics-helpers-host
 .PHONY: test-spinlock-host
+.PHONY: test-shell-commands-storage-host

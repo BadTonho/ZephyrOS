@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7293**
-- Casos de teste: **152**
+- Casos de teste: **153**
 - Superfícies aposentadas: **57**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6086 |
+| `COVERED` | 6095 |
 | `MANUAL` | 0 |
-| `PENDING` | 1207 |
+| `PENDING` | 1198 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 152 |
+| `AUTOMATED` | 153 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -87,15 +87,15 @@
 | `api:src/include/apps/mediaplayer.h:mp_resume` | `src/include/apps/mediaplayer.h` | `mp_resume` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/mediaplayer.h:mp_stop` | `src/include/apps/mediaplayer.h` | `mp_stop` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/mediaplayer.h:mp_update` | `src/include/apps/mediaplayer.h` | `mp_update` | `apps` | `COVERED` | 1 |
-| `api:src/include/apps/shell.h:shell_handle_app_request` | `src/include/apps/shell.h` | `shell_handle_app_request` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell.h:shell_handle_key` | `src/include/apps/shell.h` | `shell_handle_key` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell.h:shell_handle_app_request` | `src/include/apps/shell.h` | `shell_handle_app_request` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell.h:shell_handle_key` | `src/include/apps/shell.h` | `shell_handle_key` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell.h:shell_handle_mouse` | `src/include/apps/shell.h` | `shell_handle_mouse` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell.h:shell_init` | `src/include/apps/shell.h` | `shell_init` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell.h:shell_print_prompt` | `src/include/apps/shell.h` | `shell_print_prompt` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell.h:shell_process_command` | `src/include/apps/shell.h` | `shell_process_command` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell.h:shell_report_app_loader_result` | `src/include/apps/shell.h` | `shell_report_app_loader_result` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell.h:shell_report_user_test_result` | `src/include/apps/shell.h` | `shell_report_user_test_result` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell.h:shell_update_hosted_terminal` | `src/include/apps/shell.h` | `shell_update_hosted_terminal` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell.h:shell_print_prompt` | `src/include/apps/shell.h` | `shell_print_prompt` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell.h:shell_process_command` | `src/include/apps/shell.h` | `shell_process_command` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell.h:shell_report_app_loader_result` | `src/include/apps/shell.h` | `shell_report_app_loader_result` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell.h:shell_report_user_test_result` | `src/include/apps/shell.h` | `shell_report_user_test_result` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell.h:shell_update_hosted_terminal` | `src/include/apps/shell.h` | `shell_update_hosted_terminal` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell_command_utils.h:shell_command_args_equal` | `src/include/apps/shell_command_utils.h` | `shell_command_args_equal` | `apps` | `COVERED` | 6 |
 | `api:src/include/apps/shell_command_utils.h:shell_command_match_subcommand` | `src/include/apps/shell_command_utils.h` | `shell_command_match_subcommand` | `apps` | `COVERED` | 6 |
 | `api:src/include/apps/shell_command_utils.h:shell_command_parse_number` | `src/include/apps/shell_command_utils.h` | `shell_command_parse_number` | `apps` | `COVERED` | 6 |
@@ -180,7 +180,7 @@
 | `api:src/include/apps/shell_job.h:shell_job_state_name` | `src/include/apps/shell_job.h` | `shell_job_state_name` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_job.h:shell_network_start_job` | `src/include/apps/shell_job.h` | `shell_network_start_job` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/shell_job.h:shell_packages_start_job` | `src/include/apps/shell_job.h` | `shell_packages_start_job` | `apps` | `COVERED` | 1 |
-| `api:src/include/apps/shell_job.h:shell_storage_start_job` | `src/include/apps/shell_job.h` | `shell_storage_start_job` | `apps` | `PENDING` | 0 |
+| `api:src/include/apps/shell_job.h:shell_storage_start_job` | `src/include/apps/shell_job.h` | `shell_storage_start_job` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/shell_pipeline.h:shell_pipeline_is_active` | `src/include/apps/shell_pipeline.h` | `shell_pipeline_is_active` | `apps` | `COVERED` | 6 |
 | `api:src/include/apps/shell_pipeline.h:shell_pipeline_print_num` | `src/include/apps/shell_pipeline.h` | `shell_pipeline_print_num` | `apps` | `COVERED` | 6 |
 | `api:src/include/apps/shell_pipeline.h:shell_pipeline_read` | `src/include/apps/shell_pipeline.h` | `shell_pipeline_read` | `apps` | `COVERED` | 6 |
@@ -208,13 +208,13 @@
 | `api:src/include/apps/shell_runtime.h:shell_hosted_reset` | `src/include/apps/shell_runtime.h` | `shell_hosted_reset` | `apps` | `COVERED` | 4 |
 | `api:src/include/apps/shell_runtime.h:shell_network_validate_for_checks` | `src/include/apps/shell_runtime.h` | `shell_network_validate_for_checks` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_finish_command` | `src/include/apps/shell_runtime.h` | `shell_runtime_finish_command` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key` | `src/include/apps/shell_runtime.h` | `shell_runtime_handle_terminal_key` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key` | `src/include/apps/shell_runtime.h` | `shell_runtime_handle_terminal_key` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible` | `src/include/apps/shell_runtime.h` | `shell_runtime_is_hosted_visible` | `apps` | `COVERED` | 4 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager` | `src/include/apps/shell_runtime.h` | `shell_runtime_prepare_filemanager` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_reset_input` | `src/include/apps/shell_runtime.h` | `shell_runtime_reset_input` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal` | `src/include/apps/shell_runtime.h` | `shell_runtime_resume_terminal` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager` | `src/include/apps/shell_runtime.h` | `shell_runtime_prepare_filemanager` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_reset_input` | `src/include/apps/shell_runtime.h` | `shell_runtime_reset_input` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal` | `src/include/apps/shell_runtime.h` | `shell_runtime_resume_terminal` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal` | `src/include/apps/shell_runtime.h` | `shell_runtime_suspend_terminal` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal_for_scene` | `src/include/apps/shell_runtime.h` | `shell_runtime_suspend_terminal_for_scene` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal_for_scene` | `src/include/apps/shell_runtime.h` | `shell_runtime_suspend_terminal_for_scene` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/taskmanager.h:taskmgr_close` | `src/include/apps/taskmanager.h` | `taskmgr_close` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/taskmanager.h:taskmgr_gui_handle_key` | `src/include/apps/taskmanager.h` | `taskmgr_gui_handle_key` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/taskmanager.h:taskmgr_gui_handle_mouse` | `src/include/apps/taskmanager.h` | `taskmgr_gui_handle_mouse` | `apps` | `COVERED` | 2 |
@@ -991,16 +991,16 @@
 | `api:src/include/drivers/mouse.h:mouse_set_callback` | `src/include/drivers/mouse.h` | `mouse_set_callback` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/mouse.h:mouse_set_primary_button` | `src/include/drivers/mouse.h` | `mouse_set_primary_button` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/mouse.h:mouse_set_speed` | `src/include/drivers/mouse.h` | `mouse_set_speed` | `drivers` | `COVERED` | 4 |
-| `api:src/include/drivers/pci.h:pci_enable_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_bus_mastering` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_io_and_bus_mastering` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_memory_and_bus_mastering` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_get_device` | `src/include/drivers/pci.h` | `pci_get_device` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_get_device_at` | `src/include/drivers/pci.h` | `pci_get_device_at` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_get_device_by_id` | `src/include/drivers/pci.h` | `pci_get_device_by_id` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_get_device_count` | `src/include/drivers/pci.h` | `pci_get_device_count` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_init` | `src/include/drivers/pci.h` | `pci_init` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_read` | `src/include/drivers/pci.h` | `pci_read` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_write` | `src/include/drivers/pci.h` | `pci_write` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/pci.h:pci_enable_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_bus_mastering` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_io_and_bus_mastering` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_memory_and_bus_mastering` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_get_device` | `src/include/drivers/pci.h` | `pci_get_device` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_get_device_at` | `src/include/drivers/pci.h` | `pci_get_device_at` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_get_device_by_id` | `src/include/drivers/pci.h` | `pci_get_device_by_id` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_get_device_count` | `src/include/drivers/pci.h` | `pci_get_device_count` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_init` | `src/include/drivers/pci.h` | `pci_init` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_read` | `src/include/drivers/pci.h` | `pci_read` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_write` | `src/include/drivers/pci.h` | `pci_write` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/rng.h:rng_get_bytes` | `src/include/drivers/rng.h` | `rng_get_bytes` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/rng.h:rng_get_status` | `src/include/drivers/rng.h` | `rng_get_status` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/rng.h:rng_init` | `src/include/drivers/rng.h` | `rng_init` | `drivers` | `COVERED` | 3 |
@@ -6082,10 +6082,10 @@
 | `c:src/shell/mediaplayer.c:str_copy` | `src/shell/mediaplayer.c` | `str_copy` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:process_input` | `src/shell/shell.c` | `process_input` | `shell` | `COVERED` | 5 |
 | `c:src/shell/shell.c:shell_handle_app_request` | `src/shell/shell.c` | `shell_handle_app_request` | `shell` | `COVERED` | 7 |
-| `c:src/shell/shell.c:shell_handle_key` | `src/shell/shell.c` | `shell_handle_key` | `shell` | `COVERED` | 7 |
+| `c:src/shell/shell.c:shell_handle_key` | `src/shell/shell.c` | `shell_handle_key` | `shell` | `COVERED` | 8 |
 | `c:src/shell/shell.c:shell_handle_mouse` | `src/shell/shell.c` | `shell_handle_mouse` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:shell_init` | `src/shell/shell.c` | `shell_init` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell.c:shell_print_prompt` | `src/shell/shell.c` | `shell_print_prompt` | `shell` | `COVERED` | 7 |
+| `c:src/shell/shell.c:shell_print_prompt` | `src/shell/shell.c` | `shell_print_prompt` | `shell` | `COVERED` | 8 |
 | `c:src/shell/shell.c:shell_process_command` | `src/shell/shell.c` | `shell_process_command` | `shell` | `COVERED` | 5 |
 | `c:src/shell/shell.c:shell_redraw_after_overlay_close` | `src/shell/shell.c` | `shell_redraw_after_overlay_close` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:shell_report_app_loader_result` | `src/shell/shell.c` | `shell_report_app_loader_result` | `shell` | `COVERED` | 7 |
@@ -6093,11 +6093,11 @@
 | `c:src/shell/shell.c:shell_runtime_finish_command` | `src/shell/shell.c` | `shell_runtime_finish_command` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:shell_runtime_handle_terminal_key` | `src/shell/shell.c` | `shell_runtime_handle_terminal_key` | `shell` | `COVERED` | 7 |
 | `c:src/shell/shell.c:shell_runtime_prepare_filemanager` | `src/shell/shell.c` | `shell_runtime_prepare_filemanager` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell.c:shell_runtime_reset_input` | `src/shell/shell.c` | `shell_runtime_reset_input` | `shell` | `COVERED` | 5 |
+| `c:src/shell/shell.c:shell_runtime_reset_input` | `src/shell/shell.c` | `shell_runtime_reset_input` | `shell` | `COVERED` | 6 |
 | `c:src/shell/shell.c:shell_runtime_resume_terminal` | `src/shell/shell.c` | `shell_runtime_resume_terminal` | `shell` | `COVERED` | 5 |
 | `c:src/shell/shell.c:shell_runtime_suspend_terminal` | `src/shell/shell.c` | `shell_runtime_suspend_terminal` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:shell_runtime_suspend_terminal_for_scene` | `src/shell/shell.c` | `shell_runtime_suspend_terminal_for_scene` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell.c:shell_should_show_prompt` | `src/shell/shell.c` | `shell_should_show_prompt` | `shell` | `COVERED` | 5 |
+| `c:src/shell/shell.c:shell_should_show_prompt` | `src/shell/shell.c` | `shell_should_show_prompt` | `shell` | `COVERED` | 6 |
 | `c:src/shell/shell.c:shell_update_hosted_terminal` | `src/shell/shell.c` | `shell_update_hosted_terminal` | `shell` | `COVERED` | 7 |
 | `c:src/shell/shell_checks.c:cmd_appcheck` | `src/shell/shell_checks.c` | `cmd_appcheck` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:cmd_appcheck_devices` | `src/shell/shell_checks.c` | `cmd_appcheck_devices` | `shell` | `PENDING` | 0 |
@@ -6734,12 +6734,12 @@
 | `c:src/shell/shell_commands_storage.c:cmd_cache_print_usage` | `src/shell/shell_commands_storage.c` | `cmd_cache_print_usage` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_storage.c:cmd_cachestat` | `src/shell/shell_commands_storage.c` | `cmd_cachestat` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_storage.c:cmd_cachestat_print_usage` | `src/shell/shell_commands_storage.c` | `cmd_cachestat_print_usage` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:cmd_index` | `src/shell/shell_commands_storage.c` | `cmd_index` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:cmd_index_print_usage` | `src/shell/shell_commands_storage.c` | `cmd_index_print_usage` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:cmd_index_read_action` | `src/shell/shell_commands_storage.c` | `cmd_index_read_action` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_storage.c:cmd_index` | `src/shell/shell_commands_storage.c` | `cmd_index` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:cmd_index_print_usage` | `src/shell/shell_commands_storage.c` | `cmd_index_print_usage` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:cmd_index_read_action` | `src/shell/shell_commands_storage.c` | `cmd_index_read_action` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_storage.c:cmd_index_status` | `src/shell/shell_commands_storage.c` | `cmd_index_status` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:cmd_search` | `src/shell/shell_commands_storage.c` | `cmd_search` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:cmd_search_copy_query` | `src/shell/shell_commands_storage.c` | `cmd_search_copy_query` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_storage.c:cmd_search` | `src/shell/shell_commands_storage.c` | `cmd_search` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:cmd_search_copy_query` | `src/shell/shell_commands_storage.c` | `cmd_search_copy_query` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_storage.c:cmd_search_print_result` | `src/shell/shell_commands_storage.c` | `cmd_search_print_result` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_storage.c:cmd_search_print_warnings` | `src/shell/shell_commands_storage.c` | `cmd_search_print_warnings` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_storage.c:cmd_storage` | `src/shell/shell_commands_storage.c` | `cmd_storage` | `shell` | `PENDING` | 0 |
@@ -6760,15 +6760,15 @@
 | `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_blkstat` | `src/shell/shell_commands_storage.c` | `shell_dispatch_cmd_blkstat` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_cache` | `src/shell/shell_commands_storage.c` | `shell_dispatch_cmd_cache` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_cachestat` | `src/shell/shell_commands_storage.c` | `shell_dispatch_cmd_cachestat` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_index` | `src/shell/shell_commands_storage.c` | `shell_dispatch_cmd_index` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_search` | `src/shell/shell_commands_storage.c` | `shell_dispatch_cmd_search` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_index` | `src/shell/shell_commands_storage.c` | `shell_dispatch_cmd_index` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_search` | `src/shell/shell_commands_storage.c` | `shell_dispatch_cmd_search` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_storage` | `src/shell/shell_commands_storage.c` | `shell_dispatch_cmd_storage` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_sync` | `src/shell/shell_commands_storage.c` | `shell_dispatch_cmd_sync` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_storage.c:shell_index_job_cancel` | `src/shell/shell_commands_storage.c` | `shell_index_job_cancel` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_storage.c:shell_index_job_drain` | `src/shell/shell_commands_storage.c` | `shell_index_job_drain` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_storage.c:shell_index_job_finish` | `src/shell/shell_commands_storage.c` | `shell_index_job_finish` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_storage.c:shell_index_job_step` | `src/shell/shell_commands_storage.c` | `shell_index_job_step` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:shell_storage_start_job` | `src/shell/shell_commands_storage.c` | `shell_storage_start_job` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_storage.c:shell_storage_start_job` | `src/shell/shell_commands_storage.c` | `shell_storage_start_job` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_vfs.c:cmd_grep` | `src/shell/shell_commands_vfs.c` | `cmd_grep` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_vfs.c:cmd_pipetest` | `src/shell/shell_commands_vfs.c` | `cmd_pipetest` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_vfs.c:shell_dispatch_cmd_grep` | `src/shell/shell_commands_vfs.c` | `shell_dispatch_cmd_grep` | `shell` | `COVERED` | 1 |
@@ -7396,6 +7396,7 @@
 | `host:core:network-manager` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar inventario com PCI, protocolos e driver simulados | interface detectada sem driver fica degradada e operacoes que exigem rede ativa retornam erro canonico | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do processo host e inventario de rede simulado | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:power` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar energia com ACPI, storage e dependencias simulados | estados de energia, cadeia de notificadores, quiescencia e limpeza apos falha preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do processo host e fixtures de energia | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:scheduling` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar os autotestes de wait, workqueue e irq_deferred, alem de limites e estados invalidos | coalescencia, rerun, cancelamento, FIFO, capacidade, disponibilidade e invariantes respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente filas, trabalhos e buffers estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:core:spinlock` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inicializar, adquirir e liberar um spinlock em fixture estatica | as operacoes publicam os estados livre e adquirido sem residuos | compilador ausente, warning, falha de assercao ou timeout | somente a palavra de estado do lock no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:state` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar contratos de recovery e notificadores de energia | estados, capacidades opcionais, timeouts, ordem e erros canonicos sao observados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico dos servicos e artefatos host-only | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:syscall` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, habilitacao ring 3, dispatch de syscalls, limites, copias de usuario, IPC, sinais e rejeicoes ring 0 | dispatcher preserva os codigos canonicos, rejeita chamadas fora de estado e completa os caminhos de usuario e kernel | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado do dispatcher e buffers estaticos da fixture host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:test-coverage` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o coletor real com transporte serial falso e caminhos de limite | funcoes de registro, hash, formatacao e emissao produzem um relatorio ZCOV valido sem espera indefinida | compilador ausente, warning, cobertura incompleta, relatorio invalido, falha de assercao ou timeout | somente buffers estaticos e callbacks seriais falsos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7530,7 +7531,7 @@
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
 | `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
-| `host:core:spinlock` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inicializar, adquirir e liberar um spinlock em fixture estatica | as operacoes publicam os estados livre e adquirido sem residuos | compilador ausente, warning, falha de assercao ou timeout | somente a palavra de estado do lock no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:shell:commands-storage` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enviar argumentos nulos, invalidos, vazios e uma pesquisa sem indice disponivel | dispatcher, parser e mensagens de erro preservam os limites e codigos canonicos | compilador ausente, warning, saida inesperada, falha de assercao ou timeout | somente buffers estaticos de saida e doubles do indice no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -7544,7 +7545,6 @@
 - `api:src/include/apps/editor.h:editor_run`
 - `api:src/include/apps/editor.h:editor_run_file`
 - `api:src/include/apps/mediaplayer.h:mp_main`
-- `api:src/include/apps/shell_job.h:shell_storage_start_job`
 - `api:src/include/process/process.h:process_context_switch`
 - `api:src/include/process/process.h:process_user_enter`
 - `api:src/include/process/process.h:process_user_termination_enter`
@@ -8525,12 +8525,7 @@
 - `c:src/shell/shell_commands_storage.c:cmd_cache_print_usage`
 - `c:src/shell/shell_commands_storage.c:cmd_cachestat`
 - `c:src/shell/shell_commands_storage.c:cmd_cachestat_print_usage`
-- `c:src/shell/shell_commands_storage.c:cmd_index`
-- `c:src/shell/shell_commands_storage.c:cmd_index_print_usage`
-- `c:src/shell/shell_commands_storage.c:cmd_index_read_action`
 - `c:src/shell/shell_commands_storage.c:cmd_index_status`
-- `c:src/shell/shell_commands_storage.c:cmd_search`
-- `c:src/shell/shell_commands_storage.c:cmd_search_copy_query`
 - `c:src/shell/shell_commands_storage.c:cmd_search_print_result`
 - `c:src/shell/shell_commands_storage.c:cmd_search_print_warnings`
 - `c:src/shell/shell_commands_storage.c:cmd_storage`
@@ -8551,15 +8546,12 @@
 - `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_blkstat`
 - `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_cache`
 - `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_cachestat`
-- `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_index`
-- `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_search`
 - `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_storage`
 - `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_sync`
 - `c:src/shell/shell_commands_storage.c:shell_index_job_cancel`
 - `c:src/shell/shell_commands_storage.c:shell_index_job_drain`
 - `c:src/shell/shell_commands_storage.c:shell_index_job_finish`
 - `c:src/shell/shell_commands_storage.c:shell_index_job_step`
-- `c:src/shell/shell_commands_storage.c:shell_storage_start_job`
 - `c:src/shell/taskmanager.c:draw_bar`
 - `c:src/shell/taskmanager.c:draw_box`
 - `c:src/shell/taskmanager.c:draw_header`
