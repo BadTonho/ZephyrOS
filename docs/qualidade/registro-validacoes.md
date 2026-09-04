@@ -5703,5 +5703,16 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   usa descarte explícito de metadados de unwind para permitir a coleta por
   seções no MinGW; o build freestanding não usa essa configuração. A evidência
   foi sincronizada e a visão do catálogo regenerada; o catálogo registra 7.293
-  superfícies, 6.197 `COVERED`, 1.096 `PENDING` e 154 casos. As pendências
+  superfícies, 6.199 `COVERED`, 1.094 `PENDING` e 154 casos. As pendências
   restantes continuam explícitas.
+
+- Incremento Shell/diagnostics devcheck — concluído em 2026-09-04
+  (America/Sao_Paulo). A fixture host-only `host:shell:diagnostics` passou a
+  exercitar `devcheck` com resultado estruturado de devfs falso, cobrindo
+  sucesso 9/9, falha por `ERR_STATE`, contagem parcial e argumentos inválidos.
+  O alvo `make test-shell-diagnostics-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
+  passou com `-Wall -Wextra -Werror`; o catálogo foi sincronizado e a visão
+  renderizada. O incremento moveu duas superfícies de
+  `src/shell/shell_commands_diagnostics.c` para `COVERED`, sem hardware ou
+  armazenamento real: 7.293 superfícies, 6.199 `COVERED`, 1.094 `PENDING` e
+  154 casos. As pendências restantes continuam explícitas.

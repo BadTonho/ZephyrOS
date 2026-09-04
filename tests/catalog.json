@@ -138079,9 +138079,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_device_info",
@@ -140866,9 +140869,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_device_info",
@@ -167328,10 +167334,10 @@
         "hardware": "video, VFS e mouse falsos"
       },
       "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "executar pwd, cd, mouse, log, timer, clock, irqstat, wait, wqinfo, workq e tls em caminhos validos, invalidos, indisponiveis e de limite",
+      "action": "executar pwd, cd, mouse, log, timer, clock, irqstat, wait, wqinfo, workq, tls, vfs e mount em caminhos validos, invalidos, indisponiveis e de limite",
       "expected": "dispatchers preservam saida, estado, configuracao e codigos canonicos",
       "errors": "compilador ausente, warning, saida inesperada, falha de assercao ou timeout",
-      "effects": "somente buffers estaticos de saida e doubles locais de VFS, mouse, log, timer, RTC, clock, IRQ, IDT, wait, workqueue e TLS",
+      "effects": "somente buffers estaticos de saida e doubles locais de VFS, mouse, log, timer, RTC, clock, IRQ, IDT, wait, workqueue e TLS; sem armazenamento real",
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
       "surface_ids": [
@@ -167345,6 +167351,7 @@
         "c:src/shell/shell_commands_diagnostics.c:cmd_clock_check",
         "c:src/shell/shell_commands_diagnostics.c:cmd_clock_status",
         "c:src/shell/shell_commands_diagnostics.c:cmd_clock_usage",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_devcheck",
         "c:src/shell/shell_commands_diagnostics.c:cmd_diagnostics_print_test",
         "c:src/shell/shell_commands_diagnostics.c:cmd_diagnostics_print_u64",
         "c:src/shell/shell_commands_diagnostics.c:cmd_irqstat",
@@ -167402,6 +167409,7 @@
         "c:src/shell/shell_commands_diagnostics.c:cmd_wqinfo",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_cd",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_clock",
+        "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_devcheck",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_irqstat",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_log",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_mount",
