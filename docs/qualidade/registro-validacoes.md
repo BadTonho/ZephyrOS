@@ -5675,3 +5675,17 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   catálogo registra 7.293 superfícies, 6.095 `COVERED`, 1.198 `PENDING` e
   153 casos; o gate estrito continua pendente pelas superfícies restantes sem
   evidência específica.
+
+- Incremento Shell/storage commands — ampliação concluída em 2026-09-04
+  (America/Sao_Paulo). A mesma fixture passou a chamar os dispatchers reais de
+  `blkstat`, `cachestat`, `cache`, `sync` e `storage`, além de exercitar status,
+  resultados, avisos e callbacks do job cooperativo do índice. Foram cobertos
+  caminhos válidos, indisponíveis, diagnósticos, limites de argumentos,
+  formatos ATA/USB, volumes FAT12/FAT32 e resultados de busca com volume
+  ausente ou obsoleto. O alvo passou antes e depois do build limpo; todos os
+  casos host-only foram revalidados para preservar os relatórios dinâmicos.
+  `python tools/test_catalog.py sync`, renderização, `make catalog-test`,
+  `make q3check`, `make clean` seguido de `make` e a execução final do alvo
+  passaram. O catálogo registra 7.293 superfícies, 6.128 `COVERED`, 1.165
+  `PENDING` e 153 casos; o gate estrito continua pendente sem mascarar as
+  superfícies ainda sem evidência.

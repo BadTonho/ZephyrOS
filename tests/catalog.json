@@ -145662,9 +145662,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:cmd_blkstat_print_usage",
@@ -145680,9 +145683,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:cmd_cache",
@@ -145698,9 +145704,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:cmd_cache_print_usage",
@@ -145716,9 +145725,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:cmd_cachestat",
@@ -145734,9 +145746,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:cmd_cachestat_print_usage",
@@ -145752,9 +145767,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:cmd_index",
@@ -145833,9 +145851,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:cmd_search",
@@ -145893,9 +145914,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:cmd_search_print_warnings",
@@ -145911,9 +145935,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:cmd_storage",
@@ -145929,9 +145956,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:cmd_storage_has_extra",
@@ -145947,9 +145977,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:cmd_storage_id_copy",
@@ -145965,9 +145998,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:cmd_storage_id_lower",
@@ -145983,9 +146019,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:cmd_storage_id_prefix",
@@ -146001,9 +146040,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:cmd_storage_info",
@@ -146019,9 +146061,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:cmd_storage_list",
@@ -146037,9 +146082,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:cmd_storage_print_disk",
@@ -146055,9 +146103,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:cmd_storage_print_id_diagnostic",
@@ -146073,9 +146124,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:cmd_storage_print_usage",
@@ -146091,9 +146145,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:cmd_storage_print_volume",
@@ -146109,9 +146166,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:cmd_storage_read_token",
@@ -146127,9 +146187,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:cmd_sync",
@@ -146145,9 +146208,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:cmd_sync_durability_name",
@@ -146163,9 +146229,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:cmd_sync_print_usage",
@@ -146181,9 +146250,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_blkstat",
@@ -146199,9 +146271,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_cache",
@@ -146217,9 +146292,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_cachestat",
@@ -146235,9 +146313,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_index",
@@ -146295,9 +146376,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_sync",
@@ -146313,9 +146397,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:shell_index_job_cancel",
@@ -146331,9 +146418,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:shell_index_job_drain",
@@ -146349,9 +146439,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:shell_index_job_finish",
@@ -146367,9 +146460,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:shell_index_job_step",
@@ -146385,9 +146481,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:shell_storage_start_job",
@@ -166830,6 +166929,74 @@
       "status": "AUTOMATED"
     },
     {
+      "id": "host:shell:commands-storage",
+      "scenario": "Caminhos negativos dos comandos de indice e pesquisa",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "storage": "indice e job falsos"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "enviar argumentos nulos, invalidos, vazios e uma pesquisa sem indice disponivel",
+      "expected": "dispatcher, parser e mensagens de erro preservam os limites e codigos canonicos",
+      "errors": "compilador ausente, warning, saida inesperada, falha de assercao ou timeout",
+      "effects": "somente buffers estaticos de saida e doubles do indice no processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/apps/shell_job.h:shell_storage_start_job",
+        "c:src/shell/shell_commands_storage.c:cmd_blkstat",
+        "c:src/shell/shell_commands_storage.c:cmd_blkstat_print_usage",
+        "c:src/shell/shell_commands_storage.c:cmd_cache",
+        "c:src/shell/shell_commands_storage.c:cmd_cache_print_usage",
+        "c:src/shell/shell_commands_storage.c:cmd_cachestat",
+        "c:src/shell/shell_commands_storage.c:cmd_cachestat_print_usage",
+        "c:src/shell/shell_commands_storage.c:cmd_index",
+        "c:src/shell/shell_commands_storage.c:cmd_index_print_usage",
+        "c:src/shell/shell_commands_storage.c:cmd_index_read_action",
+        "c:src/shell/shell_commands_storage.c:cmd_index_status",
+        "c:src/shell/shell_commands_storage.c:cmd_search",
+        "c:src/shell/shell_commands_storage.c:cmd_search_copy_query",
+        "c:src/shell/shell_commands_storage.c:cmd_search_print_result",
+        "c:src/shell/shell_commands_storage.c:cmd_search_print_warnings",
+        "c:src/shell/shell_commands_storage.c:cmd_storage",
+        "c:src/shell/shell_commands_storage.c:cmd_storage_has_extra",
+        "c:src/shell/shell_commands_storage.c:cmd_storage_id_copy",
+        "c:src/shell/shell_commands_storage.c:cmd_storage_id_lower",
+        "c:src/shell/shell_commands_storage.c:cmd_storage_id_prefix",
+        "c:src/shell/shell_commands_storage.c:cmd_storage_info",
+        "c:src/shell/shell_commands_storage.c:cmd_storage_list",
+        "c:src/shell/shell_commands_storage.c:cmd_storage_print_disk",
+        "c:src/shell/shell_commands_storage.c:cmd_storage_print_id_diagnostic",
+        "c:src/shell/shell_commands_storage.c:cmd_storage_print_usage",
+        "c:src/shell/shell_commands_storage.c:cmd_storage_print_volume",
+        "c:src/shell/shell_commands_storage.c:cmd_storage_read_token",
+        "c:src/shell/shell_commands_storage.c:cmd_sync",
+        "c:src/shell/shell_commands_storage.c:cmd_sync_durability_name",
+        "c:src/shell/shell_commands_storage.c:cmd_sync_print_usage",
+        "c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_blkstat",
+        "c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_cache",
+        "c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_cachestat",
+        "c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_index",
+        "c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_search",
+        "c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_storage",
+        "c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_sync",
+        "c:src/shell/shell_commands_storage.c:shell_index_job_cancel",
+        "c:src/shell/shell_commands_storage.c:shell_index_job_drain",
+        "c:src/shell/shell_commands_storage.c:shell_index_job_finish",
+        "c:src/shell/shell_commands_storage.c:shell_index_job_step",
+        "c:src/shell/shell_commands_storage.c:shell_storage_start_job"
+      ]
+    },
+    {
       "id": "host:shell:commands-vfs",
       "scenario": "Contrato host-only dos comandos grep e pipetest do Shell",
       "owner": "quality",
@@ -179240,41 +179407,6 @@
         "snapshot"
       ],
       "status": "AUTOMATED"
-    },
-    {
-      "id": "host:shell:commands-storage",
-      "scenario": "Caminhos negativos dos comandos de indice e pesquisa",
-      "owner": "quality",
-      "layer": "host",
-      "executor": "host",
-      "profile": "host-only",
-      "timeout_seconds": 120,
-      "heartbeat_timeout_seconds": 1,
-      "isolation": "fixture",
-      "parameters": {
-        "compiler": "HOST_CC",
-        "instrumentation": "-finstrument-functions",
-        "warnings": "error",
-        "storage": "indice e job falsos"
-      },
-      "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "enviar argumentos nulos, invalidos, vazios e uma pesquisa sem indice disponivel",
-      "expected": "dispatcher, parser e mensagens de erro preservam os limites e codigos canonicos",
-      "errors": "compilador ausente, warning, saida inesperada, falha de assercao ou timeout",
-      "effects": "somente buffers estaticos de saida e doubles do indice no processo host",
-      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
-      "status": "AUTOMATED",
-      "surface_ids": [
-        "api:src/include/apps/shell_job.h:shell_storage_start_job",
-        "c:src/shell/shell_commands_storage.c:cmd_index",
-        "c:src/shell/shell_commands_storage.c:cmd_index_print_usage",
-        "c:src/shell/shell_commands_storage.c:cmd_index_read_action",
-        "c:src/shell/shell_commands_storage.c:cmd_search",
-        "c:src/shell/shell_commands_storage.c:cmd_search_copy_query",
-        "c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_index",
-        "c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_search",
-        "c:src/shell/shell_commands_storage.c:shell_storage_start_job"
-      ]
     }
   ],
   "retired": [

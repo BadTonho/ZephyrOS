@@ -1914,3 +1914,9 @@ O caso automatizado é `host:shell:commands-storage`. O relatório fica em
 em `PASS`, com `unknown_addresses=[]` e `ambiguous_symbols=[]`. O contrato
 observável usa `ERR_UNAVAILABLE=9`; após uma execução real, sincronize o
 catálogo e valide com `make catalog-test`.
+
+O mesmo caso também exercita `blkstat`, `cachestat`, `cache`, `sync` e
+`storage`, incluindo estados válidos e indisponíveis, formatos ATA/USB,
+volumes, diagnóstico de IDs, limites, busca com resultados e callbacks do job
+cooperativo do índice. A fixture usa somente doubles estáticos no processo
+host e não acessa hardware ou armazenamento real.

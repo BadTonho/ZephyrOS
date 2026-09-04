@@ -2466,3 +2466,20 @@ pendente.
       superfícies ainda sem evidência específica.
 - [x] O catálogo registra 7.293 superfícies, 6.095 `COVERED`, 1.198
       `PENDING` e 153 casos; as pendências restantes continuam visíveis.
+
+### Incremento Shell/storage commands ampliado — 2026-09-04
+
+- [x] A fixture `host:shell:commands-storage` foi ampliada para chamar os
+      dispatchers reais de `blkstat`, `cachestat`, `cache`, `sync` e `storage`,
+      além de `index` e `search`.
+- [x] Foram exercitados estados válidos e indisponíveis de bloco, cache,
+      durabilidade, storage e índice; formatos ATA/USB, volumes FAT12/FAT32,
+      diagnóstico de IDs, limites de argumentos, resultados de busca e todos
+      os caminhos observáveis do job cooperativo do índice.
+- [x] A execução instrumentada passou com `HOST_CC`, sem hardware ou
+      armazenamento real. A evidência foi sincronizada e a visão renderizada;
+      `make catalog-test`, `make q3check`, `make clean` seguido de `make` e a
+      reexecução do alvo host-only passaram.
+- [x] O catálogo registra 7.293 superfícies, 6.128 `COVERED`, 1.165
+      `PENDING` e 153 casos. As superfícies sem evidência específica continuam
+      explícitas; o gate estrito integral permanece pendente.

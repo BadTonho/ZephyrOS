@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6095 |
+| `COVERED` | 6128 |
 | `MANUAL` | 0 |
-| `PENDING` | 1198 |
+| `PENDING` | 1165 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -6728,46 +6728,46 @@
 | `c:src/shell/shell_commands_packages.c:shell_packages_job_step` | `src/shell/shell_commands_packages.c` | `shell_packages_job_step` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_packages.c:shell_packages_should_start` | `src/shell/shell_commands_packages.c` | `shell_packages_should_start` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_packages.c:shell_packages_start_job` | `src/shell/shell_commands_packages.c` | `shell_packages_start_job` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_storage.c:cmd_blkstat` | `src/shell/shell_commands_storage.c` | `cmd_blkstat` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:cmd_blkstat_print_usage` | `src/shell/shell_commands_storage.c` | `cmd_blkstat_print_usage` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:cmd_cache` | `src/shell/shell_commands_storage.c` | `cmd_cache` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:cmd_cache_print_usage` | `src/shell/shell_commands_storage.c` | `cmd_cache_print_usage` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:cmd_cachestat` | `src/shell/shell_commands_storage.c` | `cmd_cachestat` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:cmd_cachestat_print_usage` | `src/shell/shell_commands_storage.c` | `cmd_cachestat_print_usage` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_storage.c:cmd_blkstat` | `src/shell/shell_commands_storage.c` | `cmd_blkstat` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:cmd_blkstat_print_usage` | `src/shell/shell_commands_storage.c` | `cmd_blkstat_print_usage` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:cmd_cache` | `src/shell/shell_commands_storage.c` | `cmd_cache` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:cmd_cache_print_usage` | `src/shell/shell_commands_storage.c` | `cmd_cache_print_usage` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:cmd_cachestat` | `src/shell/shell_commands_storage.c` | `cmd_cachestat` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:cmd_cachestat_print_usage` | `src/shell/shell_commands_storage.c` | `cmd_cachestat_print_usage` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_storage.c:cmd_index` | `src/shell/shell_commands_storage.c` | `cmd_index` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_storage.c:cmd_index_print_usage` | `src/shell/shell_commands_storage.c` | `cmd_index_print_usage` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_storage.c:cmd_index_read_action` | `src/shell/shell_commands_storage.c` | `cmd_index_read_action` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_storage.c:cmd_index_status` | `src/shell/shell_commands_storage.c` | `cmd_index_status` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_storage.c:cmd_index_status` | `src/shell/shell_commands_storage.c` | `cmd_index_status` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_storage.c:cmd_search` | `src/shell/shell_commands_storage.c` | `cmd_search` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_storage.c:cmd_search_copy_query` | `src/shell/shell_commands_storage.c` | `cmd_search_copy_query` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_storage.c:cmd_search_print_result` | `src/shell/shell_commands_storage.c` | `cmd_search_print_result` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:cmd_search_print_warnings` | `src/shell/shell_commands_storage.c` | `cmd_search_print_warnings` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:cmd_storage` | `src/shell/shell_commands_storage.c` | `cmd_storage` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:cmd_storage_has_extra` | `src/shell/shell_commands_storage.c` | `cmd_storage_has_extra` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:cmd_storage_id_copy` | `src/shell/shell_commands_storage.c` | `cmd_storage_id_copy` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:cmd_storage_id_lower` | `src/shell/shell_commands_storage.c` | `cmd_storage_id_lower` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:cmd_storage_id_prefix` | `src/shell/shell_commands_storage.c` | `cmd_storage_id_prefix` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:cmd_storage_info` | `src/shell/shell_commands_storage.c` | `cmd_storage_info` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:cmd_storage_list` | `src/shell/shell_commands_storage.c` | `cmd_storage_list` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:cmd_storage_print_disk` | `src/shell/shell_commands_storage.c` | `cmd_storage_print_disk` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:cmd_storage_print_id_diagnostic` | `src/shell/shell_commands_storage.c` | `cmd_storage_print_id_diagnostic` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:cmd_storage_print_usage` | `src/shell/shell_commands_storage.c` | `cmd_storage_print_usage` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:cmd_storage_print_volume` | `src/shell/shell_commands_storage.c` | `cmd_storage_print_volume` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:cmd_storage_read_token` | `src/shell/shell_commands_storage.c` | `cmd_storage_read_token` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:cmd_sync` | `src/shell/shell_commands_storage.c` | `cmd_sync` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:cmd_sync_durability_name` | `src/shell/shell_commands_storage.c` | `cmd_sync_durability_name` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:cmd_sync_print_usage` | `src/shell/shell_commands_storage.c` | `cmd_sync_print_usage` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_blkstat` | `src/shell/shell_commands_storage.c` | `shell_dispatch_cmd_blkstat` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_cache` | `src/shell/shell_commands_storage.c` | `shell_dispatch_cmd_cache` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_cachestat` | `src/shell/shell_commands_storage.c` | `shell_dispatch_cmd_cachestat` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_storage.c:cmd_search_print_result` | `src/shell/shell_commands_storage.c` | `cmd_search_print_result` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:cmd_search_print_warnings` | `src/shell/shell_commands_storage.c` | `cmd_search_print_warnings` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:cmd_storage` | `src/shell/shell_commands_storage.c` | `cmd_storage` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:cmd_storage_has_extra` | `src/shell/shell_commands_storage.c` | `cmd_storage_has_extra` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:cmd_storage_id_copy` | `src/shell/shell_commands_storage.c` | `cmd_storage_id_copy` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:cmd_storage_id_lower` | `src/shell/shell_commands_storage.c` | `cmd_storage_id_lower` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:cmd_storage_id_prefix` | `src/shell/shell_commands_storage.c` | `cmd_storage_id_prefix` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:cmd_storage_info` | `src/shell/shell_commands_storage.c` | `cmd_storage_info` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:cmd_storage_list` | `src/shell/shell_commands_storage.c` | `cmd_storage_list` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:cmd_storage_print_disk` | `src/shell/shell_commands_storage.c` | `cmd_storage_print_disk` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:cmd_storage_print_id_diagnostic` | `src/shell/shell_commands_storage.c` | `cmd_storage_print_id_diagnostic` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:cmd_storage_print_usage` | `src/shell/shell_commands_storage.c` | `cmd_storage_print_usage` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:cmd_storage_print_volume` | `src/shell/shell_commands_storage.c` | `cmd_storage_print_volume` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:cmd_storage_read_token` | `src/shell/shell_commands_storage.c` | `cmd_storage_read_token` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:cmd_sync` | `src/shell/shell_commands_storage.c` | `cmd_sync` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:cmd_sync_durability_name` | `src/shell/shell_commands_storage.c` | `cmd_sync_durability_name` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:cmd_sync_print_usage` | `src/shell/shell_commands_storage.c` | `cmd_sync_print_usage` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_blkstat` | `src/shell/shell_commands_storage.c` | `shell_dispatch_cmd_blkstat` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_cache` | `src/shell/shell_commands_storage.c` | `shell_dispatch_cmd_cache` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_cachestat` | `src/shell/shell_commands_storage.c` | `shell_dispatch_cmd_cachestat` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_index` | `src/shell/shell_commands_storage.c` | `shell_dispatch_cmd_index` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_search` | `src/shell/shell_commands_storage.c` | `shell_dispatch_cmd_search` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_storage` | `src/shell/shell_commands_storage.c` | `shell_dispatch_cmd_storage` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_sync` | `src/shell/shell_commands_storage.c` | `shell_dispatch_cmd_sync` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:shell_index_job_cancel` | `src/shell/shell_commands_storage.c` | `shell_index_job_cancel` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:shell_index_job_drain` | `src/shell/shell_commands_storage.c` | `shell_index_job_drain` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:shell_index_job_finish` | `src/shell/shell_commands_storage.c` | `shell_index_job_finish` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_storage.c:shell_index_job_step` | `src/shell/shell_commands_storage.c` | `shell_index_job_step` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_storage` | `src/shell/shell_commands_storage.c` | `shell_dispatch_cmd_storage` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_sync` | `src/shell/shell_commands_storage.c` | `shell_dispatch_cmd_sync` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:shell_index_job_cancel` | `src/shell/shell_commands_storage.c` | `shell_index_job_cancel` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:shell_index_job_drain` | `src/shell/shell_commands_storage.c` | `shell_index_job_drain` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:shell_index_job_finish` | `src/shell/shell_commands_storage.c` | `shell_index_job_finish` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:shell_index_job_step` | `src/shell/shell_commands_storage.c` | `shell_index_job_step` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_storage.c:shell_storage_start_job` | `src/shell/shell_commands_storage.c` | `shell_storage_start_job` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_vfs.c:cmd_grep` | `src/shell/shell_commands_vfs.c` | `cmd_grep` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_vfs.c:cmd_pipetest` | `src/shell/shell_commands_vfs.c` | `cmd_pipetest` | `shell` | `COVERED` | 1 |
@@ -7463,6 +7463,7 @@
 | `host:security:tls-client` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar tls_client.c com engine BearSSL, socket, relogio e RNG falsos | handshake, envio, recepcao, EOF, estados de erro e limpeza preservam os contratos do adaptador | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do adaptador e fixtures do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:command-utils` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar parsing, validacao de argumentos, normalizacao e formatacao | utilitarios aceitam entradas validas, rejeitam limites e formatam valores corretamente | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos de entrada, saida e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:commands-core` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar handlers de ajuda, terminal, VFS, processos, threads, memoria, som, energia, compressao e resultados de loader com dependencias estaticas falsas | comandos validos e invalidos preservam seus retornos, mensagens, callbacks e limpeza sem hardware ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers e contadores estaticos da fixture host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:shell:commands-storage` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enviar argumentos nulos, invalidos, vazios e uma pesquisa sem indice disponivel | dispatcher, parser e mensagens de erro preservam os limites e codigos canonicos | compilador ausente, warning, saida inesperada, falha de assercao ou timeout | somente buffers estaticos de saida e doubles do indice no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:commands-vfs` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar grep com entrada fragmentada, comparacao sem diferenca de maiusculas, limites, erros de pipeline e o autoteste pipetest | linhas correspondentes sao encaminhadas, entradas invalidas e limites exibem diagnostico e pipetest preserva resultado e codigo canonico | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos de entrada, saida e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:core` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inicializar o Shell, encaminhar mouse, suspender terminal, concluir comando e restaurar a cena visual | entradas invalidas e inativas sao rejeitadas, scroll ativo e encaminhado, ciclo de terminal restaura prompt e redraw | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente callbacks estaticos do Shell, terminal, taskbar, desktop e aplicativos falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:diagnostics-helpers` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar parsers de log, sinais, mouse e VMA, nomes de estados, cores, caminhos sysfs/proc e invariantes de memoria com dependencias estaticas falsas | entradas validas retornam resultados canonicos; entradas nulas, invalidas e fora dos limites sao rejeitadas sem hardware, allocator ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos, estado de filesystem e paginação falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7531,7 +7532,6 @@
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
 | `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
-| `host:shell:commands-storage` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enviar argumentos nulos, invalidos, vazios e uma pesquisa sem indice disponivel | dispatcher, parser e mensagens de erro preservam os limites e codigos canonicos | compilador ausente, warning, saida inesperada, falha de assercao ou timeout | somente buffers estaticos de saida e doubles do indice no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -8519,39 +8519,6 @@
 - `c:src/shell/shell_commands_packages.c:shell_packages_job_drain`
 - `c:src/shell/shell_commands_packages.c:shell_packages_job_finish`
 - `c:src/shell/shell_commands_packages.c:shell_packages_job_step`
-- `c:src/shell/shell_commands_storage.c:cmd_blkstat`
-- `c:src/shell/shell_commands_storage.c:cmd_blkstat_print_usage`
-- `c:src/shell/shell_commands_storage.c:cmd_cache`
-- `c:src/shell/shell_commands_storage.c:cmd_cache_print_usage`
-- `c:src/shell/shell_commands_storage.c:cmd_cachestat`
-- `c:src/shell/shell_commands_storage.c:cmd_cachestat_print_usage`
-- `c:src/shell/shell_commands_storage.c:cmd_index_status`
-- `c:src/shell/shell_commands_storage.c:cmd_search_print_result`
-- `c:src/shell/shell_commands_storage.c:cmd_search_print_warnings`
-- `c:src/shell/shell_commands_storage.c:cmd_storage`
-- `c:src/shell/shell_commands_storage.c:cmd_storage_has_extra`
-- `c:src/shell/shell_commands_storage.c:cmd_storage_id_copy`
-- `c:src/shell/shell_commands_storage.c:cmd_storage_id_lower`
-- `c:src/shell/shell_commands_storage.c:cmd_storage_id_prefix`
-- `c:src/shell/shell_commands_storage.c:cmd_storage_info`
-- `c:src/shell/shell_commands_storage.c:cmd_storage_list`
-- `c:src/shell/shell_commands_storage.c:cmd_storage_print_disk`
-- `c:src/shell/shell_commands_storage.c:cmd_storage_print_id_diagnostic`
-- `c:src/shell/shell_commands_storage.c:cmd_storage_print_usage`
-- `c:src/shell/shell_commands_storage.c:cmd_storage_print_volume`
-- `c:src/shell/shell_commands_storage.c:cmd_storage_read_token`
-- `c:src/shell/shell_commands_storage.c:cmd_sync`
-- `c:src/shell/shell_commands_storage.c:cmd_sync_durability_name`
-- `c:src/shell/shell_commands_storage.c:cmd_sync_print_usage`
-- `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_blkstat`
-- `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_cache`
-- `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_cachestat`
-- `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_storage`
-- `c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_sync`
-- `c:src/shell/shell_commands_storage.c:shell_index_job_cancel`
-- `c:src/shell/shell_commands_storage.c:shell_index_job_drain`
-- `c:src/shell/shell_commands_storage.c:shell_index_job_finish`
-- `c:src/shell/shell_commands_storage.c:shell_index_job_step`
 - `c:src/shell/taskmanager.c:draw_bar`
 - `c:src/shell/taskmanager.c:draw_box`
 - `c:src/shell/taskmanager.c:draw_header`
