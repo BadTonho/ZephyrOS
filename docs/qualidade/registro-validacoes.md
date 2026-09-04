@@ -5663,3 +5663,15 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `make` e os 164 testes Python unitários. O catálogo registra 7.293
   superfícies, 6.086 `COVERED`, 1.207 `PENDING` e 152 casos; o gate estrito
   continua pendente pelas superfícies restantes sem evidência específica.
+
+- Incremento Shell/storage commands — concluído em 2026-09-04
+  (America/Sao_Paulo). A fixture `host:shell:commands-storage` chama os
+  dispatchers reais de `index` e `search` em `src/shell/shell_commands_storage.c`
+  e usa doubles estáticos para índice, bloco, cache, storage e VFS. Foram
+  validados argumentos nulos, desconhecidos, extras e vazios, pesquisa sem
+  índice e as mensagens com `ERR_UNAVAILABLE=9`; o primeiro ajuste corrigiu a
+  expectativa incorreta de `12`. O alvo passou com `HOST_CC`, a evidência
+  instrumentada foi sincronizada e a visão do catálogo foi regenerada. O
+  catálogo registra 7.293 superfícies, 6.095 `COVERED`, 1.198 `PENDING` e
+  153 casos; o gate estrito continua pendente pelas superfícies restantes sem
+  evidência específica.

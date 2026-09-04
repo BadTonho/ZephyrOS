@@ -3597,6 +3597,48 @@
       "evidence": "make test-shell-job-host PASS com sucesso, falha, cancelamento, drenagem, timeout, deadlines, eventos IPC e job status no relatorio instrumentado"
     },
     {
+      "id": "shell-commands-storage-host-dynamic",
+      "domain": "shell-storage-commands",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/shell-commands-storage-host/coverage.json",
+      "coverage_sources": [
+        "src/shell/shell_commands_storage.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:shell:commands-storage",
+        "scenario": "Caminhos negativos dos comandos de indice e pesquisa",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "storage": "indice e job falsos"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "enviar argumentos nulos, invalidos, vazios e uma pesquisa sem indice disponivel",
+        "expected": "dispatcher, parser e mensagens de erro preservam os limites e codigos canonicos",
+        "errors": "compilador ausente, warning, saida inesperada, falha de assercao ou timeout",
+        "effects": "somente buffers estaticos de saida e doubles do indice no processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": []
+      },
+      "evidence": "make test-shell-commands-storage-host PASS com index e search; a fixture cobre diretamente os dispatchers e os caminhos negativos de parsing usando indice e job falsos"
+    },
+    {
       "id": "shell-commands-vfs-host-dynamic",
       "domain": "shell-vfs",
       "owner": "quality",

@@ -559,6 +559,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -568,7 +569,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_handle_key",
@@ -586,6 +587,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -595,7 +597,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_handle_mouse",
@@ -669,6 +671,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -678,7 +681,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_process_command",
@@ -696,6 +699,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -705,7 +709,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_report_app_loader_result",
@@ -723,6 +727,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -732,7 +737,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_report_user_test_result",
@@ -750,6 +755,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -759,7 +765,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_update_hosted_terminal",
@@ -777,6 +783,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -786,7 +793,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_command_utils.h:shell_command_args_equal",
@@ -2825,9 +2832,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_pipeline.h:shell_pipeline_is_active",
@@ -3471,6 +3481,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -3480,7 +3491,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible",
@@ -3522,6 +3533,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -3531,7 +3543,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_reset_input",
@@ -3549,6 +3561,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -3558,7 +3571,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal",
@@ -3576,6 +3589,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -3585,7 +3599,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal",
@@ -3631,6 +3645,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -3640,7 +3655,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/taskmanager.h:taskmgr_close",
@@ -22035,11 +22050,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering",
@@ -22057,11 +22073,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering",
@@ -22079,11 +22096,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_get_device",
@@ -22101,11 +22119,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_get_device_at",
@@ -22123,11 +22142,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_get_device_by_id",
@@ -22145,11 +22165,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_get_device_count",
@@ -22167,11 +22188,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_init",
@@ -22189,11 +22211,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_read",
@@ -22211,11 +22234,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_write",
@@ -22233,11 +22257,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/rng.h:rng_get_bytes",
@@ -133649,6 +133674,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -133658,7 +133684,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell.c:shell_handle_mouse",
@@ -133718,6 +133744,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -133727,7 +133754,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell.c:shell_process_command",
@@ -133914,6 +133941,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -133921,7 +133949,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell.c:shell_runtime_resume_terminal",
@@ -134006,6 +134034,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -134013,7 +134042,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell.c:shell_update_hosted_terminal",
@@ -145741,9 +145770,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:cmd_index_print_usage",
@@ -145759,9 +145791,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:cmd_index_read_action",
@@ -145777,9 +145812,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:cmd_index_status",
@@ -145813,9 +145851,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:cmd_search_copy_query",
@@ -145831,9 +145872,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:cmd_search_print_result",
@@ -146209,9 +146253,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_search",
@@ -146227,9 +146274,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_storage",
@@ -146353,9 +146403,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_vfs.c:cmd_grep",
@@ -160813,6 +160866,34 @@
       ]
     },
     {
+      "id": "host:core:spinlock",
+      "scenario": "Contrato host-only do lock de exclusao mutua",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "inicializar, adquirir e liberar um spinlock em fixture estatica",
+      "expected": "as operacoes publicam os estados livre e adquirido sem residuos",
+      "errors": "compilador ausente, warning, falha de assercao ou timeout",
+      "effects": "somente a palavra de estado do lock no processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/spinlock.h:spinlock_acquire",
+        "api:src/include/core/spinlock.h:spinlock_init",
+        "api:src/include/core/spinlock.h:spinlock_release"
+      ]
+    },
+    {
       "id": "host:core:state",
       "scenario": "Contratos host-only de estados centrais e cadeia de energia",
       "owner": "quality",
@@ -163196,6 +163277,16 @@
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
       "surface_ids": [
+        "api:src/include/drivers/pci.h:pci_enable_bus_mastering",
+        "api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering",
+        "api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering",
+        "api:src/include/drivers/pci.h:pci_get_device",
+        "api:src/include/drivers/pci.h:pci_get_device_at",
+        "api:src/include/drivers/pci.h:pci_get_device_by_id",
+        "api:src/include/drivers/pci.h:pci_get_device_count",
+        "api:src/include/drivers/pci.h:pci_init",
+        "api:src/include/drivers/pci.h:pci_read",
+        "api:src/include/drivers/pci.h:pci_write",
         "c:src/drivers/pci.c:inl",
         "c:src/drivers/pci.c:outl",
         "c:src/drivers/pci.c:pci_enable_bus_mastering",
@@ -166802,15 +166893,31 @@
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
       "surface_ids": [
+        "api:src/include/apps/shell.h:shell_handle_app_request",
+        "api:src/include/apps/shell.h:shell_handle_key",
         "api:src/include/apps/shell.h:shell_handle_mouse",
         "api:src/include/apps/shell.h:shell_init",
+        "api:src/include/apps/shell.h:shell_print_prompt",
+        "api:src/include/apps/shell.h:shell_process_command",
+        "api:src/include/apps/shell.h:shell_report_app_loader_result",
+        "api:src/include/apps/shell.h:shell_report_user_test_result",
+        "api:src/include/apps/shell.h:shell_update_hosted_terminal",
         "api:src/include/apps/shell_runtime.h:shell_runtime_finish_command",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_reset_input",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal",
         "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal_for_scene",
+        "c:src/shell/shell.c:shell_handle_key",
         "c:src/shell/shell.c:shell_handle_mouse",
         "c:src/shell/shell.c:shell_init",
+        "c:src/shell/shell.c:shell_print_prompt",
         "c:src/shell/shell.c:shell_redraw_after_overlay_close",
         "c:src/shell/shell.c:shell_runtime_finish_command",
-        "c:src/shell/shell.c:shell_runtime_suspend_terminal"
+        "c:src/shell/shell.c:shell_runtime_reset_input",
+        "c:src/shell/shell.c:shell_runtime_suspend_terminal",
+        "c:src/shell/shell.c:shell_should_show_prompt"
       ],
       "tags": [
         "host",
@@ -179135,8 +179242,8 @@
       "status": "AUTOMATED"
     },
     {
-      "id": "host:core:spinlock",
-      "scenario": "Contrato host-only do lock de exclusao mutua",
+      "id": "host:shell:commands-storage",
+      "scenario": "Caminhos negativos dos comandos de indice e pesquisa",
       "owner": "quality",
       "layer": "host",
       "executor": "host",
@@ -179147,19 +179254,26 @@
       "parameters": {
         "compiler": "HOST_CC",
         "instrumentation": "-finstrument-functions",
-        "warnings": "error"
+        "warnings": "error",
+        "storage": "indice e job falsos"
       },
       "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "inicializar, adquirir e liberar um spinlock em fixture estatica",
-      "expected": "as operacoes publicam os estados livre e adquirido sem residuos",
-      "errors": "compilador ausente, warning, falha de assercao ou timeout",
-      "effects": "somente a palavra de estado do lock no processo host",
+      "action": "enviar argumentos nulos, invalidos, vazios e uma pesquisa sem indice disponivel",
+      "expected": "dispatcher, parser e mensagens de erro preservam os limites e codigos canonicos",
+      "errors": "compilador ausente, warning, saida inesperada, falha de assercao ou timeout",
+      "effects": "somente buffers estaticos de saida e doubles do indice no processo host",
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
       "surface_ids": [
-        "api:src/include/core/spinlock.h:spinlock_acquire",
-        "api:src/include/core/spinlock.h:spinlock_init",
-        "api:src/include/core/spinlock.h:spinlock_release"
+        "api:src/include/apps/shell_job.h:shell_storage_start_job",
+        "c:src/shell/shell_commands_storage.c:cmd_index",
+        "c:src/shell/shell_commands_storage.c:cmd_index_print_usage",
+        "c:src/shell/shell_commands_storage.c:cmd_index_read_action",
+        "c:src/shell/shell_commands_storage.c:cmd_search",
+        "c:src/shell/shell_commands_storage.c:cmd_search_copy_query",
+        "c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_index",
+        "c:src/shell/shell_commands_storage.c:shell_dispatch_cmd_search",
+        "c:src/shell/shell_commands_storage.c:shell_storage_start_job"
       ]
     }
   ],

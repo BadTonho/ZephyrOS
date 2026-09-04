@@ -131,6 +131,8 @@ BEARSSL_COMPAT_RESULT_DIR = ROOT / "build" / "test-results" / "bearssl-compat-ho
 BEARSSL_COMPAT_BINARY = ROOT / "build" / "tests" / "test_bearssl_compat_host.exe"
 SHELL_DISPATCH_RESULT_DIR = ROOT / "build" / "test-results" / "shell-dispatch-host"
 SHELL_DISPATCH_BINARY = ROOT / "build" / "tests" / "test_shell_dispatch_host.exe"
+SHELL_COMMANDS_STORAGE_RESULT_DIR = ROOT / "build" / "test-results" / "shell-commands-storage-host"
+SHELL_COMMANDS_STORAGE_BINARY = ROOT / "build" / "tests" / "test_shell_commands_storage_host.exe"
 SPINLOCK_RESULT_DIR = ROOT / "build" / "test-results" / "spinlock-host"
 SPINLOCK_BINARY = ROOT / "build" / "tests" / "test_spinlock_host.exe"
 DEFAULT_TIMEOUT = 120.0
@@ -981,6 +983,13 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
     if case_id == "host:shell:dispatch":
         return (SHELL_DISPATCH_RESULT_DIR, SHELL_DISPATCH_BINARY,
                 SHELL_DISPATCH_SOURCE_FILES, "shell-dispatch-host")
+    if case_id == "host:shell:commands-storage":
+        return (SHELL_COMMANDS_STORAGE_RESULT_DIR,
+                SHELL_COMMANDS_STORAGE_BINARY,
+                (ROOT / "tests" / "unit" / "test_shell_commands_storage_host.c",
+                 ROOT / "src" / "shell" / "shell_commands_storage.c",
+                 ROOT / "src" / "core" / "string.c"),
+                "shell-commands-storage-host")
     if case_id == "host:shell:introspection":
         return (SHELL_INTROSPECTION_RESULT_DIR, SHELL_INTROSPECTION_BINARY,
                 SHELL_INTROSPECTION_SOURCE_FILES, "shell-introspection-host")
@@ -1306,7 +1315,8 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:process:signals", "host:process:ipc",
                                  "host:core:workqueue", "host:core:bearssl-compat",
                                  "host:core:spinlock",
-                                 "host:shell:dispatch", "host:shell:introspection",
+                                 "host:shell:dispatch", "host:shell:commands-storage",
+                                 "host:shell:introspection",
                                  "host:drivers:font", "host:drivers:rtc-status",
                                  "host:core:wifi-manager",
                                  "host:core:usb-manager",
