@@ -5693,15 +5693,15 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
 - Incremento Shell/diagnostics commands — concluído em 2026-09-04
   (America/Sao_Paulo). Foi criada a fixture host-only `host:shell:diagnostics`,
   que chama diretamente os dispatchers reais de `pwd`, `cd`, `mouse`, `log`,
-  `timer`, `clock`, `irqstat`, `wait`, `wqinfo`, `workq` e `tls`. Foram validados caminhos
+  `timer`, `clock`, `irqstat`, `wait`, `wqinfo`, `workq`, `tls`, `vfs` e `mount`. Foram validados caminhos
   válidos, argumentos extras, limites de token e velocidade, estados indisponíveis,
   níveis, histórico, filas, waiters, listagens, autotestes e preservação da configuração após rejeição. O alvo
   passou com `HOST_CC`, `-Wall -Wextra -Werror`,
   instrumentação dinâmica e doubles estáticos de VFS, mouse, vídeo, log, timer,
-  RTC, IRQ, IDT, wait, workqueue e TLS. A
+  RTC, IRQ, IDT, wait, workqueue, TLS, mounts e descritores. A
   compilação host
   usa descarte explícito de metadados de unwind para permitir a coleta por
   seções no MinGW; o build freestanding não usa essa configuração. A evidência
   foi sincronizada e a visão do catálogo regenerada; o catálogo registra 7.293
-  superfícies, 6.193 `COVERED`, 1.100 `PENDING` e 154 casos. As pendências
+  superfícies, 6.197 `COVERED`, 1.096 `PENDING` e 154 casos. As pendências
   restantes continuam explícitas.
