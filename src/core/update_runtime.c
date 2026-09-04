@@ -1968,8 +1968,13 @@ static int runtime_replace_from_plan(const update_runtime_action_options_t* opti
 
         if (runtime_cancelled(options)) {
             if (index == 0U) {
-                if (runtime_clear_slot(slot) != OK ||
-                    runtime_clear_journal() != OK) {
+                int cleanup_result = kind == RUNTIME_JOURNAL_ROLLBACK ?
+                                     runtime_clear_journal() :
+                                     runtime_clear_slot(slot);
+
+                if (cleanup_result != OK ||
+                    (kind != RUNTIME_JOURNAL_ROLLBACK &&
+                     runtime_clear_journal() != OK)) {
                     if (output) output->recovery_pending = 1U;
                     return runtime_action_fail(output,
                         UPDATE_RUNTIME_REASON_JOURNAL, ERR_DISK,

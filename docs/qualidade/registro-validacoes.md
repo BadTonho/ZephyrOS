@@ -5551,3 +5551,15 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   registra 7.255 superficies, 5.729 `COVERED`, 1.526 `PENDING` e 148 casos.
   O gate estrito e a validacao TST7 completa continuam pendentes pelas
   superficies sem evidencia real.
+
+- Incremento Core/update-runtime transacional concluido em 2026-09-04
+  (America/Sao_Paulo). O caso `host:core:update-runtime` foi ampliado para uma
+  fixture FAT12 em memoria com estado persistente, journal, ZUPD, staging,
+  backups, commit, rollback, cancelamento, failpoints, recuperacao no boot,
+  cache seletivo e estados sem filesystem. O teste encontrou e corrigiu a
+  perda indevida do slot de backup quando um rollback era cancelado antes da
+  primeira substituicao. Passaram
+  `make test-update-runtime-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`,
+  sincronizacao, renderizacao, `make catalog-test` e a cobertura resolveu as
+  46 superficies pendentes de `src/core/update_runtime.c`, sem enderecos
+  desconhecidos ou simbolos ambiguos.

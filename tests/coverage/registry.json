@@ -2248,10 +2248,10 @@
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-update-runtime-host PASS com contratos de serializacao, validacao de manifestos e pacotes, planejamento, comparacao de arquivos e resultados de operacao no relatorio instrumentado",
+      "evidence": "make test-update-runtime-host PASS com FAT12 em memoria, inicializacao e recuperacao de estado, ZUPD, staging, backups, journal, commit, rollback, cancelamento, failpoints, cache seletivo e contratos publicos no relatorio instrumentado",
       "case_definition": {
         "id": "host:core:update-runtime",
-        "scenario": "Contratos puros do runtime de atualizacao U4",
+        "scenario": "Fluxos transacionais U4 em FAT12 em memoria e contratos de indisponibilidade",
         "owner": "quality",
         "layer": "host",
         "executor": "host",
@@ -2266,8 +2266,8 @@
           "storage": "nenhum; arquivos estaticos em memoria"
         },
         "preconditions": "compilador C nativo e nm disponiveis",
-        "action": "executar contratos de registros, manifestos, pacotes, planejamento e comparacao de arquivos runtime",
-        "expected": "entradas validas fazem round-trip e entradas invalidas retornam erros canonicos sem estado persistente",
+        "action": "inicializar o runtime, verificar e aplicar ZUPD, exercitar rollback, cancelamento, failpoints, recovery e cache seletivo",
+        "expected": "transacoes validas restauram estado e arquivos, falhas deixam journal recuperavel e entradas invalidas retornam erros canonicos",
         "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
         "effects": "somente buffers estaticos no processo host",
         "cleanup": "buffers locais descartados; manifesto, logs e cobertura preservados",

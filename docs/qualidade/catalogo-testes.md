@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 5821 |
+| `COVERED` | 5867 |
 | `MANUAL` | 0 |
-| `PENDING` | 1435 |
+| `PENDING` | 1389 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -3628,18 +3628,18 @@
 | `c:src/core/update_remote_system.c:update_remote_system_state_name` | `src/core/update_remote_system.c` | `update_remote_system_state_name` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_action_fail` | `src/core/update_runtime.c` | `runtime_action_fail` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_alias` | `src/core/update_runtime.c` | `runtime_alias` | `core` | `COVERED` | 1 |
-| `c:src/core/update_runtime.c:runtime_apply_plan` | `src/core/update_runtime.c` | `runtime_apply_plan` | `core` | `PENDING` | 0 |
-| `c:src/core/update_runtime.c:runtime_apply_plan_locked` | `src/core/update_runtime.c` | `runtime_apply_plan_locked` | `core` | `PENDING` | 0 |
+| `c:src/core/update_runtime.c:runtime_apply_plan` | `src/core/update_runtime.c` | `runtime_apply_plan` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:runtime_apply_plan_locked` | `src/core/update_runtime.c` | `runtime_apply_plan_locked` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_asset_name_valid` | `src/core/update_runtime.c` | `runtime_asset_name_valid` | `core` | `COVERED` | 1 |
-| `c:src/core/update_runtime.c:runtime_build_rollback_plan` | `src/core/update_runtime.c` | `runtime_build_rollback_plan` | `core` | `PENDING` | 0 |
+| `c:src/core/update_runtime.c:runtime_build_rollback_plan` | `src/core/update_runtime.c` | `runtime_build_rollback_plan` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_cancelled` | `src/core/update_runtime.c` | `runtime_cancelled` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_catalog_index` | `src/core/update_runtime.c` | `runtime_catalog_index` | `core` | `COVERED` | 1 |
-| `c:src/core/update_runtime.c:runtime_clear_journal` | `src/core/update_runtime.c` | `runtime_clear_journal` | `core` | `PENDING` | 0 |
-| `c:src/core/update_runtime.c:runtime_clear_slot` | `src/core/update_runtime.c` | `runtime_clear_slot` | `core` | `PENDING` | 0 |
-| `c:src/core/update_runtime.c:runtime_clear_stage` | `src/core/update_runtime.c` | `runtime_clear_stage` | `core` | `PENDING` | 0 |
-| `c:src/core/update_runtime.c:runtime_commit_state_from_journal` | `src/core/update_runtime.c` | `runtime_commit_state_from_journal` | `core` | `PENDING` | 0 |
+| `c:src/core/update_runtime.c:runtime_clear_journal` | `src/core/update_runtime.c` | `runtime_clear_journal` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:runtime_clear_slot` | `src/core/update_runtime.c` | `runtime_clear_slot` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:runtime_clear_stage` | `src/core/update_runtime.c` | `runtime_clear_stage` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:runtime_commit_state_from_journal` | `src/core/update_runtime.c` | `runtime_commit_state_from_journal` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_control_valid` | `src/core/update_runtime.c` | `runtime_control_valid` | `core` | `COVERED` | 1 |
-| `c:src/core/update_runtime.c:runtime_copy_current_to_backup` | `src/core/update_runtime.c` | `runtime_copy_current_to_backup` | `core` | `PENDING` | 0 |
+| `c:src/core/update_runtime.c:runtime_copy_current_to_backup` | `src/core/update_runtime.c` | `runtime_copy_current_to_backup` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_current_version` | `src/core/update_runtime.c` | `runtime_current_version` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_decode_file_state` | `src/core/update_runtime.c` | `runtime_decode_file_state` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_decode_journal` | `src/core/update_runtime.c` | `runtime_decode_journal` | `core` | `COVERED` | 1 |
@@ -3655,15 +3655,15 @@
 | `c:src/core/update_runtime.c:runtime_file_state_raw_valid` | `src/core/update_runtime.c` | `runtime_file_state_raw_valid` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_fill_action_result` | `src/core/update_runtime.c` | `runtime_fill_action_result` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_fixed_text` | `src/core/update_runtime.c` | `runtime_fixed_text` | `core` | `COVERED` | 1 |
-| `c:src/core/update_runtime.c:runtime_hash_file` | `src/core/update_runtime.c` | `runtime_hash_file` | `core` | `PENDING` | 0 |
-| `c:src/core/update_runtime.c:runtime_hash_file_range` | `src/core/update_runtime.c` | `runtime_hash_file_range` | `core` | `PENDING` | 0 |
+| `c:src/core/update_runtime.c:runtime_hash_file` | `src/core/update_runtime.c` | `runtime_hash_file` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:runtime_hash_file_range` | `src/core/update_runtime.c` | `runtime_hash_file_range` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_identifier_valid` | `src/core/update_runtime.c` | `runtime_identifier_valid` | `core` | `COVERED` | 1 |
-| `c:src/core/update_runtime.c:runtime_initial_version` | `src/core/update_runtime.c` | `runtime_initial_version` | `core` | `PENDING` | 0 |
+| `c:src/core/update_runtime.c:runtime_initial_version` | `src/core/update_runtime.c` | `runtime_initial_version` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_journal_old_state_raw_valid` | `src/core/update_runtime.c` | `runtime_journal_old_state_raw_valid` | `core` | `COVERED` | 1 |
-| `c:src/core/update_runtime.c:runtime_legacy_transaction_pending` | `src/core/update_runtime.c` | `runtime_legacy_transaction_pending` | `core` | `PENDING` | 0 |
-| `c:src/core/update_runtime.c:runtime_load_control` | `src/core/update_runtime.c` | `runtime_load_control` | `core` | `PENDING` | 0 |
-| `c:src/core/update_runtime.c:runtime_load_journal_records` | `src/core/update_runtime.c` | `runtime_load_journal_records` | `core` | `PENDING` | 0 |
-| `c:src/core/update_runtime.c:runtime_load_state_records` | `src/core/update_runtime.c` | `runtime_load_state_records` | `core` | `PENDING` | 0 |
+| `c:src/core/update_runtime.c:runtime_legacy_transaction_pending` | `src/core/update_runtime.c` | `runtime_legacy_transaction_pending` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:runtime_load_control` | `src/core/update_runtime.c` | `runtime_load_control` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:runtime_load_journal_records` | `src/core/update_runtime.c` | `runtime_load_journal_records` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:runtime_load_state_records` | `src/core/update_runtime.c` | `runtime_load_state_records` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_magic_equal` | `src/core/update_runtime.c` | `runtime_magic_equal` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_manifest_applicable` | `src/core/update_runtime.c` | `runtime_manifest_applicable` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_manifest_entry_valid` | `src/core/update_runtime.c` | `runtime_manifest_entry_valid` | `core` | `COVERED` | 1 |
@@ -3672,47 +3672,47 @@
 | `c:src/core/update_runtime.c:runtime_manifest_signature` | `src/core/update_runtime.c` | `runtime_manifest_signature` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_package_entry` | `src/core/update_runtime.c` | `runtime_package_entry` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_package_plan` | `src/core/update_runtime.c` | `runtime_package_plan` | `core` | `COVERED` | 1 |
-| `c:src/core/update_runtime.c:runtime_package_signature` | `src/core/update_runtime.c` | `runtime_package_signature` | `core` | `PENDING` | 0 |
-| `c:src/core/update_runtime.c:runtime_parse_package_header` | `src/core/update_runtime.c` | `runtime_parse_package_header` | `core` | `PENDING` | 0 |
+| `c:src/core/update_runtime.c:runtime_package_signature` | `src/core/update_runtime.c` | `runtime_package_signature` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:runtime_parse_package_header` | `src/core/update_runtime.c` | `runtime_parse_package_header` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_path_valid` | `src/core/update_runtime.c` | `runtime_path_valid` | `core` | `COVERED` | 1 |
-| `c:src/core/update_runtime.c:runtime_prepare_journal` | `src/core/update_runtime.c` | `runtime_prepare_journal` | `core` | `PENDING` | 0 |
-| `c:src/core/update_runtime.c:runtime_prune_slots` | `src/core/update_runtime.c` | `runtime_prune_slots` | `core` | `PENDING` | 0 |
-| `c:src/core/update_runtime.c:runtime_read_cache_entry` | `src/core/update_runtime.c` | `runtime_read_cache_entry` | `core` | `PENDING` | 0 |
+| `c:src/core/update_runtime.c:runtime_prepare_journal` | `src/core/update_runtime.c` | `runtime_prepare_journal` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:runtime_prune_slots` | `src/core/update_runtime.c` | `runtime_prune_slots` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:runtime_read_cache_entry` | `src/core/update_runtime.c` | `runtime_read_cache_entry` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_read_file_state` | `src/core/update_runtime.c` | `runtime_read_file_state` | `core` | `COVERED` | 1 |
-| `c:src/core/update_runtime.c:runtime_read_package_entry` | `src/core/update_runtime.c` | `runtime_read_package_entry` | `core` | `PENDING` | 0 |
+| `c:src/core/update_runtime.c:runtime_read_package_entry` | `src/core/update_runtime.c` | `runtime_read_package_entry` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_read_u16` | `src/core/update_runtime.c` | `runtime_read_u16` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_read_u32` | `src/core/update_runtime.c` | `runtime_read_u32` | `core` | `COVERED` | 1 |
-| `c:src/core/update_runtime.c:runtime_recover_pending` | `src/core/update_runtime.c` | `runtime_recover_pending` | `core` | `PENDING` | 0 |
+| `c:src/core/update_runtime.c:runtime_recover_pending` | `src/core/update_runtime.c` | `runtime_recover_pending` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_refresh_current_files` | `src/core/update_runtime.c` | `runtime_refresh_current_files` | `core` | `COVERED` | 1 |
-| `c:src/core/update_runtime.c:runtime_replace_from_plan` | `src/core/update_runtime.c` | `runtime_replace_from_plan` | `core` | `PENDING` | 0 |
-| `c:src/core/update_runtime.c:runtime_restore_new_entry` | `src/core/update_runtime.c` | `runtime_restore_new_entry` | `core` | `PENDING` | 0 |
-| `c:src/core/update_runtime.c:runtime_restore_old_entry` | `src/core/update_runtime.c` | `runtime_restore_old_entry` | `core` | `PENDING` | 0 |
-| `c:src/core/update_runtime.c:runtime_space_available` | `src/core/update_runtime.c` | `runtime_space_available` | `core` | `PENDING` | 0 |
-| `c:src/core/update_runtime.c:runtime_stage_cache` | `src/core/update_runtime.c` | `runtime_stage_cache` | `core` | `PENDING` | 0 |
-| `c:src/core/update_runtime.c:runtime_stage_package` | `src/core/update_runtime.c` | `runtime_stage_package` | `core` | `PENDING` | 0 |
+| `c:src/core/update_runtime.c:runtime_replace_from_plan` | `src/core/update_runtime.c` | `runtime_replace_from_plan` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:runtime_restore_new_entry` | `src/core/update_runtime.c` | `runtime_restore_new_entry` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:runtime_restore_old_entry` | `src/core/update_runtime.c` | `runtime_restore_old_entry` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:runtime_space_available` | `src/core/update_runtime.c` | `runtime_space_available` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:runtime_stage_cache` | `src/core/update_runtime.c` | `runtime_stage_cache` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:runtime_stage_package` | `src/core/update_runtime.c` | `runtime_stage_package` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_state_hash` | `src/core/update_runtime.c` | `runtime_state_hash` | `core` | `COVERED` | 1 |
-| `c:src/core/update_runtime.c:runtime_state_healthy_now` | `src/core/update_runtime.c` | `runtime_state_healthy_now` | `core` | `COVERED` | 1 |
-| `c:src/core/update_runtime.c:runtime_state_seed` | `src/core/update_runtime.c` | `runtime_state_seed` | `core` | `PENDING` | 0 |
-| `c:src/core/update_runtime.c:runtime_states_equal` | `src/core/update_runtime.c` | `runtime_states_equal` | `core` | `PENDING` | 0 |
+| `c:src/core/update_runtime.c:runtime_state_healthy_now` | `src/core/update_runtime.c` | `runtime_state_healthy_now` | `core` | `COVERED` | 2 |
+| `c:src/core/update_runtime.c:runtime_state_seed` | `src/core/update_runtime.c` | `runtime_state_seed` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:runtime_states_equal` | `src/core/update_runtime.c` | `runtime_states_equal` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_verification_fail` | `src/core/update_runtime.c` | `runtime_verification_fail` | `core` | `COVERED` | 1 |
-| `c:src/core/update_runtime.c:runtime_verify_package_file` | `src/core/update_runtime.c` | `runtime_verify_package_file` | `core` | `PENDING` | 0 |
-| `c:src/core/update_runtime.c:runtime_verify_package_payloads` | `src/core/update_runtime.c` | `runtime_verify_package_payloads` | `core` | `PENDING` | 0 |
+| `c:src/core/update_runtime.c:runtime_verify_package_file` | `src/core/update_runtime.c` | `runtime_verify_package_file` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:runtime_verify_package_payloads` | `src/core/update_runtime.c` | `runtime_verify_package_payloads` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_version_compare` | `src/core/update_runtime.c` | `runtime_version_compare` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_version_is_newer` | `src/core/update_runtime.c` | `runtime_version_is_newer` | `core` | `COVERED` | 1 |
-| `c:src/core/update_runtime.c:runtime_write_control` | `src/core/update_runtime.c` | `runtime_write_control` | `core` | `PENDING` | 0 |
-| `c:src/core/update_runtime.c:runtime_write_journal` | `src/core/update_runtime.c` | `runtime_write_journal` | `core` | `PENDING` | 0 |
-| `c:src/core/update_runtime.c:runtime_write_stage` | `src/core/update_runtime.c` | `runtime_write_stage` | `core` | `PENDING` | 0 |
-| `c:src/core/update_runtime.c:runtime_write_state` | `src/core/update_runtime.c` | `runtime_write_state` | `core` | `PENDING` | 0 |
-| `c:src/core/update_runtime.c:runtime_write_target_from_stage` | `src/core/update_runtime.c` | `runtime_write_target_from_stage` | `core` | `PENDING` | 0 |
+| `c:src/core/update_runtime.c:runtime_write_control` | `src/core/update_runtime.c` | `runtime_write_control` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:runtime_write_journal` | `src/core/update_runtime.c` | `runtime_write_journal` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:runtime_write_stage` | `src/core/update_runtime.c` | `runtime_write_stage` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:runtime_write_state` | `src/core/update_runtime.c` | `runtime_write_state` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:runtime_write_target_from_stage` | `src/core/update_runtime.c` | `runtime_write_target_from_stage` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_write_u16` | `src/core/update_runtime.c` | `runtime_write_u16` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_write_u32` | `src/core/update_runtime.c` | `runtime_write_u32` | `core` | `COVERED` | 1 |
-| `c:src/core/update_runtime.c:update_runtime_apply_cached` | `src/core/update_runtime.c` | `update_runtime_apply_cached` | `core` | `PENDING` | 0 |
-| `c:src/core/update_runtime.c:update_runtime_apply_file` | `src/core/update_runtime.c` | `update_runtime_apply_file` | `core` | `PENDING` | 0 |
-| `c:src/core/update_runtime.c:update_runtime_file_matches` | `src/core/update_runtime.c` | `update_runtime_file_matches` | `core` | `PENDING` | 0 |
-| `c:src/core/update_runtime.c:update_runtime_get_cache` | `src/core/update_runtime.c` | `update_runtime_get_cache` | `core` | `PENDING` | 0 |
-| `c:src/core/update_runtime.c:update_runtime_get_capabilities` | `src/core/update_runtime.c` | `update_runtime_get_capabilities` | `core` | `COVERED` | 1 |
-| `c:src/core/update_runtime.c:update_runtime_get_installed_version` | `src/core/update_runtime.c` | `update_runtime_get_installed_version` | `core` | `PENDING` | 0 |
-| `c:src/core/update_runtime.c:update_runtime_get_status` | `src/core/update_runtime.c` | `update_runtime_get_status` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:update_runtime_apply_cached` | `src/core/update_runtime.c` | `update_runtime_apply_cached` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:update_runtime_apply_file` | `src/core/update_runtime.c` | `update_runtime_apply_file` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:update_runtime_file_matches` | `src/core/update_runtime.c` | `update_runtime_file_matches` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:update_runtime_get_cache` | `src/core/update_runtime.c` | `update_runtime_get_cache` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:update_runtime_get_capabilities` | `src/core/update_runtime.c` | `update_runtime_get_capabilities` | `core` | `COVERED` | 2 |
+| `c:src/core/update_runtime.c:update_runtime_get_installed_version` | `src/core/update_runtime.c` | `update_runtime_get_installed_version` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:update_runtime_get_status` | `src/core/update_runtime.c` | `update_runtime_get_status` | `core` | `COVERED` | 2 |
 | `c:src/core/update_runtime.c:update_runtime_host_check_manifest` | `src/core/update_runtime.c` | `update_runtime_host_check_manifest` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:update_runtime_host_check_package_and_plan` | `src/core/update_runtime.c` | `update_runtime_host_check_package_and_plan` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:update_runtime_host_check_results` | `src/core/update_runtime.c` | `update_runtime_host_check_results` | `core` | `COVERED` | 1 |
@@ -3721,14 +3721,14 @@
 | `c:src/core/update_runtime.c:update_runtime_host_fill_manifest_entry` | `src/core/update_runtime.c` | `update_runtime_host_fill_manifest_entry` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:update_runtime_host_fill_state` | `src/core/update_runtime.c` | `update_runtime_host_fill_state` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:update_runtime_host_test_contracts` | `src/core/update_runtime.c` | `update_runtime_host_test_contracts` | `core` | `COVERED` | 1 |
-| `c:src/core/update_runtime.c:update_runtime_init` | `src/core/update_runtime.c` | `update_runtime_init` | `core` | `PENDING` | 0 |
-| `c:src/core/update_runtime.c:update_runtime_is_ready` | `src/core/update_runtime.c` | `update_runtime_is_ready` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:update_runtime_init` | `src/core/update_runtime.c` | `update_runtime_init` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:update_runtime_is_ready` | `src/core/update_runtime.c` | `update_runtime_is_ready` | `core` | `COVERED` | 2 |
 | `c:src/core/update_runtime.c:update_runtime_parse_manifest` | `src/core/update_runtime.c` | `update_runtime_parse_manifest` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:update_runtime_reason_name` | `src/core/update_runtime.c` | `update_runtime_reason_name` | `core` | `COVERED` | 1 |
-| `c:src/core/update_runtime.c:update_runtime_rollback` | `src/core/update_runtime.c` | `update_runtime_rollback` | `core` | `PENDING` | 0 |
-| `c:src/core/update_runtime.c:update_runtime_test_fail_after` | `src/core/update_runtime.c` | `update_runtime_test_fail_after` | `core` | `COVERED` | 1 |
-| `c:src/core/update_runtime.c:update_runtime_verify_file` | `src/core/update_runtime.c` | `update_runtime_verify_file` | `core` | `PENDING` | 0 |
-| `c:src/core/update_runtime.c:update_runtime_verify_file_for_manifest` | `src/core/update_runtime.c` | `update_runtime_verify_file_for_manifest` | `core` | `PENDING` | 0 |
+| `c:src/core/update_runtime.c:update_runtime_rollback` | `src/core/update_runtime.c` | `update_runtime_rollback` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:update_runtime_test_fail_after` | `src/core/update_runtime.c` | `update_runtime_test_fail_after` | `core` | `COVERED` | 2 |
+| `c:src/core/update_runtime.c:update_runtime_verify_file` | `src/core/update_runtime.c` | `update_runtime_verify_file` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:update_runtime_verify_file_for_manifest` | `src/core/update_runtime.c` | `update_runtime_verify_file_for_manifest` | `core` | `COVERED` | 1 |
 | `c:src/core/update_system.c:any_nonzero` | `src/core/update_system.c` | `any_nonzero` | `core` | `COVERED` | 1 |
 | `c:src/core/update_system.c:update_system_base_equal` | `src/core/update_system.c` | `update_system_base_equal` | `core` | `COVERED` | 1 |
 | `c:src/core/update_system.c:update_system_check_tag` | `src/core/update_system.c` | `update_system_check_tag` | `core` | `COVERED` | 1 |
@@ -7368,7 +7368,7 @@
 | `host:core:update-remote-release` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar parser JSON, version lock, assets, URLs, espera, cancelamento, status HTTP e consultas publicas por tag com transporte simulado | descritores validos fazem parse; tags, limites, corrupcao, HTTP e pre-condicoes retornam erros canonicos sem rede externa | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos no processo host | estado HTTP e buffers pertencem ao processo host; manifesto, logs e cobertura preservados |
 | `host:core:update-remote-runtime` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar registros, parser de release, transporte HTTP, cache e APIs publicas com fixtures estaticos | formatos validos fazem round-trip e indisponibilidade, corrupcao e limites retornam erros canonicos sem estado persistente | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos no processo host; nenhuma rede ou armazenamento real | estado e buffers pertencem ao processo host; manifesto, logs e cobertura preservados |
 | `host:core:update-remote-system` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar serializacao, cache redundante, hash, transporte transacional e contratos publicos com buffers estaticos | estado valido faz round-trip e indisponibilidade, corrupcao e limites retornam erros canonicos sem rede ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos no processo host | estado, controles e arquivos simulados pertencem ao processo host; manifesto, logs e cobertura preservados |
-| `host:core:update-runtime` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar contratos de registros, manifestos, pacotes, planejamento e comparacao de arquivos runtime | entradas validas fazem round-trip e entradas invalidas retornam erros canonicos sem estado persistente | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos no processo host | buffers locais descartados; manifesto, logs e cobertura preservados |
+| `host:core:update-runtime` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inicializar o runtime, verificar e aplicar ZUPD, exercitar rollback, cancelamento, failpoints, recovery e cache seletivo | transacoes validas restauram estado e arquivos, falhas deixam journal recuperavel e entradas invalidas retornam erros canonicos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos no processo host | buffers locais descartados; manifesto, logs e cobertura preservados |
 | `host:core:update-system` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar validadores de header, compatibilidade, hashes, assinatura, transferencia e estados publicos com dependencias simuladas | entradas invalidas retornam erros canonicos; contratos e validadores nao acessam armazenamento ou rede reais | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos no processo host | estado de transporte e buffers pertencem ao processo host; manifesto, logs e cobertura preservados |
 | `host:core:update-system-slots` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar codificacao, validacao, journal, redundancia, recuperacao e contratos publicos com buffers estaticos | estado valido faz round-trip e entradas invalidas ou recursos ausentes retornam erros canonicos sem armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos no processo host | estado, controles e arquivos simulados pertencem ao processo host; manifesto, logs e cobertura preservados |
 | `host:core:usb-manager` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inventariar controladores UHCI, EHCI e fora do escopo, sincronizar drivers de classe, consultar portas e dispositivos, executar polling e refresh | estados, identificadores, agregacoes, limites, indisponibilidade e recuperacao preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente fixtures estaticos PCI, UHCI, EHCI, MSC e HID no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7837,52 +7837,6 @@
 - `c:src/core/app_remote.c:app_remote_write_u16`
 - `c:src/core/app_remote.c:app_remote_write_u32`
 - `c:src/core/update_remote.c:update_remote_host_cancel`
-- `c:src/core/update_runtime.c:runtime_apply_plan`
-- `c:src/core/update_runtime.c:runtime_apply_plan_locked`
-- `c:src/core/update_runtime.c:runtime_build_rollback_plan`
-- `c:src/core/update_runtime.c:runtime_clear_journal`
-- `c:src/core/update_runtime.c:runtime_clear_slot`
-- `c:src/core/update_runtime.c:runtime_clear_stage`
-- `c:src/core/update_runtime.c:runtime_commit_state_from_journal`
-- `c:src/core/update_runtime.c:runtime_copy_current_to_backup`
-- `c:src/core/update_runtime.c:runtime_hash_file`
-- `c:src/core/update_runtime.c:runtime_hash_file_range`
-- `c:src/core/update_runtime.c:runtime_initial_version`
-- `c:src/core/update_runtime.c:runtime_legacy_transaction_pending`
-- `c:src/core/update_runtime.c:runtime_load_control`
-- `c:src/core/update_runtime.c:runtime_load_journal_records`
-- `c:src/core/update_runtime.c:runtime_load_state_records`
-- `c:src/core/update_runtime.c:runtime_package_signature`
-- `c:src/core/update_runtime.c:runtime_parse_package_header`
-- `c:src/core/update_runtime.c:runtime_prepare_journal`
-- `c:src/core/update_runtime.c:runtime_prune_slots`
-- `c:src/core/update_runtime.c:runtime_read_cache_entry`
-- `c:src/core/update_runtime.c:runtime_read_package_entry`
-- `c:src/core/update_runtime.c:runtime_recover_pending`
-- `c:src/core/update_runtime.c:runtime_replace_from_plan`
-- `c:src/core/update_runtime.c:runtime_restore_new_entry`
-- `c:src/core/update_runtime.c:runtime_restore_old_entry`
-- `c:src/core/update_runtime.c:runtime_space_available`
-- `c:src/core/update_runtime.c:runtime_stage_cache`
-- `c:src/core/update_runtime.c:runtime_stage_package`
-- `c:src/core/update_runtime.c:runtime_state_seed`
-- `c:src/core/update_runtime.c:runtime_states_equal`
-- `c:src/core/update_runtime.c:runtime_verify_package_file`
-- `c:src/core/update_runtime.c:runtime_verify_package_payloads`
-- `c:src/core/update_runtime.c:runtime_write_control`
-- `c:src/core/update_runtime.c:runtime_write_journal`
-- `c:src/core/update_runtime.c:runtime_write_stage`
-- `c:src/core/update_runtime.c:runtime_write_state`
-- `c:src/core/update_runtime.c:runtime_write_target_from_stage`
-- `c:src/core/update_runtime.c:update_runtime_apply_cached`
-- `c:src/core/update_runtime.c:update_runtime_apply_file`
-- `c:src/core/update_runtime.c:update_runtime_file_matches`
-- `c:src/core/update_runtime.c:update_runtime_get_cache`
-- `c:src/core/update_runtime.c:update_runtime_get_installed_version`
-- `c:src/core/update_runtime.c:update_runtime_init`
-- `c:src/core/update_runtime.c:update_runtime_rollback`
-- `c:src/core/update_runtime.c:update_runtime_verify_file`
-- `c:src/core/update_runtime.c:update_runtime_verify_file_for_manifest`
 - `c:src/desktop/desktop.c:desktop_add_icon`
 - `c:src/desktop/desktop.c:desktop_drag_threshold_reached`
 - `c:src/desktop/desktop.c:desktop_draw`
