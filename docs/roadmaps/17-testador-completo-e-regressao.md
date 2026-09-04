@@ -19,13 +19,23 @@ equipamento e evidência correspondente.
 
 A infraestrutura TST1–TST7 está concluída para a matriz automatizada existente,
 mas o programa de cobertura integral ainda não está concluído. O catálogo
-mantém 137 casos `AUTOMATED`; após a reconciliação das APIs de panic, o
-fechamento de Shell/hosted, RTC, a reconciliação da entrada do Shell e o lote
-de processos/threads, registra 7.219 superfícies, 5.220 `COVERED` e 1.999
-`PENDING`. O próximo objetivo deste
+mantém 142 casos `AUTOMATED`; após os incrementos de Shell, RTC,
+processos/threads, FAT32, update U3 e runtime U4, registra 7.239 superfícies,
+5.394 `COVERED` e 1.845 `PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
 Isso não significa declarar hardware físico validado sem equipamento.
+
+### Incremento Core/update-runtime — 2026-09-04
+
+- [x] Fixture host-only criada para `src/core/update_runtime.c`.
+- [x] Estado, journal, manifestos ZUM2, entradas ZUPD, planejamento e
+      comparação de arquivos exercitados com doubles determinísticos.
+- [x] Caso `host:core:update-runtime` integrado ao Makefile, TST7 e catálogo.
+- [x] Evidência real: `make test-update-runtime-host` e `make catalog-test`
+      passaram; cobertura desconhecida e símbolos ambíguos permaneceram vazios.
+- [ ] Aplicação transacional completa, slots, filesystem mutável e reboot ainda
+      exigem fixture integrada e não foram marcados como cobertos.
 
 ## Objetivo
 

@@ -7,6 +7,19 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## 2026-09-04 - Runtime de atualizacao host-only
+
+- Caso: `host:core:update-runtime` / `make test-update-runtime-host`.
+- Fixture: filesystem, crypto e estado legado simulados em buffers estaticos,
+  sem armazenamento real.
+- Cobertura: registros de estado e journal, manifestos ZUM2, entradas ZUPD,
+  planejamento, comparacao de arquivos, motivos e rejeicoes do runtime.
+- Resultado: o executavel terminou `PASS`, sem enderecos desconhecidos ou
+  simbolos ambiguos; `make catalog-test` tambem passou. O catalogo registra
+  7.239 superficies, 5.394 `COVERED`, 1.845 `PENDING` e 142 casos.
+- Limite conhecido: as rotinas transacionais que exigem filesystem mutavel,
+  slots e reboot continuam pendentes para uma fixture integrada.
+
 ## 2026-09-04 - Dispatcher de syscalls host-only
 
 - Caso: `host:core:syscall` / `make test-syscall-host`.

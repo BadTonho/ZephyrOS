@@ -1696,3 +1696,20 @@ O relatorio instrumentado fica em
 sincronize o catalogo e valide com `make catalog-test`.
 Depois de alterar o handler ou a fixture, sincronize o catálogo somente após a
 execução real e valide com `make catalog-test`.
+
+## Update runtime host-only
+
+O alvo `test-update-runtime-host` compila `src/core/update_runtime.c` com
+filesystem, crypto e estado legado simulados em buffers estaticos. A fixture
+valida registros de estado e journal, manifestos ZUM2, entradas ZUPD,
+planejamento, comparacao de arquivos, motivos e rejeicoes sem acessar
+armazenamento real:
+
+```text
+make test-update-runtime-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O relatorio instrumentado fica em
+`build/test-results/update-runtime-host/coverage.json` e deve terminar em
+`PASS`, com `unknown_addresses=[]` e `ambiguous_symbols=[]`. Depois da
+execucao real, sincronize o catalogo e valide com `make catalog-test`.
