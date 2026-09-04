@@ -5336,3 +5336,12 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   incluindo I/O, leitura estável, validação, conversão e inicialização. A
   sincronização, renderização e `make catalog-test` passaram. O catálogo
   registra 7.219 superfícies, 5.255 `COVERED`, 1.964 `PENDING` e 138 casos.
+- Allowlist do TST7 quick corrigido em 2026-09-04 11:21 (America/Sao_Paulo).
+  O caso `host:shell:commands-core` passou a participar também da execução
+  rápida, com teste unitário protegendo o vínculo. `python -m unittest
+  tests.unit.test_tst7_runner` passou. A repetição de `make test-tst7-quick`
+  executou todos os casos host-only, incluindo o novo caso, e terminou
+  `BLOCKED` somente em `test-tst3-sanitize` pela ausência do runtime LLVM;
+  esse bloqueio de ambiente permaneceu explícito e o baseline não foi alterado.
+  A sincronização também restaurou `coverage_mode=integration` nos comandos
+  cobertos pelo dispatcher, preservando o contrato real de cobertura.

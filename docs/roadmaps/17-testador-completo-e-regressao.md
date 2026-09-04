@@ -2236,3 +2236,9 @@ pendente.
   do driver por relatório dinâmico real. `make test-rtc-status-host` e
   `make catalog-test` passaram. O catálogo atual registra 7.219 superfícies,
   5.255 `COVERED`, 1.964 `PENDING` e 138 casos.
+- Allowlist do TST7 quick corrigido em 2026-09-04 11:21
+  (America/Sao_Paulo). O caso `host:shell:commands-core` foi incluído na suíte
+  rápida e confirmado em execução real. O quick terminou `BLOCKED` somente no
+  sanitizador LLVM por dependência de ambiente ausente; os demais casos e
+  `q3check` passaram. A sincronização restaurou ainda o modo `integration` dos
+  comandos cobertos pelo dispatcher. O baseline permaneceu inalterado.

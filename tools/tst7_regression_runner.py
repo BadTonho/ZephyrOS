@@ -99,6 +99,7 @@ QUICK_COMMANDS = (
     ("test-shell-input-host", "shell-input-host"),
     ("test-shell-hosted-host", "shell-hosted-host"),
     ("test-shell-command-utils-host", "shell-command-utils-host"),
+    ("test-shell-commands-core-host", "shell-commands-core-host"),
     ("test-qemu-selftest", "qemu-selftest"),
     ("test-tst2-host", "tst2-host"),
     ("test-tst3-host", "tst3-host"),
