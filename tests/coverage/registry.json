@@ -5951,6 +5951,58 @@
       "evidence": "make test-shell-commands-wifi-host PASS com status, inventario PCI/USB, scan, conexao, erros e indisponibilidade em cobertura instrumentada"
     },
     {
+      "id": "app-remote-host-dynamic",
+      "domain": "core-app-remote",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:app-remote"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/app-remote-host/coverage.json",
+      "coverage_sources": [
+        "src/core/app_remote.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:core:app-remote",
+        "scenario": "Repositorio remoto AS5 com catalogo, cache, dependencias e recuperacao em FAT12 simulado",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "storage": "FAT12 em memoria"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "validar catalogo autenticado, planejamento de dependencias, preflight, cache alternado, aplicacao, procedencia, cancelamento e recovery de failpoint",
+        "expected": "entradas validas produzem estados e planos coerentes; entradas indisponiveis ou corrompidas retornam motivos canonicos e deixam o cache recuperavel",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente buffers estaticos e backend FAT12 simulado no processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "core",
+          "app-remote",
+          "cache",
+          "negative",
+          "recovery",
+          "coverage"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "make test-app-remote-host PASS com catalogo ZAC1, cache FAT12 em memoria, dependencias, procedencia, cancelamento e recovery instrumentados"
+    },
+    {
       "id": "assembly-qemu-tst7-dynamic",
       "domain": "drivers-interrupt-assembly",
       "owner": "quality",

@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7256**
-- Casos de teste: **149**
+- Casos de teste: **150**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 5867 |
+| `COVERED` | 5964 |
 | `MANUAL` | 0 |
-| `PENDING` | 1389 |
+| `PENDING` | 1292 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 149 |
+| `AUTOMATED` | 150 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -297,27 +297,27 @@
 | `api:src/include/core/app_package.h:app_package_run_installed` | `src/include/core/app_package.h` | `app_package_run_installed` | `core` | `COVERED` | 2 |
 | `api:src/include/core/app_package.h:app_package_test_fail_after` | `src/include/core/app_package.h` | `app_package_test_fail_after` | `core` | `COVERED` | 2 |
 | `api:src/include/core/app_package.h:app_package_verify_file` | `src/include/core/app_package.h` | `app_package_verify_file` | `core` | `COVERED` | 2 |
-| `api:src/include/core/app_remote.h:app_remote_apply_cached` | `src/include/core/app_remote.h` | `app_remote_apply_cached` | `core` | `PENDING` | 0 |
-| `api:src/include/core/app_remote.h:app_remote_build_plan` | `src/include/core/app_remote.h` | `app_remote_build_plan` | `core` | `PENDING` | 0 |
-| `api:src/include/core/app_remote.h:app_remote_cache_state_name` | `src/include/core/app_remote.h` | `app_remote_cache_state_name` | `core` | `PENDING` | 0 |
-| `api:src/include/core/app_remote.h:app_remote_check` | `src/include/core/app_remote.h` | `app_remote_check` | `core` | `PENDING` | 0 |
-| `api:src/include/core/app_remote.h:app_remote_clear` | `src/include/core/app_remote.h` | `app_remote_clear` | `core` | `PENDING` | 0 |
-| `api:src/include/core/app_remote.h:app_remote_disable` | `src/include/core/app_remote.h` | `app_remote_disable` | `core` | `PENDING` | 0 |
-| `api:src/include/core/app_remote.h:app_remote_enable` | `src/include/core/app_remote.h` | `app_remote_enable` | `core` | `PENDING` | 0 |
-| `api:src/include/core/app_remote.h:app_remote_entry_state_name` | `src/include/core/app_remote.h` | `app_remote_entry_state_name` | `core` | `PENDING` | 0 |
-| `api:src/include/core/app_remote.h:app_remote_fetch` | `src/include/core/app_remote.h` | `app_remote_fetch` | `core` | `PENDING` | 0 |
-| `api:src/include/core/app_remote.h:app_remote_find_entry` | `src/include/core/app_remote.h` | `app_remote_find_entry` | `core` | `PENDING` | 0 |
-| `api:src/include/core/app_remote.h:app_remote_get_count` | `src/include/core/app_remote.h` | `app_remote_get_count` | `core` | `PENDING` | 0 |
-| `api:src/include/core/app_remote.h:app_remote_get_entry` | `src/include/core/app_remote.h` | `app_remote_get_entry` | `core` | `PENDING` | 0 |
-| `api:src/include/core/app_remote.h:app_remote_get_installed_trust` | `src/include/core/app_remote.h` | `app_remote_get_installed_trust` | `core` | `PENDING` | 0 |
-| `api:src/include/core/app_remote.h:app_remote_get_status` | `src/include/core/app_remote.h` | `app_remote_get_status` | `core` | `PENDING` | 0 |
-| `api:src/include/core/app_remote.h:app_remote_init` | `src/include/core/app_remote.h` | `app_remote_init` | `core` | `PENDING` | 0 |
-| `api:src/include/core/app_remote.h:app_remote_is_provenance_available` | `src/include/core/app_remote.h` | `app_remote_is_provenance_available` | `core` | `PENDING` | 0 |
-| `api:src/include/core/app_remote.h:app_remote_reason_name` | `src/include/core/app_remote.h` | `app_remote_reason_name` | `core` | `PENDING` | 0 |
-| `api:src/include/core/app_remote.h:app_remote_refresh_provenance` | `src/include/core/app_remote.h` | `app_remote_refresh_provenance` | `core` | `PENDING` | 0 |
-| `api:src/include/core/app_remote.h:app_remote_request_cancel` | `src/include/core/app_remote.h` | `app_remote_request_cancel` | `core` | `PENDING` | 0 |
-| `api:src/include/core/app_remote.h:app_remote_state_name` | `src/include/core/app_remote.h` | `app_remote_state_name` | `core` | `PENDING` | 0 |
-| `api:src/include/core/app_remote.h:app_remote_test_fail_after` | `src/include/core/app_remote.h` | `app_remote_test_fail_after` | `core` | `PENDING` | 0 |
+| `api:src/include/core/app_remote.h:app_remote_apply_cached` | `src/include/core/app_remote.h` | `app_remote_apply_cached` | `core` | `COVERED` | 1 |
+| `api:src/include/core/app_remote.h:app_remote_build_plan` | `src/include/core/app_remote.h` | `app_remote_build_plan` | `core` | `COVERED` | 1 |
+| `api:src/include/core/app_remote.h:app_remote_cache_state_name` | `src/include/core/app_remote.h` | `app_remote_cache_state_name` | `core` | `COVERED` | 1 |
+| `api:src/include/core/app_remote.h:app_remote_check` | `src/include/core/app_remote.h` | `app_remote_check` | `core` | `COVERED` | 1 |
+| `api:src/include/core/app_remote.h:app_remote_clear` | `src/include/core/app_remote.h` | `app_remote_clear` | `core` | `COVERED` | 1 |
+| `api:src/include/core/app_remote.h:app_remote_disable` | `src/include/core/app_remote.h` | `app_remote_disable` | `core` | `COVERED` | 1 |
+| `api:src/include/core/app_remote.h:app_remote_enable` | `src/include/core/app_remote.h` | `app_remote_enable` | `core` | `COVERED` | 1 |
+| `api:src/include/core/app_remote.h:app_remote_entry_state_name` | `src/include/core/app_remote.h` | `app_remote_entry_state_name` | `core` | `COVERED` | 1 |
+| `api:src/include/core/app_remote.h:app_remote_fetch` | `src/include/core/app_remote.h` | `app_remote_fetch` | `core` | `COVERED` | 1 |
+| `api:src/include/core/app_remote.h:app_remote_find_entry` | `src/include/core/app_remote.h` | `app_remote_find_entry` | `core` | `COVERED` | 1 |
+| `api:src/include/core/app_remote.h:app_remote_get_count` | `src/include/core/app_remote.h` | `app_remote_get_count` | `core` | `COVERED` | 1 |
+| `api:src/include/core/app_remote.h:app_remote_get_entry` | `src/include/core/app_remote.h` | `app_remote_get_entry` | `core` | `COVERED` | 1 |
+| `api:src/include/core/app_remote.h:app_remote_get_installed_trust` | `src/include/core/app_remote.h` | `app_remote_get_installed_trust` | `core` | `COVERED` | 1 |
+| `api:src/include/core/app_remote.h:app_remote_get_status` | `src/include/core/app_remote.h` | `app_remote_get_status` | `core` | `COVERED` | 1 |
+| `api:src/include/core/app_remote.h:app_remote_init` | `src/include/core/app_remote.h` | `app_remote_init` | `core` | `COVERED` | 1 |
+| `api:src/include/core/app_remote.h:app_remote_is_provenance_available` | `src/include/core/app_remote.h` | `app_remote_is_provenance_available` | `core` | `COVERED` | 1 |
+| `api:src/include/core/app_remote.h:app_remote_reason_name` | `src/include/core/app_remote.h` | `app_remote_reason_name` | `core` | `COVERED` | 1 |
+| `api:src/include/core/app_remote.h:app_remote_refresh_provenance` | `src/include/core/app_remote.h` | `app_remote_refresh_provenance` | `core` | `COVERED` | 1 |
+| `api:src/include/core/app_remote.h:app_remote_request_cancel` | `src/include/core/app_remote.h` | `app_remote_request_cancel` | `core` | `COVERED` | 1 |
+| `api:src/include/core/app_remote.h:app_remote_state_name` | `src/include/core/app_remote.h` | `app_remote_state_name` | `core` | `COVERED` | 1 |
+| `api:src/include/core/app_remote.h:app_remote_test_fail_after` | `src/include/core/app_remote.h` | `app_remote_test_fail_after` | `core` | `COVERED` | 1 |
 | `api:src/include/core/arp.h:arp_clear` | `src/include/core/arp.h` | `arp_clear` | `core` | `COVERED` | 2 |
 | `api:src/include/core/arp.h:arp_configure` | `src/include/core/arp.h` | `arp_configure` | `core` | `COVERED` | 2 |
 | `api:src/include/core/arp.h:arp_entry_state_name` | `src/include/core/arp.h` | `arp_entry_state_name` | `core` | `COVERED` | 2 |
@@ -604,10 +604,10 @@
 | `api:src/include/core/spinlock.h:spinlock_acquire` | `src/include/core/spinlock.h` | `spinlock_acquire` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_init` | `src/include/core/spinlock.h` | `spinlock_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_release` | `src/include/core/spinlock.h` | `spinlock_release` | `core` | `PENDING` | 0 |
-| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 53 |
-| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 57 |
-| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 47 |
-| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 49 |
+| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 54 |
+| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 58 |
+| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 48 |
+| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 50 |
 | `api:src/include/core/syscall.h:syscall_enable_user_mode` | `src/include/core/syscall.h` | `syscall_enable_user_mode` | `core` | `COVERED` | 2 |
 | `api:src/include/core/syscall.h:syscall_handler` | `src/include/core/syscall.h` | `syscall_handler` | `core` | `COVERED` | 2 |
 | `api:src/include/core/syscall.h:syscall_init` | `src/include/core/syscall.h` | `syscall_init` | `core` | `COVERED` | 2 |
@@ -2149,82 +2149,82 @@
 | `c:src/core/app_package.c:app_package_write_history` | `src/core/app_package.c` | `app_package_write_history` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_write_journal` | `src/core/app_package.c` | `app_package_write_journal` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_write_state` | `src/core/app_package.c` | `app_package_write_state` | `core` | `COVERED` | 1 |
-| `c:src/core/app_remote.c:app_remote_alias` | `src/core/app_remote.c` | `app_remote_alias` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_apply_cached` | `src/core/app_remote.c` | `app_remote_apply_cached` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_begin` | `src/core/app_remote.c` | `app_remote_begin` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_build_installed_path` | `src/core/app_remote.c` | `app_remote_build_installed_path` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_build_package_url` | `src/core/app_remote.c` | `app_remote_build_package_url` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_build_plan` | `src/core/app_remote.c` | `app_remote_build_plan` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_build_plan_internal` | `src/core/app_remote.c` | `app_remote_build_plan_internal` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_cache_path` | `src/core/app_remote.c` | `app_remote_cache_path` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_cache_state_name` | `src/core/app_remote.c` | `app_remote_cache_state_name` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_check` | `src/core/app_remote.c` | `app_remote_check` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_classify_entries` | `src/core/app_remote.c` | `app_remote_classify_entries` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_clear` | `src/core/app_remote.c` | `app_remote_clear` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_clear_directory` | `src/core/app_remote.c` | `app_remote_clear_directory` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_copy_text` | `src/core/app_remote.c` | `app_remote_copy_text` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_decode_entry` | `src/core/app_remote.c` | `app_remote_decode_entry` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_directory_exists` | `src/core/app_remote.c` | `app_remote_directory_exists` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_disable` | `src/core/app_remote.c` | `app_remote_disable` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_enable` | `src/core/app_remote.c` | `app_remote_enable` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_end_ready` | `src/core/app_remote.c` | `app_remote_end_ready` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_ensure_directory` | `src/core/app_remote.c` | `app_remote_ensure_directory` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_entry_state_name` | `src/core/app_remote.c` | `app_remote_entry_state_name` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_fail` | `src/core/app_remote.c` | `app_remote_fail` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_fetch` | `src/core/app_remote.c` | `app_remote_fetch` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_fetch_packages` | `src/core/app_remote.c` | `app_remote_fetch_packages` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_find_entry` | `src/core/app_remote.c` | `app_remote_find_entry` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_find_index` | `src/core/app_remote.c` | `app_remote_find_index` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_fixed_text` | `src/core/app_remote.c` | `app_remote_fixed_text` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_get_count` | `src/core/app_remote.c` | `app_remote_get_count` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_get_entry` | `src/core/app_remote.c` | `app_remote_get_entry` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_get_installed_trust` | `src/core/app_remote.c` | `app_remote_get_installed_trust` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_get_status` | `src/core/app_remote.c` | `app_remote_get_status` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_hash_cached` | `src/core/app_remote.c` | `app_remote_hash_cached` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_hash_installed` | `src/core/app_remote.c` | `app_remote_hash_installed` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_http_get` | `src/core/app_remote.c` | `app_remote_http_get` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_id_valid` | `src/core/app_remote.c` | `app_remote_id_valid` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_info_matches` | `src/core/app_remote.c` | `app_remote_info_matches` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_init` | `src/core/app_remote.c` | `app_remote_init` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_is_provenance_available` | `src/core/app_remote.c` | `app_remote_is_provenance_available` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_key_revoked` | `src/core/app_remote.c` | `app_remote_key_revoked` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_load_active_cache` | `src/core/app_remote.c` | `app_remote_load_active_cache` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_load_provenance` | `src/core/app_remote.c` | `app_remote_load_provenance` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_load_records` | `src/core/app_remote.c` | `app_remote_load_records` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_network_ready` | `src/core/app_remote.c` | `app_remote_network_ready` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_package_reason` | `src/core/app_remote.c` | `app_remote_package_reason` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_parse_catalog` | `src/core/app_remote.c` | `app_remote_parse_catalog` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_path_valid` | `src/core/app_remote.c` | `app_remote_path_valid` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_plan_append` | `src/core/app_remote.c` | `app_remote_plan_append` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_plan_visit` | `src/core/app_remote.c` | `app_remote_plan_visit` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_preflight_cache_space` | `src/core/app_remote.c` | `app_remote_preflight_cache_space` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_provenance_hash` | `src/core/app_remote.c` | `app_remote_provenance_hash` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_provenance_valid` | `src/core/app_remote.c` | `app_remote_provenance_valid` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_publish_cache` | `src/core/app_remote.c` | `app_remote_publish_cache` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_read_u16` | `src/core/app_remote.c` | `app_remote_read_u16` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_read_u32` | `src/core/app_remote.c` | `app_remote_read_u32` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_reason_name` | `src/core/app_remote.c` | `app_remote_reason_name` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_record_decode` | `src/core/app_remote.c` | `app_remote_record_decode` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_record_encode` | `src/core/app_remote.c` | `app_remote_record_encode` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_record_provenance` | `src/core/app_remote.c` | `app_remote_record_provenance` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_refresh_provenance` | `src/core/app_remote.c` | `app_remote_refresh_provenance` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_request_cancel` | `src/core/app_remote.c` | `app_remote_request_cancel` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_result_reset` | `src/core/app_remote.c` | `app_remote_result_reset` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_result_status` | `src/core/app_remote.c` | `app_remote_result_status` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_revalidate_pending_cache` | `src/core/app_remote.c` | `app_remote_revalidate_pending_cache` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_sort_dependencies` | `src/core/app_remote.c` | `app_remote_sort_dependencies` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_state_name` | `src/core/app_remote.c` | `app_remote_state_name` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_test_fail_after` | `src/core/app_remote.c` | `app_remote_test_fail_after` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_transport_reason` | `src/core/app_remote.c` | `app_remote_transport_reason` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_validate_download` | `src/core/app_remote.c` | `app_remote_validate_download` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_verify_cached_entry` | `src/core/app_remote.c` | `app_remote_verify_cached_entry` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_verify_signature` | `src/core/app_remote.c` | `app_remote_verify_signature` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_wait_http` | `src/core/app_remote.c` | `app_remote_wait_http` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_write_cached_package` | `src/core/app_remote.c` | `app_remote_write_cached_package` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_write_provenance` | `src/core/app_remote.c` | `app_remote_write_provenance` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_write_record` | `src/core/app_remote.c` | `app_remote_write_record` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_write_u16` | `src/core/app_remote.c` | `app_remote_write_u16` | `core` | `PENDING` | 0 |
-| `c:src/core/app_remote.c:app_remote_write_u32` | `src/core/app_remote.c` | `app_remote_write_u32` | `core` | `PENDING` | 0 |
+| `c:src/core/app_remote.c:app_remote_alias` | `src/core/app_remote.c` | `app_remote_alias` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_apply_cached` | `src/core/app_remote.c` | `app_remote_apply_cached` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_begin` | `src/core/app_remote.c` | `app_remote_begin` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_build_installed_path` | `src/core/app_remote.c` | `app_remote_build_installed_path` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_build_package_url` | `src/core/app_remote.c` | `app_remote_build_package_url` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_build_plan` | `src/core/app_remote.c` | `app_remote_build_plan` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_build_plan_internal` | `src/core/app_remote.c` | `app_remote_build_plan_internal` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_cache_path` | `src/core/app_remote.c` | `app_remote_cache_path` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_cache_state_name` | `src/core/app_remote.c` | `app_remote_cache_state_name` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_check` | `src/core/app_remote.c` | `app_remote_check` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_classify_entries` | `src/core/app_remote.c` | `app_remote_classify_entries` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_clear` | `src/core/app_remote.c` | `app_remote_clear` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_clear_directory` | `src/core/app_remote.c` | `app_remote_clear_directory` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_copy_text` | `src/core/app_remote.c` | `app_remote_copy_text` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_decode_entry` | `src/core/app_remote.c` | `app_remote_decode_entry` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_directory_exists` | `src/core/app_remote.c` | `app_remote_directory_exists` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_disable` | `src/core/app_remote.c` | `app_remote_disable` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_enable` | `src/core/app_remote.c` | `app_remote_enable` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_end_ready` | `src/core/app_remote.c` | `app_remote_end_ready` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_ensure_directory` | `src/core/app_remote.c` | `app_remote_ensure_directory` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_entry_state_name` | `src/core/app_remote.c` | `app_remote_entry_state_name` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_fail` | `src/core/app_remote.c` | `app_remote_fail` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_fetch` | `src/core/app_remote.c` | `app_remote_fetch` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_fetch_packages` | `src/core/app_remote.c` | `app_remote_fetch_packages` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_find_entry` | `src/core/app_remote.c` | `app_remote_find_entry` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_find_index` | `src/core/app_remote.c` | `app_remote_find_index` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_fixed_text` | `src/core/app_remote.c` | `app_remote_fixed_text` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_get_count` | `src/core/app_remote.c` | `app_remote_get_count` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_get_entry` | `src/core/app_remote.c` | `app_remote_get_entry` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_get_installed_trust` | `src/core/app_remote.c` | `app_remote_get_installed_trust` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_get_status` | `src/core/app_remote.c` | `app_remote_get_status` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_hash_cached` | `src/core/app_remote.c` | `app_remote_hash_cached` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_hash_installed` | `src/core/app_remote.c` | `app_remote_hash_installed` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_http_get` | `src/core/app_remote.c` | `app_remote_http_get` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_id_valid` | `src/core/app_remote.c` | `app_remote_id_valid` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_info_matches` | `src/core/app_remote.c` | `app_remote_info_matches` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_init` | `src/core/app_remote.c` | `app_remote_init` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_is_provenance_available` | `src/core/app_remote.c` | `app_remote_is_provenance_available` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_key_revoked` | `src/core/app_remote.c` | `app_remote_key_revoked` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_load_active_cache` | `src/core/app_remote.c` | `app_remote_load_active_cache` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_load_provenance` | `src/core/app_remote.c` | `app_remote_load_provenance` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_load_records` | `src/core/app_remote.c` | `app_remote_load_records` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_network_ready` | `src/core/app_remote.c` | `app_remote_network_ready` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_package_reason` | `src/core/app_remote.c` | `app_remote_package_reason` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_parse_catalog` | `src/core/app_remote.c` | `app_remote_parse_catalog` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_path_valid` | `src/core/app_remote.c` | `app_remote_path_valid` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_plan_append` | `src/core/app_remote.c` | `app_remote_plan_append` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_plan_visit` | `src/core/app_remote.c` | `app_remote_plan_visit` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_preflight_cache_space` | `src/core/app_remote.c` | `app_remote_preflight_cache_space` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_provenance_hash` | `src/core/app_remote.c` | `app_remote_provenance_hash` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_provenance_valid` | `src/core/app_remote.c` | `app_remote_provenance_valid` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_publish_cache` | `src/core/app_remote.c` | `app_remote_publish_cache` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_read_u16` | `src/core/app_remote.c` | `app_remote_read_u16` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_read_u32` | `src/core/app_remote.c` | `app_remote_read_u32` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_reason_name` | `src/core/app_remote.c` | `app_remote_reason_name` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_record_decode` | `src/core/app_remote.c` | `app_remote_record_decode` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_record_encode` | `src/core/app_remote.c` | `app_remote_record_encode` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_record_provenance` | `src/core/app_remote.c` | `app_remote_record_provenance` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_refresh_provenance` | `src/core/app_remote.c` | `app_remote_refresh_provenance` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_request_cancel` | `src/core/app_remote.c` | `app_remote_request_cancel` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_result_reset` | `src/core/app_remote.c` | `app_remote_result_reset` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_result_status` | `src/core/app_remote.c` | `app_remote_result_status` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_revalidate_pending_cache` | `src/core/app_remote.c` | `app_remote_revalidate_pending_cache` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_sort_dependencies` | `src/core/app_remote.c` | `app_remote_sort_dependencies` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_state_name` | `src/core/app_remote.c` | `app_remote_state_name` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_test_fail_after` | `src/core/app_remote.c` | `app_remote_test_fail_after` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_transport_reason` | `src/core/app_remote.c` | `app_remote_transport_reason` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_validate_download` | `src/core/app_remote.c` | `app_remote_validate_download` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_verify_cached_entry` | `src/core/app_remote.c` | `app_remote_verify_cached_entry` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_verify_signature` | `src/core/app_remote.c` | `app_remote_verify_signature` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_wait_http` | `src/core/app_remote.c` | `app_remote_wait_http` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_write_cached_package` | `src/core/app_remote.c` | `app_remote_write_cached_package` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_write_provenance` | `src/core/app_remote.c` | `app_remote_write_provenance` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_write_record` | `src/core/app_remote.c` | `app_remote_write_record` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_write_u16` | `src/core/app_remote.c` | `app_remote_write_u16` | `core` | `COVERED` | 1 |
+| `c:src/core/app_remote.c:app_remote_write_u32` | `src/core/app_remote.c` | `app_remote_write_u32` | `core` | `COVERED` | 1 |
 | `c:src/core/arp.c:arp_build_packet` | `src/core/arp.c` | `arp_build_packet` | `core` | `COVERED` | 1 |
 | `c:src/core/arp.c:arp_clear` | `src/core/arp.c` | `arp_clear` | `core` | `COVERED` | 1 |
 | `c:src/core/arp.c:arp_configure` | `src/core/arp.c` | `arp_configure` | `core` | `COVERED` | 1 |
@@ -3080,10 +3080,10 @@
 | `c:src/core/socket.c:socket_wait_local` | `src/core/socket.c` | `socket_wait_local` | `core` | `COVERED` | 1 |
 | `c:src/core/socket.c:socket_wait_owner` | `src/core/socket.c` | `socket_wait_owner` | `core` | `COVERED` | 3 |
 | `c:src/core/socket.c:socket_wake` | `src/core/socket.c` | `socket_wake` | `core` | `COVERED` | 3 |
-| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 53 |
-| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 57 |
-| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 47 |
-| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 49 |
+| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 54 |
+| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 58 |
+| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 48 |
+| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 50 |
 | `c:src/core/syscall.c:syscall_copy_user_string` | `src/core/syscall.c` | `syscall_copy_user_string` | `core` | `COVERED` | 1 |
 | `c:src/core/syscall.c:syscall_dispatch` | `src/core/syscall.c` | `syscall_dispatch` | `core` | `COVERED` | 2 |
 | `c:src/core/syscall.c:syscall_dispatch_user` | `src/core/syscall.c` | `syscall_dispatch_user` | `core` | `COVERED` | 2 |
@@ -7349,6 +7349,7 @@
 | `host:core:app-files` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fachada app_files com VFS falso e entradas validas e invalidas | operacoes de arquivo preservam pre-condicoes, encaminhamento, retornos e limpeza | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico da fachada e do VFS falso no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:app-loader` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o app_loader.c real com processo, filesystem, paging e syscall falsos | parser, layout, lifecycle assincrono, cancelamento e codigos de erro preservam o contrato | compilador ausente, warning, fixture invalida, falha de assercao ou timeout | somente buffers estaticos e estado de dependencias falsas no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:app-package` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar contratos de versao, estado, failpoint e motivos de pacote | validacao de argumentos, nomes canonicos, estados indisponiveis e failpoint respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do servico e artefatos host-only | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:core:app-remote` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar catalogo autenticado, planejamento de dependencias, preflight, cache alternado, aplicacao, procedencia, cancelamento e recovery de failpoint | entradas validas produzem estados e planos coerentes; entradas indisponiveis ou corrompidas retornam motivos canonicos e deixam o cache recuperavel | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e backend FAT12 simulado no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:bearssl-compat` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar compatibilidade de memoria e string para BearSSL | memcpy, memmove, memset, memcmp e strlen preservam seus contratos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e artefatos host-only | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:contracts` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar contratos de strings, log e clock com instrumentacao | contratos validos, erros canonicos e invariantes temporais sao observados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e artefatos host-only | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:crypto` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar SHA-256, SHA-512, comparacao e verificacao Ed25519 | vetores validos, entradas vazias, limites e entradas nulas respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente contextos e buffers estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7505,27 +7506,6 @@
 - `api:src/include/apps/editor.h:editor_run_file`
 - `api:src/include/apps/mediaplayer.h:mp_main`
 - `api:src/include/apps/shell_job.h:shell_storage_start_job`
-- `api:src/include/core/app_remote.h:app_remote_apply_cached`
-- `api:src/include/core/app_remote.h:app_remote_build_plan`
-- `api:src/include/core/app_remote.h:app_remote_cache_state_name`
-- `api:src/include/core/app_remote.h:app_remote_check`
-- `api:src/include/core/app_remote.h:app_remote_clear`
-- `api:src/include/core/app_remote.h:app_remote_disable`
-- `api:src/include/core/app_remote.h:app_remote_enable`
-- `api:src/include/core/app_remote.h:app_remote_entry_state_name`
-- `api:src/include/core/app_remote.h:app_remote_fetch`
-- `api:src/include/core/app_remote.h:app_remote_find_entry`
-- `api:src/include/core/app_remote.h:app_remote_get_count`
-- `api:src/include/core/app_remote.h:app_remote_get_entry`
-- `api:src/include/core/app_remote.h:app_remote_get_installed_trust`
-- `api:src/include/core/app_remote.h:app_remote_get_status`
-- `api:src/include/core/app_remote.h:app_remote_init`
-- `api:src/include/core/app_remote.h:app_remote_is_provenance_available`
-- `api:src/include/core/app_remote.h:app_remote_reason_name`
-- `api:src/include/core/app_remote.h:app_remote_refresh_provenance`
-- `api:src/include/core/app_remote.h:app_remote_request_cancel`
-- `api:src/include/core/app_remote.h:app_remote_state_name`
-- `api:src/include/core/app_remote.h:app_remote_test_fail_after`
 - `api:src/include/core/panic.h:panic`
 - `api:src/include/core/panic.h:panic_halt`
 - `api:src/include/core/panic.h:panic_memory`
@@ -7760,82 +7740,6 @@
 - `c:src/boot/recovery_menu.c:recovery_menu_render_state`
 - `c:src/boot/recovery_menu.c:recovery_menu_run`
 - `c:src/boot/recovery_menu.c:recovery_menu_wait_f8`
-- `c:src/core/app_remote.c:app_remote_alias`
-- `c:src/core/app_remote.c:app_remote_apply_cached`
-- `c:src/core/app_remote.c:app_remote_begin`
-- `c:src/core/app_remote.c:app_remote_build_installed_path`
-- `c:src/core/app_remote.c:app_remote_build_package_url`
-- `c:src/core/app_remote.c:app_remote_build_plan`
-- `c:src/core/app_remote.c:app_remote_build_plan_internal`
-- `c:src/core/app_remote.c:app_remote_cache_path`
-- `c:src/core/app_remote.c:app_remote_cache_state_name`
-- `c:src/core/app_remote.c:app_remote_check`
-- `c:src/core/app_remote.c:app_remote_classify_entries`
-- `c:src/core/app_remote.c:app_remote_clear`
-- `c:src/core/app_remote.c:app_remote_clear_directory`
-- `c:src/core/app_remote.c:app_remote_copy_text`
-- `c:src/core/app_remote.c:app_remote_decode_entry`
-- `c:src/core/app_remote.c:app_remote_directory_exists`
-- `c:src/core/app_remote.c:app_remote_disable`
-- `c:src/core/app_remote.c:app_remote_enable`
-- `c:src/core/app_remote.c:app_remote_end_ready`
-- `c:src/core/app_remote.c:app_remote_ensure_directory`
-- `c:src/core/app_remote.c:app_remote_entry_state_name`
-- `c:src/core/app_remote.c:app_remote_fail`
-- `c:src/core/app_remote.c:app_remote_fetch`
-- `c:src/core/app_remote.c:app_remote_fetch_packages`
-- `c:src/core/app_remote.c:app_remote_find_entry`
-- `c:src/core/app_remote.c:app_remote_find_index`
-- `c:src/core/app_remote.c:app_remote_fixed_text`
-- `c:src/core/app_remote.c:app_remote_get_count`
-- `c:src/core/app_remote.c:app_remote_get_entry`
-- `c:src/core/app_remote.c:app_remote_get_installed_trust`
-- `c:src/core/app_remote.c:app_remote_get_status`
-- `c:src/core/app_remote.c:app_remote_hash_cached`
-- `c:src/core/app_remote.c:app_remote_hash_installed`
-- `c:src/core/app_remote.c:app_remote_http_get`
-- `c:src/core/app_remote.c:app_remote_id_valid`
-- `c:src/core/app_remote.c:app_remote_info_matches`
-- `c:src/core/app_remote.c:app_remote_init`
-- `c:src/core/app_remote.c:app_remote_is_provenance_available`
-- `c:src/core/app_remote.c:app_remote_key_revoked`
-- `c:src/core/app_remote.c:app_remote_load_active_cache`
-- `c:src/core/app_remote.c:app_remote_load_provenance`
-- `c:src/core/app_remote.c:app_remote_load_records`
-- `c:src/core/app_remote.c:app_remote_network_ready`
-- `c:src/core/app_remote.c:app_remote_package_reason`
-- `c:src/core/app_remote.c:app_remote_parse_catalog`
-- `c:src/core/app_remote.c:app_remote_path_valid`
-- `c:src/core/app_remote.c:app_remote_plan_append`
-- `c:src/core/app_remote.c:app_remote_plan_visit`
-- `c:src/core/app_remote.c:app_remote_preflight_cache_space`
-- `c:src/core/app_remote.c:app_remote_provenance_hash`
-- `c:src/core/app_remote.c:app_remote_provenance_valid`
-- `c:src/core/app_remote.c:app_remote_publish_cache`
-- `c:src/core/app_remote.c:app_remote_read_u16`
-- `c:src/core/app_remote.c:app_remote_read_u32`
-- `c:src/core/app_remote.c:app_remote_reason_name`
-- `c:src/core/app_remote.c:app_remote_record_decode`
-- `c:src/core/app_remote.c:app_remote_record_encode`
-- `c:src/core/app_remote.c:app_remote_record_provenance`
-- `c:src/core/app_remote.c:app_remote_refresh_provenance`
-- `c:src/core/app_remote.c:app_remote_request_cancel`
-- `c:src/core/app_remote.c:app_remote_result_reset`
-- `c:src/core/app_remote.c:app_remote_result_status`
-- `c:src/core/app_remote.c:app_remote_revalidate_pending_cache`
-- `c:src/core/app_remote.c:app_remote_sort_dependencies`
-- `c:src/core/app_remote.c:app_remote_state_name`
-- `c:src/core/app_remote.c:app_remote_test_fail_after`
-- `c:src/core/app_remote.c:app_remote_transport_reason`
-- `c:src/core/app_remote.c:app_remote_validate_download`
-- `c:src/core/app_remote.c:app_remote_verify_cached_entry`
-- `c:src/core/app_remote.c:app_remote_verify_signature`
-- `c:src/core/app_remote.c:app_remote_wait_http`
-- `c:src/core/app_remote.c:app_remote_write_cached_package`
-- `c:src/core/app_remote.c:app_remote_write_provenance`
-- `c:src/core/app_remote.c:app_remote_write_record`
-- `c:src/core/app_remote.c:app_remote_write_u16`
-- `c:src/core/app_remote.c:app_remote_write_u32`
 - `c:src/core/update_remote.c:update_remote_host_cancel`
 - `c:src/desktop/desktop.c:desktop_add_icon`
 - `c:src/desktop/desktop.c:desktop_drag_threshold_reached`

@@ -19,12 +19,28 @@ equipamento e evidência correspondente.
 
 A infraestrutura TST1–TST7 está concluída para a matriz automatizada existente,
 mas o programa de cobertura integral ainda não está concluído. O catálogo
-mantém 149 casos `AUTOMATED`; após os incrementos de Shell, RTC,
-processos/threads, FAT32, update U3/U4 e os contratos remotos ZSYS, registra
-7.256 superfícies, 5.867 `COVERED` e 1.389 `PENDING`. O próximo objetivo deste
+mantém 150 casos `AUTOMATED`; após os incrementos de Shell, RTC,
+processos/threads, FAT32, update U3/U4, os contratos remotos ZSYS e o
+repositório remoto de aplicativos, registra 7.256 superfícies, 5.964
+`COVERED` e 1.292 `PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
 Isso não significa declarar hardware físico validado sem equipamento.
+
+### Incremento Core/app-remote — 2026-09-04
+
+- [x] Fixture host-only criada para `src/core/app_remote.c`.
+- [x] Catálogo ZAC1, dependências, planejamento, preflight, cache FAT12 em
+      memória, aplicação, procedência, cancelamento, failpoint e recovery
+      exercitados com doubles estáticos.
+- [x] Caso `host:core:app-remote` integrado ao Makefile, TST7 e catálogo.
+- [x] Evidência real: `make test-app-remote-host` passou, cobertura resolveu
+      76 superfícies de `src/core/app_remote.c` e não registrou endereços
+      desconhecidos ou símbolos ambíguos.
+- [x] O cenário negativo do motor de pacotes confirmou a tradução de
+      `APP_PACKAGE_ACTION_REASON_PACKAGE_INVALID` para
+      `APP_REMOTE_REASON_PACKAGE_VERIFY`; nenhuma superfície do arquivo ficou
+      `PENDING`.
 
 ### Incremento Core/update-runtime — 2026-09-04
 
