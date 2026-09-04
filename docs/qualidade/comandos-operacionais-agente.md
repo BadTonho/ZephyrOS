@@ -1964,3 +1964,10 @@ falha de validacao SLAB e liberacao dos tres blocos estaticos em caminhos de
 sucesso e erro. O relatorio instrumentado permanece em
 `build/test-results/shell-diagnostics-host/coverage.json`; a execucao usa
 somente doubles estaticos e nao acessa hardware, allocator ou memoria reais.
+
+O mesmo alvo cobre `kmetrics` com uma linha-base controlada. A fixture valida
+o caminho desde boot, `kmetrics reset`, deltas de PIT, scheduler, teclado, IPC,
+PMM, heap, paging user, paging boot e VESA, alem dos caminhos de argumentos
+invalidos, paging boot indisponivel e VESA sem backbuffer. O relatorio deve
+continuar com `unknown_addresses=[]` e `ambiguous_symbols=[]`; nenhuma metrica
+vem de hardware ou estado real do kernel.

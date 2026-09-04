@@ -2536,3 +2536,16 @@ pendente.
 - [x] O catálogo registra 7.293 superfícies, 6.234 `COVERED`, 1.059
       `PENDING` e 154 casos. As superfícies sem evidência específica continuam
       explícitas; o gate estrito integral permanece pendente.
+
+### Incremento Shell/diagnostics KMetrics — 2026-09-04
+
+- [x] A fixture host-only `host:shell:diagnostics` foi ampliada para chamar o
+      dispatcher real de `kmetrics` com linha-base desde boot e após `reset`.
+- [x] Foram exercitados deltas de PIT, scheduler, teclado, IPC, PMM, heap,
+      paging user, paging boot e VESA, além de argumentos inválidos, paging
+      boot indisponível e VESA sem backbuffer.
+- [x] Passaram o alvo host-only com `HOST_CC`, `make catalog-test`, a
+      sincronização e renderização da evidência e `git diff --check`.
+- [x] O catálogo registra 7.293 superfícies, 6.241 `COVERED`, 1.052
+      `PENDING` e 154 casos. As superfícies sem evidência específica continuam
+      explícitas; o gate estrito integral permanece pendente.

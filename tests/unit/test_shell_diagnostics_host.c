@@ -7,6 +7,7 @@
 #include "core/string.h"
 #include "core/timer.h"
 #include "core/clock.h"
+#include "core/keyboard.h"
 #include "core/irq_deferred.h"
 #include "core/input.h"
 #include "core/recovery.h"
@@ -21,6 +22,7 @@
 #include "drivers/idt.h"
 #include "drivers/rtc.h"
 #include "drivers/mouse.h"
+#include "drivers/vesa.h"
 #include "fs/vfs.h"
 #include "fs/storage.h"
 #include "fs/devfs.h"
@@ -54,6 +56,7 @@ void shell_dispatch_cmd_pagefault(const char* arguments);
 void shell_dispatch_cmd_vmamap(const char* arguments);
 void shell_dispatch_cmd_schedcheck(const char* arguments);
 void shell_dispatch_cmd_memcheck(const char* arguments);
+void shell_dispatch_cmd_kmetrics(const char* arguments);
 void shell_diagnostics_reset(void);
 
 #define HOST_COVERAGE_CAPACITY 512U
@@ -100,6 +103,15 @@ static int fixture_timer_stats_result;
 static int fixture_timer_copy_result;
 static int fixture_timer_test_result;
 static uint32_t fixture_timer_copy_count;
+static uint32_t fixture_ticks;
+static keyboard_metrics_t fixture_keyboard_metrics;
+static ipc_stats_t fixture_ipc_stats;
+static uint32_t fixture_ipc_pending_count;
+static vesa_metrics_t fixture_vesa_metrics;
+static vesa_mode_t fixture_vesa_mode;
+static int fixture_vesa_backbuffer;
+static paging_boot_stats_t fixture_paging_boot_stats;
+static int fixture_paging_boot_result;
 static clock_status_t fixture_clock_status;
 static clock_self_test_result_t fixture_clock_test;
 static int fixture_clock_status_result;
@@ -295,6 +307,7 @@ static void output_append(const char* text) {
 
 static void fixture_reset(void) {
     output_reset();
+    shell_diagnostics_reset();
     copy_text(fixture_cwd, sizeof(fixture_cwd), "/home/test");
     fixture_last_path[0] = '\0';
     fixture_getcwd_result = OK;
@@ -322,6 +335,10 @@ static void fixture_reset(void) {
     fixture_timer_copy_result = OK;
     fixture_timer_test_result = OK;
     fixture_timer_copy_count = 1U;
+    fixture_ticks = 1000U;
+    fixture_ipc_pending_count = 2U;
+    fixture_vesa_backbuffer = 0;
+    fixture_paging_boot_result = OK;
     fixture_clock_status_result = OK;
     fixture_clock_ticks_result = OK;
     fixture_clock_utc_result = OK;
@@ -462,6 +479,35 @@ static void fixture_reset(void) {
     fixture_timer_stats.delayed_callbacks = 2U;
     fixture_timer_stats.missed_periods = 3U;
     fixture_timer_stats.invalid_operations = 4U;
+    kmemset(&fixture_keyboard_metrics, 0, sizeof(fixture_keyboard_metrics));
+    fixture_keyboard_metrics.queued = 2U;
+    fixture_keyboard_metrics.capacity = 32U;
+    fixture_keyboard_metrics.dropped = 3U;
+    fixture_keyboard_metrics.processed = 4U;
+    fixture_keyboard_metrics.peak_queued = 5U;
+    kmemset(&fixture_ipc_stats, 0, sizeof(fixture_ipc_stats));
+    fixture_ipc_stats.sent = 6U;
+    fixture_ipc_stats.received = 7U;
+    fixture_ipc_stats.failed = 1U;
+    fixture_ipc_stats.queue_full = 2U;
+    kmemset(&fixture_vesa_metrics, 0, sizeof(fixture_vesa_metrics));
+    fixture_vesa_metrics.presentations = 3U;
+    fixture_vesa_metrics.full_presentations = 2U;
+    fixture_vesa_metrics.partial_presentations = 1U;
+    fixture_vesa_metrics.bytes_copied = 4096U;
+    fixture_vesa_metrics.last_copy_bytes = 1024U;
+    fixture_vesa_metrics.last_copy_ticks = 4U;
+    fixture_vesa_metrics.max_copy_ticks = 8U;
+    kmemset(&fixture_vesa_mode, 0, sizeof(fixture_vesa_mode));
+    fixture_vesa_mode.initialized = 1U;
+    fixture_vesa_mode.width = VESA_WIDTH_640;
+    fixture_vesa_mode.height = VESA_HEIGHT_480;
+    fixture_vesa_mode.bpp = VESA_BPP_32;
+    kmemset(&fixture_paging_boot_stats, 0, sizeof(fixture_paging_boot_stats));
+    fixture_paging_boot_stats.identity_pages = 12U;
+    fixture_paging_boot_stats.page_tables_created = 3U;
+    fixture_paging_boot_stats.init_ticks = 9U;
+    fixture_paging_boot_stats.initialized = 1U;
     fixture_timer_records[0].handle = 0x1234U;
     copy_text(fixture_timer_records[0].owner_name,
               sizeof(fixture_timer_records[0].owner_name), "SHELL");
@@ -1315,6 +1361,22 @@ uint32_t timer_get_frequency(void) {
     return fixture_timer_stats.frequency;
 }
 
+uint32_t timer_get_ticks(void) {
+    return fixture_ticks;
+}
+
+void keyboard_get_metrics(keyboard_metrics_t* metrics) {
+    if (metrics) *metrics = fixture_keyboard_metrics;
+}
+
+void ipc_get_stats(ipc_stats_t* stats) {
+    if (stats) *stats = fixture_ipc_stats;
+}
+
+uint32_t ipc_get_pending_count(void) {
+    return fixture_ipc_pending_count;
+}
+
 int workqueue_get_stats(workqueue_stats_t* stats) {
     if (!stats) return ERR_NULL;
     if (fixture_workq_stats_result != OK) return fixture_workq_stats_result;
@@ -1768,8 +1830,35 @@ uint32_t memory_get_free_pages(void) {
     return fixture_memcheck_detailed_stats.zone_pages[MEMORY_ZONE_FREE];
 }
 
+uint32_t memory_get_used(void) {
+    return fixture_memcheck_heap_stats.used_bytes;
+}
+
+uint32_t memory_get_free(void) {
+    return fixture_memcheck_heap_stats.free_bytes;
+}
+
 void paging_get_user_stats(paging_user_stats_t* stats) {
     if (stats) *stats = fixture_memcheck_paging_stats;
+}
+
+int paging_get_boot_stats(paging_boot_stats_t* stats) {
+    if (!stats) return ERR_NULL;
+    if (fixture_paging_boot_result != OK) return fixture_paging_boot_result;
+    *stats = fixture_paging_boot_stats;
+    return OK;
+}
+
+int vesa_has_backbuffer(void) {
+    return fixture_vesa_backbuffer;
+}
+
+vesa_mode_t* vesa_get_mode(void) {
+    return &fixture_vesa_mode;
+}
+
+void vesa_get_metrics(vesa_metrics_t* metrics) {
+    if (metrics) *metrics = fixture_vesa_metrics;
 }
 
 uint32_t process_get_user_count(void) {
@@ -2664,6 +2753,77 @@ static int test_memcheck(void) {
     return failures;
 }
 
+static int test_kmetrics(void) {
+    int failures = 0;
+
+    fixture_reset();
+    shell_dispatch_cmd_kmetrics("");
+    failures += expect_contains("Metricas K1 (desde boot):\n");
+    failures += expect_contains("  PIT: ticks=1000 frequencia=100 Hz\n");
+    failures += expect_contains("  Scheduler: trocas=10");
+    failures += expect_contains("  Filas: teclado=2/32");
+    failures += expect_contains("  Memoria PMM: usada=1 KB livre=3 KB paginas_livres=50 proprias=50");
+    failures += expect_contains("  Paging boot: paginas=12 tabelas=3 ticks=9 modo=blocos\n");
+    failures += expect_contains("  Heap: usado=1 KB livre=3 KB total=4 KB");
+    failures += expect_contains("  VESA: N/D\n");
+
+    fixture_reset();
+    shell_dispatch_cmd_kmetrics("invalid");
+    failures += expect_text("Uso: kmetrics [reset]\n");
+
+    fixture_reset();
+    shell_dispatch_cmd_kmetrics("reset");
+    failures += expect_text("Linha-base K1 capturada.\n");
+    fixture_ticks = 1020U;
+    fixture_keyboard_metrics.queued = 4U;
+    fixture_keyboard_metrics.dropped = 5U;
+    fixture_keyboard_metrics.processed = 7U;
+    fixture_ipc_pending_count = 3U;
+    fixture_ipc_stats.sent = 9U;
+    fixture_ipc_stats.received = 10U;
+    fixture_ipc_stats.failed = 2U;
+    fixture_ipc_stats.queue_full = 4U;
+    fixture_scheduler_stats.context_switches = 15U;
+    fixture_scheduler_stats.cooperative_yields = 8U;
+    fixture_scheduler_stats.user_preemptions = 6U;
+    fixture_scheduler_stats.idle_fallbacks = 4U;
+    fixture_scheduler_stats.idle_ticks = 25U;
+    fixture_scheduler_stats.active_ticks = 95U;
+    fixture_memcheck_pmm_stats.allocation_failures = 3U;
+    fixture_memcheck_pmm_stats.invalid_frees = 2U;
+    fixture_memcheck_heap_stats.allocation_failures = 4U;
+    fixture_memcheck_heap_stats.invalid_frees = 1U;
+    fixture_memcheck_heap_stats.double_frees = 2U;
+    fixture_memcheck_paging_stats.directories_created = 5U;
+    fixture_memcheck_paging_stats.directories_released = 2U;
+    fixture_memcheck_paging_stats.rejected_releases = 1U;
+    fixture_vesa_backbuffer = 1;
+    fixture_vesa_metrics.presentations = 5U;
+    fixture_vesa_metrics.full_presentations = 3U;
+    fixture_vesa_metrics.partial_presentations = 2U;
+    fixture_vesa_metrics.bytes_copied = 8192U;
+    fixture_vesa_metrics.last_copy_bytes = 2048U;
+    fixture_vesa_metrics.last_copy_ticks = 6U;
+    fixture_vesa_metrics.max_copy_ticks = 12U;
+    output_reset();
+    shell_dispatch_cmd_kmetrics("");
+    failures += expect_contains("Metricas K1 (desde reset):\n");
+    failures += expect_contains("  PIT: ticks=20 frequencia=100 Hz\n");
+    failures += expect_contains("  Scheduler: trocas=5");
+    failures += expect_contains("  Filas: teclado=4/32 descartes=2 processados=3");
+    failures += expect_contains("  IPC pendentes=3");
+    failures += expect_contains("  Memoria PMM: usada=1 KB livre=3 KB paginas_livres=50 proprias=50 falhas=3 rejeicoes=2");
+    failures += expect_contains("  Paging boot: paginas=12 tabelas=3 ticks=9 modo=blocos\n");
+    failures += expect_contains("  VESA: apresentacoes=2 completas=1 parciais=1 bytes=4096 media_bytes=2048");
+
+    fixture_reset();
+    fixture_paging_boot_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_kmetrics("");
+    failures += expect_contains("Metricas K1 (desde boot):\n");
+
+    return failures;
+}
+
 int main(void) {
     int result;
 
@@ -2677,6 +2837,7 @@ int main(void) {
     result += test_pagefault_and_vmamap();
     result += test_schedcheck();
     result += test_memcheck();
+    result += test_kmetrics();
     coverage_active = 0U;
     coverage_emit(result);
     return result ? 1 : 0;
