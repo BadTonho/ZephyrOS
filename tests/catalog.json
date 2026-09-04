@@ -140033,9 +140033,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_tls_check",
@@ -140051,9 +140054,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_tls_status",
@@ -140069,9 +140075,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_tls_usage",
@@ -140087,9 +140096,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_usb",
@@ -141241,9 +141253,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_usb",
@@ -167299,10 +167314,10 @@
         "hardware": "video, VFS e mouse falsos"
       },
       "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "executar pwd, cd, mouse, log, timer, clock e irqstat em caminhos validos, invalidos, indisponiveis e de limite",
+      "action": "executar pwd, cd, mouse, log, timer, clock, irqstat, wait, wqinfo e workq em caminhos validos, invalidos, indisponiveis e de limite",
       "expected": "dispatchers preservam saida, estado, configuracao e codigos canonicos",
       "errors": "compilador ausente, warning, saida inesperada, falha de assercao ou timeout",
-      "effects": "somente buffers estaticos de saida e doubles locais de VFS, mouse, log, timer, RTC, clock, IRQ e IDT",
+      "effects": "somente buffers estaticos de saida e doubles locais de VFS, mouse, log, timer, RTC, clock, IRQ, IDT, wait e workqueue",
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
       "surface_ids": [
@@ -167348,6 +167363,10 @@
         "c:src/shell/shell_commands_diagnostics.c:cmd_timer_print_test",
         "c:src/shell/shell_commands_diagnostics.c:cmd_timer_status",
         "c:src/shell/shell_commands_diagnostics.c:cmd_timer_usage",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_tls",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_tls_check",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_tls_status",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_tls_usage",
         "c:src/shell/shell_commands_diagnostics.c:cmd_wait",
         "c:src/shell/shell_commands_diagnostics.c:cmd_wait_check",
         "c:src/shell/shell_commands_diagnostics.c:cmd_wait_invalid",
@@ -167370,6 +167389,7 @@
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_mouse",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_pwd",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_timer",
+        "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_tls",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_wait",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_workq",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_wqinfo"

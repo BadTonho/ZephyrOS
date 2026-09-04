@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6188 |
+| `COVERED` | 6193 |
 | `MANUAL` | 0 |
-| `PENDING` | 1105 |
+| `PENDING` | 1100 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -6412,10 +6412,10 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_timer_print_test` | `src/shell/shell_commands_diagnostics.c` | `cmd_timer_print_test` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_timer_status` | `src/shell/shell_commands_diagnostics.c` | `cmd_timer_status` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_timer_usage` | `src/shell/shell_commands_diagnostics.c` | `cmd_timer_usage` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_tls` | `src/shell/shell_commands_diagnostics.c` | `cmd_tls` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_tls_check` | `src/shell/shell_commands_diagnostics.c` | `cmd_tls_check` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_tls_status` | `src/shell/shell_commands_diagnostics.c` | `cmd_tls_status` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_tls_usage` | `src/shell/shell_commands_diagnostics.c` | `cmd_tls_usage` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_tls` | `src/shell/shell_commands_diagnostics.c` | `cmd_tls` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_tls_check` | `src/shell/shell_commands_diagnostics.c` | `cmd_tls_check` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_tls_status` | `src/shell/shell_commands_diagnostics.c` | `cmd_tls_status` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_tls_usage` | `src/shell/shell_commands_diagnostics.c` | `cmd_tls_usage` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_usb` | `src/shell/shell_commands_diagnostics.c` | `cmd_usb` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_usb_device` | `src/shell/shell_commands_diagnostics.c` | `cmd_usb_device` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_usb_devices` | `src/shell/shell_commands_diagnostics.c` | `cmd_usb_devices` | `shell` | `PENDING` | 0 |
@@ -6475,7 +6475,7 @@
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_slabinfo` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_slabinfo` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_slabtest` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_slabtest` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_timer` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_timer` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_tls` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_tls` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_tls` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_tls` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_usb` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_usb` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_vfs` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_vfs` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_vmamap` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_vmamap` | `shell` | `PENDING` | 0 |
@@ -7466,7 +7466,7 @@
 | `host:shell:commands-storage` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar caminhos validos, negativos, limites, diagnostico, busca, sync e callbacks de job | dispatchers, parsers, formatacao e callbacks preservam limites, estados e codigos canonicos | compilador ausente, warning, saida inesperada, falha de assercao ou timeout | somente buffers estaticos de saida e doubles do indice no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:commands-vfs` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar grep com entrada fragmentada, comparacao sem diferenca de maiusculas, limites, erros de pipeline e o autoteste pipetest | linhas correspondentes sao encaminhadas, entradas invalidas e limites exibem diagnostico e pipetest preserva resultado e codigo canonico | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos de entrada, saida e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:core` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inicializar o Shell, encaminhar mouse, suspender terminal, concluir comando e restaurar a cena visual | entradas invalidas e inativas sao rejeitadas, scroll ativo e encaminhado, ciclo de terminal restaura prompt e redraw | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente callbacks estaticos do Shell, terminal, taskbar, desktop e aplicativos falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
-| `host:shell:diagnostics` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar pwd, cd, mouse, log, timer, clock e irqstat em caminhos validos, invalidos, indisponiveis e de limite | dispatchers preservam saida, estado, configuracao e codigos canonicos | compilador ausente, warning, saida inesperada, falha de assercao ou timeout | somente buffers estaticos de saida e doubles locais de VFS, mouse, log, timer, RTC, clock, IRQ e IDT | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:shell:diagnostics` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar pwd, cd, mouse, log, timer, clock, irqstat, wait, wqinfo e workq em caminhos validos, invalidos, indisponiveis e de limite | dispatchers preservam saida, estado, configuracao e codigos canonicos | compilador ausente, warning, saida inesperada, falha de assercao ou timeout | somente buffers estaticos de saida e doubles locais de VFS, mouse, log, timer, RTC, clock, IRQ, IDT, wait e workqueue | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:diagnostics-helpers` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar parsers de log, sinais, mouse e VMA, nomes de estados, cores, caminhos sysfs/proc e invariantes de memoria com dependencias estaticas falsas | entradas validas retornam resultados canonicos; entradas nulas, invalidas e fora dos limites sao rejeitadas sem hardware, allocator ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos, estado de filesystem e paginação falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:dispatch` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar comandos desconhecidos, entrada normalizada, limite e comando conhecido | dispatcher retorna ERR_NULL para entrada nula e apresenta diagnostico deterministico para comando desconhecido | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e handlers falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:hosted` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | abrir, reabrir, desenhar, encaminhar tecla e mouse, fechar e rejeitar registro do Shell Classic hospedado | o Shell hospedado publica visibilidade, encaminha callbacks e restaura o estado quando o registro falha | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do adaptador, callbacks do Window Manager e terminal falso no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -8186,10 +8186,6 @@
 - `c:src/shell/shell_commands_diagnostics.c:cmd_sysfs_has_node`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_sysfs_print_device`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_sysfs_read_snapshot`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_tls`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_tls_check`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_tls_status`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_tls_usage`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_usb`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_usb_device`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_usb_devices`
@@ -8225,7 +8221,6 @@
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_sigtest`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_slabinfo`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_slabtest`
-- `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_tls`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_usb`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_vfs`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_vmamap`
