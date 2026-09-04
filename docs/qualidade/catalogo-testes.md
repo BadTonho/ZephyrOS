@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6147 |
+| `COVERED` | 6163 |
 | `MANUAL` | 0 |
-| `PENDING` | 1146 |
+| `PENDING` | 1130 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -6304,18 +6304,18 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_print_table` | `src/shell/shell_commands_diagnostics.c` | `cmd_acpi_print_table` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_tables` | `src/shell/shell_commands_diagnostics.c` | `cmd_acpi_tables` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_cd` | `src/shell/shell_commands_diagnostics.c` | `cmd_cd` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_clock` | `src/shell/shell_commands_diagnostics.c` | `cmd_clock` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_clock_check` | `src/shell/shell_commands_diagnostics.c` | `cmd_clock_check` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_clock_status` | `src/shell/shell_commands_diagnostics.c` | `cmd_clock_status` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_clock_usage` | `src/shell/shell_commands_diagnostics.c` | `cmd_clock_usage` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_clock` | `src/shell/shell_commands_diagnostics.c` | `cmd_clock` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_clock_check` | `src/shell/shell_commands_diagnostics.c` | `cmd_clock_check` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_clock_status` | `src/shell/shell_commands_diagnostics.c` | `cmd_clock_status` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_clock_usage` | `src/shell/shell_commands_diagnostics.c` | `cmd_clock_usage` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_cpu_usage` | `src/shell/shell_commands_diagnostics.c` | `cmd_cpu_usage` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_devcheck` | `src/shell/shell_commands_diagnostics.c` | `cmd_devcheck` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_device_info` | `src/shell/shell_commands_diagnostics.c` | `cmd_device_info` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_device_scan` | `src/shell/shell_commands_diagnostics.c` | `cmd_device_scan` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_devices` | `src/shell/shell_commands_diagnostics.c` | `cmd_devices` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_devices_print_entry` | `src/shell/shell_commands_diagnostics.c` | `cmd_devices_print_entry` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_diagnostics_print_test` | `src/shell/shell_commands_diagnostics.c` | `cmd_diagnostics_print_test` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_diagnostics_print_u64` | `src/shell/shell_commands_diagnostics.c` | `cmd_diagnostics_print_u64` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_diagnostics_print_test` | `src/shell/shell_commands_diagnostics.c` | `cmd_diagnostics_print_test` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_diagnostics_print_u64` | `src/shell/shell_commands_diagnostics.c` | `cmd_diagnostics_print_u64` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health` | `src/shell/shell_commands_diagnostics.c` | `cmd_health` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_app_store` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_app_store` | `shell` | `PENDING` | 0 |
@@ -6404,14 +6404,14 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_sysfs_has_node` | `src/shell/shell_commands_diagnostics.c` | `cmd_sysfs_has_node` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_sysfs_print_device` | `src/shell/shell_commands_diagnostics.c` | `cmd_sysfs_print_device` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_sysfs_read_snapshot` | `src/shell/shell_commands_diagnostics.c` | `cmd_sysfs_read_snapshot` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_timer` | `src/shell/shell_commands_diagnostics.c` | `cmd_timer` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_timer_check` | `src/shell/shell_commands_diagnostics.c` | `cmd_timer_check` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_timer_invalid` | `src/shell/shell_commands_diagnostics.c` | `cmd_timer_invalid` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_timer_list` | `src/shell/shell_commands_diagnostics.c` | `cmd_timer_list` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_timer_print_entry` | `src/shell/shell_commands_diagnostics.c` | `cmd_timer_print_entry` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_timer_print_test` | `src/shell/shell_commands_diagnostics.c` | `cmd_timer_print_test` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_timer_status` | `src/shell/shell_commands_diagnostics.c` | `cmd_timer_status` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_timer_usage` | `src/shell/shell_commands_diagnostics.c` | `cmd_timer_usage` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_timer` | `src/shell/shell_commands_diagnostics.c` | `cmd_timer` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_timer_check` | `src/shell/shell_commands_diagnostics.c` | `cmd_timer_check` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_timer_invalid` | `src/shell/shell_commands_diagnostics.c` | `cmd_timer_invalid` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_timer_list` | `src/shell/shell_commands_diagnostics.c` | `cmd_timer_list` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_timer_print_entry` | `src/shell/shell_commands_diagnostics.c` | `cmd_timer_print_entry` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_timer_print_test` | `src/shell/shell_commands_diagnostics.c` | `cmd_timer_print_test` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_timer_status` | `src/shell/shell_commands_diagnostics.c` | `cmd_timer_status` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_timer_usage` | `src/shell/shell_commands_diagnostics.c` | `cmd_timer_usage` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_tls` | `src/shell/shell_commands_diagnostics.c` | `cmd_tls` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_tls_check` | `src/shell/shell_commands_diagnostics.c` | `cmd_tls_check` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_tls_status` | `src/shell/shell_commands_diagnostics.c` | `cmd_tls_status` | `shell` | `PENDING` | 0 |
@@ -6452,7 +6452,7 @@
 | `c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_run_memcheck` | `src/shell/shell_commands_diagnostics.c` | `shell_diagnostics_run_memcheck` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_acpi` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_acpi` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_cd` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_cd` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_clock` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_clock` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_clock` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_clock` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_cpu_usage` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_cpu_usage` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_devcheck` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_devcheck` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_device_info` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_device_info` | `shell` | `PENDING` | 0 |
@@ -6474,7 +6474,7 @@
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_sigtest` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_sigtest` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_slabinfo` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_slabinfo` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_slabtest` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_slabtest` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_timer` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_timer` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_timer` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_timer` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_tls` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_tls` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_usb` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_usb` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_vfs` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_vfs` | `shell` | `PENDING` | 0 |
@@ -8115,18 +8115,12 @@
 - `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_print_snapshot_table`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_print_table`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_tables`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_clock`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_clock_check`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_clock_status`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_clock_usage`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_cpu_usage`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_devcheck`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_device_info`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_device_scan`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_devices`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_devices_print_entry`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_diagnostics_print_test`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_diagnostics_print_u64`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_health`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_health_check`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_app_store`
@@ -8198,14 +8192,6 @@
 - `c:src/shell/shell_commands_diagnostics.c:cmd_sysfs_has_node`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_sysfs_print_device`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_sysfs_read_snapshot`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_timer`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_timer_check`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_timer_invalid`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_timer_list`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_timer_print_entry`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_timer_print_test`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_timer_status`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_timer_usage`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_tls`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_tls_check`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_tls_status`
@@ -8244,7 +8230,6 @@
 - `c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_run_device_scan`
 - `c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_run_memcheck`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_acpi`
-- `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_clock`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_cpu_usage`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_devcheck`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_device_info`
@@ -8262,7 +8247,6 @@
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_sigtest`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_slabinfo`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_slabtest`
-- `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_timer`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_tls`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_usb`
 - `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_vfs`

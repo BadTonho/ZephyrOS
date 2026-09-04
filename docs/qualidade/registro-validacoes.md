@@ -5692,10 +5692,11 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
 
 - Incremento Shell/diagnostics commands — concluído em 2026-09-04
   (America/Sao_Paulo). Foi criada a fixture host-only `host:shell:diagnostics`,
-  que chama diretamente os dispatchers reais de `pwd`, `cd`, `mouse` e `log`.
-  Foram validados caminhos válidos, argumentos extras, limites de token e
-  velocidade, estados indisponíveis, níveis, histórico e preservação da
-  configuração após rejeição. O alvo passou com `HOST_CC`, `-Wall -Wextra -Werror`,
+  que chama diretamente os dispatchers reais de `pwd`, `cd`, `mouse`, `log`,
+  `timer` e `clock`. Foram validados caminhos válidos, argumentos extras,
+  limites de token e velocidade, estados indisponíveis, níveis, histórico,
+  listagens, autotestes e preservação da configuração após rejeição. O alvo
+  passou com `HOST_CC`, `-Wall -Wextra -Werror`,
   instrumentação dinâmica e doubles estáticos de VFS, mouse, vídeo e log. A
   compilação host
   usa descarte explícito de metadados de unwind para permitir a coleta por
