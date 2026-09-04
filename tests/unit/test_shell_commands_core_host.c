@@ -518,21 +518,31 @@ static int check_runtime_commands(void) {
     loader_result.faulted = 1U;
     if (!shell_core_handle_loader_result(&loader_result) ||
         shell_finish_calls != 1U) return 3;
+    output_reset();
+    app_mem_result = OK;
+    shell_dispatch_cmd_mem(0);
+    kmemset(&loader_result, 0, sizeof(loader_result));
+    loader_result.pid = 42U;
+    loader_result.exit_code = ERR_STATE;
+    loader_result.start_failed = 1U;
+    if (!shell_core_handle_loader_result(&loader_result) ||
+        shell_finish_calls != 2U ||
+        !output_contains(video_output, "mem ring 3 nao concluiu")) return 4;
     app_mem_result = ERR_UNAVAILABLE;
     shell_dispatch_cmd_mem("");
-    if (!output_contains(video_output, "Memoria:")) return 4;
+    if (!output_contains(video_output, "Memoria:")) return 5;
     output_reset();
     shell_dispatch_cmd_mem("detailed");
-    if (!output_contains(video_output, "Memoria detalhada:")) return 5;
+    if (!output_contains(video_output, "Memoria detalhada:")) return 6;
     output_reset();
     shell_dispatch_cmd_mem("bad");
-    if (!output_contains(video_output, "Uso: mem")) return 6;
+    if (!output_contains(video_output, "Uso: mem")) return 7;
     shell_dispatch_cmd_procs(0);
     shell_dispatch_cmd_threads(0);
     shell_dispatch_cmd_stack("");
     shell_dispatch_cmd_stack("check");
     shell_dispatch_cmd_stack("bad");
-    if (!output_contains(video_output, "StackCheck: OK")) return 7;
+    if (!output_contains(video_output, "StackCheck: OK")) return 8;
     return 0;
 }
 
