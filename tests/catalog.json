@@ -72755,9 +72755,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_apply_state_from_journal",
@@ -72773,9 +72776,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_begin_operation",
@@ -72812,9 +72818,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_build_rollback_journal",
@@ -72830,9 +72839,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_bytes_zero",
@@ -72890,9 +72902,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_check_apply_space",
@@ -72908,9 +72923,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_check_exact_file_size",
@@ -72926,9 +72944,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_check_rollback_space",
@@ -72944,9 +72965,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_cleanup_slot",
@@ -72962,9 +72986,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_clear_journal",
@@ -72980,9 +73007,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_clusters_for",
@@ -73019,9 +73049,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_compare_paths",
@@ -73058,9 +73091,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_decode_file_state",
@@ -73391,9 +73427,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_fill_action_result",
@@ -73430,9 +73469,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_finalize_committed",
@@ -73448,9 +73490,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_get_capabilities",
@@ -73571,9 +73616,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_hash_content",
@@ -73589,9 +73637,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_hash_payload",
@@ -73607,9 +73658,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_hash_root_file",
@@ -73625,9 +73679,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_history_action_outcome",
@@ -73685,9 +73742,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_history_copy_alias",
@@ -73703,9 +73763,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_history_mark_invalid",
@@ -73721,9 +73784,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_history_newest",
@@ -73802,9 +73868,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_history_record_recovery",
@@ -73820,9 +73889,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_host_cancel",
@@ -74174,9 +74246,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_load_journal_records",
@@ -74192,9 +74267,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_load_root_file",
@@ -74210,9 +74288,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_load_state_records",
@@ -74228,9 +74309,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_load_structure",
@@ -74246,9 +74330,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_mark_recovery_pending",
@@ -74264,9 +74351,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_parse_entries",
@@ -74345,9 +74435,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_read_control",
@@ -74363,9 +74456,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_read_exact",
@@ -74381,9 +74477,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_read_payload",
@@ -74399,9 +74498,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_read_u16",
@@ -74480,9 +74582,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_refresh_capabilities",
@@ -74540,9 +74645,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_replace_apply_targets",
@@ -74558,9 +74666,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_replace_from_alias",
@@ -74576,9 +74687,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_replace_rollback_targets",
@@ -74594,9 +74708,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_restore_interrupted_apply",
@@ -74612,9 +74729,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_rollback",
@@ -74651,9 +74771,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_rollback_state_from_journal",
@@ -74669,9 +74792,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_set_compile_time_version",
@@ -74708,9 +74834,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_start_apply_transaction",
@@ -74726,9 +74855,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_store_state_name",
@@ -74786,9 +74918,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_target_id",
@@ -74825,9 +74960,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_validate_applicability",
@@ -74843,9 +74981,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_validate_current_state",
@@ -74861,9 +75002,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_validate_header_algorithms",
@@ -74984,9 +75128,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_verify_loaded",
@@ -75002,9 +75149,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_verify_root_file",
@@ -75020,9 +75170,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_version_compare",
@@ -75059,9 +75212,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_write_journal_record",
@@ -75077,9 +75233,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_write_state_record",
@@ -75095,9 +75254,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update.c:update_write_u16",
@@ -159357,7 +159519,7 @@
     },
     {
       "id": "host:core:update",
-      "scenario": "Contratos puros do formato e da maquina de estado de atualizacao U3/U4",
+      "scenario": "Contratos e transacoes FAT12 da maquina de estado de atualizacao U3/U4",
       "owner": "quality",
       "layer": "host",
       "executor": "host",
@@ -159372,11 +159534,11 @@
         "storage": "nenhum; registros estaticos em memoria"
       },
       "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "executar codificacao, decodificacao, validacao e corrupcao controlada de registros U3/U4 e headers ZUPD",
-      "expected": "registros validos fazem round-trip e entradas invalidas retornam os erros canonicos sem estado persistente",
+      "action": "executar codificacao, decodificacao, validacao, apply, rollback, cancelamento, failpoints e recuperacao de registros U3/U4 e headers ZUPD",
+      "expected": "registros validos fazem round-trip, transacoes restauram o estado anterior em falhas e entradas invalidas retornam os erros canonicos",
       "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
-      "effects": "somente buffers estaticos no processo host",
-      "cleanup": "buffers locais descartados; manifesto, logs e cobertura preservados",
+      "effects": "somente buffers estaticos no processo host simulando FAT12; nenhuma escrita real",
+      "cleanup": "arquivos de staging, backup, journal e historico sao removidos ou restaurados pela fixture; manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
       "surface_ids": [
         "api:src/include/core/string.h:kmemcpy",
@@ -159407,11 +159569,23 @@
         "c:src/core/update.c:update_action_fail",
         "c:src/core/update.c:update_action_reason_name",
         "c:src/core/update.c:update_apply_file",
+        "c:src/core/update.c:update_apply_recover_failure",
+        "c:src/core/update.c:update_apply_state_from_journal",
         "c:src/core/update.c:update_begin_operation",
+        "c:src/core/update.c:update_build_apply_journal",
+        "c:src/core/update.c:update_build_rollback_journal",
         "c:src/core/update.c:update_bytes_zero",
         "c:src/core/update.c:update_cancelled",
+        "c:src/core/update.c:update_capture_baseline_state",
+        "c:src/core/update.c:update_check_apply_space",
+        "c:src/core/update.c:update_check_exact_file_size",
+        "c:src/core/update.c:update_check_rollback_space",
+        "c:src/core/update.c:update_cleanup_slot",
+        "c:src/core/update.c:update_clear_journal",
         "c:src/core/update.c:update_clusters_for",
+        "c:src/core/update.c:update_commit_transaction",
         "c:src/core/update.c:update_compare_paths",
+        "c:src/core/update.c:update_continue_interrupted_rollback",
         "c:src/core/update.c:update_decode_file_state",
         "c:src/core/update.c:update_decode_header",
         "c:src/core/update.c:update_decode_history_entry",
@@ -159427,17 +159601,29 @@
         "c:src/core/update.c:update_encode_state_record",
         "c:src/core/update.c:update_end_operation",
         "c:src/core/update.c:update_fail",
+        "c:src/core/update.c:update_file_state_equal",
         "c:src/core/update.c:update_fill_action_result",
+        "c:src/core/update.c:update_fill_result",
+        "c:src/core/update.c:update_finalize_committed",
         "c:src/core/update.c:update_get_capabilities",
         "c:src/core/update.c:update_get_history_count",
         "c:src/core/update.c:update_get_history_entry",
         "c:src/core/update.c:update_get_installed_version",
         "c:src/core/update.c:update_get_status",
+        "c:src/core/update.c:update_hash_chunk",
+        "c:src/core/update.c:update_hash_content",
+        "c:src/core/update.c:update_hash_payload",
+        "c:src/core/update.c:update_hash_root_file",
         "c:src/core/update.c:update_history_action_outcome",
         "c:src/core/update.c:update_history_alias_valid",
+        "c:src/core/update.c:update_history_append",
+        "c:src/core/update.c:update_history_copy_alias",
+        "c:src/core/update.c:update_history_mark_invalid",
         "c:src/core/update.c:update_history_newest",
         "c:src/core/update.c:update_history_operation_name",
         "c:src/core/update.c:update_history_outcome_name",
+        "c:src/core/update.c:update_history_record_action",
+        "c:src/core/update.c:update_history_record_recovery",
         "c:src/core/update.c:update_host_cancel",
         "c:src/core/update.c:update_host_check_action_helpers",
         "c:src/core/update.c:update_host_check_headers_and_paths",
@@ -159454,25 +159640,55 @@
         "c:src/core/update.c:update_init",
         "c:src/core/update.c:update_is_path_character",
         "c:src/core/update.c:update_is_ready",
+        "c:src/core/update.c:update_load_history_records",
+        "c:src/core/update.c:update_load_journal_records",
+        "c:src/core/update.c:update_load_root_file",
+        "c:src/core/update.c:update_load_state_records",
+        "c:src/core/update.c:update_load_structure",
+        "c:src/core/update.c:update_mark_recovery_pending",
         "c:src/core/update.c:update_parse_entries",
         "c:src/core/update.c:update_parse_entry",
         "c:src/core/update.c:update_path_allowed",
+        "c:src/core/update.c:update_prepare_apply",
+        "c:src/core/update.c:update_read_control",
+        "c:src/core/update.c:update_read_exact",
+        "c:src/core/update.c:update_read_payload",
         "c:src/core/update.c:update_read_u16",
         "c:src/core/update.c:update_read_u32",
         "c:src/core/update.c:update_reason_error",
+        "c:src/core/update.c:update_recover_pending",
         "c:src/core/update.c:update_refresh_capabilities",
         "c:src/core/update.c:update_reject",
+        "c:src/core/update.c:update_remove_if_present",
+        "c:src/core/update.c:update_replace_apply_targets",
+        "c:src/core/update.c:update_replace_from_alias",
+        "c:src/core/update.c:update_replace_rollback_targets",
+        "c:src/core/update.c:update_restore_interrupted_apply",
         "c:src/core/update.c:update_rollback",
+        "c:src/core/update.c:update_rollback_cancelled",
+        "c:src/core/update.c:update_rollback_state_from_journal",
         "c:src/core/update.c:update_set_compile_time_version",
+        "c:src/core/update.c:update_stage_apply_files",
+        "c:src/core/update.c:update_start_apply_transaction",
         "c:src/core/update.c:update_store_state_name",
         "c:src/core/update.c:update_sync_runtime_state",
+        "c:src/core/update.c:update_target_exists",
         "c:src/core/update.c:update_target_id",
+        "c:src/core/update.c:update_test_fail_after",
+        "c:src/core/update.c:update_validate_applicability",
+        "c:src/core/update.c:update_validate_current_state",
         "c:src/core/update.c:update_validate_header_algorithms",
         "c:src/core/update.c:update_validate_header_layout",
         "c:src/core/update.c:update_validate_header_limits",
         "c:src/core/update.c:update_validate_path_syntax",
         "c:src/core/update.c:update_verify_file",
+        "c:src/core/update.c:update_verify_internal",
+        "c:src/core/update.c:update_verify_loaded",
+        "c:src/core/update.c:update_verify_root_file",
         "c:src/core/update.c:update_version_compare",
+        "c:src/core/update.c:update_write_history_record",
+        "c:src/core/update.c:update_write_journal_record",
+        "c:src/core/update.c:update_write_state_record",
         "c:src/core/update.c:update_write_u16",
         "c:src/core/update.c:update_write_u32",
         "c:src/core/update.c:zupd_reason_name"

@@ -1683,8 +1683,9 @@ Sincronize o catalogo somente apos a execucao real e valide com
 
 O alvo `test-update-host` compila `src/core/update.c` com doubles estaticos de
 crypto e filesystem. A fixture valida os registros U3/U4, headers ZUPD,
-paths, tabela de entradas, limites, corrupcao e helpers de cancelamento sem
-escrever em armazenamento real:
+paths, tabela de entradas, transacoes FAT12, slots, apply, rollback,
+cancelamento, failpoints e recuperacao por boot sem escrever em armazenamento
+real:
 
 ```text
 make test-update-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
