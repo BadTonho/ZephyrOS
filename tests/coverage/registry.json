@@ -480,7 +480,8 @@
       "coverage_sources": [
         "src/core/test_protocol.c"
       ],
-      "evidence": "make test-protocol-adapter-host aprovado com transporte serial falso, handshake, RUN, falha por fase e eventos de diagnostico",
+      "include_public_apis": true,
+      "evidence": "make test-protocol-adapter-host aprovado com transporte serial falso, handshake, RUN, falha por fase, rotas TST4/TST5/TST6/Assembly e eventos de diagnostico; APIs publicas vinculadas por implementacao observada",
       "case_definition": {
         "id": "host:tst2:protocol-adapter",
         "scenario": "Teste host-only do adaptador de protocolo ZTEST",

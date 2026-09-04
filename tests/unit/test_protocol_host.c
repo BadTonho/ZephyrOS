@@ -135,6 +135,10 @@ int kernel_tests_run_platform(const kernel_tests_runtime_t* runtime) {
     return fake_runtime_run(runtime, OK);
 }
 
+int kernel_tests_run_assembly(const kernel_tests_runtime_t* runtime) {
+    return fake_runtime_run(runtime, OK);
+}
+
 int kernel_tests_run_tst5_blackbox(const kernel_tests_runtime_t* runtime,
                                    const char* case_id,
                                    uint32_t case_length) {
@@ -303,6 +307,7 @@ static int check_all_case_routes(void) {
         "qemu:tst4:storage-vfs",
         "qemu:tst4:network",
         "qemu:tst4:platform",
+        "qemu:tst7:assembly",
         "qemu:tst5:shell",
         "qemu:tst6:matrix:baseline"
     };
@@ -320,7 +325,7 @@ static int check_all_case_routes(void) {
         }
     }
     clear_tx();
-    if (send_fields("cmd=RUN case=unknown-case iteration=1 seed=6 seq=13") !=
+    if (send_fields("cmd=RUN case=unknown-case iteration=1 seed=6 seq=14") !=
             OK || !tx_contains("ERR_NOT_FOUND")) return 48;
     return 0;
 }

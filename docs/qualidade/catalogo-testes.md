@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 5086 |
+| `COVERED` | 5092 |
 | `MANUAL` | 0 |
-| `PENDING` | 2133 |
+| `PENDING` | 2127 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -626,12 +626,12 @@
 | `api:src/include/core/tcp.h:tcp_set_receive_window` | `src/include/core/tcp.h` | `tcp_set_receive_window` | `core` | `COVERED` | 3 |
 | `api:src/include/core/tcp.h:tcp_state_name` | `src/include/core/tcp.h` | `tcp_state_name` | `core` | `COVERED` | 3 |
 | `api:src/include/core/tcp.h:tcp_validate_state` | `src/include/core/tcp.h` | `tcp_validate_state` | `core` | `COVERED` | 4 |
-| `api:src/include/core/test_protocol.h:test_protocol_init` | `src/include/core/test_protocol.h` | `test_protocol_init` | `core` | `PENDING` | 0 |
-| `api:src/include/core/test_protocol.h:test_protocol_is_active` | `src/include/core/test_protocol.h` | `test_protocol_is_active` | `core` | `PENDING` | 0 |
-| `api:src/include/core/test_protocol.h:test_protocol_panic` | `src/include/core/test_protocol.h` | `test_protocol_panic` | `core` | `PENDING` | 0 |
-| `api:src/include/core/test_protocol.h:test_protocol_poll` | `src/include/core/test_protocol.h` | `test_protocol_poll` | `core` | `PENDING` | 0 |
-| `api:src/include/core/test_protocol.h:test_protocol_set_boot_ready` | `src/include/core/test_protocol.h` | `test_protocol_set_boot_ready` | `core` | `PENDING` | 0 |
-| `api:src/include/core/test_protocol.h:test_protocol_timeout` | `src/include/core/test_protocol.h` | `test_protocol_timeout` | `core` | `PENDING` | 0 |
+| `api:src/include/core/test_protocol.h:test_protocol_init` | `src/include/core/test_protocol.h` | `test_protocol_init` | `core` | `COVERED` | 1 |
+| `api:src/include/core/test_protocol.h:test_protocol_is_active` | `src/include/core/test_protocol.h` | `test_protocol_is_active` | `core` | `COVERED` | 1 |
+| `api:src/include/core/test_protocol.h:test_protocol_panic` | `src/include/core/test_protocol.h` | `test_protocol_panic` | `core` | `COVERED` | 1 |
+| `api:src/include/core/test_protocol.h:test_protocol_poll` | `src/include/core/test_protocol.h` | `test_protocol_poll` | `core` | `COVERED` | 1 |
+| `api:src/include/core/test_protocol.h:test_protocol_set_boot_ready` | `src/include/core/test_protocol.h` | `test_protocol_set_boot_ready` | `core` | `COVERED` | 1 |
+| `api:src/include/core/test_protocol.h:test_protocol_timeout` | `src/include/core/test_protocol.h` | `test_protocol_timeout` | `core` | `COVERED` | 1 |
 | `api:src/include/core/timer.h:timer_cancel` | `src/include/core/timer.h` | `timer_cancel` | `core` | `COVERED` | 3 |
 | `api:src/include/core/timer.h:timer_copy_active` | `src/include/core/timer.h` | `timer_copy_active` | `core` | `COVERED` | 3 |
 | `api:src/include/core/timer.h:timer_create` | `src/include/core/timer.h` | `timer_create` | `core` | `COVERED` | 3 |
@@ -7478,12 +7478,6 @@
 - `api:src/include/core/spinlock.h:spinlock_acquire`
 - `api:src/include/core/spinlock.h:spinlock_init`
 - `api:src/include/core/spinlock.h:spinlock_release`
-- `api:src/include/core/test_protocol.h:test_protocol_init`
-- `api:src/include/core/test_protocol.h:test_protocol_is_active`
-- `api:src/include/core/test_protocol.h:test_protocol_panic`
-- `api:src/include/core/test_protocol.h:test_protocol_poll`
-- `api:src/include/core/test_protocol.h:test_protocol_set_boot_ready`
-- `api:src/include/core/test_protocol.h:test_protocol_timeout`
 - `api:src/include/core/update.h:update_action_reason_name`
 - `api:src/include/core/update.h:update_apply_file`
 - `api:src/include/core/update.h:update_get_capabilities`
