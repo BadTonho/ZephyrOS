@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **7254**
-- Casos de teste: **147**
+- Superfícies ativas: **7255**
+- Casos de teste: **148**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
 |---|---:|
 | `api_function` | 1541 |
 | `asm_entry` | 101 |
-| `c_function` | 5492 |
+| `c_function` | 5493 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 5694 |
+| `COVERED` | 5727 |
 | `MANUAL` | 0 |
-| `PENDING` | 1560 |
+| `PENDING` | 1528 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 147 |
+| `AUTOMATED` | 148 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -37,7 +37,7 @@
 | `apps` | 134 |
 | `appstore` | 88 |
 | `boot` | 136 |
-| `core` | 2810 |
+| `core` | 2811 |
 | `desktop` | 40 |
 | `drivers` | 932 |
 | `filemanager` | 92 |
@@ -604,10 +604,10 @@
 | `api:src/include/core/spinlock.h:spinlock_acquire` | `src/include/core/spinlock.h` | `spinlock_acquire` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_init` | `src/include/core/spinlock.h` | `spinlock_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_release` | `src/include/core/spinlock.h` | `spinlock_release` | `core` | `PENDING` | 0 |
-| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 51 |
-| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 55 |
-| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 45 |
-| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 47 |
+| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 52 |
+| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 56 |
+| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 46 |
+| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 48 |
 | `api:src/include/core/syscall.h:syscall_enable_user_mode` | `src/include/core/syscall.h` | `syscall_enable_user_mode` | `core` | `COVERED` | 2 |
 | `api:src/include/core/syscall.h:syscall_handler` | `src/include/core/syscall.h` | `syscall_handler` | `core` | `COVERED` | 2 |
 | `api:src/include/core/syscall.h:syscall_init` | `src/include/core/syscall.h` | `syscall_init` | `core` | `COVERED` | 2 |
@@ -703,8 +703,8 @@
 | `api:src/include/core/update_remote.h:update_remote_get_status` | `src/include/core/update_remote.h` | `update_remote_get_status` | `core` | `COVERED` | 1 |
 | `api:src/include/core/update_remote.h:update_remote_init` | `src/include/core/update_remote.h` | `update_remote_init` | `core` | `COVERED` | 1 |
 | `api:src/include/core/update_remote.h:update_remote_reason_name` | `src/include/core/update_remote.h` | `update_remote_reason_name` | `core` | `COVERED` | 1 |
-| `api:src/include/core/update_remote.h:update_remote_release_check` | `src/include/core/update_remote.h` | `update_remote_release_check` | `core` | `PENDING` | 0 |
-| `api:src/include/core/update_remote.h:update_remote_release_fetch` | `src/include/core/update_remote.h` | `update_remote_release_fetch` | `core` | `PENDING` | 0 |
+| `api:src/include/core/update_remote.h:update_remote_release_check` | `src/include/core/update_remote.h` | `update_remote_release_check` | `core` | `COVERED` | 1 |
+| `api:src/include/core/update_remote.h:update_remote_release_fetch` | `src/include/core/update_remote.h` | `update_remote_release_fetch` | `core` | `COVERED` | 1 |
 | `api:src/include/core/update_remote.h:update_remote_state_name` | `src/include/core/update_remote.h` | `update_remote_state_name` | `core` | `COVERED` | 1 |
 | `api:src/include/core/update_remote.h:update_remote_store_name` | `src/include/core/update_remote.h` | `update_remote_store_name` | `core` | `COVERED` | 1 |
 | `api:src/include/core/update_remote_github.h:update_remote_github_query` | `src/include/core/update_remote_github.h` | `update_remote_github_query` | `core` | `COVERED` | 1 |
@@ -3080,10 +3080,10 @@
 | `c:src/core/socket.c:socket_wait_local` | `src/core/socket.c` | `socket_wait_local` | `core` | `COVERED` | 1 |
 | `c:src/core/socket.c:socket_wait_owner` | `src/core/socket.c` | `socket_wait_owner` | `core` | `COVERED` | 3 |
 | `c:src/core/socket.c:socket_wake` | `src/core/socket.c` | `socket_wake` | `core` | `COVERED` | 3 |
-| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 51 |
-| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 55 |
-| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 45 |
-| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 47 |
+| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 52 |
+| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 56 |
+| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 46 |
+| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 48 |
 | `c:src/core/syscall.c:syscall_copy_user_string` | `src/core/syscall.c` | `syscall_copy_user_string` | `core` | `COVERED` | 1 |
 | `c:src/core/syscall.c:syscall_dispatch` | `src/core/syscall.c` | `syscall_dispatch` | `core` | `COVERED` | 2 |
 | `c:src/core/syscall.c:syscall_dispatch_user` | `src/core/syscall.c` | `syscall_dispatch_user` | `core` | `COVERED` | 2 |
@@ -3502,37 +3502,38 @@
 | `c:src/core/update_remote_github.c:update_remote_github_query` | `src/core/update_remote_github.c` | `update_remote_github_query` | `core` | `COVERED` | 1 |
 | `c:src/core/update_remote_github.c:update_remote_github_query_mode` | `src/core/update_remote_github.c` | `update_remote_github_query_mode` | `core` | `COVERED` | 1 |
 | `c:src/core/update_remote_github.c:update_remote_github_runtime_query` | `src/core/update_remote_github.c` | `update_remote_github_runtime_query` | `core` | `COVERED` | 1 |
-| `c:src/core/update_remote_release.c:update_release_basename` | `src/core/update_remote_release.c` | `update_release_basename` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_release.c:update_release_build_descriptor_url` | `src/core/update_remote_release.c` | `update_release_build_descriptor_url` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_release.c:update_release_build_manifest_url` | `src/core/update_remote_release.c` | `update_release_build_manifest_url` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_release.c:update_release_candidate_matches` | `src/core/update_remote_release.c` | `update_release_candidate_matches` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_release.c:update_release_channel_ready` | `src/core/update_remote_release.c` | `update_release_channel_ready` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_release.c:update_release_copy_text` | `src/core/update_remote_release.c` | `update_release_copy_text` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_release.c:update_release_fetch_descriptor` | `src/core/update_remote_release.c` | `update_release_fetch_descriptor` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_release.c:update_release_has_suffix` | `src/core/update_remote_release.c` | `update_release_has_suffix` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_release.c:update_release_hex_value` | `src/core/update_remote_release.c` | `update_release_hex_value` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_release.c:update_release_http_options` | `src/core/update_remote_release.c` | `update_release_http_options` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_release.c:update_release_json_asset` | `src/core/update_remote_release.c` | `update_release_json_asset` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_release.c:update_release_json_expect` | `src/core/update_remote_release.c` | `update_release_json_expect` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_release.c:update_release_json_key` | `src/core/update_remote_release.c` | `update_release_json_key` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_release.c:update_release_json_skip_space` | `src/core/update_remote_release.c` | `update_release_json_skip_space` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_release.c:update_release_json_string` | `src/core/update_remote_release.c` | `update_release_json_string` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_release.c:update_release_mark_cache_preserved` | `src/core/update_remote_release.c` | `update_release_mark_cache_preserved` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_release.c:update_release_parse_descriptor` | `src/core/update_remote_release.c` | `update_release_parse_descriptor` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_release.c:update_release_parse_hash` | `src/core/update_remote_release.c` | `update_release_parse_hash` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_release.c:update_release_parse_u32` | `src/core/update_remote_release.c` | `update_release_parse_u32` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_release.c:update_release_parse_version` | `src/core/update_remote_release.c` | `update_release_parse_version` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_release.c:update_release_prepare_options` | `src/core/update_remote_release.c` | `update_release_prepare_options` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_release.c:update_release_reject` | `src/core/update_remote_release.c` | `update_release_reject` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_release.c:update_release_resolve_descriptor` | `src/core/update_remote_release.c` | `update_release_resolve_descriptor` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_release.c:update_release_validate_asset_name` | `src/core/update_remote_release.c` | `update_release_validate_asset_name` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_release.c:update_release_validate_identifier` | `src/core/update_remote_release.c` | `update_release_validate_identifier` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_release.c:update_release_validate_source_commit` | `src/core/update_remote_release.c` | `update_release_validate_source_commit` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_release.c:update_release_validate_tag` | `src/core/update_remote_release.c` | `update_release_validate_tag` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_release.c:update_release_versions_equal` | `src/core/update_remote_release.c` | `update_release_versions_equal` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_release.c:update_release_wait_http` | `src/core/update_remote_release.c` | `update_release_wait_http` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_release.c:update_remote_release_check` | `src/core/update_remote_release.c` | `update_remote_release_check` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_release.c:update_remote_release_fetch` | `src/core/update_remote_release.c` | `update_remote_release_fetch` | `core` | `PENDING` | 0 |
+| `c:src/core/update_remote_release.c:update_release_basename` | `src/core/update_remote_release.c` | `update_release_basename` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_release_build_descriptor_url` | `src/core/update_remote_release.c` | `update_release_build_descriptor_url` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_release_build_manifest_url` | `src/core/update_remote_release.c` | `update_release_build_manifest_url` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_release_candidate_matches` | `src/core/update_remote_release.c` | `update_release_candidate_matches` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_release_channel_ready` | `src/core/update_remote_release.c` | `update_release_channel_ready` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_release_copy_text` | `src/core/update_remote_release.c` | `update_release_copy_text` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_release_fetch_descriptor` | `src/core/update_remote_release.c` | `update_release_fetch_descriptor` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_release_has_suffix` | `src/core/update_remote_release.c` | `update_release_has_suffix` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_release_hex_value` | `src/core/update_remote_release.c` | `update_release_hex_value` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_release_http_options` | `src/core/update_remote_release.c` | `update_release_http_options` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_release_json_asset` | `src/core/update_remote_release.c` | `update_release_json_asset` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_release_json_expect` | `src/core/update_remote_release.c` | `update_release_json_expect` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_release_json_key` | `src/core/update_remote_release.c` | `update_release_json_key` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_release_json_skip_space` | `src/core/update_remote_release.c` | `update_release_json_skip_space` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_release_json_string` | `src/core/update_remote_release.c` | `update_release_json_string` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_release_mark_cache_preserved` | `src/core/update_remote_release.c` | `update_release_mark_cache_preserved` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_release_parse_descriptor` | `src/core/update_remote_release.c` | `update_release_parse_descriptor` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_release_parse_hash` | `src/core/update_remote_release.c` | `update_release_parse_hash` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_release_parse_u32` | `src/core/update_remote_release.c` | `update_release_parse_u32` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_release_parse_version` | `src/core/update_remote_release.c` | `update_release_parse_version` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_release_prepare_options` | `src/core/update_remote_release.c` | `update_release_prepare_options` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_release_reject` | `src/core/update_remote_release.c` | `update_release_reject` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_release_resolve_descriptor` | `src/core/update_remote_release.c` | `update_release_resolve_descriptor` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_release_validate_asset_name` | `src/core/update_remote_release.c` | `update_release_validate_asset_name` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_release_validate_identifier` | `src/core/update_remote_release.c` | `update_release_validate_identifier` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_release_validate_source_commit` | `src/core/update_remote_release.c` | `update_release_validate_source_commit` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_release_validate_tag` | `src/core/update_remote_release.c` | `update_release_validate_tag` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_release_versions_equal` | `src/core/update_remote_release.c` | `update_release_versions_equal` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_release_wait_http` | `src/core/update_remote_release.c` | `update_release_wait_http` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_remote_release_check` | `src/core/update_remote_release.c` | `update_remote_release_check` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_remote_release_fetch` | `src/core/update_remote_release.c` | `update_remote_release_fetch` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_release.c:update_remote_release_host_test_contracts` | `src/core/update_remote_release.c` | `update_remote_release_host_test_contracts` | `core` | `PENDING` | 0 |
 | `c:src/core/update_remote_runtime.c:runtime_remote_abort_pending` | `src/core/update_remote_runtime.c` | `runtime_remote_abort_pending` | `core` | `COVERED` | 1 |
 | `c:src/core/update_remote_runtime.c:runtime_remote_asset_alias` | `src/core/update_remote_runtime.c` | `runtime_remote_asset_alias` | `core` | `COVERED` | 1 |
 | `c:src/core/update_remote_runtime.c:runtime_remote_asset_url` | `src/core/update_remote_runtime.c` | `runtime_remote_asset_url` | `core` | `COVERED` | 1 |
@@ -7487,6 +7488,7 @@
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
 | `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
+| `host:core:update-remote-release` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar parser JSON, version lock, assets, URLs, espera, cancelamento, status HTTP e consultas publicas por tag com transporte simulado | descritores validos fazem parse; tags, limites, corrupcao, HTTP e pre-condicoes retornam erros canonicos sem rede externa | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos no processo host | estado HTTP e buffers pertencem ao processo host; manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -7528,8 +7530,6 @@
 - `api:src/include/core/spinlock.h:spinlock_acquire`
 - `api:src/include/core/spinlock.h:spinlock_init`
 - `api:src/include/core/spinlock.h:spinlock_release`
-- `api:src/include/core/update_remote.h:update_remote_release_check`
-- `api:src/include/core/update_remote.h:update_remote_release_fetch`
 - `api:src/include/core/update_system.h:update_system_check_tag`
 - `api:src/include/core/update_system.h:update_system_init`
 - `api:src/include/core/update_system.h:update_system_is_ready`
@@ -7896,37 +7896,7 @@
 - `c:src/core/update.c:update_write_journal_record`
 - `c:src/core/update.c:update_write_state_record`
 - `c:src/core/update_remote.c:update_remote_host_cancel`
-- `c:src/core/update_remote_release.c:update_release_basename`
-- `c:src/core/update_remote_release.c:update_release_build_descriptor_url`
-- `c:src/core/update_remote_release.c:update_release_build_manifest_url`
-- `c:src/core/update_remote_release.c:update_release_candidate_matches`
-- `c:src/core/update_remote_release.c:update_release_channel_ready`
-- `c:src/core/update_remote_release.c:update_release_copy_text`
-- `c:src/core/update_remote_release.c:update_release_fetch_descriptor`
-- `c:src/core/update_remote_release.c:update_release_has_suffix`
-- `c:src/core/update_remote_release.c:update_release_hex_value`
-- `c:src/core/update_remote_release.c:update_release_http_options`
-- `c:src/core/update_remote_release.c:update_release_json_asset`
-- `c:src/core/update_remote_release.c:update_release_json_expect`
-- `c:src/core/update_remote_release.c:update_release_json_key`
-- `c:src/core/update_remote_release.c:update_release_json_skip_space`
-- `c:src/core/update_remote_release.c:update_release_json_string`
-- `c:src/core/update_remote_release.c:update_release_mark_cache_preserved`
-- `c:src/core/update_remote_release.c:update_release_parse_descriptor`
-- `c:src/core/update_remote_release.c:update_release_parse_hash`
-- `c:src/core/update_remote_release.c:update_release_parse_u32`
-- `c:src/core/update_remote_release.c:update_release_parse_version`
-- `c:src/core/update_remote_release.c:update_release_prepare_options`
-- `c:src/core/update_remote_release.c:update_release_reject`
-- `c:src/core/update_remote_release.c:update_release_resolve_descriptor`
-- `c:src/core/update_remote_release.c:update_release_validate_asset_name`
-- `c:src/core/update_remote_release.c:update_release_validate_identifier`
-- `c:src/core/update_remote_release.c:update_release_validate_source_commit`
-- `c:src/core/update_remote_release.c:update_release_validate_tag`
-- `c:src/core/update_remote_release.c:update_release_versions_equal`
-- `c:src/core/update_remote_release.c:update_release_wait_http`
-- `c:src/core/update_remote_release.c:update_remote_release_check`
-- `c:src/core/update_remote_release.c:update_remote_release_fetch`
+- `c:src/core/update_remote_release.c:update_remote_release_host_test_contracts`
 - `c:src/core/update_runtime.c:runtime_apply_plan`
 - `c:src/core/update_runtime.c:runtime_apply_plan_locked`
 - `c:src/core/update_runtime.c:runtime_build_rollback_plan`

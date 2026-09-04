@@ -8,6 +8,10 @@
 #include "core/update_remote_github.h"
 #include "process/process.h"
 
+#if defined(ZEPHYROS_HOST_TEST)
+#include "update_remote_release_host.h"
+#endif
+
 #define UPDATE_RELEASE_FORMAT "zephyros-release-v1"
 #define UPDATE_RELEASE_TAG_MARKER "{tag}"
 #define UPDATE_RELEASE_TAG_MARKER_SIZE 5U
@@ -1105,3 +1109,339 @@ int update_remote_release_fetch(const char* tag,
     LOG_INFO("UPDATE", "Release por tag publicada no cache U5");
     return OK;
 }
+
+#if defined(ZEPHYROS_HOST_TEST)
+int update_remote_release_host_test_contracts(void) {
+    static const char valid_hash[] =
+        "0000000000000000000000000000000000000000000000000000000000000000";
+    static const char valid_commit[] =
+        "1111111111111111111111111111111111111111";
+    static const uint8_t valid_asset[] =
+        "{\"name\":\"APPLY.ZUP\",\"size\":9954,\"sha256\":\""
+        "0000000000000000000000000000000000000000000000000000000000000000\"}";
+    static const uint8_t invalid_asset[] =
+        "{\"name\":\"APPLY.ZUP\",\"size\":0,\"sha256\":\""
+        "0000000000000000000000000000000000000000000000000000000000000000\"}";
+    static const uint8_t invalid_json[] = "{\"format\":\"bad\"}";
+    update_release_json_t json;
+    update_release_descriptor_t descriptor;
+    update_remote_result_t result;
+    update_remote_result_t candidate_result;
+    update_remote_options_t options;
+    update_remote_options_t prepared;
+    http_request_options_t http_options;
+    http_status_t status;
+    update_version_t version;
+    update_remote_reason_t reason;
+    uint8_t hash[CRYPTO_SHA256_SIZE];
+    uint8_t descriptor_hash[CRYPTO_SHA256_SIZE];
+    uint8_t cancelled;
+    const uint8_t* body;
+    uint32_t body_length;
+    char text[UPDATE_REMOTE_URL_SIZE];
+    char small_text[4];
+
+    if (update_release_copy_text(NULL, 1U, "x") != ERR_NULL ||
+        update_release_copy_text(text, sizeof(text), NULL) != ERR_NULL ||
+        update_release_copy_text(small_text, sizeof(small_text), "long") !=
+            ERR_OVERFLOW ||
+        update_release_copy_text(text, sizeof(text), "ok") != OK ||
+        kstrcmp(text, "ok") != 0) return 90;
+    kmemset(&result, 0, sizeof(result));
+    update_remote_release_host_status_result = OK;
+    update_remote_release_host_package_cached = 1U;
+    update_release_mark_cache_preserved(&result);
+    if (!result.cache_preserved ||
+        update_release_reject(UPDATE_REMOTE_REASON_HTTP, ERR_INVALID,
+                               "fixture", &result) != ERR_INVALID ||
+        result.reason != UPDATE_REMOTE_REASON_HTTP) return 91;
+    update_remote_release_host_status_result = ERR_STATE;
+    if (update_release_channel_ready(&result) != ERR_STATE) return 92;
+    update_remote_release_host_status_result = OK;
+    update_remote_release_host_enabled = 0U;
+    if (update_release_channel_ready(&result) != ERR_UNAVAILABLE) return 93;
+    update_remote_release_host_enabled = 1U;
+    update_remote_release_host_network_ready = 0U;
+    if (update_release_channel_ready(&result) != ERR_UNAVAILABLE) return 94;
+    update_remote_release_host_network_ready = 1U;
+    if (update_release_channel_ready(&result) != OK) return 95;
+
+    if (update_release_validate_tag(NULL) != ERR_NULL ||
+        update_release_validate_tag("") != ERR_INVALID ||
+        update_release_validate_tag("bad/tag") != ERR_INVALID ||
+        update_release_validate_tag("v1.2.3") != OK ||
+        update_release_hex_value('0') != 0 ||
+        update_release_hex_value('f') != 15 ||
+        update_release_hex_value('g') != -1 ||
+        update_release_parse_hash(NULL, hash) != ERR_INVALID ||
+        update_release_parse_hash(valid_hash, NULL) != ERR_INVALID ||
+        update_release_parse_hash(valid_hash, hash) != OK ||
+        update_release_parse_hash("0", hash) != ERR_INVALID ||
+        update_release_parse_hash(
+            "000000000000000000000000000000000000000000000000000000000000000g",
+            hash) != ERR_INVALID) return 96;
+    if (update_release_parse_version(NULL, &version) != ERR_NULL ||
+        update_release_parse_version("1.2.3", NULL) != ERR_NULL ||
+        update_release_parse_version("1.2.3", &version) != OK ||
+        version.major != 1U || version.minor != 2U || version.patch != 3U ||
+        update_release_parse_version("1.2", &version) != ERR_INVALID ||
+        update_release_parse_version("65536.0.0", &version) != ERR_OVERFLOW ||
+        update_release_parse_version("1..2", &version) != ERR_INVALID) {
+        return 97;
+    }
+
+    json.data = (const uint8_t*)" \n \t\"text\"";
+    json.length = (uint32_t)sizeof(" \n \t\"text\"") - 1U;
+    json.offset = 0U;
+    if (update_release_json_string(&json, text, sizeof(text)) != OK ||
+        kstrcmp(text, "text") != 0 ||
+        update_release_json_expect(&json, '}') != ERR_INVALID) return 98;
+    json.data = (const uint8_t*)" \"value\" : 4294967295";
+    json.length = (uint32_t)kstrlen((const char*)json.data);
+    json.offset = 0U;
+    if (update_release_json_key(&json, "value") != OK ||
+        update_release_parse_u32(&json, &body_length) != OK ||
+        body_length != 0xFFFFFFFFU ||
+        update_release_json_expect(&json, ',') != ERR_INVALID) return 99;
+    json.data = (const uint8_t*)"00";
+    json.length = 2U;
+    json.offset = 0U;
+    if (update_release_parse_u32(&json, &body_length) != ERR_INVALID) {
+        return 100;
+    }
+    json.data = (const uint8_t*)"\"x\"";
+    json.length = 3U;
+    json.offset = 0U;
+    if (update_release_json_string(&json, text, 1U) != ERR_OVERFLOW) {
+        return 100;
+    }
+    if (update_release_validate_identifier(NULL, sizeof(text)) != ERR_NULL ||
+        update_release_validate_identifier("bad/name", sizeof(text)) !=
+            ERR_INVALID ||
+        update_release_validate_identifier("id-1", sizeof(text)) != OK ||
+        update_release_validate_source_commit(NULL) != ERR_INVALID ||
+        update_release_validate_source_commit(valid_commit) != OK ||
+        update_release_validate_source_commit("111111111111111111111111111111111111111G") !=
+            ERR_INVALID ||
+        update_release_has_suffix("FILE.ZUM", ".zum") != 1 ||
+        update_release_has_suffix("FILE.ZUP", ".zum") != 0 ||
+        update_release_has_suffix(NULL, ".zum") != 0) return 101;
+    if (update_release_validate_asset_name(NULL, sizeof(text), 0) != ERR_NULL ||
+        update_release_validate_asset_name("release.zum", sizeof(text), 1) !=
+            OK ||
+        update_release_validate_asset_name("release.zup", sizeof(text), 0) !=
+            OK ||
+        update_release_validate_asset_name("bad/name.zup", sizeof(text), 0) !=
+            ERR_INVALID ||
+        update_release_validate_asset_name("wrong.bin", sizeof(text), 1) !=
+            ERR_INVALID) return 102;
+    json.data = valid_asset;
+    json.length = sizeof(valid_asset) - 1U;
+    json.offset = 0U;
+    if (update_release_json_asset(&json, text, sizeof(text), &body_length,
+                                  hash, 0) != OK || body_length != 9954U ||
+        kstrcmp(text, "APPLY.ZUP") != 0) return 103;
+    json.data = invalid_asset;
+    json.length = sizeof(invalid_asset) - 1U;
+    json.offset = 0U;
+    if (update_release_json_asset(&json, text, sizeof(text), &body_length,
+                                  hash, 0) != ERR_INVALID) return 104;
+
+    if (update_release_parse_descriptor(
+            NULL, 0U, "ep6-alt", "http://x/ep6-alt.json", &descriptor,
+            descriptor_hash, &reason) != ERR_NULL ||
+        update_release_parse_descriptor(
+            update_remote_release_host_descriptor,
+            update_remote_release_host_descriptor_size, "ep6-alt",
+            "http://10.0.2.2:8000/zephyros/ep6-alt.json", &descriptor,
+            descriptor_hash, &reason) != OK ||
+        kstrcmp(descriptor.release.tag, "ep6-alt") != 0 ||
+        descriptor.release.package_size != 9954U ||
+        kstrcmp(descriptor.release.manifest_url,
+                "http://10.0.2.2:8000/zephyros/stable2.zum") != 0 ||
+        reason != UPDATE_REMOTE_REASON_RELEASE_FORMAT) return 105;
+    if (update_release_parse_descriptor(
+            invalid_json, sizeof(invalid_json) - 1U, "ep6-alt", "http://x/y",
+            &descriptor, descriptor_hash, &reason) != ERR_INVALID ||
+        update_release_parse_descriptor(
+            update_remote_release_host_descriptor,
+            update_remote_release_host_descriptor_size, "other",
+            "http://x/ep6-alt.json", &descriptor, descriptor_hash,
+            &reason) != ERR_INVALID ||
+        reason != UPDATE_REMOTE_REASON_RELEASE_TAG) return 106;
+    if (update_release_parse_descriptor(
+            update_remote_release_host_descriptor,
+            update_remote_release_host_descriptor_size, "ep6-alt",
+            "http://10.0.2.2:8000/zephyros/ep6-alt.json", &descriptor,
+            descriptor_hash, &reason) != OK) return 106;
+    if (update_release_build_descriptor_url(NULL, text) != ERR_NULL ||
+        update_release_build_descriptor_url("ep6-alt", text) != OK ||
+        kstrcmp(text, "http://10.0.2.2:8000/zephyros/ep6-alt.json") != 0 ||
+        update_release_build_manifest_url(NULL, "release.zum", text) !=
+            ERR_NULL ||
+        update_release_build_manifest_url("http://x/y.json", "release.zum",
+                                          text) != OK ||
+        kstrcmp(text, "http://x/release.zum") != 0 ||
+        update_release_build_manifest_url("invalid", "release.zum", text) !=
+            ERR_INVALID) return 107;
+
+    kmemset(&options, 0, sizeof(options));
+    options.http_accept = "application/json";
+    options.http_api_version = "v1";
+    options.http_require_https = 0U;
+    options.http_follow_redirects = 0U;
+    options.http_max_redirects = 1U;
+    if (update_release_http_options(NULL, &http_options) != OK ||
+        update_release_http_options(&options, &http_options) != OK ||
+        http_options.accept != options.http_accept ||
+        update_release_http_options(&options, NULL) != ERR_NULL) return 108;
+    update_release_prepare_options(&options, &prepared);
+    if (!prepared.http_require_https || !prepared.http_follow_redirects ||
+        prepared.http_max_redirects != HTTP_MAX_REDIRECTS) return 109;
+
+    update_remote_release_host_http_body =
+        update_remote_release_host_descriptor;
+    update_remote_release_host_http_body_size =
+        update_remote_release_host_descriptor_size;
+    update_remote_release_host_http_mode =
+        UPDATE_REMOTE_RELEASE_HOST_HTTP_COMPLETE;
+    update_remote_release_host_http_start_result = OK;
+    update_remote_release_host_http_status_result = OK;
+    update_remote_release_host_http_body_result = OK;
+    update_remote_release_host_http_status_code = UPDATE_RELEASE_HTTP_OK;
+    update_remote_release_host_http_has_content_length = 1U;
+    update_remote_release_host_http_content_length =
+        update_remote_release_host_descriptor_size;
+    if (http_get_start_ex("http://fixture/release.json", &http_options) != OK) {
+        return 110;
+    }
+    if (update_release_wait_http(NULL, NULL, &cancelled) != ERR_NULL ||
+        update_release_wait_http(NULL, &status, NULL) != ERR_NULL ||
+        update_release_wait_http(NULL, &status, &cancelled) != OK ||
+        cancelled != 0U) return 110;
+    update_remote_release_host_http_mode =
+        UPDATE_REMOTE_RELEASE_HOST_HTTP_FAILED;
+    if (http_get_start_ex("http://fixture/release.json", &http_options) != OK) {
+        return 111;
+    }
+    if (update_release_wait_http(NULL, &status, &cancelled) != ERR_DISK) {
+        return 111;
+    }
+    update_remote_release_host_http_mode =
+        UPDATE_REMOTE_RELEASE_HOST_HTTP_WAIT;
+    if (http_get_start_ex("http://fixture/release.json", &http_options) != OK) {
+        return 112;
+    }
+    update_remote_release_host_cancel = 1U;
+    options.cancel_check = update_remote_release_host_cancel_check;
+    if (update_release_wait_http(&options, &status, &cancelled) != ERR_TIMEOUT ||
+        !cancelled) return 112;
+    update_remote_release_host_cancel = 0U;
+    update_remote_release_host_http_status_result = ERR_STATE;
+    if (update_release_wait_http(NULL, &status, &cancelled) != ERR_STATE) {
+        return 113;
+    }
+    update_remote_release_host_http_status_result = OK;
+    update_remote_release_host_http_mode =
+        UPDATE_REMOTE_RELEASE_HOST_HTTP_COMPLETE;
+
+    kmemset(&result, 0, sizeof(result));
+    body = NULL;
+    body_length = 0U;
+    if (update_release_fetch_descriptor(
+            NULL, NULL, NULL, &result, &body, &body_length, &reason) !=
+            ERR_NULL ||
+        update_release_fetch_descriptor(
+            "http://x/release.json", NULL, &http_options, &result, &body,
+            &body_length, &reason) != OK ||
+        body != update_remote_release_host_http_body ||
+        body_length != update_remote_release_host_descriptor_size ||
+        result.http_status != UPDATE_RELEASE_HTTP_OK) return 114;
+    update_remote_release_host_http_mode =
+        UPDATE_REMOTE_RELEASE_HOST_HTTP_NOT_FOUND;
+    if (update_release_fetch_descriptor(
+            "http://x/release.json", NULL, &http_options, &result, &body,
+            &body_length, &reason) != ERR_NOT_FOUND ||
+        reason != UPDATE_REMOTE_REASON_RELEASE_NOT_FOUND) return 115;
+    update_remote_release_host_http_mode =
+        UPDATE_REMOTE_RELEASE_HOST_HTTP_COMPLETE;
+    update_remote_release_host_http_status_code = 500U;
+    if (update_release_fetch_descriptor(
+            "http://x/release.json", NULL, &http_options, &result, &body,
+            &body_length, &reason) != ERR_INVALID ||
+        reason != UPDATE_REMOTE_REASON_RELEASE_API) return 116;
+    update_remote_release_host_http_status_code = UPDATE_RELEASE_HTTP_OK;
+    update_remote_release_host_http_has_content_length = 0U;
+    if (update_release_fetch_descriptor(
+            "http://x/release.json", NULL, &http_options, &result, &body,
+            &body_length, &reason) != ERR_INVALID ||
+        reason != UPDATE_REMOTE_REASON_RELEASE_FORMAT) return 117;
+    update_remote_release_host_http_has_content_length = 1U;
+    update_remote_release_host_http_content_length =
+        update_remote_release_host_descriptor_size + 1U;
+    if (update_release_fetch_descriptor(
+            "http://x/release.json", NULL, &http_options, &result, &body,
+            &body_length, &reason) != ERR_INVALID) return 118;
+    update_remote_release_host_http_content_length =
+        update_remote_release_host_descriptor_size;
+    update_remote_release_host_http_body_result = ERR_DISK;
+    if (update_release_fetch_descriptor(
+            "http://x/release.json", NULL, &http_options, &result, &body,
+            &body_length, &reason) != ERR_INVALID) return 119;
+    update_remote_release_host_http_body_result = OK;
+    update_remote_release_host_http_start_result = ERR_DISK;
+    if (update_release_fetch_descriptor(
+            "http://x/release.json", NULL, &http_options, &result, &body,
+            &body_length, &reason) != ERR_DISK ||
+        reason != UPDATE_REMOTE_REASON_HTTP) return 120;
+    update_remote_release_host_http_start_result = OK;
+
+    update_remote_release_host_github_result = ERR_DISK;
+    if (update_release_resolve_descriptor(
+            "v1.2.3", &options, &result, &descriptor, descriptor_hash) !=
+            ERR_DISK ||
+        update_release_versions_equal(&version, NULL) != 0 ||
+        update_release_versions_equal(&version, &version) != 1 ||
+        update_release_basename(NULL) != NULL ||
+        kstrcmp(update_release_basename("/cache/APPLY.ZUP"), "APPLY.ZUP") != 0) {
+        return 121;
+    }
+    candidate_result = result;
+    candidate_result.candidate.package_size = descriptor.release.package_size;
+    candidate_result.candidate.base_version = (update_version_t){0U, 1U, 0U};
+    candidate_result.candidate.target_version = (update_version_t){0U, 1U, 1U};
+    candidate_result.candidate.base_epoch = 0U;
+    candidate_result.candidate.target_epoch = 0U;
+    kmemcpy(candidate_result.candidate.package_hash,
+            descriptor.release.package_hash, CRYPTO_SHA256_SIZE);
+    kmemcpy(candidate_result.manifest_hash, descriptor.release.manifest_hash,
+            CRYPTO_SHA256_SIZE);
+    kmemcpy(candidate_result.candidate.package_path, "cache/APPLY.ZUP", 16U);
+    if (update_release_candidate_matches(NULL, &candidate_result) != 0 ||
+        update_release_candidate_matches(&descriptor, NULL) != 0 ||
+        update_release_candidate_matches(&descriptor, &candidate_result) != 1) {
+        return 122;
+    }
+    candidate_result.candidate.package_size++;
+    if (update_release_candidate_matches(&descriptor, &candidate_result) != 0) {
+        return 123;
+    }
+
+    kmemset(&result, 0, sizeof(result));
+    if (update_remote_release_check(NULL, NULL, &result) != ERR_NULL ||
+        result.reason != UPDATE_REMOTE_REASON_RELEASE_TAG ||
+        update_remote_release_check("v1.2.3", NULL, &result) !=
+            ERR_DISK ||
+        update_remote_release_check("v1.2.3", NULL, NULL) != ERR_NULL ||
+        update_remote_release_fetch(NULL, NULL, &result) != ERR_NULL ||
+        update_remote_release_fetch("v1.2.3", NULL, &result) != ERR_STATE ||
+        update_remote_release_fetch("v1.2.3", &options, NULL) != ERR_NULL) {
+        return 124;
+    }
+    options.dry_run = 1U;
+    if (update_remote_release_fetch("bad/tag", &options, &result) !=
+        ERR_INVALID) return 125;
+    options.dry_run = 0U;
+    return OK;
+}
+#endif

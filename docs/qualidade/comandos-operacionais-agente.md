@@ -1805,3 +1805,22 @@ O relatorio instrumentado fica em
 em `PASS`, com `unknown_addresses=[]` e `ambiguous_symbols=[]`. Depois da
 execucao real, sincronize o catalogo, renderize a visao e valide com
 `make catalog-test`.
+
+## Update remote release host-only
+
+O alvo `test-update-remote-release-host` compila o
+`src/core/update_remote_release.c` com descritor JSON, HTTP, crypto, canal
+remoto e consulta GitHub simulados em buffers estaticos. A fixture valida
+version lock, tags, assets, hashes, URLs, truncamento, status HTTP,
+cancelamento, selecao por tag, pre-condicoes e contrato de download sem rede
+externa:
+
+```text
+make test-update-remote-release-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O relatorio instrumentado fica em
+`build/test-results/update-remote-release-host/coverage.json` e deve terminar
+em `PASS`, com `unknown_addresses=[]` e `ambiguous_symbols=[]`. Depois da
+execucao real, sincronize o catalogo, renderize a visao e valide com
+`make catalog-test`.

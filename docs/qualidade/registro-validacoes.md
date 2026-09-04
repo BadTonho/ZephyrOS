@@ -5502,3 +5502,20 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   registra 7.254 superficies, 5.694 `COVERED`, 1.560 `PENDING` e 147 casos.
   O gate estrito e a validacao TST7 completa continuam pendentes pelas
   superficies sem evidencia real.
+
+- Incremento Core/update remote release concluido em 2026-09-04
+  (America/Sao_Paulo). Foi criada a fixture host-only
+  `host:core:update-remote-release`, com descritor JSON, HTTP, crypto, canal
+  remoto e consulta GitHub simulados em buffers estaticos. O caso exercita
+  diretamente version lock, tags, assets, hashes, URLs, truncamento, status
+  HTTP, cancelamento, selecao por tag, pre-condicoes e contrato de download
+  de `src/core/update_remote_release.c`, sem rede externa. O relatorio
+  `build/test-results/update-remote-release-host/coverage.json` terminou
+  `PASS`, resolveu 35 superficies reais e nao registrou enderecos desconhecidos
+  ou simbolos ambiguos. Passaram
+  `make test-update-remote-release-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`,
+  sincronizacao, renderizacao, `make catalog-test`, `q3check`, `make clean`,
+  `make` e os testes unitarios de catalogo, runner host e TST7. O catalogo
+  registra 7.255 superficies, 5.729 `COVERED`, 1.526 `PENDING` e 148 casos.
+  O gate estrito e a validacao TST7 completa continuam pendentes pelas
+  superficies sem evidencia real.

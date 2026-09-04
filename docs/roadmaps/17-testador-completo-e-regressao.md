@@ -2366,3 +2366,17 @@ pendente.
   catalogo, runner host e TST7, e `git diff --check`. O catalogo registra
   7.254 superficies, 5.694 `COVERED`, 1.560 `PENDING` e 147 casos; o restante
   da cobertura integral continua pendente e nao foi mascarado.
+
+- Incremento Core/update remote release concluido em 2026-09-04. A fixture
+  host-only `host:core:update-remote-release` executa os helpers e contratos
+  publicos reais de `src/core/update_remote_release.c` com descritor JSON,
+  HTTP, crypto, canal remoto e consulta GitHub simulados em buffers estaticos.
+  A evidencia instrumentada resolveu 35 superficies reais sem enderecos
+  desconhecidos ou simbolos ambiguos, cobrindo version lock, tags, assets,
+  hashes, URLs, truncamento, status HTTP, cancelamento, selecao por tag,
+  pre-condicoes e contrato de download. Passaram o alvo host-only com
+  `HOST_CC`, sincronizacao, renderizacao, `make catalog-test`, `q3check`,
+  `make clean`, `make`, os testes unitarios de catalogo, runner host e TST7,
+  e `git diff --check`. O catalogo registra 7.255 superficies, 5.729
+  `COVERED`, 1.526 `PENDING` e 148 casos; o restante da cobertura integral
+  continua pendente e nao foi mascarado.
