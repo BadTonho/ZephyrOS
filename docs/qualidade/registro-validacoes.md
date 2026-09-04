@@ -5453,3 +5453,18 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   superficies, 5.546 `COVERED`, 1.705 `PENDING` e 144 casos. O gate estrito e
   a validacao TST7 completa continuam pendentes pelas superficies sem
   evidencia real.
+
+- Incremento Core/update system slots concluido em 2026-09-04. Foi criada a
+  fixture host-only `host:core:update-system-slots`, com filesystem, volume,
+  crypto, armazenamento e estado de boot simulados em buffers estaticos. O
+  caso exercita diretamente serializacao de estado e journal, validacao,
+  redundancia, recuperacao, paths, limites e contratos publicos sem
+  armazenamento real ou reboot. O relatorio
+  `build/test-results/update-system-slots-host/coverage.json` terminou `PASS`,
+  resolveu 56 superficies reais e nao registrou enderecos desconhecidos ou
+  simbolos ambiguos. Passaram `make test-update-system-slots-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`, sincronizacao, renderizacao,
+  `make catalog-test`, o build limpo, `q3check` e os testes unitarios de
+  catalogo, runner host e TST7. O catalogo registra 7.252 superficies, 5.616
+  `COVERED`, 1.636 `PENDING` e 145 casos. O gate estrito e a validacao TST7
+  completa continuam pendentes pelas superficies sem evidencia real.

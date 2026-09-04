@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **7251**
-- Casos de teste: **144**
+- Superfícies ativas: **7252**
+- Casos de teste: **145**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
 |---|---:|
 | `api_function` | 1541 |
 | `asm_entry` | 101 |
-| `c_function` | 5489 |
+| `c_function` | 5490 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 5551 |
+| `COVERED` | 5616 |
 | `MANUAL` | 0 |
-| `PENDING` | 1700 |
+| `PENDING` | 1636 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 144 |
+| `AUTOMATED` | 145 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -37,7 +37,7 @@
 | `apps` | 134 |
 | `appstore` | 88 |
 | `boot` | 136 |
-| `core` | 2807 |
+| `core` | 2808 |
 | `desktop` | 40 |
 | `drivers` | 932 |
 | `filemanager` | 92 |
@@ -604,10 +604,10 @@
 | `api:src/include/core/spinlock.h:spinlock_acquire` | `src/include/core/spinlock.h` | `spinlock_acquire` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_init` | `src/include/core/spinlock.h` | `spinlock_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_release` | `src/include/core/spinlock.h` | `spinlock_release` | `core` | `PENDING` | 0 |
-| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 48 |
-| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 52 |
-| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 42 |
-| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 44 |
+| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 49 |
+| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 53 |
+| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 43 |
+| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 45 |
 | `api:src/include/core/syscall.h:syscall_enable_user_mode` | `src/include/core/syscall.h` | `syscall_enable_user_mode` | `core` | `COVERED` | 2 |
 | `api:src/include/core/syscall.h:syscall_handler` | `src/include/core/syscall.h` | `syscall_handler` | `core` | `COVERED` | 2 |
 | `api:src/include/core/syscall.h:syscall_init` | `src/include/core/syscall.h` | `syscall_init` | `core` | `COVERED` | 2 |
@@ -750,18 +750,18 @@
 | `api:src/include/core/update_system.h:update_system_transfer_tag` | `src/include/core/update_system.h` | `update_system_transfer_tag` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_system.h:update_system_verify_file` | `src/include/core/update_system.h` | `update_system_verify_file` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_system.h:update_system_verify_file_for_slot` | `src/include/core/update_system.h` | `update_system_verify_file_for_slot` | `core` | `PENDING` | 0 |
-| `api:src/include/core/update_system_slots.h:update_system_slot_file_state_name` | `src/include/core/update_system_slots.h` | `update_system_slot_file_state_name` | `core` | `PENDING` | 0 |
-| `api:src/include/core/update_system_slots.h:update_system_slots_boot_confirm` | `src/include/core/update_system_slots.h` | `update_system_slots_boot_confirm` | `core` | `PENDING` | 0 |
-| `api:src/include/core/update_system_slots.h:update_system_slots_boot_state_name` | `src/include/core/update_system_slots.h` | `update_system_slots_boot_state_name` | `core` | `PENDING` | 0 |
-| `api:src/include/core/update_system_slots.h:update_system_slots_cancel_pending` | `src/include/core/update_system_slots.h` | `update_system_slots_cancel_pending` | `core` | `PENDING` | 0 |
-| `api:src/include/core/update_system_slots.h:update_system_slots_get_status` | `src/include/core/update_system_slots.h` | `update_system_slots_get_status` | `core` | `PENDING` | 0 |
-| `api:src/include/core/update_system_slots.h:update_system_slots_init` | `src/include/core/update_system_slots.h` | `update_system_slots_init` | `core` | `PENDING` | 0 |
-| `api:src/include/core/update_system_slots.h:update_system_slots_is_ready` | `src/include/core/update_system_slots.h` | `update_system_slots_is_ready` | `core` | `PENDING` | 0 |
-| `api:src/include/core/update_system_slots.h:update_system_slots_journal_phase_name` | `src/include/core/update_system_slots.h` | `update_system_slots_journal_phase_name` | `core` | `PENDING` | 0 |
-| `api:src/include/core/update_system_slots.h:update_system_slots_reason_name` | `src/include/core/update_system_slots.h` | `update_system_slots_reason_name` | `core` | `PENDING` | 0 |
-| `api:src/include/core/update_system_slots.h:update_system_slots_reboot_preflight` | `src/include/core/update_system_slots.h` | `update_system_slots_reboot_preflight` | `core` | `PENDING` | 0 |
-| `api:src/include/core/update_system_slots.h:update_system_slots_stage_file` | `src/include/core/update_system_slots.h` | `update_system_slots_stage_file` | `core` | `PENDING` | 0 |
-| `api:src/include/core/update_system_slots.h:update_system_slots_state_name` | `src/include/core/update_system_slots.h` | `update_system_slots_state_name` | `core` | `PENDING` | 0 |
+| `api:src/include/core/update_system_slots.h:update_system_slot_file_state_name` | `src/include/core/update_system_slots.h` | `update_system_slot_file_state_name` | `core` | `COVERED` | 1 |
+| `api:src/include/core/update_system_slots.h:update_system_slots_boot_confirm` | `src/include/core/update_system_slots.h` | `update_system_slots_boot_confirm` | `core` | `COVERED` | 1 |
+| `api:src/include/core/update_system_slots.h:update_system_slots_boot_state_name` | `src/include/core/update_system_slots.h` | `update_system_slots_boot_state_name` | `core` | `COVERED` | 1 |
+| `api:src/include/core/update_system_slots.h:update_system_slots_cancel_pending` | `src/include/core/update_system_slots.h` | `update_system_slots_cancel_pending` | `core` | `COVERED` | 1 |
+| `api:src/include/core/update_system_slots.h:update_system_slots_get_status` | `src/include/core/update_system_slots.h` | `update_system_slots_get_status` | `core` | `COVERED` | 1 |
+| `api:src/include/core/update_system_slots.h:update_system_slots_init` | `src/include/core/update_system_slots.h` | `update_system_slots_init` | `core` | `COVERED` | 1 |
+| `api:src/include/core/update_system_slots.h:update_system_slots_is_ready` | `src/include/core/update_system_slots.h` | `update_system_slots_is_ready` | `core` | `COVERED` | 1 |
+| `api:src/include/core/update_system_slots.h:update_system_slots_journal_phase_name` | `src/include/core/update_system_slots.h` | `update_system_slots_journal_phase_name` | `core` | `COVERED` | 1 |
+| `api:src/include/core/update_system_slots.h:update_system_slots_reason_name` | `src/include/core/update_system_slots.h` | `update_system_slots_reason_name` | `core` | `COVERED` | 1 |
+| `api:src/include/core/update_system_slots.h:update_system_slots_reboot_preflight` | `src/include/core/update_system_slots.h` | `update_system_slots_reboot_preflight` | `core` | `COVERED` | 1 |
+| `api:src/include/core/update_system_slots.h:update_system_slots_stage_file` | `src/include/core/update_system_slots.h` | `update_system_slots_stage_file` | `core` | `COVERED` | 1 |
+| `api:src/include/core/update_system_slots.h:update_system_slots_state_name` | `src/include/core/update_system_slots.h` | `update_system_slots_state_name` | `core` | `COVERED` | 1 |
 | `api:src/include/core/usb_manager.h:usb_manager_find` | `src/include/core/usb_manager.h` | `usb_manager_find` | `core` | `COVERED` | 4 |
 | `api:src/include/core/usb_manager.h:usb_manager_find_device` | `src/include/core/usb_manager.h` | `usb_manager_find_device` | `core` | `COVERED` | 4 |
 | `api:src/include/core/usb_manager.h:usb_manager_format_device_text` | `src/include/core/usb_manager.h` | `usb_manager_format_device_text` | `core` | `COVERED` | 4 |
@@ -3080,10 +3080,10 @@
 | `c:src/core/socket.c:socket_wait_local` | `src/core/socket.c` | `socket_wait_local` | `core` | `COVERED` | 1 |
 | `c:src/core/socket.c:socket_wait_owner` | `src/core/socket.c` | `socket_wait_owner` | `core` | `COVERED` | 3 |
 | `c:src/core/socket.c:socket_wake` | `src/core/socket.c` | `socket_wake` | `core` | `COVERED` | 3 |
-| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 48 |
-| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 52 |
-| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 42 |
-| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 44 |
+| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 49 |
+| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 53 |
+| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 43 |
+| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 45 |
 | `c:src/core/syscall.c:syscall_copy_user_string` | `src/core/syscall.c` | `syscall_copy_user_string` | `core` | `COVERED` | 1 |
 | `c:src/core/syscall.c:syscall_dispatch` | `src/core/syscall.c` | `syscall_dispatch` | `core` | `COVERED` | 2 |
 | `c:src/core/syscall.c:syscall_dispatch_user` | `src/core/syscall.c` | `syscall_dispatch_user` | `core` | `COVERED` | 2 |
@@ -3757,58 +3757,59 @@
 | `c:src/core/update_system.c:update_system_verify_file_internal` | `src/core/update_system.c` | `update_system_verify_file_internal` | `core` | `PENDING` | 0 |
 | `c:src/core/update_system.c:update_system_verify_signature` | `src/core/update_system.c` | `update_system_verify_signature` | `core` | `PENDING` | 0 |
 | `c:src/core/update_system.c:update_system_version_compare` | `src/core/update_system.c` | `update_system_version_compare` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_bytes_equal` | `src/core/update_system_slots.c` | `system_slots_bytes_equal` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_bytes_zero` | `src/core/update_system_slots.c` | `system_slots_bytes_zero` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_cancelled` | `src/core/update_system_slots.c` | `system_slots_cancelled` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_clear_journal_locked` | `src/core/update_system_slots.c` | `system_slots_clear_journal_locked` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_controls_preallocated_locked` | `src/core/update_system_slots.c` | `system_slots_controls_preallocated_locked` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_copy_fixed_text` | `src/core/update_system_slots.c` | `system_slots_copy_fixed_text` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_decode_info` | `src/core/update_system_slots.c` | `system_slots_decode_info` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_decode_journal` | `src/core/update_system_slots.c` | `system_slots_decode_journal` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_decode_state` | `src/core/update_system_slots.c` | `system_slots_decode_state` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_delete_staging` | `src/core/update_system_slots.c` | `system_slots_delete_staging` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_encode_info` | `src/core/update_system_slots.c` | `system_slots_encode_info` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_encode_journal` | `src/core/update_system_slots.c` | `system_slots_encode_journal` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_encode_state` | `src/core/update_system_slots.c` | `system_slots_encode_state` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_file_info` | `src/core/update_system_slots.c` | `system_slots_file_info` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_fill_info` | `src/core/update_system_slots.c` | `system_slots_fill_info` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_handoff_valid` | `src/core/update_system_slots.c` | `system_slots_handoff_valid` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_hash_file` | `src/core/update_system_slots.c` | `system_slots_hash_file` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_info_matches` | `src/core/update_system_slots.c` | `system_slots_info_matches` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_is_newer` | `src/core/update_system_slots.c` | `system_slots_is_newer` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_load_control` | `src/core/update_system_slots.c` | `system_slots_load_control` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_load_journal_locked` | `src/core/update_system_slots.c` | `system_slots_load_journal_locked` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_load_state_locked` | `src/core/update_system_slots.c` | `system_slots_load_state_locked` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_magic_equal` | `src/core/update_system_slots.c` | `system_slots_magic_equal` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_map_reason` | `src/core/update_system_slots.c` | `system_slots_map_reason` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_path_is_local` | `src/core/update_system_slots.c` | `system_slots_path_is_local` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_publish_status_locked` | `src/core/update_system_slots.c` | `system_slots_publish_status_locked` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_read_free_bytes` | `src/core/update_system_slots.c` | `system_slots_read_free_bytes` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_read_u16` | `src/core/update_system_slots.c` | `system_slots_read_u16` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_read_u32` | `src/core/update_system_slots.c` | `system_slots_read_u32` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_recover_journal_locked` | `src/core/update_system_slots.c` | `system_slots_recover_journal_locked` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_refresh_status_locked` | `src/core/update_system_slots.c` | `system_slots_refresh_status_locked` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_replicate_state_locked` | `src/core/update_system_slots.c` | `system_slots_replicate_state_locked` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_reset_info` | `src/core/update_system_slots.c` | `system_slots_reset_info` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_version_compare` | `src/core/update_system_slots.c` | `system_slots_version_compare` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_write_control` | `src/core/update_system_slots.c` | `system_slots_write_control` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_write_fixed_text` | `src/core/update_system_slots.c` | `system_slots_write_fixed_text` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_write_journal_locked` | `src/core/update_system_slots.c` | `system_slots_write_journal_locked` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_write_state_locked` | `src/core/update_system_slots.c` | `system_slots_write_state_locked` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_write_u16` | `src/core/update_system_slots.c` | `system_slots_write_u16` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:system_slots_write_u32` | `src/core/update_system_slots.c` | `system_slots_write_u32` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:update_system_slot_file_state_name` | `src/core/update_system_slots.c` | `update_system_slot_file_state_name` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:update_system_slots_boot_confirm` | `src/core/update_system_slots.c` | `update_system_slots_boot_confirm` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:update_system_slots_boot_state_name` | `src/core/update_system_slots.c` | `update_system_slots_boot_state_name` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:update_system_slots_cancel_pending` | `src/core/update_system_slots.c` | `update_system_slots_cancel_pending` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:update_system_slots_get_status` | `src/core/update_system_slots.c` | `update_system_slots_get_status` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:update_system_slots_init` | `src/core/update_system_slots.c` | `update_system_slots_init` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:update_system_slots_is_ready` | `src/core/update_system_slots.c` | `update_system_slots_is_ready` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:update_system_slots_journal_phase_name` | `src/core/update_system_slots.c` | `update_system_slots_journal_phase_name` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:update_system_slots_reason_name` | `src/core/update_system_slots.c` | `update_system_slots_reason_name` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:update_system_slots_reboot_preflight` | `src/core/update_system_slots.c` | `update_system_slots_reboot_preflight` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:update_system_slots_stage_file` | `src/core/update_system_slots.c` | `update_system_slots_stage_file` | `core` | `PENDING` | 0 |
-| `c:src/core/update_system_slots.c:update_system_slots_state_name` | `src/core/update_system_slots.c` | `update_system_slots_state_name` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system_slots.c:system_slots_bytes_equal` | `src/core/update_system_slots.c` | `system_slots_bytes_equal` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_bytes_zero` | `src/core/update_system_slots.c` | `system_slots_bytes_zero` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_cancelled` | `src/core/update_system_slots.c` | `system_slots_cancelled` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_clear_journal_locked` | `src/core/update_system_slots.c` | `system_slots_clear_journal_locked` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_controls_preallocated_locked` | `src/core/update_system_slots.c` | `system_slots_controls_preallocated_locked` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_copy_fixed_text` | `src/core/update_system_slots.c` | `system_slots_copy_fixed_text` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_decode_info` | `src/core/update_system_slots.c` | `system_slots_decode_info` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_decode_journal` | `src/core/update_system_slots.c` | `system_slots_decode_journal` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_decode_state` | `src/core/update_system_slots.c` | `system_slots_decode_state` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_delete_staging` | `src/core/update_system_slots.c` | `system_slots_delete_staging` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_encode_info` | `src/core/update_system_slots.c` | `system_slots_encode_info` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_encode_journal` | `src/core/update_system_slots.c` | `system_slots_encode_journal` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_encode_state` | `src/core/update_system_slots.c` | `system_slots_encode_state` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_file_info` | `src/core/update_system_slots.c` | `system_slots_file_info` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_fill_info` | `src/core/update_system_slots.c` | `system_slots_fill_info` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_handoff_valid` | `src/core/update_system_slots.c` | `system_slots_handoff_valid` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_hash_file` | `src/core/update_system_slots.c` | `system_slots_hash_file` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_info_matches` | `src/core/update_system_slots.c` | `system_slots_info_matches` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_is_newer` | `src/core/update_system_slots.c` | `system_slots_is_newer` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_load_control` | `src/core/update_system_slots.c` | `system_slots_load_control` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_load_journal_locked` | `src/core/update_system_slots.c` | `system_slots_load_journal_locked` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_load_state_locked` | `src/core/update_system_slots.c` | `system_slots_load_state_locked` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_magic_equal` | `src/core/update_system_slots.c` | `system_slots_magic_equal` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_map_reason` | `src/core/update_system_slots.c` | `system_slots_map_reason` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_path_is_local` | `src/core/update_system_slots.c` | `system_slots_path_is_local` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_publish_status_locked` | `src/core/update_system_slots.c` | `system_slots_publish_status_locked` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_read_free_bytes` | `src/core/update_system_slots.c` | `system_slots_read_free_bytes` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_read_u16` | `src/core/update_system_slots.c` | `system_slots_read_u16` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_read_u32` | `src/core/update_system_slots.c` | `system_slots_read_u32` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_recover_journal_locked` | `src/core/update_system_slots.c` | `system_slots_recover_journal_locked` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_refresh_status_locked` | `src/core/update_system_slots.c` | `system_slots_refresh_status_locked` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_replicate_state_locked` | `src/core/update_system_slots.c` | `system_slots_replicate_state_locked` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_reset_info` | `src/core/update_system_slots.c` | `system_slots_reset_info` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_version_compare` | `src/core/update_system_slots.c` | `system_slots_version_compare` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_write_control` | `src/core/update_system_slots.c` | `system_slots_write_control` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_write_fixed_text` | `src/core/update_system_slots.c` | `system_slots_write_fixed_text` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_write_journal_locked` | `src/core/update_system_slots.c` | `system_slots_write_journal_locked` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_write_state_locked` | `src/core/update_system_slots.c` | `system_slots_write_state_locked` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_write_u16` | `src/core/update_system_slots.c` | `system_slots_write_u16` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:system_slots_write_u32` | `src/core/update_system_slots.c` | `system_slots_write_u32` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:update_system_slot_file_state_name` | `src/core/update_system_slots.c` | `update_system_slot_file_state_name` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:update_system_slots_boot_confirm` | `src/core/update_system_slots.c` | `update_system_slots_boot_confirm` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:update_system_slots_boot_state_name` | `src/core/update_system_slots.c` | `update_system_slots_boot_state_name` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:update_system_slots_cancel_pending` | `src/core/update_system_slots.c` | `update_system_slots_cancel_pending` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:update_system_slots_get_status` | `src/core/update_system_slots.c` | `update_system_slots_get_status` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:update_system_slots_host_test_contracts` | `src/core/update_system_slots.c` | `update_system_slots_host_test_contracts` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:update_system_slots_init` | `src/core/update_system_slots.c` | `update_system_slots_init` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:update_system_slots_is_ready` | `src/core/update_system_slots.c` | `update_system_slots_is_ready` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:update_system_slots_journal_phase_name` | `src/core/update_system_slots.c` | `update_system_slots_journal_phase_name` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:update_system_slots_reason_name` | `src/core/update_system_slots.c` | `update_system_slots_reason_name` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:update_system_slots_reboot_preflight` | `src/core/update_system_slots.c` | `update_system_slots_reboot_preflight` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:update_system_slots_stage_file` | `src/core/update_system_slots.c` | `update_system_slots_stage_file` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system_slots.c:update_system_slots_state_name` | `src/core/update_system_slots.c` | `update_system_slots_state_name` | `core` | `COVERED` | 1 |
 | `c:src/core/usb_manager.c:usb_append_char` | `src/core/usb_manager.c` | `usb_append_char` | `core` | `COVERED` | 1 |
 | `c:src/core/usb_manager.c:usb_append_hex` | `src/core/usb_manager.c` | `usb_append_hex` | `core` | `COVERED` | 1 |
 | `c:src/core/usb_manager.c:usb_append_text` | `src/core/usb_manager.c` | `usb_append_text` | `core` | `COVERED` | 1 |
@@ -7361,6 +7362,7 @@
 | `host:core:update-remote` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar serializacao, validacao, cache redundante, download e contratos publicos com fixtures estaticos | entradas validas fazem round-trip e indisponibilidade, corrupcao, cancelamento e limites retornam erros canonicos sem rede ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos no processo host; nenhuma rede ou armazenamento real | estado e arquivos simulados pertencem ao processo host; manifesto, logs e cobertura preservados |
 | `host:core:update-remote-runtime` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar registros, parser de release, transporte HTTP, cache e APIs publicas com fixtures estaticos | formatos validos fazem round-trip e indisponibilidade, corrupcao e limites retornam erros canonicos sem estado persistente | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos no processo host; nenhuma rede ou armazenamento real | estado e buffers pertencem ao processo host; manifesto, logs e cobertura preservados |
 | `host:core:update-runtime` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar contratos de registros, manifestos, pacotes, planejamento e comparacao de arquivos runtime | entradas validas fazem round-trip e entradas invalidas retornam erros canonicos sem estado persistente | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos no processo host | buffers locais descartados; manifesto, logs e cobertura preservados |
+| `host:core:update-system-slots` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar codificacao, validacao, journal, redundancia, recuperacao e contratos publicos com buffers estaticos | estado valido faz round-trip e entradas invalidas ou recursos ausentes retornam erros canonicos sem armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos no processo host | estado, controles e arquivos simulados pertencem ao processo host; manifesto, logs e cobertura preservados |
 | `host:core:usb-manager` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inventariar controladores UHCI, EHCI e fora do escopo, sincronizar drivers de classe, consultar portas e dispositivos, executar polling e refresh | estados, identificadores, agregacoes, limites, indisponibilidade e recuperacao preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente fixtures estaticos PCI, UHCI, EHCI, MSC e HID no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:usb-transport` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar entradas nulas, controladores desconhecidos e encaminhamento de controle, Bulk, toggles e Interrupt para EHCI e UHCI falsos | erros canonicos rejeitam entradas invalidas, controlador desconhecido retorna ERR_UNAVAILABLE e cada operacao chega ao backend selecionado sem hardware | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente contadores e argumentos estaticos dos backends EHCI e UHCI falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:wifi-manager` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inventariar candidatos PCI e USB, consultar interfaces, executar scan e conexao aberta com backends falsos | identificadores, estados, contadores, limites, indisponibilidade e recuperacao preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente fixtures estaticos PCI, USB e RTL8811CU no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7540,18 +7542,6 @@
 - `api:src/include/core/update_system.h:update_system_transfer_tag`
 - `api:src/include/core/update_system.h:update_system_verify_file`
 - `api:src/include/core/update_system.h:update_system_verify_file_for_slot`
-- `api:src/include/core/update_system_slots.h:update_system_slot_file_state_name`
-- `api:src/include/core/update_system_slots.h:update_system_slots_boot_confirm`
-- `api:src/include/core/update_system_slots.h:update_system_slots_boot_state_name`
-- `api:src/include/core/update_system_slots.h:update_system_slots_cancel_pending`
-- `api:src/include/core/update_system_slots.h:update_system_slots_get_status`
-- `api:src/include/core/update_system_slots.h:update_system_slots_init`
-- `api:src/include/core/update_system_slots.h:update_system_slots_is_ready`
-- `api:src/include/core/update_system_slots.h:update_system_slots_journal_phase_name`
-- `api:src/include/core/update_system_slots.h:update_system_slots_reason_name`
-- `api:src/include/core/update_system_slots.h:update_system_slots_reboot_preflight`
-- `api:src/include/core/update_system_slots.h:update_system_slots_stage_file`
-- `api:src/include/core/update_system_slots.h:update_system_slots_state_name`
 - `api:src/include/process/process.h:process_context_switch`
 - `api:src/include/process/process.h:process_user_enter`
 - `api:src/include/process/process.h:process_user_termination_enter`
@@ -8086,58 +8076,6 @@
 - `c:src/core/update_system.c:update_system_verify_file_internal`
 - `c:src/core/update_system.c:update_system_verify_signature`
 - `c:src/core/update_system.c:update_system_version_compare`
-- `c:src/core/update_system_slots.c:system_slots_bytes_equal`
-- `c:src/core/update_system_slots.c:system_slots_bytes_zero`
-- `c:src/core/update_system_slots.c:system_slots_cancelled`
-- `c:src/core/update_system_slots.c:system_slots_clear_journal_locked`
-- `c:src/core/update_system_slots.c:system_slots_controls_preallocated_locked`
-- `c:src/core/update_system_slots.c:system_slots_copy_fixed_text`
-- `c:src/core/update_system_slots.c:system_slots_decode_info`
-- `c:src/core/update_system_slots.c:system_slots_decode_journal`
-- `c:src/core/update_system_slots.c:system_slots_decode_state`
-- `c:src/core/update_system_slots.c:system_slots_delete_staging`
-- `c:src/core/update_system_slots.c:system_slots_encode_info`
-- `c:src/core/update_system_slots.c:system_slots_encode_journal`
-- `c:src/core/update_system_slots.c:system_slots_encode_state`
-- `c:src/core/update_system_slots.c:system_slots_file_info`
-- `c:src/core/update_system_slots.c:system_slots_fill_info`
-- `c:src/core/update_system_slots.c:system_slots_handoff_valid`
-- `c:src/core/update_system_slots.c:system_slots_hash_file`
-- `c:src/core/update_system_slots.c:system_slots_info_matches`
-- `c:src/core/update_system_slots.c:system_slots_is_newer`
-- `c:src/core/update_system_slots.c:system_slots_load_control`
-- `c:src/core/update_system_slots.c:system_slots_load_journal_locked`
-- `c:src/core/update_system_slots.c:system_slots_load_state_locked`
-- `c:src/core/update_system_slots.c:system_slots_magic_equal`
-- `c:src/core/update_system_slots.c:system_slots_map_reason`
-- `c:src/core/update_system_slots.c:system_slots_path_is_local`
-- `c:src/core/update_system_slots.c:system_slots_publish_status_locked`
-- `c:src/core/update_system_slots.c:system_slots_read_free_bytes`
-- `c:src/core/update_system_slots.c:system_slots_read_u16`
-- `c:src/core/update_system_slots.c:system_slots_read_u32`
-- `c:src/core/update_system_slots.c:system_slots_recover_journal_locked`
-- `c:src/core/update_system_slots.c:system_slots_refresh_status_locked`
-- `c:src/core/update_system_slots.c:system_slots_replicate_state_locked`
-- `c:src/core/update_system_slots.c:system_slots_reset_info`
-- `c:src/core/update_system_slots.c:system_slots_version_compare`
-- `c:src/core/update_system_slots.c:system_slots_write_control`
-- `c:src/core/update_system_slots.c:system_slots_write_fixed_text`
-- `c:src/core/update_system_slots.c:system_slots_write_journal_locked`
-- `c:src/core/update_system_slots.c:system_slots_write_state_locked`
-- `c:src/core/update_system_slots.c:system_slots_write_u16`
-- `c:src/core/update_system_slots.c:system_slots_write_u32`
-- `c:src/core/update_system_slots.c:update_system_slot_file_state_name`
-- `c:src/core/update_system_slots.c:update_system_slots_boot_confirm`
-- `c:src/core/update_system_slots.c:update_system_slots_boot_state_name`
-- `c:src/core/update_system_slots.c:update_system_slots_cancel_pending`
-- `c:src/core/update_system_slots.c:update_system_slots_get_status`
-- `c:src/core/update_system_slots.c:update_system_slots_init`
-- `c:src/core/update_system_slots.c:update_system_slots_is_ready`
-- `c:src/core/update_system_slots.c:update_system_slots_journal_phase_name`
-- `c:src/core/update_system_slots.c:update_system_slots_reason_name`
-- `c:src/core/update_system_slots.c:update_system_slots_reboot_preflight`
-- `c:src/core/update_system_slots.c:update_system_slots_stage_file`
-- `c:src/core/update_system_slots.c:update_system_slots_state_name`
 - `c:src/desktop/desktop.c:desktop_add_icon`
 - `c:src/desktop/desktop.c:desktop_drag_threshold_reached`
 - `c:src/desktop/desktop.c:desktop_draw`
