@@ -1732,3 +1732,21 @@ O relatorio instrumentado fica em
 em `PASS`, com `unknown_addresses=[]` e `ambiguous_symbols=[]`. Depois da
 execucao real, sincronize o catalogo, renderize a visao e valide com
 `make catalog-test`.
+
+## Update remoto host-only
+
+O alvo `test-update-remote-host` compila o `src/core/update_remote.c` com
+transporte HTTP, filesystem FAT12, crypto, processo e runtime simulados em
+buffers estaticos. A fixture valida manifestos, registros redundantes, cache,
+download, cancelamento, estados e contratos publicos sem rede ou
+armazenamento reais:
+
+```text
+make test-update-remote-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O relatorio instrumentado fica em
+`build/test-results/update-remote-host/coverage.json` e deve terminar em
+`PASS`, com `unknown_addresses=[]` e `ambiguous_symbols=[]`. Depois da
+execucao real, sincronize o catalogo, renderize a visao e valide com
+`make catalog-test`.

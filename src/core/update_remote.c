@@ -11,6 +11,10 @@
 #include "fs/fs.h"
 #include "process/process.h"
 
+#if defined(ZEPHYROS_HOST_TEST)
+#include "update_remote_host.h"
+#endif
+
 #define UPDATE_REMOTE_FORMAT_VERSION 1U
 #define UPDATE_REMOTE_ARCH_I386 1U
 #define UPDATE_REMOTE_CHANNEL_STABLE 1U
@@ -1377,3 +1381,271 @@ const char* update_remote_store_name(update_remote_store_t state) {
     if (state == UPDATE_REMOTE_STORE_INVALID) return "INVALID";
     return "UNKNOWN";
 }
+
+#if defined(ZEPHYROS_HOST_TEST)
+static int update_remote_host_cancel(void* context) {
+    (void)context;
+    return 1;
+}
+
+static void update_remote_host_manifest(uint8_t raw[UPDATE_REMOTE_MANIFEST_SIZE]) {
+    kmemset(raw, 0, UPDATE_REMOTE_MANIFEST_SIZE);
+    raw[0] = 'Z';
+    raw[1] = 'U';
+    raw[2] = 'M';
+    raw[3] = '1';
+    update_remote_write_u16(raw + 4U, UPDATE_REMOTE_FORMAT_VERSION);
+    update_remote_write_u16(raw + 6U, UPDATE_REMOTE_MANIFEST_SIZE);
+    update_remote_write_u16(raw + 8U, UPDATE_REMOTE_ARCH_I386);
+    update_remote_write_u16(raw + 10U, UPDATE_REMOTE_CHANNEL_STABLE);
+    update_remote_write_u32(raw + 12U, 9U);
+    update_remote_encode_version(raw + 16U, &(update_version_t){1U, 2U, 3U});
+    update_remote_encode_version(raw + 22U, &(update_version_t){1U, 2U, 4U});
+    update_remote_write_u32(raw + 28U, 7U);
+    update_remote_write_u32(raw + 32U, 8U);
+    update_remote_write_u32(raw + 36U, 8U);
+    kmemcpy(raw + 40U, (const uint8_t[32]){0xA5U}, 32U);
+    kmemcpy(raw + 72U, UPDATE_TRUST_KEY_ID, 16U);
+    kmemcpy(raw + 92U, "/update.zupd", 13U);
+}
+
+static int update_remote_host_check_scalars(void) {
+    uint8_t raw[UPDATE_REMOTE_MANIFEST_SIZE];
+    uint8_t record_raw[UPDATE_REMOTE_RECORD_SIZE];
+    update_remote_candidate_t candidate;
+    update_remote_reason_t reason;
+    update_remote_record_t record;
+    update_remote_record_t decoded;
+    update_remote_result_t result;
+    update_remote_options_t options;
+    http_request_options_t http_options;
+    uint8_t valid_path[UPDATE_REMOTE_PATH_SIZE] = {'/', 'a', '.', 'z'};
+    uint8_t dot_path[UPDATE_REMOTE_PATH_SIZE] = {'.', '.', 0U};
+    uint8_t slash_path[UPDATE_REMOTE_PATH_SIZE] = {'/', '\\', 0U};
+    char output[UPDATE_REMOTE_URL_SIZE];
+
+    if (update_remote_read_u16((const uint8_t[]){0x34U, 0x12U}) != 0x1234U ||
+        update_remote_read_u32((const uint8_t[]){1U, 2U, 3U, 4U}) !=
+            0x04030201U) return 101;
+    update_remote_write_u16(record_raw, 0xABCDU);
+    update_remote_write_u32(record_raw + 2U, 0x12345678U);
+    if (update_remote_read_u16(record_raw) != 0xABCDU ||
+        update_remote_read_u32(record_raw + 2U) != 0x12345678U) return 102;
+    update_remote_copy_text(output, sizeof(output), "remote");
+    if (kstrcmp(output, "remote") != 0 ||
+        update_remote_version_compare(&(update_version_t){2U, 0U, 0U},
+                                      &(update_version_t){1U, 9U, 9U}) != 1 ||
+        update_remote_version_compare(&(update_version_t){1U, 0U, 0U},
+                                      &(update_version_t){1U, 0U, 0U}) != 0 ||
+        update_remote_version_compare(&(update_version_t){1U, 0U, 0U},
+                                      &(update_version_t){1U, 1U, 0U}) != -1) return 103;
+    if (!update_remote_path_valid(valid_path, output) ||
+        update_remote_path_valid(dot_path, output) ||
+        update_remote_path_valid(slash_path, output)) return 104;
+    if (update_remote_build_package_url(
+            "https://host/manifest.zum", "/package.zupd", output) != OK ||
+        kstrcmp(output, "https://host/package.zupd") != 0 ||
+        update_remote_build_package_url("ftp://host/x", "x", output) !=
+            ERR_INVALID ||
+        update_remote_build_package_url(0, "x", output) != ERR_NULL) return 105;
+    if (update_remote_transient_error(ERR_TIMEOUT) != 1 ||
+        update_remote_transient_error(ERR_STATE) != 1 ||
+        update_remote_transient_error(ERR_INVALID) != 0) return 106;
+    if (kstrcmp(update_remote_state_name(UPDATE_REMOTE_STATE_FAILED), "FAILED") != 0 ||
+        kstrcmp(update_remote_state_name((update_remote_state_t)99), "UNKNOWN") != 0 ||
+        kstrcmp(update_remote_reason_name(UPDATE_REMOTE_REASON_TLS), "TLS") != 0 ||
+        kstrcmp(update_remote_reason_name((update_remote_reason_t)99), "UNKNOWN") != 0 ||
+        kstrcmp(update_remote_store_name(UPDATE_REMOTE_STORE_VALID), "VALID") != 0 ||
+        kstrcmp(update_remote_store_name((update_remote_store_t)99), "UNKNOWN") != 0) return 107;
+
+    options = (update_remote_options_t){0U, 0, 0, "application/json", "v1", 1U, 1U, 2U};
+    update_remote_make_http_options(&options, &http_options);
+    if (http_options.require_https != 1U ||
+        http_options.max_redirects != 2U ||
+        http_options.accept != options.http_accept) return 108;
+    update_remote_make_http_options(0, &http_options);
+    if (http_options.accept || http_options.require_https) return 109;
+    kmemset(&update_remote_http, 0, sizeof(update_remote_http));
+    if (update_remote_http_reason() != UPDATE_REMOTE_REASON_HTTP) return 110;
+    update_remote_http.redirect_rejected = 1U;
+    if (update_remote_http_reason() != UPDATE_REMOTE_REASON_REDIRECT) return 111;
+    update_remote_http.redirect_rejected = 0U;
+    update_remote_http.secure = 1U;
+    update_remote_http.tls_verified = 0U;
+    if (update_remote_http_reason() != UPDATE_REMOTE_REASON_TLS) return 112;
+    update_remote_http.secure = 0U;
+    if (kstrcmp(update_remote_effective_url(0),
+                UPDATE_REMOTE_DEFAULT_MANIFEST_URL) != 0) return 113;
+    update_remote_copy_text(update_remote_status.manifest_url,
+                            sizeof(update_remote_status.manifest_url),
+                            "http://host/manifest.zum");
+    update_remote_manifest_valid = 1U;
+    if (update_remote_effective_url(0) != update_remote_status.manifest_url ||
+        update_remote_effective_url("http://other/x") == 0) return 114;
+    update_remote_manifest_valid = 0U;
+
+    if (update_remote_parse_manifest(0, &candidate, &reason) != ERR_NULL) return 115;
+    update_remote_host_manifest(raw);
+    if (update_remote_parse_manifest(raw, &candidate, &reason) != OK ||
+        candidate.package_size != 8U || candidate.target_version.patch != 4U ||
+        reason != UPDATE_REMOTE_REASON_NONE) return 116;
+    raw[0] = 'X';
+    if (update_remote_parse_manifest(raw, &candidate, &reason) != ERR_INVALID) return 117;
+    update_remote_host_manifest(raw);
+    update_remote_write_u32(raw + 36U, 0U);
+    if (update_remote_parse_manifest(raw, &candidate, &reason) != ERR_OVERFLOW) return 118;
+    update_remote_host_manifest(raw);
+    raw[92U] = '.';
+    raw[93U] = '.';
+    if (update_remote_parse_manifest(raw, &candidate, &reason) != ERR_INVALID) return 119;
+    update_remote_host_manifest(raw);
+
+    kmemset(&record, 0, sizeof(record));
+    record.sequence = 4U;
+    record.phase = UPDATE_REMOTE_PHASE_CLEAN;
+    record.active_slot = 0U;
+    record.pending_slot = UPDATE_REMOTE_SLOT_NONE;
+    record.package_size = 8U;
+    record.base_version = (update_version_t){1U, 2U, 3U};
+    record.target_version = (update_version_t){1U, 2U, 4U};
+    record.base_epoch = 7U;
+    record.target_epoch = 8U;
+    record.package_hash[0] = 1U;
+    record.manifest_hash[0] = 2U;
+    update_remote_record_encode(record_raw, &record);
+    if (update_remote_record_decode(record_raw, &decoded) != OK ||
+        decoded.sequence != 4U || decoded.active_slot != 0U) return 120;
+    record_raw[UPDATE_REMOTE_RECORD_RESERVED_OFFSET] = 1U;
+    if (update_remote_record_decode(record_raw, &decoded) != ERR_INVALID) return 121;
+    update_remote_record_encode(record_raw, &record);
+    record_raw[UPDATE_REMOTE_RECORD_HASH_OFFSET] ^= 1U;
+    if (update_remote_record_decode(record_raw, &decoded) != ERR_INVALID) return 122;
+    if (update_remote_record_decode(0, &decoded) != ERR_NULL ||
+        update_remote_record_decode(record_raw, 0) != ERR_NULL) return 123;
+
+    update_remote_status = (update_remote_status_t){0};
+    if (update_remote_begin() != ERR_STATE) return 124;
+    update_remote_status.initialized = 1U;
+    update_remote_status.busy = 1U;
+    if (update_remote_begin() != ERR_STATE) return 125;
+    update_remote_status.busy = 0U;
+    if (update_remote_begin() != OK || !update_remote_status.busy) return 126;
+    update_remote_end_ready();
+    update_remote_status.enabled = 1U;
+    update_remote_status.busy = 0U;
+    update_remote_status.network_ready = 0U;
+    update_remote_host_set_network_ready(0U);
+    update_remote_refresh_network();
+    if (update_remote_status.state != UPDATE_REMOTE_STATE_UNAVAILABLE) return 127;
+    update_remote_host_set_network_ready(1U);
+    update_remote_result_copy(&result);
+    update_remote_result_copy(0);
+    return OK;
+}
+
+static int update_remote_host_check_storage(void) {
+    const uint8_t package[] = "REMOTE!";
+    update_remote_options_t options = {0U, 0, 0, 0, 0, 0, 0, 0};
+    update_remote_result_t result;
+    uint8_t hash[32];
+
+    update_remote_host_set_fs_type(FS_TYPE_FAT12);
+    fs_atomic_delete_root("ZUR0.STA");
+    fs_atomic_delete_root("ZUR1.STA");
+    fs_atomic_delete_root("ZUR0.ZUP");
+    fs_atomic_delete_root("ZUR1.ZUP");
+    update_remote_status = (update_remote_status_t){0};
+    update_remote_status.initialized = 1U;
+    update_remote_status.enabled = 1U;
+    update_remote_status.network_ready = 1U;
+    update_remote_status.cache_store = UPDATE_REMOTE_STORE_EMPTY;
+    update_remote_record = (update_remote_record_t){0};
+    update_remote_record.active_slot = UPDATE_REMOTE_SLOT_NONE;
+    update_remote_record.pending_slot = UPDATE_REMOTE_SLOT_NONE;
+    update_remote_record_slot = -1;
+    if (update_remote_load_records() != OK ||
+        update_remote_record.active_slot != UPDATE_REMOTE_SLOT_NONE) return 201;
+    if (!update_remote_space_available(8U) ||
+        update_remote_space_available(ZUPD_MAX_TOTAL_SIZE + 1U)) return 202;
+    update_remote_status.cache_store = UPDATE_REMOTE_STORE_INVALID;
+    if (update_remote_prepare_pending(1U) != OK ||
+        update_remote_record.phase != UPDATE_REMOTE_PHASE_DOWNLOADING) return 203;
+    update_remote_record.pending_slot = UPDATE_REMOTE_SLOT_NONE;
+    update_remote_record.phase = UPDATE_REMOTE_PHASE_CLEAN;
+    if (update_remote_write_record() != OK) return 204;
+
+    update_remote_status.candidate = (update_remote_candidate_t){
+        9U, {1U, 2U, 3U}, {1U, 2U, 4U}, 7U, 8U, sizeof(package) - 1U,
+        {0}, "/update.zupd"};
+    crypto_sha256(package, sizeof(package) - 1U, hash);
+    kmemcpy(update_remote_status.candidate.package_hash, hash, 32U);
+    kmemset(update_remote_manifest_hash, 0x22U, sizeof(update_remote_manifest_hash));
+    update_remote_manifest_valid = 1U;
+    update_remote_record.active_slot = UPDATE_REMOTE_SLOT_NONE;
+    update_remote_record.pending_slot = UPDATE_REMOTE_SLOT_NONE;
+    if (update_remote_prepare_pending(0U) != OK) return 205;
+    if (update_remote_download_attempt(
+            "http://host/update.zupd", "ZUR0.ZUP", &options) != OK) return 206;
+    if (update_remote_receive_package(
+            "http://host/update.zupd", 0U, &options, &result) != OK) return 207;
+    if (update_remote_commit_package(0U, update_remote_package_hash, &result) != OK ||
+        !result.package_published || !update_remote_status.package_cached) return 208;
+    if (update_remote_validate_cached_package() != OK ||
+        !update_remote_candidate_matches_package(&(update_verification_t){
+            ZUPD_REASON_NONE, {1U, 2U, 3U}, {1U, 2U, 4U}, 7U, 8U,
+            sizeof(package) - 1U, 0U})) return 209;
+    if (update_remote_get_cached_alias(0, 0U) != ERR_NULL) return 210;
+    if (update_remote_get_cached_alias((char[UPDATE_REMOTE_ALIAS_SIZE]){0}, 1U) !=
+            ERR_OVERFLOW) return 211;
+    if (update_remote_recover_cache() != OK) return 212;
+    update_remote_record.phase = UPDATE_REMOTE_PHASE_DOWNLOADING;
+    update_remote_record.pending_slot = 1U;
+    if (update_remote_abort_pending(UPDATE_REMOTE_REASON_CANCELLED, ERR_TIMEOUT,
+                                    &result) != ERR_TIMEOUT ||
+        result.reason != UPDATE_REMOTE_REASON_CANCELLED) return 213;
+    return OK;
+}
+
+static int update_remote_host_check_public(void) {
+    update_remote_status_t status;
+    update_remote_result_t result;
+    update_remote_options_t options = {1U, 0, 0, 0, 0, 0, 0, 0};
+    char alias[UPDATE_REMOTE_ALIAS_SIZE];
+
+    update_remote_host_set_fs_type(FS_TYPE_NONE);
+    update_remote_host_set_update_ready(0U);
+    if (update_remote_init() != ERR_STATE) return 301;
+    update_remote_host_set_update_ready(1U);
+    if (update_remote_init() != OK) return 302;
+    if (update_remote_get_status(0) != ERR_NULL ||
+        update_remote_get_status(&status) != OK ||
+        status.state != UPDATE_REMOTE_STATE_DISABLED) return 303;
+    if (update_remote_get_cached_alias(alias, sizeof(alias)) != ERR_NOT_FOUND ||
+        update_remote_get_cached_alias(0, sizeof(alias)) != ERR_NULL ||
+        update_remote_capability_available() != 0) return 304;
+    if (update_remote_check(0, &options, &result) != ERR_UNAVAILABLE ||
+        result.reason != UPDATE_REMOTE_REASON_DISABLED) return 305;
+    if (update_remote_enable() != OK ||
+        !update_remote_capability_available()) return 306;
+    options.dry_run = 0U;
+    if (update_remote_fetch(0, &options, &result) != ERR_STATE ||
+        result.reason != UPDATE_REMOTE_REASON_MANIFEST_FORMAT) return 307;
+    if (update_remote_clear(&options, &result) != ERR_UNAVAILABLE ||
+        result.reason != UPDATE_REMOTE_REASON_CACHE) return 308;
+    if (update_remote_disable() != OK ||
+        update_remote_disable() != OK) return 309;
+    if (update_remote_check(0, 0, 0) != ERR_NULL ||
+        update_remote_fetch(0, 0, 0) != ERR_NULL ||
+        update_remote_clear(0, 0) != ERR_NULL) return 310;
+    return OK;
+}
+
+int update_remote_host_test_contracts(void) {
+    int result = update_remote_host_check_scalars();
+
+    if (result != OK) return result;
+    result = update_remote_host_check_storage();
+    if (result != OK) return result;
+    return update_remote_host_check_public();
+}
+#endif
