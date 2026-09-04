@@ -1632,3 +1632,19 @@ O relatorio instrumentado fica em
 `build/test-results/thread-host/coverage.json`; ele deve terminar com `PASS`,
 sem `unknown_addresses` ou `ambiguous_symbols`. A cobertura da troca de
 contexto Assembly permanece separada e requer o caso freestanding/QEMU.
+## Shell commands-core host-only
+
+O alvo `test-shell-commands-core-host` compila uma fixture estática com os
+handlers reais de `src/shell/shell_commands_core.c` e dependências falsas para
+VFS, processos, loader, vídeo, áudio, energia e compressão. Ele executa os
+caminhos válidos e negativos sem hardware, reset, halt ou armazenamento real:
+
+```text
+make test-shell-commands-core-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O relatório instrumentado fica em
+`build/test-results/shell-commands-core-host/coverage.json`. O resultado deve
+terminar em `PASS`, com `unknown_addresses=[]` e `ambiguous_symbols=[]`.
+Depois de alterar o handler ou a fixture, sincronize o catálogo somente após a
+execução real e valide com `make catalog-test`.
