@@ -5264,3 +5264,14 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
 
   A sincronização, a renderização e `make catalog-test` passaram. O catálogo
   registra 7.219 superfícies, 5.220 `COVERED`, 1.999 `PENDING` e 137 casos.
+
+- Correção do allowlist TST7 para drivers concluída em 2026-09-04. A execução
+  rápida do TST7 identificou que os casos host-only de AC97, ACPI, ATA, E1000,
+  EHCI, IDT, mouse, RTL8139, RTL8811CU e UHCI tinham executores reais e alvos
+  Makefile, mas não estavam todos associados no mapa interno do runner. As
+  associações foram registradas sem alterar o catálogo ou criar cobertura
+  artificial. `python -m unittest tests.unit.test_tst7_runner`,
+  `make test-ac97-host`, `make q3check`, `make clean`, `make` e
+  `make catalog-test` passaram. A execução rápida completa anterior continua
+  registrada como `FAIL` por `test-tst3-sanitize` `BLOCKED`; esse bloqueio de
+  ambiente não foi mascarado.
