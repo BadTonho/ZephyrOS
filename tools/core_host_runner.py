@@ -226,6 +226,12 @@ PROCESS_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_process_host.c",
     ROOT / "src" / "process" / "process.c",
 )
+THREAD_RESULT_DIR = ROOT / "build" / "test-results" / "thread-host"
+THREAD_BINARY = ROOT / "build" / "tests" / "test_thread_host.exe"
+THREAD_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_thread_host.c",
+    ROOT / "src" / "thread" / "thread.c",
+)
 APP_CATALOG_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_app_catalog_host.c",
     ROOT / "src" / "core" / "app_catalog.c",
@@ -765,6 +771,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return SYSCALL_RESULT_DIR, SYSCALL_BINARY, SYSCALL_SOURCE_FILES, "syscall-host"
     if case_id == "host:process:runtime":
         return PROCESS_RESULT_DIR, PROCESS_BINARY, PROCESS_SOURCE_FILES, "process-host"
+    if case_id == "host:process:threads":
+        return THREAD_RESULT_DIR, THREAD_BINARY, THREAD_SOURCE_FILES, "thread-host"
     if case_id == "host:core:app-catalog":
         return (APP_CATALOG_RESULT_DIR, APP_CATALOG_BINARY,
                 APP_CATALOG_SOURCE_FILES, "app-catalog-host")
@@ -1011,6 +1019,10 @@ def compiler_command(compiler: str, binary: Path,
         compatibility_flags.extend(["-Wno-int-to-pointer-cast",
                                     "-Wno-pointer-to-int-cast",
                                     "-Dasm=__asm__"])
+    if any(source.name == "thread.c" for source in selected_sources):
+        compatibility_flags.extend(["-Wno-int-to-pointer-cast",
+                                    "-Wno-pointer-to-int-cast",
+                                    "-Dasm=__asm__"])
     return [
         compiler, "-std=c11", "-O0", "-fno-inline", "-ffunction-sections",
         "-fdata-sections", "-Wall", "-Wextra",
@@ -1109,6 +1121,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:core:app-loader", "host:ui:taskbar",
                                  "host:core:syscall",
                                  "host:process:runtime",
+                                 "host:process:threads",
                                  "host:core:app-catalog",
                                  "host:core:input",
                                  "host:core:power", "host:storage:vfs-path",

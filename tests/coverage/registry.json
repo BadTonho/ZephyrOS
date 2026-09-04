@@ -5281,6 +5281,57 @@
       "evidence": "make test-process-host PASS com fixtures estaticas, snapshots, scheduler, limites, cancelamento, sinais, shutdown cooperativo e cobertura instrumentada"
     },
     {
+      "id": "thread-host-dynamic",
+      "domain": "process-threads",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:process:threads"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/thread-host/coverage.json",
+      "coverage_sources": [
+        "src/thread/thread.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:process:threads",
+        "scenario": "Contrato host-only do scheduler cooperativo de threads",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "none"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "exercitar inicializacao, criacao, selecao, yield, bloqueio, espera, cancelamento, desbloqueio, timeouts, limites e limpeza com threads e stacks estaticas",
+        "expected": "o scheduler preserva estados, identidade, filas de espera, codigos canonicos e limpeza sem executar troca de contexto Assembly",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente tabelas, threads e stacks estaticas da fixture host",
+        "cleanup": "processo host encerrado, threads estaticas removidas e manifesto, logs e cobertura preservados",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "process",
+          "threads",
+          "scheduler",
+          "wait",
+          "limits",
+          "coverage"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "make test-thread-host PASS com fixture estatica de threads, filas de espera, timeouts, cancelamento, limites e cobertura instrumentada"
+    },
+    {
       "id": "assembly-qemu-tst7-dynamic",
       "domain": "drivers-interrupt-assembly",
       "owner": "quality",

@@ -28,16 +28,24 @@ static uint32_t thread_test_trace_pos = 0;
 static char thread_test_trace[THREAD_TEST_TRACE_SIZE];
 
 static uint32_t thread_wait_irq_save(void) {
+#if defined(ZEPHYROS_HOST_TEST)
+    return 0U;
+#else
     uint32_t flags;
 
     asm volatile("pushf\n\tpop %0\n\tcli" : "=r"(flags) : : "memory");
     return flags;
+#endif
 }
 
 static void thread_wait_irq_restore(uint32_t flags) {
+#if defined(ZEPHYROS_HOST_TEST)
+    (void)flags;
+#else
     if (flags & THREAD_WAIT_EFLAGS_INTERRUPT_ENABLE) {
         asm volatile("sti" : : : "memory");
     }
+#endif
 }
 
 static void thread_wait_block_transition(void* target,
