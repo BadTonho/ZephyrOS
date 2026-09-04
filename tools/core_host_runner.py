@@ -37,6 +37,8 @@ SCHEDULING_RESULT_DIR = ROOT / "build" / "test-results" / "scheduling-host"
 SCHEDULING_BINARY = ROOT / "build" / "tests" / "test_core_scheduling_host.exe"
 PACKAGE_RESULT_DIR = ROOT / "build" / "test-results" / "package-host"
 PACKAGE_BINARY = ROOT / "build" / "tests" / "test_package_host.exe"
+UPDATE_RESULT_DIR = ROOT / "build" / "test-results" / "update-host"
+UPDATE_BINARY = ROOT / "build" / "tests" / "test_update_host.exe"
 STATE_RESULT_DIR = ROOT / "build" / "test-results" / "state-host"
 STATE_BINARY = ROOT / "build" / "tests" / "test_core_state_host.exe"
 DEVICE_RESULT_DIR = ROOT / "build" / "test-results" / "device-manager-host"
@@ -171,6 +173,11 @@ PACKAGE_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_package_host.c",
     ROOT / "src" / "core" / "app_package.c",
     ROOT / "src" / "core" / "log.c",
+    ROOT / "src" / "core" / "string.c",
+)
+UPDATE_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_update_host.c",
+    ROOT / "src" / "core" / "update.c",
     ROOT / "src" / "core" / "string.c",
 )
 STATE_SOURCE_FILES = (
@@ -775,6 +782,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
                 SCHEDULING_SOURCE_FILES, "scheduling-host")
     if case_id == "host:core:app-package":
         return PACKAGE_RESULT_DIR, PACKAGE_BINARY, PACKAGE_SOURCE_FILES, "package-host"
+    if case_id == "host:core:update":
+        return UPDATE_RESULT_DIR, UPDATE_BINARY, UPDATE_SOURCE_FILES, "update-host"
     if case_id == "host:core:state":
         return STATE_RESULT_DIR, STATE_BINARY, STATE_SOURCE_FILES, "state-host"
     if case_id == "host:core:device-manager":
@@ -1148,6 +1157,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:network:route", "host:network:ipv4",
                                  "host:core:crypto", "host:core:scheduling",
                                  "host:core:app-package", "host:core:state",
+                                 "host:core:update",
                                  "host:core:device-manager", "host:core:app-api",
                                  "host:core:app-files", "host:core:app-builtin",
                                  "host:core:app-loader", "host:ui:taskbar",

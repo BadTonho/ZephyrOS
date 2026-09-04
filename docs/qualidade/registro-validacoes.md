@@ -5382,3 +5382,17 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   catalogo registra 7.219 superficies, 5.290 `COVERED`, 1.929 `PENDING` e
   140 casos. O bloqueio do sanitizador permanece explicito e o baseline TST7
   nao foi alterado.
+
+- Incremento Core/update concluido em 2026-09-04 12:30 (America/Sao_Paulo).
+  Foi criada a fixture host-only `host:core:update`, com doubles estaticos de
+  crypto e filesystem, para executar diretamente os helpers de serializacao e
+  validacao de `src/core/update.c`. O caso cobriu round-trip e corrupcao dos
+  registros U3/U4, limites e algoritmos dos headers ZUPD, paths, tabela de
+  entradas, comparacao de versoes, resultados de acao e cancelamento. O
+  relatorio `build/test-results/update-host/coverage.json` terminou `PASS`,
+  sem enderecos desconhecidos ou simbolos ambiguos. Passaram
+  `make test-update-host`, sincronizacao, renderizacao, `make catalog-test` e
+  `git diff --check`; o catalogo registra 7.231 superficies, 5.356
+  `COVERED`, 1.875 `PENDING` e 141 casos. As rotinas de transacao que exigem
+  filesystem mutavel, slots e reboot continuam pendentes para uma fixture
+  integrada, sem serem mascaradas.
