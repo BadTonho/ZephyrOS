@@ -5499,8 +5499,8 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   simbolos ambiguos. Passaram `make test-update-system-host
   HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`, sincronizacao, renderizacao,
   `make catalog-test`, `q3check`, `make clean`, `make` e os testes unitarios de
-  catalogo, runner host e TST7. O catalogo registra 7.256 superficies, 5.766
-  `COVERED`, 1.490 `PENDING` e 149 casos. O gate estrito e a validacao TST7
+  catalogo, runner host e TST7. O catalogo registra 7.256 superficies, 5.767
+  `COVERED`, 1.489 `PENDING` e 149 casos. O gate estrito e a validacao TST7
   completa continuam pendentes pelas superficies sem evidencia real.
 
 - Incremento Core/update remote GitHub concluido em 2026-09-04

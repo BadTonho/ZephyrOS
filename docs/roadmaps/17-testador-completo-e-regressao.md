@@ -21,7 +21,7 @@ A infraestrutura TST1–TST7 está concluída para a matriz automatizada existen
 mas o programa de cobertura integral ainda não está concluído. O catálogo
 mantém 149 casos `AUTOMATED`; após os incrementos de Shell, RTC,
 processos/threads, FAT32, update U3/U4 e os contratos remotos ZSYS, registra
-7.256 superfícies, 5.766 `COVERED` e 1.490 `PENDING`. O próximo objetivo deste
+7.256 superfícies, 5.767 `COVERED` e 1.489 `PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
 Isso não significa declarar hardware físico validado sem equipamento.
@@ -2393,5 +2393,5 @@ pendente.
   simbolos ambiguos. Passaram o alvo host-only com `HOST_CC`, sincronizacao,
   renderizacao, `make catalog-test`, `q3check`, `make clean`, `make`, os testes
   unitarios de catalogo, runner host e TST7, e `git diff --check`. O catalogo
-  registra 7.256 superficies, 5.766 `COVERED`, 1.490 `PENDING` e 149 casos; o
+  registra 7.256 superficies, 5.767 `COVERED`, 1.489 `PENDING` e 149 casos; o
   restante da cobertura integral continua pendente e nao foi mascarado.
