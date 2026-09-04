@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 5766 |
+| `COVERED` | 5767 |
 | `MANUAL` | 0 |
-| `PENDING` | 1490 |
+| `PENDING` | 1489 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -3735,7 +3735,7 @@
 | `c:src/core/update_system.c:update_system_copy_fixed_text` | `src/core/update_system.c` | `update_system_copy_fixed_text` | `core` | `COVERED` | 1 |
 | `c:src/core/update_system.c:update_system_hash_range` | `src/core/update_system.c` | `update_system_hash_range` | `core` | `COVERED` | 1 |
 | `c:src/core/update_system.c:update_system_hex_digit` | `src/core/update_system.c` | `update_system_hex_digit` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_host_test_contracts` | `src/core/update_system.c` | `update_system_host_test_contracts` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_host_test_contracts` | `src/core/update_system.c` | `update_system_host_test_contracts` | `core` | `COVERED` | 1 |
 | `c:src/core/update_system.c:update_system_init` | `src/core/update_system.c` | `update_system_init` | `core` | `COVERED` | 1 |
 | `c:src/core/update_system.c:update_system_is_ready` | `src/core/update_system.c` | `update_system_is_ready` | `core` | `COVERED` | 1 |
 | `c:src/core/update_system.c:update_system_read_base` | `src/core/update_system.c` | `update_system_read_base` | `core` | `COVERED` | 1 |
@@ -7369,6 +7369,7 @@
 | `host:core:update-remote-runtime` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar registros, parser de release, transporte HTTP, cache e APIs publicas com fixtures estaticos | formatos validos fazem round-trip e indisponibilidade, corrupcao e limites retornam erros canonicos sem estado persistente | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos no processo host; nenhuma rede ou armazenamento real | estado e buffers pertencem ao processo host; manifesto, logs e cobertura preservados |
 | `host:core:update-remote-system` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar serializacao, cache redundante, hash, transporte transacional e contratos publicos com buffers estaticos | estado valido faz round-trip e indisponibilidade, corrupcao e limites retornam erros canonicos sem rede ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos no processo host | estado, controles e arquivos simulados pertencem ao processo host; manifesto, logs e cobertura preservados |
 | `host:core:update-runtime` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar contratos de registros, manifestos, pacotes, planejamento e comparacao de arquivos runtime | entradas validas fazem round-trip e entradas invalidas retornam erros canonicos sem estado persistente | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos no processo host | buffers locais descartados; manifesto, logs e cobertura preservados |
+| `host:core:update-system` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar validadores de header, compatibilidade, hashes, assinatura, transferencia e estados publicos com dependencias simuladas | entradas invalidas retornam erros canonicos; contratos e validadores nao acessam armazenamento ou rede reais | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos no processo host | estado de transporte e buffers pertencem ao processo host; manifesto, logs e cobertura preservados |
 | `host:core:update-system-slots` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar codificacao, validacao, journal, redundancia, recuperacao e contratos publicos com buffers estaticos | estado valido faz round-trip e entradas invalidas ou recursos ausentes retornam erros canonicos sem armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos no processo host | estado, controles e arquivos simulados pertencem ao processo host; manifesto, logs e cobertura preservados |
 | `host:core:usb-manager` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inventariar controladores UHCI, EHCI e fora do escopo, sincronizar drivers de classe, consultar portas e dispositivos, executar polling e refresh | estados, identificadores, agregacoes, limites, indisponibilidade e recuperacao preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente fixtures estaticos PCI, UHCI, EHCI, MSC e HID no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:usb-transport` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar entradas nulas, controladores desconhecidos e encaminhamento de controle, Bulk, toggles e Interrupt para EHCI e UHCI falsos | erros canonicos rejeitam entradas invalidas, controlador desconhecido retorna ERR_UNAVAILABLE e cada operacao chega ao backend selecionado sem hardware | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente contadores e argumentos estaticos dos backends EHCI e UHCI falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7490,7 +7491,6 @@
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
 | `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
-| `host:core:update-system` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar validadores de header, compatibilidade, hashes, assinatura, transferencia e estados publicos com dependencias simuladas | entradas invalidas retornam erros canonicos; contratos e validadores nao acessam armazenamento ou rede reais | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos no processo host | estado de transporte e buffers pertencem ao processo host; manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -7937,7 +7937,6 @@
 - `c:src/core/update_runtime.c:update_runtime_rollback`
 - `c:src/core/update_runtime.c:update_runtime_verify_file`
 - `c:src/core/update_runtime.c:update_runtime_verify_file_for_manifest`
-- `c:src/core/update_system.c:update_system_host_test_contracts`
 - `c:src/desktop/desktop.c:desktop_add_icon`
 - `c:src/desktop/desktop.c:desktop_drag_threshold_reached`
 - `c:src/desktop/desktop.c:desktop_draw`
