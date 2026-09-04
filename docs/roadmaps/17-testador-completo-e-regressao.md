@@ -2306,3 +2306,15 @@ pendente.
   registra 7.240 superficies, 5.417 `COVERED`, 1.823 `PENDING` e 142 casos;
   transacoes FAT12 com slots mutaveis continuam pendentes para fixture
   integrada.
+
+- Incremento Core/update remote runtime concluido em 2026-09-04. A fixture
+  host-only `host:core:update-remote-runtime` passou a executar os helpers e
+  contratos publicos reais de `src/core/update_remote_runtime.c` com doubles
+  estaticos, cobrindo serializacao, CRC, JSON, descriptors, selecao de origem,
+  transporte, download, cache, abortamento e indisponibilidade. O relatorio
+  instrumentado resolveu 64 superficies reais sem enderecos desconhecidos ou
+  simbolos ambiguos. Passaram `make q3check`, build limpo, o alvo
+  `make test-update-remote-runtime-host` com `HOST_CC` configurado,
+  sincronizacao, renderizacao e `make catalog-test`. O catalogo registra 7.245
+  superficies, 5.469 `COVERED`, 1.776 `PENDING` e 143 casos; o restante da
+  cobertura integral continua pendente e nao foi mascarado.

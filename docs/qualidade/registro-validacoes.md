@@ -5421,3 +5421,19 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   resolve 76 superficies de `src/core/update.c`; as transacoes FAT12 com slots
   mutaveis continuam pendentes para uma fixture integrada. O catalogo registra
   7.240 superficies, 5.417 `COVERED`, 1.823 `PENDING` e 142 casos.
+
+- Incremento Core/update remote runtime concluido em 2026-09-04. Foi criada a
+  fixture host-only `host:core:update-remote-runtime`, com buffers estaticos e
+  doubles de HTTP, filesystem, crypto, processo e estado de atualizacao. O
+  caso exercita diretamente serializacao, CRC, parsing JSON, validacao de
+  descriptor, selecao de origem, transporte, download, cache, abortamento e
+  contratos publicos de `src/core/update_remote_runtime.c`, incluindo caminhos
+  negativos e limites. O relatorio
+  `build/test-results/update-remote-runtime-host/coverage.json` terminou
+  `PASS`, resolveu 64 superficies reais do arquivo e nao registrou enderecos
+  desconhecidos ou simbolos ambiguos. Passaram `make q3check`, `make clean`,
+  `make`, `make test-update-remote-runtime-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`,
+  sincronizacao, renderizacao, `make catalog-test` e `git diff --check`. O
+  catalogo registra 7.245 superficies, 5.469 `COVERED`, 1.776 `PENDING` e
+  143 casos; o gate estrito e a validacao TST7 completa continuam pendentes
+  pelas superficies de software ainda sem evidencia.
