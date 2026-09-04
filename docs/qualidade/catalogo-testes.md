@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 5267 |
+| `COVERED` | 5272 |
 | `MANUAL` | 0 |
-| `PENDING` | 1952 |
+| `PENDING` | 1947 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -5742,15 +5742,15 @@
 | `c:src/process/ipc.c:process_restore_focus` | `src/process/ipc.c` | `process_restore_focus` | `process` | `COVERED` | 1 |
 | `c:src/process/ipc.c:process_set_focus` | `src/process/ipc.c` | `process_set_focus` | `process` | `COVERED` | 1 |
 | `c:src/process/ipc.c:process_set_focus_fallback` | `src/process/ipc.c` | `process_set_focus_fallback` | `process` | `COVERED` | 1 |
-| `c:src/process/process.c:process_allocate_pid` | `src/process/process.c` | `process_allocate_pid` | `process` | `COVERED` | 2 |
+| `c:src/process/process.c:process_allocate_pid` | `src/process/process.c` | `process_allocate_pid` | `process` | `COVERED` | 3 |
 | `c:src/process/process.c:process_apply_pending_cancel` | `src/process/process.c` | `process_apply_pending_cancel` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_block` | `src/process/process.c` | `process_block` | `process` | `COVERED` | 3 |
-| `c:src/process/process.c:process_bootstrap_idle` | `src/process/process.c` | `process_bootstrap_idle` | `process` | `PENDING` | 0 |
+| `c:src/process/process.c:process_bootstrap_idle` | `src/process/process.c` | `process_bootstrap_idle` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_cancel_focused_user` | `src/process/process.c` | `process_cancel_focused_user` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_cancel_user` | `src/process/process.c` | `process_cancel_user` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_cancel_user_test` | `src/process/process.c` | `process_cancel_user_test` | `process` | `COVERED` | 1 |
-| `c:src/process/process.c:process_cancel_wait` | `src/process/process.c` | `process_cancel_wait` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_copy_wait_text` | `src/process/process.c` | `process_copy_wait_text` | `process` | `PENDING` | 0 |
+| `c:src/process/process.c:process_cancel_wait` | `src/process/process.c` | `process_cancel_wait` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_copy_wait_text` | `src/process/process.c` | `process_copy_wait_text` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_copy_waiters` | `src/process/process.c` | `process_copy_waiters` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_create` | `src/process/process.c` | `process_create` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_create_internal` | `src/process/process.c` | `process_create_internal` | `process` | `COVERED` | 1 |
@@ -5761,7 +5761,7 @@
 | `c:src/process/process.c:process_create_user_test` | `src/process/process.c` | `process_create_user_test` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_create_with_stack_size` | `src/process/process.c` | `process_create_with_stack_size` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_destroy` | `src/process/process.c` | `process_destroy` | `process` | `COVERED` | 3 |
-| `c:src/process/process.c:process_discard_new_process` | `src/process/process.c` | `process_discard_new_process` | `process` | `PENDING` | 0 |
+| `c:src/process/process.c:process_discard_new_process` | `src/process/process.c` | `process_discard_new_process` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_exit_current` | `src/process/process.c` | `process_exit_current` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_finish_user_termination` | `src/process/process.c` | `process_finish_user_termination` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_get_by_pid` | `src/process/process.c` | `process_get_by_pid` | `process` | `COVERED` | 1 |
@@ -5780,7 +5780,7 @@
 | `c:src/process/process.c:process_is_user` | `src/process/process.c` | `process_is_user` | `process` | `COVERED` | 9 |
 | `c:src/process/process.c:process_mark_current_user_zombie` | `src/process/process.c` | `process_mark_current_user_zombie` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_mark_user_zombie` | `src/process/process.c` | `process_mark_user_zombie` | `process` | `COVERED` | 2 |
-| `c:src/process/process.c:process_next_identity_generation` | `src/process/process.c` | `process_next_identity_generation` | `process` | `COVERED` | 2 |
+| `c:src/process/process.c:process_next_identity_generation` | `src/process/process.c` | `process_next_identity_generation` | `process` | `COVERED` | 3 |
 | `c:src/process/process.c:process_pointer_valid` | `src/process/process.c` | `process_pointer_valid` | `process` | `COVERED` | 9 |
 | `c:src/process/process.c:process_power_has_active_users` | `src/process/process.c` | `process_power_has_active_users` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_power_reap_users` | `src/process/process.c` | `process_power_reap_users` | `process` | `COVERED` | 1 |
@@ -5799,7 +5799,7 @@
 | `c:src/process/process.c:process_snapshot_fill_locked` | `src/process/process.c` | `process_snapshot_fill_locked` | `process` | `COVERED` | 4 |
 | `c:src/process/process.c:process_snapshot_list` | `src/process/process.c` | `process_snapshot_list` | `process` | `COVERED` | 3 |
 | `c:src/process/process.c:process_stack_align_up` | `src/process/process.c` | `process_stack_align_up` | `process` | `COVERED` | 4 |
-| `c:src/process/process.c:process_stack_allocate` | `src/process/process.c` | `process_stack_allocate` | `process` | `COVERED` | 2 |
+| `c:src/process/process.c:process_stack_allocate` | `src/process/process.c` | `process_stack_allocate` | `process` | `COVERED` | 3 |
 | `c:src/process/process.c:process_stack_attach` | `src/process/process.c` | `process_stack_attach` | `process` | `COVERED` | 4 |
 | `c:src/process/process.c:process_stack_bounds_valid` | `src/process/process.c` | `process_stack_bounds_valid` | `process` | `COVERED` | 7 |
 | `c:src/process/process.c:process_stack_check_current` | `src/process/process.c` | `process_stack_check_current` | `process` | `COVERED` | 1 |
@@ -5817,7 +5817,7 @@
 | `c:src/process/process.c:process_stack_validate_all` | `src/process/process.c` | `process_stack_validate_all` | `process` | `COVERED` | 3 |
 | `c:src/process/process.c:process_stack_verify_or_panic` | `src/process/process.c` | `process_stack_verify_or_panic` | `process` | `COVERED` | 3 |
 | `c:src/process/process.c:process_stack_write_guard` | `src/process/process.c` | `process_stack_write_guard` | `process` | `COVERED` | 4 |
-| `c:src/process/process.c:process_start_scheduler` | `src/process/process.c` | `process_start_scheduler` | `process` | `PENDING` | 0 |
+| `c:src/process/process.c:process_start_scheduler` | `src/process/process.c` | `process_start_scheduler` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_start_user` | `src/process/process.c` | `process_start_user` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_store_user_image` | `src/process/process.c` | `process_store_user_image` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_switch_after_termination` | `src/process/process.c` | `process_switch_after_termination` | `process` | `COVERED` | 1 |
@@ -5836,7 +5836,7 @@
 | `c:src/process/process.c:process_wait_deadline_reached` | `src/process/process.c` | `process_wait_deadline_reached` | `process` | `COVERED` | 8 |
 | `c:src/process/process.c:process_wait_irq_restore` | `src/process/process.c` | `process_wait_irq_restore` | `process` | `COVERED` | 6 |
 | `c:src/process/process.c:process_wait_irq_save` | `src/process/process.c` | `process_wait_irq_save` | `process` | `COVERED` | 6 |
-| `c:src/process/process.c:process_wait_state_init` | `src/process/process.c` | `process_wait_state_init` | `process` | `COVERED` | 2 |
+| `c:src/process/process.c:process_wait_state_init` | `src/process/process.c` | `process_wait_state_init` | `process` | `COVERED` | 3 |
 | `c:src/process/process.c:process_wait_wake_transition` | `src/process/process.c` | `process_wait_wake_transition` | `process` | `COVERED` | 8 |
 | `c:src/process/process.c:process_wait_yield_transition` | `src/process/process.c` | `process_wait_yield_transition` | `process` | `COVERED` | 3 |
 | `c:src/process/process.c:process_wake_channel` | `src/process/process.c` | `process_wake_channel` | `process` | `COVERED` | 1 |
@@ -7387,6 +7387,7 @@
 | `host:shell:job` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar ciclo de vida, deadlines, wakeups, progresso, cancelamento, drenagem, timeout, erros, eventos IPC e diagnostico job status | jobs completam, falham, cancelam ou expiram com estado, codigo, geracao e limpeza coerentes | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do executor, filas IPC, relogio, teclado, video e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:mediaplayer` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar audio, imagem e reproducao combinada com arquivos estaticos e dependencias de hardware simuladas | o Media Player preserva estados, metadados, erros canonicos, limites e ownership sem hardware ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos, allocator de teste, recovery fake e contadores de audio e video do processo host | dados de audio e imagem liberados, estado parado e manifesto, logs e cobertura preservados |
 | `host:shell:pipeline` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar parsing, limites, pipes, redirecionamento, workers, leitura, escrita, autoteste e limpeza sob falhas controladas | pipelines validos concluem, entradas invalidas retornam codigo canonico e recursos sao restaurados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente pipes, threads, buffers, redirecionamento, video e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:shell:wifi` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar status, inventario PCI/USB, scan, conexao, argumentos invalidos, erros e estados indisponiveis | o Shell formata estados, locais, resultados e erros sem aceitar senha ou abrir conexao externa | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos de saida e fixtures do gerenciador Wi-Fi no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:storage:block` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar block_self_test e block_cache_self_test com providers estaticos | filas BIO, limites, cancelamento, failpoints, cache, writeback e sync passam e o inventario retorna ao estado inicial | compilador ausente, warning, cobertura incompleta, failpoint residual, falha de assercao ou timeout | somente estruturas globais do processo host e buffers estaticos de provider | autotestes removem dispositivos temporarios, limpam cache e deixam fila sem pendencias |
 | `host:storage:bmp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar parser BMP real com imagens estaticas, framebuffer e VESA simulados | headers, paletas, pixels, orientacao, transparencia, redimensionamento, escala, ownership e erros preservam o contrato sem hardware real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente imagens BMP, framebuffer e allocator estaticos do processo host | imagens liberadas, alocacoes devolvidas e manifesto, logs e cobertura preservados |
 | `host:storage:devfs` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar dispositivos null, zero, tty, speaker e hda com transporte estatico | registro, permissoes, leituras, seeks, ioctl, indisponibilidade e invariantes preservam o contrato sem hardware real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estruturas devfs e buffers estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7443,7 +7444,6 @@
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
 | `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
-| `host:shell:wifi` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar status, inventario PCI/USB, scan, conexao, argumentos invalidos, erros e estados indisponiveis | o Shell formata estados, locais, resultados e erros sem aceitar senha ou abrir conexao externa | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos de saida e fixtures do gerenciador Wi-Fi no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -8466,16 +8466,11 @@
 - `c:src/kernel/kernel.c:shell_process_main`
 - `c:src/kernel/kernel.c:system_process_main`
 - `c:src/kernel/kernel.c:test_protocol_process_main`
-- `c:src/process/process.c:process_bootstrap_idle`
-- `c:src/process/process.c:process_cancel_wait`
-- `c:src/process/process.c:process_copy_wait_text`
-- `c:src/process/process.c:process_discard_new_process`
 - `c:src/process/process.c:process_idle_main`
 - `c:src/process/process.c:process_stack_log_append_number`
 - `c:src/process/process.c:process_stack_log_append_text`
 - `c:src/process/process.c:process_stack_recorded_usage`
 - `c:src/process/process.c:process_stack_report_corruption`
-- `c:src/process/process.c:process_start_scheduler`
 - `c:src/settings/settings.c:apply_mouse_settings`
 - `c:src/settings/settings.c:apply_taskbar_settings`
 - `c:src/settings/settings.c:apply_wm_settings`

@@ -5278,7 +5278,7 @@
         ],
         "status": "AUTOMATED"
       },
-      "evidence": "make test-process-host PASS com fixtures estaticas, snapshots, scheduler, limites, cancelamento, sinais, shutdown cooperativo e cobertura instrumentada"
+      "evidence": "make test-process-host PASS com fixtures estaticas, snapshots, scheduler, bootstrap sem cache, pre-condicao de inicio, descarte apos falha de criacao, espera ativa, cancelamento, sinais, shutdown cooperativo e cobertura instrumentada"
     },
     {
       "id": "thread-host-dynamic",

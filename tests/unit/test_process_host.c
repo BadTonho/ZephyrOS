@@ -22,6 +22,7 @@ static uint32_t coverage_count;
 static uint8_t coverage_active;
 static uint32_t fake_ticks = 100U;
 static uint8_t fake_power_signal;
+static uint8_t fake_cache_alloc_enabled;
 static uint32_t fake_focus_pid;
 static uint8_t fake_cache_storage[64U];
 static page_directory_t fake_directory;
@@ -121,7 +122,7 @@ kmem_cache_t* kmem_cache_create(const char* name, uint32_t object_size,
 
 void* kmem_cache_alloc(kmem_cache_t* cache) {
     (void)cache;
-    return NULL;
+    return fake_cache_alloc_enabled ? &fixture : NULL;
 }
 
 void kmem_cache_free(kmem_cache_t* cache, void* object) {
@@ -389,6 +390,7 @@ static void reset_fixture(void) {
     memset(&user_fixture, 0, sizeof(user_fixture));
     fake_ticks = 100U;
     fake_power_signal = 0U;
+    fake_cache_alloc_enabled = 0U;
     fake_focus_pid = 0U;
 }
 
@@ -440,6 +442,8 @@ static int test_initial_state(void) {
     if (process_stack_get_info(PROCESS_FIXTURE_PID, &stack_info) !=
         ERR_NOT_FOUND) return 91;
     if (process_stack_validate_all(NULL) != ERR_NULL) return 10;
+    process_bootstrap_idle();
+    if (process_start_scheduler() != ERR_STATE) return 11;
     return 0;
 }
 
@@ -454,9 +458,12 @@ static int test_creation_guards(void) {
     if (process_create(NULL, NULL) != NULL) return 1;
     if (process_create_with_stack_size("bad", process_entry_fixture,
                                       KERNEL_STACK_SIZE + 1U) != NULL) return 2;
+    fake_cache_alloc_enabled = 1U;
     if (process_create("no-memory", process_entry_fixture) != NULL) {
+        fake_cache_alloc_enabled = 0U;
         return 3;
     }
+    fake_cache_alloc_enabled = 0U;
     if (process_create_user_image("user", code, sizeof(code), NULL, 0U, 0U,
                                   PAGE_SIZE, 0, &pid) != ERR_UNAVAILABLE) {
         return 4;
@@ -635,6 +642,27 @@ static int test_wait_and_wake_contract(void) {
     if (process_copy_waiters(NULL, 1U, &count) != ERR_NULL ||
         process_copy_waiters(&info, 1U, NULL) != ERR_NULL ||
         process_copy_waiters(&info, 1U, &count) != OK || count != 0U) return 3;
+
+    install_fixture(1U, &fixture, PROCESS_FIXTURE_PID,
+                    PROCESS_STATE_BLOCKED, 0U);
+    if (process_cancel_wait(&fixture) != ERR_STATE) return 4;
+    if (wait_channel_init(&channel, "host-wait") != OK) return 5;
+    fixture.wait_active = 1U;
+    fixture.wait_channel = &channel;
+    fixture.wait_reason = WAIT_REASON_NONE;
+    fixture.wait_deadline = fake_ticks + 10U;
+    fixture.wait_deadline_active = 1U;
+    fixture.wait_entry.linked = 1U;
+    if (process_cancel_wait(&fixture) != OK ||
+        fixture.wait_entry.linked != 0U) return 6;
+    fixture.wait_active = 1U;
+    fixture.state = PROCESS_STATE_BLOCKED;
+    fixture.wait_entry.linked = 0U;
+    if (process_copy_waiters(&info, 1U, &count) != OK || count != 1U ||
+        info.id != PROCESS_FIXTURE_PID ||
+        strcmp(info.name, "kernel-fixture") != 0 ||
+        strcmp(info.channel_owner, "host-wait") != 0 ||
+        info.remaining_ticks != 1U || !info.active) return 7;
     return 0;
 }
 

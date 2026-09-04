@@ -2252,3 +2252,13 @@ pendente.
   evidencia instrumentada real. O catalogo registra 7.219 superficies,
   5.267 `COVERED`, 1.952 `PENDING` e 139 casos. A cobertura integral ainda
   depende das pendencias restantes.
+
+- Incremento Process/runtime concluido em 2026-09-04 11:45.
+  A fixture `host:process:runtime` foi ampliada com chamadas reais para
+  bootstrap sem cache, inicio do scheduler em estado invalido, descarte apos
+  falha de criacao e copia/cancelamento de espera ativa. A etapa passou o alvo
+  host-only, `q3check`, build limpo, `make catalog-test` e os testes unitarios
+  dos runners. Cinco superficies de `src/process/process.c` foram resolvidas
+  por evidencia dinamica; as rotinas de stack dependentes de enderecos 32-bit
+  continuam pendentes sem uma fixture adequada. O catalogo registra 7.219
+  superficies, 5.272 `COVERED`, 1.947 `PENDING` e 139 casos.

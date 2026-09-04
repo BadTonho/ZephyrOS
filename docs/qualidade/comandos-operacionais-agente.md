@@ -342,6 +342,11 @@ privilegiadas ou hardware. O relatorio fica em
 make test-process-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+A fixture tambem valida o bootstrap sem cache, a pre-condicao do inicio do
+scheduler, o descarte apos falha de criacao e a copia/cancelamento de uma
+espera ativa. O relatorio instrumentado confirma essas rotinas sem executar a
+troca de contexto Assembly nem o Idle real.
+
 O caso `test-workqueue-host` exercita a fila de trabalho com autoteste interno,
 callbacks, prioridades, FIFO, atrasos, coalescencia, rerun, cancelamento,
 fallback, quiescencia, worker e validacao de invariantes. O worker usa quatro
