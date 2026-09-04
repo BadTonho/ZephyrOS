@@ -16,13 +16,16 @@
 #include "core/video.h"
 #include "core/wait.h"
 #include "core/workqueue.h"
+#include "core/memory.h"
 #include "drivers/idt.h"
 #include "drivers/rtc.h"
 #include "drivers/mouse.h"
 #include "fs/vfs.h"
 #include "fs/storage.h"
 #include "fs/devfs.h"
+#include "memory/paging.h"
 #include "memory/slab.h"
+#include "process/process.h"
 #include "drivers/usb_hid.h"
 #include "drivers/usb_msc.h"
 
@@ -45,6 +48,11 @@ void shell_dispatch_cmd_device_info(const char* arguments);
 void shell_dispatch_cmd_usb(const char* arguments);
 void shell_dispatch_cmd_slabinfo(const char* arguments);
 void shell_dispatch_cmd_slabtest(const char* arguments);
+void shell_dispatch_cmd_cpu_usage(const char* arguments);
+void shell_dispatch_cmd_pagefault(const char* arguments);
+void shell_dispatch_cmd_vmamap(const char* arguments);
+void shell_dispatch_cmd_schedcheck(const char* arguments);
+void shell_diagnostics_reset(void);
 
 #define HOST_COVERAGE_CAPACITY 512U
 #define HOST_COVERAGE_LINE_SIZE 32U
@@ -187,6 +195,18 @@ static kmem_cache_info_t fixture_slab_info[2];
 static uint32_t fixture_slab_count;
 static int fixture_slab_info_result;
 static int fixture_slab_self_test_result;
+static scheduler_stats_t fixture_scheduler_stats;
+static scheduler_validation_t fixture_scheduler_validation;
+static int fixture_scheduler_stats_result;
+static int fixture_scheduler_validation_result;
+static page_fault_stats_t fixture_page_fault_stats;
+static int fixture_page_fault_stats_result;
+static process_t fixture_user_process;
+static vm_area_info_t fixture_user_areas[2];
+static uint32_t fixture_user_area_count;
+static int fixture_process_lookup_result;
+static int fixture_process_is_user_result;
+static int fixture_process_vma_copy_result;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -353,6 +373,13 @@ static void fixture_reset(void) {
     fixture_slab_count = 1U;
     fixture_slab_info_result = OK;
     fixture_slab_self_test_result = OK;
+    fixture_scheduler_stats_result = OK;
+    fixture_scheduler_validation_result = OK;
+    fixture_page_fault_stats_result = OK;
+    fixture_user_area_count = 2U;
+    fixture_process_lookup_result = OK;
+    fixture_process_is_user_result = 1;
+    fixture_process_vma_copy_result = OK;
     kmemset(&fixture_log_stats, 0, sizeof(fixture_log_stats));
     kmemset(fixture_log_records, 0, sizeof(fixture_log_records));
     kmemset(&fixture_log_test, 0, sizeof(fixture_log_test));
@@ -916,6 +943,36 @@ static void fixture_reset(void) {
     fixture_slab_info[0].invalid_frees = 0U;
     fixture_slab_info[0].double_frees = 0U;
     fixture_slab_info[0].initialized = 1U;
+    kmemset(&fixture_scheduler_stats, 0, sizeof(fixture_scheduler_stats));
+    fixture_scheduler_stats.context_switches = 10U;
+    fixture_scheduler_stats.cooperative_yields = 4U;
+    fixture_scheduler_stats.user_preemptions = 3U;
+    fixture_scheduler_stats.idle_fallbacks = 2U;
+    fixture_scheduler_stats.user_quantum_ticks = 1U;
+    fixture_scheduler_stats.idle_ticks = 20U;
+    fixture_scheduler_stats.active_ticks = 80U;
+    kmemset(&fixture_scheduler_validation, 0,
+            sizeof(fixture_scheduler_validation));
+    fixture_scheduler_validation.current_valid = 1U;
+    fixture_scheduler_validation.idle_valid = 1U;
+    fixture_scheduler_validation.pid_table_valid = 1U;
+    fixture_scheduler_validation.state_table_valid = 1U;
+    fixture_scheduler_validation.stack_table_valid = 1U;
+    fixture_scheduler_validation.slab_table_valid = 1U;
+    fixture_scheduler_validation.idle_accounting_valid = 1U;
+    fixture_page_fault_stats.handled = 7U;
+    fixture_page_fault_stats.invalid = 2U;
+    kmemset(&fixture_user_process, 0, sizeof(fixture_user_process));
+    fixture_user_process.pid = 42U;
+    copy_text(fixture_user_process.name, sizeof(fixture_user_process.name),
+              "user-fixture");
+    fixture_user_process.state = PROCESS_STATE_READY;
+    fixture_user_areas[0].start_addr = USER_CODE_BASE;
+    fixture_user_areas[0].end_addr = USER_CODE_BASE + PAGE_SIZE;
+    fixture_user_areas[0].flags = VM_READ | VM_EXEC;
+    fixture_user_areas[1].start_addr = USER_STACK_BASE;
+    fixture_user_areas[1].end_addr = USER_STACK_TOP;
+    fixture_user_areas[1].flags = VM_READ | VM_WRITE;
     kmemset(&fixture_mouse_status, 0, sizeof(fixture_mouse_status));
     fixture_mouse_status.initialized = 1U;
     fixture_mouse_status.x = 12;
@@ -945,7 +1002,8 @@ static int contains_text(const char* text) {
 
 static int expect_text(const char* text) {
     if (kstrcmp(video_output, text) == 0) return 0;
-    fprintf(stderr, "diagnostics-host: saida inesperada: %s\n", video_output);
+    fprintf(stderr, "diagnostics-host: saida inesperada: atual=%s esperado=%s\n",
+            video_output, text);
     return 1;
 }
 
@@ -958,6 +1016,12 @@ static int expect_contains(const char* text) {
 void video_print(const char* text, uint8_t color) {
     (void)color;
     output_append(text);
+}
+
+void video_begin_update(void) {
+}
+
+void video_end_update(void) {
 }
 
 void log_print(log_level_t level, const char* module, const char* message) {
@@ -1613,6 +1677,51 @@ int kmem_cache_get_info_at(uint32_t index, kmem_cache_info_t* info) {
 
 int kmem_cache_self_test(void) {
     return fixture_slab_self_test_result;
+}
+
+void scheduler_get_stats(scheduler_stats_t* stats) {
+    if (stats) *stats = fixture_scheduler_stats;
+}
+
+int scheduler_validate_invariants(scheduler_validation_t* validation) {
+    if (!validation) return ERR_NULL;
+    *validation = fixture_scheduler_validation;
+    return fixture_scheduler_validation_result;
+}
+
+int process_vma_get_page_fault_stats(page_fault_stats_t* stats) {
+    if (!stats) return ERR_NULL;
+    if (fixture_page_fault_stats_result != OK) {
+        return fixture_page_fault_stats_result;
+    }
+    *stats = fixture_page_fault_stats;
+    return OK;
+}
+
+process_t* process_get_by_pid(uint32_t pid) {
+    if (fixture_process_lookup_result != OK ||
+        pid != fixture_user_process.pid) {
+        return 0;
+    }
+    return &fixture_user_process;
+}
+
+int process_is_user(const process_t* proc) {
+    return proc == &fixture_user_process && fixture_process_is_user_result;
+}
+
+int process_vma_copy(const process_t* proc, vm_area_info_t* output,
+                     uint32_t capacity, uint32_t* out_count) {
+    if (!proc || !output || !out_count) return ERR_NULL;
+    if (fixture_process_vma_copy_result != OK) {
+        return fixture_process_vma_copy_result;
+    }
+    if (capacity < fixture_user_area_count) return ERR_OVERFLOW;
+    for (uint32_t index = 0U; index < fixture_user_area_count; index++) {
+        output[index] = fixture_user_areas[index];
+    }
+    *out_count = fixture_user_area_count;
+    return OK;
 }
 
 int vfs_getcwd(char* path, uint32_t capacity) {
@@ -2318,6 +2427,84 @@ static int test_slab(void) {
     return failures;
 }
 
+static int test_cpu_usage(void) {
+    int failures = 0;
+
+    fixture_reset();
+    shell_diagnostics_reset();
+    shell_dispatch_cmd_cpu_usage("usage reset");
+    failures += expect_text("Linha-base de CPU capturada.\n");
+    fixture_scheduler_stats.active_ticks = 100U;
+    fixture_scheduler_stats.idle_ticks = 30U;
+    output_reset();
+    shell_dispatch_cmd_cpu_usage("usage");
+    failures += expect_contains("CPU usage (PIT):\n");
+    failures += expect_contains("ticks_ativos=20 ticks_idle=10 ticks_total=30\n");
+    failures += expect_contains("percentual_ativo=66% percentual_idle=33%\n");
+    fixture_reset();
+    shell_dispatch_cmd_cpu_usage("");
+    failures += expect_text("Uso: cpu usage [reset]\n");
+    fixture_reset();
+    shell_dispatch_cmd_cpu_usage("other");
+    failures += expect_text("Uso: cpu usage [reset]\n");
+    return failures;
+}
+
+static int test_pagefault_and_vmamap(void) {
+    int failures = 0;
+
+    fixture_reset();
+    shell_dispatch_cmd_pagefault("status");
+    failures += expect_text("PageFault: tratadas=7 invalidas=2\n");
+    fixture_reset();
+    shell_dispatch_cmd_pagefault("");
+    failures += expect_text("Uso: pagefault status\n");
+    fixture_reset();
+    fixture_page_fault_stats_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_pagefault("status");
+    failures += expect_text("PageFault indisponivel.\n");
+
+    fixture_reset();
+    shell_dispatch_cmd_vmamap("42");
+    failures += expect_contains("VMAMap PID=42 (user-fixture):\n");
+    failures += expect_contains("  CODE R-X 0x00800000-0x00801000 paginas=1\n");
+    failures += expect_contains("  STACK RW- 0x00C00000-0x00C01000 paginas=1\n");
+    failures += expect_contains("  total=2 VMA(s)\n");
+    fixture_reset();
+    shell_dispatch_cmd_vmamap("");
+    failures += expect_text("Uso: vmamap <pid>\n");
+    fixture_reset();
+    shell_dispatch_cmd_vmamap("43");
+    failures += expect_text("Erro: PID nao encontrado.\n");
+    fixture_reset();
+    fixture_process_is_user_result = 0;
+    shell_dispatch_cmd_vmamap("42");
+    failures += expect_text("Erro: processo sem mapa ring 3.\n");
+    fixture_reset();
+    fixture_process_vma_copy_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_vmamap("42");
+    failures += expect_text("Erro: mapa virtual indisponivel.\n");
+    return failures;
+}
+
+static int test_schedcheck(void) {
+    int failures = 0;
+
+    fixture_reset();
+    shell_dispatch_cmd_schedcheck("");
+    failures += expect_text("SchedCheck:\n  estado_atual OK\n  idle OK\n  tabela_pid OK\n  estados OK\n  tabela_slab OK\n  stacks OK\n  contabilidade_idle OK\n  resultado OK\n");
+    fixture_reset();
+    shell_dispatch_cmd_schedcheck("extra");
+    failures += expect_text("Uso: schedcheck\n");
+    fixture_reset();
+    fixture_scheduler_validation.current_valid = 0U;
+    fixture_scheduler_validation_result = ERR_STATE;
+    shell_dispatch_cmd_schedcheck("");
+    failures += expect_contains("  estado_atual ERRO\n");
+    failures += expect_contains("  resultado ERRO\n");
+    return failures;
+}
+
 int main(void) {
     int result;
 
@@ -2327,6 +2514,9 @@ int main(void) {
              test_wqinfo() + test_workq() + test_tls() + test_vfs();
     result += test_devcheck() + test_devices_and_usb();
     result += test_slab();
+    result += test_cpu_usage();
+    result += test_pagefault_and_vmamap();
+    result += test_schedcheck();
     coverage_active = 0U;
     coverage_emit(result);
     return result ? 1 : 0;

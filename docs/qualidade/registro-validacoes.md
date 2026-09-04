@@ -5743,3 +5743,17 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   quatro superfícies observadas de `src/shell/shell_commands_diagnostics.c`,
   sem tocar no allocator real: 7.293 superfícies, 6.219 `COVERED`, 1.074
   `PENDING` e 154 casos. As pendências restantes continuam explícitas.
+
+- Incremento Shell/diagnostics CPU, page fault, VMA e scheduler — concluído em
+  2026-09-04 (America/Sao_Paulo). A fixture host-only
+  `host:shell:diagnostics` passou a chamar os dispatchers reais de `cpu usage`,
+  `pagefault`, `vmamap` e `schedcheck`, com estatísticas de scheduler,
+  processos, VMAs e page faults falsos em buffers estáticos. Foram exercitados
+  linha-base e percentuais de CPU, mapas de código/stack, PID inexistente,
+  processo não-usuário, VMA indisponível, argumentos inválidos e falha de
+  invariantes. O alvo específico e os demais 111 alvos host que alimentam o
+  catálogo passaram com `HOST_CC`; também passaram `make q3check`, `make clean`
+  seguido de `make`, sincronização, renderização, `make catalog-test` e
+  `git diff --check`. O catálogo registra 7.293 superfícies, 6.230
+  `COVERED`, 1.063 `PENDING` e 154 casos; as pendências restantes continuam
+  explícitas.
