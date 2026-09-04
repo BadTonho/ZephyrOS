@@ -9,6 +9,8 @@
 #include "core/clock.h"
 #include "core/irq_deferred.h"
 #include "core/video.h"
+#include "core/wait.h"
+#include "core/workqueue.h"
 #include "drivers/idt.h"
 #include "drivers/rtc.h"
 #include "drivers/mouse.h"
@@ -21,6 +23,9 @@ void shell_dispatch_cmd_log(const char* arguments);
 void shell_dispatch_cmd_timer(const char* arguments);
 void shell_dispatch_cmd_clock(const char* arguments);
 void shell_dispatch_cmd_irqstat(const char* arguments);
+void shell_dispatch_cmd_wait(const char* arguments);
+void shell_dispatch_cmd_wqinfo(const char* arguments);
+void shell_dispatch_cmd_workq(const char* arguments);
 
 #define HOST_COVERAGE_CAPACITY 512U
 #define HOST_COVERAGE_LINE_SIZE 32U
@@ -87,6 +92,25 @@ static int fixture_irq_line_result;
 static int fixture_irq_test_result;
 static int fixture_irq_validate_result;
 static int fixture_idt_validate_result;
+static wait_stats_t fixture_wait_stats;
+static wait_queue_info_t fixture_wait_queues[2];
+static wait_info_t fixture_waiters[2];
+static wait_self_test_result_t fixture_wait_test;
+static int fixture_wait_stats_result;
+static int fixture_wait_info_result;
+static int fixture_waiters_result;
+static int fixture_wait_test_result;
+static workqueue_stats_t fixture_workq_stats;
+static work_info_t fixture_work_records[2];
+static workqueue_self_test_result_t fixture_workq_test;
+static int fixture_workq_stats_result;
+static int fixture_workq_info_result;
+static int fixture_workq_test_result;
+static int fixture_workq_validate_result;
+static int fixture_workq_probe_result;
+static uint32_t fixture_wait_queue_count;
+static uint32_t fixture_waiter_count;
+static uint32_t fixture_work_info_count;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -201,6 +225,18 @@ static void fixture_reset(void) {
     fixture_irq_test_result = OK;
     fixture_irq_validate_result = OK;
     fixture_idt_validate_result = OK;
+    fixture_wait_stats_result = OK;
+    fixture_wait_info_result = OK;
+    fixture_waiters_result = OK;
+    fixture_wait_test_result = OK;
+    fixture_workq_stats_result = OK;
+    fixture_workq_info_result = OK;
+    fixture_workq_test_result = OK;
+    fixture_workq_validate_result = OK;
+    fixture_workq_probe_result = OK;
+    fixture_wait_queue_count = 1U;
+    fixture_waiter_count = 1U;
+    fixture_work_info_count = 1U;
     kmemset(&fixture_log_stats, 0, sizeof(fixture_log_stats));
     kmemset(fixture_log_records, 0, sizeof(fixture_log_records));
     kmemset(&fixture_log_test, 0, sizeof(fixture_log_test));
@@ -358,6 +394,122 @@ static void fixture_reset(void) {
     fixture_irq_test.invariants = 1U;
     fixture_irq_test.passed = 8U;
     fixture_irq_test.failed = 0U;
+    kmemset(&fixture_wait_stats, 0, sizeof(fixture_wait_stats));
+    kmemset(fixture_wait_queues, 0, sizeof(fixture_wait_queues));
+    kmemset(fixture_waiters, 0, sizeof(fixture_waiters));
+    kmemset(&fixture_wait_test, 0, sizeof(fixture_wait_test));
+    fixture_wait_stats.initialized = 1U;
+    fixture_wait_stats.channels_active = 1U;
+    fixture_wait_stats.active_waiters = 1U;
+    fixture_wait_stats.peak_waiters = 2U;
+    fixture_wait_stats.waits_started = 8U;
+    fixture_wait_stats.event_wakes = 3U;
+    fixture_wait_stats.timeout_wakes = 2U;
+    fixture_wait_stats.cancellation_wakes = 1U;
+    fixture_wait_stats.unavailable_wakes = 1U;
+    fixture_wait_stats.invalid_operations = 2U;
+    fixture_wait_stats.registry_capacity = WAIT_QUEUE_REGISTRY_CAPACITY;
+    fixture_wait_stats.registry_peak = 4U;
+    fixture_wait_stats.registration_rejections = 1U;
+    fixture_wait_stats.wake_one_calls = 5U;
+    fixture_wait_stats.wake_all_calls = 6U;
+    fixture_wait_stats.context_errors = 1U;
+    fixture_wait_stats.orphan_errors = 2U;
+    fixture_wait_stats.signal_wakes = 3U;
+    fixture_wait_queues[0].id = 7U;
+    copy_text(fixture_wait_queues[0].owner,
+              sizeof(fixture_wait_queues[0].owner), "timer");
+    fixture_wait_queues[0].condition = 12U;
+    fixture_wait_queues[0].waiters = 1U;
+    fixture_wait_queues[0].peak_waiters = 2U;
+    fixture_wait_queues[0].available = 1U;
+    fixture_waiters[0].id = 23U;
+    fixture_waiters[0].queue_id = 7U;
+    fixture_waiters[0].queue_position = 0U;
+    fixture_waiters[0].target = WAIT_TARGET_THREAD;
+    copy_text(fixture_waiters[0].name, sizeof(fixture_waiters[0].name), "worker");
+    copy_text(fixture_waiters[0].channel_owner,
+              sizeof(fixture_waiters[0].channel_owner), "timer");
+    fixture_waiters[0].reason = WAIT_REASON_SIGNAL;
+    fixture_waiters[0].deadline_tick = 500U;
+    fixture_waiters[0].remaining_ticks = 25U;
+    fixture_waiters[0].deadline_active = 1U;
+    fixture_waiters[0].active = 1U;
+    fixture_wait_test.channel_lifecycle = 1U;
+    fixture_wait_test.condition_signal = 1U;
+    fixture_wait_test.availability = 1U;
+    fixture_wait_test.accounting = 1U;
+    fixture_wait_test.reasons = 1U;
+    fixture_wait_test.limits = 1U;
+    fixture_wait_test.reset = 1U;
+    fixture_wait_test.fifo = 1U;
+    fixture_wait_test.wake_all = 1U;
+    fixture_wait_test.lost_wakeup = 1U;
+    fixture_wait_test.condition_recheck = 1U;
+    fixture_wait_test.process_thread = 1U;
+    fixture_wait_test.interrupt_context = 1U;
+    fixture_wait_test.invariants = 1U;
+    fixture_wait_test.passed = 14U;
+    fixture_wait_test.failed = 0U;
+    kmemset(&fixture_workq_stats, 0, sizeof(fixture_workq_stats));
+    kmemset(fixture_work_records, 0, sizeof(fixture_work_records));
+    kmemset(&fixture_workq_test, 0, sizeof(fixture_workq_test));
+    fixture_workq_stats.initialized = 1U;
+    fixture_workq_stats.worker_bound = 1U;
+    fixture_workq_stats.worker_active = 1U;
+    fixture_workq_stats.fallback_active = 0U;
+    fixture_workq_stats.worker_pid = 42U;
+    fixture_workq_stats.execution_context = WORK_CONTEXT_KWORKER;
+    fixture_workq_stats.capacity = WORKQUEUE_CAPACITY;
+    fixture_workq_stats.registered = 1U;
+    fixture_workq_stats.ready_high = 1U;
+    fixture_workq_stats.ready_normal = 2U;
+    fixture_workq_stats.delayed = 1U;
+    fixture_workq_stats.running = 1U;
+    fixture_workq_stats.scheduled = 8U;
+    fixture_workq_stats.executed = 4U;
+    fixture_workq_stats.coalesced = 2U;
+    fixture_workq_stats.reruns = 1U;
+    fixture_workq_stats.cancelled = 1U;
+    fixture_workq_stats.rejected = 2U;
+    fixture_workq_stats.callback_errors = 1U;
+    fixture_workq_stats.context_errors = 1U;
+    fixture_workq_stats.wake_errors = 1U;
+    fixture_workq_stats.wakeups = 6U;
+    fixture_workq_stats.sleeps = 3U;
+    fixture_workq_stats.peak_pending = 4U;
+    fixture_workq_stats.total_callback_ticks = 20U;
+    fixture_workq_stats.max_callback_ticks = 8U;
+    fixture_work_records[0].id = 0x01000005U;
+    fixture_work_records[0].generation = 1U;
+    copy_text(fixture_work_records[0].owner,
+              sizeof(fixture_work_records[0].owner), "shell");
+    fixture_work_records[0].priority = WORK_PRIORITY_HIGH;
+    fixture_work_records[0].state = WORK_STATE_RUNNING;
+    fixture_work_records[0].deadline_tick = 300U;
+    fixture_work_records[0].remaining_ticks = 10U;
+    fixture_work_records[0].scheduled = 5U;
+    fixture_work_records[0].executed = 4U;
+    fixture_work_records[0].coalesced = 1U;
+    fixture_work_records[0].reruns = 2U;
+    fixture_work_records[0].cancellations = 1U;
+    fixture_work_records[0].callback_ticks = 20U;
+    fixture_work_records[0].max_callback_ticks = 8U;
+    fixture_work_records[0].last_error = -ERR_TIMEOUT;
+    fixture_workq_test.lifecycle = 1U;
+    fixture_workq_test.fifo = 1U;
+    fixture_workq_test.priority = 1U;
+    fixture_workq_test.delayed = 1U;
+    fixture_workq_test.rollover = 1U;
+    fixture_workq_test.promotion = 1U;
+    fixture_workq_test.coalescing = 1U;
+    fixture_workq_test.rerun = 1U;
+    fixture_workq_test.cancellation = 1U;
+    fixture_workq_test.capacity = 1U;
+    fixture_workq_test.interrupt_context = 1U;
+    fixture_workq_test.invariants = 1U;
+    fixture_workq_test.passed = 12U;
+    fixture_workq_test.failed = 0U;
     kmemset(&fixture_mouse_status, 0, sizeof(fixture_mouse_status));
     fixture_mouse_status.initialized = 1U;
     fixture_mouse_status.x = 12;
@@ -584,6 +736,111 @@ int idt_get_irq_status(uint8_t irq_line, idt_irq_status_t* status) {
 
 int idt_validate_irq_state(void) {
     return fixture_idt_validate_result;
+}
+
+int wait_get_stats(wait_stats_t* stats) {
+    if (!stats) return ERR_NULL;
+    if (fixture_wait_stats_result != OK) return fixture_wait_stats_result;
+    *stats = fixture_wait_stats;
+    return OK;
+}
+
+int wait_queue_copy_info(wait_queue_info_t* output, uint32_t max_entries,
+                         uint32_t* out_count) {
+    if (!output || !out_count) return ERR_NULL;
+    if (fixture_wait_info_result != OK) return fixture_wait_info_result;
+    if (max_entries < fixture_wait_queue_count) return ERR_OVERFLOW;
+    for (uint32_t index = 0U; index < fixture_wait_queue_count; index++) {
+        output[index] = fixture_wait_queues[index];
+    }
+    *out_count = fixture_wait_queue_count;
+    return OK;
+}
+
+int wait_queue_copy_waiters(wait_info_t* output, uint32_t max_entries,
+                            uint32_t* out_count) {
+    if (!output || !out_count) return ERR_NULL;
+    if (fixture_waiters_result != OK) return fixture_waiters_result;
+    if (max_entries < fixture_waiter_count) return ERR_OVERFLOW;
+    for (uint32_t index = 0U; index < fixture_waiter_count; index++) {
+        output[index] = fixture_waiters[index];
+    }
+    *out_count = fixture_waiter_count;
+    return OK;
+}
+
+int wait_self_test(wait_self_test_result_t* result) {
+    if (!result) return ERR_NULL;
+    *result = fixture_wait_test;
+    return fixture_wait_test_result;
+}
+
+int wait_validate_state(void) {
+    return fixture_wait_stats_result;
+}
+
+const char* wait_reason_name(wait_reason_t reason) {
+    if (reason == WAIT_REASON_EVENT) return "evento";
+    if (reason == WAIT_REASON_TIMEOUT) return "timeout";
+    if (reason == WAIT_REASON_CANCELLED) return "cancelado";
+    if (reason == WAIT_REASON_DEVICE_UNAVAILABLE) return "indisponivel";
+    if (reason == WAIT_REASON_SIGNAL) return "sinal";
+    return "nenhum";
+}
+
+uint32_t timer_get_frequency(void) {
+    return fixture_timer_stats.frequency;
+}
+
+int workqueue_get_stats(workqueue_stats_t* stats) {
+    if (!stats) return ERR_NULL;
+    if (fixture_workq_stats_result != OK) return fixture_workq_stats_result;
+    *stats = fixture_workq_stats;
+    return OK;
+}
+
+int workqueue_copy_info(work_info_t* output, uint32_t max_entries,
+                        uint32_t* out_count) {
+    if (!output || !out_count) return ERR_NULL;
+    if (fixture_workq_info_result != OK) return fixture_workq_info_result;
+    if (max_entries < fixture_work_info_count) return ERR_OVERFLOW;
+    for (uint32_t index = 0U; index < fixture_work_info_count; index++) {
+        output[index] = fixture_work_records[index];
+    }
+    *out_count = fixture_work_info_count;
+    return OK;
+}
+
+int workqueue_self_test(workqueue_self_test_result_t* result) {
+    if (!result) return ERR_NULL;
+    *result = fixture_workq_test;
+    return fixture_workq_test_result;
+}
+
+int workqueue_validate_state(void) {
+    return fixture_workq_validate_result;
+}
+
+int workqueue_probe_worker(uint32_t timeout_ticks) {
+    (void)timeout_ticks;
+    return fixture_workq_probe_result;
+}
+
+const char* workqueue_priority_name(work_priority_t priority) {
+    return priority == WORK_PRIORITY_HIGH ? "alta" : "normal";
+}
+
+const char* workqueue_state_name(work_state_t state) {
+    if (state == WORK_STATE_READY) return "pronto";
+    if (state == WORK_STATE_DELAYED) return "atrasado";
+    if (state == WORK_STATE_RUNNING) return "executando";
+    return "ocioso";
+}
+
+const char* workqueue_context_name(work_context_t context) {
+    if (context == WORK_CONTEXT_KWORKER) return "kworker";
+    if (context == WORK_CONTEXT_SYSTEM_FALLBACK) return "fallback";
+    return "nenhum";
 }
 
 int vfs_getcwd(char* path, uint32_t capacity) {
@@ -919,12 +1176,128 @@ static int test_irqstat(void) {
     return failures;
 }
 
+static int test_wait(void) {
+    int failures = 0;
+
+    fixture_reset();
+    shell_dispatch_cmd_wait("status");
+    failures += expect_contains("Servico de espera: canais=1 waiters=1 pico=2\n");
+    failures += expect_contains("Inicios=8 eventos=3 timeouts=2 cancelamentos=1 indisponiveis=1\n");
+    failures += expect_contains("Operacoes invalidas=2 registro=1/128 pico=4 rejeicoes=1\n");
+    failures += expect_contains("Wake um/todos=5/6 contexto/orfaos=1/2\n");
+    fixture_reset();
+    fixture_wait_stats_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_wait("");
+    failures += expect_text("Erro: estatisticas de espera indisponiveis.\n");
+    fixture_reset();
+    fixture_waiter_count = 0U;
+    shell_dispatch_cmd_wait("list");
+    failures += expect_text("Nenhuma tarefa bloqueada por canal.\n");
+    fixture_reset();
+    shell_dispatch_cmd_wait("list");
+    failures += expect_text("Tarefas bloqueadas por canal:\nthread=23 fila=7 pos=0 nome=worker canal=timer motivo=sinal restante=25\n");
+    fixture_reset();
+    fixture_waiters_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_wait("list");
+    failures += expect_text("Erro: lista de esperas indisponivel.\n");
+    fixture_reset();
+    shell_dispatch_cmd_wait("check");
+    failures += expect_contains("Autoteste de esperas (canal privado):\n");
+    failures += expect_contains("  ciclo do canal: OK");
+    failures += expect_contains("  wake all: OK");
+    failures += expect_contains("Resultado: OK (14 aprovados, 0 falhos)\n");
+    fixture_reset();
+    fixture_wait_test_result = ERR_STATE;
+    fixture_wait_test.invariants = 0U;
+    fixture_wait_test.failed = 1U;
+    shell_dispatch_cmd_wait("check");
+    failures += expect_contains("  invariantes: ERRO\nResultado: ERRO (14 aprovados, 1 falhos)\n");
+    fixture_reset();
+    shell_dispatch_cmd_wait("invalid");
+    failures += expect_text("Uso: wait [status|list|check]\n");
+    return failures;
+}
+
+static int test_wqinfo(void) {
+    int failures = 0;
+
+    fixture_reset();
+    fixture_waiter_count = 0U;
+    shell_dispatch_cmd_wqinfo("");
+    failures += expect_contains("Filas de espera registradas:\n  #7 timer estado=DISPONIVEL geracao=12 waiters/pico=1/2\n");
+    failures += expect_contains("Nenhum waiter bloqueado.\n");
+    fixture_reset();
+    shell_dispatch_cmd_wqinfo("");
+    failures += expect_contains("Ordem FIFO dos waiters:\nthread=23 fila=7 pos=0 nome=worker canal=timer motivo=sinal restante=25\n");
+    fixture_reset();
+    fixture_wait_info_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_wqinfo("");
+    failures += expect_text("Erro: filas de espera indisponiveis.\n");
+    fixture_reset();
+    shell_dispatch_cmd_wqinfo("extra");
+    failures += expect_text("Uso: wqinfo\n");
+    return failures;
+}
+
+static int test_workq(void) {
+    int failures = 0;
+
+    fixture_reset();
+    shell_dispatch_cmd_workq("status");
+    failures += expect_contains("Workqueue: contexto=kworker worker_pid=42 ativo=1 fallback=0\n");
+    failures += expect_contains("Registro=1/64 prontos H/N=1/2 atrasados=1 executando=1 pico=4\n");
+    failures += expect_contains("Agendados/executados=8/4 coalescidos=2 reexecucoes=1 cancelados=1\n");
+    failures += expect_contains("Duracao ticks media/max=5/8 sub-tick=N/D\n");
+    fixture_reset();
+    fixture_workq_stats_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_workq("");
+    failures += expect_text("Erro: workqueue indisponivel.\n");
+    fixture_reset();
+    fixture_work_info_count = 0U;
+    shell_dispatch_cmd_workq("list");
+    failures += expect_text("Trabalhos registrados:\n");
+    fixture_reset();
+    shell_dispatch_cmd_workq("list");
+    failures += expect_contains("#16777221 shell geracao=1 prioridade=alta estado=executando restante=10 prazo=300 exec/agend=4/5 coalesc=1 erro=4294967288\n");
+    failures += expect_contains("reexec/cancel=2/1 ticks total/max=20/8\n");
+    fixture_reset();
+    fixture_workq_info_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_workq("list");
+    failures += expect_text("Erro: snapshot da workqueue indisponivel.\n");
+    fixture_reset();
+    shell_dispatch_cmd_workq("check");
+    failures += expect_contains("Autoteste da workqueue (fixture privada):\n");
+    failures += expect_contains("  ciclo: OK");
+    failures += expect_contains("  interrupcoes habilitadas: OK");
+    failures += expect_contains("Resultado: OK\n");
+    fixture_reset();
+    fixture_workq_test_result = ERR_STATE;
+    fixture_workq_test.invariants = 0U;
+    fixture_workq_test.failed = 1U;
+    shell_dispatch_cmd_workq("check");
+    failures += expect_contains("  invariantes: ERRO\nResultado: ERRO\n");
+    fixture_reset();
+    fixture_workq_validate_result = ERR_STATE;
+    shell_dispatch_cmd_workq("check");
+    failures += expect_contains("Resultado: ERRO\n");
+    fixture_reset();
+    fixture_workq_probe_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_workq("check");
+    failures += expect_contains("wake Shell/kworker sem perda: ERRO");
+    failures += expect_contains("Resultado: ERRO");
+    fixture_reset();
+    shell_dispatch_cmd_workq("invalid");
+    failures += expect_text("Uso: workq [status|list|check]\n");
+    return failures;
+}
+
 int main(void) {
     int result;
 
     coverage_active = 1U;
     result = test_pwd() + test_cd() + test_mouse() + test_log() +
-             test_timer() + test_clock() + test_irqstat();
+             test_timer() + test_clock() + test_irqstat() + test_wait() +
+             test_wqinfo() + test_workq();
     coverage_active = 0U;
     coverage_emit(result);
     return result ? 1 : 0;
