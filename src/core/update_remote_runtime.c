@@ -9,6 +9,9 @@
 #include "core/update_remote_github.h"
 #include "fs/fs.h"
 #include "process/process.h"
+#if defined(ZEPHYROS_HOST_TEST)
+#include "update_remote_runtime_host.h"
+#endif
 
 #define RUNTIME_REMOTE_RECORD_MAGIC "ZRV2"
 #define RUNTIME_REMOTE_RECORD_VERSION 1U
@@ -1389,6 +1392,268 @@ static void runtime_remote_copy_result(update_remote_runtime_result_t* output) {
     output->tls_reason = runtime_remote_http.tls_reason;
     output->tls_error = runtime_remote_http.tls_error;
 }
+
+#if defined(ZEPHYROS_HOST_TEST)
+static int update_remote_runtime_host_check_scalars(void) {
+    uint8_t raw[UPDATE_RUNTIME_CACHE_RECORD_SIZE];
+    runtime_remote_record_t record;
+    runtime_remote_record_t decoded;
+    char output[UPDATE_REMOTE_RUNTIME_URL_SIZE];
+    uint8_t hash[32];
+
+    if (runtime_remote_read_u16((const uint8_t[]){0x34U, 0x12U}) != 0x1234U ||
+        runtime_remote_read_u32((const uint8_t[]){1U, 2U, 3U, 4U}) !=
+            0x04030201U) return 101;
+    runtime_remote_write_u16(raw, 0xABCDU);
+    runtime_remote_write_u32(raw + 2U, 0x12345678U);
+    if (runtime_remote_read_u16(raw) != 0xABCDU ||
+        runtime_remote_read_u32(raw + 2U) != 0x12345678U) return 102;
+    runtime_remote_copy_text(output, sizeof(output), "runtime");
+    if (kstrcmp(output, "runtime") != 0 || !runtime_remote_tag_valid("v1.2-rc") ||
+        runtime_remote_tag_valid(0) || runtime_remote_tag_valid("") ||
+        runtime_remote_tag_valid("v1/2")) return 103;
+    if (runtime_remote_magic((const uint8_t*)"ZRV2", RUNTIME_REMOTE_RECORD_MAGIC) != 1 ||
+        runtime_remote_magic((const uint8_t*)"BAD!", RUNTIME_REMOTE_RECORD_MAGIC) != 0 ||
+        runtime_remote_control_hash(0) != ERR_NULL ||
+        runtime_remote_control_valid(0)) return 104;
+
+    kmemset(&record, 0, sizeof(record));
+    record.active_slot = RUNTIME_REMOTE_SLOT_NONE;
+    record.pending_slot = RUNTIME_REMOTE_SLOT_NONE;
+    record.phase = RUNTIME_REMOTE_PHASE_CLEAN;
+    runtime_remote_encode_record(raw, &record);
+    if (runtime_remote_decode_record(raw, &decoded) != OK ||
+        decoded.active_slot != RUNTIME_REMOTE_SLOT_NONE) return 105;
+    raw[98U] = 1U;
+    if (runtime_remote_control_hash(raw) != OK ||
+        runtime_remote_decode_record(raw, &decoded) != ERR_INVALID) return 106;
+
+    kmemset(&record, 0, sizeof(record));
+    record.sequence = 4U;
+    record.phase = RUNTIME_REMOTE_PHASE_CLEAN;
+    record.active_slot = 0U;
+    record.pending_slot = RUNTIME_REMOTE_SLOT_NONE;
+    record.mode = UPDATE_REMOTE_RUNTIME_FETCH_FULL;
+    record.entry_count = 1U;
+    record.package_size = 64U;
+    record.target_version = (update_version_t){2U, 0U, 0U};
+    record.target_epoch = 8U;
+    record.manifest_hash[0] = 1U;
+    record.package_hash[0] = 2U;
+    runtime_remote_encode_record(raw, &record);
+    if (runtime_remote_decode_record(raw, &decoded) != OK ||
+        decoded.package_size != 64U || decoded.target_version.major != 2U) return 107;
+    record.asset_mask = 1U;
+    runtime_remote_encode_record(raw, &record);
+    if (runtime_remote_decode_record(raw, &decoded) != ERR_INVALID) return 108;
+    if (runtime_remote_build_relative_url("http://host/runtime/manifest.zum2",
+                                          "runtime.zephyrosupd", output) != OK ||
+        kstrcmp(output, "http://host/runtime/runtime.zephyrosupd") != 0 ||
+        runtime_remote_build_relative_url(0, "x", output) != ERR_NULL ||
+        runtime_remote_build_relative_url("host", "x", output) != ERR_OVERFLOW) return 109;
+    if (runtime_remote_json_hash(
+            "00112233445566778899aAbBcCdDeEfF00112233445566778899aAbBcCdDeEfF",
+            hash) != OK) return 111;
+    if (hash[0] != 0U) return 112;
+    if (hash[15] != 0xFFU) return 113;
+    if (runtime_remote_json_hash("invalid", hash) != ERR_INVALID) return 114;
+    return OK;
+}
+
+static int update_remote_runtime_host_check_json(void) {
+    runtime_remote_json_t json;
+    runtime_remote_descriptor_asset_t asset;
+    runtime_remote_source_t source;
+    char text[32];
+    uint32_t number;
+    const uint8_t string_data[] = " \"runtime\\n-v2\"";
+    const uint8_t descriptor[] =
+        "{\"format\":\"zephyros-runtime-release-v2\","
+        "\"release_id\":\"rel-1\",\"release_name\":\"Release\","
+        "\"channel\":\"stable\",\"tag\":\"v1.2\",\"runtime\":{"
+        "\"zum2\":{\"name\":\"runtime.zum2\",\"size\":4096,"
+        "\"sha256\":\"0000000000000000000000000000000000000000000000000000000000000000\"},"
+        "\"zephyrosupd\":{\"name\":\"runtime.zephyrosupd\",\"size\":64,"
+        "\"sha256\":\"1111111111111111111111111111111111111111111111111111111111111111\"},"
+        "\"assets\":[]}}";
+    const uint8_t duplicate[] =
+        "{\"format\":\"zephyros-runtime-release-v2\","
+        "\"release_id\":\"rel-1\",\"release_name\":\"Release\","
+        "\"channel\":\"stable\",\"tag\":\"v1.2\",\"runtime\":{"
+        "\"zum2\":{\"name\":\"runtime.zum2\",\"size\":4096,"
+        "\"sha256\":\"0000000000000000000000000000000000000000000000000000000000000000\"},"
+        "\"zephyrosupd\":{\"name\":\"runtime.zephyrosupd\",\"size\":64,"
+        "\"sha256\":\"1111111111111111111111111111111111111111111111111111111111111111\"},"
+        "\"assets\":[{\"name\":\"SHELL.BMP\",\"size\":1,"
+        "\"sha256\":\"0000000000000000000000000000000000000000000000000000000000000000\"},"
+        "{\"name\":\"SHELL.BMP\",\"size\":1,"
+        "\"sha256\":\"0000000000000000000000000000000000000000000000000000000000000000\"}]}}";
+
+    json.data = string_data;
+    json.length = sizeof(string_data) - 1U;
+    json.offset = 0U;
+    if (runtime_remote_json_string(&json, text, sizeof(text)) != OK ||
+        kstrcmp(text, "runtimen-v2") != 0) return 201;
+    json.data = (const uint8_t*)"4294967295,";
+    json.length = 11U;
+    json.offset = 0U;
+    if (runtime_remote_json_number(&json, &number) != OK || number != 0xFFFFFFFFU) return 202;
+    json.data = (const uint8_t*)"42949672960";
+    json.length = 11U;
+    json.offset = 0U;
+    if (runtime_remote_json_number(&json, &number) != ERR_OVERFLOW) return 203;
+    kmemset(&source, 0, sizeof(source));
+    if (runtime_remote_descriptor_parse(descriptor, sizeof(descriptor) - 1U,
+                                         "v1.2", &source) != OK ||
+        source.asset_count != 0U || kstrcmp(source.release_id, "rel-1") != 0) return 204;
+    if (runtime_remote_descriptor_parse(duplicate, sizeof(duplicate) - 1U,
+                                         "v1.2", &source) != ERR_INVALID ||
+        runtime_remote_json_asset(0, &asset) != ERR_NULL ||
+        runtime_remote_json_expect(0, '{') != ERR_NULL) return 205;
+    runtime_remote_descriptor_length = 0U;
+    if (runtime_remote_descriptor_sink(0, 1U, 0) != ERR_NULL ||
+        runtime_remote_descriptor_sink((const uint8_t*)"x", 1U, 0) != OK) return 206;
+    runtime_remote_descriptor_length = HTTP_BODY_CAPACITY;
+    if (runtime_remote_descriptor_sink((const uint8_t*)"x", 1U, 0) != ERR_OVERFLOW) return 207;
+    return OK;
+}
+
+static int update_remote_runtime_host_check_transport(void) {
+    update_remote_options_t options = {0U, 0, 0, 0, 0, 0, 0, 0};
+    update_remote_runtime_result_t result;
+    runtime_remote_source_t source;
+    update_runtime_entry_t entry;
+    runtime_remote_download_t download;
+    char output[UPDATE_REMOTE_RUNTIME_URL_SIZE];
+    uint8_t hash[32];
+
+    kmemset(&source, 0, sizeof(source));
+    runtime_remote_source = source;
+    if (runtime_remote_build_tag_url("v1.2", output, sizeof(output)) != OK ||
+        kstrcmp(output, "http://10.0.2.2:8000/zephyros/runtime-v1.2.json") != 0 ||
+        runtime_remote_build_tag_url(0, output, sizeof(output)) != ERR_NULL) return 301;
+    runtime_remote_copy_text(runtime_remote_source.manifest_url,
+                              sizeof(runtime_remote_source.manifest_url),
+                              "http://host/runtime/");
+    if (runtime_remote_asset_url(0, output, sizeof(output), &result.bytes_received) != ERR_NULL) return 302;
+    kmemset(&entry, 0, sizeof(entry));
+    kmemcpy(entry.asset_name, "SHELL.BMP", 10U);
+    entry.asset_size = 12U;
+    if (runtime_remote_asset_url(&entry, output, sizeof(output), &result.bytes_received) != OK ||
+        kstrcmp(output, "http://host/runtime/SHELL.BMP") != 0) return 303;
+    runtime_remote_source.github = 1U;
+    runtime_remote_source.release.runtime_asset_count = 1U;
+    kmemcpy(runtime_remote_source.release.runtime_assets[0].name, "SHELL.BMP", 10U);
+    kmemcpy(runtime_remote_source.release.runtime_assets[0].url, "https://host/SHELL.BMP", 23U);
+    runtime_remote_source.release.runtime_assets[0].size = entry.asset_size;
+    if (runtime_remote_asset_url(&entry, output, sizeof(output), &result.bytes_received) != OK ||
+        kstrcmp(output, "https://host/SHELL.BMP") != 0) return 304;
+    if (runtime_remote_network_ready() != 1) return 305;
+    kmemset(&runtime_remote_http, 0, sizeof(runtime_remote_http));
+    runtime_remote_http.state = HTTP_STATE_COMPLETE;
+    runtime_remote_http.status_code = 200U;
+    if (runtime_remote_wait_http(&options) != OK) return 306;
+    {
+        http_request_options_t http_options;
+        runtime_remote_http_options(&options, &http_options);
+    }
+    runtime_remote_http_reason();
+    runtime_remote_http.secure = 1U;
+    runtime_remote_http.tls_verified = 0U;
+    runtime_remote_http.tls_reason = TLS_REASON_POLICY;
+    if (runtime_remote_http_reason() != UPDATE_REMOTE_RUNTIME_REASON_TLS) return 307;
+    runtime_remote_http.secure = 0U;
+    runtime_remote_http.last_error = ERR_TIMEOUT;
+    if (runtime_remote_http_reason() != UPDATE_REMOTE_RUNTIME_REASON_TIMEOUT) return 308;
+    runtime_remote_http.last_error = ERR_UNAVAILABLE;
+    if (runtime_remote_http_reason() != UPDATE_REMOTE_RUNTIME_REASON_DNS) return 309;
+    runtime_remote_http.last_error = OK;
+    runtime_remote_http.status_code = 404U;
+    if (runtime_remote_http_reason() != UPDATE_REMOTE_RUNTIME_REASON_RELEASE_NOT_FOUND) return 310;
+    runtime_remote_http.status_code = 500U;
+    runtime_remote_http.tls_reason = TLS_REASON_TIME_UNAVAILABLE;
+    if (runtime_remote_http_reason() != UPDATE_REMOTE_RUNTIME_REASON_TIME) return 311;
+    kmemset(&download, 0, sizeof(download));
+    if (runtime_remote_stream_sink(0, 1U, &download) != ERR_NULL ||
+        runtime_remote_stream_sink((const uint8_t*)"AB", 2U, &download) != OK) return 312;
+    if (runtime_remote_hash_file("HASH", 4U, hash) != OK) return 313;
+    if (runtime_remote_load_records() != OK || runtime_remote_delete_slot(0U) != OK ||
+        runtime_remote_write_record() != ERR_UNAVAILABLE) return 314;
+    runtime_remote_record.active_slot = RUNTIME_REMOTE_SLOT_NONE;
+    runtime_remote_record.pending_slot = RUNTIME_REMOTE_SLOT_NONE;
+    if (runtime_remote_validate_active() != OK) return 315;
+    runtime_remote_prepare_progress(UPDATE_REMOTE_RUNTIME_FETCH_SELECTIVE);
+    if (runtime_remote_prepare_pending(0U) != ERR_UNAVAILABLE) return 316;
+    if (runtime_remote_abort_pending(UPDATE_REMOTE_RUNTIME_REASON_IO, ERR_DISK,
+                                     &result) != ERR_DISK) return 317;
+    if (runtime_remote_source_for_tag("bad/tag", &options, &source, &result) !=
+            ERR_INVALID || result.reason != UPDATE_REMOTE_RUNTIME_REASON_RELEASE_TAG ||
+        runtime_remote_source_for_tag(0, &options, &source, &result) != OK) return 318;
+    runtime_remote_source.github = 0U;
+    runtime_remote_source.descriptor_present = 0U;
+    runtime_remote_tag[0] = '\0';
+    runtime_remote_manifest_raw[0] = 0xA5U;
+    kmemset(&result, 0, sizeof(result));
+    if (runtime_remote_manifest_check(&options, &result) != OK) return 319;
+    if (!result.verification.manifest_valid) return 323;
+    runtime_remote_manifest_raw[0] = 0U;
+    if (runtime_remote_manifest_check(&options, &result) != ERR_INVALID ||
+        result.reason != UPDATE_REMOTE_RUNTIME_REASON_MANIFEST_FORMAT) return 320;
+    if (runtime_remote_manifest_commit_to_slot(0U) != ERR_UNAVAILABLE ||
+        runtime_remote_fetch_descriptor("http://host/release.json", &options) !=
+            ERR_INVALID ||
+        runtime_remote_download("http://host/runtime.pkg", "ZRV0.PKG", 64U,
+                                &options, hash) != ERR_UNAVAILABLE) return 321;
+    if (runtime_remote_fetch_manifest("http://host/runtime.zum2", &options) != OK) return 322;
+    runtime_remote_status.initialized = 1U;
+    runtime_remote_status.enabled = 1U;
+    runtime_remote_status.state = UPDATE_REMOTE_RUNTIME_STATE_READY;
+    runtime_remote_copy_result(&result);
+    return OK;
+}
+
+static int update_remote_runtime_host_check_public(void) {
+    update_remote_runtime_result_t result;
+    update_runtime_cache_t cache;
+    update_remote_runtime_status_t status;
+    char alias[UPDATE_RUNTIME_CACHE_ALIAS_SIZE];
+    update_remote_options_t options = {1U, 0, 0, 0, 0, 0, 0, 0};
+    update_remote_options_t fetch_options = {0U, 0, 0, 0, 0, 0, 0, 0};
+
+    kmemset(&result, 0, sizeof(result));
+    if (update_remote_runtime_get_status(0) != ERR_NULL ||
+        update_remote_runtime_enable() != ERR_STATE ||
+        update_remote_runtime_check("v1", &options, 0) != ERR_NULL) return 401;
+    if (update_remote_runtime_init() != OK ||
+        update_remote_runtime_get_status(&status) != OK || !status.initialized ||
+        status.state != UPDATE_REMOTE_RUNTIME_STATE_DISABLED ||
+        update_remote_runtime_capability_available() != 0) return 402;
+    if (update_remote_runtime_enable() != OK ||
+        update_remote_runtime_get_status(&status) != OK || !status.enabled ||
+        update_remote_runtime_disable() != OK || status.busy) return 403;
+    if (update_remote_runtime_get_cache(&cache) != ERR_NOT_FOUND ||
+        update_remote_runtime_get_cached_alias(alias, sizeof(alias)) != ERR_NOT_FOUND ||
+        update_remote_runtime_get_cached_alias(alias, 0U) != ERR_NULL) return 404;
+    if (update_remote_runtime_check(0, &options, &result) != ERR_UNAVAILABLE ||
+        result.reason != UPDATE_REMOTE_RUNTIME_REASON_DISABLED) return 405;
+    if (update_remote_runtime_fetch("v1", (update_remote_runtime_fetch_mode_t)9U,
+                                    &fetch_options, &result) != ERR_INVALID) return 408;
+    if (update_remote_runtime_fetch("v1", UPDATE_REMOTE_RUNTIME_FETCH_FULL,
+                                    0, &result) != ERR_UNAVAILABLE) return 409;
+    if (update_remote_runtime_clear(&options, &result) != OK ||
+        update_remote_runtime_state_name((update_remote_runtime_state_t)255U) == 0 ||
+        update_remote_runtime_reason_name((update_remote_runtime_reason_t)255U) == 0) return 407;
+    return OK;
+}
+
+int update_remote_runtime_host_test_contracts(void) {
+    int result = update_remote_runtime_host_check_scalars();
+    if (result == OK) result = update_remote_runtime_host_check_json();
+    if (result == OK) result = update_remote_runtime_host_check_transport();
+    if (result == OK) result = update_remote_runtime_host_check_public();
+    return result;
+}
+#endif
 
 int update_remote_runtime_init(void) {
     LOG_INFO("UPDATE", "Inicializando transporte runtime v2");

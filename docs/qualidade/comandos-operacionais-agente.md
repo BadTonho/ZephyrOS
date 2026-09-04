@@ -1713,3 +1713,22 @@ O relatorio instrumentado fica em
 `build/test-results/update-runtime-host/coverage.json` e deve terminar em
 `PASS`, com `unknown_addresses=[]` e `ambiguous_symbols=[]`. Depois da
 execucao real, sincronize o catalogo e valide com `make catalog-test`.
+
+## Update remote runtime host-only
+
+O alvo `test-update-remote-runtime-host` compila o
+`src/core/update_remote_runtime.c` com transporte HTTP, filesystem, crypto,
+estado de atualizacao e processo simulados em buffers estaticos. A fixture
+executa diretamente os helpers de serializacao, validacao, JSON, selecao de
+origem, download, cache, abortamento e os contratos publicos de capacidade e
+estado, sem rede, armazenamento ou reboot reais:
+
+```text
+make test-update-remote-runtime-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O relatorio instrumentado fica em
+`build/test-results/update-remote-runtime-host/coverage.json` e deve terminar
+em `PASS`, com `unknown_addresses=[]` e `ambiguous_symbols=[]`. Depois da
+execucao real, sincronize o catalogo, renderize a visao e valide com
+`make catalog-test`.
