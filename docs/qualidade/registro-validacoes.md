@@ -5574,3 +5574,16 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`, sincronizacao, renderizacao,
   `make catalog-test` e a cobertura resolveu as 76 superficies de
   `src/core/app_remote.c`, sem enderecos desconhecidos ou simbolos ambiguos.
+
+- Incremento Shell/diagnostics-helpers concluido em 2026-09-04
+  (America/Sao_Paulo). Os parsers, estados, cores, caminhos e invariantes
+  puros dos diagnosticos foram extraidos para
+  `src/shell/shell_diagnostics_helpers.c`, com header interno e fixture
+  `host:shell:diagnostics-helpers`. Passou
+  `make test-shell-diagnostics-helpers-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`; o relatorio terminou `PASS`,
+  resolveu 34 superficies do helper e duas rotinas de string, sem enderecos
+  desconhecidos ou simbolos ambiguos. A sincronizacao e a renderizacao do
+  catalogo tambem foram executadas; o estado atual registra 7.290 superficies,
+  6.032 `COVERED`, 1.258 `PENDING` e 151 casos. O gate estrito continua
+  pendente pelas superficies restantes sem evidencia especifica.

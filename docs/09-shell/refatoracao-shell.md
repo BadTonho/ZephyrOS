@@ -368,3 +368,11 @@ O Task Manager Classic usa esse adaptador para `/proc/<pid>/status` e
 `/proc/meminfo`; Simple permanece no caminho legado. `devices`, `device-info`
 e `proccheck` tambem sao consumidores de snapshots e nao alteram as
 assinaturas de `shell.h`, App API ou syscalls.
+
+## Helpers de diagnostico
+
+`shell_diagnostics_helpers.h` e um header interno para os parsers e helpers
+deterministicos usados pelos comandos de diagnostico. O modulo cobre nomes de
+estado, niveis de log, sinais, mouse, VMA, memoria, sysfs, procfs, USB, ACPI e
+VFS. A fixture `host:shell:diagnostics-helpers` executa esses contratos com
+doubles estaticos e valida entradas invalidas, limites e limpeza sem hardware.

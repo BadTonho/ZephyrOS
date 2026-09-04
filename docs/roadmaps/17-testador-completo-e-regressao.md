@@ -54,6 +54,15 @@ Isso não significa declarar hardware físico validado sem equipamento.
       cancelamento, failpoints e recuperação foram exercitados em fixture
       FAT12 em memória; as 46 superfícies pendentes do arquivo foram cobertas.
 
+### Atualizacao vigente — 2026-09-04
+
+O sincronizador mais recente registra 7.290 superficies, 6.032 `COVERED`,
+1.258 `PENDING` e 151 casos `AUTOMATED`. O incremento mais recente adicionou
+o caso host-only `host:shell:diagnostics-helpers`, com evidencia real para 34
+helpers extraidos de `shell_commands_diagnostics.c` e duas rotinas de string.
+O gate estrito e a cobertura integral permanecem pendentes para os demais
+subsistemas sem evidencia especifica.
+
 ## Objetivo
 
 Criar um testador capaz de exercitar o sistema por camadas, registrar os
