@@ -76828,9 +76828,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote.c:update_remote_host_check_public",
@@ -76901,6 +76904,27 @@
       "source": "src/core/update_remote.c",
       "symbol": "update_remote_host_manifest",
       "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/update_remote.c:update_remote_host_test_cancel",
+      "kind": "c_function",
+      "source": "src/core/update_remote.c",
+      "symbol": "update_remote_host_test_cancel",
+      "linkage": "external",
       "owner": "core",
       "layer": "kernel-source",
       "preconditions": "definir no caso de teste associado",
@@ -161304,10 +161328,12 @@
         "c:src/core/update_remote.c:update_remote_get_cached_alias",
         "c:src/core/update_remote.c:update_remote_get_status",
         "c:src/core/update_remote.c:update_remote_hash_file",
+        "c:src/core/update_remote.c:update_remote_host_cancel",
         "c:src/core/update_remote.c:update_remote_host_check_public",
         "c:src/core/update_remote.c:update_remote_host_check_scalars",
         "c:src/core/update_remote.c:update_remote_host_check_storage",
         "c:src/core/update_remote.c:update_remote_host_manifest",
+        "c:src/core/update_remote.c:update_remote_host_test_cancel",
         "c:src/core/update_remote.c:update_remote_host_test_contracts",
         "c:src/core/update_remote.c:update_remote_http_reason",
         "c:src/core/update_remote.c:update_remote_init",

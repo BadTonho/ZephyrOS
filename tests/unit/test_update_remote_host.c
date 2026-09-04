@@ -37,6 +37,7 @@ static uint32_t host_stream_expected;
 static http_status_t host_http_status;
 static uint8_t host_http_body[UPDATE_REMOTE_MANIFEST_SIZE];
 static uint32_t host_http_body_size;
+static uint8_t host_http_pending;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -118,6 +119,10 @@ void update_remote_host_set_update_ready(uint8_t ready) {
 
 void update_remote_host_set_network_ready(uint8_t ready) {
     host_network_ready = ready;
+}
+
+void update_remote_host_set_http_pending(uint8_t pending) {
+    host_http_pending = pending;
 }
 
 void log_print(log_level_t level, const char* module, const char* message) {
@@ -333,7 +338,8 @@ int http_get_start_ex(const char* url, const http_request_options_t* options) {
     (void)url;
     (void)options;
     kmemset(&host_http_status, 0, sizeof(host_http_status));
-    host_http_status.state = HTTP_STATE_COMPLETE;
+    host_http_status.state = host_http_pending ?
+                             HTTP_STATE_RECEIVING_BODY : HTTP_STATE_COMPLETE;
     host_http_status.status_code = 200U;
     host_http_status.body_length = host_http_body_size;
     host_http_status.content_length = host_http_body_size;
