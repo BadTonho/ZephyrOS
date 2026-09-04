@@ -2200,3 +2200,13 @@ pendente.
   `make catalog-test`; todos terminaram com sucesso. O catalogo registra
   7.196 superficies, 3.953 `COVERED`, 3.243 `PENDING` e 86 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
+- Incremento Shell/commands-core concluído em 2026-09-04 10:54
+  (America/Sao_Paulo). Foi adicionada uma fixture host-only que executa os
+  handlers reais de `src/shell/shell_commands_core.c`, com caminhos válidos e
+  negativos e dependências de hardware substituídas por doubles estáticos. O
+  caso `host:shell:commands-core` está no catálogo e no allowlist do TST7. A
+  evidência dinâmica terminou `PASS`; `make q3check`, build limpo,
+  `make test-shell-commands-core-host`, os testes unitários dos runners e
+  `make catalog-test` passaram. O catálogo atual registra 7.219 superfícies,
+  5.240 `COVERED`, 1.979 `PENDING` e 138 casos. O fechamento integral ainda
+  depende das 1.979 superfícies pendentes restantes.

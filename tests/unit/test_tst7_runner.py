@@ -229,6 +229,11 @@ class Tst7RunnerContractTests(unittest.TestCase):
         self.assertEqual(runner.HOST_CASE_TARGETS[
             "host:tst2:protocol-adapter"], "test-protocol-adapter-host")
 
+    def test_shell_commands_core_host_case_is_mapped(self):
+        self.assertEqual(
+            runner.HOST_CASE_TARGETS["host:shell:commands-core"],
+            "test-shell-commands-core-host")
+
     def test_blackbox_host_case_is_mapped(self):
         self.assertEqual(runner.HOST_CASE_TARGETS["host:tst5:blackbox"],
                          "test-blackbox-host")

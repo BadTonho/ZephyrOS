@@ -187,6 +187,7 @@ HOST_CASE_TARGETS = {
     "host:shell:command-utils": "test-shell-command-utils-host",
     "host:gui:display": "test-display-host",
     "host:shell:core": "test-shell-core-host",
+    "host:shell:commands-core": "test-shell-commands-core-host",
     "host:core:usb-transport": "test-usb-transport-host",
     "host:gui:widgets": "test-gui-host",
     "host:shell:commands-vfs": "test-shell-commands-vfs-host",

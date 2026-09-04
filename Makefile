@@ -1900,6 +1900,9 @@ test-display-host: tools\core_host_runner.py tools\coverage_collector.py tests\u
 test-shell-core-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_shell_host.c tests\catalog.json src\shell\shell.c src\include\apps\shell.h src\include\apps\shell_input.h src\include\apps\shell_job.h src\include\apps\shell_runtime.h src\include\core\app_loader.h src\include\core\errors.h src\include\core\log.h src\include\core\video.h src\include\drivers\mouse.h src\include\apps\guitest.h src\include\ui\appstore.h src\include\ui\desktop.h src\include\ui\filemanager.h src\include\ui\settings.h src\include\ui\taskbar.h src\include\ui\updater.h src\include\ui\wm.h
 	python tools/core_host_runner.py --case host:shell:core --cc "$(HOST_CC)"
 
+test-shell-commands-core-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_shell_commands_core_host.c tests\catalog.json src\shell\shell_commands_core.c src\shell\shell_command_utils.c src\core\string.c src\include\apps\shell_runtime.h src\include\apps\shell_command_utils.h src\include\apps\shell_pipeline.h src\include\core\app_builtin.h src\include\core\app_loader.h src\include\core\errors.h src\include\core\log.h src\include\core\memory.h src\include\core\power.h src\include\core\string.h src\include\core\video.h src\include\drivers\speaker.h src\include\fs\vfs.h src\include\memory\compress.h src\include\process\process.h src\include\process\thread.h
+	python tools\core_host_runner.py --case host:shell:commands-core --cc "$(HOST_CC)"
+
 test-usb-transport-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_usb_transport_host.c tests\catalog.json src\core\usb_transport.c src\include\core\usb_transport.h src\include\core\usb_manager.h src\include\drivers\ehci.h src\include\drivers\uhci.h src\include\core\errors.h src\include\core\log.h
 	python tools/core_host_runner.py --case host:core:usb-transport --cc "$(HOST_CC)"
 
@@ -2052,3 +2055,4 @@ clean:
 .PHONY: test-ehci-host
 .PHONY: test-rtl8139-host
 .PHONY: test-mouse-host test-e1000-host test-ac97-host test-rtl8811cu-host
+.PHONY: test-shell-commands-core-host

@@ -5293,3 +5293,15 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `host:drivers:pci`; como as fixtures chamam diretamente essas funções, o
   catálogo registrou `coverage_mode=direct`. Nenhuma associação por arquivo foi
   criada e os vínculos bidirecionais continuam válidos.
+
+- Cobertura Shell/commands-core concluída em 2026-09-04 10:54 (America/Sao_Paulo).
+  A nova fixture host-only `host:shell:commands-core` executou diretamente os
+  handlers reais de `src/shell/shell_commands_core.c`, incluindo caminhos
+  válidos, inválidos, VFS, loader, processos, energia, áudio e compressão.
+  O relatório `build/test-results/shell-commands-core-host/coverage.json`
+  terminou `PASS`, sem endereços desconhecidos ou símbolos ambíguos. Foram
+  validados `make test-shell-commands-core-host`, `make q3check`, `make clean`,
+  `make`, `make test-shell-commands-core-host`, os 75 testes unitários dos
+  runners, `git diff --check` e `make catalog-test`. O catálogo registra 7.219
+  superfícies, 5.240 `COVERED`, 1.979 `PENDING` e 138 casos. As pendências
+  restantes continuam reais e não foram mascaradas.

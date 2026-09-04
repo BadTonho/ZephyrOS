@@ -609,6 +609,14 @@ SHELL_CORE_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_shell_host.c",
     ROOT / "src" / "shell" / "shell.c",
 )
+SHELL_COMMANDS_CORE_RESULT_DIR = ROOT / "build" / "test-results" / "shell-commands-core-host"
+SHELL_COMMANDS_CORE_BINARY = ROOT / "build" / "tests" / "test_shell_commands_core_host.exe"
+SHELL_COMMANDS_CORE_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_shell_commands_core_host.c",
+    ROOT / "src" / "shell" / "shell_commands_core.c",
+    ROOT / "src" / "shell" / "shell_command_utils.c",
+    ROOT / "src" / "core" / "string.c",
+)
 USB_TRANSPORT_RESULT_DIR = ROOT / "build" / "test-results" / "usb-transport-host"
 USB_TRANSPORT_BINARY = ROOT / "build" / "tests" / "test_usb_transport_host.exe"
 USB_TRANSPORT_SOURCE_FILES = (
@@ -915,6 +923,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return DISPLAY_RESULT_DIR, DISPLAY_BINARY, DISPLAY_SOURCE_FILES, "display-host"
     if case_id == "host:shell:core":
         return SHELL_CORE_RESULT_DIR, SHELL_CORE_BINARY, SHELL_CORE_SOURCE_FILES, "shell-core-host"
+    if case_id == "host:shell:commands-core":
+        return (SHELL_COMMANDS_CORE_RESULT_DIR, SHELL_COMMANDS_CORE_BINARY,
+                SHELL_COMMANDS_CORE_SOURCE_FILES, "shell-commands-core-host")
     if case_id == "host:core:usb-transport":
         return (USB_TRANSPORT_RESULT_DIR, USB_TRANSPORT_BINARY,
                 USB_TRANSPORT_SOURCE_FILES, "usb-transport-host")
@@ -1166,6 +1177,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:shell:input", "host:shell:hosted",
                                  "host:shell:command-utils",
                                  "host:gui:display", "host:shell:core",
+                                 "host:shell:commands-core",
                                  "host:core:usb-transport", "host:gui:widgets",
                                  "host:shell:commands-vfs",
                                  "host:boot:recovery-runtime",

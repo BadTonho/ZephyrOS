@@ -5332,6 +5332,57 @@
       "evidence": "make test-thread-host PASS com fixture estatica de threads, filas de espera, timeouts, cancelamento, limites e cobertura instrumentada"
     },
     {
+      "id": "shell-commands-core-host-dynamic",
+      "domain": "shell-core-commands",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:shell:commands-core"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/shell-commands-core-host/coverage.json",
+      "coverage_sources": [
+        "src/shell/shell_commands_core.c",
+        "src/shell/shell_command_utils.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:shell:commands-core",
+        "scenario": "Handlers centrais do Shell sobre fixtures estaticas de terminal, VFS, processos e energia",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "executar handlers de ajuda, terminal, VFS, processos, threads, memoria, som, energia, compressao e resultados de loader com dependencias estaticas falsas",
+        "expected": "comandos validos e invalidos preservam seus retornos, mensagens, callbacks e limpeza sem hardware ou armazenamento real",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente buffers e contadores estaticos da fixture host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "shell",
+          "commands",
+          "vfs",
+          "power",
+          "coverage"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "make test-shell-commands-core-host PASS com handlers centrais, caminhos invalidos, fixtures VFS, loader, energia e cobertura instrumentada"
+    },
+    {
       "id": "assembly-qemu-tst7-dynamic",
       "domain": "drivers-interrupt-assembly",
       "owner": "quality",
