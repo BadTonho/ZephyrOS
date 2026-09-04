@@ -1572,3 +1572,18 @@ O relatorio instrumentado fica em
 `PASS`, sem `unknown_addresses` ou `ambiguous_symbols`. O teste usa somente
 buffers estaticos no processo host e nao substitui a validacao QEMU do fluxo
 completo de aplicacoes.
+
+## Taskbar host-only
+
+O caso `test-taskbar-host` exercita a taskbar real em TUI e GUI com VESA,
+display, desktop, mouse, timer e primitivas de desenho falsas. A fixture cobre
+layouts, limites de botoes, menus, configuracao, cliques, relogio, selecao de
+janelas e fallback sem hardware grafico real:
+
+```text
+make test-taskbar-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O relatorio instrumentado fica em
+`build/test-results/taskbar-host/coverage.json`; ele deve terminar com `PASS`,
+sem `unknown_addresses` ou `ambiguous_symbols`.

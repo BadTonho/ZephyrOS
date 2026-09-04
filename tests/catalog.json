@@ -1070,7 +1070,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -1080,7 +1079,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_input.h:shell_input_get_buffer",
@@ -1098,7 +1097,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -1108,7 +1106,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_input.h:shell_input_handle_key",
@@ -1126,7 +1124,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -1136,7 +1133,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_input.h:shell_input_init",
@@ -1182,7 +1179,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -1192,7 +1188,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_input.h:shell_input_reset",
@@ -1210,7 +1206,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -1220,7 +1215,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_input.h:shell_input_reset_modifiers",
@@ -1238,7 +1233,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -1248,7 +1242,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_input.h:shell_input_resume_terminal",
@@ -1266,7 +1260,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -1276,7 +1269,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_introspection.h:shell_introspection_find_value",
@@ -2761,13 +2754,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:hosted",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:storage"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager",
@@ -21290,12 +21282,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/rtc.h:rtc_read_utc",
@@ -21313,12 +21304,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/rtc.h:rtc_self_test",
@@ -21336,12 +21326,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/rtc.h:rtc_validate_state",
@@ -21359,12 +21348,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/rtl8139.h:rtl8139_handler",
@@ -35155,11 +35143,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/taskbar.h:taskbar_add_window",
@@ -35177,11 +35166,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/taskbar.h:taskbar_draw",
@@ -35199,11 +35189,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/taskbar.h:taskbar_draw_config_menu",
@@ -35221,11 +35212,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/taskbar.h:taskbar_get_bounds",
@@ -35243,11 +35235,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/taskbar.h:taskbar_get_config",
@@ -35265,11 +35258,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/taskbar.h:taskbar_get_work_area",
@@ -35287,11 +35281,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/taskbar.h:taskbar_handle_click",
@@ -35309,11 +35304,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/taskbar.h:taskbar_handle_config_key",
@@ -35331,11 +35327,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/taskbar.h:taskbar_handle_key",
@@ -35353,11 +35350,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/taskbar.h:taskbar_init",
@@ -35375,11 +35373,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/taskbar.h:taskbar_is_menu_open",
@@ -35397,11 +35396,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/taskbar.h:taskbar_redraw_menu",
@@ -35419,11 +35419,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/taskbar.h:taskbar_remove_app",
@@ -35441,11 +35442,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/taskbar.h:taskbar_remove_window",
@@ -35463,11 +35465,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/taskbar.h:taskbar_set_custom_position",
@@ -35485,11 +35488,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/taskbar.h:taskbar_set_icon_size",
@@ -35507,11 +35511,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/taskbar.h:taskbar_set_pinned",
@@ -35529,11 +35534,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/taskbar.h:taskbar_set_position",
@@ -35551,11 +35557,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/taskbar.h:taskbar_set_window_active",
@@ -35573,11 +35580,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/taskbar.h:taskbar_take_window_request",
@@ -35595,11 +35603,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/taskbar.h:taskbar_update_clock",
@@ -35617,11 +35626,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/updater.h:updater_close",
@@ -92800,12 +92810,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_days_in_month",
@@ -92823,12 +92832,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_decode_snapshot",
@@ -92846,12 +92854,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_decode_value",
@@ -92869,12 +92876,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_get_status",
@@ -92911,12 +92917,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_init",
@@ -92932,12 +92935,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_is_leap_year",
@@ -92955,12 +92955,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_outb",
@@ -92976,12 +92975,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_raw_equal",
@@ -92997,12 +92993,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_read_raw",
@@ -93018,12 +93011,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_read_raw_once",
@@ -93039,12 +93029,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_read_register",
@@ -93060,12 +93047,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_read_utc",
@@ -93081,12 +93065,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_self_test",
@@ -93104,12 +93085,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_validate_state",
@@ -93127,12 +93107,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_wait_update_complete",
@@ -93148,12 +93127,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_advance_rx",
@@ -143008,12 +142984,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:shell:hosted"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/shell/shell_hosted.c:shell_hosted_draw",
@@ -143031,13 +143004,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:hosted",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:storage"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_hosted.c:shell_hosted_key",
@@ -143055,13 +143027,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:hosted",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:storage"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_hosted.c:shell_hosted_mouse",
@@ -143077,12 +143048,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:shell:hosted"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/shell/shell_hosted.c:shell_hosted_open",
@@ -143100,13 +143068,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:hosted",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:storage"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_hosted.c:shell_hosted_present_progress",
@@ -143124,13 +143091,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:hosted",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:storage"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_hosted.c:shell_hosted_reset",
@@ -143146,12 +143112,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:shell:hosted"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/shell/shell_hosted.c:shell_runtime_is_hosted_visible",
@@ -143169,13 +143132,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:hosted",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:storage"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_cancel_extended",
@@ -143193,7 +143155,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -143203,7 +143164,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_get_buffer",
@@ -143219,12 +143180,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:shell:input"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_handle_key",
@@ -143242,7 +143200,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -143252,7 +143209,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_handle_terminal_scroll_key",
@@ -143291,7 +143248,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -143299,7 +143255,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_history_detach_for_edit",
@@ -143317,7 +143273,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -143327,7 +143282,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_history_navigate",
@@ -143366,7 +143321,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -143374,7 +143328,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_history_replace_input",
@@ -143413,7 +143367,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -143421,7 +143374,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_init",
@@ -143437,12 +143390,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:shell:input"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_print_prompt",
@@ -143460,7 +143410,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -143470,7 +143419,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_reset",
@@ -143488,7 +143437,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -143496,7 +143444,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_reset_modifiers",
@@ -143514,7 +143462,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -143522,7 +143469,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_resume_terminal",
@@ -143540,7 +143487,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -143550,7 +143496,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_return_to_terminal_tail",
@@ -143568,7 +143514,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -143578,7 +143523,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_introspection.c:shell_introspection_ascii_valid",
@@ -146611,9 +146556,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:taskbar"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:get_icon_char_count",
@@ -146629,9 +146577,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:taskbar"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:get_row",
@@ -146647,9 +146598,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:taskbar"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:int_to_str",
@@ -146667,11 +146621,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_add_app",
@@ -146687,9 +146642,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:taskbar"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_add_window",
@@ -146707,11 +146665,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_blend_glass_channel",
@@ -146727,9 +146686,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:taskbar"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_clamp_rect",
@@ -146747,11 +146709,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_close_config_menu",
@@ -146767,9 +146730,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:taskbar"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_close_menu",
@@ -146785,9 +146751,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:taskbar"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_config_item_count",
@@ -146803,9 +146772,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:taskbar"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_draw",
@@ -146823,11 +146795,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_draw_clock_gui_text",
@@ -146845,11 +146818,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_draw_config_menu",
@@ -146865,9 +146839,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:taskbar"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_draw_gui",
@@ -146885,11 +146862,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_draw_menu",
@@ -146907,11 +146885,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_draw_menu_gui",
@@ -146929,11 +146908,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_fill_glass_region",
@@ -146951,11 +146931,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_format_time",
@@ -146973,11 +146954,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_get_bounds",
@@ -146995,11 +146977,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_get_button_rect",
@@ -147017,11 +147000,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_get_clock_rect",
@@ -147039,11 +147023,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_get_config",
@@ -147059,9 +147044,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:taskbar"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_get_menu_bounds",
@@ -147079,11 +147067,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_get_work_area",
@@ -147101,11 +147090,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_handle_click",
@@ -147121,9 +147111,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:taskbar"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_handle_click_gui",
@@ -147139,9 +147132,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:taskbar"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_handle_config_key",
@@ -147159,11 +147155,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_handle_key",
@@ -147181,11 +147178,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_init",
@@ -147201,9 +147199,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:taskbar"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_is_horizontal_gui",
@@ -147221,11 +147222,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_is_menu_open",
@@ -147241,9 +147243,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:taskbar"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_point_in_rect",
@@ -147259,9 +147264,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:taskbar"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_prepare_glass_background",
@@ -147277,9 +147285,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:taskbar"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_redraw_menu",
@@ -147297,11 +147308,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_remove_app",
@@ -147317,9 +147329,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:taskbar"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_remove_window",
@@ -147337,11 +147352,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_reset_menu",
@@ -147359,11 +147375,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_set_custom_position",
@@ -147379,9 +147396,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:taskbar"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_set_icon_size",
@@ -147397,9 +147417,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:taskbar"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_set_pinned",
@@ -147415,9 +147438,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:taskbar"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_set_position",
@@ -147433,9 +147459,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:taskbar"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_set_window_active",
@@ -147453,11 +147482,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_take_window_request",
@@ -147473,9 +147503,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:taskbar"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_update_clock",
@@ -147491,9 +147524,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:taskbar"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:taskbar_uses_gui",
@@ -147511,11 +147547,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:taskbar",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:update_dimensions",
@@ -147531,9 +147568,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:taskbar"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/thread/thread.c:thread_block",
@@ -154459,6 +154499,68 @@
       ]
     },
     {
+      "id": "host:core:app-loader",
+      "scenario": "Execucao host-only do carregador ZAPP com dependencias falsas",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "compilar e executar o app_loader.c real com processo, filesystem, paging e syscall falsos",
+      "expected": "parser, layout, lifecycle assincrono, cancelamento e codigos de erro preservam o contrato",
+      "errors": "compilador ausente, warning, fixture invalida, falha de assercao ou timeout",
+      "effects": "somente buffers estaticos e estado de dependencias falsas no processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/app_loader.h:app_loader_build_launch_info",
+        "api:src/include/core/app_loader.h:app_loader_cancel_foreground",
+        "api:src/include/core/app_loader.h:app_loader_get_foreground_pid",
+        "api:src/include/core/app_loader.h:app_loader_init",
+        "api:src/include/core/app_loader.h:app_loader_is_foreground_active",
+        "api:src/include/core/app_loader.h:app_loader_is_ready",
+        "api:src/include/core/app_loader.h:app_loader_reap_finished",
+        "api:src/include/core/app_loader.h:app_loader_run_file",
+        "api:src/include/core/app_loader.h:app_loader_run_file_with_launch",
+        "api:src/include/core/app_loader.h:app_loader_run_image",
+        "api:src/include/core/app_loader.h:app_loader_set_operation_generation",
+        "api:src/include/core/app_loader.h:app_loader_take_finished_result",
+        "api:src/include/core/app_loader.h:app_loader_validate_image",
+        "c:src/core/app_loader.c:app_loader_build_launch_info",
+        "c:src/core/app_loader.c:app_loader_cancel_foreground",
+        "c:src/core/app_loader.c:app_loader_get_foreground_pid",
+        "c:src/core/app_loader.c:app_loader_has_zap_extension",
+        "c:src/core/app_loader.c:app_loader_init",
+        "c:src/core/app_loader.c:app_loader_is_busy",
+        "c:src/core/app_loader.c:app_loader_is_foreground_active",
+        "c:src/core/app_loader.c:app_loader_is_launch_space",
+        "c:src/core/app_loader.c:app_loader_is_ready",
+        "c:src/core/app_loader.c:app_loader_magic_is_valid",
+        "c:src/core/app_loader.c:app_loader_prepare_launch",
+        "c:src/core/app_loader.c:app_loader_reap_active",
+        "c:src/core/app_loader.c:app_loader_reap_finished",
+        "c:src/core/app_loader.c:app_loader_release_process_resources",
+        "c:src/core/app_loader.c:app_loader_run_file",
+        "c:src/core/app_loader.c:app_loader_run_file_with_launch",
+        "c:src/core/app_loader.c:app_loader_run_image",
+        "c:src/core/app_loader.c:app_loader_set_operation_generation",
+        "c:src/core/app_loader.c:app_loader_start_pending",
+        "c:src/core/app_loader.c:app_loader_store_result",
+        "c:src/core/app_loader.c:app_loader_take_finished_result",
+        "c:src/core/app_loader.c:app_loader_validate_image",
+        "c:src/core/app_loader.c:app_loader_validate_launch_info",
+        "c:src/core/app_loader.c:app_loader_validate_layout"
+      ]
+    },
+    {
       "id": "host:core:app-package",
       "scenario": "Contratos host-only do servico de pacotes",
       "owner": "quality",
@@ -157230,27 +157332,7 @@
       "status": "AUTOMATED",
       "surface_ids": [
         "api:src/include/drivers/rtc.h:rtc_get_status",
-        "api:src/include/drivers/rtc.h:rtc_init",
-        "api:src/include/drivers/rtc.h:rtc_read_utc",
-        "api:src/include/drivers/rtc.h:rtc_self_test",
-        "api:src/include/drivers/rtc.h:rtc_validate_state",
-        "c:src/drivers/rtc.c:rtc_datetime_valid",
-        "c:src/drivers/rtc.c:rtc_days_in_month",
-        "c:src/drivers/rtc.c:rtc_decode_snapshot",
-        "c:src/drivers/rtc.c:rtc_decode_value",
-        "c:src/drivers/rtc.c:rtc_get_status",
-        "c:src/drivers/rtc.c:rtc_inb",
-        "c:src/drivers/rtc.c:rtc_init",
-        "c:src/drivers/rtc.c:rtc_is_leap_year",
-        "c:src/drivers/rtc.c:rtc_outb",
-        "c:src/drivers/rtc.c:rtc_raw_equal",
-        "c:src/drivers/rtc.c:rtc_read_raw",
-        "c:src/drivers/rtc.c:rtc_read_raw_once",
-        "c:src/drivers/rtc.c:rtc_read_register",
-        "c:src/drivers/rtc.c:rtc_read_utc",
-        "c:src/drivers/rtc.c:rtc_self_test",
-        "c:src/drivers/rtc.c:rtc_validate_state",
-        "c:src/drivers/rtc.c:rtc_wait_update_complete"
+        "c:src/drivers/rtc.c:rtc_get_status"
       ],
       "tags": [
         "host",
@@ -160560,16 +160642,7 @@
       "surface_ids": [
         "api:src/include/apps/shell_runtime.h:shell_hosted_open",
         "api:src/include/apps/shell_runtime.h:shell_hosted_present_progress",
-        "api:src/include/apps/shell_runtime.h:shell_hosted_reset",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible",
-        "c:src/shell/shell_hosted.c:shell_hosted_close",
-        "c:src/shell/shell_hosted.c:shell_hosted_draw",
-        "c:src/shell/shell_hosted.c:shell_hosted_key",
-        "c:src/shell/shell_hosted.c:shell_hosted_mouse",
-        "c:src/shell/shell_hosted.c:shell_hosted_open",
-        "c:src/shell/shell_hosted.c:shell_hosted_present_progress",
-        "c:src/shell/shell_hosted.c:shell_hosted_reset",
-        "c:src/shell/shell_hosted.c:shell_runtime_is_hosted_visible"
+        "api:src/include/apps/shell_runtime.h:shell_hosted_reset"
       ],
       "tags": [
         "host",
@@ -160602,30 +160675,10 @@
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
       "surface_ids": [
-        "api:src/include/apps/shell_input.h:shell_input_cancel_extended",
-        "api:src/include/apps/shell_input.h:shell_input_get_buffer",
-        "api:src/include/apps/shell_input.h:shell_input_handle_key",
         "api:src/include/apps/shell_input.h:shell_input_init",
-        "api:src/include/apps/shell_input.h:shell_input_print_prompt",
-        "api:src/include/apps/shell_input.h:shell_input_reset",
-        "api:src/include/apps/shell_input.h:shell_input_reset_modifiers",
-        "api:src/include/apps/shell_input.h:shell_input_resume_terminal",
-        "c:src/shell/shell_input.c:shell_input_cancel_extended",
-        "c:src/shell/shell_input.c:shell_input_get_buffer",
-        "c:src/shell/shell_input.c:shell_input_handle_key",
         "c:src/shell/shell_input.c:shell_input_handle_terminal_scroll_key",
-        "c:src/shell/shell_input.c:shell_input_history_copy",
-        "c:src/shell/shell_input.c:shell_input_history_detach_for_edit",
         "c:src/shell/shell_input.c:shell_input_history_navigate",
-        "c:src/shell/shell_input.c:shell_input_history_record",
-        "c:src/shell/shell_input.c:shell_input_history_replace_input",
-        "c:src/shell/shell_input.c:shell_input_history_reset_navigation",
-        "c:src/shell/shell_input.c:shell_input_init",
-        "c:src/shell/shell_input.c:shell_input_print_prompt",
-        "c:src/shell/shell_input.c:shell_input_reset",
-        "c:src/shell/shell_input.c:shell_input_reset_modifiers",
-        "c:src/shell/shell_input.c:shell_input_resume_terminal",
-        "c:src/shell/shell_input.c:shell_input_return_to_terminal_tail"
+        "c:src/shell/shell_input.c:shell_input_history_replace_input"
       ],
       "tags": [
         "host",
@@ -162484,6 +162537,110 @@
         "limits",
         "coverage"
       ]
+    },
+    {
+      "id": "host:ui:taskbar",
+      "scenario": "Contrato host-only da taskbar em TUI e GUI com dependencias graficas falsas",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "display": "vesa-display-desktop-mouse-falsos"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "exercitar estados TUI e GUI, layouts, botoes, menus, configuracao, cliques, relogio e limites",
+      "expected": "taskbar preserva configuracao, geometria, navegacao, selecao de janelas e fallback sem hardware grafico real",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente configuracao, botoes, menus e chamadas de desenho dentro da fixture host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "surface_ids": [
+        "api:src/include/ui/taskbar.h:taskbar_add_app",
+        "api:src/include/ui/taskbar.h:taskbar_add_window",
+        "api:src/include/ui/taskbar.h:taskbar_draw",
+        "api:src/include/ui/taskbar.h:taskbar_draw_config_menu",
+        "api:src/include/ui/taskbar.h:taskbar_get_bounds",
+        "api:src/include/ui/taskbar.h:taskbar_get_config",
+        "api:src/include/ui/taskbar.h:taskbar_get_work_area",
+        "api:src/include/ui/taskbar.h:taskbar_handle_click",
+        "api:src/include/ui/taskbar.h:taskbar_handle_config_key",
+        "api:src/include/ui/taskbar.h:taskbar_handle_key",
+        "api:src/include/ui/taskbar.h:taskbar_init",
+        "api:src/include/ui/taskbar.h:taskbar_is_menu_open",
+        "api:src/include/ui/taskbar.h:taskbar_redraw_menu",
+        "api:src/include/ui/taskbar.h:taskbar_remove_app",
+        "api:src/include/ui/taskbar.h:taskbar_remove_window",
+        "api:src/include/ui/taskbar.h:taskbar_set_custom_position",
+        "api:src/include/ui/taskbar.h:taskbar_set_icon_size",
+        "api:src/include/ui/taskbar.h:taskbar_set_pinned",
+        "api:src/include/ui/taskbar.h:taskbar_set_position",
+        "api:src/include/ui/taskbar.h:taskbar_set_window_active",
+        "api:src/include/ui/taskbar.h:taskbar_take_window_request",
+        "api:src/include/ui/taskbar.h:taskbar_update_clock",
+        "c:src/taskbar/taskbar.c:get_col",
+        "c:src/taskbar/taskbar.c:get_icon_char_count",
+        "c:src/taskbar/taskbar.c:get_row",
+        "c:src/taskbar/taskbar.c:int_to_str",
+        "c:src/taskbar/taskbar.c:taskbar_add_app",
+        "c:src/taskbar/taskbar.c:taskbar_add_window",
+        "c:src/taskbar/taskbar.c:taskbar_blend_glass_channel",
+        "c:src/taskbar/taskbar.c:taskbar_clamp_rect",
+        "c:src/taskbar/taskbar.c:taskbar_close_config_menu",
+        "c:src/taskbar/taskbar.c:taskbar_close_menu",
+        "c:src/taskbar/taskbar.c:taskbar_config_item_count",
+        "c:src/taskbar/taskbar.c:taskbar_draw",
+        "c:src/taskbar/taskbar.c:taskbar_draw_clock_gui_text",
+        "c:src/taskbar/taskbar.c:taskbar_draw_config_menu",
+        "c:src/taskbar/taskbar.c:taskbar_draw_gui",
+        "c:src/taskbar/taskbar.c:taskbar_draw_menu",
+        "c:src/taskbar/taskbar.c:taskbar_draw_menu_gui",
+        "c:src/taskbar/taskbar.c:taskbar_fill_glass_region",
+        "c:src/taskbar/taskbar.c:taskbar_format_time",
+        "c:src/taskbar/taskbar.c:taskbar_get_bounds",
+        "c:src/taskbar/taskbar.c:taskbar_get_button_rect",
+        "c:src/taskbar/taskbar.c:taskbar_get_clock_rect",
+        "c:src/taskbar/taskbar.c:taskbar_get_config",
+        "c:src/taskbar/taskbar.c:taskbar_get_menu_bounds",
+        "c:src/taskbar/taskbar.c:taskbar_get_work_area",
+        "c:src/taskbar/taskbar.c:taskbar_handle_click",
+        "c:src/taskbar/taskbar.c:taskbar_handle_click_gui",
+        "c:src/taskbar/taskbar.c:taskbar_handle_config_key",
+        "c:src/taskbar/taskbar.c:taskbar_handle_key",
+        "c:src/taskbar/taskbar.c:taskbar_init",
+        "c:src/taskbar/taskbar.c:taskbar_is_horizontal_gui",
+        "c:src/taskbar/taskbar.c:taskbar_is_menu_open",
+        "c:src/taskbar/taskbar.c:taskbar_point_in_rect",
+        "c:src/taskbar/taskbar.c:taskbar_prepare_glass_background",
+        "c:src/taskbar/taskbar.c:taskbar_redraw_menu",
+        "c:src/taskbar/taskbar.c:taskbar_remove_app",
+        "c:src/taskbar/taskbar.c:taskbar_remove_window",
+        "c:src/taskbar/taskbar.c:taskbar_reset_menu",
+        "c:src/taskbar/taskbar.c:taskbar_set_custom_position",
+        "c:src/taskbar/taskbar.c:taskbar_set_icon_size",
+        "c:src/taskbar/taskbar.c:taskbar_set_pinned",
+        "c:src/taskbar/taskbar.c:taskbar_set_position",
+        "c:src/taskbar/taskbar.c:taskbar_set_window_active",
+        "c:src/taskbar/taskbar.c:taskbar_take_window_request",
+        "c:src/taskbar/taskbar.c:taskbar_update_clock",
+        "c:src/taskbar/taskbar.c:taskbar_uses_gui",
+        "c:src/taskbar/taskbar.c:update_dimensions"
+      ],
+      "tags": [
+        "host",
+        "ui",
+        "taskbar",
+        "tui",
+        "gui",
+        "limits",
+        "coverage"
+      ],
+      "status": "AUTOMATED"
     },
     {
       "id": "qemu:tst2:boot-ready",
@@ -172254,68 +172411,6 @@
         "snapshot"
       ],
       "status": "AUTOMATED"
-    },
-    {
-      "id": "host:core:app-loader",
-      "scenario": "Execucao host-only do carregador ZAPP com dependencias falsas",
-      "owner": "quality",
-      "layer": "host",
-      "executor": "host",
-      "profile": "host-only",
-      "timeout_seconds": 120,
-      "heartbeat_timeout_seconds": 1,
-      "isolation": "fixture",
-      "parameters": {
-        "compiler": "HOST_CC",
-        "instrumentation": "-finstrument-functions",
-        "warnings": "error"
-      },
-      "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "compilar e executar o app_loader.c real com processo, filesystem, paging e syscall falsos",
-      "expected": "parser, layout, lifecycle assincrono, cancelamento e codigos de erro preservam o contrato",
-      "errors": "compilador ausente, warning, fixture invalida, falha de assercao ou timeout",
-      "effects": "somente buffers estaticos e estado de dependencias falsas no processo host",
-      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
-      "status": "AUTOMATED",
-      "surface_ids": [
-        "api:src/include/core/app_loader.h:app_loader_build_launch_info",
-        "api:src/include/core/app_loader.h:app_loader_cancel_foreground",
-        "api:src/include/core/app_loader.h:app_loader_get_foreground_pid",
-        "api:src/include/core/app_loader.h:app_loader_init",
-        "api:src/include/core/app_loader.h:app_loader_is_foreground_active",
-        "api:src/include/core/app_loader.h:app_loader_is_ready",
-        "api:src/include/core/app_loader.h:app_loader_reap_finished",
-        "api:src/include/core/app_loader.h:app_loader_run_file",
-        "api:src/include/core/app_loader.h:app_loader_run_file_with_launch",
-        "api:src/include/core/app_loader.h:app_loader_run_image",
-        "api:src/include/core/app_loader.h:app_loader_set_operation_generation",
-        "api:src/include/core/app_loader.h:app_loader_take_finished_result",
-        "api:src/include/core/app_loader.h:app_loader_validate_image",
-        "c:src/core/app_loader.c:app_loader_build_launch_info",
-        "c:src/core/app_loader.c:app_loader_cancel_foreground",
-        "c:src/core/app_loader.c:app_loader_get_foreground_pid",
-        "c:src/core/app_loader.c:app_loader_has_zap_extension",
-        "c:src/core/app_loader.c:app_loader_init",
-        "c:src/core/app_loader.c:app_loader_is_busy",
-        "c:src/core/app_loader.c:app_loader_is_foreground_active",
-        "c:src/core/app_loader.c:app_loader_is_launch_space",
-        "c:src/core/app_loader.c:app_loader_is_ready",
-        "c:src/core/app_loader.c:app_loader_magic_is_valid",
-        "c:src/core/app_loader.c:app_loader_prepare_launch",
-        "c:src/core/app_loader.c:app_loader_reap_active",
-        "c:src/core/app_loader.c:app_loader_reap_finished",
-        "c:src/core/app_loader.c:app_loader_release_process_resources",
-        "c:src/core/app_loader.c:app_loader_run_file",
-        "c:src/core/app_loader.c:app_loader_run_file_with_launch",
-        "c:src/core/app_loader.c:app_loader_run_image",
-        "c:src/core/app_loader.c:app_loader_set_operation_generation",
-        "c:src/core/app_loader.c:app_loader_start_pending",
-        "c:src/core/app_loader.c:app_loader_store_result",
-        "c:src/core/app_loader.c:app_loader_take_finished_result",
-        "c:src/core/app_loader.c:app_loader_validate_image",
-        "c:src/core/app_loader.c:app_loader_validate_launch_info",
-        "c:src/core/app_loader.c:app_loader_validate_layout"
-      ]
     }
   ],
   "retired": [

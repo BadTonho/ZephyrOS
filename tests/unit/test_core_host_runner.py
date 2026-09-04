@@ -345,6 +345,17 @@ class CoreHostRunnerTests(unittest.TestCase):
         self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
                       "test_gui_host.c", sources)
 
+    def test_taskbar_case_has_ui_fixture_sources(self):
+        result_dir, binary, sources, suite = core_host_runner.case_configuration(
+            "host:ui:taskbar")
+        self.assertEqual(suite, "taskbar-host")
+        self.assertEqual(result_dir, core_host_runner.TASKBAR_RESULT_DIR)
+        self.assertEqual(binary, core_host_runner.TASKBAR_BINARY)
+        self.assertIn(core_host_runner.ROOT / "src" / "taskbar" /
+                      "taskbar.c", sources)
+        self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
+                      "test_taskbar_host.c", sources)
+
     def test_shell_commands_vfs_case_has_pipeline_fixture_sources(self):
         result_dir, binary, sources, suite = core_host_runner.case_configuration(
             "host:shell:commands-vfs")
