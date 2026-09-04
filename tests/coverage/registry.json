@@ -5745,6 +5745,22 @@
       "evidence": "make test-syscall-host PASS com fixture ring 0/ring 3, mapa de memoria de usuario estatico, limites, IPC, sinais e cobertura instrumentada completa"
     },
     {
+      "id": "syscall-abi-constants-host-static",
+      "domain": "core-syscall-abi",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:syscall"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "tests/coverage/static/syscall-abi.json",
+      "coverage_sources": [
+        "src/include/core/syscall.h"
+      ],
+      "evidence": "test_syscall_host.c referencia cada constante APP_SYSCALL_0..24 em dispatches validos, invalidos e na verificacao da tabela ABI; nenhuma constante e inferida por nome de arquivo"
+    },
+    {
       "id": "process-host-dynamic",
       "domain": "process-runtime",
       "owner": "quality",

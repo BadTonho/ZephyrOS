@@ -1632,6 +1632,10 @@ make test-syscall-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 O relatorio instrumentado fica em
 `build/test-results/syscall-host/coverage.json`; ele deve terminar com `PASS`,
 sem `unknown_addresses` ou `ambiguous_symbols`.
+As constantes `APP_SYSCALL_*` sao verificadas diretamente pelos dispatches da
+fixture e sua evidencia declarativa fica em
+`tests/coverage/static/syscall-abi.json`, pois macros nao produzem enderecos
+no relatorio dinamico.
 
 ## Threads e scheduler host-only
 
