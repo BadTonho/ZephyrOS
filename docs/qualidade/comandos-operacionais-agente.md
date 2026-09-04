@@ -354,9 +354,10 @@ make test-process-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
 A fixture tambem valida o bootstrap sem cache, a pre-condicao do inicio do
-scheduler, o descarte apos falha de criacao e a copia/cancelamento de uma
-espera ativa. O relatorio instrumentado confirma essas rotinas sem executar a
-troca de contexto Assembly nem o Idle real.
+scheduler, o descarte apos falha de criacao, a copia/cancelamento de uma espera
+ativa, o diagnostico de canario e os helpers de formatacao da stack. O idle e
+executado uma vez no caminho `ZEPHYROS_HOST_TEST`, sem `hlt`; a troca de
+contexto Assembly continua fora do processo host.
 
 O caso `test-workqueue-host` exercita a fila de trabalho com autoteste interno,
 callbacks, prioridades, FIFO, atrasos, coalescencia, rerun, cancelamento,

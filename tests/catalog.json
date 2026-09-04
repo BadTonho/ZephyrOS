@@ -128670,6 +128670,48 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/process/process.c:process_host_test_idle_once",
+      "kind": "c_function",
+      "source": "src/process/process.c",
+      "symbol": "process_host_test_idle_once",
+      "linkage": "external",
+      "owner": "process",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/process/process.c:process_host_test_report_corruption",
+      "kind": "c_function",
+      "source": "src/process/process.c",
+      "symbol": "process_host_test_report_corruption",
+      "linkage": "external",
+      "owner": "process",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "c:src/process/process.c:process_idle_main",
       "kind": "c_function",
       "source": "src/process/process.c",
@@ -128683,9 +128725,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_init",
@@ -129419,9 +129464,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_stack_log_append_text",
@@ -129437,9 +129485,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_stack_observe",
@@ -129480,9 +129531,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_stack_release",
@@ -129521,9 +129575,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_stack_self_test",
@@ -130186,12 +130243,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
         "qemu:tst5:processes"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:scheduler_find_next_ready",
@@ -165906,6 +165964,9 @@
         "c:src/process/process.c:process_get_user_count",
         "c:src/process/process.c:process_get_user_fault_count",
         "c:src/process/process.c:process_handle_user_exception",
+        "c:src/process/process.c:process_host_test_idle_once",
+        "c:src/process/process.c:process_host_test_report_corruption",
+        "c:src/process/process.c:process_idle_main",
         "c:src/process/process.c:process_init",
         "c:src/process/process.c:process_initialize_pid_pool",
         "c:src/process/process.c:process_is_user",
@@ -165932,8 +165993,12 @@
         "c:src/process/process.c:process_stack_check_current",
         "c:src/process/process.c:process_stack_copy_name",
         "c:src/process/process.c:process_stack_get_info",
+        "c:src/process/process.c:process_stack_log_append_number",
+        "c:src/process/process.c:process_stack_log_append_text",
         "c:src/process/process.c:process_stack_observe",
+        "c:src/process/process.c:process_stack_recorded_usage",
         "c:src/process/process.c:process_stack_release",
+        "c:src/process/process.c:process_stack_report_corruption",
         "c:src/process/process.c:process_stack_size_valid",
         "c:src/process/process.c:process_stack_validate_all",
         "c:src/process/process.c:process_start_scheduler",
@@ -165949,6 +166014,7 @@
         "c:src/process/process.c:process_wait_irq_save",
         "c:src/process/process.c:process_wait_state_init",
         "c:src/process/process.c:process_wake_channel",
+        "c:src/process/process.c:process_yield",
         "c:src/process/process.c:scheduler_find_next_ready",
         "c:src/process/process.c:scheduler_get_stats",
         "c:src/process/process.c:scheduler_init",

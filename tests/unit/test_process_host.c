@@ -30,6 +30,9 @@ static page_directory_t foreign_directory;
 static process_t fixture;
 static process_t user_fixture;
 
+void process_host_test_idle_once(void);
+void process_host_test_report_corruption(process_t* proc);
+
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
     uintptr_t address = (uintptr_t)function;
@@ -666,6 +669,20 @@ static int test_wait_and_wake_contract(void) {
     return 0;
 }
 
+static int test_stack_diagnostic_helpers(void) {
+    reset_fixture();
+    memset(&fixture, 0, sizeof(fixture));
+    fixture.pid = PROCESS_FIXTURE_PID;
+    strncpy(fixture.name, "stack-fixture", sizeof(fixture.name) - 1U);
+    process_host_test_report_corruption(&fixture);
+    if (!fixture.kernel_stack_corruption_reported ||
+        fixture.kernel_stack_overflow_events != 1U) return 1;
+    process_host_test_report_corruption(&fixture);
+    if (fixture.kernel_stack_overflow_events != 1U) return 2;
+    process_host_test_idle_once();
+    return 0;
+}
+
 int main(void) {
     int result = 0;
 
@@ -676,6 +693,7 @@ int main(void) {
     if (!result) result = test_process_transitions();
     if (!result) result = test_power_shutdown();
     if (!result) result = test_wait_and_wake_contract();
+    if (!result) result = test_stack_diagnostic_helpers();
     coverage_active = 0U;
     coverage_emit(result);
     if (result) {

@@ -4,7 +4,7 @@
 
 ## Resumo
 
-- Superfícies ativas: **7290**
+- Superfícies ativas: **7292**
 - Casos de teste: **151**
 - Superfícies aposentadas: **57**
 
@@ -12,16 +12,16 @@
 |---|---:|
 | `api_function` | 1575 |
 | `asm_entry` | 101 |
-| `c_function` | 5494 |
+| `c_function` | 5496 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6032 |
+| `COVERED` | 6039 |
 | `MANUAL` | 0 |
-| `PENDING` | 1258 |
+| `PENDING` | 1253 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -46,7 +46,7 @@
 | `icons` | 18 |
 | `kernel` | 40 |
 | `memory` | 194 |
-| `process` | 257 |
+| `process` | 259 |
 | `settings` | 55 |
 | `shell` | 1082 |
 | `taskbar` | 47 |
@@ -5845,7 +5845,9 @@
 | `c:src/process/process.c:process_get_user_count` | `src/process/process.c` | `process_get_user_count` | `process` | `COVERED` | 4 |
 | `c:src/process/process.c:process_get_user_fault_count` | `src/process/process.c` | `process_get_user_fault_count` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_handle_user_exception` | `src/process/process.c` | `process_handle_user_exception` | `process` | `COVERED` | 2 |
-| `c:src/process/process.c:process_idle_main` | `src/process/process.c` | `process_idle_main` | `process` | `PENDING` | 0 |
+| `c:src/process/process.c:process_host_test_idle_once` | `src/process/process.c` | `process_host_test_idle_once` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_host_test_report_corruption` | `src/process/process.c` | `process_host_test_report_corruption` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_idle_main` | `src/process/process.c` | `process_idle_main` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_init` | `src/process/process.c` | `process_init` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_initialize_pid_pool` | `src/process/process.c` | `process_initialize_pid_pool` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_is_user` | `src/process/process.c` | `process_is_user` | `process` | `COVERED` | 9 |
@@ -5877,12 +5879,12 @@
 | `c:src/process/process.c:process_stack_copy_name` | `src/process/process.c` | `process_stack_copy_name` | `process` | `COVERED` | 6 |
 | `c:src/process/process.c:process_stack_get_info` | `src/process/process.c` | `process_stack_get_info` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_stack_guard_matches` | `src/process/process.c` | `process_stack_guard_matches` | `process` | `COVERED` | 6 |
-| `c:src/process/process.c:process_stack_log_append_number` | `src/process/process.c` | `process_stack_log_append_number` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_stack_log_append_text` | `src/process/process.c` | `process_stack_log_append_text` | `process` | `PENDING` | 0 |
+| `c:src/process/process.c:process_stack_log_append_number` | `src/process/process.c` | `process_stack_log_append_number` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_stack_log_append_text` | `src/process/process.c` | `process_stack_log_append_text` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_stack_observe` | `src/process/process.c` | `process_stack_observe` | `process` | `COVERED` | 5 |
-| `c:src/process/process.c:process_stack_recorded_usage` | `src/process/process.c` | `process_stack_recorded_usage` | `process` | `PENDING` | 0 |
+| `c:src/process/process.c:process_stack_recorded_usage` | `src/process/process.c` | `process_stack_recorded_usage` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_stack_release` | `src/process/process.c` | `process_stack_release` | `process` | `COVERED` | 3 |
-| `c:src/process/process.c:process_stack_report_corruption` | `src/process/process.c` | `process_stack_report_corruption` | `process` | `PENDING` | 0 |
+| `c:src/process/process.c:process_stack_report_corruption` | `src/process/process.c` | `process_stack_report_corruption` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_stack_self_test` | `src/process/process.c` | `process_stack_self_test` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:process_stack_size_valid` | `src/process/process.c` | `process_stack_size_valid` | `process` | `COVERED` | 7 |
 | `c:src/process/process.c:process_stack_validate_all` | `src/process/process.c` | `process_stack_validate_all` | `process` | `COVERED` | 3 |
@@ -5911,7 +5913,7 @@
 | `c:src/process/process.c:process_wait_wake_transition` | `src/process/process.c` | `process_wait_wake_transition` | `process` | `COVERED` | 8 |
 | `c:src/process/process.c:process_wait_yield_transition` | `src/process/process.c` | `process_wait_yield_transition` | `process` | `COVERED` | 3 |
 | `c:src/process/process.c:process_wake_channel` | `src/process/process.c` | `process_wake_channel` | `process` | `COVERED` | 1 |
-| `c:src/process/process.c:process_yield` | `src/process/process.c` | `process_yield` | `process` | `COVERED` | 3 |
+| `c:src/process/process.c:process_yield` | `src/process/process.c` | `process_yield` | `process` | `COVERED` | 4 |
 | `c:src/process/process.c:scheduler_find_next_ready` | `src/process/process.c` | `scheduler_find_next_ready` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:scheduler_get_stats` | `src/process/process.c` | `scheduler_get_stats` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:scheduler_init` | `src/process/process.c` | `scheduler_init` | `process` | `COVERED` | 1 |
@@ -7889,11 +7891,6 @@
 - `c:src/kernel/kernel.c:shell_process_main`
 - `c:src/kernel/kernel.c:system_process_main`
 - `c:src/kernel/kernel.c:test_protocol_process_main`
-- `c:src/process/process.c:process_idle_main`
-- `c:src/process/process.c:process_stack_log_append_number`
-- `c:src/process/process.c:process_stack_log_append_text`
-- `c:src/process/process.c:process_stack_recorded_usage`
-- `c:src/process/process.c:process_stack_report_corruption`
 - `c:src/settings/settings.c:apply_mouse_settings`
 - `c:src/settings/settings.c:apply_taskbar_settings`
 - `c:src/settings/settings.c:apply_wm_settings`
