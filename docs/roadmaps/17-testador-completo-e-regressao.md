@@ -2274,3 +2274,13 @@ pendente.
   build limpo, a bateria host do TST7 e `make catalog-test`; o quick global ficou
   `BLOCKED` somente pelo runtime LLVM ausente no sanitizador. O catalogo agora
   registra 7.219 superficies, 5.290 `COVERED`, 1.929 `PENDING` e 140 casos.
+
+- Incremento Core/update concluido em 2026-09-04 12:30. O caso
+  `host:core:update` foi adicionado com buffers estaticos e doubles de crypto e
+  filesystem. A fixture executa os helpers reais de `src/core/update.c` para
+  validar registros U3/U4, headers ZUPD, paths, entradas, limites, corrupcao,
+  resultados de acao e cancelamento. A evidencia instrumentada e
+  `make test-update-host` passaram, assim como `make catalog-test`. O
+  catalogo registra 7.231 superficies, 5.356 `COVERED`, 1.875 `PENDING` e 141
+  casos. As operacoes transacionais completas ainda dependem de fixture
+  integrada e permanecem pendentes.

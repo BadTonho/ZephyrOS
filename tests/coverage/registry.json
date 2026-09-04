@@ -2233,6 +2233,56 @@
       "evidence": "make test-route-host aprovado com coverage.json instrumentado em build/test-results/route-host/coverage.json"
     },
     {
+      "id": "update-host-dynamic",
+      "domain": "core-update",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:update"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/update-host/coverage.json",
+      "coverage_sources": [
+        "src/core/update.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-update-host PASS com registros U3/U4, validacao de header, paths, tabela de entradas, limites, corrupcao e helpers de transacao no relatorio instrumentado",
+      "case_definition": {
+        "id": "host:core:update",
+        "scenario": "Contratos puros do formato e da maquina de estado de atualizacao U3/U4",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "storage": "nenhum; registros estaticos em memoria"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "executar codificacao, decodificacao, validacao e corrupcao controlada de registros U3/U4 e headers ZUPD",
+        "expected": "registros validos fazem round-trip e entradas invalidas retornam os erros canonicos sem estado persistente",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente buffers estaticos no processo host",
+        "cleanup": "buffers locais descartados; manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "update",
+          "format",
+          "negative",
+          "corruption"
+        ]
+      }
+    },
+    {
       "id": "package-host-dynamic",
       "domain": "core-packages",
       "owner": "quality",

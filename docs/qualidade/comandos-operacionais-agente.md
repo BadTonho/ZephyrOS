@@ -1678,5 +1678,21 @@ O relatorio fica em `build/test-results/shell-wifi-host/coverage.json` e deve
 terminar em `PASS`, com `unknown_addresses=[]` e `ambiguous_symbols=[]`.
 Sincronize o catalogo somente apos a execucao real e valide com
 `make catalog-test`.
+
+## Update host-only
+
+O alvo `test-update-host` compila `src/core/update.c` com doubles estaticos de
+crypto e filesystem. A fixture valida os registros U3/U4, headers ZUPD,
+paths, tabela de entradas, limites, corrupcao e helpers de cancelamento sem
+escrever em armazenamento real:
+
+```text
+make test-update-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O relatorio instrumentado fica em
+`build/test-results/update-host/coverage.json` e deve terminar em `PASS`, com
+`unknown_addresses=[]` e `ambiguous_symbols=[]`. Depois da execucao real,
+sincronize o catalogo e valide com `make catalog-test`.
 Depois de alterar o handler ou a fixture, sincronize o catálogo somente após a
 execução real e valide com `make catalog-test`.

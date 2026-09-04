@@ -8,6 +8,9 @@
 #include "core/update_runtime.h"
 #include "core/version.h"
 #include "fs/fs.h"
+#if defined(ZEPHYROS_HOST_TEST)
+#include "update_host.h"
+#endif
 
 #define UPDATE_FORMAT_VERSION 1U
 #define UPDATE_ARCH_I386 1U
@@ -2245,6 +2248,355 @@ static void update_refresh_capabilities(void) {
     update_capabilities.remote_available =
         update_remote_capability_available() ? 1U : 0U;
 }
+
+#if defined(ZEPHYROS_HOST_TEST)
+static void update_host_fill_file_state(update_file_state_t* state,
+                                         uint32_t size, uint8_t seed,
+                                         uint8_t present) {
+    state->size = size;
+    state->present = present;
+    for (uint32_t index = 0U; index < CRYPTO_SHA256_SIZE; index++) {
+        state->hash[index] = (uint8_t)(seed + index);
+    }
+}
+
+static void update_host_write_u16(uint8_t* data, uint32_t offset,
+                                  uint16_t value) {
+    update_write_u16(data + offset, value);
+}
+
+static void update_host_write_u32(uint8_t* data, uint32_t offset,
+                                  uint32_t value) {
+    update_write_u32(data + offset, value);
+}
+
+static int update_host_check_state_records(void) {
+    update_state_t source;
+    update_state_t decoded;
+    uint8_t record[UPDATE_CONTROL_SIZE];
+    int result;
+
+    kmemset(&source, 0, sizeof(source));
+    source.sequence = 7U;
+    source.installed_version.major = 1U;
+    source.installed_version.minor = 2U;
+    source.installed_version.patch = 3U;
+    source.installed_epoch = 40U;
+    source.rollback_available = 1U;
+    source.rollback_slot = 1U;
+    source.rollback_entry_count = 1U;
+    source.previous_version.major = 1U;
+    source.previous_version.minor = 2U;
+    source.previous_version.patch = 2U;
+    source.previous_epoch = 39U;
+    update_host_fill_file_state(&source.current[0], 11U, 0x10U, 1U);
+    update_host_fill_file_state(&source.rollback[1], 9U, 0x40U, 1U);
+    result = update_encode_state_record(&source, record);
+    if (result != OK) return 101;
+    if (update_decode_state_record(&decoded, record) != OK ||
+        decoded.sequence != source.sequence ||
+        decoded.current[0].size != source.current[0].size ||
+        decoded.rollback[1].present != 1U) {
+        return 102;
+    }
+    if (update_decode_state_record(0, record) != ERR_NULL) return 103;
+    record[18] = 1U;
+    if (update_decode_state_record(&decoded, record) != ERR_INVALID) {
+        return 104;
+    }
+    return OK;
+}
+
+static int update_host_check_journal_record(void) {
+    update_journal_t source;
+    update_journal_t decoded;
+    uint8_t record[UPDATE_CONTROL_SIZE];
+    uint8_t hash[CRYPTO_SHA256_SIZE];
+    int result;
+
+    kmemset(&source, 0, sizeof(source));
+    source.sequence = 8U;
+    source.kind = UPDATE_JOURNAL_APPLY;
+    source.phase = UPDATE_PHASE_REPLACING;
+    source.slot = 0U;
+    source.entry_count = 2U;
+    source.progress = 1U;
+    source.base_state_sequence = 7U;
+    source.base_version.major = 1U;
+    source.base_version.minor = 2U;
+    source.base_version.patch = 3U;
+    source.target_version.major = 1U;
+    source.target_version.minor = 3U;
+    source.target_version.patch = 0U;
+    source.base_epoch = 40U;
+    source.target_epoch = 41U;
+    for (uint32_t index = 0U; index < 2U; index++) {
+        source.entries[index].target_id = (uint8_t)index;
+        update_host_fill_file_state(&source.entries[index].old_file,
+                                    10U + index, (uint8_t)(0x50U + index), 1U);
+        update_host_fill_file_state(&source.entries[index].new_file,
+                                    12U + index, (uint8_t)(0x70U + index), 1U);
+    }
+    result = update_encode_journal_record(&source, record);
+    if (result != OK) return 111;
+    if (update_decode_journal_record(&decoded, record) != OK ||
+        decoded.sequence != source.sequence || decoded.entry_count != 2U ||
+        decoded.entries[1].new_file.size != 13U) {
+        return 112;
+    }
+    record[15] = 3U;
+    if (crypto_sha256(record, UPDATE_CONTROL_HASH_OFFSET, hash) != OK) {
+        return 113;
+    }
+    kmemcpy(record + UPDATE_CONTROL_HASH_OFFSET, hash, sizeof(hash));
+    if (update_decode_journal_record(&decoded, record) != ERR_INVALID) {
+        return 114;
+    }
+    if (update_decode_journal_record(0, record) != ERR_NULL) return 115;
+    return OK;
+}
+
+static void update_host_fill_history_entry(update_history_entry_t* entry,
+                                           uint32_t sequence,
+                                           update_history_operation_t operation,
+                                           update_history_outcome_t outcome,
+                                           const char* alias) {
+    uint32_t alias_size = kstrlen(alias);
+
+    kmemset(entry, 0, sizeof(*entry));
+    entry->sequence = sequence;
+    entry->operation = operation;
+    entry->outcome = outcome;
+    entry->action_reason = UPDATE_ACTION_NONE;
+    entry->verification_reason = ZUPD_REASON_NONE;
+    entry->from_version.major = 1U;
+    entry->to_version.major = 2U;
+    entry->from_epoch = sequence;
+    entry->to_epoch = sequence + 1U;
+    entry->entry_count = 1U;
+    entry->completed_entries = 1U;
+    entry->reboot_required = (uint8_t)(sequence & 1U);
+    if (alias_size >= UPDATE_HISTORY_PACKAGE_SIZE) {
+        alias_size = UPDATE_HISTORY_PACKAGE_SIZE - 1U;
+    }
+    kmemcpy(entry->package_alias, alias, alias_size);
+}
+
+static int update_host_check_history_record(void) {
+    static const char valid_alias[UPDATE_HISTORY_PACKAGE_SIZE] = "VALID.ZUP";
+    static const char invalid_alias[UPDATE_HISTORY_PACKAGE_SIZE] = {
+        'B', 'A', 'D', '/', 'N', 'A', 'M', 'E', 0
+    };
+    update_history_t source;
+    update_history_t decoded;
+    uint8_t record[UPDATE_CONTROL_SIZE];
+    uint8_t hash[CRYPTO_SHA256_SIZE];
+    int result;
+
+    kmemset(&source, 0, sizeof(source));
+    source.sequence = 2U;
+    source.count = 2U;
+    source.next_index = 2U;
+    update_host_fill_history_entry(&source.entries[0], 1U,
+                                   UPDATE_HISTORY_OPERATION_APPLY,
+                                   UPDATE_HISTORY_OUTCOME_SUCCESS, "A.ZUP");
+    update_host_fill_history_entry(&source.entries[1], 2U,
+                                   UPDATE_HISTORY_OPERATION_ROLLBACK,
+                                   UPDATE_HISTORY_OUTCOME_RECOVERED, "B.ZUP");
+    result = update_encode_history_record(&source, record);
+    if (result != OK) return 121;
+    if (update_decode_history_record(&decoded, record) != OK ||
+        decoded.sequence != 2U || decoded.count != 2U ||
+        decoded.entries[1].operation != UPDATE_HISTORY_OPERATION_ROLLBACK) {
+        return 122;
+    }
+    if (!update_history_alias_valid(valid_alias) ||
+        update_history_alias_valid(invalid_alias)) {
+        return 123;
+    }
+    record[46U + UPDATE_HISTORY_ENTRY_OFFSET] = 1U;
+    if (crypto_sha256(record, UPDATE_CONTROL_HASH_OFFSET, hash) != OK) {
+        return 124;
+    }
+    kmemcpy(record + UPDATE_CONTROL_HASH_OFFSET, hash, sizeof(hash));
+    if (update_decode_history_record(&decoded, record) != ERR_INVALID) {
+        return 125;
+    }
+    if (update_decode_history_record(0, record) != ERR_NULL) return 126;
+    return OK;
+}
+
+static void update_host_fill_header(uint8_t header[ZUPD_HEADER_SIZE]) {
+    kmemset(header, 0, ZUPD_HEADER_SIZE);
+    kmemcpy(header, "ZUPD", 4U);
+    update_host_write_u16(header, HEADER_FORMAT_VERSION, UPDATE_FORMAT_VERSION);
+    update_host_write_u16(header, HEADER_SIZE, ZUPD_HEADER_SIZE);
+    update_host_write_u32(header, HEADER_ARCHITECTURE, UPDATE_ARCH_I386);
+    update_host_write_u32(header, HEADER_TOTAL_SIZE, 321U);
+    update_host_write_u32(header, HEADER_MANIFEST_OFFSET, ZUPD_HEADER_SIZE);
+    update_host_write_u32(header, HEADER_MANIFEST_SIZE, ZUPD_ENTRY_SIZE);
+    update_host_write_u32(header, HEADER_PAYLOAD_OFFSET, 256U);
+    update_host_write_u32(header, HEADER_PAYLOAD_SIZE, 1U);
+    update_host_write_u32(header, HEADER_SIGNATURE_OFFSET, 257U);
+    update_host_write_u16(header, HEADER_SIGNATURE_SIZE, UPDATE_SIGNATURE_SIZE);
+    update_host_write_u16(header, HEADER_SIGNATURE_ALGORITHM,
+                          UPDATE_SIGNATURE_ED25519);
+    update_host_write_u16(header, HEADER_HASH_ALGORITHM, UPDATE_HASH_SHA256);
+    update_host_write_u16(header, HEADER_ENTRY_COUNT, 1U);
+    update_host_write_u16(header, HEADER_ENTRY_SIZE, ZUPD_ENTRY_SIZE);
+}
+
+static int update_host_check_headers_and_paths(void) {
+    uint8_t header[ZUPD_HEADER_SIZE];
+    uint8_t encoded[ZUPD_PATH_SIZE];
+    uint8_t table[ZUPD_ENTRY_SIZE * 2U];
+    update_verification_t verification;
+    update_header_t parsed;
+    update_workspace_t workspace;
+    update_version_t first;
+    update_version_t second;
+    int result;
+
+    update_host_fill_header(header);
+    kmemset(&verification, 0, sizeof(verification));
+    if (update_validate_header_limits(header, &verification) != OK ||
+        update_validate_header_algorithms(header, &verification) != OK ||
+        update_validate_header_layout(header, &verification) != OK) {
+        return 131;
+    }
+    update_decode_header(&parsed, header);
+    if (parsed.architecture != UPDATE_ARCH_I386 || parsed.entry_count != 1U) {
+        return 132;
+    }
+    header[HEADER_HASH_ALGORITHM] = 0U;
+    if (update_validate_header_algorithms(header, &verification) !=
+        ERR_UNAVAILABLE) {
+        return 133;
+    }
+    update_host_fill_header(header);
+    header[HEADER_TOTAL_SIZE] = 0U;
+    if (update_validate_header_limits(header, &verification) != ERR_OVERFLOW) {
+        return 134;
+    }
+    update_host_fill_header(header);
+    header[0] = 'X';
+    if (update_validate_header_layout(header, &verification) != ERR_INVALID) {
+        return 135;
+    }
+    if (!update_validate_path_syntax("FILE.TXT") ||
+        update_validate_path_syntax("file.TXT") ||
+        update_validate_path_syntax("TOOLONG01.TXT") ||
+        update_validate_path_syntax("BAD.TOOL")) {
+        return 136;
+    }
+    kmemset(encoded, 0, sizeof(encoded));
+    kmemcpy(encoded, "FILE.TXT", 8U);
+    if (update_decode_path((char*)table, encoded, &verification) != OK ||
+        kstrcmp((char*)table, "FILE.TXT") != 0) {
+        return 137;
+    }
+    encoded[9] = 'X';
+    if (update_decode_path((char*)table, encoded, &verification) != ERR_INVALID) {
+        return 138;
+    }
+    if (update_compare_paths("A.TXT", "B.TXT") >= 0 ||
+        update_compare_paths("B.TXT", "A.TXT") <= 0 ||
+        update_compare_paths("A.TXT", "A.TXT") != 0 ||
+        update_target_id("SHELL.BMP") != 1 || update_target_id("NOPE.BMP") != -1 ||
+        !update_path_allowed("TASKMGR.BMP") || update_path_allowed("NOPE.BMP")) {
+        return 139;
+    }
+    first.major = 1U; first.minor = 0U; first.patch = 0U;
+    second = first;
+    if (update_version_compare(&first, &second) != 0) return 140;
+    second.patch = 1U;
+    if (update_version_compare(&first, &second) >= 0) return 141;
+    second.major = 0U;
+    if (update_version_compare(&first, &second) <= 0) return 142;
+    kmemset(table, 0, sizeof(table));
+    workspace.parsed.payload_offset = 256U;
+    workspace.parsed.signature_offset = 259U;
+    workspace.parsed.entry_count = 2U;
+    kmemcpy(table, "A.TXT", 5U);
+    update_host_write_u32(table, ENTRY_PAYLOAD_OFFSET, 256U);
+    update_host_write_u32(table, ENTRY_PAYLOAD_SIZE, 1U);
+    update_host_write_u32(table, ENTRY_INSTALLED_SIZE, 1U);
+    update_host_write_u16(table, ENTRY_OPERATION, UPDATE_OPERATION_REPLACE);
+    update_host_write_u16(table, ENTRY_TARGET_CLASS, UPDATE_TARGET_SYSTEM_FILE);
+    kmemcpy(table + ZUPD_ENTRY_SIZE, "B.TXT", 5U);
+    update_host_write_u32(table + ZUPD_ENTRY_SIZE, ENTRY_PAYLOAD_OFFSET, 257U);
+    update_host_write_u32(table + ZUPD_ENTRY_SIZE, ENTRY_PAYLOAD_SIZE, 2U);
+    update_host_write_u32(table + ZUPD_ENTRY_SIZE, ENTRY_INSTALLED_SIZE, 2U);
+    update_host_write_u16(table + ZUPD_ENTRY_SIZE, ENTRY_OPERATION,
+                          UPDATE_OPERATION_REPLACE);
+    update_host_write_u16(table + ZUPD_ENTRY_SIZE, ENTRY_TARGET_CLASS,
+                          UPDATE_TARGET_SYSTEM_FILE);
+    kmemcpy(workspace.table, table, sizeof(table));
+    result = update_parse_entries(&workspace, &verification);
+    if (result != OK) return 143;
+    workspace.table[ZUPD_ENTRY_SIZE] = 'A';
+    if (update_parse_entries(&workspace, &verification) != ERR_INVALID) return 144;
+    return OK;
+}
+
+static int update_host_cancel(void* context) {
+    return context != 0;
+}
+
+static int update_host_check_action_helpers(void) {
+    update_action_options_t options;
+    update_action_result_t action;
+    update_version_t version;
+
+    version.major = 1U; version.minor = 2U; version.patch = 3U;
+    update_fill_action_result(&action, &version, 10U, &version, 11U, 2U);
+    if (action.reason != UPDATE_ACTION_NONE || action.entry_count != 2U) {
+        return 151;
+    }
+    if (update_action_fail(&action, UPDATE_ACTION_IO, ERR_DISK,
+                           "host update action") != ERR_DISK ||
+        action.reason != UPDATE_ACTION_IO) {
+        return 152;
+    }
+    if (update_history_action_outcome(OK, &action) !=
+            UPDATE_HISTORY_OUTCOME_SUCCESS ||
+        update_history_action_outcome(ERR_DISK, &action) !=
+            UPDATE_HISTORY_OUTCOME_FAILED) {
+        return 153;
+    }
+    if (update_reason_error(ZUPD_REASON_SIZE) != ERR_OVERFLOW ||
+        update_reason_error(ZUPD_REASON_UNSUPPORTED) != ERR_UNAVAILABLE ||
+        update_reason_error(ZUPD_REASON_FORMAT) != ERR_INVALID ||
+        update_reason_error(ZUPD_REASON_ARCHITECTURE) != ERR_STATE) {
+        return 154;
+    }
+    options.cancel_check = 0;
+    options.cancel_context = 0;
+    options.dry_run = 0U;
+    if (update_cancelled(&options) != 0 || update_cancelled(0) != 0) return 155;
+    options.cancel_check = update_host_cancel;
+    options.cancel_context = (void*)1;
+    if (update_cancelled(&options) != 1) return 156;
+    if (update_clusters_for(0U, 512U) != 0U ||
+        update_clusters_for(1U, 512U) != 1U ||
+        update_clusters_for(513U, 512U) != 2U) {
+        return 157;
+    }
+    return OK;
+}
+
+int update_host_test_contracts(void) {
+    int result;
+
+    spinlock_init(&update_lock);
+    result = update_host_check_state_records();
+    if (result == OK) result = update_host_check_journal_record();
+    if (result == OK) result = update_host_check_history_record();
+    if (result == OK) result = update_host_check_headers_and_paths();
+    if (result == OK) result = update_host_check_action_helpers();
+    return result;
+}
+#endif
 
 int update_init(void) {
     uint8_t key_hash[CRYPTO_SHA256_SIZE];
