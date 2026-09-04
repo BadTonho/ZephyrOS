@@ -2506,3 +2506,19 @@ pendente.
 - [x] O catálogo registra 7.293 superfícies, 6.128 `COVERED`, 1.165
       `PENDING` e 153 casos. As superfícies sem evidência específica continuam
       explícitas; o gate estrito integral permanece pendente.
+
+### Incremento Shell/diagnostics CPU, page fault, VMA e scheduler — 2026-09-04
+
+- [x] A fixture host-only `host:shell:diagnostics` foi ampliada para chamar os
+      dispatchers reais de `cpu usage`, `pagefault`, `vmamap` e `schedcheck`.
+- [x] Foram exercitados percentuais e linha-base de CPU, estatísticas de page
+      fault, mapas de código e stack de processo usuário, PID inexistente,
+      processo não-usuário, VMA indisponível, argumentos inválidos e falha de
+      invariantes do scheduler, usando somente doubles estáticos.
+- [x] Passaram o alvo específico com `HOST_CC`, todos os alvos host que
+      alimentam a cobertura, `make q3check`, `make clean` seguido de `make`,
+      sincronização e renderização da cobertura, `make catalog-test` e
+      `git diff --check`.
+- [x] O catálogo registra 7.293 superfícies, 6.230 `COVERED`, 1.063
+      `PENDING` e 154 casos. As superfícies sem evidência específica continuam
+      explícitas; o gate estrito integral permanece pendente.

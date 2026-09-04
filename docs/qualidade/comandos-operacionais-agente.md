@@ -1947,3 +1947,11 @@ da fila Bottom-Half por linha de IRQ, filas de espera, waiters, workqueue,
 políticas TLS, mounts, descritores, devfs, inventários de dispositivos, USB,
 HID, MSC, listagens, autotestes e estados de indisponibilidade, sem tocar em
 hardware ou armazenamento real.
+
+A mesma fixture tambem executa `cpu usage`, `pagefault`, `vmamap` e
+`schedcheck`. Ela usa estatisticas de scheduler, processos e VMAs falsos para
+validar percentuais, estatisticas de page fault, mapas de codigo/stack,
+processos inexistentes, processos nao-usuario, VMA indisponivel, argumentos
+invalidos e falhas de invariantes. O relatorio deve continuar com
+`unknown_addresses=[]` e `ambiguous_symbols=[]`; a execucao nao acessa
+hardware, memoria do kernel ou processos reais.
