@@ -138913,9 +138913,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_irqstat_check",
@@ -138931,9 +138934,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_irqstat_list",
@@ -138949,9 +138955,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_irqstat_print_test",
@@ -138967,9 +138976,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_irqstat_status",
@@ -138985,9 +138997,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_irqstat_usage",
@@ -139003,9 +139018,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_kill",
@@ -140871,9 +140889,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_kill",
@@ -167224,10 +167245,10 @@
         "hardware": "video, VFS e mouse falsos"
       },
       "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "executar pwd, cd, mouse e log em caminhos validos, invalidos, indisponiveis e de limite",
+      "action": "executar pwd, cd, mouse, log, timer e clock em caminhos validos, invalidos, indisponiveis e de limite",
       "expected": "dispatchers preservam saida, estado, configuracao e codigos canonicos",
       "errors": "compilador ausente, warning, saida inesperada, falha de assercao ou timeout",
-      "effects": "somente buffers estaticos de saida e doubles locais do VFS e mouse",
+      "effects": "somente buffers estaticos de saida e doubles locais de VFS, mouse, log, timer, RTC e clock",
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
       "surface_ids": [
@@ -167243,6 +167264,12 @@
         "c:src/shell/shell_commands_diagnostics.c:cmd_clock_usage",
         "c:src/shell/shell_commands_diagnostics.c:cmd_diagnostics_print_test",
         "c:src/shell/shell_commands_diagnostics.c:cmd_diagnostics_print_u64",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_irqstat",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_irqstat_check",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_irqstat_list",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_irqstat_print_test",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_irqstat_status",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_irqstat_usage",
         "c:src/shell/shell_commands_diagnostics.c:cmd_log",
         "c:src/shell/shell_commands_diagnostics.c:cmd_log_check",
         "c:src/shell/shell_commands_diagnostics.c:cmd_log_invalid",
@@ -167269,6 +167296,7 @@
         "c:src/shell/shell_commands_diagnostics.c:cmd_timer_usage",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_cd",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_clock",
+        "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_irqstat",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_log",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_mouse",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_pwd",

@@ -3670,15 +3670,15 @@
           "hardware": "video, VFS e mouse falsos"
         },
         "preconditions": "compilador C nativo e nm disponiveis",
-        "action": "executar pwd, cd, mouse, log, timer e clock em caminhos validos, invalidos, indisponiveis e de limite",
+        "action": "executar pwd, cd, mouse, log, timer, clock e irqstat em caminhos validos, invalidos, indisponiveis e de limite",
         "expected": "dispatchers preservam saida, estado, configuracao e codigos canonicos",
         "errors": "compilador ausente, warning, saida inesperada, falha de assercao ou timeout",
-        "effects": "somente buffers estaticos de saida e doubles locais de VFS, mouse, log, timer, RTC e clock",
+        "effects": "somente buffers estaticos de saida e doubles locais de VFS, mouse, log, timer, RTC, clock, IRQ e IDT",
         "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
         "status": "AUTOMATED",
         "surface_ids": []
       },
-      "evidence": "make test-shell-diagnostics-host PASS com pwd, cd, mouse, log, timer e clock; a fixture chama diretamente os dispatchers e caminhos validos, negativos, indisponiveis e de limite"
+      "evidence": "make test-shell-diagnostics-host PASS com pwd, cd, mouse, log, timer, clock e irqstat; a fixture chama diretamente os dispatchers e caminhos validos, negativos, indisponiveis e de limite"
     },
     {
       "id": "shell-commands-vfs-host-dynamic",

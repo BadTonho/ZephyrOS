@@ -1924,8 +1924,8 @@ host e não acessa hardware ou armazenamento real.
 ## Shell: comandos diagnósticos host-only
 
 O alvo `test-shell-diagnostics-host` executa os dispatchers reais de `pwd`,
-`cd`, `mouse`, `log`, `timer` e `clock` com VFS, mouse, vídeo, timer, RTC e
-clock falsos. A fixture cobre
+`cd`, `mouse`, `log`, `timer`, `clock` e `irqstat` com VFS, mouse, vídeo,
+timer, RTC, IRQ e IDT falsos. A fixture cobre
 caminhos válidos, argumentos extras, limites, estados indisponíveis e
 preservação da configuração quando uma preferência é recusada:
 
@@ -1939,4 +1939,5 @@ em `PASS`, com `unknown_addresses=[]` e `ambiguous_symbols=[]`. O teste não
 acessa hardware, VFS real ou persistência. Os caminhos de `log` validam
 status, histórico, limpeza, níveis, código de erro, autoteste e entradas
 inválidas. Os caminhos de `timer` e `clock` cobrem status, listagem,
-autoteste, indisponibilidade, fonte RTC, valores monotônicos e datas.
+autoteste, indisponibilidade, fonte RTC, valores monotônicos, datas e o estado
+da fila Bottom-Half por linha de IRQ.
