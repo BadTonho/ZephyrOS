@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7219**
-- Casos de teste: **136**
+- Casos de teste: **137**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 5183 |
+| `COVERED` | 5203 |
 | `MANUAL` | 0 |
-| `PENDING` | 2036 |
+| `PENDING` | 2016 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 136 |
+| `AUTOMATED` | 137 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -1441,26 +1441,26 @@
 | `api:src/include/process/signal.h:process_signal_self_test` | `src/include/process/signal.h` | `process_signal_self_test` | `process` | `COVERED` | 8 |
 | `api:src/include/process/signal.h:process_signal_send` | `src/include/process/signal.h` | `process_signal_send` | `process` | `COVERED` | 8 |
 | `api:src/include/process/signal.h:process_signal_validate_state` | `src/include/process/signal.h` | `process_signal_validate_state` | `process` | `COVERED` | 8 |
-| `api:src/include/process/thread.h:thread_block` | `src/include/process/thread.h` | `thread_block` | `process` | `COVERED` | 7 |
-| `api:src/include/process/thread.h:thread_block_indefinite` | `src/include/process/thread.h` | `thread_block_indefinite` | `process` | `COVERED` | 7 |
-| `api:src/include/process/thread.h:thread_cancel_wait` | `src/include/process/thread.h` | `thread_cancel_wait` | `process` | `COVERED` | 7 |
+| `api:src/include/process/thread.h:thread_block` | `src/include/process/thread.h` | `thread_block` | `process` | `COVERED` | 8 |
+| `api:src/include/process/thread.h:thread_block_indefinite` | `src/include/process/thread.h` | `thread_block_indefinite` | `process` | `COVERED` | 8 |
+| `api:src/include/process/thread.h:thread_cancel_wait` | `src/include/process/thread.h` | `thread_cancel_wait` | `process` | `COVERED` | 8 |
 | `api:src/include/process/thread.h:thread_context_switch` | `src/include/process/thread.h` | `thread_context_switch` | `process` | `PENDING` | 0 |
-| `api:src/include/process/thread.h:thread_copy_waiters` | `src/include/process/thread.h` | `thread_copy_waiters` | `process` | `COVERED` | 7 |
-| `api:src/include/process/thread.h:thread_create` | `src/include/process/thread.h` | `thread_create` | `process` | `COVERED` | 7 |
-| `api:src/include/process/thread.h:thread_destroy` | `src/include/process/thread.h` | `thread_destroy` | `process` | `COVERED` | 7 |
-| `api:src/include/process/thread.h:thread_get_by_id` | `src/include/process/thread.h` | `thread_get_by_id` | `process` | `COVERED` | 7 |
-| `api:src/include/process/thread.h:thread_get_count` | `src/include/process/thread.h` | `thread_get_count` | `process` | `COVERED` | 7 |
-| `api:src/include/process/thread.h:thread_get_count_by_owner` | `src/include/process/thread.h` | `thread_get_count_by_owner` | `process` | `COVERED` | 7 |
-| `api:src/include/process/thread.h:thread_get_current` | `src/include/process/thread.h` | `thread_get_current` | `process` | `COVERED` | 7 |
-| `api:src/include/process/thread.h:thread_init` | `src/include/process/thread.h` | `thread_init` | `process` | `COVERED` | 7 |
-| `api:src/include/process/thread.h:thread_is_ready` | `src/include/process/thread.h` | `thread_is_ready` | `process` | `COVERED` | 7 |
-| `api:src/include/process/thread.h:thread_run_self_test` | `src/include/process/thread.h` | `thread_run_self_test` | `process` | `COVERED` | 7 |
-| `api:src/include/process/thread.h:thread_schedule_next` | `src/include/process/thread.h` | `thread_schedule_next` | `process` | `COVERED` | 7 |
-| `api:src/include/process/thread.h:thread_scheduler_tick` | `src/include/process/thread.h` | `thread_scheduler_tick` | `process` | `COVERED` | 7 |
-| `api:src/include/process/thread.h:thread_unblock` | `src/include/process/thread.h` | `thread_unblock` | `process` | `COVERED` | 7 |
-| `api:src/include/process/thread.h:thread_wait` | `src/include/process/thread.h` | `thread_wait` | `process` | `COVERED` | 7 |
-| `api:src/include/process/thread.h:thread_wake_channel` | `src/include/process/thread.h` | `thread_wake_channel` | `process` | `COVERED` | 7 |
-| `api:src/include/process/thread.h:thread_yield` | `src/include/process/thread.h` | `thread_yield` | `process` | `COVERED` | 7 |
+| `api:src/include/process/thread.h:thread_copy_waiters` | `src/include/process/thread.h` | `thread_copy_waiters` | `process` | `COVERED` | 8 |
+| `api:src/include/process/thread.h:thread_create` | `src/include/process/thread.h` | `thread_create` | `process` | `COVERED` | 8 |
+| `api:src/include/process/thread.h:thread_destroy` | `src/include/process/thread.h` | `thread_destroy` | `process` | `COVERED` | 8 |
+| `api:src/include/process/thread.h:thread_get_by_id` | `src/include/process/thread.h` | `thread_get_by_id` | `process` | `COVERED` | 8 |
+| `api:src/include/process/thread.h:thread_get_count` | `src/include/process/thread.h` | `thread_get_count` | `process` | `COVERED` | 8 |
+| `api:src/include/process/thread.h:thread_get_count_by_owner` | `src/include/process/thread.h` | `thread_get_count_by_owner` | `process` | `COVERED` | 8 |
+| `api:src/include/process/thread.h:thread_get_current` | `src/include/process/thread.h` | `thread_get_current` | `process` | `COVERED` | 8 |
+| `api:src/include/process/thread.h:thread_init` | `src/include/process/thread.h` | `thread_init` | `process` | `COVERED` | 8 |
+| `api:src/include/process/thread.h:thread_is_ready` | `src/include/process/thread.h` | `thread_is_ready` | `process` | `COVERED` | 8 |
+| `api:src/include/process/thread.h:thread_run_self_test` | `src/include/process/thread.h` | `thread_run_self_test` | `process` | `COVERED` | 8 |
+| `api:src/include/process/thread.h:thread_schedule_next` | `src/include/process/thread.h` | `thread_schedule_next` | `process` | `COVERED` | 8 |
+| `api:src/include/process/thread.h:thread_scheduler_tick` | `src/include/process/thread.h` | `thread_scheduler_tick` | `process` | `COVERED` | 8 |
+| `api:src/include/process/thread.h:thread_unblock` | `src/include/process/thread.h` | `thread_unblock` | `process` | `COVERED` | 8 |
+| `api:src/include/process/thread.h:thread_wait` | `src/include/process/thread.h` | `thread_wait` | `process` | `COVERED` | 8 |
+| `api:src/include/process/thread.h:thread_wake_channel` | `src/include/process/thread.h` | `thread_wake_channel` | `process` | `COVERED` | 8 |
+| `api:src/include/process/thread.h:thread_yield` | `src/include/process/thread.h` | `thread_yield` | `process` | `COVERED` | 8 |
 | `api:src/include/ui/appstore.h:appstore_close` | `src/include/ui/appstore.h` | `appstore_close` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/appstore.h:appstore_draw` | `src/include/ui/appstore.h` | `appstore_draw` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/appstore.h:appstore_get_mode` | `src/include/ui/appstore.h` | `appstore_get_mode` | `ui` | `COVERED` | 3 |
@@ -6969,40 +6969,40 @@
 | `c:src/taskbar/taskbar.c:taskbar_update_clock` | `src/taskbar/taskbar.c` | `taskbar_update_clock` | `taskbar` | `COVERED` | 1 |
 | `c:src/taskbar/taskbar.c:taskbar_uses_gui` | `src/taskbar/taskbar.c` | `taskbar_uses_gui` | `taskbar` | `COVERED` | 3 |
 | `c:src/taskbar/taskbar.c:update_dimensions` | `src/taskbar/taskbar.c` | `update_dimensions` | `taskbar` | `COVERED` | 1 |
-| `c:src/thread/thread.c:thread_block` | `src/thread/thread.c` | `thread_block` | `thread` | `PENDING` | 0 |
-| `c:src/thread/thread.c:thread_block_indefinite` | `src/thread/thread.c` | `thread_block_indefinite` | `thread` | `PENDING` | 0 |
-| `c:src/thread/thread.c:thread_cancel_wait` | `src/thread/thread.c` | `thread_cancel_wait` | `thread` | `PENDING` | 0 |
-| `c:src/thread/thread.c:thread_copy_wait_text` | `src/thread/thread.c` | `thread_copy_wait_text` | `thread` | `PENDING` | 0 |
-| `c:src/thread/thread.c:thread_copy_waiters` | `src/thread/thread.c` | `thread_copy_waiters` | `thread` | `PENDING` | 0 |
-| `c:src/thread/thread.c:thread_create` | `src/thread/thread.c` | `thread_create` | `thread` | `PENDING` | 0 |
-| `c:src/thread/thread.c:thread_destroy` | `src/thread/thread.c` | `thread_destroy` | `thread` | `COVERED` | 2 |
+| `c:src/thread/thread.c:thread_block` | `src/thread/thread.c` | `thread_block` | `thread` | `COVERED` | 1 |
+| `c:src/thread/thread.c:thread_block_indefinite` | `src/thread/thread.c` | `thread_block_indefinite` | `thread` | `COVERED` | 1 |
+| `c:src/thread/thread.c:thread_cancel_wait` | `src/thread/thread.c` | `thread_cancel_wait` | `thread` | `COVERED` | 1 |
+| `c:src/thread/thread.c:thread_copy_wait_text` | `src/thread/thread.c` | `thread_copy_wait_text` | `thread` | `COVERED` | 1 |
+| `c:src/thread/thread.c:thread_copy_waiters` | `src/thread/thread.c` | `thread_copy_waiters` | `thread` | `COVERED` | 1 |
+| `c:src/thread/thread.c:thread_create` | `src/thread/thread.c` | `thread_create` | `thread` | `COVERED` | 1 |
+| `c:src/thread/thread.c:thread_destroy` | `src/thread/thread.c` | `thread_destroy` | `thread` | `COVERED` | 3 |
 | `c:src/thread/thread.c:thread_entry_trampoline` | `src/thread/thread.c` | `thread_entry_trampoline` | `thread` | `COVERED` | 2 |
-| `c:src/thread/thread.c:thread_get_by_id` | `src/thread/thread.c` | `thread_get_by_id` | `thread` | `PENDING` | 0 |
-| `c:src/thread/thread.c:thread_get_count` | `src/thread/thread.c` | `thread_get_count` | `thread` | `COVERED` | 4 |
-| `c:src/thread/thread.c:thread_get_count_by_owner` | `src/thread/thread.c` | `thread_get_count_by_owner` | `thread` | `COVERED` | 2 |
-| `c:src/thread/thread.c:thread_get_current` | `src/thread/thread.c` | `thread_get_current` | `thread` | `PENDING` | 0 |
-| `c:src/thread/thread.c:thread_index` | `src/thread/thread.c` | `thread_index` | `thread` | `COVERED` | 2 |
-| `c:src/thread/thread.c:thread_init` | `src/thread/thread.c` | `thread_init` | `thread` | `PENDING` | 0 |
-| `c:src/thread/thread.c:thread_is_ready` | `src/thread/thread.c` | `thread_is_ready` | `thread` | `COVERED` | 2 |
-| `c:src/thread/thread.c:thread_prepare_stack` | `src/thread/thread.c` | `thread_prepare_stack` | `thread` | `COVERED` | 2 |
+| `c:src/thread/thread.c:thread_get_by_id` | `src/thread/thread.c` | `thread_get_by_id` | `thread` | `COVERED` | 1 |
+| `c:src/thread/thread.c:thread_get_count` | `src/thread/thread.c` | `thread_get_count` | `thread` | `COVERED` | 5 |
+| `c:src/thread/thread.c:thread_get_count_by_owner` | `src/thread/thread.c` | `thread_get_count_by_owner` | `thread` | `COVERED` | 3 |
+| `c:src/thread/thread.c:thread_get_current` | `src/thread/thread.c` | `thread_get_current` | `thread` | `COVERED` | 1 |
+| `c:src/thread/thread.c:thread_index` | `src/thread/thread.c` | `thread_index` | `thread` | `COVERED` | 3 |
+| `c:src/thread/thread.c:thread_init` | `src/thread/thread.c` | `thread_init` | `thread` | `COVERED` | 1 |
+| `c:src/thread/thread.c:thread_is_ready` | `src/thread/thread.c` | `thread_is_ready` | `thread` | `COVERED` | 3 |
+| `c:src/thread/thread.c:thread_prepare_stack` | `src/thread/thread.c` | `thread_prepare_stack` | `thread` | `COVERED` | 3 |
 | `c:src/thread/thread.c:thread_run_self_test` | `src/thread/thread.c` | `thread_run_self_test` | `thread` | `COVERED` | 2 |
-| `c:src/thread/thread.c:thread_schedule_next` | `src/thread/thread.c` | `thread_schedule_next` | `thread` | `PENDING` | 0 |
-| `c:src/thread/thread.c:thread_scheduler_tick` | `src/thread/thread.c` | `thread_scheduler_tick` | `thread` | `COVERED` | 7 |
-| `c:src/thread/thread.c:thread_switch_to_scheduler` | `src/thread/thread.c` | `thread_switch_to_scheduler` | `thread` | `COVERED` | 2 |
+| `c:src/thread/thread.c:thread_schedule_next` | `src/thread/thread.c` | `thread_schedule_next` | `thread` | `COVERED` | 1 |
+| `c:src/thread/thread.c:thread_scheduler_tick` | `src/thread/thread.c` | `thread_scheduler_tick` | `thread` | `COVERED` | 8 |
+| `c:src/thread/thread.c:thread_switch_to_scheduler` | `src/thread/thread.c` | `thread_switch_to_scheduler` | `thread` | `COVERED` | 3 |
 | `c:src/thread/thread.c:thread_test_record` | `src/thread/thread.c` | `thread_test_record` | `thread` | `COVERED` | 2 |
 | `c:src/thread/thread.c:thread_test_worker_a` | `src/thread/thread.c` | `thread_test_worker_a` | `thread` | `COVERED` | 2 |
 | `c:src/thread/thread.c:thread_test_worker_b` | `src/thread/thread.c` | `thread_test_worker_b` | `thread` | `COVERED` | 2 |
-| `c:src/thread/thread.c:thread_unblock` | `src/thread/thread.c` | `thread_unblock` | `thread` | `PENDING` | 0 |
-| `c:src/thread/thread.c:thread_wait` | `src/thread/thread.c` | `thread_wait` | `thread` | `PENDING` | 0 |
-| `c:src/thread/thread.c:thread_wait_block_transition` | `src/thread/thread.c` | `thread_wait_block_transition` | `thread` | `PENDING` | 0 |
-| `c:src/thread/thread.c:thread_wait_clear` | `src/thread/thread.c` | `thread_wait_clear` | `thread` | `PENDING` | 0 |
-| `c:src/thread/thread.c:thread_wait_deadline_reached` | `src/thread/thread.c` | `thread_wait_deadline_reached` | `thread` | `PENDING` | 0 |
-| `c:src/thread/thread.c:thread_wait_irq_restore` | `src/thread/thread.c` | `thread_wait_irq_restore` | `thread` | `PENDING` | 0 |
-| `c:src/thread/thread.c:thread_wait_irq_save` | `src/thread/thread.c` | `thread_wait_irq_save` | `thread` | `PENDING` | 0 |
-| `c:src/thread/thread.c:thread_wait_wake_transition` | `src/thread/thread.c` | `thread_wait_wake_transition` | `thread` | `PENDING` | 0 |
-| `c:src/thread/thread.c:thread_wait_yield_transition` | `src/thread/thread.c` | `thread_wait_yield_transition` | `thread` | `PENDING` | 0 |
-| `c:src/thread/thread.c:thread_wake_channel` | `src/thread/thread.c` | `thread_wake_channel` | `thread` | `PENDING` | 0 |
-| `c:src/thread/thread.c:thread_yield` | `src/thread/thread.c` | `thread_yield` | `thread` | `COVERED` | 4 |
+| `c:src/thread/thread.c:thread_unblock` | `src/thread/thread.c` | `thread_unblock` | `thread` | `COVERED` | 1 |
+| `c:src/thread/thread.c:thread_wait` | `src/thread/thread.c` | `thread_wait` | `thread` | `COVERED` | 1 |
+| `c:src/thread/thread.c:thread_wait_block_transition` | `src/thread/thread.c` | `thread_wait_block_transition` | `thread` | `COVERED` | 1 |
+| `c:src/thread/thread.c:thread_wait_clear` | `src/thread/thread.c` | `thread_wait_clear` | `thread` | `COVERED` | 1 |
+| `c:src/thread/thread.c:thread_wait_deadline_reached` | `src/thread/thread.c` | `thread_wait_deadline_reached` | `thread` | `COVERED` | 1 |
+| `c:src/thread/thread.c:thread_wait_irq_restore` | `src/thread/thread.c` | `thread_wait_irq_restore` | `thread` | `COVERED` | 1 |
+| `c:src/thread/thread.c:thread_wait_irq_save` | `src/thread/thread.c` | `thread_wait_irq_save` | `thread` | `COVERED` | 1 |
+| `c:src/thread/thread.c:thread_wait_wake_transition` | `src/thread/thread.c` | `thread_wait_wake_transition` | `thread` | `COVERED` | 1 |
+| `c:src/thread/thread.c:thread_wait_yield_transition` | `src/thread/thread.c` | `thread_wait_yield_transition` | `thread` | `COVERED` | 1 |
+| `c:src/thread/thread.c:thread_wake_channel` | `src/thread/thread.c` | `thread_wake_channel` | `thread` | `COVERED` | 1 |
+| `c:src/thread/thread.c:thread_yield` | `src/thread/thread.c` | `thread_yield` | `thread` | `COVERED` | 5 |
 | `c:src/updater/updater.c:updater_cancel_check` | `src/updater/updater.c` | `updater_cancel_check` | `updater` | `PENDING` | 0 |
 | `c:src/updater/updater.c:updater_change_selection` | `src/updater/updater.c` | `updater_change_selection` | `updater` | `PENDING` | 0 |
 | `c:src/updater/updater.c:updater_close` | `src/updater/updater.c` | `updater_close` | `updater` | `PENDING` | 0 |
@@ -7371,6 +7371,7 @@
 | `host:network:tcp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar handshake, dados, ACK, FIN, RST, retransmissao, timeout e limpeza usando IPv4 e timer falsos | conexoes validas avancam no protocolo, segmentos invalidos falham com codigo canonico e nenhum estado residual permanece | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado TCP, callbacks, buffers estaticos e transporte IPv4 falso no processo host | conexoes, callbacks e estado TCP reiniciados e artefatos preservados |
 | `host:network:udp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar envio, reinjecao, checksum, listeners, broadcast e erros UDP com IPv4 simulado | datagramas validos sao entregues, entradas corrompidas sao rejeitadas e endpoints sao liberados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos, endpoints UDP e transporte IPv4 falso no processo host | todos os endpoints sao desvinculados e os artefatos sao preservados |
 | `host:process:ipc` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fixture de IPC com processos estaticos | mensagens, filas, espera, foco e limpeza validos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente processos estaticos e filas falsas no processo host | filas, foco e estado da fixture restaurados com artefatos preservados |
+| `host:process:runtime` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, snapshots, scheduler, limites de criacao, transicoes, cancelamento, sinais, energia e filas de espera com processos estaticos | o gerenciador preserva codigos canonicos, estados, identidade, snapshots, limpeza e invariantes sem executar instrucoes privilegiadas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas, processos e buffers estaticos da fixture host | processo host encerrado, processos estaticos removidos e manifesto, logs e cobertura preservados |
 | `host:process:signals` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fixture de sinais com processos estaticos | mascaras, handlers, coalescencia, notificacao e invariantes validas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente processos estaticos e stubs de paging no processo host | estado de sinais restaurado e artefatos preservados |
 | `host:security:tls` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar politica, estados, validade, cadeia, SAN, pinning, rotacao, revogacao e autoteste TLS com relogio e RNG falsos | identidades validas sao aceitas, rejeicoes retornam motivo canonico e capacidades indisponiveis permanecem explicitas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado TLS, politica e dependencias falsas no processo host | estado TLS e dependencias falsas reiniciados e artefatos preservados |
 | `host:security:tls-client` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar tls_client.c com engine BearSSL, socket, relogio e RNG falsos | handshake, envio, recepcao, EOF, estados de erro e limpeza preservam os contratos do adaptador | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do adaptador e fixtures do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7440,7 +7441,7 @@
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
 | `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
-| `host:process:runtime` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, snapshots, scheduler, limites de criacao, transicoes, cancelamento, sinais, energia e filas de espera com processos estaticos | o gerenciador preserva codigos canonicos, estados, identidade, snapshots, limpeza e invariantes sem executar instrucoes privilegiadas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas, processos e buffers estaticos da fixture host | processo host encerrado, processos estaticos removidos e manifesto, logs e cobertura preservados |
+| `host:process:threads` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, criacao, selecao, yield, bloqueio, espera, cancelamento, desbloqueio, timeouts, limites e limpeza com threads e stacks estaticas | o scheduler preserva estados, identidade, filas de espera, codigos canonicos e limpeza sem executar troca de contexto Assembly | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas, threads e stacks estaticas da fixture host | processo host encerrado, threads estaticas removidas e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -9304,26 +9305,6 @@
 - `c:src/shell/taskmanager.c:taskmgr_thread_state_name`
 - `c:src/shell/taskmanager.c:taskmgr_update_cpu_metrics`
 - `c:src/shell/taskmanager.c:taskmgr_update_memory_stats`
-- `c:src/thread/thread.c:thread_block`
-- `c:src/thread/thread.c:thread_block_indefinite`
-- `c:src/thread/thread.c:thread_cancel_wait`
-- `c:src/thread/thread.c:thread_copy_wait_text`
-- `c:src/thread/thread.c:thread_copy_waiters`
-- `c:src/thread/thread.c:thread_create`
-- `c:src/thread/thread.c:thread_get_by_id`
-- `c:src/thread/thread.c:thread_get_current`
-- `c:src/thread/thread.c:thread_init`
-- `c:src/thread/thread.c:thread_schedule_next`
-- `c:src/thread/thread.c:thread_unblock`
-- `c:src/thread/thread.c:thread_wait`
-- `c:src/thread/thread.c:thread_wait_block_transition`
-- `c:src/thread/thread.c:thread_wait_clear`
-- `c:src/thread/thread.c:thread_wait_deadline_reached`
-- `c:src/thread/thread.c:thread_wait_irq_restore`
-- `c:src/thread/thread.c:thread_wait_irq_save`
-- `c:src/thread/thread.c:thread_wait_wake_transition`
-- `c:src/thread/thread.c:thread_wait_yield_transition`
-- `c:src/thread/thread.c:thread_wake_channel`
 - `c:src/updater/updater.c:updater_cancel_check`
 - `c:src/updater/updater.c:updater_change_selection`
 - `c:src/updater/updater.c:updater_close`

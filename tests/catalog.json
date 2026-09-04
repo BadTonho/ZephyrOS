@@ -32987,6 +32987,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:threads",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -32996,7 +32997,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/thread.h:thread_block_indefinite",
@@ -33014,6 +33015,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:threads",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -33023,7 +33025,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/thread.h:thread_cancel_wait",
@@ -33041,6 +33043,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:threads",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -33050,7 +33053,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/thread.h:thread_context_switch",
@@ -33086,6 +33089,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:threads",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -33095,7 +33099,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/thread.h:thread_create",
@@ -33113,6 +33117,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:threads",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -33122,7 +33127,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/thread.h:thread_destroy",
@@ -33140,6 +33145,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:threads",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -33149,7 +33155,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/thread.h:thread_get_by_id",
@@ -33167,6 +33173,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:threads",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -33176,7 +33183,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/thread.h:thread_get_count",
@@ -33194,6 +33201,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:threads",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -33203,7 +33211,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/thread.h:thread_get_count_by_owner",
@@ -33221,6 +33229,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:threads",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -33230,7 +33239,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/thread.h:thread_get_current",
@@ -33248,6 +33257,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:threads",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -33257,7 +33267,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/thread.h:thread_init",
@@ -33275,6 +33285,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:threads",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -33284,7 +33295,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/thread.h:thread_is_ready",
@@ -33302,6 +33313,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:threads",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -33311,7 +33323,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/thread.h:thread_run_self_test",
@@ -33329,6 +33341,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:threads",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -33338,7 +33351,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/thread.h:thread_schedule_next",
@@ -33356,6 +33369,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:threads",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -33365,7 +33379,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/thread.h:thread_scheduler_tick",
@@ -33383,6 +33397,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:threads",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -33392,7 +33407,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/thread.h:thread_unblock",
@@ -33410,6 +33425,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:threads",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -33419,7 +33435,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/thread.h:thread_wait",
@@ -33437,6 +33453,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:threads",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -33446,7 +33463,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/thread.h:thread_wake_channel",
@@ -33464,6 +33481,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:threads",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -33473,7 +33491,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/thread.h:thread_yield",
@@ -33491,6 +33509,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:threads",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -33500,7 +33519,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/appstore.h:appstore_close",
@@ -147879,9 +147898,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:threads"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/thread/thread.c:thread_block_indefinite",
@@ -147897,9 +147919,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:threads"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/thread/thread.c:thread_cancel_wait",
@@ -147915,9 +147940,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:threads"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/thread/thread.c:thread_copy_wait_text",
@@ -147933,9 +147961,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:threads"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/thread/thread.c:thread_copy_waiters",
@@ -147951,9 +147982,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:threads"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/thread/thread.c:thread_create",
@@ -147969,9 +148003,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:threads"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/thread/thread.c:thread_destroy",
@@ -147989,11 +148026,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:threads",
         "qemu:tst4:execution",
         "qemu:tst6:stress:kernel"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/thread/thread.c:thread_entry_trampoline",
@@ -148031,9 +148069,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:threads"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/thread/thread.c:thread_get_count",
@@ -148051,13 +148092,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:threads",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
         "qemu:tst6:stress:kernel"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/thread/thread.c:thread_get_count_by_owner",
@@ -148075,11 +148117,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:threads",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/thread/thread.c:thread_get_current",
@@ -148095,9 +148138,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:threads"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/thread/thread.c:thread_index",
@@ -148115,11 +148161,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:threads",
         "qemu:tst4:execution",
         "qemu:tst6:stress:kernel"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/thread/thread.c:thread_init",
@@ -148135,9 +148182,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:threads"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/thread/thread.c:thread_is_ready",
@@ -148155,11 +148205,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:threads",
         "qemu:tst4:execution",
         "qemu:tst6:stress:kernel"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/thread/thread.c:thread_prepare_stack",
@@ -148177,11 +148228,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:threads",
         "qemu:tst4:execution",
         "qemu:tst6:stress:kernel"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/thread/thread.c:thread_run_self_test",
@@ -148219,9 +148271,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:threads"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/thread/thread.c:thread_scheduler_tick",
@@ -148239,6 +148294,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:threads",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -148248,7 +148304,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/thread/thread.c:thread_switch_to_scheduler",
@@ -148266,11 +148322,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:threads",
         "qemu:tst4:execution",
         "qemu:tst6:stress:kernel"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/thread/thread.c:thread_test_record",
@@ -148352,9 +148409,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:threads"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/thread/thread.c:thread_wait",
@@ -148370,9 +148430,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:threads"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/thread/thread.c:thread_wait_block_transition",
@@ -148388,9 +148451,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:threads"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/thread/thread.c:thread_wait_clear",
@@ -148406,9 +148472,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:threads"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/thread/thread.c:thread_wait_deadline_reached",
@@ -148424,9 +148493,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:threads"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/thread/thread.c:thread_wait_irq_restore",
@@ -148442,9 +148514,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:threads"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/thread/thread.c:thread_wait_irq_save",
@@ -148460,9 +148535,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:threads"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/thread/thread.c:thread_wait_wake_transition",
@@ -148478,9 +148556,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:threads"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/thread/thread.c:thread_wait_yield_transition",
@@ -148496,9 +148577,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:threads"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/thread/thread.c:thread_wake_channel",
@@ -148514,9 +148598,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:threads"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/thread/thread.c:thread_yield",
@@ -148534,13 +148621,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:threads",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
         "qemu:tst6:stress:kernel"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/updater/updater.c:updater_cancel_check",
@@ -160492,6 +160580,165 @@
         "ipc",
         "coverage"
       ]
+    },
+    {
+      "id": "host:process:runtime",
+      "scenario": "Contrato host-only do ciclo de vida e estados do gerenciador de processos",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "hardware": "none"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "exercitar inicializacao, snapshots, scheduler, limites de criacao, transicoes, cancelamento, sinais, energia e filas de espera com processos estaticos",
+      "expected": "o gerenciador preserva codigos canonicos, estados, identidade, snapshots, limpeza e invariantes sem executar instrucoes privilegiadas",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente tabelas, processos e buffers estaticos da fixture host",
+      "cleanup": "processo host encerrado, processos estaticos removidos e manifesto, logs e cobertura preservados",
+      "surface_ids": [
+        "api:src/include/process/process.h:process_apply_pending_cancel",
+        "api:src/include/process/process.h:process_block",
+        "api:src/include/process/process.h:process_bootstrap_idle",
+        "api:src/include/process/process.h:process_cancel_focused_user",
+        "api:src/include/process/process.h:process_cancel_user",
+        "api:src/include/process/process.h:process_cancel_user_test",
+        "api:src/include/process/process.h:process_cancel_wait",
+        "api:src/include/process/process.h:process_copy_waiters",
+        "api:src/include/process/process.h:process_create",
+        "api:src/include/process/process.h:process_create_user_image",
+        "api:src/include/process/process.h:process_create_user_image_suspended",
+        "api:src/include/process/process.h:process_create_user_image_suspended_with_launch",
+        "api:src/include/process/process.h:process_create_user_test",
+        "api:src/include/process/process.h:process_create_with_stack_size",
+        "api:src/include/process/process.h:process_destroy",
+        "api:src/include/process/process.h:process_exit_current",
+        "api:src/include/process/process.h:process_finish_user_termination",
+        "api:src/include/process/process.h:process_get_by_pid",
+        "api:src/include/process/process.h:process_get_count",
+        "api:src/include/process/process.h:process_get_current",
+        "api:src/include/process/process.h:process_get_current_pid",
+        "api:src/include/process/process.h:process_get_event_generation",
+        "api:src/include/process/process.h:process_get_last_user_fault",
+        "api:src/include/process/process.h:process_get_state_count",
+        "api:src/include/process/process.h:process_get_user_count",
+        "api:src/include/process/process.h:process_get_user_fault_count",
+        "api:src/include/process/process.h:process_handle_user_exception",
+        "api:src/include/process/process.h:process_init",
+        "api:src/include/process/process.h:process_is_user",
+        "api:src/include/process/process.h:process_power_set_quiescing",
+        "api:src/include/process/process.h:process_power_shutdown_users",
+        "api:src/include/process/process.h:process_prepare_user_termination",
+        "api:src/include/process/process.h:process_reap_finished_user",
+        "api:src/include/process/process.h:process_snapshot_copy",
+        "api:src/include/process/process.h:process_snapshot_copy_vmas",
+        "api:src/include/process/process.h:process_snapshot_list",
+        "api:src/include/process/process.h:process_stack_check_current",
+        "api:src/include/process/process.h:process_stack_get_info",
+        "api:src/include/process/process.h:process_stack_self_test",
+        "api:src/include/process/process.h:process_stack_validate_all",
+        "api:src/include/process/process.h:process_start_scheduler",
+        "api:src/include/process/process.h:process_start_user",
+        "api:src/include/process/process.h:process_take_user_test_result",
+        "api:src/include/process/process.h:process_terminate_user_signal",
+        "api:src/include/process/process.h:process_unblock",
+        "api:src/include/process/process.h:process_wait",
+        "api:src/include/process/process.h:process_wake_channel",
+        "api:src/include/process/process.h:process_yield",
+        "api:src/include/process/process.h:scheduler_get_stats",
+        "api:src/include/process/process.h:scheduler_init",
+        "api:src/include/process/process.h:scheduler_preempt_user",
+        "api:src/include/process/process.h:scheduler_schedule",
+        "api:src/include/process/process.h:scheduler_tick",
+        "api:src/include/process/process.h:scheduler_validate_invariants",
+        "c:src/process/process.c:process_apply_pending_cancel",
+        "c:src/process/process.c:process_cancel_focused_user",
+        "c:src/process/process.c:process_cancel_user",
+        "c:src/process/process.c:process_cancel_user_test",
+        "c:src/process/process.c:process_copy_waiters",
+        "c:src/process/process.c:process_create",
+        "c:src/process/process.c:process_create_internal",
+        "c:src/process/process.c:process_create_user_image",
+        "c:src/process/process.c:process_create_user_image_internal",
+        "c:src/process/process.c:process_create_user_image_suspended",
+        "c:src/process/process.c:process_create_user_image_suspended_with_launch",
+        "c:src/process/process.c:process_create_user_test",
+        "c:src/process/process.c:process_create_with_stack_size",
+        "c:src/process/process.c:process_destroy",
+        "c:src/process/process.c:process_get_by_pid",
+        "c:src/process/process.c:process_get_count",
+        "c:src/process/process.c:process_get_current",
+        "c:src/process/process.c:process_get_current_pid",
+        "c:src/process/process.c:process_get_event_generation",
+        "c:src/process/process.c:process_get_last_user_fault",
+        "c:src/process/process.c:process_get_state_count",
+        "c:src/process/process.c:process_get_user_count",
+        "c:src/process/process.c:process_get_user_fault_count",
+        "c:src/process/process.c:process_handle_user_exception",
+        "c:src/process/process.c:process_init",
+        "c:src/process/process.c:process_initialize_pid_pool",
+        "c:src/process/process.c:process_is_user",
+        "c:src/process/process.c:process_mark_user_zombie",
+        "c:src/process/process.c:process_pointer_valid",
+        "c:src/process/process.c:process_power_has_active_users",
+        "c:src/process/process.c:process_power_reap_users",
+        "c:src/process/process.c:process_power_send_signal",
+        "c:src/process/process.c:process_power_set_quiescing",
+        "c:src/process/process.c:process_power_shutdown_users",
+        "c:src/process/process.c:process_power_snapshot_matches",
+        "c:src/process/process.c:process_power_snapshot_users",
+        "c:src/process/process.c:process_prepare_user_termination",
+        "c:src/process/process.c:process_release_pid",
+        "c:src/process/process.c:process_release_user_image",
+        "c:src/process/process.c:process_slot_index",
+        "c:src/process/process.c:process_snapshot_copy",
+        "c:src/process/process.c:process_snapshot_copy_vmas",
+        "c:src/process/process.c:process_snapshot_fill_locked",
+        "c:src/process/process.c:process_snapshot_list",
+        "c:src/process/process.c:process_stack_bounds_valid",
+        "c:src/process/process.c:process_stack_check_current",
+        "c:src/process/process.c:process_stack_copy_name",
+        "c:src/process/process.c:process_stack_get_info",
+        "c:src/process/process.c:process_stack_observe",
+        "c:src/process/process.c:process_stack_release",
+        "c:src/process/process.c:process_stack_size_valid",
+        "c:src/process/process.c:process_stack_validate_all",
+        "c:src/process/process.c:process_start_user",
+        "c:src/process/process.c:process_take_user_test_result",
+        "c:src/process/process.c:process_terminate_user_signal",
+        "c:src/process/process.c:process_unblock",
+        "c:src/process/process.c:process_user_build_code",
+        "c:src/process/process.c:process_user_emit_mov",
+        "c:src/process/process.c:process_user_patch_u32",
+        "c:src/process/process.c:process_wait",
+        "c:src/process/process.c:process_wait_irq_restore",
+        "c:src/process/process.c:process_wait_irq_save",
+        "c:src/process/process.c:process_wake_channel",
+        "c:src/process/process.c:scheduler_find_next_ready",
+        "c:src/process/process.c:scheduler_get_stats",
+        "c:src/process/process.c:scheduler_init",
+        "c:src/process/process.c:scheduler_schedule",
+        "c:src/process/process.c:scheduler_validate_invariants",
+        "c:src/process/process.c:scheduler_validate_pid_table",
+        "c:src/process/process.c:scheduler_validate_states"
+      ],
+      "tags": [
+        "host",
+        "process",
+        "scheduler",
+        "snapshots",
+        "limits",
+        "recovery",
+        "coverage"
+      ],
+      "status": "AUTOMATED"
     },
     {
       "id": "host:process:signals",
@@ -172778,8 +173025,8 @@
       "status": "AUTOMATED"
     },
     {
-      "id": "host:process:runtime",
-      "scenario": "Contrato host-only do ciclo de vida e estados do gerenciador de processos",
+      "id": "host:process:threads",
+      "scenario": "Contrato host-only do scheduler cooperativo de threads",
       "owner": "quality",
       "layer": "host",
       "executor": "host",
@@ -172794,144 +173041,68 @@
         "hardware": "none"
       },
       "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "exercitar inicializacao, snapshots, scheduler, limites de criacao, transicoes, cancelamento, sinais, energia e filas de espera com processos estaticos",
-      "expected": "o gerenciador preserva codigos canonicos, estados, identidade, snapshots, limpeza e invariantes sem executar instrucoes privilegiadas",
+      "action": "exercitar inicializacao, criacao, selecao, yield, bloqueio, espera, cancelamento, desbloqueio, timeouts, limites e limpeza com threads e stacks estaticas",
+      "expected": "o scheduler preserva estados, identidade, filas de espera, codigos canonicos e limpeza sem executar troca de contexto Assembly",
       "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
-      "effects": "somente tabelas, processos e buffers estaticos da fixture host",
-      "cleanup": "processo host encerrado, processos estaticos removidos e manifesto, logs e cobertura preservados",
+      "effects": "somente tabelas, threads e stacks estaticas da fixture host",
+      "cleanup": "processo host encerrado, threads estaticas removidas e manifesto, logs e cobertura preservados",
       "surface_ids": [
-        "api:src/include/process/process.h:process_apply_pending_cancel",
-        "api:src/include/process/process.h:process_block",
-        "api:src/include/process/process.h:process_bootstrap_idle",
-        "api:src/include/process/process.h:process_cancel_focused_user",
-        "api:src/include/process/process.h:process_cancel_user",
-        "api:src/include/process/process.h:process_cancel_user_test",
-        "api:src/include/process/process.h:process_cancel_wait",
-        "api:src/include/process/process.h:process_copy_waiters",
-        "api:src/include/process/process.h:process_create",
-        "api:src/include/process/process.h:process_create_user_image",
-        "api:src/include/process/process.h:process_create_user_image_suspended",
-        "api:src/include/process/process.h:process_create_user_image_suspended_with_launch",
-        "api:src/include/process/process.h:process_create_user_test",
-        "api:src/include/process/process.h:process_create_with_stack_size",
-        "api:src/include/process/process.h:process_destroy",
-        "api:src/include/process/process.h:process_exit_current",
-        "api:src/include/process/process.h:process_finish_user_termination",
-        "api:src/include/process/process.h:process_get_by_pid",
-        "api:src/include/process/process.h:process_get_count",
-        "api:src/include/process/process.h:process_get_current",
-        "api:src/include/process/process.h:process_get_current_pid",
-        "api:src/include/process/process.h:process_get_event_generation",
-        "api:src/include/process/process.h:process_get_last_user_fault",
-        "api:src/include/process/process.h:process_get_state_count",
-        "api:src/include/process/process.h:process_get_user_count",
-        "api:src/include/process/process.h:process_get_user_fault_count",
-        "api:src/include/process/process.h:process_handle_user_exception",
-        "api:src/include/process/process.h:process_init",
-        "api:src/include/process/process.h:process_is_user",
-        "api:src/include/process/process.h:process_power_set_quiescing",
-        "api:src/include/process/process.h:process_power_shutdown_users",
-        "api:src/include/process/process.h:process_prepare_user_termination",
-        "api:src/include/process/process.h:process_reap_finished_user",
-        "api:src/include/process/process.h:process_snapshot_copy",
-        "api:src/include/process/process.h:process_snapshot_copy_vmas",
-        "api:src/include/process/process.h:process_snapshot_list",
-        "api:src/include/process/process.h:process_stack_check_current",
-        "api:src/include/process/process.h:process_stack_get_info",
-        "api:src/include/process/process.h:process_stack_self_test",
-        "api:src/include/process/process.h:process_stack_validate_all",
-        "api:src/include/process/process.h:process_start_scheduler",
-        "api:src/include/process/process.h:process_start_user",
-        "api:src/include/process/process.h:process_take_user_test_result",
-        "api:src/include/process/process.h:process_terminate_user_signal",
-        "api:src/include/process/process.h:process_unblock",
-        "api:src/include/process/process.h:process_wait",
-        "api:src/include/process/process.h:process_wake_channel",
-        "api:src/include/process/process.h:process_yield",
-        "api:src/include/process/process.h:scheduler_get_stats",
-        "api:src/include/process/process.h:scheduler_init",
-        "api:src/include/process/process.h:scheduler_preempt_user",
-        "api:src/include/process/process.h:scheduler_schedule",
-        "api:src/include/process/process.h:scheduler_tick",
-        "api:src/include/process/process.h:scheduler_validate_invariants",
-        "c:src/process/process.c:process_apply_pending_cancel",
-        "c:src/process/process.c:process_cancel_focused_user",
-        "c:src/process/process.c:process_cancel_user",
-        "c:src/process/process.c:process_cancel_user_test",
-        "c:src/process/process.c:process_copy_waiters",
-        "c:src/process/process.c:process_create",
-        "c:src/process/process.c:process_create_internal",
-        "c:src/process/process.c:process_create_user_image",
-        "c:src/process/process.c:process_create_user_image_internal",
-        "c:src/process/process.c:process_create_user_image_suspended",
-        "c:src/process/process.c:process_create_user_image_suspended_with_launch",
-        "c:src/process/process.c:process_create_user_test",
-        "c:src/process/process.c:process_create_with_stack_size",
-        "c:src/process/process.c:process_destroy",
-        "c:src/process/process.c:process_get_by_pid",
-        "c:src/process/process.c:process_get_count",
-        "c:src/process/process.c:process_get_current",
-        "c:src/process/process.c:process_get_current_pid",
-        "c:src/process/process.c:process_get_event_generation",
-        "c:src/process/process.c:process_get_last_user_fault",
-        "c:src/process/process.c:process_get_state_count",
-        "c:src/process/process.c:process_get_user_count",
-        "c:src/process/process.c:process_get_user_fault_count",
-        "c:src/process/process.c:process_handle_user_exception",
-        "c:src/process/process.c:process_init",
-        "c:src/process/process.c:process_initialize_pid_pool",
-        "c:src/process/process.c:process_is_user",
-        "c:src/process/process.c:process_mark_user_zombie",
-        "c:src/process/process.c:process_pointer_valid",
-        "c:src/process/process.c:process_power_has_active_users",
-        "c:src/process/process.c:process_power_reap_users",
-        "c:src/process/process.c:process_power_send_signal",
-        "c:src/process/process.c:process_power_set_quiescing",
-        "c:src/process/process.c:process_power_shutdown_users",
-        "c:src/process/process.c:process_power_snapshot_matches",
-        "c:src/process/process.c:process_power_snapshot_users",
-        "c:src/process/process.c:process_prepare_user_termination",
-        "c:src/process/process.c:process_release_pid",
-        "c:src/process/process.c:process_release_user_image",
-        "c:src/process/process.c:process_slot_index",
-        "c:src/process/process.c:process_snapshot_copy",
-        "c:src/process/process.c:process_snapshot_copy_vmas",
-        "c:src/process/process.c:process_snapshot_fill_locked",
-        "c:src/process/process.c:process_snapshot_list",
-        "c:src/process/process.c:process_stack_bounds_valid",
-        "c:src/process/process.c:process_stack_check_current",
-        "c:src/process/process.c:process_stack_copy_name",
-        "c:src/process/process.c:process_stack_get_info",
-        "c:src/process/process.c:process_stack_observe",
-        "c:src/process/process.c:process_stack_release",
-        "c:src/process/process.c:process_stack_size_valid",
-        "c:src/process/process.c:process_stack_validate_all",
-        "c:src/process/process.c:process_start_user",
-        "c:src/process/process.c:process_take_user_test_result",
-        "c:src/process/process.c:process_terminate_user_signal",
-        "c:src/process/process.c:process_unblock",
-        "c:src/process/process.c:process_user_build_code",
-        "c:src/process/process.c:process_user_emit_mov",
-        "c:src/process/process.c:process_user_patch_u32",
-        "c:src/process/process.c:process_wait",
-        "c:src/process/process.c:process_wait_irq_restore",
-        "c:src/process/process.c:process_wait_irq_save",
-        "c:src/process/process.c:process_wake_channel",
-        "c:src/process/process.c:scheduler_find_next_ready",
-        "c:src/process/process.c:scheduler_get_stats",
-        "c:src/process/process.c:scheduler_init",
-        "c:src/process/process.c:scheduler_schedule",
-        "c:src/process/process.c:scheduler_validate_invariants",
-        "c:src/process/process.c:scheduler_validate_pid_table",
-        "c:src/process/process.c:scheduler_validate_states"
+        "api:src/include/process/thread.h:thread_block",
+        "api:src/include/process/thread.h:thread_block_indefinite",
+        "api:src/include/process/thread.h:thread_cancel_wait",
+        "api:src/include/process/thread.h:thread_copy_waiters",
+        "api:src/include/process/thread.h:thread_create",
+        "api:src/include/process/thread.h:thread_destroy",
+        "api:src/include/process/thread.h:thread_get_by_id",
+        "api:src/include/process/thread.h:thread_get_count",
+        "api:src/include/process/thread.h:thread_get_count_by_owner",
+        "api:src/include/process/thread.h:thread_get_current",
+        "api:src/include/process/thread.h:thread_init",
+        "api:src/include/process/thread.h:thread_is_ready",
+        "api:src/include/process/thread.h:thread_run_self_test",
+        "api:src/include/process/thread.h:thread_schedule_next",
+        "api:src/include/process/thread.h:thread_scheduler_tick",
+        "api:src/include/process/thread.h:thread_unblock",
+        "api:src/include/process/thread.h:thread_wait",
+        "api:src/include/process/thread.h:thread_wake_channel",
+        "api:src/include/process/thread.h:thread_yield",
+        "c:src/thread/thread.c:thread_block",
+        "c:src/thread/thread.c:thread_block_indefinite",
+        "c:src/thread/thread.c:thread_cancel_wait",
+        "c:src/thread/thread.c:thread_copy_wait_text",
+        "c:src/thread/thread.c:thread_copy_waiters",
+        "c:src/thread/thread.c:thread_create",
+        "c:src/thread/thread.c:thread_destroy",
+        "c:src/thread/thread.c:thread_get_by_id",
+        "c:src/thread/thread.c:thread_get_count",
+        "c:src/thread/thread.c:thread_get_count_by_owner",
+        "c:src/thread/thread.c:thread_get_current",
+        "c:src/thread/thread.c:thread_index",
+        "c:src/thread/thread.c:thread_init",
+        "c:src/thread/thread.c:thread_is_ready",
+        "c:src/thread/thread.c:thread_prepare_stack",
+        "c:src/thread/thread.c:thread_schedule_next",
+        "c:src/thread/thread.c:thread_scheduler_tick",
+        "c:src/thread/thread.c:thread_switch_to_scheduler",
+        "c:src/thread/thread.c:thread_unblock",
+        "c:src/thread/thread.c:thread_wait",
+        "c:src/thread/thread.c:thread_wait_block_transition",
+        "c:src/thread/thread.c:thread_wait_clear",
+        "c:src/thread/thread.c:thread_wait_deadline_reached",
+        "c:src/thread/thread.c:thread_wait_irq_restore",
+        "c:src/thread/thread.c:thread_wait_irq_save",
+        "c:src/thread/thread.c:thread_wait_wake_transition",
+        "c:src/thread/thread.c:thread_wait_yield_transition",
+        "c:src/thread/thread.c:thread_wake_channel",
+        "c:src/thread/thread.c:thread_yield"
       ],
       "tags": [
         "host",
         "process",
+        "threads",
         "scheduler",
-        "snapshots",
+        "wait",
         "limits",
-        "recovery",
         "coverage"
       ],
       "status": "AUTOMATED"

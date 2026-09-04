@@ -19,11 +19,11 @@ equipamento e evidência correspondente.
 
 A infraestrutura TST1–TST7 está concluída para a matriz automatizada existente,
 mas o programa de cobertura integral ainda não está concluído. O catálogo
-mantém 36 casos `AUTOMATED` e superfícies de API e comportamento em
-`PENDING`. O próximo objetivo deste roadmap é eliminar esse `PENDING` de
-todas as superfícies de software testáveis, vinculando cada uma a um caso
-executável e a evidência reproduzível. Isso não significa declarar hardware
-físico validado sem equipamento.
+mantém 137 casos `AUTOMATED`; após o lote de processos/threads, registra 7.219
+superfícies, 5.203 `COVERED` e 2.016 `PENDING`. O próximo objetivo deste
+roadmap é eliminar esse `PENDING` de todas as superfícies de software
+testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
+Isso não significa declarar hardware físico validado sem equipamento.
 
 ## Objetivo
 
@@ -1547,6 +1547,27 @@ pendente.
   `make catalog-test`; todos terminaram com sucesso. O catalogo registra
   7.196 superficies, 3.953 `COVERED`, 3.243 `PENDING` e 86 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
+
+- Incremento Processos/threads concluído em 2026-09-04 09:52
+  (America/Sao_Paulo). Foi adicionado o caso host-only
+  `host:process:threads` e o alvo `make test-thread-host`. A fixture compila
+  `src/thread/thread.c` real com pool de threads e stacks estáticas, cobrindo
+  inicialização, criação, seleção, yield, bloqueio, espera, cancelamento,
+  desbloqueio, timeout, indisponibilidade, limites e limpeza. A espera usada
+  nos cenários de indisponibilidade e timeout é criada pela API real, para que
+  os callbacks internos de transição e a restauração do estado sejam
+  exercitados sem executar instruções privilegiadas no processo host.
+
+  A execução instrumentada terminou `PASS`, resolveu 29 superfícies de
+  `src/thread/thread.c` e registrou `unknown_addresses=[]` e
+  `ambiguous_symbols=[]` em `build/test-results/thread-host/coverage.json`.
+  Também passaram `make q3check`, `make clean`, `make`,
+  `make test-thread-host`, `make catalog-test` e os 72 testes unitários de
+  `tests.unit.test_core_host_runner` e `tests.unit.test_tst7_runner`.
+  O catálogo registra 7.219 superfícies, 5.203 `COVERED`, 2.016 `PENDING` e
+  137 casos. `thread_context_switch` e a entrada Assembly correspondente
+  continuam pendentes porque esta etapa host-only não simula cobertura
+  freestanding; elas exigem evidência real no kernel/QEMU.
 
 - Incremento Core/syscall concluido em 2026-09-04. O novo caso
   `host:core:syscall` usa uma fixture estatica para exercitar o dispatcher real

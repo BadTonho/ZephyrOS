@@ -5203,3 +5203,22 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   a suíte unitária dos runners. O catálogo atual registra 7.219 superfícies,
   5.110 `COVERED`, 2.109 `PENDING` e 133 casos. O fechamento integral, o gate
   estrito e a validação TST7 completa continuam pendentes.
+
+- Incremento Processos/threads concluído em 2026-09-04 09:52
+  (America/Sao_Paulo). Foi adicionado o caso host-only
+  `host:process:threads` e o alvo `make test-thread-host`. A fixture compila
+  `src/thread/thread.c` real com pool de threads e stacks estáticas, exercitando
+  inicialização, criação, seleção, yield, bloqueio, espera, cancelamento,
+  desbloqueio, timeout, indisponibilidade, limites e limpeza. Os cenários de
+  espera criam as entradas pela API real, preservando os callbacks internos de
+  transição no teste host.
+
+  A execução instrumentada terminou `PASS`, resolveu 29 superfícies de
+  `src/thread/thread.c` e registrou `unknown_addresses=[]` e
+  `ambiguous_symbols=[]` em `build/test-results/thread-host/coverage.json`.
+  Passaram `make q3check`, `make clean`, `make`, `make test-thread-host`,
+  `make catalog-test` e os 72 testes unitários de
+  `tests.unit.test_core_host_runner` e `tests.unit.test_tst7_runner`.
+  O catálogo registra 7.219 superfícies, 5.203 `COVERED`, 2.016 `PENDING` e
+  137 casos. `thread_context_switch` e a entrada Assembly correspondente
+  permanecem pendentes por exigirem execução freestanding/QEMU.

@@ -83,6 +83,7 @@ make test-shell-pipeline-host
 make test-socket-runtime-host
 make test-sysfs-host
 make test-process-host
+make test-thread-host
 ```
 
 O caso de scheduling cobre `wait`, `workqueue` e `irq_deferred` em processo
@@ -1614,3 +1615,20 @@ make test-syscall-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 O relatorio instrumentado fica em
 `build/test-results/syscall-host/coverage.json`; ele deve terminar com `PASS`,
 sem `unknown_addresses` ou `ambiguous_symbols`.
+
+## Threads e scheduler host-only
+
+O caso `test-thread-host` compila o scheduler cooperativo real com pool de
+threads, stacks e filas de espera estaticas. Ele exercita ciclo de vida,
+selecao, yield, bloqueio, espera, cancelamento, desbloqueio, timeout,
+indisponibilidade, limites e limpeza sem executar a troca de contexto Assembly
+privilegiada. Execute-o com:
+
+```text
+make test-thread-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O relatorio instrumentado fica em
+`build/test-results/thread-host/coverage.json`; ele deve terminar com `PASS`,
+sem `unknown_addresses` ou `ambiguous_symbols`. A cobertura da troca de
+contexto Assembly permanece separada e requer o caso freestanding/QEMU.
