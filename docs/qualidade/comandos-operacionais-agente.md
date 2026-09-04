@@ -1924,9 +1924,9 @@ host e não acessa hardware ou armazenamento real.
 ## Shell: comandos diagnósticos host-only
 
 O alvo `test-shell-diagnostics-host` executa os dispatchers reais de `pwd`,
-`cd` e `mouse` com VFS, mouse, vídeo e logs falsos. A fixture cobre caminhos
-válidos, argumentos extras, limites, estados indisponíveis e preservação da
-configuração quando uma preferência é recusada:
+`cd`, `mouse` e `log` com VFS, mouse, vídeo e logs falsos. A fixture cobre
+caminhos válidos, argumentos extras, limites, estados indisponíveis e
+preservação da configuração quando uma preferência é recusada:
 
 ```text
 make test-shell-diagnostics-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
@@ -1935,4 +1935,6 @@ make test-shell-diagnostics-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 O caso automatizado é `host:shell:diagnostics`. O relatório instrumentado fica
 em `build/test-results/shell-diagnostics-host/coverage.json` e deve terminar
 em `PASS`, com `unknown_addresses=[]` e `ambiguous_symbols=[]`. O teste não
-acessa hardware, VFS real ou persistência.
+acessa hardware, VFS real ou persistência. Os caminhos de `log` validam
+status, histórico, limpeza, níveis, código de erro, autoteste e entradas
+inválidas.

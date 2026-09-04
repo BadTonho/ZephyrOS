@@ -5692,13 +5692,14 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
 
 - Incremento Shell/diagnostics commands — concluído em 2026-09-04
   (America/Sao_Paulo). Foi criada a fixture host-only `host:shell:diagnostics`,
-  que chama diretamente os dispatchers reais de `pwd`, `cd` e `mouse`. Foram
-  validados caminhos válidos, argumentos extras, limites de token e
-  velocidade, estados indisponíveis e preservação da configuração após
-  rejeição. O alvo passou com `HOST_CC`, `-Wall -Wextra -Werror`, instrumentação
-  dinâmica e doubles estáticos de VFS, mouse, vídeo e log. A compilação host
+  que chama diretamente os dispatchers reais de `pwd`, `cd`, `mouse` e `log`.
+  Foram validados caminhos válidos, argumentos extras, limites de token e
+  velocidade, estados indisponíveis, níveis, histórico e preservação da
+  configuração após rejeição. O alvo passou com `HOST_CC`, `-Wall -Wextra -Werror`,
+  instrumentação dinâmica e doubles estáticos de VFS, mouse, vídeo e log. A
+  compilação host
   usa descarte explícito de metadados de unwind para permitir a coleta por
   seções no MinGW; o build freestanding não usa essa configuração. A evidência
   foi sincronizada e a visão do catálogo regenerada; o catálogo registra 7.293
-  superfícies, 6.135 `COVERED`, 1.158 `PENDING` e 154 casos. As pendências
+  superfícies, 6.147 `COVERED`, 1.146 `PENDING` e 154 casos. As pendências
   restantes continuam explícitas.
