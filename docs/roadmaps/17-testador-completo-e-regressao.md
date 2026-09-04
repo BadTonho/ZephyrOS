@@ -1281,6 +1281,17 @@ pendente.
   7.197 superficies, 3.898 `COVERED`, 3.299 `PENDING` e 85 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento UI/taskbar concluido em 2026-09-03. O novo caso host-only
+  `host:ui:taskbar` usa dependencias falsas de VESA, display, desktop, mouse,
+  timer e desenho para exercitar TUI e GUI, layouts, limites de botoes, menus,
+  configuracao, cliques, relogio e selecao de janelas. A execucao instrumentada
+  terminou `PASS`, resolveu todas as 47 funcoes de `src/taskbar/taskbar.c` e
+  nao registrou enderecos desconhecidos ou simbolos ambiguos. O caso foi
+  adicionado ao `full` do TST7, o catalogo foi sincronizado, renderizado e
+  validado com 7.219 superficies, 5.120 `COVERED`, 2.099 `PENDING` e 134
+  casos. O fechamento integral, o gate estrito e a validacao TST7 completa
+  continuam pendentes.
+
 - Incremento Storage/procfs concluido em 2026-09-02: foi criado o caso
   host-only `host:storage:procfs` com o provider procfs real, VFS, processos,
   snapshots e controles de log simulados. A fixture exercitou inicializacao,

@@ -5128,6 +5128,57 @@
       "evidence": "make test-idt-host PASS com gates, handlers, IRQ compartilhada, PIC, syscall, panic controlado e cobertura instrumentada completa"
     },
     {
+      "id": "taskbar-host-dynamic",
+      "domain": "ui-taskbar",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:ui:taskbar"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/taskbar-host/coverage.json",
+      "coverage_sources": [
+        "src/taskbar/taskbar.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:ui:taskbar",
+        "scenario": "Contrato host-only da taskbar em TUI e GUI com dependencias graficas falsas",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "display": "vesa-display-desktop-mouse-falsos"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "exercitar estados TUI e GUI, layouts, botoes, menus, configuracao, cliques, relogio e limites",
+        "expected": "taskbar preserva configuracao, geometria, navegacao, selecao de janelas e fallback sem hardware grafico real",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente configuracao, botoes, menus e chamadas de desenho dentro da fixture host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "ui",
+          "taskbar",
+          "tui",
+          "gui",
+          "limits",
+          "coverage"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "make test-taskbar-host PASS com TUI e GUI falsos, layouts, menus, configuracao, cliques, janelas e cobertura instrumentada"
+    },
+    {
       "id": "assembly-qemu-tst7-dynamic",
       "domain": "drivers-interrupt-assembly",
       "owner": "quality",

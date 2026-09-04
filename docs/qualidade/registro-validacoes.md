@@ -5149,6 +5149,17 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   O catálogo atual registra 7.219 superfícies, 5.092 `COVERED`, 2.127
   `PENDING` e 132 casos.
 
+- Incremento UI/taskbar concluído em 2026-09-03. O novo caso
+  `host:ui:taskbar` e o alvo `make test-taskbar-host` usam dependências falsas
+  de VESA, display, desktop, mouse, timer e desenho para exercitar TUI e GUI,
+  layouts, limites de botões, menus, configuração, cliques, relógio e seleção
+  de janelas. A execução instrumentada terminou `PASS` e resolveu todas as
+  47 superfícies de `src/taskbar/taskbar.c`, sem `unknown_addresses` ou
+  `ambiguous_symbols`. Também passaram `make catalog-test`, a unidade dos
+  runners e `make q3check`. O catálogo atual registra 7.219 superfícies,
+  5.120 `COVERED`, 2.099 `PENDING` e 134 casos. O fechamento integral, o gate
+  estrito e a validação TST7 completa continuam pendentes.
+
 - Incremento Core/app_loader concluído em 2026-09-03. O novo caso
   `host:core:app-loader` e o alvo `make test-app-loader-host` usam buffers
   estáticos e dependências falsas para exercitar parsing, validação de ZAPP,

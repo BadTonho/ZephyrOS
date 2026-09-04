@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7219**
-- Casos de teste: **133**
+- Casos de teste: **134**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 5110 |
+| `COVERED` | 5120 |
 | `MANUAL` | 0 |
-| `PENDING` | 2109 |
+| `PENDING` | 2099 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 133 |
+| `AUTOMATED` | 134 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -107,14 +107,14 @@
 | `api:src/include/apps/shell_command_utils.h:shell_command_read_two_args` | `src/include/apps/shell_command_utils.h` | `shell_command_read_two_args` | `apps` | `COVERED` | 4 |
 | `api:src/include/apps/shell_command_utils.h:shell_command_uppercase` | `src/include/apps/shell_command_utils.h` | `shell_command_uppercase` | `apps` | `COVERED` | 4 |
 | `api:src/include/apps/shell_dispatch.h:shell_dispatch_execute` | `src/include/apps/shell_dispatch.h` | `shell_dispatch_execute` | `apps` | `COVERED` | 6 |
-| `api:src/include/apps/shell_input.h:shell_input_cancel_extended` | `src/include/apps/shell_input.h` | `shell_input_cancel_extended` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell_input.h:shell_input_get_buffer` | `src/include/apps/shell_input.h` | `shell_input_get_buffer` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell_input.h:shell_input_handle_key` | `src/include/apps/shell_input.h` | `shell_input_handle_key` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_input.h:shell_input_cancel_extended` | `src/include/apps/shell_input.h` | `shell_input_cancel_extended` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_input.h:shell_input_get_buffer` | `src/include/apps/shell_input.h` | `shell_input_get_buffer` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_input.h:shell_input_handle_key` | `src/include/apps/shell_input.h` | `shell_input_handle_key` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_input.h:shell_input_init` | `src/include/apps/shell_input.h` | `shell_input_init` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell_input.h:shell_input_print_prompt` | `src/include/apps/shell_input.h` | `shell_input_print_prompt` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell_input.h:shell_input_reset` | `src/include/apps/shell_input.h` | `shell_input_reset` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell_input.h:shell_input_reset_modifiers` | `src/include/apps/shell_input.h` | `shell_input_reset_modifiers` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell_input.h:shell_input_resume_terminal` | `src/include/apps/shell_input.h` | `shell_input_resume_terminal` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_input.h:shell_input_print_prompt` | `src/include/apps/shell_input.h` | `shell_input_print_prompt` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_input.h:shell_input_reset` | `src/include/apps/shell_input.h` | `shell_input_reset` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_input.h:shell_input_reset_modifiers` | `src/include/apps/shell_input.h` | `shell_input_reset_modifiers` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_input.h:shell_input_resume_terminal` | `src/include/apps/shell_input.h` | `shell_input_resume_terminal` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_introspection.h:shell_introspection_find_value` | `src/include/apps/shell_introspection.h` | `shell_introspection_find_value` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_introspection.h:shell_introspection_parse_hex_u32` | `src/include/apps/shell_introspection.h` | `shell_introspection_parse_hex_u32` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_introspection.h:shell_introspection_parse_u32` | `src/include/apps/shell_introspection.h` | `shell_introspection_parse_u32` | `apps` | `COVERED` | 2 |
@@ -175,7 +175,7 @@
 | `api:src/include/apps/shell_runtime.h:shell_network_validate_for_checks` | `src/include/apps/shell_runtime.h` | `shell_network_validate_for_checks` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_finish_command` | `src/include/apps/shell_runtime.h` | `shell_runtime_finish_command` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key` | `src/include/apps/shell_runtime.h` | `shell_runtime_handle_terminal_key` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible` | `src/include/apps/shell_runtime.h` | `shell_runtime_is_hosted_visible` | `apps` | `COVERED` | 4 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible` | `src/include/apps/shell_runtime.h` | `shell_runtime_is_hosted_visible` | `apps` | `COVERED` | 3 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager` | `src/include/apps/shell_runtime.h` | `shell_runtime_prepare_filemanager` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_reset_input` | `src/include/apps/shell_runtime.h` | `shell_runtime_reset_input` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal` | `src/include/apps/shell_runtime.h` | `shell_runtime_resume_terminal` | `apps` | `COVERED` | 7 |
@@ -972,10 +972,10 @@
 | `api:src/include/drivers/rng.h:rng_init` | `src/include/drivers/rng.h` | `rng_init` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/rng.h:rng_validate_state` | `src/include/drivers/rng.h` | `rng_validate_state` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/rtc.h:rtc_get_status` | `src/include/drivers/rtc.h` | `rtc_get_status` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/rtc.h:rtc_init` | `src/include/drivers/rtc.h` | `rtc_init` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/rtc.h:rtc_read_utc` | `src/include/drivers/rtc.h` | `rtc_read_utc` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/rtc.h:rtc_self_test` | `src/include/drivers/rtc.h` | `rtc_self_test` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/rtc.h:rtc_validate_state` | `src/include/drivers/rtc.h` | `rtc_validate_state` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/rtc.h:rtc_init` | `src/include/drivers/rtc.h` | `rtc_init` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/rtc.h:rtc_read_utc` | `src/include/drivers/rtc.h` | `rtc_read_utc` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/rtc.h:rtc_self_test` | `src/include/drivers/rtc.h` | `rtc_self_test` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/rtc.h:rtc_validate_state` | `src/include/drivers/rtc.h` | `rtc_validate_state` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/rtl8139.h:rtl8139_handler` | `src/include/drivers/rtl8139.h` | `rtl8139_handler` | `drivers` | `COVERED` | 1 |
 | `api:src/include/drivers/rtl8139.h:rtl8139_init` | `src/include/drivers/rtl8139.h` | `rtl8139_init` | `drivers` | `COVERED` | 1 |
 | `api:src/include/drivers/rtl8811cu.h:rtl8811cu_connect_open` | `src/include/drivers/rtl8811cu.h` | `rtl8811cu_connect_open` | `drivers` | `COVERED` | 1 |
@@ -1536,28 +1536,28 @@
 | `api:src/include/ui/settings.h:settings_init` | `src/include/ui/settings.h` | `settings_init` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/settings.h:settings_is_open` | `src/include/ui/settings.h` | `settings_is_open` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/settings.h:settings_open` | `src/include/ui/settings.h` | `settings_open` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/taskbar.h:taskbar_add_app` | `src/include/ui/taskbar.h` | `taskbar_add_app` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/taskbar.h:taskbar_add_window` | `src/include/ui/taskbar.h` | `taskbar_add_window` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/taskbar.h:taskbar_draw` | `src/include/ui/taskbar.h` | `taskbar_draw` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/taskbar.h:taskbar_draw_config_menu` | `src/include/ui/taskbar.h` | `taskbar_draw_config_menu` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/taskbar.h:taskbar_get_bounds` | `src/include/ui/taskbar.h` | `taskbar_get_bounds` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/taskbar.h:taskbar_get_config` | `src/include/ui/taskbar.h` | `taskbar_get_config` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/taskbar.h:taskbar_get_work_area` | `src/include/ui/taskbar.h` | `taskbar_get_work_area` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/taskbar.h:taskbar_handle_click` | `src/include/ui/taskbar.h` | `taskbar_handle_click` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/taskbar.h:taskbar_handle_config_key` | `src/include/ui/taskbar.h` | `taskbar_handle_config_key` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/taskbar.h:taskbar_handle_key` | `src/include/ui/taskbar.h` | `taskbar_handle_key` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/taskbar.h:taskbar_init` | `src/include/ui/taskbar.h` | `taskbar_init` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/taskbar.h:taskbar_is_menu_open` | `src/include/ui/taskbar.h` | `taskbar_is_menu_open` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/taskbar.h:taskbar_redraw_menu` | `src/include/ui/taskbar.h` | `taskbar_redraw_menu` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/taskbar.h:taskbar_remove_app` | `src/include/ui/taskbar.h` | `taskbar_remove_app` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/taskbar.h:taskbar_remove_window` | `src/include/ui/taskbar.h` | `taskbar_remove_window` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/taskbar.h:taskbar_set_custom_position` | `src/include/ui/taskbar.h` | `taskbar_set_custom_position` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/taskbar.h:taskbar_set_icon_size` | `src/include/ui/taskbar.h` | `taskbar_set_icon_size` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/taskbar.h:taskbar_set_pinned` | `src/include/ui/taskbar.h` | `taskbar_set_pinned` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/taskbar.h:taskbar_set_position` | `src/include/ui/taskbar.h` | `taskbar_set_position` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/taskbar.h:taskbar_set_window_active` | `src/include/ui/taskbar.h` | `taskbar_set_window_active` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/taskbar.h:taskbar_take_window_request` | `src/include/ui/taskbar.h` | `taskbar_take_window_request` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/taskbar.h:taskbar_update_clock` | `src/include/ui/taskbar.h` | `taskbar_update_clock` | `ui` | `COVERED` | 2 |
+| `api:src/include/ui/taskbar.h:taskbar_add_app` | `src/include/ui/taskbar.h` | `taskbar_add_app` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/taskbar.h:taskbar_add_window` | `src/include/ui/taskbar.h` | `taskbar_add_window` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/taskbar.h:taskbar_draw` | `src/include/ui/taskbar.h` | `taskbar_draw` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/taskbar.h:taskbar_draw_config_menu` | `src/include/ui/taskbar.h` | `taskbar_draw_config_menu` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/taskbar.h:taskbar_get_bounds` | `src/include/ui/taskbar.h` | `taskbar_get_bounds` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/taskbar.h:taskbar_get_config` | `src/include/ui/taskbar.h` | `taskbar_get_config` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/taskbar.h:taskbar_get_work_area` | `src/include/ui/taskbar.h` | `taskbar_get_work_area` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/taskbar.h:taskbar_handle_click` | `src/include/ui/taskbar.h` | `taskbar_handle_click` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/taskbar.h:taskbar_handle_config_key` | `src/include/ui/taskbar.h` | `taskbar_handle_config_key` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/taskbar.h:taskbar_handle_key` | `src/include/ui/taskbar.h` | `taskbar_handle_key` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/taskbar.h:taskbar_init` | `src/include/ui/taskbar.h` | `taskbar_init` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/taskbar.h:taskbar_is_menu_open` | `src/include/ui/taskbar.h` | `taskbar_is_menu_open` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/taskbar.h:taskbar_redraw_menu` | `src/include/ui/taskbar.h` | `taskbar_redraw_menu` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/taskbar.h:taskbar_remove_app` | `src/include/ui/taskbar.h` | `taskbar_remove_app` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/taskbar.h:taskbar_remove_window` | `src/include/ui/taskbar.h` | `taskbar_remove_window` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/taskbar.h:taskbar_set_custom_position` | `src/include/ui/taskbar.h` | `taskbar_set_custom_position` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/taskbar.h:taskbar_set_icon_size` | `src/include/ui/taskbar.h` | `taskbar_set_icon_size` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/taskbar.h:taskbar_set_pinned` | `src/include/ui/taskbar.h` | `taskbar_set_pinned` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/taskbar.h:taskbar_set_position` | `src/include/ui/taskbar.h` | `taskbar_set_position` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/taskbar.h:taskbar_set_window_active` | `src/include/ui/taskbar.h` | `taskbar_set_window_active` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/taskbar.h:taskbar_take_window_request` | `src/include/ui/taskbar.h` | `taskbar_take_window_request` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/taskbar.h:taskbar_update_clock` | `src/include/ui/taskbar.h` | `taskbar_update_clock` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/updater.h:updater_close` | `src/include/ui/updater.h` | `updater_close` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/updater.h:updater_draw` | `src/include/ui/updater.h` | `updater_draw` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/updater.h:updater_get_mode` | `src/include/ui/updater.h` | `updater_get_mode` | `ui` | `COVERED` | 3 |
@@ -4311,23 +4311,23 @@
 | `c:src/drivers/rng.c:rng_init` | `src/drivers/rng.c` | `rng_init` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/rng.c:rng_read_word` | `src/drivers/rng.c` | `rng_read_word` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/rng.c:rng_validate_state` | `src/drivers/rng.c` | `rng_validate_state` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/rtc.c:rtc_datetime_valid` | `src/drivers/rtc.c` | `rtc_datetime_valid` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/rtc.c:rtc_days_in_month` | `src/drivers/rtc.c` | `rtc_days_in_month` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/rtc.c:rtc_decode_snapshot` | `src/drivers/rtc.c` | `rtc_decode_snapshot` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/rtc.c:rtc_decode_value` | `src/drivers/rtc.c` | `rtc_decode_value` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/rtc.c:rtc_datetime_valid` | `src/drivers/rtc.c` | `rtc_datetime_valid` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/rtc.c:rtc_days_in_month` | `src/drivers/rtc.c` | `rtc_days_in_month` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/rtc.c:rtc_decode_snapshot` | `src/drivers/rtc.c` | `rtc_decode_snapshot` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/rtc.c:rtc_decode_value` | `src/drivers/rtc.c` | `rtc_decode_value` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/rtc.c:rtc_get_status` | `src/drivers/rtc.c` | `rtc_get_status` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/rtc.c:rtc_inb` | `src/drivers/rtc.c` | `rtc_inb` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/rtc.c:rtc_init` | `src/drivers/rtc.c` | `rtc_init` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/rtc.c:rtc_is_leap_year` | `src/drivers/rtc.c` | `rtc_is_leap_year` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/rtc.c:rtc_outb` | `src/drivers/rtc.c` | `rtc_outb` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/rtc.c:rtc_raw_equal` | `src/drivers/rtc.c` | `rtc_raw_equal` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/rtc.c:rtc_read_raw` | `src/drivers/rtc.c` | `rtc_read_raw` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/rtc.c:rtc_read_raw_once` | `src/drivers/rtc.c` | `rtc_read_raw_once` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/rtc.c:rtc_read_register` | `src/drivers/rtc.c` | `rtc_read_register` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/rtc.c:rtc_read_utc` | `src/drivers/rtc.c` | `rtc_read_utc` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/rtc.c:rtc_self_test` | `src/drivers/rtc.c` | `rtc_self_test` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/rtc.c:rtc_validate_state` | `src/drivers/rtc.c` | `rtc_validate_state` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/rtc.c:rtc_wait_update_complete` | `src/drivers/rtc.c` | `rtc_wait_update_complete` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/rtc.c:rtc_inb` | `src/drivers/rtc.c` | `rtc_inb` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/rtc.c:rtc_init` | `src/drivers/rtc.c` | `rtc_init` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/rtc.c:rtc_is_leap_year` | `src/drivers/rtc.c` | `rtc_is_leap_year` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/rtc.c:rtc_outb` | `src/drivers/rtc.c` | `rtc_outb` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/rtc.c:rtc_raw_equal` | `src/drivers/rtc.c` | `rtc_raw_equal` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/rtc.c:rtc_read_raw` | `src/drivers/rtc.c` | `rtc_read_raw` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/rtc.c:rtc_read_raw_once` | `src/drivers/rtc.c` | `rtc_read_raw_once` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/rtc.c:rtc_read_register` | `src/drivers/rtc.c` | `rtc_read_register` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/rtc.c:rtc_read_utc` | `src/drivers/rtc.c` | `rtc_read_utc` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/rtc.c:rtc_self_test` | `src/drivers/rtc.c` | `rtc_self_test` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/rtc.c:rtc_validate_state` | `src/drivers/rtc.c` | `rtc_validate_state` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/rtc.c:rtc_wait_update_complete` | `src/drivers/rtc.c` | `rtc_wait_update_complete` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/rtl8139.c:rtl8139_advance_rx` | `src/drivers/rtl8139.c` | `rtl8139_advance_rx` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/rtl8139.c:rtl8139_allocate_device` | `src/drivers/rtl8139.c` | `rtl8139_allocate_device` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/rtl8139.c:rtl8139_allocate_dma` | `src/drivers/rtl8139.c` | `rtl8139_allocate_dma` | `drivers` | `COVERED` | 1 |
@@ -6749,30 +6749,30 @@
 | `c:src/shell/shell_commands_wifi.c:wifi_state_color` | `src/shell/shell_commands_wifi.c` | `wifi_state_color` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_dispatch.c:shell_dispatch_execute` | `src/shell/shell_dispatch.c` | `shell_dispatch_execute` | `shell` | `COVERED` | 6 |
 | `c:src/shell/shell_dispatch.c:shell_dispatch_print_unknown` | `src/shell/shell_dispatch.c` | `shell_dispatch_print_unknown` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_hosted.c:shell_hosted_close` | `src/shell/shell_hosted.c` | `shell_hosted_close` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_hosted.c:shell_hosted_draw` | `src/shell/shell_hosted.c` | `shell_hosted_draw` | `shell` | `COVERED` | 4 |
-| `c:src/shell/shell_hosted.c:shell_hosted_key` | `src/shell/shell_hosted.c` | `shell_hosted_key` | `shell` | `COVERED` | 4 |
-| `c:src/shell/shell_hosted.c:shell_hosted_mouse` | `src/shell/shell_hosted.c` | `shell_hosted_mouse` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_hosted.c:shell_hosted_open` | `src/shell/shell_hosted.c` | `shell_hosted_open` | `shell` | `COVERED` | 4 |
-| `c:src/shell/shell_hosted.c:shell_hosted_present_progress` | `src/shell/shell_hosted.c` | `shell_hosted_present_progress` | `shell` | `COVERED` | 4 |
-| `c:src/shell/shell_hosted.c:shell_hosted_reset` | `src/shell/shell_hosted.c` | `shell_hosted_reset` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_hosted.c:shell_runtime_is_hosted_visible` | `src/shell/shell_hosted.c` | `shell_runtime_is_hosted_visible` | `shell` | `COVERED` | 4 |
-| `c:src/shell/shell_input.c:shell_input_cancel_extended` | `src/shell/shell_input.c` | `shell_input_cancel_extended` | `shell` | `COVERED` | 8 |
-| `c:src/shell/shell_input.c:shell_input_get_buffer` | `src/shell/shell_input.c` | `shell_input_get_buffer` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_input.c:shell_input_handle_key` | `src/shell/shell_input.c` | `shell_input_handle_key` | `shell` | `COVERED` | 8 |
+| `c:src/shell/shell_hosted.c:shell_hosted_close` | `src/shell/shell_hosted.c` | `shell_hosted_close` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_hosted.c:shell_hosted_draw` | `src/shell/shell_hosted.c` | `shell_hosted_draw` | `shell` | `COVERED` | 3 |
+| `c:src/shell/shell_hosted.c:shell_hosted_key` | `src/shell/shell_hosted.c` | `shell_hosted_key` | `shell` | `COVERED` | 3 |
+| `c:src/shell/shell_hosted.c:shell_hosted_mouse` | `src/shell/shell_hosted.c` | `shell_hosted_mouse` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_hosted.c:shell_hosted_open` | `src/shell/shell_hosted.c` | `shell_hosted_open` | `shell` | `COVERED` | 3 |
+| `c:src/shell/shell_hosted.c:shell_hosted_present_progress` | `src/shell/shell_hosted.c` | `shell_hosted_present_progress` | `shell` | `COVERED` | 3 |
+| `c:src/shell/shell_hosted.c:shell_hosted_reset` | `src/shell/shell_hosted.c` | `shell_hosted_reset` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_hosted.c:shell_runtime_is_hosted_visible` | `src/shell/shell_hosted.c` | `shell_runtime_is_hosted_visible` | `shell` | `COVERED` | 3 |
+| `c:src/shell/shell_input.c:shell_input_cancel_extended` | `src/shell/shell_input.c` | `shell_input_cancel_extended` | `shell` | `COVERED` | 7 |
+| `c:src/shell/shell_input.c:shell_input_get_buffer` | `src/shell/shell_input.c` | `shell_input_get_buffer` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_input.c:shell_input_handle_key` | `src/shell/shell_input.c` | `shell_input_handle_key` | `shell` | `COVERED` | 7 |
 | `c:src/shell/shell_input.c:shell_input_handle_terminal_scroll_key` | `src/shell/shell_input.c` | `shell_input_handle_terminal_scroll_key` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_input.c:shell_input_history_copy` | `src/shell/shell_input.c` | `shell_input_history_copy` | `shell` | `COVERED` | 6 |
-| `c:src/shell/shell_input.c:shell_input_history_detach_for_edit` | `src/shell/shell_input.c` | `shell_input_history_detach_for_edit` | `shell` | `COVERED` | 8 |
+| `c:src/shell/shell_input.c:shell_input_history_copy` | `src/shell/shell_input.c` | `shell_input_history_copy` | `shell` | `COVERED` | 5 |
+| `c:src/shell/shell_input.c:shell_input_history_detach_for_edit` | `src/shell/shell_input.c` | `shell_input_history_detach_for_edit` | `shell` | `COVERED` | 7 |
 | `c:src/shell/shell_input.c:shell_input_history_navigate` | `src/shell/shell_input.c` | `shell_input_history_navigate` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_input.c:shell_input_history_record` | `src/shell/shell_input.c` | `shell_input_history_record` | `shell` | `COVERED` | 6 |
+| `c:src/shell/shell_input.c:shell_input_history_record` | `src/shell/shell_input.c` | `shell_input_history_record` | `shell` | `COVERED` | 5 |
 | `c:src/shell/shell_input.c:shell_input_history_replace_input` | `src/shell/shell_input.c` | `shell_input_history_replace_input` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_input.c:shell_input_history_reset_navigation` | `src/shell/shell_input.c` | `shell_input_history_reset_navigation` | `shell` | `COVERED` | 6 |
-| `c:src/shell/shell_input.c:shell_input_init` | `src/shell/shell_input.c` | `shell_input_init` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_input.c:shell_input_print_prompt` | `src/shell/shell_input.c` | `shell_input_print_prompt` | `shell` | `COVERED` | 8 |
-| `c:src/shell/shell_input.c:shell_input_reset` | `src/shell/shell_input.c` | `shell_input_reset` | `shell` | `COVERED` | 6 |
-| `c:src/shell/shell_input.c:shell_input_reset_modifiers` | `src/shell/shell_input.c` | `shell_input_reset_modifiers` | `shell` | `COVERED` | 6 |
-| `c:src/shell/shell_input.c:shell_input_resume_terminal` | `src/shell/shell_input.c` | `shell_input_resume_terminal` | `shell` | `COVERED` | 8 |
-| `c:src/shell/shell_input.c:shell_input_return_to_terminal_tail` | `src/shell/shell_input.c` | `shell_input_return_to_terminal_tail` | `shell` | `COVERED` | 8 |
+| `c:src/shell/shell_input.c:shell_input_history_reset_navigation` | `src/shell/shell_input.c` | `shell_input_history_reset_navigation` | `shell` | `COVERED` | 5 |
+| `c:src/shell/shell_input.c:shell_input_init` | `src/shell/shell_input.c` | `shell_input_init` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_input.c:shell_input_print_prompt` | `src/shell/shell_input.c` | `shell_input_print_prompt` | `shell` | `COVERED` | 7 |
+| `c:src/shell/shell_input.c:shell_input_reset` | `src/shell/shell_input.c` | `shell_input_reset` | `shell` | `COVERED` | 5 |
+| `c:src/shell/shell_input.c:shell_input_reset_modifiers` | `src/shell/shell_input.c` | `shell_input_reset_modifiers` | `shell` | `COVERED` | 5 |
+| `c:src/shell/shell_input.c:shell_input_resume_terminal` | `src/shell/shell_input.c` | `shell_input_resume_terminal` | `shell` | `COVERED` | 7 |
+| `c:src/shell/shell_input.c:shell_input_return_to_terminal_tail` | `src/shell/shell_input.c` | `shell_input_return_to_terminal_tail` | `shell` | `COVERED` | 7 |
 | `c:src/shell/shell_introspection.c:shell_introspection_ascii_valid` | `src/shell/shell_introspection.c` | `shell_introspection_ascii_valid` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_introspection.c:shell_introspection_find_value` | `src/shell/shell_introspection.c` | `shell_introspection_find_value` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_introspection.c:shell_introspection_hex_digit` | `src/shell/shell_introspection.c` | `shell_introspection_hex_digit` | `shell` | `COVERED` | 1 |
@@ -6922,53 +6922,53 @@
 | `c:src/shell/taskmanager.c:taskmgr_thread_state_name` | `src/shell/taskmanager.c` | `taskmgr_thread_state_name` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_update_cpu_metrics` | `src/shell/taskmanager.c` | `taskmgr_update_cpu_metrics` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_update_memory_stats` | `src/shell/taskmanager.c` | `taskmgr_update_memory_stats` | `shell` | `PENDING` | 0 |
-| `c:src/taskbar/taskbar.c:get_col` | `src/taskbar/taskbar.c` | `get_col` | `taskbar` | `PENDING` | 0 |
-| `c:src/taskbar/taskbar.c:get_icon_char_count` | `src/taskbar/taskbar.c` | `get_icon_char_count` | `taskbar` | `PENDING` | 0 |
-| `c:src/taskbar/taskbar.c:get_row` | `src/taskbar/taskbar.c` | `get_row` | `taskbar` | `PENDING` | 0 |
-| `c:src/taskbar/taskbar.c:int_to_str` | `src/taskbar/taskbar.c` | `int_to_str` | `taskbar` | `COVERED` | 2 |
-| `c:src/taskbar/taskbar.c:taskbar_add_app` | `src/taskbar/taskbar.c` | `taskbar_add_app` | `taskbar` | `PENDING` | 0 |
-| `c:src/taskbar/taskbar.c:taskbar_add_window` | `src/taskbar/taskbar.c` | `taskbar_add_window` | `taskbar` | `COVERED` | 2 |
-| `c:src/taskbar/taskbar.c:taskbar_blend_glass_channel` | `src/taskbar/taskbar.c` | `taskbar_blend_glass_channel` | `taskbar` | `PENDING` | 0 |
-| `c:src/taskbar/taskbar.c:taskbar_clamp_rect` | `src/taskbar/taskbar.c` | `taskbar_clamp_rect` | `taskbar` | `COVERED` | 2 |
-| `c:src/taskbar/taskbar.c:taskbar_close_config_menu` | `src/taskbar/taskbar.c` | `taskbar_close_config_menu` | `taskbar` | `PENDING` | 0 |
-| `c:src/taskbar/taskbar.c:taskbar_close_menu` | `src/taskbar/taskbar.c` | `taskbar_close_menu` | `taskbar` | `PENDING` | 0 |
-| `c:src/taskbar/taskbar.c:taskbar_config_item_count` | `src/taskbar/taskbar.c` | `taskbar_config_item_count` | `taskbar` | `PENDING` | 0 |
-| `c:src/taskbar/taskbar.c:taskbar_draw` | `src/taskbar/taskbar.c` | `taskbar_draw` | `taskbar` | `COVERED` | 2 |
-| `c:src/taskbar/taskbar.c:taskbar_draw_clock_gui_text` | `src/taskbar/taskbar.c` | `taskbar_draw_clock_gui_text` | `taskbar` | `COVERED` | 2 |
-| `c:src/taskbar/taskbar.c:taskbar_draw_config_menu` | `src/taskbar/taskbar.c` | `taskbar_draw_config_menu` | `taskbar` | `PENDING` | 0 |
-| `c:src/taskbar/taskbar.c:taskbar_draw_gui` | `src/taskbar/taskbar.c` | `taskbar_draw_gui` | `taskbar` | `COVERED` | 2 |
-| `c:src/taskbar/taskbar.c:taskbar_draw_menu` | `src/taskbar/taskbar.c` | `taskbar_draw_menu` | `taskbar` | `COVERED` | 2 |
-| `c:src/taskbar/taskbar.c:taskbar_draw_menu_gui` | `src/taskbar/taskbar.c` | `taskbar_draw_menu_gui` | `taskbar` | `COVERED` | 2 |
-| `c:src/taskbar/taskbar.c:taskbar_fill_glass_region` | `src/taskbar/taskbar.c` | `taskbar_fill_glass_region` | `taskbar` | `COVERED` | 2 |
-| `c:src/taskbar/taskbar.c:taskbar_format_time` | `src/taskbar/taskbar.c` | `taskbar_format_time` | `taskbar` | `COVERED` | 2 |
-| `c:src/taskbar/taskbar.c:taskbar_get_bounds` | `src/taskbar/taskbar.c` | `taskbar_get_bounds` | `taskbar` | `COVERED` | 2 |
-| `c:src/taskbar/taskbar.c:taskbar_get_button_rect` | `src/taskbar/taskbar.c` | `taskbar_get_button_rect` | `taskbar` | `COVERED` | 2 |
-| `c:src/taskbar/taskbar.c:taskbar_get_clock_rect` | `src/taskbar/taskbar.c` | `taskbar_get_clock_rect` | `taskbar` | `COVERED` | 2 |
-| `c:src/taskbar/taskbar.c:taskbar_get_config` | `src/taskbar/taskbar.c` | `taskbar_get_config` | `taskbar` | `PENDING` | 0 |
-| `c:src/taskbar/taskbar.c:taskbar_get_menu_bounds` | `src/taskbar/taskbar.c` | `taskbar_get_menu_bounds` | `taskbar` | `COVERED` | 2 |
-| `c:src/taskbar/taskbar.c:taskbar_get_work_area` | `src/taskbar/taskbar.c` | `taskbar_get_work_area` | `taskbar` | `COVERED` | 2 |
-| `c:src/taskbar/taskbar.c:taskbar_handle_click` | `src/taskbar/taskbar.c` | `taskbar_handle_click` | `taskbar` | `PENDING` | 0 |
-| `c:src/taskbar/taskbar.c:taskbar_handle_click_gui` | `src/taskbar/taskbar.c` | `taskbar_handle_click_gui` | `taskbar` | `PENDING` | 0 |
-| `c:src/taskbar/taskbar.c:taskbar_handle_config_key` | `src/taskbar/taskbar.c` | `taskbar_handle_config_key` | `taskbar` | `COVERED` | 2 |
-| `c:src/taskbar/taskbar.c:taskbar_handle_key` | `src/taskbar/taskbar.c` | `taskbar_handle_key` | `taskbar` | `COVERED` | 2 |
-| `c:src/taskbar/taskbar.c:taskbar_init` | `src/taskbar/taskbar.c` | `taskbar_init` | `taskbar` | `PENDING` | 0 |
-| `c:src/taskbar/taskbar.c:taskbar_is_horizontal_gui` | `src/taskbar/taskbar.c` | `taskbar_is_horizontal_gui` | `taskbar` | `COVERED` | 2 |
-| `c:src/taskbar/taskbar.c:taskbar_is_menu_open` | `src/taskbar/taskbar.c` | `taskbar_is_menu_open` | `taskbar` | `PENDING` | 0 |
-| `c:src/taskbar/taskbar.c:taskbar_point_in_rect` | `src/taskbar/taskbar.c` | `taskbar_point_in_rect` | `taskbar` | `PENDING` | 0 |
-| `c:src/taskbar/taskbar.c:taskbar_prepare_glass_background` | `src/taskbar/taskbar.c` | `taskbar_prepare_glass_background` | `taskbar` | `PENDING` | 0 |
-| `c:src/taskbar/taskbar.c:taskbar_redraw_menu` | `src/taskbar/taskbar.c` | `taskbar_redraw_menu` | `taskbar` | `COVERED` | 2 |
-| `c:src/taskbar/taskbar.c:taskbar_remove_app` | `src/taskbar/taskbar.c` | `taskbar_remove_app` | `taskbar` | `PENDING` | 0 |
-| `c:src/taskbar/taskbar.c:taskbar_remove_window` | `src/taskbar/taskbar.c` | `taskbar_remove_window` | `taskbar` | `COVERED` | 2 |
-| `c:src/taskbar/taskbar.c:taskbar_reset_menu` | `src/taskbar/taskbar.c` | `taskbar_reset_menu` | `taskbar` | `COVERED` | 2 |
-| `c:src/taskbar/taskbar.c:taskbar_set_custom_position` | `src/taskbar/taskbar.c` | `taskbar_set_custom_position` | `taskbar` | `PENDING` | 0 |
-| `c:src/taskbar/taskbar.c:taskbar_set_icon_size` | `src/taskbar/taskbar.c` | `taskbar_set_icon_size` | `taskbar` | `PENDING` | 0 |
-| `c:src/taskbar/taskbar.c:taskbar_set_pinned` | `src/taskbar/taskbar.c` | `taskbar_set_pinned` | `taskbar` | `PENDING` | 0 |
-| `c:src/taskbar/taskbar.c:taskbar_set_position` | `src/taskbar/taskbar.c` | `taskbar_set_position` | `taskbar` | `PENDING` | 0 |
-| `c:src/taskbar/taskbar.c:taskbar_set_window_active` | `src/taskbar/taskbar.c` | `taskbar_set_window_active` | `taskbar` | `COVERED` | 2 |
-| `c:src/taskbar/taskbar.c:taskbar_take_window_request` | `src/taskbar/taskbar.c` | `taskbar_take_window_request` | `taskbar` | `PENDING` | 0 |
-| `c:src/taskbar/taskbar.c:taskbar_update_clock` | `src/taskbar/taskbar.c` | `taskbar_update_clock` | `taskbar` | `PENDING` | 0 |
-| `c:src/taskbar/taskbar.c:taskbar_uses_gui` | `src/taskbar/taskbar.c` | `taskbar_uses_gui` | `taskbar` | `COVERED` | 2 |
-| `c:src/taskbar/taskbar.c:update_dimensions` | `src/taskbar/taskbar.c` | `update_dimensions` | `taskbar` | `PENDING` | 0 |
+| `c:src/taskbar/taskbar.c:get_col` | `src/taskbar/taskbar.c` | `get_col` | `taskbar` | `COVERED` | 1 |
+| `c:src/taskbar/taskbar.c:get_icon_char_count` | `src/taskbar/taskbar.c` | `get_icon_char_count` | `taskbar` | `COVERED` | 1 |
+| `c:src/taskbar/taskbar.c:get_row` | `src/taskbar/taskbar.c` | `get_row` | `taskbar` | `COVERED` | 1 |
+| `c:src/taskbar/taskbar.c:int_to_str` | `src/taskbar/taskbar.c` | `int_to_str` | `taskbar` | `COVERED` | 3 |
+| `c:src/taskbar/taskbar.c:taskbar_add_app` | `src/taskbar/taskbar.c` | `taskbar_add_app` | `taskbar` | `COVERED` | 1 |
+| `c:src/taskbar/taskbar.c:taskbar_add_window` | `src/taskbar/taskbar.c` | `taskbar_add_window` | `taskbar` | `COVERED` | 3 |
+| `c:src/taskbar/taskbar.c:taskbar_blend_glass_channel` | `src/taskbar/taskbar.c` | `taskbar_blend_glass_channel` | `taskbar` | `COVERED` | 1 |
+| `c:src/taskbar/taskbar.c:taskbar_clamp_rect` | `src/taskbar/taskbar.c` | `taskbar_clamp_rect` | `taskbar` | `COVERED` | 3 |
+| `c:src/taskbar/taskbar.c:taskbar_close_config_menu` | `src/taskbar/taskbar.c` | `taskbar_close_config_menu` | `taskbar` | `COVERED` | 1 |
+| `c:src/taskbar/taskbar.c:taskbar_close_menu` | `src/taskbar/taskbar.c` | `taskbar_close_menu` | `taskbar` | `COVERED` | 1 |
+| `c:src/taskbar/taskbar.c:taskbar_config_item_count` | `src/taskbar/taskbar.c` | `taskbar_config_item_count` | `taskbar` | `COVERED` | 1 |
+| `c:src/taskbar/taskbar.c:taskbar_draw` | `src/taskbar/taskbar.c` | `taskbar_draw` | `taskbar` | `COVERED` | 3 |
+| `c:src/taskbar/taskbar.c:taskbar_draw_clock_gui_text` | `src/taskbar/taskbar.c` | `taskbar_draw_clock_gui_text` | `taskbar` | `COVERED` | 3 |
+| `c:src/taskbar/taskbar.c:taskbar_draw_config_menu` | `src/taskbar/taskbar.c` | `taskbar_draw_config_menu` | `taskbar` | `COVERED` | 1 |
+| `c:src/taskbar/taskbar.c:taskbar_draw_gui` | `src/taskbar/taskbar.c` | `taskbar_draw_gui` | `taskbar` | `COVERED` | 3 |
+| `c:src/taskbar/taskbar.c:taskbar_draw_menu` | `src/taskbar/taskbar.c` | `taskbar_draw_menu` | `taskbar` | `COVERED` | 3 |
+| `c:src/taskbar/taskbar.c:taskbar_draw_menu_gui` | `src/taskbar/taskbar.c` | `taskbar_draw_menu_gui` | `taskbar` | `COVERED` | 3 |
+| `c:src/taskbar/taskbar.c:taskbar_fill_glass_region` | `src/taskbar/taskbar.c` | `taskbar_fill_glass_region` | `taskbar` | `COVERED` | 3 |
+| `c:src/taskbar/taskbar.c:taskbar_format_time` | `src/taskbar/taskbar.c` | `taskbar_format_time` | `taskbar` | `COVERED` | 3 |
+| `c:src/taskbar/taskbar.c:taskbar_get_bounds` | `src/taskbar/taskbar.c` | `taskbar_get_bounds` | `taskbar` | `COVERED` | 3 |
+| `c:src/taskbar/taskbar.c:taskbar_get_button_rect` | `src/taskbar/taskbar.c` | `taskbar_get_button_rect` | `taskbar` | `COVERED` | 3 |
+| `c:src/taskbar/taskbar.c:taskbar_get_clock_rect` | `src/taskbar/taskbar.c` | `taskbar_get_clock_rect` | `taskbar` | `COVERED` | 3 |
+| `c:src/taskbar/taskbar.c:taskbar_get_config` | `src/taskbar/taskbar.c` | `taskbar_get_config` | `taskbar` | `COVERED` | 1 |
+| `c:src/taskbar/taskbar.c:taskbar_get_menu_bounds` | `src/taskbar/taskbar.c` | `taskbar_get_menu_bounds` | `taskbar` | `COVERED` | 3 |
+| `c:src/taskbar/taskbar.c:taskbar_get_work_area` | `src/taskbar/taskbar.c` | `taskbar_get_work_area` | `taskbar` | `COVERED` | 3 |
+| `c:src/taskbar/taskbar.c:taskbar_handle_click` | `src/taskbar/taskbar.c` | `taskbar_handle_click` | `taskbar` | `COVERED` | 1 |
+| `c:src/taskbar/taskbar.c:taskbar_handle_click_gui` | `src/taskbar/taskbar.c` | `taskbar_handle_click_gui` | `taskbar` | `COVERED` | 1 |
+| `c:src/taskbar/taskbar.c:taskbar_handle_config_key` | `src/taskbar/taskbar.c` | `taskbar_handle_config_key` | `taskbar` | `COVERED` | 3 |
+| `c:src/taskbar/taskbar.c:taskbar_handle_key` | `src/taskbar/taskbar.c` | `taskbar_handle_key` | `taskbar` | `COVERED` | 3 |
+| `c:src/taskbar/taskbar.c:taskbar_init` | `src/taskbar/taskbar.c` | `taskbar_init` | `taskbar` | `COVERED` | 1 |
+| `c:src/taskbar/taskbar.c:taskbar_is_horizontal_gui` | `src/taskbar/taskbar.c` | `taskbar_is_horizontal_gui` | `taskbar` | `COVERED` | 3 |
+| `c:src/taskbar/taskbar.c:taskbar_is_menu_open` | `src/taskbar/taskbar.c` | `taskbar_is_menu_open` | `taskbar` | `COVERED` | 1 |
+| `c:src/taskbar/taskbar.c:taskbar_point_in_rect` | `src/taskbar/taskbar.c` | `taskbar_point_in_rect` | `taskbar` | `COVERED` | 1 |
+| `c:src/taskbar/taskbar.c:taskbar_prepare_glass_background` | `src/taskbar/taskbar.c` | `taskbar_prepare_glass_background` | `taskbar` | `COVERED` | 1 |
+| `c:src/taskbar/taskbar.c:taskbar_redraw_menu` | `src/taskbar/taskbar.c` | `taskbar_redraw_menu` | `taskbar` | `COVERED` | 3 |
+| `c:src/taskbar/taskbar.c:taskbar_remove_app` | `src/taskbar/taskbar.c` | `taskbar_remove_app` | `taskbar` | `COVERED` | 1 |
+| `c:src/taskbar/taskbar.c:taskbar_remove_window` | `src/taskbar/taskbar.c` | `taskbar_remove_window` | `taskbar` | `COVERED` | 3 |
+| `c:src/taskbar/taskbar.c:taskbar_reset_menu` | `src/taskbar/taskbar.c` | `taskbar_reset_menu` | `taskbar` | `COVERED` | 3 |
+| `c:src/taskbar/taskbar.c:taskbar_set_custom_position` | `src/taskbar/taskbar.c` | `taskbar_set_custom_position` | `taskbar` | `COVERED` | 1 |
+| `c:src/taskbar/taskbar.c:taskbar_set_icon_size` | `src/taskbar/taskbar.c` | `taskbar_set_icon_size` | `taskbar` | `COVERED` | 1 |
+| `c:src/taskbar/taskbar.c:taskbar_set_pinned` | `src/taskbar/taskbar.c` | `taskbar_set_pinned` | `taskbar` | `COVERED` | 1 |
+| `c:src/taskbar/taskbar.c:taskbar_set_position` | `src/taskbar/taskbar.c` | `taskbar_set_position` | `taskbar` | `COVERED` | 1 |
+| `c:src/taskbar/taskbar.c:taskbar_set_window_active` | `src/taskbar/taskbar.c` | `taskbar_set_window_active` | `taskbar` | `COVERED` | 3 |
+| `c:src/taskbar/taskbar.c:taskbar_take_window_request` | `src/taskbar/taskbar.c` | `taskbar_take_window_request` | `taskbar` | `COVERED` | 1 |
+| `c:src/taskbar/taskbar.c:taskbar_update_clock` | `src/taskbar/taskbar.c` | `taskbar_update_clock` | `taskbar` | `COVERED` | 1 |
+| `c:src/taskbar/taskbar.c:taskbar_uses_gui` | `src/taskbar/taskbar.c` | `taskbar_uses_gui` | `taskbar` | `COVERED` | 3 |
+| `c:src/taskbar/taskbar.c:update_dimensions` | `src/taskbar/taskbar.c` | `update_dimensions` | `taskbar` | `COVERED` | 1 |
 | `c:src/thread/thread.c:thread_block` | `src/thread/thread.c` | `thread_block` | `thread` | `PENDING` | 0 |
 | `c:src/thread/thread.c:thread_block_indefinite` | `src/thread/thread.c` | `thread_block_indefinite` | `thread` | `PENDING` | 0 |
 | `c:src/thread/thread.c:thread_cancel_wait` | `src/thread/thread.c` | `thread_cancel_wait` | `thread` | `PENDING` | 0 |
@@ -7310,6 +7310,7 @@
 | `host:core:app-builtin` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar os construtores de aplicativos internos com loader falso | imagens ZAPP preservam cabecalho, limites, entrada, dados, pre-condicoes e retornos canonicos | compilador ausente, warning, imagem invalida, falha de assercao ou timeout | somente imagem estatica e estado do loader falso no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:app-catalog` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar catalogo com fontes de pacotes, dependencias, instalados e limites simulados | classificacao, aliases, planos, ciclos, motivos canonicos e indisponibilidade preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do catalogo e backends host simulados | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:app-files` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fachada app_files com VFS falso e entradas validas e invalidas | operacoes de arquivo preservam pre-condicoes, encaminhamento, retornos e limpeza | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico da fachada e do VFS falso no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:core:app-loader` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o app_loader.c real com processo, filesystem, paging e syscall falsos | parser, layout, lifecycle assincrono, cancelamento e codigos de erro preservam o contrato | compilador ausente, warning, fixture invalida, falha de assercao ou timeout | somente buffers estaticos e estado de dependencias falsas no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:app-package` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar contratos de versao, estado, failpoint e motivos de pacote | validacao de argumentos, nomes canonicos, estados indisponiveis e failpoint respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do servico e artefatos host-only | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:bearssl-compat` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar compatibilidade de memoria e string para BearSSL | memcpy, memmove, memset, memcmp e strlen preservam seus contratos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e artefatos host-only | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:contracts` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar contratos de strings, log e clock com instrumentacao | contratos validos, erros canonicos e invariantes temporais sao observados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e artefatos host-only | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7400,6 +7401,7 @@
 | `host:tst3:string-compress` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo disponivel | compilar e executar buffers estaticos de strings e compressao | casos validos, vazios, limites, truncamento e overflow retornam o contrato esperado | compilador ausente, warning, falha de assercao ou timeout | somente buffers estaticos e stub de video_print | processo host encerrado e artefatos preservados pelo runner |
 | `host:tst5:blackbox` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo disponivel | compilar e executar o harness black-box com snapshots de terminal falsos | casos TST5 validos encontram o marcador apos nova geracao e caso invalido retorna ERR_NOT_FOUND | compilador ausente, warning, marcador ausente, caso invalido ou timeout | somente buffers estaticos e callbacks falsos do observador | processo host encerrado e relatorio de cobertura preservado |
 | `host:ui:icons` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar defaults, mutacoes, fallback, cache BMP, limites VESA e falhas controladas | registro vetorial permanece utilizavel sem filesystem e BMPs validos sao aceitos somente no formato esperado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente registro, cache e dispositivos BMP/VESA falsos no processo host | processo host encerrado, cache liberado e manifesto, logs e cobertura preservados |
+| `host:ui:taskbar` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar estados TUI e GUI, layouts, botoes, menus, configuracao, cliques, relogio e limites | taskbar preserva configuracao, geometria, navegacao, selecao de janelas e fallback sem hardware grafico real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente configuracao, botoes, menus e chamadas de desenho dentro da fixture host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `qemu:tst2:boot-ready` | `qemu` | `smoke` | `qemu:tst2:boot-ready` | `AUTOMATED` | 30 | 5 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e o executavel qemu-system-i386 esta disponivel | iniciar o guest em snapshot, enviar HELLO e executar o caso de boot apos READY | o guest publica READY, HEARTBEAT e PASS para o caso solicitado | PANIC, TIMEOUT, ausencia de heartbeat, erro de protocolo ou encerramento inesperado do QEMU | cria um processo QEMU e artefatos temporarios da execucao | encerrar o QEMU via QMP e preservar o relatorio, serial e logs da execucao |
 | `qemu:tst4:execution` | `qemu` | `smoke` | `qemu:tst4:execution` | `AUTOMATED` | 60 | 10 | `snapshot` | `quality` | `qemu` | processos, threads, IPC, wait e workqueue estao READY | executar um unico autoteste interno apos READY | todos os resultados estruturados passam e nenhum estado residual permanece | falha de resultado, invariante, fila, contador, timeout, protocolo ou QEMU | cria somente objetos temporarios dos self-tests existentes | cada self-test desfaz seus objetos e o harness valida as filas finais |
 | `qemu:tst4:memory-slab` | `qemu` | `smoke` | `qemu:tst4:memory-slab` | `AUTOMATED` | 30 | 5 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e paging, PMM, heap e SLAB estao READY | iniciar o guest em snapshot e enviar um unico RUN apos READY | o guest publica READY, HEARTBEAT, BEGIN e PASS, preservando o estado de memoria | falha de pre-condicao, invariante, contador, pagina, protocolo, heartbeat ou QEMU | cria um processo QEMU e recursos temporarios de memoria do autoteste | encerrar o QEMU via QMP e preservar manifesto, serial, logs e resultado |
@@ -7437,7 +7439,6 @@
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
 | `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
-| `host:core:app-loader` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o app_loader.c real com processo, filesystem, paging e syscall falsos | parser, layout, lifecycle assincrono, cancelamento e codigos de erro preservam o contrato | compilador ausente, warning, fixture invalida, falha de assercao ou timeout | somente buffers estaticos e estado de dependencias falsas no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -8388,6 +8389,15 @@
 - `c:src/desktop/desktop.c:desktop_update_drag_preview`
 - `c:src/desktop/desktop.c:desktop_update_selection`
 - `c:src/desktop/desktop.c:draw_single_icon_simple`
+- `c:src/drivers/rtc.c:rtc_inb`
+- `c:src/drivers/rtc.c:rtc_init`
+- `c:src/drivers/rtc.c:rtc_outb`
+- `c:src/drivers/rtc.c:rtc_raw_equal`
+- `c:src/drivers/rtc.c:rtc_read_raw`
+- `c:src/drivers/rtc.c:rtc_read_raw_once`
+- `c:src/drivers/rtc.c:rtc_read_register`
+- `c:src/drivers/rtc.c:rtc_read_utc`
+- `c:src/drivers/rtc.c:rtc_wait_update_complete`
 - `c:src/filemanager/filemanager.c:fm_block_read_only_mutation`
 - `c:src/filemanager/filemanager.c:fm_classic_draw_help`
 - `c:src/filemanager/filemanager.c:fm_classic_draw_input_dialog`
@@ -9300,6 +9310,11 @@
 - `c:src/shell/shell_commands_wifi.c:wifi_print_usb_location`
 - `c:src/shell/shell_commands_wifi.c:wifi_scan`
 - `c:src/shell/shell_commands_wifi.c:wifi_state_color`
+- `c:src/shell/shell_hosted.c:shell_hosted_close`
+- `c:src/shell/shell_hosted.c:shell_hosted_mouse`
+- `c:src/shell/shell_hosted.c:shell_hosted_reset`
+- `c:src/shell/shell_input.c:shell_input_get_buffer`
+- `c:src/shell/shell_input.c:shell_input_init`
 - `c:src/shell/taskmanager.c:draw_bar`
 - `c:src/shell/taskmanager.c:draw_box`
 - `c:src/shell/taskmanager.c:draw_header`
@@ -9350,30 +9365,6 @@
 - `c:src/shell/taskmanager.c:taskmgr_thread_state_name`
 - `c:src/shell/taskmanager.c:taskmgr_update_cpu_metrics`
 - `c:src/shell/taskmanager.c:taskmgr_update_memory_stats`
-- `c:src/taskbar/taskbar.c:get_col`
-- `c:src/taskbar/taskbar.c:get_icon_char_count`
-- `c:src/taskbar/taskbar.c:get_row`
-- `c:src/taskbar/taskbar.c:taskbar_add_app`
-- `c:src/taskbar/taskbar.c:taskbar_blend_glass_channel`
-- `c:src/taskbar/taskbar.c:taskbar_close_config_menu`
-- `c:src/taskbar/taskbar.c:taskbar_close_menu`
-- `c:src/taskbar/taskbar.c:taskbar_config_item_count`
-- `c:src/taskbar/taskbar.c:taskbar_draw_config_menu`
-- `c:src/taskbar/taskbar.c:taskbar_get_config`
-- `c:src/taskbar/taskbar.c:taskbar_handle_click`
-- `c:src/taskbar/taskbar.c:taskbar_handle_click_gui`
-- `c:src/taskbar/taskbar.c:taskbar_init`
-- `c:src/taskbar/taskbar.c:taskbar_is_menu_open`
-- `c:src/taskbar/taskbar.c:taskbar_point_in_rect`
-- `c:src/taskbar/taskbar.c:taskbar_prepare_glass_background`
-- `c:src/taskbar/taskbar.c:taskbar_remove_app`
-- `c:src/taskbar/taskbar.c:taskbar_set_custom_position`
-- `c:src/taskbar/taskbar.c:taskbar_set_icon_size`
-- `c:src/taskbar/taskbar.c:taskbar_set_pinned`
-- `c:src/taskbar/taskbar.c:taskbar_set_position`
-- `c:src/taskbar/taskbar.c:taskbar_take_window_request`
-- `c:src/taskbar/taskbar.c:taskbar_update_clock`
-- `c:src/taskbar/taskbar.c:update_dimensions`
 - `c:src/thread/thread.c:thread_block`
 - `c:src/thread/thread.c:thread_block_indefinite`
 - `c:src/thread/thread.c:thread_cancel_wait`
