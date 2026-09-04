@@ -8,6 +8,10 @@
 #include "core/timer.h"
 #include "core/clock.h"
 #include "core/irq_deferred.h"
+#include "core/input.h"
+#include "core/recovery.h"
+#include "core/device_manager.h"
+#include "core/usb_manager.h"
 #include "core/tls.h"
 #include "core/video.h"
 #include "core/wait.h"
@@ -18,6 +22,8 @@
 #include "fs/vfs.h"
 #include "fs/storage.h"
 #include "fs/devfs.h"
+#include "drivers/usb_hid.h"
+#include "drivers/usb_msc.h"
 
 void shell_dispatch_cmd_pwd(const char* arguments);
 void shell_dispatch_cmd_cd(const char* arguments);
@@ -33,6 +39,9 @@ void shell_dispatch_cmd_tls(const char* arguments);
 void shell_dispatch_cmd_vfs(const char* arguments);
 void shell_dispatch_cmd_mount(const char* arguments);
 void shell_dispatch_cmd_devcheck(const char* arguments);
+void shell_dispatch_cmd_devices(const char* arguments);
+void shell_dispatch_cmd_device_info(const char* arguments);
+void shell_dispatch_cmd_usb(const char* arguments);
 
 #define HOST_COVERAGE_CAPACITY 512U
 #define HOST_COVERAGE_LINE_SIZE 32U
@@ -137,6 +146,40 @@ static uint32_t fixture_vfs_descriptor_count;
 static uint32_t fixture_vfs_mount_count;
 static devfs_test_result_t fixture_devfs_test;
 static int fixture_devfs_test_result;
+static device_info_t fixture_devices[2];
+static uint32_t fixture_device_count;
+static int fixture_device_count_result;
+static int fixture_device_info_result;
+static int fixture_device_find_result;
+static int fixture_device_format_result;
+static usb_manager_status_t fixture_usb_status;
+static usb_controller_info_t fixture_usb_controllers[2];
+static usb_port_info_t fixture_usb_ports[2];
+static usb_device_info_t fixture_usb_devices[2];
+static uint32_t fixture_usb_controller_count;
+static uint32_t fixture_usb_port_count;
+static uint32_t fixture_usb_device_count;
+static int fixture_usb_status_result;
+static int fixture_usb_count_result;
+static int fixture_usb_info_result;
+static int fixture_usb_port_count_result;
+static int fixture_usb_port_result;
+static int fixture_usb_device_count_result;
+static int fixture_usb_device_result;
+static int fixture_usb_find_result;
+static int fixture_usb_format_result;
+static usb_msc_info_t fixture_usb_msc[2];
+static uint32_t fixture_usb_msc_count;
+static int fixture_usb_msc_count_result;
+static int fixture_usb_msc_info_result;
+static usb_hid_info_t fixture_usb_hid[2];
+static uint32_t fixture_usb_hid_count;
+static int fixture_usb_hid_count_result;
+static int fixture_usb_hid_info_result;
+static int fixture_usb_hid_validate_result;
+static int fixture_input_validate_result;
+static int fixture_recovery_state_result;
+static recovery_component_t fixture_recovery_usb;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -274,6 +317,32 @@ static void fixture_reset(void) {
     fixture_vfs_descriptor_count = 1U;
     fixture_vfs_mount_count = 1U;
     fixture_devfs_test_result = OK;
+    fixture_device_count = 2U;
+    fixture_device_count_result = OK;
+    fixture_device_info_result = OK;
+    fixture_device_find_result = OK;
+    fixture_device_format_result = OK;
+    fixture_usb_controller_count = 1U;
+    fixture_usb_port_count = 1U;
+    fixture_usb_device_count = 1U;
+    fixture_usb_status_result = OK;
+    fixture_usb_count_result = OK;
+    fixture_usb_info_result = OK;
+    fixture_usb_port_count_result = OK;
+    fixture_usb_port_result = OK;
+    fixture_usb_device_count_result = OK;
+    fixture_usb_device_result = OK;
+    fixture_usb_find_result = OK;
+    fixture_usb_format_result = OK;
+    fixture_usb_msc_count = 1U;
+    fixture_usb_msc_count_result = OK;
+    fixture_usb_msc_info_result = OK;
+    fixture_usb_hid_count = 1U;
+    fixture_usb_hid_count_result = OK;
+    fixture_usb_hid_info_result = OK;
+    fixture_usb_hid_validate_result = OK;
+    fixture_input_validate_result = OK;
+    fixture_recovery_state_result = OK;
     kmemset(&fixture_log_stats, 0, sizeof(fixture_log_stats));
     kmemset(fixture_log_records, 0, sizeof(fixture_log_records));
     kmemset(&fixture_log_test, 0, sizeof(fixture_log_test));
@@ -672,6 +741,156 @@ static void fixture_reset(void) {
     fixture_devfs_test.invariants = 1U;
     fixture_devfs_test.passed = 9U;
     fixture_devfs_test.total = 9U;
+    kmemset(fixture_devices, 0, sizeof(fixture_devices));
+    fixture_devices[0].kind = DEVICE_KIND_PCI;
+    fixture_devices[0].status = DEVICE_STATUS_READY;
+    fixture_devices[0].vendor_id = 0x1234U;
+    fixture_devices[0].device_id = 0x5678U;
+    fixture_devices[0].class_code = 0x02U;
+    fixture_devices[0].subclass_code = 0x00U;
+    fixture_devices[0].bus = 0U;
+    fixture_devices[0].device = 3U;
+    fixture_devices[0].function = 0U;
+    fixture_devices[0].irq = 11U;
+    fixture_devices[1].kind = DEVICE_KIND_ATA_PRIMARY;
+    fixture_devices[1].status = DEVICE_STATUS_DEGRADED;
+    fixture_devices[1].capacity_sectors = 2048U;
+    fixture_devices[1].irq = DEVICE_IRQ_UNKNOWN;
+    kmemset(&fixture_usb_status, 0, sizeof(fixture_usb_status));
+    fixture_usb_status.initialized = 1U;
+    fixture_usb_status.controller_count = 1U;
+    fixture_usb_status.ehci_count = 1U;
+    fixture_usb_status.ehci_ready_count = 1U;
+    fixture_usb_status.dma_initialized = 1U;
+    fixture_usb_status.irq_initialized = 1U;
+    fixture_usb_status.transfer_available = 1U;
+    fixture_usb_status.bulk_transfer_available = 1U;
+    fixture_usb_status.high_speed_transfer_available = 1U;
+    fixture_usb_status.port_count = 1U;
+    fixture_usb_status.configured_device_count = 1U;
+    fixture_usb_status.dma_td_capacity = 64U;
+    fixture_usb_status.dma_td_in_use = 2U;
+    fixture_usb_status.class_driver_active = 1U;
+    fixture_usb_status.msc_device_count = 1U;
+    fixture_usb_status.hid_device_count = 1U;
+    fixture_usb_status.hid_active_count = 1U;
+    fixture_usb_status.interrupt_transfer_available = 1U;
+    kmemset(fixture_usb_controllers, 0, sizeof(fixture_usb_controllers));
+    fixture_usb_controllers[0].model = USB_CONTROLLER_MODEL_EHCI;
+    fixture_usb_controllers[0].state = USB_CONTROLLER_READY;
+    fixture_usb_controllers[0].reason = USB_CONTROLLER_REASON_DRIVER_READY;
+    fixture_usb_controllers[0].vendor_id = 0x8086U;
+    fixture_usb_controllers[0].device_id = 0x24CDU;
+    fixture_usb_controllers[0].class_code = USB_CONTROLLER_PCI_CLASS;
+    fixture_usb_controllers[0].subclass_code = USB_CONTROLLER_PCI_SUBCLASS;
+    fixture_usb_controllers[0].prog_if = USB_CONTROLLER_PROG_IF_EHCI;
+    fixture_usb_controllers[0].revision = 1U;
+    fixture_usb_controllers[0].bus = 0U;
+    fixture_usb_controllers[0].device = 4U;
+    fixture_usb_controllers[0].function = 0U;
+    fixture_usb_controllers[0].irq = 11U;
+    fixture_usb_controllers[0].bars[0] = 0x1000U;
+    fixture_usb_controllers[0].ehci_initialized = 1U;
+    fixture_usb_controllers[0].ehci_irq_registered = 1U;
+    fixture_usb_controllers[0].ehci_dma_ready = 1U;
+    fixture_usb_controllers[0].ehci_transfer_ready = 1U;
+    fixture_usb_controllers[0].ehci_port_count = USB_EHCI_PORT_COUNT;
+    fixture_usb_controllers[0].ehci_device_count = 1U;
+    kmemset(fixture_usb_ports, 0, sizeof(fixture_usb_ports));
+    copy_text(fixture_usb_ports[0].controller_id,
+              sizeof(fixture_usb_ports[0].controller_id), "usb-00:04.0");
+    fixture_usb_ports[0].controller_bus = 0U;
+    fixture_usb_ports[0].controller_device = 4U;
+    fixture_usb_ports[0].controller_model = USB_CONTROLLER_MODEL_EHCI;
+    fixture_usb_ports[0].port_number = 1U;
+    fixture_usb_ports[0].state = USB_PORT_CONFIGURED;
+    fixture_usb_ports[0].reason = USB_PORT_REASON_NONE;
+    fixture_usb_ports[0].speed = USB_DEVICE_SPEED_FULL;
+    fixture_usb_ports[0].connected = 1U;
+    fixture_usb_ports[0].enabled = 1U;
+    fixture_usb_ports[0].usb_address = 5U;
+    copy_text(fixture_usb_ports[0].device_id,
+              sizeof(fixture_usb_ports[0].device_id), "usb-device-1");
+    kmemset(fixture_usb_devices, 0, sizeof(fixture_usb_devices));
+    copy_text(fixture_usb_devices[0].id, sizeof(fixture_usb_devices[0].id),
+              "usb-device-1");
+    copy_text(fixture_usb_devices[0].controller_id,
+              sizeof(fixture_usb_devices[0].controller_id), "usb-00:04.0");
+    fixture_usb_devices[0].controller_bus = 0U;
+    fixture_usb_devices[0].controller_device = 4U;
+    fixture_usb_devices[0].controller_function = 0U;
+    fixture_usb_devices[0].port_number = 1U;
+    fixture_usb_devices[0].state = USB_DEVICE_CONFIGURED;
+    fixture_usb_devices[0].speed = USB_DEVICE_SPEED_HIGH;
+    fixture_usb_devices[0].usb_address = 5U;
+    fixture_usb_devices[0].controller_model = USB_CONTROLLER_MODEL_EHCI;
+    fixture_usb_devices[0].vendor_id = 0x046DU;
+    fixture_usb_devices[0].product_id = 0xC31CU;
+    fixture_usb_devices[0].device_revision = 0x0100U;
+    fixture_usb_devices[0].device_class = 0U;
+    fixture_usb_devices[0].interface_class = 3U;
+    fixture_usb_devices[0].max_packet_size0 = 64U;
+    fixture_usb_devices[0].num_configurations = 1U;
+    fixture_usb_devices[0].configuration_length = 34U;
+    fixture_usb_devices[0].configuration_value = 1U;
+    fixture_usb_devices[0].interface_number = 0U;
+    fixture_usb_devices[0].endpoint_count = 1U;
+    fixture_usb_devices[0].endpoints[0].address = 0x81U;
+    fixture_usb_devices[0].endpoints[0].transfer_type = 3U;
+    fixture_usb_devices[0].endpoints[0].max_packet = 8U;
+    fixture_usb_devices[0].endpoints[0].interval = 10U;
+    fixture_usb_devices[0].class_driver_active = 1U;
+    fixture_usb_devices[0].device_descriptor_valid = 1U;
+    fixture_usb_devices[0].configuration_descriptor_valid = 1U;
+    fixture_usb_devices[0].interrupt_in_endpoint = 0x81U;
+    fixture_usb_devices[0].interrupt_in_count = 1U;
+    fixture_usb_devices[0].interrupt_in_max_packet = 8U;
+    fixture_usb_devices[0].interrupt_interval = 10U;
+    fixture_usb_devices[0].hid_driver_active = 1U;
+    kmemset(fixture_usb_msc, 0, sizeof(fixture_usb_msc));
+    copy_text(fixture_usb_msc[0].id, sizeof(fixture_usb_msc[0].id),
+              "usb-device-1");
+    copy_text(fixture_usb_msc[0].block_id, sizeof(fixture_usb_msc[0].block_id),
+              "usbmsc0");
+    copy_text(fixture_usb_msc[0].vendor, sizeof(fixture_usb_msc[0].vendor),
+              "Zephyr");
+    copy_text(fixture_usb_msc[0].product, sizeof(fixture_usb_msc[0].product),
+              "TestDisk");
+    copy_text(fixture_usb_msc[0].revision, sizeof(fixture_usb_msc[0].revision),
+              "1.0");
+    fixture_usb_msc[0].interface_number = 0U;
+    fixture_usb_msc[0].bulk_in_endpoint = 0x81U;
+    fixture_usb_msc[0].bulk_out_endpoint = 0x02U;
+    fixture_usb_msc[0].bulk_in_max_packet = 512U;
+    fixture_usb_msc[0].bulk_out_max_packet = 512U;
+    fixture_usb_msc[0].sector_size = 512U;
+    fixture_usb_msc[0].sector_count = 4096U;
+    fixture_usb_msc[0].state = USB_MSC_READY;
+    fixture_usb_msc[0].command_count = 4U;
+    fixture_usb_msc[0].read_ops = 2U;
+    fixture_usb_msc[0].reset_count = 1U;
+    kmemset(fixture_usb_hid, 0, sizeof(fixture_usb_hid));
+    copy_text(fixture_usb_hid[0].id, sizeof(fixture_usb_hid[0].id),
+              "usb-device-1");
+    copy_text(fixture_usb_hid[0].controller_id,
+              sizeof(fixture_usb_hid[0].controller_id), "usb-00:04.0");
+    fixture_usb_hid[0].kind = USB_HID_KIND_KEYBOARD;
+    fixture_usb_hid[0].state = USB_HID_STATE_READY;
+    fixture_usb_hid[0].interrupt_endpoint = 0x81U;
+    fixture_usb_hid[0].max_packet = 8U;
+    fixture_usb_hid[0].interval = 10U;
+    fixture_usb_hid[0].active = 1U;
+    fixture_usb_hid[0].report_count = 5U;
+    fixture_usb_hid[0].malformed_count = 1U;
+    fixture_usb_hid[0].timeout_count = 2U;
+    fixture_usb_hid[0].error_count = 3U;
+    fixture_usb_hid[0].dropped_count = 4U;
+    fixture_usb_hid[0].cancel_count = 1U;
+    fixture_recovery_usb.name = "USB";
+    fixture_recovery_usb.state = RECOVERY_STATE_READY;
+    fixture_recovery_usb.failures = 0U;
+    fixture_recovery_usb.last_error = OK;
+    fixture_recovery_usb.last_message = "ready";
     kmemset(&fixture_mouse_status, 0, sizeof(fixture_mouse_status));
     fixture_mouse_status.initialized = 1U;
     fixture_mouse_status.x = 12;
@@ -1090,6 +1309,273 @@ int devfs_self_test(devfs_test_result_t* result) {
     if (!result) return ERR_NULL;
     *result = fixture_devfs_test;
     return fixture_devfs_test_result;
+}
+
+int shell_introspection_read_file(const char* path, uint8_t* buffer,
+                                  uint32_t capacity, uint32_t* out_size) {
+    (void)path;
+    (void)buffer;
+    (void)capacity;
+    if (!out_size) return ERR_NULL;
+    *out_size = 0U;
+    return ERR_NOT_FOUND;
+}
+
+int device_manager_get_count(uint32_t* out_count) {
+    if (!out_count) return ERR_NULL;
+    if (fixture_device_count_result != OK) return fixture_device_count_result;
+    *out_count = fixture_device_count;
+    return OK;
+}
+
+int device_manager_get_info(uint32_t index, device_info_t* out_info) {
+    if (!out_info) return ERR_NULL;
+    if (fixture_device_info_result != OK) return fixture_device_info_result;
+    if (index >= fixture_device_count) return ERR_INVALID;
+    *out_info = fixture_devices[index];
+    return OK;
+}
+
+int device_manager_format_text(const device_info_t* info,
+                               device_text_t* out_text) {
+    if (!info || !out_text) return ERR_NULL;
+    if (fixture_device_format_result != OK) return fixture_device_format_result;
+    kmemset(out_text, 0, sizeof(*out_text));
+    if (info->kind == DEVICE_KIND_PCI) {
+        copy_text(out_text->id, sizeof(out_text->id), "pci-00:03.0");
+        copy_text(out_text->name, sizeof(out_text->name), "Controlador de rede");
+        copy_text(out_text->type, sizeof(out_text->type), "PCI");
+        copy_text(out_text->location, sizeof(out_text->location),
+                  "PCI 00:03.0");
+        copy_text(out_text->detail, sizeof(out_text->detail),
+                  "PCI dispositivo de teste");
+    } else {
+        copy_text(out_text->id, sizeof(out_text->id), "ata0");
+        copy_text(out_text->name, sizeof(out_text->name), "ATA Primary");
+        copy_text(out_text->type, sizeof(out_text->type), "STORAGE");
+        copy_text(out_text->location, sizeof(out_text->location), "primary");
+        copy_text(out_text->detail, sizeof(out_text->detail),
+                  "2048 setores");
+    }
+    return OK;
+}
+
+int device_manager_find(const char* id, device_info_t* out_info) {
+    device_text_t text;
+
+    if (!id || !out_info) return ERR_NULL;
+    if (fixture_device_find_result != OK) return fixture_device_find_result;
+    for (uint32_t index = 0U; index < fixture_device_count; index++) {
+        if (device_manager_format_text(&fixture_devices[index], &text) == OK &&
+            kstrcmp(id, text.id) == 0) {
+            *out_info = fixture_devices[index];
+            return OK;
+        }
+    }
+    return ERR_NOT_FOUND;
+}
+
+const char* device_manager_status_name(device_status_t status) {
+    if (status == DEVICE_STATUS_READY) return "READY";
+    if (status == DEVICE_STATUS_DEGRADED) return "DEGRADED";
+    if (status == DEVICE_STATUS_DISABLED) return "DISABLED";
+    return "UNKNOWN";
+}
+
+int vfs_list_dir(const char* path, vfs_dir_entry_t* entries,
+                uint32_t capacity, uint32_t* out_count) {
+    (void)path;
+    (void)entries;
+    (void)capacity;
+    if (!out_count) return ERR_NULL;
+    *out_count = 0U;
+    return ERR_NOT_FOUND;
+}
+
+int usb_manager_get_status(usb_manager_status_t* out_status) {
+    if (!out_status) return ERR_NULL;
+    if (fixture_usb_status_result != OK) return fixture_usb_status_result;
+    *out_status = fixture_usb_status;
+    return OK;
+}
+
+int usb_manager_get_count(uint32_t* out_count) {
+    if (!out_count) return ERR_NULL;
+    if (fixture_usb_count_result != OK) return fixture_usb_count_result;
+    *out_count = fixture_usb_controller_count;
+    return OK;
+}
+
+int usb_manager_get_info(uint32_t index, usb_controller_info_t* out_info) {
+    if (!out_info) return ERR_NULL;
+    if (fixture_usb_info_result != OK) return fixture_usb_info_result;
+    if (index >= fixture_usb_controller_count) return ERR_INVALID;
+    *out_info = fixture_usb_controllers[index];
+    return OK;
+}
+
+int usb_manager_get_port_count(uint32_t* out_count) {
+    if (!out_count) return ERR_NULL;
+    if (fixture_usb_port_count_result != OK) return fixture_usb_port_count_result;
+    *out_count = fixture_usb_port_count;
+    return OK;
+}
+
+int usb_manager_get_port(uint32_t index, usb_port_info_t* out_info) {
+    if (!out_info) return ERR_NULL;
+    if (fixture_usb_port_result != OK) return fixture_usb_port_result;
+    if (index >= fixture_usb_port_count) return ERR_INVALID;
+    *out_info = fixture_usb_ports[index];
+    return OK;
+}
+
+int usb_manager_get_device_count(uint32_t* out_count) {
+    if (!out_count) return ERR_NULL;
+    if (fixture_usb_device_count_result != OK) {
+        return fixture_usb_device_count_result;
+    }
+    *out_count = fixture_usb_device_count;
+    return OK;
+}
+
+int usb_manager_get_device(uint32_t index, usb_device_info_t* out_info) {
+    if (!out_info) return ERR_NULL;
+    if (fixture_usb_device_result != OK) return fixture_usb_device_result;
+    if (index >= fixture_usb_device_count) return ERR_INVALID;
+    *out_info = fixture_usb_devices[index];
+    return OK;
+}
+
+int usb_manager_find(const char* id, usb_controller_info_t* out_info) {
+    if (!id || !out_info) return ERR_NULL;
+    if (fixture_usb_find_result != OK) return fixture_usb_find_result;
+    if (kstrcmp(id, "usb-00:04.0") != 0) return ERR_NOT_FOUND;
+    *out_info = fixture_usb_controllers[0];
+    return OK;
+}
+
+int usb_manager_format_text(const usb_controller_info_t* info,
+                            usb_controller_text_t* out_text) {
+    if (!info || !out_text) return ERR_NULL;
+    if (fixture_usb_format_result != OK) return fixture_usb_format_result;
+    kmemset(out_text, 0, sizeof(*out_text));
+    copy_text(out_text->id, sizeof(out_text->id), "usb-00:04.0");
+    copy_text(out_text->name, sizeof(out_text->name), "EHCI Test");
+    copy_text(out_text->location, sizeof(out_text->location), "00:04.0");
+    copy_text(out_text->detail, sizeof(out_text->detail),
+              "EHCI USB controller");
+    return OK;
+}
+
+const char* usb_manager_model_name(usb_controller_model_t model) {
+    if (model == USB_CONTROLLER_MODEL_UHCI) return "UHCI";
+    if (model == USB_CONTROLLER_MODEL_EHCI) return "EHCI";
+    return "OTHER";
+}
+
+const char* usb_manager_state_name(usb_controller_state_t state) {
+    if (state == USB_CONTROLLER_READY) return "READY";
+    if (state == USB_CONTROLLER_DEGRADED) return "DEGRADED";
+    return "DISABLED";
+}
+
+const char* usb_manager_reason_name(usb_controller_reason_t reason) {
+    if (reason == USB_CONTROLLER_REASON_DRIVER_READY) return "DRIVER_READY";
+    if (reason == USB_CONTROLLER_REASON_DRIVER_FAILURE) return "DRIVER_FAILURE";
+    if (reason == USB_CONTROLLER_REASON_PORT_FAILURE) return "PORT_FAILURE";
+    if (reason == USB_CONTROLLER_REASON_OUT_OF_SCOPE) return "OUT_OF_SCOPE";
+    return "DRIVER_NOT_INITIALIZED";
+}
+
+const char* usb_manager_port_state_name(usb_port_state_t state) {
+    if (state == USB_PORT_EMPTY) return "EMPTY";
+    if (state == USB_PORT_RESETTING) return "RESETTING";
+    if (state == USB_PORT_ENUMERATING) return "ENUMERATING";
+    if (state == USB_PORT_CONFIGURED) return "CONFIGURED";
+    return "DEGRADED";
+}
+
+const char* usb_manager_port_reason_name(usb_port_reason_t reason) {
+    if (reason == USB_PORT_REASON_NONE) return "NONE";
+    if (reason == USB_PORT_REASON_NO_DEVICE) return "NO_DEVICE";
+    if (reason == USB_PORT_REASON_RESET_TIMEOUT) return "RESET_TIMEOUT";
+    if (reason == USB_PORT_REASON_CONTROL_TIMEOUT) return "CONTROL_TIMEOUT";
+    if (reason == USB_PORT_REASON_INVALID_DESCRIPTOR) return "INVALID_DESCRIPTOR";
+    if (reason == USB_PORT_REASON_UNSUPPORTED_SPEED) return "UNSUPPORTED_SPEED";
+    if (reason == USB_PORT_REASON_UNSUPPORTED_LAYOUT) return "UNSUPPORTED_LAYOUT";
+    return "DRIVER_FAILURE";
+}
+
+const char* usb_manager_speed_name(usb_device_speed_t speed) {
+    if (speed == USB_DEVICE_SPEED_LOW) return "LOW";
+    if (speed == USB_DEVICE_SPEED_FULL) return "FULL";
+    return "HIGH";
+}
+
+int usb_msc_get_count(uint32_t* out_count) {
+    if (!out_count) return ERR_NULL;
+    if (fixture_usb_msc_count_result != OK) return fixture_usb_msc_count_result;
+    *out_count = fixture_usb_msc_count;
+    return OK;
+}
+
+int usb_msc_get_at(uint32_t index, usb_msc_info_t* out_info) {
+    if (!out_info) return ERR_NULL;
+    if (fixture_usb_msc_info_result != OK) return fixture_usb_msc_info_result;
+    if (index >= fixture_usb_msc_count) return ERR_INVALID;
+    *out_info = fixture_usb_msc[index];
+    return OK;
+}
+
+const char* usb_msc_state_name(usb_msc_state_t state) {
+    return state == USB_MSC_READY ? "READY" : "DEGRADED";
+}
+
+int usb_hid_get_count(uint32_t* out_count) {
+    if (!out_count) return ERR_NULL;
+    if (fixture_usb_hid_count_result != OK) return fixture_usb_hid_count_result;
+    *out_count = fixture_usb_hid_count;
+    return OK;
+}
+
+int usb_hid_get_at(uint32_t index, usb_hid_info_t* out_info) {
+    if (!out_info) return ERR_NULL;
+    if (fixture_usb_hid_info_result != OK) return fixture_usb_hid_info_result;
+    if (index >= fixture_usb_hid_count) return ERR_INVALID;
+    *out_info = fixture_usb_hid[index];
+    return OK;
+}
+
+int usb_hid_validate_state(void) {
+    return fixture_usb_hid_validate_result;
+}
+
+const char* usb_hid_kind_name(usb_hid_kind_t kind) {
+    return kind == USB_HID_KIND_KEYBOARD ? "KEYBOARD" : "MOUSE";
+}
+
+const char* usb_hid_state_name(usb_hid_state_t state) {
+    if (state == USB_HID_STATE_READY) return "READY";
+    if (state == USB_HID_STATE_DEGRADED) return "DEGRADED";
+    return "DISABLED";
+}
+
+int input_validate_state(void) {
+    return fixture_input_validate_result;
+}
+
+const recovery_component_t* recovery_get(recovery_component_id_t component) {
+    if (component == RECOVERY_COMPONENT_USB && fixture_recovery_state_result == OK) {
+        return &fixture_recovery_usb;
+    }
+    return 0;
+}
+
+const char* recovery_state_name(recovery_state_t state) {
+    if (state == RECOVERY_STATE_READY) return "READY";
+    if (state == RECOVERY_STATE_DEGRADED) return "DEGRADED";
+    if (state == RECOVERY_STATE_DISABLED) return "DISABLED";
+    return "UNKNOWN";
 }
 
 int vfs_getcwd(char* path, uint32_t capacity) {
@@ -1664,6 +2150,106 @@ static int test_devcheck(void) {
     return failures;
 }
 
+static int test_devices_and_usb(void) {
+    int failures = 0;
+
+    fixture_reset();
+    shell_dispatch_cmd_devices("-v");
+    failures += expect_contains("Dispositivos detectados:\n");
+    failures += expect_contains("pci-00:03.0");
+    failures += expect_contains("ata0");
+    failures += expect_contains("2048 setores");
+    fixture_reset();
+    shell_dispatch_cmd_devices("extra");
+    failures += expect_text("Uso: devices [-v]\n");
+    fixture_reset();
+    fixture_device_count_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_devices("");
+    failures += expect_text("Erro: inventario de dispositivos indisponivel.\n");
+    fixture_reset();
+    shell_dispatch_cmd_device_info("pci-00:03.0");
+    failures += expect_contains("Dispositivo:\n  ID: pci-00:03.0\n");
+    failures += expect_contains("Estado: READY");
+    fixture_reset();
+    shell_dispatch_cmd_device_info("missing");
+    failures += expect_text("Erro: dispositivo nao encontrado.\n");
+    fixture_reset();
+    shell_dispatch_cmd_device_info("");
+    failures += expect_text("Uso: device-info <id>\n");
+
+    fixture_reset();
+    shell_dispatch_cmd_usb("status");
+    failures += expect_contains("USB:\n  Servico: READY");
+    failures += expect_contains("Controladores: 1");
+    failures += expect_contains("High-speed: READY");
+    fixture_reset();
+    shell_dispatch_cmd_usb("list");
+    failures += expect_contains("Controladores USB detectados:\n");
+    failures += expect_contains("usb-00:04.0");
+    failures += expect_contains("EHCI USB controller");
+    fixture_reset();
+    shell_dispatch_cmd_usb("ports");
+    failures += expect_contains("Portas USB:\n");
+    failures += expect_contains("usb-00:04.0 p1  CONFIGURED");
+    fixture_reset();
+    shell_dispatch_cmd_usb("devices");
+    failures += expect_contains("Dispositivos USB configurados:\n");
+    failures += expect_contains("ID: usb-device-1");
+    failures += expect_contains("DeviceDesc: OK");
+    failures += expect_contains("MSC e HID ativos");
+    fixture_reset();
+    shell_dispatch_cmd_usb("storage");
+    failures += expect_contains("USB Mass Storage: 1 dispositivo(s)\n");
+    failures += expect_contains("ID: usb-device-1");
+    failures += expect_contains("Estado: READY");
+    fixture_reset();
+    shell_dispatch_cmd_usb("hid status");
+    failures += expect_contains("USB HID Boot: 1 registro(s)\n");
+    failures += expect_contains("KEYBOARD  Estado: READY");
+    fixture_reset();
+    shell_dispatch_cmd_usb("hid check");
+    failures += expect_text("USB HID check: OK\n");
+    fixture_reset();
+    shell_dispatch_cmd_usb("device usb-00:04.0");
+    failures += expect_contains("Controlador USB:\n  ID: usb-00:04.0");
+    failures += expect_contains("Modelo: EHCI");
+    fixture_reset();
+    shell_dispatch_cmd_usb("device missing");
+    failures += expect_text("Erro: controlador USB nao encontrado.\n");
+    fixture_reset();
+    shell_dispatch_cmd_usb("invalid");
+    failures += expect_contains("Uso: usb status|list|ports|devices|storage|hid|device <id>\n");
+    fixture_reset();
+    fixture_usb_status_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_usb("status");
+    failures += expect_text("Erro: inventario USB indisponivel.\n");
+    fixture_reset();
+    fixture_usb_count_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_usb("list");
+    failures += expect_text("Erro: inventario USB indisponivel.\n");
+    fixture_reset();
+    fixture_usb_port_count_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_usb("ports");
+    failures += expect_text("Erro: portas USB indisponiveis.\n");
+    fixture_reset();
+    fixture_usb_device_count_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_usb("devices");
+    failures += expect_text("Erro: dispositivos USB indisponiveis.\n");
+    fixture_reset();
+    fixture_usb_msc_count_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_usb("storage");
+    failures += expect_text("Erro: inventario USB MSC indisponivel.\n");
+    fixture_reset();
+    fixture_usb_hid_count_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_usb("hid");
+    failures += expect_text("Erro: inventario USB HID indisponivel.\n");
+    fixture_reset();
+    fixture_usb_hid_validate_result = ERR_STATE;
+    shell_dispatch_cmd_usb("hid check");
+    failures += expect_contains("USB HID check: FALHOU hid=");
+    return failures;
+}
+
 int main(void) {
     int result;
 
@@ -1671,7 +2257,7 @@ int main(void) {
     result = test_pwd() + test_cd() + test_mouse() + test_log() +
              test_timer() + test_clock() + test_irqstat() + test_wait() +
              test_wqinfo() + test_workq() + test_tls() + test_vfs();
-    result += test_devcheck();
+    result += test_devcheck() + test_devices_and_usb();
     coverage_active = 0U;
     coverage_emit(result);
     return result ? 1 : 0;

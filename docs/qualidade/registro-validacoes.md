@@ -5716,3 +5716,17 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `src/shell/shell_commands_diagnostics.c` para `COVERED`, sem hardware ou
   armazenamento real: 7.293 superfícies, 6.199 `COVERED`, 1.094 `PENDING` e
   154 casos. As pendências restantes continuam explícitas.
+
+- Incremento Shell/diagnostics devices e USB — concluído em 2026-09-04
+  (America/Sao_Paulo). A fixture host-only `host:shell:diagnostics` passou a
+  exercitar os dispatchers reais de `devices`, `device-info` e `usb`, com
+  inventário PCI e ATA falso, controladora EHCI, portas, dispositivos HID e
+  MSC simulados. Foram validados inventário detalhado, busca por identificador,
+  estados prontos/degradados, listagens, limites, argumentos inválidos,
+  dispositivos ausentes e indisponibilidade coerente. O alvo
+  `make test-shell-diagnostics-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
+  passou com `-Wall -Wextra -Werror` e instrumentação dinâmica; os relatórios
+  foram sincronizados e a visão do catálogo regenerada. O incremento resolveu
+  16 superfícies observadas de `src/shell/shell_commands_diagnostics.c`, sem
+  hardware ou armazenamento real: 7.293 superfícies, 6.215 `COVERED`, 1.078
+  `PENDING` e 154 casos. As pendências restantes continuam explícitas.
