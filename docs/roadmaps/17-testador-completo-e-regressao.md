@@ -2329,3 +2329,14 @@ pendente.
   renderizacao, `make catalog-test`, o build limpo e `q3check`. O catalogo
   registra 7.251 superficies, 5.546 `COVERED`, 1.705 `PENDING` e 144 casos; o
   restante da cobertura integral continua pendente e nao foi mascarado.
+
+- Incremento Core/update system slots concluido em 2026-09-04. A fixture
+  host-only `host:core:update-system-slots` executa os helpers e contratos
+  publicos reais de `src/core/update_system_slots.c` com filesystem, volume,
+  crypto, armazenamento e estado de boot simulados em buffers estaticos. A
+  evidencia instrumentada resolveu 56 superficies reais sem enderecos
+  desconhecidos ou simbolos ambiguos. Passaram o alvo host-only com `HOST_CC`,
+  sincronizacao, renderizacao, `make catalog-test`, o build limpo, `q3check` e
+  os testes unitarios selecionados. O catalogo registra 7.252 superficies,
+  5.616 `COVERED`, 1.636 `PENDING` e 145 casos; o restante da cobertura
+  integral continua pendente e nao foi mascarado.

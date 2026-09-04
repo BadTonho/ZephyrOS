@@ -6,6 +6,9 @@
 #include "fs/fs.h"
 #include "fs/storage.h"
 #include "process/process.h"
+#if defined(ZEPHYROS_HOST_TEST)
+#include "update_system_slots_host.h"
+#endif
 
 #define SYSTEM_SLOTS_STATE_MAGIC "ZSI1"
 #define SYSTEM_SLOTS_JOURNAL_MAGIC "ZSJ1"
@@ -79,6 +82,9 @@ static update_system_slots_status_t system_slots_status;
 static uint8_t system_slots_control[UPDATE_SYSTEM_SLOT_CONTROL_SIZE];
 static uint8_t system_slots_verify_control[UPDATE_SYSTEM_SLOT_CONTROL_SIZE];
 static uint8_t system_slots_io[SYSTEM_SLOTS_IO_SIZE];
+#if defined(ZEPHYROS_HOST_TEST)
+static update_system_boot_handoff_t system_slots_host_handoff;
+#endif
 
 static uint16_t system_slots_read_u16(const uint8_t* data) {
     return (uint16_t)data[0] | ((uint16_t)data[1] << 8U);
@@ -1438,9 +1444,14 @@ static int system_slots_handoff_valid(const update_system_boot_handoff_t* handof
 }
 
 int update_system_slots_boot_confirm(void) {
+#if defined(ZEPHYROS_HOST_TEST)
+    volatile const update_system_boot_handoff_t* handoff =
+        &system_slots_host_handoff;
+#else
     volatile const update_system_boot_handoff_t* handoff =
         (volatile const update_system_boot_handoff_t*)
             UPDATE_SYSTEM_BOOT_HANDOFF_ADDRESS;
+#endif
     update_system_boot_handoff_t snapshot;
     int result;
 
@@ -1547,3 +1558,240 @@ const char* update_system_slots_reason_name(
         default: return "UNKNOWN";
     }
 }
+
+#if defined(ZEPHYROS_HOST_TEST)
+int update_system_slots_host_test_contracts(void) {
+    uint8_t raw[UPDATE_SYSTEM_SLOT_CONTROL_SIZE];
+    uint8_t info_raw[SYSTEM_SLOTS_STATE_SLOT_SIZE];
+    uint8_t invalid_raw[SYSTEM_SLOTS_STATE_SLOT_SIZE];
+    char text[SYSTEM_SLOTS_ID_SIZE];
+    update_system_slot_info_t info;
+    update_system_slot_info_t decoded_info;
+    system_slots_state_t decoded_state;
+    system_slots_state_t state;
+    update_system_slots_action_options_t options;
+    update_system_slots_action_result_t action;
+    update_system_verification_t verification;
+    system_slots_journal_t journal;
+    system_slots_journal_t decoded_journal;
+    update_version_t first_version;
+    update_version_t second_version;
+    uint32_t value = 0U;
+    kmemset(&options, 0, sizeof(options));
+    (void)update_system_slots_init();
+    system_slots_initialized = 1U;
+    system_slots_volume_ready = 1U;
+    system_slots_state_degraded = 0U;
+    system_slots_journal_degraded = 0U;
+    kmemset(&system_slots_state, 0, sizeof(system_slots_state));
+    kmemset(&system_slots_journal, 0, sizeof(system_slots_journal));
+    system_slots_state.pending_slot = UPDATE_SYSTEM_SLOT_NONE;
+    system_slots_state.previous_slot = UPDATE_SYSTEM_SLOT_NONE;
+    system_slots_state.attempt_slot = UPDATE_SYSTEM_SLOT_NONE;
+    kmemset(raw, 0, sizeof(raw));
+    if (system_slots_read_u16(raw) != 0U || system_slots_read_u32(raw) != 0U) {
+        return 101;
+    }
+    system_slots_write_u16(raw, 0x1234U);
+    system_slots_write_u32(raw + 2U, 0x89ABCDEFU);
+    if (system_slots_read_u16(raw) != 0x1234U ||
+        system_slots_read_u32(raw + 2U) != 0x89ABCDEFU) {
+        return 102;
+    }
+    if (!system_slots_bytes_zero(raw + 8U, 4U) ||
+        system_slots_bytes_equal(raw + 8U, raw + 8U, 4U) != 1 ||
+        system_slots_bytes_equal(NULL, raw, 1U) != 0) {
+        return 103;
+    }
+    raw[0] = 'Z'; raw[1] = 'S'; raw[2] = 'I'; raw[3] = '1';
+    if (!system_slots_magic_equal(raw, SYSTEM_SLOTS_STATE_MAGIC) ||
+        system_slots_magic_equal(raw, SYSTEM_SLOTS_JOURNAL_MAGIC)) {
+        return 104;
+    }
+    kmemset(raw, 0, sizeof(raw));
+    raw[0] = 'I'; raw[1] = 'D';
+    if (system_slots_copy_fixed_text(raw, 4U, text, sizeof(text)) != OK ||
+        kstrcmp(text, "ID") != 0 ||
+        system_slots_copy_fixed_text(NULL, 4U, text, sizeof(text)) != ERR_NULL) {
+        return 105;
+    }
+    if (system_slots_write_fixed_text(raw, 4U, "AB") != OK ||
+        kstrcmp((const char*)raw, "AB") != 0 ||
+        system_slots_write_fixed_text(raw, 2U, "AB") != ERR_OVERFLOW) {
+        return 106;
+    }
+    first_version.major = 1U; first_version.minor = 0U; first_version.patch = 0U;
+    second_version.major = 1U; second_version.minor = 1U; second_version.patch = 0U;
+    if (system_slots_version_compare(&first_version, &second_version) >= 0 ||
+        system_slots_version_compare(&second_version, &first_version) <= 0 ||
+        system_slots_version_compare(&first_version, &first_version) != 0 ||
+        !system_slots_is_newer(&second_version, 0U, &first_version, 99U) ||
+        !system_slots_is_newer(&first_version, 100U, &first_version, 99U)) {
+        return 107;
+    }
+
+    kmemset(&info, 0, sizeof(info));
+    info.state = UPDATE_SYSTEM_SLOT_FILE_VALID;
+    info.version = second_version;
+    info.epoch = 7U;
+    info.size = UPDATE_SYSTEM_HEADER_SIZE + 1024U;
+    info.file_hash[0] = 0xA5U;
+    info.release_id[0] = 'R';
+    info.release_id[1] = '1';
+    info.release_tag[0] = 'T';
+    info.release_tag[1] = '1';
+    kmemset(info_raw, 0, sizeof(info_raw));
+    system_slots_encode_info(info_raw, &info);
+    if (system_slots_decode_info(info_raw, &decoded_info) != OK ||
+        !system_slots_info_matches(&info, &decoded_info)) {
+        return 108;
+    }
+    kmemset(&info, 0, sizeof(info));
+    system_slots_encode_info(info_raw, &info);
+    if (system_slots_decode_info(info_raw, &decoded_info) != OK) return 109;
+
+    kmemset(&state, 0, sizeof(state));
+    state.sequence = 1U;
+    state.active_slot = 0U;
+    state.pending_slot = UPDATE_SYSTEM_SLOT_NONE;
+    state.previous_slot = 0U;
+    state.attempt_slot = UPDATE_SYSTEM_SLOT_NONE;
+    state.boot_state = UPDATE_SYSTEM_SLOTS_BOOT_NONE;
+    state.boot_reason = UPDATE_SYSTEM_SLOTS_REASON_NONE;
+    state.slots[0].state = UPDATE_SYSTEM_SLOT_FILE_VALID;
+    state.slots[0].version = second_version;
+    state.slots[0].epoch = 7U;
+    state.slots[0].size = UPDATE_SYSTEM_HEADER_SIZE + 1024U;
+    state.slots[0].release_id[0] = 'R';
+    state.slots[0].release_tag[0] = 'T';
+    if (system_slots_encode_state(&state, raw) != OK ||
+        system_slots_decode_state(raw, &decoded_state) != OK ||
+        decoded_state.sequence != state.sequence) {
+        return 110;
+    }
+    raw[0] = 'X';
+    if (system_slots_decode_state(raw, &decoded_state) != ERR_INVALID) {
+        return 111;
+    }
+    kmemset(&journal, 0, sizeof(journal));
+    journal.sequence = 2U;
+    journal.phase = SYSTEM_SLOTS_PHASE_PREPARED;
+    journal.target_slot = 1U;
+    journal.target.state = UPDATE_SYSTEM_SLOT_FILE_VALID;
+    journal.target.version = second_version;
+    journal.target.epoch = 7U;
+    journal.target.size = UPDATE_SYSTEM_HEADER_SIZE + 1024U;
+    journal.target.release_id[0] = 'R';
+    journal.target.release_tag[0] = 'T';
+    if (system_slots_encode_journal(&journal, raw) != OK ||
+        system_slots_decode_journal(raw, &decoded_journal) != OK ||
+        decoded_journal.sequence != journal.sequence) {
+        return 112;
+    }
+
+    if (!system_slots_path_is_local("system:/candidate.zsy") ||
+        system_slots_path_is_local("system:/ZSA0.ZSY") ||
+        system_slots_path_is_local("system:/nested/file.zsy") ||
+        system_slots_path_is_local(NULL)) {
+        return 113;
+    }
+    kmemset(&verification, 0, sizeof(verification));
+    verification.image_size = 1024U;
+    verification.target_version = second_version;
+    verification.target_epoch = 7U;
+    verification.release_id[0] = 'R';
+    verification.release_tag[0] = 'T';
+    if (system_slots_hash_file("system:/candidate.zsy", 2048U,
+                               info.file_hash) != OK ||
+        system_slots_fill_info("system:/candidate.zsy", &verification,
+                               &info) != OK ||
+        system_slots_file_info("system:/candidate.zsy", &decoded_info) != OK ||
+        !system_slots_info_matches(&info, &decoded_info)) {
+        return 114;
+    }
+    state.slots[0] = info;
+    if (system_slots_map_reason(UPDATE_SYSTEM_REASON_FORMAT) !=
+            UPDATE_SYSTEM_SLOTS_REASON_FORMAT ||
+        system_slots_map_reason(UPDATE_SYSTEM_REASON_UNKNOWN_KEY) !=
+            UPDATE_SYSTEM_SLOTS_REASON_SIGNATURE ||
+        system_slots_map_reason(UPDATE_SYSTEM_REASON_BASE_VERSION) !=
+            UPDATE_SYSTEM_SLOTS_REASON_COMPATIBILITY ||
+        system_slots_map_reason(UPDATE_SYSTEM_REASON_DOWNGRADE) !=
+            UPDATE_SYSTEM_SLOTS_REASON_DOWNGRADE ||
+        system_slots_map_reason(UPDATE_SYSTEM_REASON_IO) !=
+            UPDATE_SYSTEM_SLOTS_REASON_IO ||
+        system_slots_map_reason(UPDATE_SYSTEM_REASON_UNSUPPORTED) !=
+            UPDATE_SYSTEM_SLOTS_REASON_FORMAT) {
+        return 115;
+    }
+
+    if (system_slots_load_control(UPDATE_SYSTEM_SLOT_STATE_A_ALIAS, raw) !=
+            ERR_NOT_FOUND ||
+        system_slots_controls_preallocated_locked() != OK ||
+        system_slots_write_control(UPDATE_SYSTEM_SLOT_STATE_A_ALIAS, raw) != OK ||
+        system_slots_load_control(UPDATE_SYSTEM_SLOT_STATE_A_ALIAS, raw) != OK) {
+        return 116;
+    }
+    system_slots_state = state;
+    system_slots_state.sequence = 1U;
+    system_slots_state.slots[1].state = UPDATE_SYSTEM_SLOT_FILE_EMPTY;
+    if (system_slots_write_state_locked() != OK ||
+        system_slots_replicate_state_locked() != OK ||
+        system_slots_load_state_locked() != OK) {
+        return 117;
+    }
+    system_slots_journal = journal;
+    if (system_slots_write_journal_locked() != OK ||
+        system_slots_load_journal_locked() != OK ||
+        system_slots_clear_journal_locked() != OK ||
+        system_slots_journal.phase != SYSTEM_SLOTS_PHASE_NONE) {
+        return 118;
+    }
+    if (system_slots_delete_staging("SYSVOL") != OK ||
+        system_slots_delete_staging(NULL) != ERR_NULL ||
+        system_slots_read_free_bytes(&value) != OK) {
+        return 119;
+    }
+    system_slots_volume_ready = 1U;
+    system_slots_state_degraded = 0U;
+    system_slots_journal_degraded = 0U;
+    system_slots_refresh_status_locked();
+    if (system_slots_publish_status_locked() != OK ||
+        system_slots_recover_journal_locked() != OK ||
+        system_slots_cancelled(&options) != 0) {
+        return 120;
+    }
+    if (update_system_slots_state_name(UPDATE_SYSTEM_SLOTS_STATE_READY) == NULL ||
+        update_system_slots_boot_state_name(UPDATE_SYSTEM_SLOTS_BOOT_ATTEMPTED) == NULL ||
+        update_system_slots_journal_phase_name(UPDATE_SYSTEM_SLOTS_JOURNAL_VERIFIED) == NULL ||
+        update_system_slot_file_state_name(UPDATE_SYSTEM_SLOT_FILE_VALID) == NULL ||
+        update_system_slots_reason_name(UPDATE_SYSTEM_SLOTS_REASON_RECOVERY) == NULL) {
+        return 121;
+    }
+    kmemset(&system_slots_host_handoff, 0, sizeof(system_slots_host_handoff));
+    if (system_slots_handoff_valid(NULL)) return 122;
+    kmemcpy(system_slots_host_handoff.magic, SYSTEM_SLOTS_BOOT_HANDOFF_MAGIC, 4U);
+    system_slots_host_handoff.version = SYSTEM_SLOTS_BOOT_HANDOFF_VERSION;
+    system_slots_host_handoff.size = UPDATE_SYSTEM_BOOT_HANDOFF_SIZE;
+    system_slots_host_handoff.boot_slot = 1U;
+    system_slots_host_handoff.previous_slot = 0U;
+    system_slots_host_handoff.boot_state = UPDATE_SYSTEM_SLOTS_BOOT_ATTEMPTED;
+    system_slots_host_handoff.attempt_sequence = 1U;
+    if (!system_slots_handoff_valid(&system_slots_host_handoff)) return 123;
+
+    kmemset(&system_slots_host_handoff, 0, sizeof(system_slots_host_handoff));
+    if (!update_system_slots_is_ready()) return 125;
+    if (update_system_slots_get_status(NULL) != ERR_NULL) return 126;
+    if (update_system_slots_get_status(&system_slots_status) != OK) return 127;
+    if (update_system_slots_stage_file(NULL, &options, &action) != ERR_NULL) return 128;
+    if (update_system_slots_stage_file("system:/ZSA0.ZSY", &options,
+                                       &action) != ERR_UNAVAILABLE) return 129;
+    if (update_system_slots_cancel_pending(NULL, &action) != OK) return 130;
+    if (update_system_slots_cancel_pending(&options, &action) != OK) return 131;
+    if (update_system_slots_reboot_preflight(NULL) != ERR_NULL) return 132;
+    if (update_system_slots_reboot_preflight(&action) != ERR_STATE) return 133;
+    if (update_system_slots_boot_confirm() != OK) return 134;
+    (void)invalid_raw;
+    return OK;
+}
+#endif

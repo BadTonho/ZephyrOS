@@ -1750,3 +1750,21 @@ O relatorio instrumentado fica em
 `PASS`, com `unknown_addresses=[]` e `ambiguous_symbols=[]`. Depois da
 execucao real, sincronize o catalogo, renderize a visao e valide com
 `make catalog-test`.
+
+## Update system slots host-only
+
+O alvo `test-update-system-slots-host` compila o
+`src/core/update_system_slots.c` com filesystem, crypto, armazenamento e
+volume de sistema simulados em buffers estaticos. A fixture valida
+serializacao de estado e journal, redundancia, recuperacao, paths, limites e
+contratos publicos sem armazenamento real, reboot ou hardware:
+
+```text
+make test-update-system-slots-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O relatorio instrumentado fica em
+`build/test-results/update-system-slots-host/coverage.json` e deve terminar
+em `PASS`, com `unknown_addresses=[]` e `ambiguous_symbols=[]`. Depois da
+execucao real, sincronize o catalogo, renderize a visao e valide com
+`make catalog-test`.

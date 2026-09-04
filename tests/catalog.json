@@ -12972,6 +12972,7 @@
         "host:core:update-remote",
         "host:core:update-remote-runtime",
         "host:core:update-runtime",
+        "host:core:update-system-slots",
         "host:memory:memory",
         "host:memory:paging",
         "host:memory:slab-metadata",
@@ -13040,6 +13041,7 @@
         "host:core:update-remote",
         "host:core:update-remote-runtime",
         "host:core:update-runtime",
+        "host:core:update-system-slots",
         "host:drivers:rng",
         "host:memory:memory",
         "host:memory:paging",
@@ -13112,6 +13114,7 @@
         "host:core:update-remote",
         "host:core:update-remote-runtime",
         "host:core:update-runtime",
+        "host:core:update-system-slots",
         "host:memory:memory",
         "host:memory:paging",
         "host:memory:slab-metadata",
@@ -13174,6 +13177,7 @@
         "host:core:update-remote",
         "host:core:update-remote-runtime",
         "host:core:update-runtime",
+        "host:core:update-system-slots",
         "host:memory:paging",
         "host:memory:slab-metadata",
         "host:memory:vma",
@@ -16274,9 +16278,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_system_slots.h:update_system_slots_boot_confirm",
@@ -16292,9 +16299,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_system_slots.h:update_system_slots_boot_state_name",
@@ -16310,9 +16320,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_system_slots.h:update_system_slots_cancel_pending",
@@ -16328,9 +16341,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_system_slots.h:update_system_slots_get_status",
@@ -16346,9 +16362,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_system_slots.h:update_system_slots_init",
@@ -16364,9 +16383,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_system_slots.h:update_system_slots_is_ready",
@@ -16382,9 +16404,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_system_slots.h:update_system_slots_journal_phase_name",
@@ -16400,9 +16425,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_system_slots.h:update_system_slots_reason_name",
@@ -16418,9 +16446,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_system_slots.h:update_system_slots_reboot_preflight",
@@ -16436,9 +16467,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_system_slots.h:update_system_slots_stage_file",
@@ -16454,9 +16488,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_system_slots.h:update_system_slots_state_name",
@@ -16472,9 +16509,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/usb_manager.h:usb_manager_find",
@@ -68173,6 +68213,7 @@
         "host:core:update-remote",
         "host:core:update-remote-runtime",
         "host:core:update-runtime",
+        "host:core:update-system-slots",
         "host:memory:memory",
         "host:memory:paging",
         "host:memory:slab-metadata",
@@ -68241,6 +68282,7 @@
         "host:core:update-remote",
         "host:core:update-remote-runtime",
         "host:core:update-runtime",
+        "host:core:update-system-slots",
         "host:drivers:rng",
         "host:memory:memory",
         "host:memory:paging",
@@ -68313,6 +68355,7 @@
         "host:core:update-remote",
         "host:core:update-remote-runtime",
         "host:core:update-runtime",
+        "host:core:update-system-slots",
         "host:memory:memory",
         "host:memory:paging",
         "host:memory:slab-metadata",
@@ -68375,6 +68418,7 @@
         "host:core:update-remote",
         "host:core:update-remote-runtime",
         "host:core:update-runtime",
+        "host:core:update-system-slots",
         "host:memory:paging",
         "host:memory:slab-metadata",
         "host:memory:vma",
@@ -81995,9 +82039,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_bytes_zero",
@@ -82013,9 +82060,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_cancelled",
@@ -82031,9 +82081,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_clear_journal_locked",
@@ -82049,9 +82102,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_controls_preallocated_locked",
@@ -82067,9 +82123,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_copy_fixed_text",
@@ -82085,9 +82144,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_decode_info",
@@ -82103,9 +82165,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_decode_journal",
@@ -82121,9 +82186,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_decode_state",
@@ -82139,9 +82207,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_delete_staging",
@@ -82157,9 +82228,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_encode_info",
@@ -82175,9 +82249,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_encode_journal",
@@ -82193,9 +82270,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_encode_state",
@@ -82211,9 +82291,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_file_info",
@@ -82229,9 +82312,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_fill_info",
@@ -82247,9 +82333,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_handoff_valid",
@@ -82265,9 +82354,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_hash_file",
@@ -82283,9 +82375,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_info_matches",
@@ -82301,9 +82396,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_is_newer",
@@ -82319,9 +82417,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_load_control",
@@ -82337,9 +82438,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_load_journal_locked",
@@ -82355,9 +82459,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_load_state_locked",
@@ -82373,9 +82480,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_magic_equal",
@@ -82391,9 +82501,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_map_reason",
@@ -82409,9 +82522,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_path_is_local",
@@ -82427,9 +82543,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_publish_status_locked",
@@ -82445,9 +82564,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_read_free_bytes",
@@ -82463,9 +82585,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_read_u16",
@@ -82481,9 +82606,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_read_u32",
@@ -82499,9 +82627,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_recover_journal_locked",
@@ -82517,9 +82648,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_refresh_status_locked",
@@ -82535,9 +82669,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_replicate_state_locked",
@@ -82553,9 +82690,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_reset_info",
@@ -82571,9 +82711,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_version_compare",
@@ -82589,9 +82732,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_write_control",
@@ -82607,9 +82753,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_write_fixed_text",
@@ -82625,9 +82774,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_write_journal_locked",
@@ -82643,9 +82795,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_write_state_locked",
@@ -82661,9 +82816,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_write_u16",
@@ -82679,9 +82837,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:system_slots_write_u32",
@@ -82697,9 +82858,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:update_system_slot_file_state_name",
@@ -82715,9 +82879,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:update_system_slots_boot_confirm",
@@ -82733,9 +82900,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:update_system_slots_boot_state_name",
@@ -82751,9 +82921,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:update_system_slots_cancel_pending",
@@ -82769,9 +82942,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:update_system_slots_get_status",
@@ -82787,9 +82963,33 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/update_system_slots.c:update_system_slots_host_test_contracts",
+      "kind": "c_function",
+      "source": "src/core/update_system_slots.c",
+      "symbol": "update_system_slots_host_test_contracts",
+      "linkage": "external",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:update_system_slots_init",
@@ -82805,9 +83005,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:update_system_slots_is_ready",
@@ -82823,9 +83026,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:update_system_slots_journal_phase_name",
@@ -82841,9 +83047,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:update_system_slots_reason_name",
@@ -82859,9 +83068,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:update_system_slots_reboot_preflight",
@@ -82877,9 +83089,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:update_system_slots_stage_file",
@@ -82895,9 +83110,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_system_slots.c:update_system_slots_state_name",
@@ -82913,9 +83131,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/usb_manager.c:usb_append_char",
@@ -159045,6 +159266,114 @@
         "format",
         "negative",
         "corruption"
+      ]
+    },
+    {
+      "id": "host:core:update-system-slots",
+      "scenario": "Contratos de slots redundantes e recuperacao de atualizacao de sistema",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "storage": "filesystem simulado com controles redundantes",
+        "hardware": "nenhum"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "executar codificacao, validacao, journal, redundancia, recuperacao e contratos publicos com buffers estaticos",
+      "expected": "estado valido faz round-trip e entradas invalidas ou recursos ausentes retornam erros canonicos sem armazenamento real",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente buffers estaticos no processo host",
+      "cleanup": "estado, controles e arquivos simulados pertencem ao processo host; manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/string.h:kmemcpy",
+        "api:src/include/core/string.h:kmemset",
+        "api:src/include/core/string.h:kstrcmp",
+        "api:src/include/core/string.h:kstrlen",
+        "api:src/include/core/update_system_slots.h:update_system_slot_file_state_name",
+        "api:src/include/core/update_system_slots.h:update_system_slots_boot_confirm",
+        "api:src/include/core/update_system_slots.h:update_system_slots_boot_state_name",
+        "api:src/include/core/update_system_slots.h:update_system_slots_cancel_pending",
+        "api:src/include/core/update_system_slots.h:update_system_slots_get_status",
+        "api:src/include/core/update_system_slots.h:update_system_slots_init",
+        "api:src/include/core/update_system_slots.h:update_system_slots_is_ready",
+        "api:src/include/core/update_system_slots.h:update_system_slots_journal_phase_name",
+        "api:src/include/core/update_system_slots.h:update_system_slots_reason_name",
+        "api:src/include/core/update_system_slots.h:update_system_slots_reboot_preflight",
+        "api:src/include/core/update_system_slots.h:update_system_slots_stage_file",
+        "api:src/include/core/update_system_slots.h:update_system_slots_state_name",
+        "c:src/core/string.c:kmemcpy",
+        "c:src/core/string.c:kmemset",
+        "c:src/core/string.c:kstrcmp",
+        "c:src/core/string.c:kstrlen",
+        "c:src/core/update_system_slots.c:system_slots_bytes_equal",
+        "c:src/core/update_system_slots.c:system_slots_bytes_zero",
+        "c:src/core/update_system_slots.c:system_slots_cancelled",
+        "c:src/core/update_system_slots.c:system_slots_clear_journal_locked",
+        "c:src/core/update_system_slots.c:system_slots_controls_preallocated_locked",
+        "c:src/core/update_system_slots.c:system_slots_copy_fixed_text",
+        "c:src/core/update_system_slots.c:system_slots_decode_info",
+        "c:src/core/update_system_slots.c:system_slots_decode_journal",
+        "c:src/core/update_system_slots.c:system_slots_decode_state",
+        "c:src/core/update_system_slots.c:system_slots_delete_staging",
+        "c:src/core/update_system_slots.c:system_slots_encode_info",
+        "c:src/core/update_system_slots.c:system_slots_encode_journal",
+        "c:src/core/update_system_slots.c:system_slots_encode_state",
+        "c:src/core/update_system_slots.c:system_slots_file_info",
+        "c:src/core/update_system_slots.c:system_slots_fill_info",
+        "c:src/core/update_system_slots.c:system_slots_handoff_valid",
+        "c:src/core/update_system_slots.c:system_slots_hash_file",
+        "c:src/core/update_system_slots.c:system_slots_info_matches",
+        "c:src/core/update_system_slots.c:system_slots_is_newer",
+        "c:src/core/update_system_slots.c:system_slots_load_control",
+        "c:src/core/update_system_slots.c:system_slots_load_journal_locked",
+        "c:src/core/update_system_slots.c:system_slots_load_state_locked",
+        "c:src/core/update_system_slots.c:system_slots_magic_equal",
+        "c:src/core/update_system_slots.c:system_slots_map_reason",
+        "c:src/core/update_system_slots.c:system_slots_path_is_local",
+        "c:src/core/update_system_slots.c:system_slots_publish_status_locked",
+        "c:src/core/update_system_slots.c:system_slots_read_free_bytes",
+        "c:src/core/update_system_slots.c:system_slots_read_u16",
+        "c:src/core/update_system_slots.c:system_slots_read_u32",
+        "c:src/core/update_system_slots.c:system_slots_recover_journal_locked",
+        "c:src/core/update_system_slots.c:system_slots_refresh_status_locked",
+        "c:src/core/update_system_slots.c:system_slots_replicate_state_locked",
+        "c:src/core/update_system_slots.c:system_slots_reset_info",
+        "c:src/core/update_system_slots.c:system_slots_version_compare",
+        "c:src/core/update_system_slots.c:system_slots_write_control",
+        "c:src/core/update_system_slots.c:system_slots_write_fixed_text",
+        "c:src/core/update_system_slots.c:system_slots_write_journal_locked",
+        "c:src/core/update_system_slots.c:system_slots_write_state_locked",
+        "c:src/core/update_system_slots.c:system_slots_write_u16",
+        "c:src/core/update_system_slots.c:system_slots_write_u32",
+        "c:src/core/update_system_slots.c:update_system_slot_file_state_name",
+        "c:src/core/update_system_slots.c:update_system_slots_boot_confirm",
+        "c:src/core/update_system_slots.c:update_system_slots_boot_state_name",
+        "c:src/core/update_system_slots.c:update_system_slots_cancel_pending",
+        "c:src/core/update_system_slots.c:update_system_slots_get_status",
+        "c:src/core/update_system_slots.c:update_system_slots_host_test_contracts",
+        "c:src/core/update_system_slots.c:update_system_slots_init",
+        "c:src/core/update_system_slots.c:update_system_slots_is_ready",
+        "c:src/core/update_system_slots.c:update_system_slots_journal_phase_name",
+        "c:src/core/update_system_slots.c:update_system_slots_reason_name",
+        "c:src/core/update_system_slots.c:update_system_slots_reboot_preflight",
+        "c:src/core/update_system_slots.c:update_system_slots_stage_file",
+        "c:src/core/update_system_slots.c:update_system_slots_state_name"
+      ],
+      "tags": [
+        "host",
+        "update",
+        "system-slots",
+        "journal",
+        "recovery",
+        "negative"
       ]
     },
     {

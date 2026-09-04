@@ -45,6 +45,8 @@ UPDATE_REMOTE_RUNTIME_RESULT_DIR = ROOT / "build" / "test-results" / "update-rem
 UPDATE_REMOTE_RUNTIME_BINARY = ROOT / "build" / "tests" / "test_update_remote_runtime_host.exe"
 UPDATE_REMOTE_RESULT_DIR = ROOT / "build" / "test-results" / "update-remote-host"
 UPDATE_REMOTE_BINARY = ROOT / "build" / "tests" / "test_update_remote_host.exe"
+UPDATE_SYSTEM_SLOTS_RESULT_DIR = ROOT / "build" / "test-results" / "update-system-slots-host"
+UPDATE_SYSTEM_SLOTS_BINARY = ROOT / "build" / "tests" / "test_update_system_slots_host.exe"
 STATE_RESULT_DIR = ROOT / "build" / "test-results" / "state-host"
 STATE_BINARY = ROOT / "build" / "tests" / "test_core_state_host.exe"
 DEVICE_RESULT_DIR = ROOT / "build" / "test-results" / "device-manager-host"
@@ -199,6 +201,11 @@ UPDATE_REMOTE_RUNTIME_SOURCE_FILES = (
 UPDATE_REMOTE_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_update_remote_host.c",
     ROOT / "src" / "core" / "update_remote.c",
+    ROOT / "src" / "core" / "string.c",
+)
+UPDATE_SYSTEM_SLOTS_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_update_system_slots_host.c",
+    ROOT / "src" / "core" / "update_system_slots.c",
     ROOT / "src" / "core" / "string.c",
 )
 STATE_SOURCE_FILES = (
@@ -814,6 +821,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
     if case_id == "host:core:update-remote":
         return (UPDATE_REMOTE_RESULT_DIR, UPDATE_REMOTE_BINARY,
                 UPDATE_REMOTE_SOURCE_FILES, "update-remote-host")
+    if case_id == "host:core:update-system-slots":
+        return (UPDATE_SYSTEM_SLOTS_RESULT_DIR, UPDATE_SYSTEM_SLOTS_BINARY,
+                UPDATE_SYSTEM_SLOTS_SOURCE_FILES, "update-system-slots-host")
     if case_id == "host:core:state":
         return STATE_RESULT_DIR, STATE_BINARY, STATE_SOURCE_FILES, "state-host"
     if case_id == "host:core:device-manager":
@@ -1191,6 +1201,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:core:update-runtime",
                                  "host:core:update-remote-runtime",
                                  "host:core:update-remote",
+                                 "host:core:update-system-slots",
                                  "host:core:device-manager", "host:core:app-api",
                                  "host:core:app-files", "host:core:app-builtin",
                                  "host:core:app-loader", "host:ui:taskbar",

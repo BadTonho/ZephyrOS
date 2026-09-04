@@ -2283,6 +2283,58 @@
       }
     },
     {
+      "id": "update-system-slots-host-dynamic",
+      "domain": "core-update-system-slots",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:update-system-slots"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/update-system-slots-host/coverage.json",
+      "coverage_sources": [
+        "src/core/update_system_slots.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-update-system-slots-host PASS com serializacao, journal, redundancia, recuperacao e contratos publicos em filesystem simulado no relatorio instrumentado",
+      "case_definition": {
+        "id": "host:core:update-system-slots",
+        "scenario": "Contratos de slots redundantes e recuperacao de atualizacao de sistema",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "storage": "filesystem simulado com controles redundantes",
+          "hardware": "nenhum"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "executar codificacao, validacao, journal, redundancia, recuperacao e contratos publicos com buffers estaticos",
+        "expected": "estado valido faz round-trip e entradas invalidas ou recursos ausentes retornam erros canonicos sem armazenamento real",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente buffers estaticos no processo host",
+        "cleanup": "estado, controles e arquivos simulados pertencem ao processo host; manifesto, logs e cobertura preservados",
+        "status": "AUTOMATED",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "update",
+          "system-slots",
+          "journal",
+          "recovery",
+          "negative"
+        ]
+      }
+    },
+    {
       "id": "update-remote-host-dynamic",
       "domain": "core-update-remote",
       "owner": "quality",
