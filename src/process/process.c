@@ -376,16 +376,24 @@ static void process_stack_verify_or_panic(process_t* proc) {
 }
 
 static uint32_t process_wait_irq_save(void) {
+#if defined(ZEPHYROS_HOST_TEST)
+    return 0U;
+#else
     uint32_t flags;
 
     asm volatile("pushf\n\tpop %0\n\tcli" : "=r"(flags) : : "memory");
     return flags;
+#endif
 }
 
 static void process_wait_irq_restore(uint32_t flags) {
+#if defined(ZEPHYROS_HOST_TEST)
+    (void)flags;
+#else
     if (flags & PROCESS_WAIT_EFLAGS_INTERRUPT_ENABLE) {
         asm volatile("sti" : : : "memory");
     }
+#endif
 }
 
 static void process_wait_block_transition(void* target,
@@ -1628,7 +1636,11 @@ int process_handle_user_exception(registers_t* regs) {
         return ERR_STATE;
     }
     if (regs->int_no == 14) {
+#if defined(ZEPHYROS_HOST_TEST)
+        fault_address = 0U;
+#else
         asm volatile("mov %%cr2, %0" : "=r"(fault_address));
+#endif
         if (process_vma_handle_page_fault(current_process, fault_address,
                                           regs->err_code) == OK) {
             return OK;

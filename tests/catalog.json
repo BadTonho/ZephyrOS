@@ -30873,6 +30873,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -30882,7 +30883,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_block",
@@ -30900,6 +30901,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -30909,7 +30911,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_bootstrap_idle",
@@ -30927,6 +30929,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -30936,7 +30939,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_cancel_focused_user",
@@ -30954,6 +30957,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -30963,7 +30967,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_cancel_user",
@@ -30981,6 +30985,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -30990,7 +30995,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_cancel_user_test",
@@ -31008,6 +31013,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31017,7 +31023,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_cancel_wait",
@@ -31035,6 +31041,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31044,7 +31051,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_context_switch",
@@ -31080,6 +31087,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31089,7 +31097,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_create",
@@ -31107,6 +31115,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31116,7 +31125,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_create_user_image",
@@ -31134,6 +31143,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31143,7 +31153,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_create_user_image_suspended",
@@ -31161,6 +31171,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31170,7 +31181,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_create_user_image_suspended_with_launch",
@@ -31188,6 +31199,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31197,7 +31209,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_create_user_test",
@@ -31215,6 +31227,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31224,7 +31237,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_create_with_stack_size",
@@ -31242,6 +31255,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31251,7 +31265,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_destroy",
@@ -31269,6 +31283,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31278,7 +31293,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_exit_current",
@@ -31296,6 +31311,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31305,7 +31321,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_finish_user_termination",
@@ -31323,6 +31339,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31332,7 +31349,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_get_by_pid",
@@ -31350,6 +31367,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31359,7 +31377,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_get_count",
@@ -31377,6 +31395,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31386,7 +31405,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_get_current",
@@ -31404,6 +31423,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31413,7 +31433,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_get_current_pid",
@@ -31431,6 +31451,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31440,7 +31461,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_get_event_generation",
@@ -31458,6 +31479,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31467,7 +31489,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_get_focus",
@@ -31510,6 +31532,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31519,7 +31542,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_get_state_count",
@@ -31537,6 +31560,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31546,7 +31570,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_get_user_count",
@@ -31564,6 +31588,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31573,7 +31598,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_get_user_fault_count",
@@ -31591,6 +31616,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31600,7 +31626,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_handle_user_exception",
@@ -31618,6 +31644,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31627,7 +31654,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_init",
@@ -31645,6 +31672,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31654,7 +31682,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_is_user",
@@ -31672,6 +31700,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31681,7 +31710,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_power_set_quiescing",
@@ -31699,6 +31728,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31708,7 +31738,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_power_shutdown_users",
@@ -31726,6 +31756,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31735,7 +31766,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_prepare_user_termination",
@@ -31753,6 +31784,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31762,7 +31794,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_reap_finished_user",
@@ -31780,6 +31812,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31789,7 +31822,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_restore_focus",
@@ -31882,6 +31915,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31891,7 +31925,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_snapshot_copy_vmas",
@@ -31909,6 +31943,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31918,7 +31953,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_snapshot_list",
@@ -31936,6 +31971,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31945,7 +31981,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_stack_check_current",
@@ -31963,6 +31999,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31972,7 +32009,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_stack_get_info",
@@ -31990,6 +32027,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -31999,7 +32037,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_stack_self_test",
@@ -32017,6 +32055,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -32026,7 +32065,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_stack_validate_all",
@@ -32044,6 +32083,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -32053,7 +32093,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_start_scheduler",
@@ -32071,6 +32111,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -32080,7 +32121,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_start_user",
@@ -32098,6 +32139,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -32107,7 +32149,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_take_user_test_result",
@@ -32125,6 +32167,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -32134,7 +32177,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_terminate_user_signal",
@@ -32152,6 +32195,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -32161,7 +32205,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_unblock",
@@ -32179,6 +32223,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -32188,7 +32233,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_user_enter",
@@ -32242,6 +32287,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -32251,7 +32297,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_wake_channel",
@@ -32269,6 +32315,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -32278,7 +32325,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:process_yield",
@@ -32296,6 +32343,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -32305,7 +32353,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:scheduler_get_stats",
@@ -32323,6 +32371,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -32332,7 +32381,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:scheduler_init",
@@ -32350,6 +32399,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -32359,7 +32409,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:scheduler_preempt_user",
@@ -32377,6 +32427,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -32386,7 +32437,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:scheduler_schedule",
@@ -32404,6 +32455,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -32413,7 +32465,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:scheduler_tick",
@@ -32431,6 +32483,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -32440,7 +32493,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/process.h:scheduler_validate_invariants",
@@ -32458,6 +32511,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst5:apps",
         "qemu:tst5:processes",
@@ -32467,7 +32521,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/process/signal.h:process_signal_action",
@@ -124150,9 +124204,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_block",
@@ -124209,9 +124266,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_cancel_user",
@@ -124227,9 +124287,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_cancel_user_test",
@@ -124245,9 +124308,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_cancel_wait",
@@ -124299,9 +124365,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_create",
@@ -124317,9 +124386,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_create_internal",
@@ -124335,9 +124407,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_create_user_image",
@@ -124355,10 +124430,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_create_user_image_internal",
@@ -124376,10 +124452,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_create_user_image_suspended",
@@ -124395,9 +124472,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_create_user_image_suspended_with_launch",
@@ -124413,9 +124493,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_create_user_test",
@@ -124431,9 +124514,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_create_with_stack_size",
@@ -124449,9 +124535,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_destroy",
@@ -124469,11 +124558,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:paging-vma",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_discard_new_process",
@@ -124549,9 +124639,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_get_count",
@@ -124569,11 +124662,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst6:stress:kernel"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_get_current",
@@ -124589,9 +124683,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_get_current_pid",
@@ -124609,6 +124706,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
@@ -124617,7 +124715,7 @@
         "qemu:tst6:stress:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_get_event_generation",
@@ -124633,9 +124731,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_get_last_user_fault",
@@ -124651,9 +124752,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_get_state_count",
@@ -124671,12 +124775,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst6:stress:kernel"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_get_user_count",
@@ -124694,12 +124799,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst6:stress:kernel"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_get_user_fault_count",
@@ -124715,9 +124821,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_handle_user_exception",
@@ -124735,10 +124844,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_idle_main",
@@ -124772,9 +124882,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_initialize_pid_pool",
@@ -124790,9 +124903,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_is_user",
@@ -124810,6 +124926,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
@@ -124820,7 +124937,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_mark_current_user_zombie",
@@ -124859,10 +124976,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_next_identity_generation",
@@ -124902,6 +125020,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
@@ -124912,7 +125031,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_power_has_active_users",
@@ -124928,9 +125047,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_power_reap_users",
@@ -124946,9 +125068,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_power_send_signal",
@@ -124964,9 +125089,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_power_set_quiescing",
@@ -124982,9 +125110,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_power_shutdown_users",
@@ -125000,9 +125131,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_power_snapshot_matches",
@@ -125018,9 +125152,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_power_snapshot_users",
@@ -125036,9 +125173,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_prepare_user_termination",
@@ -125056,10 +125196,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_reap_finished_user",
@@ -125100,11 +125241,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:paging-vma",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_release_user_image",
@@ -125122,11 +125264,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:paging-vma",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_slot_index",
@@ -125144,6 +125287,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
@@ -125154,7 +125298,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_snapshot_copy",
@@ -125172,12 +125316,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_snapshot_copy_vmas",
@@ -125195,10 +125340,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_snapshot_fill_locked",
@@ -125216,12 +125362,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_snapshot_list",
@@ -125239,11 +125386,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_stack_align_up",
@@ -125331,6 +125479,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
@@ -125339,7 +125488,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_stack_check_current",
@@ -125355,9 +125504,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_stack_copy_name",
@@ -125375,6 +125527,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
@@ -125382,7 +125535,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_stack_get_info",
@@ -125398,9 +125551,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_stack_guard_matches",
@@ -125480,13 +125636,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst6:stress:kernel",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_stack_recorded_usage",
@@ -125522,11 +125679,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:paging-vma",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_stack_report_corruption",
@@ -125584,6 +125742,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
@@ -125592,7 +125751,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_stack_validate_all",
@@ -125610,11 +125769,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst6:stress:kernel"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_stack_verify_or_panic",
@@ -125695,9 +125855,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_store_user_image",
@@ -125757,12 +125920,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
         "qemu:tst5:processes"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_terminate_user_signal",
@@ -125778,9 +125942,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_unblock",
@@ -125796,9 +125963,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_user_build_code",
@@ -125814,9 +125984,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_user_emit_mov",
@@ -125832,9 +126005,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_user_initialize",
@@ -125871,9 +126047,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_user_reap_previous_test",
@@ -125933,12 +126112,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
         "qemu:tst5:processes"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_wait_block_transition",
@@ -126035,6 +126215,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
@@ -126042,7 +126223,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_wait_irq_save",
@@ -126060,6 +126241,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
@@ -126067,7 +126249,7 @@
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_wait_state_init",
@@ -126156,9 +126338,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:process_yield",
@@ -126197,9 +126382,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:scheduler_get_stats",
@@ -126215,9 +126403,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:scheduler_init",
@@ -126233,9 +126424,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:scheduler_preempt_user",
@@ -126272,9 +126466,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:scheduler_tick",
@@ -126320,11 +126517,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst6:stress:kernel"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:scheduler_validate_pid_table",
@@ -126342,11 +126540,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst6:stress:kernel"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:scheduler_validate_states",
@@ -126364,11 +126563,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:process:runtime",
         "qemu:tst4:execution",
         "qemu:tst6:stress:kernel"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/process/process.c:scheduler_yield_internal",
@@ -156170,6 +156370,81 @@
       ]
     },
     {
+      "id": "host:core:syscall",
+      "scenario": "Contrato host-only do dispatcher de syscalls em ring 0 e ring 3",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "user_addresses": "mapa estatico sem hardware"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "exercitar inicializacao, habilitacao ring 3, dispatch de syscalls, limites, copias de usuario, IPC, sinais e rejeicoes ring 0",
+      "expected": "dispatcher preserva os codigos canonicos, rejeita chamadas fora de estado e completa os caminhos de usuario e kernel",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente estado do dispatcher e buffers estaticos da fixture host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "surface_ids": [
+        "api:src/include/core/syscall.h:syscall_enable_user_mode",
+        "api:src/include/core/syscall.h:syscall_handler",
+        "api:src/include/core/syscall.h:syscall_init",
+        "api:src/include/core/syscall.h:syscall_invoke_kernel",
+        "api:src/include/core/syscall.h:syscall_is_ready",
+        "api:src/include/core/syscall.h:syscall_user_mode_is_enabled",
+        "c:src/core/syscall.c:syscall_copy_user_string",
+        "c:src/core/syscall.c:syscall_dispatch",
+        "c:src/core/syscall.c:syscall_dispatch_user",
+        "c:src/core/syscall.c:syscall_enable_user_mode",
+        "c:src/core/syscall.c:syscall_handler",
+        "c:src/core/syscall.c:syscall_init",
+        "c:src/core/syscall.c:syscall_invoke_kernel",
+        "c:src/core/syscall.c:syscall_is_ready",
+        "c:src/core/syscall.c:syscall_is_user_caller",
+        "c:src/core/syscall.c:syscall_select_request",
+        "c:src/core/syscall.c:syscall_user_chdir",
+        "c:src/core/syscall.c:syscall_user_console_write",
+        "c:src/core/syscall.c:syscall_user_file_fsync",
+        "c:src/core/syscall.c:syscall_user_file_ioctl",
+        "c:src/core/syscall.c:syscall_user_file_lseek",
+        "c:src/core/syscall.c:syscall_user_file_open",
+        "c:src/core/syscall.c:syscall_user_file_read",
+        "c:src/core/syscall.c:syscall_user_file_write",
+        "c:src/core/syscall.c:syscall_user_getcwd",
+        "c:src/core/syscall.c:syscall_user_memory",
+        "c:src/core/syscall.c:syscall_user_message_receive",
+        "c:src/core/syscall.c:syscall_user_message_send",
+        "c:src/core/syscall.c:syscall_user_mmap",
+        "c:src/core/syscall.c:syscall_user_mode_is_enabled",
+        "c:src/core/syscall.c:syscall_user_munmap",
+        "c:src/core/syscall.c:syscall_user_pipe",
+        "c:src/core/syscall.c:syscall_user_poll",
+        "c:src/core/syscall.c:syscall_user_select",
+        "c:src/core/syscall.c:syscall_user_signal_action",
+        "c:src/core/syscall.c:syscall_user_signal_mask",
+        "c:src/core/syscall.c:syscall_user_sync",
+        "c:src/core/syscall.c:syscall_user_uptime",
+        "c:src/core/syscall.c:syscall_validate_caller",
+        "c:src/core/syscall.c:syscall_validate_user_caller"
+      ],
+      "tags": [
+        "host",
+        "core",
+        "syscall",
+        "ring0",
+        "ring3",
+        "limits",
+        "coverage"
+      ],
+      "status": "AUTOMATED"
+    },
+    {
       "id": "host:core:test-coverage",
       "scenario": "Teste host-only do coletor de cobertura instrumentada",
       "owner": "quality",
@@ -172503,8 +172778,8 @@
       "status": "AUTOMATED"
     },
     {
-      "id": "host:core:syscall",
-      "scenario": "Contrato host-only do dispatcher de syscalls em ring 0 e ring 3",
+      "id": "host:process:runtime",
+      "scenario": "Contrato host-only do ciclo de vida e estados do gerenciador de processos",
       "owner": "quality",
       "layer": "host",
       "executor": "host",
@@ -172516,63 +172791,147 @@
         "compiler": "HOST_CC",
         "instrumentation": "-finstrument-functions",
         "warnings": "error",
-        "user_addresses": "mapa estatico sem hardware"
+        "hardware": "none"
       },
       "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "exercitar inicializacao, habilitacao ring 3, dispatch de syscalls, limites, copias de usuario, IPC, sinais e rejeicoes ring 0",
-      "expected": "dispatcher preserva os codigos canonicos, rejeita chamadas fora de estado e completa os caminhos de usuario e kernel",
+      "action": "exercitar inicializacao, snapshots, scheduler, limites de criacao, transicoes, cancelamento, sinais, energia e filas de espera com processos estaticos",
+      "expected": "o gerenciador preserva codigos canonicos, estados, identidade, snapshots, limpeza e invariantes sem executar instrucoes privilegiadas",
       "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
-      "effects": "somente estado do dispatcher e buffers estaticos da fixture host",
-      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "effects": "somente tabelas, processos e buffers estaticos da fixture host",
+      "cleanup": "processo host encerrado, processos estaticos removidos e manifesto, logs e cobertura preservados",
       "surface_ids": [
-        "api:src/include/core/syscall.h:syscall_enable_user_mode",
-        "api:src/include/core/syscall.h:syscall_handler",
-        "api:src/include/core/syscall.h:syscall_init",
-        "api:src/include/core/syscall.h:syscall_invoke_kernel",
-        "api:src/include/core/syscall.h:syscall_is_ready",
-        "api:src/include/core/syscall.h:syscall_user_mode_is_enabled",
-        "c:src/core/syscall.c:syscall_copy_user_string",
-        "c:src/core/syscall.c:syscall_dispatch",
-        "c:src/core/syscall.c:syscall_dispatch_user",
-        "c:src/core/syscall.c:syscall_enable_user_mode",
-        "c:src/core/syscall.c:syscall_handler",
-        "c:src/core/syscall.c:syscall_init",
-        "c:src/core/syscall.c:syscall_invoke_kernel",
-        "c:src/core/syscall.c:syscall_is_ready",
-        "c:src/core/syscall.c:syscall_is_user_caller",
-        "c:src/core/syscall.c:syscall_select_request",
-        "c:src/core/syscall.c:syscall_user_chdir",
-        "c:src/core/syscall.c:syscall_user_console_write",
-        "c:src/core/syscall.c:syscall_user_file_fsync",
-        "c:src/core/syscall.c:syscall_user_file_ioctl",
-        "c:src/core/syscall.c:syscall_user_file_lseek",
-        "c:src/core/syscall.c:syscall_user_file_open",
-        "c:src/core/syscall.c:syscall_user_file_read",
-        "c:src/core/syscall.c:syscall_user_file_write",
-        "c:src/core/syscall.c:syscall_user_getcwd",
-        "c:src/core/syscall.c:syscall_user_memory",
-        "c:src/core/syscall.c:syscall_user_message_receive",
-        "c:src/core/syscall.c:syscall_user_message_send",
-        "c:src/core/syscall.c:syscall_user_mmap",
-        "c:src/core/syscall.c:syscall_user_mode_is_enabled",
-        "c:src/core/syscall.c:syscall_user_munmap",
-        "c:src/core/syscall.c:syscall_user_pipe",
-        "c:src/core/syscall.c:syscall_user_poll",
-        "c:src/core/syscall.c:syscall_user_select",
-        "c:src/core/syscall.c:syscall_user_signal_action",
-        "c:src/core/syscall.c:syscall_user_signal_mask",
-        "c:src/core/syscall.c:syscall_user_sync",
-        "c:src/core/syscall.c:syscall_user_uptime",
-        "c:src/core/syscall.c:syscall_validate_caller",
-        "c:src/core/syscall.c:syscall_validate_user_caller"
+        "api:src/include/process/process.h:process_apply_pending_cancel",
+        "api:src/include/process/process.h:process_block",
+        "api:src/include/process/process.h:process_bootstrap_idle",
+        "api:src/include/process/process.h:process_cancel_focused_user",
+        "api:src/include/process/process.h:process_cancel_user",
+        "api:src/include/process/process.h:process_cancel_user_test",
+        "api:src/include/process/process.h:process_cancel_wait",
+        "api:src/include/process/process.h:process_copy_waiters",
+        "api:src/include/process/process.h:process_create",
+        "api:src/include/process/process.h:process_create_user_image",
+        "api:src/include/process/process.h:process_create_user_image_suspended",
+        "api:src/include/process/process.h:process_create_user_image_suspended_with_launch",
+        "api:src/include/process/process.h:process_create_user_test",
+        "api:src/include/process/process.h:process_create_with_stack_size",
+        "api:src/include/process/process.h:process_destroy",
+        "api:src/include/process/process.h:process_exit_current",
+        "api:src/include/process/process.h:process_finish_user_termination",
+        "api:src/include/process/process.h:process_get_by_pid",
+        "api:src/include/process/process.h:process_get_count",
+        "api:src/include/process/process.h:process_get_current",
+        "api:src/include/process/process.h:process_get_current_pid",
+        "api:src/include/process/process.h:process_get_event_generation",
+        "api:src/include/process/process.h:process_get_last_user_fault",
+        "api:src/include/process/process.h:process_get_state_count",
+        "api:src/include/process/process.h:process_get_user_count",
+        "api:src/include/process/process.h:process_get_user_fault_count",
+        "api:src/include/process/process.h:process_handle_user_exception",
+        "api:src/include/process/process.h:process_init",
+        "api:src/include/process/process.h:process_is_user",
+        "api:src/include/process/process.h:process_power_set_quiescing",
+        "api:src/include/process/process.h:process_power_shutdown_users",
+        "api:src/include/process/process.h:process_prepare_user_termination",
+        "api:src/include/process/process.h:process_reap_finished_user",
+        "api:src/include/process/process.h:process_snapshot_copy",
+        "api:src/include/process/process.h:process_snapshot_copy_vmas",
+        "api:src/include/process/process.h:process_snapshot_list",
+        "api:src/include/process/process.h:process_stack_check_current",
+        "api:src/include/process/process.h:process_stack_get_info",
+        "api:src/include/process/process.h:process_stack_self_test",
+        "api:src/include/process/process.h:process_stack_validate_all",
+        "api:src/include/process/process.h:process_start_scheduler",
+        "api:src/include/process/process.h:process_start_user",
+        "api:src/include/process/process.h:process_take_user_test_result",
+        "api:src/include/process/process.h:process_terminate_user_signal",
+        "api:src/include/process/process.h:process_unblock",
+        "api:src/include/process/process.h:process_wait",
+        "api:src/include/process/process.h:process_wake_channel",
+        "api:src/include/process/process.h:process_yield",
+        "api:src/include/process/process.h:scheduler_get_stats",
+        "api:src/include/process/process.h:scheduler_init",
+        "api:src/include/process/process.h:scheduler_preempt_user",
+        "api:src/include/process/process.h:scheduler_schedule",
+        "api:src/include/process/process.h:scheduler_tick",
+        "api:src/include/process/process.h:scheduler_validate_invariants",
+        "c:src/process/process.c:process_apply_pending_cancel",
+        "c:src/process/process.c:process_cancel_focused_user",
+        "c:src/process/process.c:process_cancel_user",
+        "c:src/process/process.c:process_cancel_user_test",
+        "c:src/process/process.c:process_copy_waiters",
+        "c:src/process/process.c:process_create",
+        "c:src/process/process.c:process_create_internal",
+        "c:src/process/process.c:process_create_user_image",
+        "c:src/process/process.c:process_create_user_image_internal",
+        "c:src/process/process.c:process_create_user_image_suspended",
+        "c:src/process/process.c:process_create_user_image_suspended_with_launch",
+        "c:src/process/process.c:process_create_user_test",
+        "c:src/process/process.c:process_create_with_stack_size",
+        "c:src/process/process.c:process_destroy",
+        "c:src/process/process.c:process_get_by_pid",
+        "c:src/process/process.c:process_get_count",
+        "c:src/process/process.c:process_get_current",
+        "c:src/process/process.c:process_get_current_pid",
+        "c:src/process/process.c:process_get_event_generation",
+        "c:src/process/process.c:process_get_last_user_fault",
+        "c:src/process/process.c:process_get_state_count",
+        "c:src/process/process.c:process_get_user_count",
+        "c:src/process/process.c:process_get_user_fault_count",
+        "c:src/process/process.c:process_handle_user_exception",
+        "c:src/process/process.c:process_init",
+        "c:src/process/process.c:process_initialize_pid_pool",
+        "c:src/process/process.c:process_is_user",
+        "c:src/process/process.c:process_mark_user_zombie",
+        "c:src/process/process.c:process_pointer_valid",
+        "c:src/process/process.c:process_power_has_active_users",
+        "c:src/process/process.c:process_power_reap_users",
+        "c:src/process/process.c:process_power_send_signal",
+        "c:src/process/process.c:process_power_set_quiescing",
+        "c:src/process/process.c:process_power_shutdown_users",
+        "c:src/process/process.c:process_power_snapshot_matches",
+        "c:src/process/process.c:process_power_snapshot_users",
+        "c:src/process/process.c:process_prepare_user_termination",
+        "c:src/process/process.c:process_release_pid",
+        "c:src/process/process.c:process_release_user_image",
+        "c:src/process/process.c:process_slot_index",
+        "c:src/process/process.c:process_snapshot_copy",
+        "c:src/process/process.c:process_snapshot_copy_vmas",
+        "c:src/process/process.c:process_snapshot_fill_locked",
+        "c:src/process/process.c:process_snapshot_list",
+        "c:src/process/process.c:process_stack_bounds_valid",
+        "c:src/process/process.c:process_stack_check_current",
+        "c:src/process/process.c:process_stack_copy_name",
+        "c:src/process/process.c:process_stack_get_info",
+        "c:src/process/process.c:process_stack_observe",
+        "c:src/process/process.c:process_stack_release",
+        "c:src/process/process.c:process_stack_size_valid",
+        "c:src/process/process.c:process_stack_validate_all",
+        "c:src/process/process.c:process_start_user",
+        "c:src/process/process.c:process_take_user_test_result",
+        "c:src/process/process.c:process_terminate_user_signal",
+        "c:src/process/process.c:process_unblock",
+        "c:src/process/process.c:process_user_build_code",
+        "c:src/process/process.c:process_user_emit_mov",
+        "c:src/process/process.c:process_user_patch_u32",
+        "c:src/process/process.c:process_wait",
+        "c:src/process/process.c:process_wait_irq_restore",
+        "c:src/process/process.c:process_wait_irq_save",
+        "c:src/process/process.c:process_wake_channel",
+        "c:src/process/process.c:scheduler_find_next_ready",
+        "c:src/process/process.c:scheduler_get_stats",
+        "c:src/process/process.c:scheduler_init",
+        "c:src/process/process.c:scheduler_schedule",
+        "c:src/process/process.c:scheduler_validate_invariants",
+        "c:src/process/process.c:scheduler_validate_pid_table",
+        "c:src/process/process.c:scheduler_validate_states"
       ],
       "tags": [
         "host",
-        "core",
-        "syscall",
-        "ring0",
-        "ring3",
+        "process",
+        "scheduler",
+        "snapshots",
         "limits",
+        "recovery",
         "coverage"
       ],
       "status": "AUTOMATED"

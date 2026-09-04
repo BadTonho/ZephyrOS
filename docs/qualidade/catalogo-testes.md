@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7219**
-- Casos de teste: **135**
+- Casos de teste: **136**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 5145 |
+| `COVERED` | 5183 |
 | `MANUAL` | 0 |
-| `PENDING` | 2074 |
+| `PENDING` | 2036 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 135 |
+| `AUTOMATED` | 136 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -1364,67 +1364,67 @@
 | `api:src/include/process/process.h:ipc_receive` | `src/include/process/process.h` | `ipc_receive` | `process` | `COVERED` | 5 |
 | `api:src/include/process/process.h:ipc_send` | `src/include/process/process.h` | `ipc_send` | `process` | `COVERED` | 5 |
 | `api:src/include/process/process.h:ipc_wait` | `src/include/process/process.h` | `ipc_wait` | `process` | `COVERED` | 5 |
-| `api:src/include/process/process.h:process_apply_pending_cancel` | `src/include/process/process.h` | `process_apply_pending_cancel` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_block` | `src/include/process/process.h` | `process_block` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_bootstrap_idle` | `src/include/process/process.h` | `process_bootstrap_idle` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_cancel_focused_user` | `src/include/process/process.h` | `process_cancel_focused_user` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_cancel_user` | `src/include/process/process.h` | `process_cancel_user` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_cancel_user_test` | `src/include/process/process.h` | `process_cancel_user_test` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_cancel_wait` | `src/include/process/process.h` | `process_cancel_wait` | `process` | `COVERED` | 7 |
+| `api:src/include/process/process.h:process_apply_pending_cancel` | `src/include/process/process.h` | `process_apply_pending_cancel` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_block` | `src/include/process/process.h` | `process_block` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_bootstrap_idle` | `src/include/process/process.h` | `process_bootstrap_idle` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_cancel_focused_user` | `src/include/process/process.h` | `process_cancel_focused_user` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_cancel_user` | `src/include/process/process.h` | `process_cancel_user` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_cancel_user_test` | `src/include/process/process.h` | `process_cancel_user_test` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_cancel_wait` | `src/include/process/process.h` | `process_cancel_wait` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_context_switch` | `src/include/process/process.h` | `process_context_switch` | `process` | `PENDING` | 0 |
-| `api:src/include/process/process.h:process_copy_waiters` | `src/include/process/process.h` | `process_copy_waiters` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_create` | `src/include/process/process.h` | `process_create` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_create_user_image` | `src/include/process/process.h` | `process_create_user_image` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_create_user_image_suspended` | `src/include/process/process.h` | `process_create_user_image_suspended` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_create_user_image_suspended_with_launch` | `src/include/process/process.h` | `process_create_user_image_suspended_with_launch` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_create_user_test` | `src/include/process/process.h` | `process_create_user_test` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_create_with_stack_size` | `src/include/process/process.h` | `process_create_with_stack_size` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_destroy` | `src/include/process/process.h` | `process_destroy` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_exit_current` | `src/include/process/process.h` | `process_exit_current` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_finish_user_termination` | `src/include/process/process.h` | `process_finish_user_termination` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_get_by_pid` | `src/include/process/process.h` | `process_get_by_pid` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_get_count` | `src/include/process/process.h` | `process_get_count` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_get_current` | `src/include/process/process.h` | `process_get_current` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_get_current_pid` | `src/include/process/process.h` | `process_get_current_pid` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_get_event_generation` | `src/include/process/process.h` | `process_get_event_generation` | `process` | `COVERED` | 7 |
+| `api:src/include/process/process.h:process_copy_waiters` | `src/include/process/process.h` | `process_copy_waiters` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_create` | `src/include/process/process.h` | `process_create` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_create_user_image` | `src/include/process/process.h` | `process_create_user_image` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_create_user_image_suspended` | `src/include/process/process.h` | `process_create_user_image_suspended` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_create_user_image_suspended_with_launch` | `src/include/process/process.h` | `process_create_user_image_suspended_with_launch` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_create_user_test` | `src/include/process/process.h` | `process_create_user_test` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_create_with_stack_size` | `src/include/process/process.h` | `process_create_with_stack_size` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_destroy` | `src/include/process/process.h` | `process_destroy` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_exit_current` | `src/include/process/process.h` | `process_exit_current` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_finish_user_termination` | `src/include/process/process.h` | `process_finish_user_termination` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_get_by_pid` | `src/include/process/process.h` | `process_get_by_pid` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_get_count` | `src/include/process/process.h` | `process_get_count` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_get_current` | `src/include/process/process.h` | `process_get_current` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_get_current_pid` | `src/include/process/process.h` | `process_get_current_pid` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_get_event_generation` | `src/include/process/process.h` | `process_get_event_generation` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_get_focus` | `src/include/process/process.h` | `process_get_focus` | `process` | `COVERED` | 5 |
-| `api:src/include/process/process.h:process_get_last_user_fault` | `src/include/process/process.h` | `process_get_last_user_fault` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_get_state_count` | `src/include/process/process.h` | `process_get_state_count` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_get_user_count` | `src/include/process/process.h` | `process_get_user_count` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_get_user_fault_count` | `src/include/process/process.h` | `process_get_user_fault_count` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_handle_user_exception` | `src/include/process/process.h` | `process_handle_user_exception` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_init` | `src/include/process/process.h` | `process_init` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_is_user` | `src/include/process/process.h` | `process_is_user` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_power_set_quiescing` | `src/include/process/process.h` | `process_power_set_quiescing` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_power_shutdown_users` | `src/include/process/process.h` | `process_power_shutdown_users` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_prepare_user_termination` | `src/include/process/process.h` | `process_prepare_user_termination` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_reap_finished_user` | `src/include/process/process.h` | `process_reap_finished_user` | `process` | `COVERED` | 7 |
+| `api:src/include/process/process.h:process_get_last_user_fault` | `src/include/process/process.h` | `process_get_last_user_fault` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_get_state_count` | `src/include/process/process.h` | `process_get_state_count` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_get_user_count` | `src/include/process/process.h` | `process_get_user_count` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_get_user_fault_count` | `src/include/process/process.h` | `process_get_user_fault_count` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_handle_user_exception` | `src/include/process/process.h` | `process_handle_user_exception` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_init` | `src/include/process/process.h` | `process_init` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_is_user` | `src/include/process/process.h` | `process_is_user` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_power_set_quiescing` | `src/include/process/process.h` | `process_power_set_quiescing` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_power_shutdown_users` | `src/include/process/process.h` | `process_power_shutdown_users` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_prepare_user_termination` | `src/include/process/process.h` | `process_prepare_user_termination` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_reap_finished_user` | `src/include/process/process.h` | `process_reap_finished_user` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_restore_focus` | `src/include/process/process.h` | `process_restore_focus` | `process` | `COVERED` | 5 |
 | `api:src/include/process/process.h:process_set_focus` | `src/include/process/process.h` | `process_set_focus` | `process` | `COVERED` | 5 |
 | `api:src/include/process/process.h:process_set_focus_fallback` | `src/include/process/process.h` | `process_set_focus_fallback` | `process` | `COVERED` | 5 |
-| `api:src/include/process/process.h:process_snapshot_copy` | `src/include/process/process.h` | `process_snapshot_copy` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_snapshot_copy_vmas` | `src/include/process/process.h` | `process_snapshot_copy_vmas` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_snapshot_list` | `src/include/process/process.h` | `process_snapshot_list` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_stack_check_current` | `src/include/process/process.h` | `process_stack_check_current` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_stack_get_info` | `src/include/process/process.h` | `process_stack_get_info` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_stack_self_test` | `src/include/process/process.h` | `process_stack_self_test` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_stack_validate_all` | `src/include/process/process.h` | `process_stack_validate_all` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_start_scheduler` | `src/include/process/process.h` | `process_start_scheduler` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_start_user` | `src/include/process/process.h` | `process_start_user` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_take_user_test_result` | `src/include/process/process.h` | `process_take_user_test_result` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_terminate_user_signal` | `src/include/process/process.h` | `process_terminate_user_signal` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_unblock` | `src/include/process/process.h` | `process_unblock` | `process` | `COVERED` | 7 |
+| `api:src/include/process/process.h:process_snapshot_copy` | `src/include/process/process.h` | `process_snapshot_copy` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_snapshot_copy_vmas` | `src/include/process/process.h` | `process_snapshot_copy_vmas` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_snapshot_list` | `src/include/process/process.h` | `process_snapshot_list` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_stack_check_current` | `src/include/process/process.h` | `process_stack_check_current` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_stack_get_info` | `src/include/process/process.h` | `process_stack_get_info` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_stack_self_test` | `src/include/process/process.h` | `process_stack_self_test` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_stack_validate_all` | `src/include/process/process.h` | `process_stack_validate_all` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_start_scheduler` | `src/include/process/process.h` | `process_start_scheduler` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_start_user` | `src/include/process/process.h` | `process_start_user` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_take_user_test_result` | `src/include/process/process.h` | `process_take_user_test_result` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_terminate_user_signal` | `src/include/process/process.h` | `process_terminate_user_signal` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_unblock` | `src/include/process/process.h` | `process_unblock` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_user_enter` | `src/include/process/process.h` | `process_user_enter` | `process` | `PENDING` | 0 |
 | `api:src/include/process/process.h:process_user_termination_enter` | `src/include/process/process.h` | `process_user_termination_enter` | `process` | `PENDING` | 0 |
-| `api:src/include/process/process.h:process_wait` | `src/include/process/process.h` | `process_wait` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_wake_channel` | `src/include/process/process.h` | `process_wake_channel` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:process_yield` | `src/include/process/process.h` | `process_yield` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:scheduler_get_stats` | `src/include/process/process.h` | `scheduler_get_stats` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:scheduler_init` | `src/include/process/process.h` | `scheduler_init` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:scheduler_preempt_user` | `src/include/process/process.h` | `scheduler_preempt_user` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:scheduler_schedule` | `src/include/process/process.h` | `scheduler_schedule` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:scheduler_tick` | `src/include/process/process.h` | `scheduler_tick` | `process` | `COVERED` | 7 |
-| `api:src/include/process/process.h:scheduler_validate_invariants` | `src/include/process/process.h` | `scheduler_validate_invariants` | `process` | `COVERED` | 7 |
+| `api:src/include/process/process.h:process_wait` | `src/include/process/process.h` | `process_wait` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_wake_channel` | `src/include/process/process.h` | `process_wake_channel` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_yield` | `src/include/process/process.h` | `process_yield` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:scheduler_get_stats` | `src/include/process/process.h` | `scheduler_get_stats` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:scheduler_init` | `src/include/process/process.h` | `scheduler_init` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:scheduler_preempt_user` | `src/include/process/process.h` | `scheduler_preempt_user` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:scheduler_schedule` | `src/include/process/process.h` | `scheduler_schedule` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:scheduler_tick` | `src/include/process/process.h` | `scheduler_tick` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:scheduler_validate_invariants` | `src/include/process/process.h` | `scheduler_validate_invariants` | `process` | `COVERED` | 8 |
 | `api:src/include/process/signal.h:process_signal_action` | `src/include/process/signal.h` | `process_signal_action` | `process` | `COVERED` | 8 |
 | `api:src/include/process/signal.h:process_signal_copy_info` | `src/include/process/signal.h` | `process_signal_copy_info` | `process` | `COVERED` | 8 |
 | `api:src/include/process/signal.h:process_signal_get_stats` | `src/include/process/signal.h` | `process_signal_get_stats` | `process` | `COVERED` | 8 |
@@ -5743,113 +5743,113 @@
 | `c:src/process/ipc.c:process_set_focus` | `src/process/ipc.c` | `process_set_focus` | `process` | `COVERED` | 1 |
 | `c:src/process/ipc.c:process_set_focus_fallback` | `src/process/ipc.c` | `process_set_focus_fallback` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_allocate_pid` | `src/process/process.c` | `process_allocate_pid` | `process` | `COVERED` | 2 |
-| `c:src/process/process.c:process_apply_pending_cancel` | `src/process/process.c` | `process_apply_pending_cancel` | `process` | `PENDING` | 0 |
+| `c:src/process/process.c:process_apply_pending_cancel` | `src/process/process.c` | `process_apply_pending_cancel` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_block` | `src/process/process.c` | `process_block` | `process` | `COVERED` | 3 |
 | `c:src/process/process.c:process_bootstrap_idle` | `src/process/process.c` | `process_bootstrap_idle` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_cancel_focused_user` | `src/process/process.c` | `process_cancel_focused_user` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_cancel_user` | `src/process/process.c` | `process_cancel_user` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_cancel_user_test` | `src/process/process.c` | `process_cancel_user_test` | `process` | `PENDING` | 0 |
+| `c:src/process/process.c:process_cancel_focused_user` | `src/process/process.c` | `process_cancel_focused_user` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_cancel_user` | `src/process/process.c` | `process_cancel_user` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_cancel_user_test` | `src/process/process.c` | `process_cancel_user_test` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_cancel_wait` | `src/process/process.c` | `process_cancel_wait` | `process` | `PENDING` | 0 |
 | `c:src/process/process.c:process_copy_wait_text` | `src/process/process.c` | `process_copy_wait_text` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_copy_waiters` | `src/process/process.c` | `process_copy_waiters` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_create` | `src/process/process.c` | `process_create` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_create_internal` | `src/process/process.c` | `process_create_internal` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_create_user_image` | `src/process/process.c` | `process_create_user_image` | `process` | `COVERED` | 1 |
-| `c:src/process/process.c:process_create_user_image_internal` | `src/process/process.c` | `process_create_user_image_internal` | `process` | `COVERED` | 1 |
-| `c:src/process/process.c:process_create_user_image_suspended` | `src/process/process.c` | `process_create_user_image_suspended` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_create_user_image_suspended_with_launch` | `src/process/process.c` | `process_create_user_image_suspended_with_launch` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_create_user_test` | `src/process/process.c` | `process_create_user_test` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_create_with_stack_size` | `src/process/process.c` | `process_create_with_stack_size` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_destroy` | `src/process/process.c` | `process_destroy` | `process` | `COVERED` | 2 |
+| `c:src/process/process.c:process_copy_waiters` | `src/process/process.c` | `process_copy_waiters` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_create` | `src/process/process.c` | `process_create` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_create_internal` | `src/process/process.c` | `process_create_internal` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_create_user_image` | `src/process/process.c` | `process_create_user_image` | `process` | `COVERED` | 2 |
+| `c:src/process/process.c:process_create_user_image_internal` | `src/process/process.c` | `process_create_user_image_internal` | `process` | `COVERED` | 2 |
+| `c:src/process/process.c:process_create_user_image_suspended` | `src/process/process.c` | `process_create_user_image_suspended` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_create_user_image_suspended_with_launch` | `src/process/process.c` | `process_create_user_image_suspended_with_launch` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_create_user_test` | `src/process/process.c` | `process_create_user_test` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_create_with_stack_size` | `src/process/process.c` | `process_create_with_stack_size` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_destroy` | `src/process/process.c` | `process_destroy` | `process` | `COVERED` | 3 |
 | `c:src/process/process.c:process_discard_new_process` | `src/process/process.c` | `process_discard_new_process` | `process` | `PENDING` | 0 |
 | `c:src/process/process.c:process_exit_current` | `src/process/process.c` | `process_exit_current` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_finish_user_termination` | `src/process/process.c` | `process_finish_user_termination` | `process` | `COVERED` | 1 |
-| `c:src/process/process.c:process_get_by_pid` | `src/process/process.c` | `process_get_by_pid` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_get_count` | `src/process/process.c` | `process_get_count` | `process` | `COVERED` | 2 |
-| `c:src/process/process.c:process_get_current` | `src/process/process.c` | `process_get_current` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_get_current_pid` | `src/process/process.c` | `process_get_current_pid` | `process` | `COVERED` | 6 |
-| `c:src/process/process.c:process_get_event_generation` | `src/process/process.c` | `process_get_event_generation` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_get_last_user_fault` | `src/process/process.c` | `process_get_last_user_fault` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_get_state_count` | `src/process/process.c` | `process_get_state_count` | `process` | `COVERED` | 3 |
-| `c:src/process/process.c:process_get_user_count` | `src/process/process.c` | `process_get_user_count` | `process` | `COVERED` | 3 |
-| `c:src/process/process.c:process_get_user_fault_count` | `src/process/process.c` | `process_get_user_fault_count` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_handle_user_exception` | `src/process/process.c` | `process_handle_user_exception` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_get_by_pid` | `src/process/process.c` | `process_get_by_pid` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_get_count` | `src/process/process.c` | `process_get_count` | `process` | `COVERED` | 3 |
+| `c:src/process/process.c:process_get_current` | `src/process/process.c` | `process_get_current` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_get_current_pid` | `src/process/process.c` | `process_get_current_pid` | `process` | `COVERED` | 7 |
+| `c:src/process/process.c:process_get_event_generation` | `src/process/process.c` | `process_get_event_generation` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_get_last_user_fault` | `src/process/process.c` | `process_get_last_user_fault` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_get_state_count` | `src/process/process.c` | `process_get_state_count` | `process` | `COVERED` | 4 |
+| `c:src/process/process.c:process_get_user_count` | `src/process/process.c` | `process_get_user_count` | `process` | `COVERED` | 4 |
+| `c:src/process/process.c:process_get_user_fault_count` | `src/process/process.c` | `process_get_user_fault_count` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_handle_user_exception` | `src/process/process.c` | `process_handle_user_exception` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:process_idle_main` | `src/process/process.c` | `process_idle_main` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_init` | `src/process/process.c` | `process_init` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_initialize_pid_pool` | `src/process/process.c` | `process_initialize_pid_pool` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_is_user` | `src/process/process.c` | `process_is_user` | `process` | `COVERED` | 8 |
+| `c:src/process/process.c:process_init` | `src/process/process.c` | `process_init` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_initialize_pid_pool` | `src/process/process.c` | `process_initialize_pid_pool` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_is_user` | `src/process/process.c` | `process_is_user` | `process` | `COVERED` | 9 |
 | `c:src/process/process.c:process_mark_current_user_zombie` | `src/process/process.c` | `process_mark_current_user_zombie` | `process` | `COVERED` | 1 |
-| `c:src/process/process.c:process_mark_user_zombie` | `src/process/process.c` | `process_mark_user_zombie` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_mark_user_zombie` | `src/process/process.c` | `process_mark_user_zombie` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:process_next_identity_generation` | `src/process/process.c` | `process_next_identity_generation` | `process` | `COVERED` | 2 |
-| `c:src/process/process.c:process_pointer_valid` | `src/process/process.c` | `process_pointer_valid` | `process` | `COVERED` | 8 |
-| `c:src/process/process.c:process_power_has_active_users` | `src/process/process.c` | `process_power_has_active_users` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_power_reap_users` | `src/process/process.c` | `process_power_reap_users` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_power_send_signal` | `src/process/process.c` | `process_power_send_signal` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_power_set_quiescing` | `src/process/process.c` | `process_power_set_quiescing` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_power_shutdown_users` | `src/process/process.c` | `process_power_shutdown_users` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_power_snapshot_matches` | `src/process/process.c` | `process_power_snapshot_matches` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_power_snapshot_users` | `src/process/process.c` | `process_power_snapshot_users` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_prepare_user_termination` | `src/process/process.c` | `process_prepare_user_termination` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_pointer_valid` | `src/process/process.c` | `process_pointer_valid` | `process` | `COVERED` | 9 |
+| `c:src/process/process.c:process_power_has_active_users` | `src/process/process.c` | `process_power_has_active_users` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_power_reap_users` | `src/process/process.c` | `process_power_reap_users` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_power_send_signal` | `src/process/process.c` | `process_power_send_signal` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_power_set_quiescing` | `src/process/process.c` | `process_power_set_quiescing` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_power_shutdown_users` | `src/process/process.c` | `process_power_shutdown_users` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_power_snapshot_matches` | `src/process/process.c` | `process_power_snapshot_matches` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_power_snapshot_users` | `src/process/process.c` | `process_power_snapshot_users` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_prepare_user_termination` | `src/process/process.c` | `process_prepare_user_termination` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:process_reap_finished_user` | `src/process/process.c` | `process_reap_finished_user` | `process` | `COVERED` | 3 |
-| `c:src/process/process.c:process_release_pid` | `src/process/process.c` | `process_release_pid` | `process` | `COVERED` | 2 |
-| `c:src/process/process.c:process_release_user_image` | `src/process/process.c` | `process_release_user_image` | `process` | `COVERED` | 2 |
-| `c:src/process/process.c:process_slot_index` | `src/process/process.c` | `process_slot_index` | `process` | `COVERED` | 8 |
-| `c:src/process/process.c:process_snapshot_copy` | `src/process/process.c` | `process_snapshot_copy` | `process` | `COVERED` | 3 |
-| `c:src/process/process.c:process_snapshot_copy_vmas` | `src/process/process.c` | `process_snapshot_copy_vmas` | `process` | `COVERED` | 1 |
-| `c:src/process/process.c:process_snapshot_fill_locked` | `src/process/process.c` | `process_snapshot_fill_locked` | `process` | `COVERED` | 3 |
-| `c:src/process/process.c:process_snapshot_list` | `src/process/process.c` | `process_snapshot_list` | `process` | `COVERED` | 2 |
+| `c:src/process/process.c:process_release_pid` | `src/process/process.c` | `process_release_pid` | `process` | `COVERED` | 3 |
+| `c:src/process/process.c:process_release_user_image` | `src/process/process.c` | `process_release_user_image` | `process` | `COVERED` | 3 |
+| `c:src/process/process.c:process_slot_index` | `src/process/process.c` | `process_slot_index` | `process` | `COVERED` | 9 |
+| `c:src/process/process.c:process_snapshot_copy` | `src/process/process.c` | `process_snapshot_copy` | `process` | `COVERED` | 4 |
+| `c:src/process/process.c:process_snapshot_copy_vmas` | `src/process/process.c` | `process_snapshot_copy_vmas` | `process` | `COVERED` | 2 |
+| `c:src/process/process.c:process_snapshot_fill_locked` | `src/process/process.c` | `process_snapshot_fill_locked` | `process` | `COVERED` | 4 |
+| `c:src/process/process.c:process_snapshot_list` | `src/process/process.c` | `process_snapshot_list` | `process` | `COVERED` | 3 |
 | `c:src/process/process.c:process_stack_align_up` | `src/process/process.c` | `process_stack_align_up` | `process` | `COVERED` | 4 |
 | `c:src/process/process.c:process_stack_allocate` | `src/process/process.c` | `process_stack_allocate` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:process_stack_attach` | `src/process/process.c` | `process_stack_attach` | `process` | `COVERED` | 4 |
-| `c:src/process/process.c:process_stack_bounds_valid` | `src/process/process.c` | `process_stack_bounds_valid` | `process` | `COVERED` | 6 |
-| `c:src/process/process.c:process_stack_check_current` | `src/process/process.c` | `process_stack_check_current` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_stack_copy_name` | `src/process/process.c` | `process_stack_copy_name` | `process` | `COVERED` | 5 |
-| `c:src/process/process.c:process_stack_get_info` | `src/process/process.c` | `process_stack_get_info` | `process` | `PENDING` | 0 |
+| `c:src/process/process.c:process_stack_bounds_valid` | `src/process/process.c` | `process_stack_bounds_valid` | `process` | `COVERED` | 7 |
+| `c:src/process/process.c:process_stack_check_current` | `src/process/process.c` | `process_stack_check_current` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_stack_copy_name` | `src/process/process.c` | `process_stack_copy_name` | `process` | `COVERED` | 6 |
+| `c:src/process/process.c:process_stack_get_info` | `src/process/process.c` | `process_stack_get_info` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_stack_guard_matches` | `src/process/process.c` | `process_stack_guard_matches` | `process` | `COVERED` | 6 |
 | `c:src/process/process.c:process_stack_log_append_number` | `src/process/process.c` | `process_stack_log_append_number` | `process` | `PENDING` | 0 |
 | `c:src/process/process.c:process_stack_log_append_text` | `src/process/process.c` | `process_stack_log_append_text` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_stack_observe` | `src/process/process.c` | `process_stack_observe` | `process` | `COVERED` | 4 |
+| `c:src/process/process.c:process_stack_observe` | `src/process/process.c` | `process_stack_observe` | `process` | `COVERED` | 5 |
 | `c:src/process/process.c:process_stack_recorded_usage` | `src/process/process.c` | `process_stack_recorded_usage` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_stack_release` | `src/process/process.c` | `process_stack_release` | `process` | `COVERED` | 2 |
+| `c:src/process/process.c:process_stack_release` | `src/process/process.c` | `process_stack_release` | `process` | `COVERED` | 3 |
 | `c:src/process/process.c:process_stack_report_corruption` | `src/process/process.c` | `process_stack_report_corruption` | `process` | `PENDING` | 0 |
 | `c:src/process/process.c:process_stack_self_test` | `src/process/process.c` | `process_stack_self_test` | `process` | `COVERED` | 2 |
-| `c:src/process/process.c:process_stack_size_valid` | `src/process/process.c` | `process_stack_size_valid` | `process` | `COVERED` | 6 |
-| `c:src/process/process.c:process_stack_validate_all` | `src/process/process.c` | `process_stack_validate_all` | `process` | `COVERED` | 2 |
+| `c:src/process/process.c:process_stack_size_valid` | `src/process/process.c` | `process_stack_size_valid` | `process` | `COVERED` | 7 |
+| `c:src/process/process.c:process_stack_validate_all` | `src/process/process.c` | `process_stack_validate_all` | `process` | `COVERED` | 3 |
 | `c:src/process/process.c:process_stack_verify_or_panic` | `src/process/process.c` | `process_stack_verify_or_panic` | `process` | `COVERED` | 3 |
 | `c:src/process/process.c:process_stack_write_guard` | `src/process/process.c` | `process_stack_write_guard` | `process` | `COVERED` | 4 |
 | `c:src/process/process.c:process_start_scheduler` | `src/process/process.c` | `process_start_scheduler` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_start_user` | `src/process/process.c` | `process_start_user` | `process` | `PENDING` | 0 |
+| `c:src/process/process.c:process_start_user` | `src/process/process.c` | `process_start_user` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_store_user_image` | `src/process/process.c` | `process_store_user_image` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_switch_after_termination` | `src/process/process.c` | `process_switch_after_termination` | `process` | `COVERED` | 1 |
-| `c:src/process/process.c:process_take_user_test_result` | `src/process/process.c` | `process_take_user_test_result` | `process` | `COVERED` | 3 |
-| `c:src/process/process.c:process_terminate_user_signal` | `src/process/process.c` | `process_terminate_user_signal` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_unblock` | `src/process/process.c` | `process_unblock` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_user_build_code` | `src/process/process.c` | `process_user_build_code` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:process_user_emit_mov` | `src/process/process.c` | `process_user_emit_mov` | `process` | `PENDING` | 0 |
+| `c:src/process/process.c:process_take_user_test_result` | `src/process/process.c` | `process_take_user_test_result` | `process` | `COVERED` | 4 |
+| `c:src/process/process.c:process_terminate_user_signal` | `src/process/process.c` | `process_terminate_user_signal` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_unblock` | `src/process/process.c` | `process_unblock` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_user_build_code` | `src/process/process.c` | `process_user_build_code` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_user_emit_mov` | `src/process/process.c` | `process_user_emit_mov` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_user_initialize` | `src/process/process.c` | `process_user_initialize` | `process` | `COVERED` | 1 |
-| `c:src/process/process.c:process_user_patch_u32` | `src/process/process.c` | `process_user_patch_u32` | `process` | `PENDING` | 0 |
+| `c:src/process/process.c:process_user_patch_u32` | `src/process/process.c` | `process_user_patch_u32` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_user_reap_previous_test` | `src/process/process.c` | `process_user_reap_previous_test` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_user_validate_launch` | `src/process/process.c` | `process_user_validate_launch` | `process` | `COVERED` | 1 |
-| `c:src/process/process.c:process_wait` | `src/process/process.c` | `process_wait` | `process` | `COVERED` | 3 |
+| `c:src/process/process.c:process_wait` | `src/process/process.c` | `process_wait` | `process` | `COVERED` | 4 |
 | `c:src/process/process.c:process_wait_block_transition` | `src/process/process.c` | `process_wait_block_transition` | `process` | `COVERED` | 3 |
 | `c:src/process/process.c:process_wait_clear` | `src/process/process.c` | `process_wait_clear` | `process` | `COVERED` | 8 |
 | `c:src/process/process.c:process_wait_deadline_reached` | `src/process/process.c` | `process_wait_deadline_reached` | `process` | `COVERED` | 8 |
-| `c:src/process/process.c:process_wait_irq_restore` | `src/process/process.c` | `process_wait_irq_restore` | `process` | `COVERED` | 5 |
-| `c:src/process/process.c:process_wait_irq_save` | `src/process/process.c` | `process_wait_irq_save` | `process` | `COVERED` | 5 |
+| `c:src/process/process.c:process_wait_irq_restore` | `src/process/process.c` | `process_wait_irq_restore` | `process` | `COVERED` | 6 |
+| `c:src/process/process.c:process_wait_irq_save` | `src/process/process.c` | `process_wait_irq_save` | `process` | `COVERED` | 6 |
 | `c:src/process/process.c:process_wait_state_init` | `src/process/process.c` | `process_wait_state_init` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:process_wait_wake_transition` | `src/process/process.c` | `process_wait_wake_transition` | `process` | `COVERED` | 8 |
 | `c:src/process/process.c:process_wait_yield_transition` | `src/process/process.c` | `process_wait_yield_transition` | `process` | `COVERED` | 3 |
-| `c:src/process/process.c:process_wake_channel` | `src/process/process.c` | `process_wake_channel` | `process` | `PENDING` | 0 |
+| `c:src/process/process.c:process_wake_channel` | `src/process/process.c` | `process_wake_channel` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_yield` | `src/process/process.c` | `process_yield` | `process` | `COVERED` | 3 |
-| `c:src/process/process.c:scheduler_find_next_ready` | `src/process/process.c` | `scheduler_find_next_ready` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:scheduler_get_stats` | `src/process/process.c` | `scheduler_get_stats` | `process` | `PENDING` | 0 |
-| `c:src/process/process.c:scheduler_init` | `src/process/process.c` | `scheduler_init` | `process` | `PENDING` | 0 |
+| `c:src/process/process.c:scheduler_find_next_ready` | `src/process/process.c` | `scheduler_find_next_ready` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:scheduler_get_stats` | `src/process/process.c` | `scheduler_get_stats` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:scheduler_init` | `src/process/process.c` | `scheduler_init` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:scheduler_preempt_user` | `src/process/process.c` | `scheduler_preempt_user` | `process` | `COVERED` | 1 |
-| `c:src/process/process.c:scheduler_schedule` | `src/process/process.c` | `scheduler_schedule` | `process` | `PENDING` | 0 |
+| `c:src/process/process.c:scheduler_schedule` | `src/process/process.c` | `scheduler_schedule` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:scheduler_tick` | `src/process/process.c` | `scheduler_tick` | `process` | `COVERED` | 8 |
-| `c:src/process/process.c:scheduler_validate_invariants` | `src/process/process.c` | `scheduler_validate_invariants` | `process` | `COVERED` | 2 |
-| `c:src/process/process.c:scheduler_validate_pid_table` | `src/process/process.c` | `scheduler_validate_pid_table` | `process` | `COVERED` | 2 |
-| `c:src/process/process.c:scheduler_validate_states` | `src/process/process.c` | `scheduler_validate_states` | `process` | `COVERED` | 2 |
+| `c:src/process/process.c:scheduler_validate_invariants` | `src/process/process.c` | `scheduler_validate_invariants` | `process` | `COVERED` | 3 |
+| `c:src/process/process.c:scheduler_validate_pid_table` | `src/process/process.c` | `scheduler_validate_pid_table` | `process` | `COVERED` | 3 |
+| `c:src/process/process.c:scheduler_validate_states` | `src/process/process.c` | `scheduler_validate_states` | `process` | `COVERED` | 3 |
 | `c:src/process/process.c:scheduler_yield_internal` | `src/process/process.c` | `scheduler_yield_internal` | `process` | `COVERED` | 3 |
 | `c:src/process/signal.c:process_signal_action` | `src/process/signal.c` | `process_signal_action` | `process` | `COVERED` | 1 |
 | `c:src/process/signal.c:process_signal_copy_info` | `src/process/signal.c` | `process_signal_copy_info` | `process` | `COVERED` | 1 |
@@ -7322,6 +7322,7 @@
 | `host:core:power` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar energia com ACPI, storage e dependencias simulados | estados de energia, cadeia de notificadores, quiescencia e limpeza apos falha preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do processo host e fixtures de energia | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:scheduling` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar os autotestes de wait, workqueue e irq_deferred, alem de limites e estados invalidos | coalescencia, rerun, cancelamento, FIFO, capacidade, disponibilidade e invariantes respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente filas, trabalhos e buffers estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:state` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar contratos de recovery e notificadores de energia | estados, capacidades opcionais, timeouts, ordem e erros canonicos sao observados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico dos servicos e artefatos host-only | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:core:syscall` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, habilitacao ring 3, dispatch de syscalls, limites, copias de usuario, IPC, sinais e rejeicoes ring 0 | dispatcher preserva os codigos canonicos, rejeita chamadas fora de estado e completa os caminhos de usuario e kernel | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado do dispatcher e buffers estaticos da fixture host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:test-coverage` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o coletor real com transporte serial falso e caminhos de limite | funcoes de registro, hash, formatacao e emissao produzem um relatorio ZCOV valido sem espera indefinida | compilador ausente, warning, cobertura incompleta, relatorio invalido, falha de assercao ou timeout | somente buffers estaticos e callbacks seriais falsos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:timer` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar timers one-shot e periodicos com IDT, PIC e scheduler simulados | handles, prazos, cancelamento, dispatch, callbacks, notifier e limpeza respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas estaticas do servico de timers no processo host | todos os timers e proprietarios sao destruidos e os artefatos sao preservados |
 | `host:core:usb-manager` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inventariar controladores UHCI, EHCI e fora do escopo, sincronizar drivers de classe, consultar portas e dispositivos, executar polling e refresh | estados, identificadores, agregacoes, limites, indisponibilidade e recuperacao preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente fixtures estaticos PCI, UHCI, EHCI, MSC e HID no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7439,7 +7440,7 @@
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
 | `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
-| `host:core:syscall` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, habilitacao ring 3, dispatch de syscalls, limites, copias de usuario, IPC, sinais e rejeicoes ring 0 | dispatcher preserva os codigos canonicos, rejeita chamadas fora de estado e completa os caminhos de usuario e kernel | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado do dispatcher e buffers estaticos da fixture host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:process:runtime` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, snapshots, scheduler, limites de criacao, transicoes, cancelamento, sinais, energia e filas de espera com processos estaticos | o gerenciador preserva codigos canonicos, estados, identidade, snapshots, limpeza e invariantes sem executar instrucoes privilegiadas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas, processos e buffers estaticos da fixture host | processo host encerrado, processos estaticos removidos e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -8471,54 +8472,16 @@
 - `c:src/kernel/kernel.c:shell_process_main`
 - `c:src/kernel/kernel.c:system_process_main`
 - `c:src/kernel/kernel.c:test_protocol_process_main`
-- `c:src/process/process.c:process_apply_pending_cancel`
 - `c:src/process/process.c:process_bootstrap_idle`
-- `c:src/process/process.c:process_cancel_focused_user`
-- `c:src/process/process.c:process_cancel_user`
-- `c:src/process/process.c:process_cancel_user_test`
 - `c:src/process/process.c:process_cancel_wait`
 - `c:src/process/process.c:process_copy_wait_text`
-- `c:src/process/process.c:process_copy_waiters`
-- `c:src/process/process.c:process_create`
-- `c:src/process/process.c:process_create_internal`
-- `c:src/process/process.c:process_create_user_image_suspended`
-- `c:src/process/process.c:process_create_user_image_suspended_with_launch`
-- `c:src/process/process.c:process_create_user_test`
-- `c:src/process/process.c:process_create_with_stack_size`
 - `c:src/process/process.c:process_discard_new_process`
-- `c:src/process/process.c:process_get_by_pid`
-- `c:src/process/process.c:process_get_current`
-- `c:src/process/process.c:process_get_event_generation`
-- `c:src/process/process.c:process_get_last_user_fault`
-- `c:src/process/process.c:process_get_user_fault_count`
 - `c:src/process/process.c:process_idle_main`
-- `c:src/process/process.c:process_init`
-- `c:src/process/process.c:process_initialize_pid_pool`
-- `c:src/process/process.c:process_power_has_active_users`
-- `c:src/process/process.c:process_power_reap_users`
-- `c:src/process/process.c:process_power_send_signal`
-- `c:src/process/process.c:process_power_set_quiescing`
-- `c:src/process/process.c:process_power_shutdown_users`
-- `c:src/process/process.c:process_power_snapshot_matches`
-- `c:src/process/process.c:process_power_snapshot_users`
-- `c:src/process/process.c:process_stack_check_current`
-- `c:src/process/process.c:process_stack_get_info`
 - `c:src/process/process.c:process_stack_log_append_number`
 - `c:src/process/process.c:process_stack_log_append_text`
 - `c:src/process/process.c:process_stack_recorded_usage`
 - `c:src/process/process.c:process_stack_report_corruption`
 - `c:src/process/process.c:process_start_scheduler`
-- `c:src/process/process.c:process_start_user`
-- `c:src/process/process.c:process_terminate_user_signal`
-- `c:src/process/process.c:process_unblock`
-- `c:src/process/process.c:process_user_build_code`
-- `c:src/process/process.c:process_user_emit_mov`
-- `c:src/process/process.c:process_user_patch_u32`
-- `c:src/process/process.c:process_wake_channel`
-- `c:src/process/process.c:scheduler_find_next_ready`
-- `c:src/process/process.c:scheduler_get_stats`
-- `c:src/process/process.c:scheduler_init`
-- `c:src/process/process.c:scheduler_schedule`
 - `c:src/settings/settings.c:apply_mouse_settings`
 - `c:src/settings/settings.c:apply_taskbar_settings`
 - `c:src/settings/settings.c:apply_wm_settings`
