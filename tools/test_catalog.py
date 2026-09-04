@@ -116,7 +116,7 @@ def registry_surface_ids(entry: dict[str, Any],
                 continue
             surface = surfaces.get(surface_id)
             if not surface or surface.get("kind") not in {
-                    "c_function", "asm_entry"}:
+                    "c_function", "asm_entry", "syscall"}:
                 continue
             if source_filters and surface.get("source") not in source_filters:
                 continue

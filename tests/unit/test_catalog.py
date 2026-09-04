@@ -288,8 +288,42 @@ class CatalogContractTests(unittest.TestCase):
                     "surface_ids": ["asm:src/drivers/isr.asm:isr128"]
                 }},
                 {item["id"]: item for item in catalog["surfaces"]}, root), [
-                    "asm:src/drivers/isr.asm:isr128",
-                ])
+                "asm:src/drivers/isr.asm:isr128",
+            ])
+
+    def test_registry_coverage_report_selects_syscall_contracts(self):
+        catalog = sample_catalog()
+        syscall = sample_surface(["host:coverage:sample"])
+        syscall["id"] = "syscall:0"
+        syscall["kind"] = "syscall"
+        syscall["source"] = "src/include/core/syscall.h"
+        syscall["symbol"] = "APP_SYSCALL_PROCESS_EXIT"
+        catalog["surfaces"] = [syscall]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            report = root / "coverage.json"
+            report.write_text(json.dumps({
+                "status": "PASS",
+                "covered_surface_ids": ["syscall:0"],
+                "unknown_addresses": [],
+                "ambiguous_addresses": [],
+            }), encoding="utf-8")
+            entry = {
+                "id": "syscall-report",
+                "domain": "core-syscall-abi",
+                "owner": "quality",
+                "executor": "host",
+                "coverage_mode": "direct",
+                "case_ids": ["host:coverage:sample"],
+                "surface_selector": "coverage_report",
+                "coverage_report": "coverage.json",
+                "coverage_sources": ["src/include/core/syscall.h"],
+                "evidence": "contrato",
+            }
+            self.assertEqual(test_catalog.registry_surface_ids(
+                entry, {"host:coverage:sample": catalog["cases"][0]},
+                {item["id"]: item for item in catalog["surfaces"]}, root),
+                ["syscall:0"])
 
     def test_registry_coverage_report_uses_report_when_surface_list_is_empty(self):
         catalog = sample_catalog()

@@ -56,14 +56,15 @@ Isso não significa declarar hardware físico validado sem equipamento.
 
 ### Atualizacao vigente — 2026-09-04
 
-O sincronizador mais recente registra 7.293 superficies, 6.055 `COVERED`,
-1.238 `PENDING` e 151 casos `AUTOMATED`. Os incrementos mais recentes
+O sincronizador mais recente registra 7.293 superficies, 6.080 `COVERED`,
+1.213 `PENDING` e 151 casos `AUTOMATED`. Os incrementos mais recentes
 adicionaram o caso host-only `host:shell:diagnostics-helpers`, com evidencia
 real para 34 helpers extraidos de `shell_commands_diagnostics.c` e duas rotinas
 de string, ampliaram `host:process:runtime` com cinco helpers de stack e o
 idle controlado, confirmaram as 17 funcoes do driver RTC pela fixture CMOS,
 revalidaram as fixtures host-only de Shell hosted, entrada e syscall e
-exercitaram o cancelamento real do transporte HTTP remoto.
+exercitaram o cancelamento real do transporte HTTP remoto e registraram a
+evidencia declarativa das 25 constantes da ABI de syscalls.
 O gate estrito e a cobertura integral permanecem pendentes para os demais
 subsistemas sem evidencia especifica.
 

@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6055 |
+| `COVERED` | 6080 |
 | `MANUAL` | 0 |
-| `PENDING` | 1238 |
+| `PENDING` | 1213 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -7349,31 +7349,31 @@
 
 | ID | Fonte | Símbolo | Proprietário | Status | Casos |
 |---|---|---|---|---|---:|
-| `syscall:0` | `src/include/core/syscall.h` | `APP_SYSCALL_PROCESS_EXIT` | `core` | `PENDING` | 0 |
-| `syscall:1` | `src/include/core/syscall.h` | `APP_SYSCALL_CONSOLE_WRITE` | `core` | `PENDING` | 0 |
-| `syscall:10` | `src/include/core/syscall.h` | `APP_SYSCALL_SIGNAL_ACTION` | `core` | `PENDING` | 0 |
-| `syscall:11` | `src/include/core/syscall.h` | `APP_SYSCALL_SIGNAL_MASK` | `core` | `PENDING` | 0 |
-| `syscall:12` | `src/include/core/syscall.h` | `APP_SYSCALL_SIGNAL_RAISE` | `core` | `PENDING` | 0 |
-| `syscall:13` | `src/include/core/syscall.h` | `APP_SYSCALL_SIGNAL_RETURN` | `core` | `PENDING` | 0 |
-| `syscall:14` | `src/include/core/syscall.h` | `APP_SYSCALL_FILE_LSEEK` | `core` | `PENDING` | 0 |
-| `syscall:15` | `src/include/core/syscall.h` | `APP_SYSCALL_CHDIR` | `core` | `PENDING` | 0 |
-| `syscall:16` | `src/include/core/syscall.h` | `APP_SYSCALL_GETCWD` | `core` | `PENDING` | 0 |
-| `syscall:17` | `src/include/core/syscall.h` | `APP_SYSCALL_FILE_IOCTL` | `core` | `PENDING` | 0 |
-| `syscall:18` | `src/include/core/syscall.h` | `APP_SYSCALL_PIPE` | `core` | `PENDING` | 0 |
-| `syscall:19` | `src/include/core/syscall.h` | `APP_SYSCALL_MMAP` | `core` | `PENDING` | 0 |
-| `syscall:2` | `src/include/core/syscall.h` | `APP_SYSCALL_UPTIME` | `core` | `PENDING` | 0 |
-| `syscall:20` | `src/include/core/syscall.h` | `APP_SYSCALL_MUNMAP` | `core` | `PENDING` | 0 |
-| `syscall:21` | `src/include/core/syscall.h` | `APP_SYSCALL_FSYNC` | `core` | `PENDING` | 0 |
-| `syscall:22` | `src/include/core/syscall.h` | `APP_SYSCALL_SYNC` | `core` | `PENDING` | 0 |
-| `syscall:23` | `src/include/core/syscall.h` | `APP_SYSCALL_POLL` | `core` | `PENDING` | 0 |
-| `syscall:24` | `src/include/core/syscall.h` | `APP_SYSCALL_SELECT` | `core` | `PENDING` | 0 |
-| `syscall:3` | `src/include/core/syscall.h` | `APP_SYSCALL_MEMORY_INFO` | `core` | `PENDING` | 0 |
-| `syscall:4` | `src/include/core/syscall.h` | `APP_SYSCALL_FILE_OPEN` | `core` | `PENDING` | 0 |
-| `syscall:5` | `src/include/core/syscall.h` | `APP_SYSCALL_FILE_READ` | `core` | `PENDING` | 0 |
-| `syscall:6` | `src/include/core/syscall.h` | `APP_SYSCALL_FILE_WRITE` | `core` | `PENDING` | 0 |
-| `syscall:7` | `src/include/core/syscall.h` | `APP_SYSCALL_FILE_CLOSE` | `core` | `PENDING` | 0 |
-| `syscall:8` | `src/include/core/syscall.h` | `APP_SYSCALL_MESSAGE_SEND` | `core` | `PENDING` | 0 |
-| `syscall:9` | `src/include/core/syscall.h` | `APP_SYSCALL_MESSAGE_RECEIVE` | `core` | `PENDING` | 0 |
+| `syscall:0` | `src/include/core/syscall.h` | `APP_SYSCALL_PROCESS_EXIT` | `core` | `COVERED` | 1 |
+| `syscall:1` | `src/include/core/syscall.h` | `APP_SYSCALL_CONSOLE_WRITE` | `core` | `COVERED` | 1 |
+| `syscall:10` | `src/include/core/syscall.h` | `APP_SYSCALL_SIGNAL_ACTION` | `core` | `COVERED` | 1 |
+| `syscall:11` | `src/include/core/syscall.h` | `APP_SYSCALL_SIGNAL_MASK` | `core` | `COVERED` | 1 |
+| `syscall:12` | `src/include/core/syscall.h` | `APP_SYSCALL_SIGNAL_RAISE` | `core` | `COVERED` | 1 |
+| `syscall:13` | `src/include/core/syscall.h` | `APP_SYSCALL_SIGNAL_RETURN` | `core` | `COVERED` | 1 |
+| `syscall:14` | `src/include/core/syscall.h` | `APP_SYSCALL_FILE_LSEEK` | `core` | `COVERED` | 1 |
+| `syscall:15` | `src/include/core/syscall.h` | `APP_SYSCALL_CHDIR` | `core` | `COVERED` | 1 |
+| `syscall:16` | `src/include/core/syscall.h` | `APP_SYSCALL_GETCWD` | `core` | `COVERED` | 1 |
+| `syscall:17` | `src/include/core/syscall.h` | `APP_SYSCALL_FILE_IOCTL` | `core` | `COVERED` | 1 |
+| `syscall:18` | `src/include/core/syscall.h` | `APP_SYSCALL_PIPE` | `core` | `COVERED` | 1 |
+| `syscall:19` | `src/include/core/syscall.h` | `APP_SYSCALL_MMAP` | `core` | `COVERED` | 1 |
+| `syscall:2` | `src/include/core/syscall.h` | `APP_SYSCALL_UPTIME` | `core` | `COVERED` | 1 |
+| `syscall:20` | `src/include/core/syscall.h` | `APP_SYSCALL_MUNMAP` | `core` | `COVERED` | 1 |
+| `syscall:21` | `src/include/core/syscall.h` | `APP_SYSCALL_FSYNC` | `core` | `COVERED` | 1 |
+| `syscall:22` | `src/include/core/syscall.h` | `APP_SYSCALL_SYNC` | `core` | `COVERED` | 1 |
+| `syscall:23` | `src/include/core/syscall.h` | `APP_SYSCALL_POLL` | `core` | `COVERED` | 1 |
+| `syscall:24` | `src/include/core/syscall.h` | `APP_SYSCALL_SELECT` | `core` | `COVERED` | 1 |
+| `syscall:3` | `src/include/core/syscall.h` | `APP_SYSCALL_MEMORY_INFO` | `core` | `COVERED` | 1 |
+| `syscall:4` | `src/include/core/syscall.h` | `APP_SYSCALL_FILE_OPEN` | `core` | `COVERED` | 1 |
+| `syscall:5` | `src/include/core/syscall.h` | `APP_SYSCALL_FILE_READ` | `core` | `COVERED` | 1 |
+| `syscall:6` | `src/include/core/syscall.h` | `APP_SYSCALL_FILE_WRITE` | `core` | `COVERED` | 1 |
+| `syscall:7` | `src/include/core/syscall.h` | `APP_SYSCALL_FILE_CLOSE` | `core` | `COVERED` | 1 |
+| `syscall:8` | `src/include/core/syscall.h` | `APP_SYSCALL_MESSAGE_SEND` | `core` | `COVERED` | 1 |
+| `syscall:9` | `src/include/core/syscall.h` | `APP_SYSCALL_MESSAGE_RECEIVE` | `core` | `COVERED` | 1 |
 
 ## Casos
 
@@ -8746,31 +8746,6 @@
 - `c:src/wm/wm.c:wm_set_show_title`
 - `c:src/wm/wm.c:wm_toggle_window`
 - `c:src/wm/wm.c:wm_update_cpu_stats`
-- `syscall:0`
-- `syscall:1`
-- `syscall:10`
-- `syscall:11`
-- `syscall:12`
-- `syscall:13`
-- `syscall:14`
-- `syscall:15`
-- `syscall:16`
-- `syscall:17`
-- `syscall:18`
-- `syscall:19`
-- `syscall:2`
-- `syscall:20`
-- `syscall:21`
-- `syscall:22`
-- `syscall:23`
-- `syscall:24`
-- `syscall:3`
-- `syscall:4`
-- `syscall:5`
-- `syscall:6`
-- `syscall:7`
-- `syscall:8`
-- `syscall:9`
 
 ## Aposentadas
 

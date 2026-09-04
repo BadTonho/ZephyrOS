@@ -5634,3 +5634,13 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   7.293 superfícies, 6.055 `COVERED`, 1.238 `PENDING` e 151 casos. O gate
   estrito continua pendente pelas superfícies restantes sem evidência
   específica.
+
+- Incremento Core/syscall — contrato estático da ABI — concluído em 2026-09-04
+  (America/Sao_Paulo). A fixture existente `host:core:syscall` referencia cada
+  constante `APP_SYSCALL_0..24` nos dispatches válidos, inválidos e na tabela
+  de números. Como macros não são endereços executáveis, o vínculo foi
+  registrado em `tests/coverage/static/syscall-abi.json` e validado pelo
+  sincronizador sem associação genérica por arquivo. A sincronização e a
+  renderização passaram; o catálogo registra 7.293 superfícies, 6.080
+  `COVERED`, 1.213 `PENDING` e 151 casos. O gate estrito continua pendente
+  pelas superfícies restantes sem evidência específica.
