@@ -9,6 +9,9 @@
 #include "core/update_remote_config.h"
 #include "core/update_runtime.h"
 #include "process/process.h"
+#if defined(ZEPHYROS_HOST_TEST)
+#include "update_remote_github_host.h"
+#endif
 
 #define UPDATE_GITHUB_HTTP_OK 200U
 #define UPDATE_GITHUB_HTTP_NOT_FOUND 404U
@@ -1357,3 +1360,353 @@ int update_remote_github_runtime_query(
     return update_remote_github_query_mode(tag, options, release_out,
                                            result_out, 1U);
 }
+
+#if defined(ZEPHYROS_HOST_TEST)
+int update_remote_github_host_test_contracts(void) {
+    update_github_json_t json;
+    update_github_asset_parse_t parsed;
+    update_remote_github_release_t release;
+    update_remote_github_release_t runtime_release;
+    update_remote_github_asset_t asset;
+    update_remote_result_t result;
+    update_remote_options_t options;
+    uint8_t raw[256];
+    uint8_t digest[32];
+    uint8_t descriptor_found = 0U;
+    uint8_t manifest_found = 0U;
+    uint8_t package_found = 0U;
+    uint8_t system_found = 0U;
+    uint8_t runtime_manifest_found = 0U;
+    uint8_t runtime_package_found = 0U;
+    uint32_t length;
+    uint32_t value;
+    uint16_t port;
+    char text[UPDATE_REMOTE_RELEASE_NAME_SIZE];
+    char host[HTTP_HOST_BUFFER_SIZE];
+    char url[UPDATE_REMOTE_URL_SIZE];
+    static const uint8_t asset_json[] =
+        "[{\"name\":\"release.json\",\"size\":512,"
+        "\"browser_download_url\":\"https://github.com/x\","
+        "\"state\":\"uploaded\",\"digest\":null,"
+        "\"extra\":{\"ok\":true}}]";
+    static const uint8_t escaped_text[] = "\"a\\n\\u0041\\\"\"";
+    static const uint8_t number_text[] = "-1.25e+2";
+    static const uint8_t value_text[] =
+        "{\"items\":[true,null,{\"value\":-1.25e+2}]}";
+    static const char valid_digest[] =
+        "sha256:0000000000000000000000000000000000000000000000000000000000000000";
+
+    if (update_github_validate_tag(NULL) != ERR_NULL ||
+        update_github_validate_tag("") != ERR_INVALID ||
+        update_github_validate_tag("v1/2") != ERR_INVALID ||
+        update_github_validate_tag("v1.2-rc_1") != OK) return 90;
+    if (update_github_expect(NULL, '{') != ERR_NULL ||
+        update_github_hex_digit('a') != 10 ||
+        update_github_hex_digit('F') != 15 ||
+        update_github_hex_digit('x') != -1) return 91;
+
+    json.data = escaped_text;
+    json.length = sizeof(escaped_text) - 1U;
+    json.offset = 0U;
+    json.depth = 0U;
+    if (update_github_parse_string(&json, text, sizeof(text)) != OK ||
+        text[0] != 'a' || text[1] != '\n' || text[2] != 'A' ||
+        text[3] != '"' || text[4] != '\0') return 92;
+    json.data = (const uint8_t*)" true ";
+    json.length = 6U;
+    json.offset = 0U;
+    if (update_github_parse_bool(&json, (uint8_t*)&value) != OK ||
+        value != 1U) return 93;
+    json.data = (const uint8_t*)"false";
+    json.length = 5U;
+    json.offset = 0U;
+    if (update_github_parse_bool(&json, (uint8_t*)&value) != OK ||
+        value != 0U) return 94;
+    json.data = (const uint8_t*)"null";
+    json.length = 4U;
+    json.offset = 0U;
+    if (update_github_parse_null(&json) != OK) return 95;
+    json.data = (const uint8_t*)"4294967295";
+    json.length = 10U;
+    json.offset = 0U;
+    if (update_github_parse_u32(&json, &value) != OK ||
+        value != 0xFFFFFFFFU) return 96;
+    json.data = (const uint8_t*)"01";
+    json.length = 2U;
+    json.offset = 0U;
+    if (update_github_parse_u32(&json, &value) != ERR_INVALID) return 97;
+    json.data = (const uint8_t*)"4294967296";
+    json.length = 10U;
+    json.offset = 0U;
+    if (update_github_parse_u32(&json, &value) != ERR_OVERFLOW) return 98;
+    json.data = number_text;
+    json.length = sizeof(number_text) - 1U;
+    json.offset = 0U;
+    if (update_github_skip_number(&json) != OK || json.offset != json.length) {
+        return 99;
+    }
+    json.data = (const uint8_t*)"123";
+    json.length = 3U;
+    json.offset = 0U;
+    if (update_github_parse_number_text(&json, text, sizeof(text)) != OK ||
+        kstrcmp(text, "123") != 0) return 100;
+    json.data = (const uint8_t*)"01";
+    json.length = 2U;
+    json.offset = 0U;
+    if (update_github_parse_number_text(&json, text, sizeof(text)) != ERR_INVALID) {
+        return 101;
+    }
+    json.data = (const uint8_t*)"\"x\\u0041\"";
+    json.length = 9U;
+    json.offset = 0U;
+    if (update_github_skip_string(&json) != OK) return 102;
+    json.data = value_text;
+    json.length = sizeof(value_text) - 1U;
+    json.offset = 0U;
+    if (update_github_skip_value(&json, 1U) != OK || json.offset != json.length) {
+        return 103;
+    }
+    json.data = (const uint8_t*)"{";
+    json.length = 1U;
+    json.offset = 0U;
+    if (update_github_skip_object(&json, 1U) != ERR_INVALID) return 104;
+    json.data = (const uint8_t*)"[";
+    json.length = 1U;
+    json.offset = 0U;
+    if (update_github_skip_array(&json, 1U) != ERR_INVALID) return 105;
+    json.data = (const uint8_t*)"{}";
+    json.length = 2U;
+    json.offset = 0U;
+    if (update_github_expect(&json, '{') != OK ||
+        update_github_skip_object(&json, UPDATE_GITHUB_JSON_DEPTH + 1U) !=
+            ERR_OVERFLOW) return 106;
+    if (update_github_parse_digest(valid_digest, digest) != OK ||
+        update_github_parse_digest("sha256:bad", digest) != ERR_INVALID) {
+        return 107;
+    }
+
+    json.data = asset_json;
+    json.length = sizeof(asset_json) - 1U;
+    json.offset = 1U;
+    if (update_github_parse_asset(&json, &parsed) != OK ||
+        kstrcmp(parsed.asset.name, "release.json") != 0 ||
+        parsed.asset.digest_present) return 108;
+    json.data = (const uint8_t*)
+        "{\"name\":\"x\",\"name\":\"y\",\"size\":1,"
+        "\"browser_download_url\":\"https://github.com/x\"}";
+    json.length = kstrlen((const char*)json.data);
+    json.offset = 0U;
+    if (update_github_parse_asset(&json, &parsed) != ERR_INVALID) return 109;
+    if (update_github_copy_asset(NULL, &parsed) != ERR_NULL ||
+        update_github_copy_asset(&asset, NULL) != ERR_NULL) return 110;
+
+    kmemset(&parsed, 0, sizeof(parsed));
+    parsed.asset.size = 1U;
+    kmemcpy(parsed.asset.url, "https://github.com/x",
+            kstrlen("https://github.com/x") + 1U);
+    kmemcpy(parsed.asset.name, UPDATE_REMOTE_GITHUB_DESCRIPTOR_NAME,
+            kstrlen(UPDATE_REMOTE_GITHUB_DESCRIPTOR_NAME) + 1U);
+    if (update_github_assign_asset(NULL, &parsed, &descriptor_found,
+                                   &manifest_found, &package_found,
+                                   &system_found, &runtime_manifest_found,
+                                   &runtime_package_found, 0U) != ERR_NULL ||
+        update_github_assign_asset(&release, &parsed, &descriptor_found,
+                                   &manifest_found, &package_found,
+                                   &system_found, &runtime_manifest_found,
+                                   &runtime_package_found, 0U) != OK ||
+        update_github_assign_asset(&release, &parsed, &descriptor_found,
+                                   &manifest_found, &package_found,
+                                   &system_found, &runtime_manifest_found,
+                                   &runtime_package_found, 0U) != ERR_INVALID) {
+        return 111;
+    }
+    kmemset(parsed.asset.name, 0, sizeof(parsed.asset.name));
+    kmemcpy(parsed.asset.name, UPDATE_REMOTE_GITHUB_SYSTEM_NAME,
+            kstrlen(UPDATE_REMOTE_GITHUB_SYSTEM_NAME) + 1U);
+    if (update_github_assign_asset(&release, &parsed, &descriptor_found,
+                                   &manifest_found, &package_found,
+                                   &system_found, &runtime_manifest_found,
+                                   &runtime_package_found, 0U) != OK ||
+        !release.system_present) return 112;
+    kmemset(parsed.asset.name, 0, sizeof(parsed.asset.name));
+    kmemcpy(parsed.asset.name, UPDATE_REMOTE_GITHUB_RUNTIME_MANIFEST_NAME,
+            kstrlen(UPDATE_REMOTE_GITHUB_RUNTIME_MANIFEST_NAME) + 1U);
+    if (update_github_assign_asset(&runtime_release, &parsed,
+                                   &descriptor_found, &manifest_found,
+                                   &package_found, &system_found,
+                                   &runtime_manifest_found,
+                                   &runtime_package_found, 1U) != OK) return 113;
+    kmemset(parsed.asset.name, 0, sizeof(parsed.asset.name));
+    kmemcpy(parsed.asset.name, UPDATE_REMOTE_GITHUB_RUNTIME_PACKAGE_NAME,
+            kstrlen(UPDATE_REMOTE_GITHUB_RUNTIME_PACKAGE_NAME) + 1U);
+    if (update_github_assign_asset(&runtime_release, &parsed,
+                                   &descriptor_found, &manifest_found,
+                                   &package_found, &system_found,
+                                   &runtime_manifest_found,
+                                   &runtime_package_found, 1U) != OK) return 114;
+    kmemset(parsed.asset.name, 0, sizeof(parsed.asset.name));
+    kmemcpy(parsed.asset.name, "EXPLORER.BMP", 13U);
+    if (update_github_assign_asset(&runtime_release, &parsed,
+                                   &descriptor_found, &manifest_found,
+                                   &package_found, &system_found,
+                                   &runtime_manifest_found,
+                                   &runtime_package_found, 1U) != OK ||
+        update_github_assign_asset(&runtime_release, &parsed,
+                                   &descriptor_found, &manifest_found,
+                                   &package_found, &system_found,
+                                   &runtime_manifest_found,
+                                   &runtime_package_found, 1U) != ERR_INVALID) {
+        return 115;
+    }
+    descriptor_found = 0U;
+    manifest_found = 0U;
+    package_found = 0U;
+    system_found = 0U;
+    runtime_manifest_found = 0U;
+    runtime_package_found = 0U;
+    kmemset(&release, 0, sizeof(release));
+    json.data = asset_json;
+    json.length = sizeof(asset_json) - 1U;
+    json.offset = 0U;
+    if (update_github_parse_assets(&json, &release, &descriptor_found,
+                                   &manifest_found, &package_found,
+                                   &system_found, &runtime_manifest_found,
+                                   &runtime_package_found, 0U) != OK) return 116;
+    if (update_github_validate_published_at("2026-09-04T12:34:56Z") != OK ||
+        update_github_validate_published_at("2026-13-04T12:34:56Z") != ERR_INVALID) {
+        return 117;
+    }
+    if (update_github_parse_release(update_remote_github_host_release_json,
+                                    update_remote_github_host_release_json_size,
+                                    "v1.2.3", 0U, &release) != OK ||
+        !release.system_present || release.package.size != 1024U) return 118;
+    if (update_github_parse_release(update_remote_github_host_runtime_json,
+                                    update_remote_github_host_runtime_json_size,
+                                    "v1.2.3", 1U, &runtime_release) != OK ||
+        runtime_release.runtime_asset_count != 2U) return 119;
+
+    if (!update_github_ascii_equal('A', 'a') ||
+        update_github_ascii_equal('A', 'b') ||
+        update_github_host("https://github.com/path", host, sizeof(host)) != OK ||
+        kstrcmp(host, "github.com") != 0 ||
+        update_github_host("http://github.com/path", host, sizeof(host)) != ERR_INVALID ||
+        update_github_port("https://github.com/path", &port) != OK ||
+        port != HTTPS_DEFAULT_PORT ||
+        update_github_port("https://github.com:8443/path", &port) != OK ||
+        port != 8443U ||
+        update_github_port("https://github.com:0/path", &port) != ERR_INVALID ||
+        update_github_host_equal("GitHub.com", "github.COM") != 1U ||
+        update_github_host_equal("github.com", "example.com") != 0U) return 120;
+    if (update_github_validate_asset_url("https://github.com/a") != OK ||
+        update_github_validate_asset_url("https://evil.example/a") != ERR_INVALID ||
+        update_github_validate_asset_url("https://github.com:444/a") != ERR_INVALID) {
+        return 121;
+    }
+    kmemset(raw, 0, sizeof(raw));
+    length = 0U;
+    if (update_github_append(raw, sizeof(raw), &length, "ab") != OK ||
+        update_github_append_u32(raw, sizeof(raw), &length, 0U) != OK ||
+        update_github_append_u32(raw, sizeof(raw), &length, 0xFFFFFFFFU) != OK ||
+        update_github_append_digest(raw, sizeof(raw), &length, &asset) != OK ||
+        update_github_append_digest(NULL, sizeof(raw), &length, &asset) != ERR_NULL ||
+        update_github_append(raw, 2U, &length, "x") != ERR_OVERFLOW ||
+        update_github_marker_match("{tag}", "{tag}") != 1U ||
+        update_github_marker_match("{tag}", "{repo}") != 0U ||
+        update_github_marker_match(NULL, "x") != 0U) return 122;
+    asset.digest_present = 1U;
+    kmemset(asset.digest, 0, sizeof(asset.digest));
+    length = 0U;
+    if (update_github_append_digest(raw, sizeof(raw), &length, &asset) != OK ||
+        update_github_fingerprint(&release) != OK ||
+        update_github_fingerprint(NULL) != ERR_NULL ||
+        update_github_runtime_fingerprint(&runtime_release) != OK ||
+        update_github_runtime_fingerprint(NULL) != ERR_NULL) return 123;
+    if (update_github_build_url("v1.2.3", url, sizeof(url)) != OK ||
+        kstrcmp(url, "https://api.github.com/repos/BadTonho/ZephyrOS/releases/tags/v1.2.3") != 0 ||
+        update_github_build_url(NULL, url, sizeof(url)) != ERR_NULL ||
+        update_github_build_url("v1.2.3", url, 8U) != ERR_OVERFLOW) return 124;
+
+    update_github_workspace.response_length = 0U;
+    if (update_github_sink(NULL, 0U, NULL) != OK ||
+        update_github_sink(NULL, 1U, NULL) != ERR_NULL) return 125;
+    update_github_workspace.response_length =
+        UPDATE_REMOTE_GITHUB_RESPONSE_CAPACITY;
+    if (update_github_sink((const uint8_t*)"x", 1U, NULL) != ERR_OVERFLOW) {
+        return 126;
+    }
+    update_github_workspace.http.status_code = 201U;
+    update_github_workspace.http.body_length = 22U;
+    update_github_workspace.http.secure = 1U;
+    update_github_workspace.http.tls_verified = 1U;
+    update_github_workspace.http.redirect_count = 2U;
+    update_github_workspace.http.tls_reason = TLS_REASON_NONE;
+    update_github_workspace.http.tls_error = 0U;
+    update_github_copy_http_result(&result);
+    if (result.http_status != 201U || result.bytes_received != 22U ||
+        result.redirect_count != 2U) return 127;
+    update_github_workspace.http.redirect_rejected = 1U;
+    if (update_github_http_reason() != UPDATE_REMOTE_REASON_REDIRECT) return 128;
+    update_github_workspace.http.redirect_rejected = 0U;
+    update_github_workspace.http.tls_verified = 0U;
+    update_github_workspace.http.tls_reason = TLS_REASON_CERT_EXPIRED;
+    if (update_github_http_reason() != UPDATE_REMOTE_REASON_TLS) return 129;
+    update_github_workspace.http.tls_verified = 1U;
+    update_github_workspace.http.tls_reason = TLS_REASON_NONE;
+    update_github_workspace.http.status_code = 404U;
+    if (update_github_http_reason() != UPDATE_REMOTE_REASON_RELEASE_NOT_FOUND) {
+        return 130;
+    }
+    update_github_copy_http_result(NULL);
+
+    update_remote_github_host_http_mode =
+        UPDATE_REMOTE_GITHUB_HOST_HTTP_COMPLETE;
+    update_remote_github_host_http_status_result = OK;
+    update_remote_github_host_http_error = ERR_DISK;
+    if (update_github_wait(NULL) != OK) return 131;
+    update_remote_github_host_http_mode = UPDATE_REMOTE_GITHUB_HOST_HTTP_FAILED;
+    if (update_github_wait(NULL) != ERR_DISK) return 132;
+    update_remote_github_host_http_mode = UPDATE_REMOTE_GITHUB_HOST_HTTP_WAIT;
+    update_remote_github_host_cancel = 1U;
+    kmemset(&options, 0, sizeof(options));
+    options.cancel_check = update_remote_github_host_cancel_check;
+    if (update_github_wait(&options) != ERR_TIMEOUT) return 133;
+    update_remote_github_host_cancel = 0U;
+    update_remote_github_host_http_status_result = ERR_STATE;
+    if (update_github_wait(NULL) != ERR_STATE) return 134;
+    update_remote_github_host_http_status_result = OK;
+
+    update_remote_github_host_http_payload =
+        update_remote_github_host_release_json;
+    update_remote_github_host_http_payload_size =
+        update_remote_github_host_release_json_size;
+    update_remote_github_host_http_mode =
+        UPDATE_REMOTE_GITHUB_HOST_HTTP_COMPLETE;
+    update_remote_github_host_http_start_result = OK;
+    if (update_remote_github_query(NULL, &options, &release, &result) != ERR_NULL ||
+        update_remote_github_query("v1/2", &options, &release, &result) != ERR_INVALID ||
+        update_remote_github_query("v1.2.3", &options, &release, &result) != OK ||
+        result.reason != UPDATE_REMOTE_REASON_NONE || result.http_status != 200U) {
+        return 135;
+    }
+    update_remote_github_host_http_payload = update_remote_github_host_runtime_json;
+    update_remote_github_host_http_payload_size =
+        update_remote_github_host_runtime_json_size;
+    if (update_remote_github_runtime_query("v1.2.3", &options,
+                                           &runtime_release, &result) != OK) {
+        return 136;
+    }
+    update_remote_github_host_http_mode =
+        UPDATE_REMOTE_GITHUB_HOST_HTTP_NOT_FOUND;
+    if (update_remote_github_query("v1.2.3", &options, &release, &result) !=
+            ERR_INVALID ||
+        result.reason != UPDATE_REMOTE_REASON_RELEASE_NOT_FOUND) return 137;
+    update_remote_github_host_http_mode = UPDATE_REMOTE_GITHUB_HOST_HTTP_FAILED;
+    if (update_remote_github_query("v1.2.3", &options, &release, &result) !=
+            ERR_DISK) return 138;
+    update_remote_github_host_http_start_result = ERR_DISK;
+    update_remote_github_host_http_mode = UPDATE_REMOTE_GITHUB_HOST_HTTP_COMPLETE;
+    if (update_remote_github_query("v1.2.3", &options, &release, &result) !=
+            ERR_DISK) return 139;
+    return OK;
+}
+#endif

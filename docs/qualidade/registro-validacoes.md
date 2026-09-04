@@ -5485,3 +5485,20 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   registra 7.253 superficies, 5.651 `COVERED`, 1.602 `PENDING` e 146 casos.
   O gate estrito e a validacao TST7 completa continuam pendentes pelas
   superficies sem evidencia real.
+
+- Incremento Core/update remote GitHub concluido em 2026-09-04
+  (America/Sao_Paulo). Foi criada a fixture host-only
+  `host:core:update-remote-github`, com respostas JSON, HTTP, crypto e
+  cancelamento simulados em buffers estaticos. O caso exercita diretamente
+  parser JSON, assets, duplicidades, limites, URLs allowlisted, fingerprints,
+  espera, cancelamento, status HTTP e contratos publicos de
+  `src/core/update_remote_github.c`, sem rede externa. O relatorio
+  `build/test-results/update-remote-github-host/coverage.json` terminou
+  `PASS`, resolveu 44 superficies reais e nao registrou enderecos desconhecidos
+  ou simbolos ambiguos. Passaram
+  `make test-update-remote-github-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`,
+  sincronizacao, renderizacao, `make catalog-test`, `q3check`, `make clean`,
+  `make` e os testes unitarios de catalogo, runner host e TST7. O catalogo
+  registra 7.254 superficies, 5.694 `COVERED`, 1.560 `PENDING` e 147 casos.
+  O gate estrito e a validacao TST7 completa continuam pendentes pelas
+  superficies sem evidencia real.

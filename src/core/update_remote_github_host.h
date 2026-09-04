@@ -1,0 +1,26 @@
+#ifndef UPDATE_REMOTE_GITHUB_HOST_H
+#define UPDATE_REMOTE_GITHUB_HOST_H
+
+#include "types.h"
+
+#define UPDATE_REMOTE_GITHUB_HOST_HTTP_COMPLETE 0U
+#define UPDATE_REMOTE_GITHUB_HOST_HTTP_NOT_FOUND 1U
+#define UPDATE_REMOTE_GITHUB_HOST_HTTP_FAILED 2U
+#define UPDATE_REMOTE_GITHUB_HOST_HTTP_WAIT 3U
+
+extern const uint8_t update_remote_github_host_release_json[];
+extern const uint32_t update_remote_github_host_release_json_size;
+extern const uint8_t update_remote_github_host_runtime_json[];
+extern const uint32_t update_remote_github_host_runtime_json_size;
+extern const uint8_t* update_remote_github_host_http_payload;
+extern uint32_t update_remote_github_host_http_payload_size;
+extern uint8_t update_remote_github_host_http_mode;
+extern int update_remote_github_host_http_start_result;
+extern int update_remote_github_host_http_status_result;
+extern int update_remote_github_host_http_error;
+extern uint8_t update_remote_github_host_cancel;
+int update_remote_github_host_cancel_check(void* context);
+
+int update_remote_github_host_test_contracts(void);
+
+#endif

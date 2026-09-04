@@ -2353,3 +2353,16 @@ pendente.
   unitarios selecionados. O catalogo registra 7.253 superficies, 5.651
   `COVERED`, 1.602 `PENDING` e 146 casos; o restante da cobertura integral
   continua pendente e nao foi mascarado.
+
+- Incremento Core/update remote GitHub concluido em 2026-09-04. A fixture
+  host-only `host:core:update-remote-github` executa os helpers e contratos
+  publicos reais de `src/core/update_remote_github.c` com respostas JSON, HTTP,
+  crypto e cancelamento simulados em buffers estaticos. A evidencia
+  instrumentada resolveu 44 superficies reais sem enderecos desconhecidos ou
+  simbolos ambiguos, cobrindo parser JSON, assets, duplicidades, limites, URLs
+  allowlisted, fingerprints, espera, cancelamento e status HTTP. Passaram o
+  alvo host-only com `HOST_CC`, sincronizacao, renderizacao,
+  `make catalog-test`, `q3check`, `make clean`, `make`, os testes unitarios de
+  catalogo, runner host e TST7, e `git diff --check`. O catalogo registra
+  7.254 superficies, 5.694 `COVERED`, 1.560 `PENDING` e 147 casos; o restante
+  da cobertura integral continua pendente e nao foi mascarado.

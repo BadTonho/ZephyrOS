@@ -12970,6 +12970,7 @@
         "host:core:timer",
         "host:core:update",
         "host:core:update-remote",
+        "host:core:update-remote-github",
         "host:core:update-remote-runtime",
         "host:core:update-remote-system",
         "host:core:update-runtime",
@@ -13040,6 +13041,7 @@
         "host:core:timer",
         "host:core:update",
         "host:core:update-remote",
+        "host:core:update-remote-github",
         "host:core:update-remote-runtime",
         "host:core:update-remote-system",
         "host:core:update-runtime",
@@ -13114,6 +13116,7 @@
         "host:core:timer",
         "host:core:update",
         "host:core:update-remote",
+        "host:core:update-remote-github",
         "host:core:update-remote-runtime",
         "host:core:update-remote-system",
         "host:core:update-runtime",
@@ -13178,6 +13181,7 @@
         "host:core:timer",
         "host:core:update",
         "host:core:update-remote",
+        "host:core:update-remote-github",
         "host:core:update-remote-runtime",
         "host:core:update-remote-system",
         "host:core:update-runtime",
@@ -15400,9 +15404,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_remote_github.h:update_remote_github_runtime_query",
@@ -15418,9 +15425,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_remote_runtime.h:update_remote_runtime_capability_available",
@@ -68236,6 +68246,7 @@
         "host:core:timer",
         "host:core:update",
         "host:core:update-remote",
+        "host:core:update-remote-github",
         "host:core:update-remote-runtime",
         "host:core:update-remote-system",
         "host:core:update-runtime",
@@ -68306,6 +68317,7 @@
         "host:core:timer",
         "host:core:update",
         "host:core:update-remote",
+        "host:core:update-remote-github",
         "host:core:update-remote-runtime",
         "host:core:update-remote-system",
         "host:core:update-runtime",
@@ -68380,6 +68392,7 @@
         "host:core:timer",
         "host:core:update",
         "host:core:update-remote",
+        "host:core:update-remote-github",
         "host:core:update-remote-runtime",
         "host:core:update-remote-system",
         "host:core:update-runtime",
@@ -68444,6 +68457,7 @@
         "host:core:timer",
         "host:core:update",
         "host:core:update-remote",
+        "host:core:update-remote-github",
         "host:core:update-remote-runtime",
         "host:core:update-remote-system",
         "host:core:update-runtime",
@@ -76376,9 +76390,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_append_digest",
@@ -76394,9 +76411,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_append_u32",
@@ -76412,9 +76432,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_ascii_equal",
@@ -76430,9 +76453,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_assign_asset",
@@ -76448,9 +76474,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_build_url",
@@ -76466,9 +76495,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_copy_asset",
@@ -76484,9 +76516,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_copy_http_result",
@@ -76502,9 +76537,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_expect",
@@ -76520,9 +76558,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_fingerprint",
@@ -76538,9 +76579,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_hex_digit",
@@ -76556,9 +76600,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_host",
@@ -76574,9 +76621,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_host_equal",
@@ -76592,9 +76642,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_http_reason",
@@ -76610,9 +76663,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_marker_match",
@@ -76628,9 +76684,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_parse_asset",
@@ -76646,9 +76705,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_parse_assets",
@@ -76664,9 +76726,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_parse_bool",
@@ -76682,9 +76747,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_parse_digest",
@@ -76700,9 +76768,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_parse_null",
@@ -76718,9 +76789,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_parse_number_text",
@@ -76736,9 +76810,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_parse_release",
@@ -76754,9 +76831,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_parse_string",
@@ -76772,9 +76852,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_parse_u32",
@@ -76790,9 +76873,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_port",
@@ -76808,9 +76894,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_runtime_fingerprint",
@@ -76826,9 +76915,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_sink",
@@ -76844,9 +76936,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_skip_array",
@@ -76862,9 +76957,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_skip_number",
@@ -76880,9 +76978,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_skip_object",
@@ -76898,9 +76999,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_skip_space",
@@ -76916,9 +77020,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_skip_string",
@@ -76934,9 +77041,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_skip_value",
@@ -76952,9 +77062,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_validate_asset_url",
@@ -76970,9 +77083,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_validate_published_at",
@@ -76988,9 +77104,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_validate_tag",
@@ -77006,9 +77125,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_github_wait",
@@ -77024,9 +77146,33 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/update_remote_github.c:update_remote_github_host_test_contracts",
+      "kind": "c_function",
+      "source": "src/core/update_remote_github.c",
+      "symbol": "update_remote_github_host_test_contracts",
+      "linkage": "external",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_remote_github_query",
@@ -77042,9 +77188,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_remote_github_query_mode",
@@ -77060,9 +77209,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_github.c:update_remote_github_runtime_query",
@@ -77078,9 +77230,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-remote-github"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_remote_release.c:update_release_basename",
@@ -159168,6 +159323,93 @@
         "host",
         "update",
         "remote",
+        "offline",
+        "negative",
+        "corruption"
+      ]
+    },
+    {
+      "id": "host:core:update-remote-github",
+      "scenario": "Contratos do transporte remoto de releases GitHub",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "network": "HTTP simulado offline",
+        "responses": "releases estaticas de sistema e runtime"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "executar parser JSON, validacao de assets, URLs, fingerprints, espera, cancelamento e consultas publicas com transporte simulado",
+      "expected": "releases validas fazem parse e fingerprint; corrupcao, status HTTP, cancelamento e limites retornam erros canonicos sem rede externa",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente buffers estaticos no processo host",
+      "cleanup": "estado HTTP e buffers pertencem ao processo host; manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/string.h:kmemcpy",
+        "api:src/include/core/string.h:kmemset",
+        "api:src/include/core/string.h:kstrcmp",
+        "api:src/include/core/string.h:kstrlen",
+        "api:src/include/core/update_remote_github.h:update_remote_github_query",
+        "api:src/include/core/update_remote_github.h:update_remote_github_runtime_query",
+        "c:src/core/string.c:kmemcpy",
+        "c:src/core/string.c:kmemset",
+        "c:src/core/string.c:kstrcmp",
+        "c:src/core/string.c:kstrlen",
+        "c:src/core/update_remote_github.c:update_github_append",
+        "c:src/core/update_remote_github.c:update_github_append_digest",
+        "c:src/core/update_remote_github.c:update_github_append_u32",
+        "c:src/core/update_remote_github.c:update_github_ascii_equal",
+        "c:src/core/update_remote_github.c:update_github_assign_asset",
+        "c:src/core/update_remote_github.c:update_github_build_url",
+        "c:src/core/update_remote_github.c:update_github_copy_asset",
+        "c:src/core/update_remote_github.c:update_github_copy_http_result",
+        "c:src/core/update_remote_github.c:update_github_expect",
+        "c:src/core/update_remote_github.c:update_github_fingerprint",
+        "c:src/core/update_remote_github.c:update_github_hex_digit",
+        "c:src/core/update_remote_github.c:update_github_host",
+        "c:src/core/update_remote_github.c:update_github_host_equal",
+        "c:src/core/update_remote_github.c:update_github_http_reason",
+        "c:src/core/update_remote_github.c:update_github_marker_match",
+        "c:src/core/update_remote_github.c:update_github_parse_asset",
+        "c:src/core/update_remote_github.c:update_github_parse_assets",
+        "c:src/core/update_remote_github.c:update_github_parse_bool",
+        "c:src/core/update_remote_github.c:update_github_parse_digest",
+        "c:src/core/update_remote_github.c:update_github_parse_null",
+        "c:src/core/update_remote_github.c:update_github_parse_number_text",
+        "c:src/core/update_remote_github.c:update_github_parse_release",
+        "c:src/core/update_remote_github.c:update_github_parse_string",
+        "c:src/core/update_remote_github.c:update_github_parse_u32",
+        "c:src/core/update_remote_github.c:update_github_port",
+        "c:src/core/update_remote_github.c:update_github_runtime_fingerprint",
+        "c:src/core/update_remote_github.c:update_github_sink",
+        "c:src/core/update_remote_github.c:update_github_skip_array",
+        "c:src/core/update_remote_github.c:update_github_skip_number",
+        "c:src/core/update_remote_github.c:update_github_skip_object",
+        "c:src/core/update_remote_github.c:update_github_skip_space",
+        "c:src/core/update_remote_github.c:update_github_skip_string",
+        "c:src/core/update_remote_github.c:update_github_skip_value",
+        "c:src/core/update_remote_github.c:update_github_validate_asset_url",
+        "c:src/core/update_remote_github.c:update_github_validate_published_at",
+        "c:src/core/update_remote_github.c:update_github_validate_tag",
+        "c:src/core/update_remote_github.c:update_github_wait",
+        "c:src/core/update_remote_github.c:update_remote_github_host_test_contracts",
+        "c:src/core/update_remote_github.c:update_remote_github_query",
+        "c:src/core/update_remote_github.c:update_remote_github_query_mode",
+        "c:src/core/update_remote_github.c:update_remote_github_runtime_query"
+      ],
+      "tags": [
+        "host",
+        "update",
+        "github",
+        "json",
         "offline",
         "negative",
         "corruption"

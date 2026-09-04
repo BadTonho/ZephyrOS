@@ -1787,3 +1787,21 @@ O relatorio instrumentado fica em
 em `PASS`, com `unknown_addresses=[]` e `ambiguous_symbols=[]`. Depois da
 execucao real, sincronize o catalogo, renderize a visao e valide com
 `make catalog-test`.
+
+## Update remote GitHub host-only
+
+O alvo `test-update-remote-github-host` compila o
+`src/core/update_remote_github.c` com respostas JSON, HTTP, crypto e cancelamento
+simulados em buffers estaticos. A fixture valida parser JSON, assets,
+duplicidades, limites, URLs allowlisted, fingerprints, espera, cancelamento,
+status HTTP e os contratos publicos de consulta sem rede externa:
+
+```text
+make test-update-remote-github-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O relatorio instrumentado fica em
+`build/test-results/update-remote-github-host/coverage.json` e deve terminar
+em `PASS`, com `unknown_addresses=[]` e `ambiguous_symbols=[]`. Depois da
+execucao real, sincronize o catalogo, renderize a visao e valide com
+`make catalog-test`.

@@ -215,6 +215,13 @@ UPDATE_REMOTE_SYSTEM_SOURCE_FILES = (
     ROOT / "src" / "core" / "update_remote_system.c",
     ROOT / "src" / "core" / "string.c",
 )
+UPDATE_REMOTE_GITHUB_RESULT_DIR = ROOT / "build" / "test-results" / "update-remote-github-host"
+UPDATE_REMOTE_GITHUB_BINARY = ROOT / "build" / "tests" / "test_update_remote_github_host.exe"
+UPDATE_REMOTE_GITHUB_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_update_remote_github_host.c",
+    ROOT / "src" / "core" / "update_remote_github.c",
+    ROOT / "src" / "core" / "string.c",
+)
 STATE_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_core_state_host.c",
     ROOT / "src" / "core" / "recovery.c",
@@ -834,6 +841,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
     if case_id == "host:core:update-remote-system":
         return (UPDATE_REMOTE_SYSTEM_RESULT_DIR, UPDATE_REMOTE_SYSTEM_BINARY,
                 UPDATE_REMOTE_SYSTEM_SOURCE_FILES, "update-remote-system-host")
+    if case_id == "host:core:update-remote-github":
+        return (UPDATE_REMOTE_GITHUB_RESULT_DIR, UPDATE_REMOTE_GITHUB_BINARY,
+                UPDATE_REMOTE_GITHUB_SOURCE_FILES, "update-remote-github-host")
     if case_id == "host:core:state":
         return STATE_RESULT_DIR, STATE_BINARY, STATE_SOURCE_FILES, "state-host"
     if case_id == "host:core:device-manager":
@@ -1213,6 +1223,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:core:update-remote",
                                  "host:core:update-system-slots",
                                  "host:core:update-remote-system",
+                                 "host:core:update-remote-github",
                                  "host:core:device-manager", "host:core:app-api",
                                  "host:core:app-files", "host:core:app-builtin",
                                  "host:core:app-loader", "host:ui:taskbar",
