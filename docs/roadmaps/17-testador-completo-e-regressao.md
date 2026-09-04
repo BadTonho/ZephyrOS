@@ -1517,6 +1517,17 @@ pendente.
   7.196 superficies, 3.953 `COVERED`, 3.243 `PENDING` e 86 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Shell/hosted — evidencia final — concluido em 2026-09-03. O caso
+  existente `host:shell:hosted` foi executado novamente após o build limpo com
+  Window Manager, terminal e mouse falsos. O relatorio
+  `build/test-results/shell-hosted-host/coverage.json` terminou `PASS`,
+  resolveu as 8 funcoes de `src/shell/shell_hosted.c` e nao registrou erros de
+  cobertura. Tambem passaram `python tools/test_catalog.py sync`,
+  `python tools/test_catalog.py render` e `make catalog-test`. O catalogo atual
+  registra 7.219 superficies, 5.086 `COVERED`, 2.133 `PENDING` e 132 casos.
+  O fechamento integral, o gate estrito e a validacao TST7 completa continuam
+  pendentes.
+
 - Incremento Drivers/RTC — fechamento de cobertura — concluido em 2026-09-03.
   O caso existente `host:drivers:rtc-status` foi executado novamente depois do
   build limpo, com CMOS falso e sem I/O privilegiado. O relatorio
