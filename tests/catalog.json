@@ -1090,7 +1090,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -1100,7 +1099,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_input.h:shell_input_get_buffer",
@@ -1118,7 +1117,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -1128,7 +1126,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_input.h:shell_input_handle_key",
@@ -1146,7 +1144,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -1156,7 +1153,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_input.h:shell_input_init",
@@ -1202,7 +1199,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -1212,7 +1208,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_input.h:shell_input_reset",
@@ -1230,7 +1226,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -1240,7 +1235,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_input.h:shell_input_reset_modifiers",
@@ -1258,7 +1253,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -1268,7 +1262,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_input.h:shell_input_resume_terminal",
@@ -1286,7 +1280,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -1296,7 +1289,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_introspection.h:shell_introspection_find_value",
@@ -2785,13 +2778,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:hosted",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:storage"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager",
@@ -12977,6 +12969,7 @@
         "host:core:state",
         "host:core:timer",
         "host:core:update",
+        "host:core:update-runtime",
         "host:memory:memory",
         "host:memory:paging",
         "host:memory:slab-metadata",
@@ -13042,6 +13035,7 @@
         "host:core:state",
         "host:core:timer",
         "host:core:update",
+        "host:core:update-runtime",
         "host:drivers:rng",
         "host:memory:memory",
         "host:memory:paging",
@@ -13111,6 +13105,7 @@
         "host:core:state",
         "host:core:timer",
         "host:core:update",
+        "host:core:update-runtime",
         "host:memory:memory",
         "host:memory:paging",
         "host:memory:slab-metadata",
@@ -13170,6 +13165,7 @@
         "host:core:state",
         "host:core:timer",
         "host:core:update",
+        "host:core:update-runtime",
         "host:memory:paging",
         "host:memory:slab-metadata",
         "host:memory:vma",
@@ -15768,10 +15764,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:update-runtime",
         "qemu:tst6:fault:update"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_runtime.h:update_runtime_apply_file",
@@ -15789,10 +15786,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:update-runtime",
         "qemu:tst6:fault:update"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_runtime.h:update_runtime_file_matches",
@@ -15810,10 +15808,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:update-runtime",
         "qemu:tst6:fault:update"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_runtime.h:update_runtime_get_cache",
@@ -15831,10 +15830,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:update-runtime",
         "qemu:tst6:fault:update"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_runtime.h:update_runtime_get_capabilities",
@@ -15852,10 +15852,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:update-runtime",
         "qemu:tst6:fault:update"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_runtime.h:update_runtime_get_installed_version",
@@ -15873,10 +15874,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:update-runtime",
         "qemu:tst6:fault:update"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_runtime.h:update_runtime_get_status",
@@ -15894,10 +15896,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:update-runtime",
         "qemu:tst6:fault:update"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_runtime.h:update_runtime_init",
@@ -15915,10 +15918,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:update-runtime",
         "qemu:tst6:fault:update"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_runtime.h:update_runtime_is_ready",
@@ -15936,10 +15940,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:update-runtime",
         "qemu:tst6:fault:update"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_runtime.h:update_runtime_parse_manifest",
@@ -15957,10 +15962,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:update-runtime",
         "qemu:tst6:fault:update"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_runtime.h:update_runtime_reason_name",
@@ -15978,10 +15984,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:update-runtime",
         "qemu:tst6:fault:update"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_runtime.h:update_runtime_rollback",
@@ -15999,10 +16006,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:update-runtime",
         "qemu:tst6:fault:update"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_runtime.h:update_runtime_test_fail_after",
@@ -16020,10 +16028,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:update-runtime",
         "qemu:tst6:fault:update"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_runtime.h:update_runtime_verify_file",
@@ -16041,10 +16050,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:update-runtime",
         "qemu:tst6:fault:update"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_runtime.h:update_runtime_verify_file_for_manifest",
@@ -16062,10 +16072,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:update-runtime",
         "qemu:tst6:fault:update"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/update_system.h:update_system_check_tag",
@@ -21385,12 +21396,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/rtc.h:rtc_read_utc",
@@ -21408,12 +21418,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/rtc.h:rtc_self_test",
@@ -21431,12 +21440,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/rtc.h:rtc_validate_state",
@@ -21454,12 +21462,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/rtl8139.h:rtl8139_handler",
@@ -68107,6 +68114,7 @@
         "host:core:state",
         "host:core:timer",
         "host:core:update",
+        "host:core:update-runtime",
         "host:memory:memory",
         "host:memory:paging",
         "host:memory:slab-metadata",
@@ -68172,6 +68180,7 @@
         "host:core:state",
         "host:core:timer",
         "host:core:update",
+        "host:core:update-runtime",
         "host:drivers:rng",
         "host:memory:memory",
         "host:memory:paging",
@@ -68241,6 +68250,7 @@
         "host:core:state",
         "host:core:timer",
         "host:core:update",
+        "host:core:update-runtime",
         "host:memory:memory",
         "host:memory:paging",
         "host:memory:slab-metadata",
@@ -68300,6 +68310,7 @@
         "host:core:state",
         "host:core:timer",
         "host:core:update",
+        "host:core:update-runtime",
         "host:memory:paging",
         "host:memory:slab-metadata",
         "host:memory:vma",
@@ -78685,9 +78696,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_alias",
@@ -78703,9 +78717,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_apply_plan",
@@ -78757,9 +78774,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_build_rollback_plan",
@@ -78793,9 +78813,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_catalog_index",
@@ -78811,9 +78834,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_clear_journal",
@@ -78901,9 +78927,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_copy_current_to_backup",
@@ -78937,9 +78966,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_decode_file_state",
@@ -78955,9 +78987,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_decode_journal",
@@ -78973,9 +79008,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_decode_plan_entry",
@@ -78991,9 +79029,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_decode_state",
@@ -79009,9 +79050,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_decode_version",
@@ -79027,9 +79071,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_delete_root",
@@ -79045,9 +79092,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_encode_file_state",
@@ -79063,9 +79113,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_encode_journal",
@@ -79081,9 +79134,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_encode_plan_entry",
@@ -79099,9 +79155,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_encode_state",
@@ -79117,9 +79176,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_encode_version",
@@ -79135,9 +79197,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_file_state_raw_valid",
@@ -79153,9 +79218,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_fill_action_result",
@@ -79171,9 +79239,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_fixed_text",
@@ -79189,9 +79260,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_hash_file",
@@ -79243,9 +79317,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_initial_version",
@@ -79279,9 +79356,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_legacy_transaction_pending",
@@ -79369,9 +79449,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_manifest_applicable",
@@ -79387,9 +79470,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_manifest_entry_valid",
@@ -79405,9 +79491,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_manifest_find",
@@ -79423,9 +79512,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_manifest_plan",
@@ -79441,9 +79533,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_manifest_signature",
@@ -79459,9 +79554,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_package_entry",
@@ -79477,9 +79575,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_package_plan",
@@ -79495,9 +79596,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_package_signature",
@@ -79549,9 +79653,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_prepare_journal",
@@ -79621,9 +79728,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_read_package_entry",
@@ -79657,9 +79767,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_read_u32",
@@ -79675,9 +79788,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_recover_pending",
@@ -79711,9 +79827,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_replace_from_plan",
@@ -79837,9 +79956,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_state_healthy_now",
@@ -79912,9 +80034,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_verify_package_file",
@@ -79966,9 +80091,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_version_is_newer",
@@ -79984,9 +80112,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_write_control",
@@ -80092,9 +80223,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:runtime_write_u32",
@@ -80110,9 +80244,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:update_runtime_apply_cached",
@@ -80247,6 +80384,174 @@
       "coverage_mode": "integration"
     },
     {
+      "id": "c:src/core/update_runtime.c:update_runtime_host_check_manifest",
+      "kind": "c_function",
+      "source": "src/core/update_runtime.c",
+      "symbol": "update_runtime_host_check_manifest",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/update_runtime.c:update_runtime_host_check_package_and_plan",
+      "kind": "c_function",
+      "source": "src/core/update_runtime.c",
+      "symbol": "update_runtime_host_check_package_and_plan",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/update_runtime.c:update_runtime_host_check_results",
+      "kind": "c_function",
+      "source": "src/core/update_runtime.c",
+      "symbol": "update_runtime_host_check_results",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/update_runtime.c:update_runtime_host_check_scalars",
+      "kind": "c_function",
+      "source": "src/core/update_runtime.c",
+      "symbol": "update_runtime_host_check_scalars",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/update_runtime.c:update_runtime_host_check_state_records",
+      "kind": "c_function",
+      "source": "src/core/update_runtime.c",
+      "symbol": "update_runtime_host_check_state_records",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/update_runtime.c:update_runtime_host_fill_manifest_entry",
+      "kind": "c_function",
+      "source": "src/core/update_runtime.c",
+      "symbol": "update_runtime_host_fill_manifest_entry",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/update_runtime.c:update_runtime_host_fill_state",
+      "kind": "c_function",
+      "source": "src/core/update_runtime.c",
+      "symbol": "update_runtime_host_fill_state",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/update_runtime.c:update_runtime_host_test_contracts",
+      "kind": "c_function",
+      "source": "src/core/update_runtime.c",
+      "symbol": "update_runtime_host_test_contracts",
+      "linkage": "external",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "c:src/core/update_runtime.c:update_runtime_init",
       "kind": "c_function",
       "source": "src/core/update_runtime.c",
@@ -80299,9 +80604,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:update_runtime_reason_name",
@@ -80317,9 +80625,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/update_runtime.c:update_runtime_rollback",
@@ -93499,12 +93810,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_days_in_month",
@@ -93522,12 +93832,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_decode_snapshot",
@@ -93545,12 +93854,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_decode_value",
@@ -93568,12 +93876,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_get_status",
@@ -93610,12 +93917,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_init",
@@ -93631,12 +93935,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_is_leap_year",
@@ -93654,12 +93955,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_outb",
@@ -93675,12 +93975,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_raw_equal",
@@ -93696,12 +93993,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_read_raw",
@@ -93717,12 +94011,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_read_raw_once",
@@ -93738,12 +94029,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_read_register",
@@ -93759,12 +94047,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_read_utc",
@@ -93780,12 +94065,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_self_test",
@@ -93803,12 +94085,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_validate_state",
@@ -93826,12 +94107,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/drivers/rtc.c:rtc_wait_update_complete",
@@ -93847,12 +94127,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:drivers:rtc-status"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/drivers/rtl8139.c:rtl8139_advance_rx",
@@ -144170,12 +144447,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:shell:hosted"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/shell/shell_hosted.c:shell_hosted_draw",
@@ -144193,13 +144467,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:hosted",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:storage"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_hosted.c:shell_hosted_key",
@@ -144217,13 +144490,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:hosted",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:storage"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_hosted.c:shell_hosted_mouse",
@@ -144239,12 +144511,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:shell:hosted"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/shell/shell_hosted.c:shell_hosted_open",
@@ -144262,13 +144531,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:hosted",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:storage"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_hosted.c:shell_hosted_present_progress",
@@ -144286,13 +144554,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:hosted",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:storage"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_hosted.c:shell_hosted_reset",
@@ -144308,12 +144575,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:shell:hosted"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/shell/shell_hosted.c:shell_runtime_is_hosted_visible",
@@ -144331,13 +144595,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:hosted",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:storage"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_cancel_extended",
@@ -144355,7 +144618,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -144365,7 +144627,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_get_buffer",
@@ -144381,12 +144643,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:shell:input"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_handle_key",
@@ -144404,7 +144663,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -144414,7 +144672,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_handle_terminal_scroll_key",
@@ -144453,7 +144711,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -144461,7 +144718,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_history_detach_for_edit",
@@ -144479,7 +144736,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -144489,7 +144745,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_history_navigate",
@@ -144528,7 +144784,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -144536,7 +144791,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_history_replace_input",
@@ -144575,7 +144830,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -144583,7 +144837,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_init",
@@ -144599,12 +144853,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:shell:input"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_print_prompt",
@@ -144622,7 +144873,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -144632,7 +144882,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_reset",
@@ -144650,7 +144900,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -144658,7 +144907,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_reset_modifiers",
@@ -144676,7 +144925,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -144684,7 +144932,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_resume_terminal",
@@ -144702,7 +144950,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -144712,7 +144959,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_input.c:shell_input_return_to_terminal_tail",
@@ -144730,7 +144977,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -144740,7 +144986,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell_introspection.c:shell_introspection_ascii_valid",
@@ -152705,7 +152951,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:app",
@@ -152727,7 +152973,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:appcheck",
@@ -152751,7 +152997,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:beep",
@@ -152773,7 +153019,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:blkcheck",
@@ -152797,7 +153043,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:blkstat",
@@ -152819,7 +153065,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:cache",
@@ -152841,7 +153087,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:cachestat",
@@ -152863,7 +153109,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:cat",
@@ -152885,7 +153131,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:cd",
@@ -152907,7 +153153,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:clear",
@@ -152929,7 +153175,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:clock",
@@ -152953,7 +153199,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:compress",
@@ -152975,7 +153221,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:cpu",
@@ -152997,7 +153243,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:desktop",
@@ -153019,7 +153265,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:devcheck",
@@ -153043,7 +153289,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:device-info",
@@ -153065,7 +153311,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:device-scan",
@@ -153087,7 +153333,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:devices",
@@ -153109,7 +153355,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:display",
@@ -153131,7 +153377,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:echo",
@@ -153153,7 +153399,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:edit",
@@ -153175,7 +153421,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:explorer",
@@ -153197,7 +153443,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:grep",
@@ -153219,7 +153465,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:guimode",
@@ -153241,7 +153487,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:guitest",
@@ -153263,7 +153509,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:health",
@@ -153287,7 +153533,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:help",
@@ -153309,7 +153555,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:http",
@@ -153331,7 +153577,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:icons",
@@ -153353,7 +153599,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:index",
@@ -153375,7 +153621,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:irqstat",
@@ -153399,7 +153645,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:job",
@@ -153421,7 +153667,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:kill",
@@ -153443,7 +153689,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:kmetrics",
@@ -153467,7 +153713,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:log",
@@ -153489,7 +153735,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:ls",
@@ -153511,7 +153757,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:melody",
@@ -153533,7 +153779,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:mem",
@@ -153555,7 +153801,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:memcheck",
@@ -153579,7 +153825,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:mount",
@@ -153601,7 +153847,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:mouse",
@@ -153623,7 +153869,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:net",
@@ -153647,7 +153893,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:netstat",
@@ -153669,7 +153915,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:nslookup",
@@ -153691,7 +153937,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:pagefault",
@@ -153713,7 +153959,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:ping",
@@ -153735,7 +153981,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:pipetest",
@@ -153757,7 +154003,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:pkg",
@@ -153779,7 +154025,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:pkgcheck",
@@ -153801,7 +154047,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:play",
@@ -153823,7 +154069,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:power",
@@ -153845,7 +154091,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:poweroff",
@@ -153867,7 +154113,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:proccheck",
@@ -153891,7 +154137,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:procs",
@@ -153913,7 +154159,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:pwd",
@@ -153935,7 +154181,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:q2check",
@@ -153957,7 +154203,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:reboot",
@@ -153979,7 +154225,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:regcheck",
@@ -154003,7 +154249,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:route",
@@ -154027,7 +154273,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:schedcheck",
@@ -154051,7 +154297,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:search",
@@ -154073,7 +154319,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:selecttest",
@@ -154095,7 +154341,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:settings",
@@ -154117,7 +154363,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:shutdown",
@@ -154139,7 +154385,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:sigtest",
@@ -154161,7 +154407,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:skbstat",
@@ -154183,7 +154429,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:slabinfo",
@@ -154205,7 +154451,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:slabtest",
@@ -154229,7 +154475,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:sockstat",
@@ -154253,7 +154499,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:stack",
@@ -154275,7 +154521,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:stats",
@@ -154297,7 +154543,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:stop",
@@ -154319,7 +154565,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:storage",
@@ -154343,7 +154589,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:store",
@@ -154365,7 +154611,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:sync",
@@ -154387,7 +154633,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:taskcfg",
@@ -154409,7 +154655,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:taskmgr",
@@ -154431,7 +154677,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:threads",
@@ -154453,7 +154699,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:threadtest",
@@ -154475,7 +154721,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:timer",
@@ -154499,7 +154745,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:tls",
@@ -154523,7 +154769,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:update",
@@ -154545,7 +154791,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:updater",
@@ -154567,7 +154813,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:uptime",
@@ -154589,7 +154835,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:usb",
@@ -154611,7 +154857,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:usertest",
@@ -154633,7 +154879,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:vfs",
@@ -154657,7 +154903,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:view",
@@ -154679,7 +154925,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:vmamap",
@@ -154701,7 +154947,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:wait",
@@ -154725,7 +154971,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:wifi",
@@ -154747,7 +154993,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:wm",
@@ -154769,7 +155015,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:workq",
@@ -154793,7 +155039,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:wqinfo",
@@ -154817,7 +155063,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "syscall:0",
@@ -157723,6 +157969,114 @@
       ]
     },
     {
+      "id": "host:core:update-runtime",
+      "scenario": "Contratos puros do runtime de atualizacao U4",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "storage": "nenhum; arquivos estaticos em memoria"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "executar contratos de registros, manifestos, pacotes, planejamento e comparacao de arquivos runtime",
+      "expected": "entradas validas fazem round-trip e entradas invalidas retornam erros canonicos sem estado persistente",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente buffers estaticos no processo host",
+      "cleanup": "buffers locais descartados; manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/string.h:kmemcpy",
+        "api:src/include/core/string.h:kmemset",
+        "api:src/include/core/string.h:kstrcmp",
+        "api:src/include/core/string.h:kstrlen",
+        "api:src/include/core/update_runtime.h:update_runtime_apply_cached",
+        "api:src/include/core/update_runtime.h:update_runtime_apply_file",
+        "api:src/include/core/update_runtime.h:update_runtime_file_matches",
+        "api:src/include/core/update_runtime.h:update_runtime_get_cache",
+        "api:src/include/core/update_runtime.h:update_runtime_get_capabilities",
+        "api:src/include/core/update_runtime.h:update_runtime_get_installed_version",
+        "api:src/include/core/update_runtime.h:update_runtime_get_status",
+        "api:src/include/core/update_runtime.h:update_runtime_init",
+        "api:src/include/core/update_runtime.h:update_runtime_is_ready",
+        "api:src/include/core/update_runtime.h:update_runtime_parse_manifest",
+        "api:src/include/core/update_runtime.h:update_runtime_reason_name",
+        "api:src/include/core/update_runtime.h:update_runtime_rollback",
+        "api:src/include/core/update_runtime.h:update_runtime_test_fail_after",
+        "api:src/include/core/update_runtime.h:update_runtime_verify_file",
+        "api:src/include/core/update_runtime.h:update_runtime_verify_file_for_manifest",
+        "c:src/core/string.c:kmemcpy",
+        "c:src/core/string.c:kmemset",
+        "c:src/core/string.c:kstrcmp",
+        "c:src/core/string.c:kstrlen",
+        "c:src/core/update_runtime.c:runtime_action_fail",
+        "c:src/core/update_runtime.c:runtime_alias",
+        "c:src/core/update_runtime.c:runtime_asset_name_valid",
+        "c:src/core/update_runtime.c:runtime_cancelled",
+        "c:src/core/update_runtime.c:runtime_catalog_index",
+        "c:src/core/update_runtime.c:runtime_control_valid",
+        "c:src/core/update_runtime.c:runtime_current_version",
+        "c:src/core/update_runtime.c:runtime_decode_file_state",
+        "c:src/core/update_runtime.c:runtime_decode_journal",
+        "c:src/core/update_runtime.c:runtime_decode_plan_entry",
+        "c:src/core/update_runtime.c:runtime_decode_state",
+        "c:src/core/update_runtime.c:runtime_decode_version",
+        "c:src/core/update_runtime.c:runtime_delete_root",
+        "c:src/core/update_runtime.c:runtime_encode_file_state",
+        "c:src/core/update_runtime.c:runtime_encode_journal",
+        "c:src/core/update_runtime.c:runtime_encode_plan_entry",
+        "c:src/core/update_runtime.c:runtime_encode_state",
+        "c:src/core/update_runtime.c:runtime_encode_version",
+        "c:src/core/update_runtime.c:runtime_file_state_raw_valid",
+        "c:src/core/update_runtime.c:runtime_fill_action_result",
+        "c:src/core/update_runtime.c:runtime_fixed_text",
+        "c:src/core/update_runtime.c:runtime_identifier_valid",
+        "c:src/core/update_runtime.c:runtime_journal_old_state_raw_valid",
+        "c:src/core/update_runtime.c:runtime_magic_equal",
+        "c:src/core/update_runtime.c:runtime_manifest_applicable",
+        "c:src/core/update_runtime.c:runtime_manifest_entry_valid",
+        "c:src/core/update_runtime.c:runtime_manifest_find",
+        "c:src/core/update_runtime.c:runtime_manifest_plan",
+        "c:src/core/update_runtime.c:runtime_manifest_signature",
+        "c:src/core/update_runtime.c:runtime_package_entry",
+        "c:src/core/update_runtime.c:runtime_package_plan",
+        "c:src/core/update_runtime.c:runtime_path_valid",
+        "c:src/core/update_runtime.c:runtime_read_file_state",
+        "c:src/core/update_runtime.c:runtime_read_u16",
+        "c:src/core/update_runtime.c:runtime_read_u32",
+        "c:src/core/update_runtime.c:runtime_refresh_current_files",
+        "c:src/core/update_runtime.c:runtime_state_hash",
+        "c:src/core/update_runtime.c:runtime_verification_fail",
+        "c:src/core/update_runtime.c:runtime_version_compare",
+        "c:src/core/update_runtime.c:runtime_version_is_newer",
+        "c:src/core/update_runtime.c:runtime_write_u16",
+        "c:src/core/update_runtime.c:runtime_write_u32",
+        "c:src/core/update_runtime.c:update_runtime_host_check_manifest",
+        "c:src/core/update_runtime.c:update_runtime_host_check_package_and_plan",
+        "c:src/core/update_runtime.c:update_runtime_host_check_results",
+        "c:src/core/update_runtime.c:update_runtime_host_check_scalars",
+        "c:src/core/update_runtime.c:update_runtime_host_check_state_records",
+        "c:src/core/update_runtime.c:update_runtime_host_fill_manifest_entry",
+        "c:src/core/update_runtime.c:update_runtime_host_fill_state",
+        "c:src/core/update_runtime.c:update_runtime_host_test_contracts",
+        "c:src/core/update_runtime.c:update_runtime_parse_manifest",
+        "c:src/core/update_runtime.c:update_runtime_reason_name"
+      ],
+      "tags": [
+        "host",
+        "update-runtime",
+        "format",
+        "negative",
+        "corruption"
+      ]
+    },
+    {
       "id": "host:core:usb-manager",
       "scenario": "Inventario host-only de controladores, portas e dispositivos USB",
       "owner": "quality",
@@ -158800,27 +159154,7 @@
       "status": "AUTOMATED",
       "surface_ids": [
         "api:src/include/drivers/rtc.h:rtc_get_status",
-        "api:src/include/drivers/rtc.h:rtc_init",
-        "api:src/include/drivers/rtc.h:rtc_read_utc",
-        "api:src/include/drivers/rtc.h:rtc_self_test",
-        "api:src/include/drivers/rtc.h:rtc_validate_state",
-        "c:src/drivers/rtc.c:rtc_datetime_valid",
-        "c:src/drivers/rtc.c:rtc_days_in_month",
-        "c:src/drivers/rtc.c:rtc_decode_snapshot",
-        "c:src/drivers/rtc.c:rtc_decode_value",
-        "c:src/drivers/rtc.c:rtc_get_status",
-        "c:src/drivers/rtc.c:rtc_inb",
-        "c:src/drivers/rtc.c:rtc_init",
-        "c:src/drivers/rtc.c:rtc_is_leap_year",
-        "c:src/drivers/rtc.c:rtc_outb",
-        "c:src/drivers/rtc.c:rtc_raw_equal",
-        "c:src/drivers/rtc.c:rtc_read_raw",
-        "c:src/drivers/rtc.c:rtc_read_raw_once",
-        "c:src/drivers/rtc.c:rtc_read_register",
-        "c:src/drivers/rtc.c:rtc_read_utc",
-        "c:src/drivers/rtc.c:rtc_self_test",
-        "c:src/drivers/rtc.c:rtc_validate_state",
-        "c:src/drivers/rtc.c:rtc_wait_update_complete"
+        "c:src/drivers/rtc.c:rtc_get_status"
       ],
       "tags": [
         "host",
@@ -162481,16 +162815,7 @@
       "surface_ids": [
         "api:src/include/apps/shell_runtime.h:shell_hosted_open",
         "api:src/include/apps/shell_runtime.h:shell_hosted_present_progress",
-        "api:src/include/apps/shell_runtime.h:shell_hosted_reset",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible",
-        "c:src/shell/shell_hosted.c:shell_hosted_close",
-        "c:src/shell/shell_hosted.c:shell_hosted_draw",
-        "c:src/shell/shell_hosted.c:shell_hosted_key",
-        "c:src/shell/shell_hosted.c:shell_hosted_mouse",
-        "c:src/shell/shell_hosted.c:shell_hosted_open",
-        "c:src/shell/shell_hosted.c:shell_hosted_present_progress",
-        "c:src/shell/shell_hosted.c:shell_hosted_reset",
-        "c:src/shell/shell_hosted.c:shell_runtime_is_hosted_visible"
+        "api:src/include/apps/shell_runtime.h:shell_hosted_reset"
       ],
       "tags": [
         "host",
@@ -162523,30 +162848,10 @@
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
       "surface_ids": [
-        "api:src/include/apps/shell_input.h:shell_input_cancel_extended",
-        "api:src/include/apps/shell_input.h:shell_input_get_buffer",
-        "api:src/include/apps/shell_input.h:shell_input_handle_key",
         "api:src/include/apps/shell_input.h:shell_input_init",
-        "api:src/include/apps/shell_input.h:shell_input_print_prompt",
-        "api:src/include/apps/shell_input.h:shell_input_reset",
-        "api:src/include/apps/shell_input.h:shell_input_reset_modifiers",
-        "api:src/include/apps/shell_input.h:shell_input_resume_terminal",
-        "c:src/shell/shell_input.c:shell_input_cancel_extended",
-        "c:src/shell/shell_input.c:shell_input_get_buffer",
-        "c:src/shell/shell_input.c:shell_input_handle_key",
         "c:src/shell/shell_input.c:shell_input_handle_terminal_scroll_key",
-        "c:src/shell/shell_input.c:shell_input_history_copy",
-        "c:src/shell/shell_input.c:shell_input_history_detach_for_edit",
         "c:src/shell/shell_input.c:shell_input_history_navigate",
-        "c:src/shell/shell_input.c:shell_input_history_record",
-        "c:src/shell/shell_input.c:shell_input_history_replace_input",
-        "c:src/shell/shell_input.c:shell_input_history_reset_navigation",
-        "c:src/shell/shell_input.c:shell_input_init",
-        "c:src/shell/shell_input.c:shell_input_print_prompt",
-        "c:src/shell/shell_input.c:shell_input_reset",
-        "c:src/shell/shell_input.c:shell_input_reset_modifiers",
-        "c:src/shell/shell_input.c:shell_input_resume_terminal",
-        "c:src/shell/shell_input.c:shell_input_return_to_terminal_tail"
+        "c:src/shell/shell_input.c:shell_input_history_replace_input"
       ],
       "tags": [
         "host",

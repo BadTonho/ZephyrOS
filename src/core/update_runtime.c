@@ -7,6 +7,9 @@
 #include "core/update_trust.h"
 #include "core/version.h"
 #include "fs/fs.h"
+#if defined(ZEPHYROS_HOST_TEST)
+#include "update_runtime_host.h"
+#endif
 
 #define RUNTIME_MANIFEST_MAGIC "ZUM2"
 #define RUNTIME_PACKAGE_MAGIC "ZUPD"
@@ -2325,6 +2328,317 @@ static int runtime_build_rollback_plan(runtime_plan_entry_t* plan,
     *count_out = count;
     return count ? OK : ERR_NOT_FOUND;
 }
+
+#if defined(ZEPHYROS_HOST_TEST)
+static void update_runtime_host_fill_state(runtime_file_state_t* state,
+                                            uint32_t size, uint8_t seed,
+                                            uint8_t present) {
+    state->present = present;
+    state->size = present ? size : 0U;
+    for (uint32_t index = 0U; index < sizeof(state->hash); index++) {
+        state->hash[index] = present ? (uint8_t)(seed + index) : 0U;
+    }
+}
+
+static void update_runtime_host_fill_manifest_entry(
+    uint8_t* raw, const char* path, uint8_t target_present,
+    uint8_t operation, uint32_t size, uint8_t seed) {
+    kmemset(raw, 0, UPDATE_RUNTIME_MANIFEST_ENTRY_SIZE);
+    kmemcpy(raw, path, kstrlen(path));
+    raw[64U] = target_present;
+    raw[65U] = operation;
+    runtime_write_u32(raw + 68U, target_present ? size : 0U);
+    if (target_present) {
+        for (uint32_t index = 0U; index < 32U; index++) {
+            raw[72U + index] = (uint8_t)(seed + index);
+            raw[172U + index] = (uint8_t)(seed + index + 1U);
+        }
+    }
+    kmemcpy(raw + 104U, path, kstrlen(path));
+    runtime_write_u32(raw + 168U, target_present ? size : 0U);
+}
+
+static int update_runtime_host_check_scalars(void) {
+    uint8_t raw[UPDATE_RUNTIME_PATH_SIZE];
+    uint8_t asset_raw[UPDATE_RUNTIME_ASSET_NAME_SIZE];
+    uint8_t encoded[6U];
+    char output[UPDATE_RUNTIME_PATH_SIZE];
+    update_version_t first = {1U, 2U, 3U};
+    update_version_t second = {1U, 2U, 4U};
+
+    runtime_write_u16(encoded, 0x1234U);
+    runtime_write_u32(encoded + 2U, 0xA1B2C3D4U);
+    if (runtime_read_u16(encoded) != 0x1234U ||
+        runtime_read_u32(encoded + 2U) != 0xA1B2C3D4U) return 101;
+    if (runtime_version_compare(&first, &second) >= 0 ||
+        runtime_version_compare(&second, &first) <= 0 ||
+        runtime_version_compare(&first, &first) != 0 ||
+        !runtime_version_is_newer(&second, 4U, &first, 3U) ||
+        runtime_version_is_newer(&first, 3U, &second, 4U)) return 102;
+    runtime_encode_version(encoded, &second);
+    runtime_decode_version(&first, encoded);
+    if (runtime_version_compare(&first, &second) != 0) return 103;
+
+    kmemset(raw, 0, sizeof(raw));
+    kmemcpy(raw, "SHELL.BMP", 9U);
+    if (!runtime_path_valid(raw, output) ||
+        kstrcmp(output, "SHELL.BMP") != 0 || runtime_catalog_index(output) != 1 ||
+        runtime_catalog_index("MISSING.BMP") >= 0) return 104;
+    raw[1] = 'a';
+    if (runtime_path_valid(raw, output) || runtime_path_valid(0, output) ||
+        runtime_catalog_index(0) != -1) return 105;
+    runtime_alias(output, 1U, 2U, "ZTS0.");
+    if (kstrcmp(output, "ZTS0.02") != 0) return 106;
+    kmemset(asset_raw, 0, sizeof(asset_raw));
+    kmemcpy(asset_raw, "SHELL.BMP", 9U);
+    if (!runtime_identifier_valid("release-1.2") ||
+        runtime_identifier_valid("release/1") ||
+        runtime_identifier_valid(0)) return 107;
+    if (runtime_fixed_text((const uint8_t*)"TAG", 4U, output,
+                           sizeof(output)) != OK ||
+        kstrcmp(output, "TAG") != 0 ||
+        runtime_fixed_text((const uint8_t*)"ABCD", 4U, output,
+                           sizeof(output)) != ERR_INVALID ||
+        runtime_asset_name_valid(asset_raw, output) != 1) {
+        return 108;
+    }
+    kmemset(asset_raw, 0, sizeof(asset_raw));
+    kmemcpy(asset_raw, "shell.bmp", 9U);
+    if (runtime_asset_name_valid(asset_raw, output) != 0) return 110;
+    if (runtime_delete_root("MISSING.ZRT") != OK ||
+        runtime_delete_root(0) != ERR_NULL) return 109;
+    return OK;
+}
+
+static int update_runtime_host_check_state_records(void) {
+    runtime_state_t source;
+    runtime_state_t decoded;
+    runtime_journal_t journal;
+    runtime_journal_t decoded_journal;
+    runtime_plan_entry_t plan;
+    uint8_t raw[UPDATE_RUNTIME_CACHE_RECORD_SIZE * 8U];
+    uint8_t plan_raw[RUNTIME_JOURNAL_ENTRY_SIZE];
+
+    kmemset(&source, 0, sizeof(source));
+    source.sequence = 7U;
+    source.installed_version = (update_version_t){1U, 2U, 3U};
+    source.installed_epoch = 7U;
+    source.rollback_slot = RUNTIME_SLOT_NONE;
+    source.entry_count = 3U;
+    update_runtime_host_fill_state(&source.current[0], 12U, 0x10U, 1U);
+    runtime_encode_state(raw, &source);
+    if (runtime_decode_state(raw, &decoded) != OK ||
+        decoded.sequence != source.sequence ||
+        decoded.current[0].size != 12U) return 201;
+    if (runtime_decode_state(0, &decoded) != ERR_INVALID) return 202;
+    raw[38U] = 1U;
+    runtime_state_hash(raw);
+    if (runtime_decode_state(raw, &decoded) != ERR_INVALID) return 203;
+
+    kmemset(&journal, 0, sizeof(journal));
+    journal.sequence = 8U;
+    journal.phase = RUNTIME_PHASE_STAGING;
+    journal.kind = RUNTIME_JOURNAL_APPLY;
+    journal.slot = 0U;
+    journal.progress = 1U;
+    journal.entry_count = 1U;
+    journal.base_version = (update_version_t){1U, 2U, 3U};
+    journal.target_version = (update_version_t){1U, 3U, 0U};
+    journal.base_epoch = 7U;
+    journal.target_epoch = 8U;
+    plan.catalog_index = 0U;
+    plan.operation = UPDATE_RUNTIME_OPERATION_REPLACE;
+    update_runtime_host_fill_state(&plan.old_state, 12U, 0x10U, 1U);
+    update_runtime_host_fill_state(&plan.new_state, 14U, 0x20U, 1U);
+    journal.entries[0] = plan;
+    runtime_encode_journal(raw, &journal);
+    if (runtime_decode_journal(raw, &decoded_journal) != OK ||
+        decoded_journal.entries[0].catalog_index != 0U ||
+        decoded_journal.entries[0].new_state.size != 14U) return 204;
+    raw[RUNTIME_JOURNAL_PROGRESS] = 2U;
+    runtime_state_hash(raw);
+    if (runtime_decode_journal(raw, &decoded_journal) != ERR_INVALID) return 205;
+    runtime_encode_plan_entry(plan_raw, &plan);
+    runtime_decode_plan_entry(plan_raw, &decoded_journal.entries[0]);
+    if (decoded_journal.entries[0].catalog_index != 0U) {
+        return 206;
+    }
+    return OK;
+}
+
+static int update_runtime_host_check_manifest(void) {
+    static const char paths[3][UPDATE_RUNTIME_PATH_SIZE] = {
+        "EXPLORER.BMP", "SHELL.BMP", "TASKMGR.BMP"
+    };
+    update_runtime_manifest_t manifest;
+    update_runtime_manifest_t decoded;
+    update_runtime_entry_t entry;
+    update_runtime_verification_t verification;
+    uint8_t raw[UPDATE_RUNTIME_MANIFEST_SIZE];
+    uint8_t entry_raw[UPDATE_RUNTIME_MANIFEST_ENTRY_SIZE];
+    update_runtime_reason_t reason;
+
+    kmemset(raw, 0, sizeof(raw));
+    kmemcpy(raw, "ZUM2", 4U);
+    runtime_write_u16(raw + 4U, UPDATE_RUNTIME_FORMAT_VERSION);
+    runtime_write_u16(raw + 6U, UPDATE_RUNTIME_MANIFEST_SIZE);
+    runtime_write_u16(raw + 8U, UPDATE_RUNTIME_ARCH_I386);
+    runtime_write_u16(raw + 26U, 3U);
+    runtime_write_u16(raw + 28U, UPDATE_RUNTIME_MANIFEST_ENTRY_SIZE);
+    runtime_write_u16(raw + 30U, 1U);
+    runtime_write_u32(raw + 12U, 9U);
+    runtime_write_u16(raw + 16U, 1U);
+    runtime_write_u16(raw + 18U, 3U);
+    runtime_write_u16(raw + 20U, 0U);
+    runtime_write_u32(raw + 22U, 9U);
+    runtime_write_u32(raw + 32U, 1200U);
+    for (uint32_t index = 0U; index < 32U; index++) raw[36U + index] =
+        (uint8_t)(0x30U + index);
+    kmemcpy(raw + 68U, UPDATE_TRUST_KEY_ID, UPDATE_RUNTIME_KEY_ID_SIZE);
+    kmemcpy(raw + RUNTIME_MANIFEST_TAG_OFFSET, "release-2", 9U);
+    kmemcpy(raw + RUNTIME_MANIFEST_ID_OFFSET, "runtime-9", 9U);
+    runtime_write_u16(raw + UPDATE_RUNTIME_MANIFEST_BASE_OFFSET, 1U);
+    runtime_write_u16(raw + UPDATE_RUNTIME_MANIFEST_BASE_OFFSET + 2U, 2U);
+    runtime_write_u16(raw + UPDATE_RUNTIME_MANIFEST_BASE_OFFSET + 4U, 3U);
+    runtime_write_u32(raw + UPDATE_RUNTIME_MANIFEST_BASE_OFFSET + 6U, 7U);
+    for (uint32_t index = 0U; index < 3U; index++) {
+        update_runtime_host_fill_manifest_entry(
+            raw + UPDATE_RUNTIME_MANIFEST_ENTRY_OFFSET +
+                index * UPDATE_RUNTIME_MANIFEST_ENTRY_SIZE,
+            paths[index], 1U, UPDATE_RUNTIME_OPERATION_REPLACE |
+            UPDATE_RUNTIME_OPERATION_CREATE, 100U + index, (uint8_t)(0x50U + index));
+    }
+    if (update_runtime_parse_manifest(raw, sizeof(raw), &manifest, &reason) != OK ||
+        reason != UPDATE_RUNTIME_REASON_NONE || manifest.entry_count != 3U ||
+        kstrcmp(manifest.entries[1].path, "SHELL.BMP") != 0) return 301;
+    if (update_runtime_parse_manifest(raw, sizeof(raw), 0, &reason) != ERR_NULL ||
+        update_runtime_parse_manifest(raw, sizeof(raw), &decoded, 0) != ERR_NULL) {
+        return 302;
+    }
+    raw[68U] = 0U;
+    if (update_runtime_parse_manifest(raw, sizeof(raw), &decoded, &reason) !=
+            ERR_INVALID || reason != UPDATE_RUNTIME_REASON_UNKNOWN_KEY) return 303;
+    update_runtime_host_fill_manifest_entry(entry_raw, "SHELL.BMP", 1U,
+        UPDATE_RUNTIME_OPERATION_REPLACE, 64U, 0x60U);
+    if (runtime_manifest_entry_valid(entry_raw, &entry) != OK ||
+        entry.target_size != 64U) return 304;
+    entry_raw[1U] = 'x';
+    if (runtime_manifest_entry_valid(entry_raw, &entry) != ERR_INVALID ||
+        runtime_manifest_entry_valid(0, &entry) != ERR_NULL) return 305;
+    kmemset(&verification, 0, sizeof(verification));
+    return OK;
+}
+
+static int update_runtime_host_check_package_and_plan(void) {
+    runtime_package_entry_t package_entry;
+    runtime_package_entry_t decoded_entry;
+    runtime_package_t package;
+    runtime_plan_entry_t plan[UPDATE_RUNTIME_MAX_ENTRIES];
+    update_runtime_manifest_t manifest;
+    update_version_t version = {1U, 2U, 3U};
+    uint8_t raw[UPDATE_RUNTIME_PACKAGE_ENTRY_SIZE];
+    uint16_t count;
+
+    kmemset(raw, 0, sizeof(raw));
+    kmemcpy(raw, "SHELL.BMP", 9U);
+    runtime_write_u32(raw + RUNTIME_ENTRY_PAYLOAD_OFFSET, 512U);
+    runtime_write_u32(raw + RUNTIME_ENTRY_PAYLOAD_SIZE, 64U);
+    raw[RUNTIME_ENTRY_PRESENT] = 1U;
+    raw[RUNTIME_ENTRY_OPERATION] = UPDATE_RUNTIME_OPERATION_REPLACE;
+    for (uint32_t index = 0U; index < 32U; index++) raw[76U + index] =
+        (uint8_t)(0x70U + index);
+    if (runtime_package_entry(raw, &package_entry) != OK ||
+        !package_entry.valid || package_entry.payload_size != 64U) return 401;
+    raw[RUNTIME_ENTRY_OPERATION] = UPDATE_RUNTIME_OPERATION_DELETE;
+    if (runtime_package_entry(raw, &decoded_entry) != ERR_INVALID ||
+        runtime_package_entry(0, &decoded_entry) != ERR_NULL) return 402;
+
+    kmemset(&manifest, 0, sizeof(manifest));
+    manifest.generation = 9U;
+    manifest.target_version = (update_version_t){1U, 3U, 0U};
+    manifest.target_epoch = 8U;
+    manifest.base_count = 1U;
+    manifest.base_versions[0] = version;
+    manifest.base_epochs[0] = 7U;
+    manifest.entry_count = 3U;
+    for (uint32_t index = 0U; index < 3U; index++) {
+        kmemcpy(manifest.entries[index].path, runtime_catalog[index],
+                kstrlen(runtime_catalog[index]) + 1U);
+        manifest.entries[index].target_present = 1U;
+        manifest.entries[index].allowed_operations =
+            UPDATE_RUNTIME_OPERATION_CREATE | UPDATE_RUNTIME_OPERATION_REPLACE;
+        manifest.entries[index].target_size = 100U + index;
+        for (uint32_t byte = 0U; byte < 32U; byte++) {
+            manifest.entries[index].target_hash[byte] =
+                (uint8_t)(0x50U + index + byte);
+        }
+    }
+    kmemset(&package, 0, sizeof(package));
+    package.generation = manifest.generation;
+    package.target_version = manifest.target_version;
+    package.target_epoch = manifest.target_epoch;
+    package.base_version = version;
+    package.base_epoch = 7U;
+    package.entry_count = 3U;
+    for (uint32_t index = 0U; index < 3U; index++) {
+        package.entries[index].valid = 1U;
+        package.entries[index].present = 1U;
+        package.entries[index].operation = UPDATE_RUNTIME_OPERATION_CREATE;
+        package.entries[index].payload_size = 100U + index;
+        kmemcpy(package.entries[index].path, manifest.entries[index].path,
+                kstrlen(manifest.entries[index].path) + 1U);
+        kmemcpy(package.entries[index].hash, manifest.entries[index].target_hash,
+                32U);
+    }
+    runtime_state_healthy = 1U;
+    runtime_initialized = 1U;
+    runtime_state.installed_version = version;
+    runtime_state.installed_epoch = 7U;
+    if (runtime_manifest_applicable(&manifest) != OK ||
+        runtime_manifest_find(&manifest, 1U) != 1 ||
+        runtime_manifest_plan(&manifest, plan, &count, 0, 0) != OK ||
+        count != 3U || runtime_package_plan(&package, &manifest, plan, &count) != OK ||
+        count != 3U) return 403;
+    runtime_state_healthy = 0U;
+    runtime_initialized = 0U;
+    return OK;
+}
+
+static int update_runtime_host_check_results(void) {
+    update_runtime_action_result_t action;
+    update_runtime_verification_t verification;
+    update_runtime_action_options_t options;
+    update_version_t from = {1U, 0U, 0U};
+    update_version_t to = {2U, 0U, 0U};
+
+    kmemset(&action, 0, sizeof(action));
+    kmemset(&verification, 0, sizeof(verification));
+    kmemset(&options, 0, sizeof(options));
+    if (runtime_action_fail(&action, UPDATE_RUNTIME_REASON_IO, ERR_DISK,
+                            "host-action") != ERR_DISK ||
+        action.reason != UPDATE_RUNTIME_REASON_IO ||
+        runtime_verification_fail(&verification, UPDATE_RUNTIME_REASON_FORMAT,
+                                  ERR_INVALID, "host-verification") != ERR_INVALID ||
+        verification.reason != UPDATE_RUNTIME_REASON_FORMAT) return 501;
+    runtime_fill_action_result(&action, &from, 1U, &to, 2U, 3U);
+    if (action.entry_count != 3U || !action.reboot_required ||
+        runtime_cancelled(&options)) return 502;
+    if (update_runtime_reason_name(UPDATE_RUNTIME_REASON_CANCELLED) == 0 ||
+        kstrcmp(update_runtime_reason_name((update_runtime_reason_t)255U),
+                "INVALID_REASON") != 0) return 503;
+    return OK;
+}
+
+int update_runtime_host_test_contracts(void) {
+    int result = update_runtime_host_check_scalars();
+
+    if (result == OK) result = update_runtime_host_check_state_records();
+    if (result == OK) result = update_runtime_host_check_manifest();
+    if (result == OK) result = update_runtime_host_check_package_and_plan();
+    if (result == OK) result = update_runtime_host_check_results();
+    return result;
+}
+#endif
 
 int update_runtime_apply_file(
     const char* path, const update_runtime_action_options_t* options,

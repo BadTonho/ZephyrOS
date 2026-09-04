@@ -39,6 +39,8 @@ PACKAGE_RESULT_DIR = ROOT / "build" / "test-results" / "package-host"
 PACKAGE_BINARY = ROOT / "build" / "tests" / "test_package_host.exe"
 UPDATE_RESULT_DIR = ROOT / "build" / "test-results" / "update-host"
 UPDATE_BINARY = ROOT / "build" / "tests" / "test_update_host.exe"
+UPDATE_RUNTIME_RESULT_DIR = ROOT / "build" / "test-results" / "update-runtime-host"
+UPDATE_RUNTIME_BINARY = ROOT / "build" / "tests" / "test_update_runtime_host.exe"
 STATE_RESULT_DIR = ROOT / "build" / "test-results" / "state-host"
 STATE_BINARY = ROOT / "build" / "tests" / "test_core_state_host.exe"
 DEVICE_RESULT_DIR = ROOT / "build" / "test-results" / "device-manager-host"
@@ -178,6 +180,11 @@ PACKAGE_SOURCE_FILES = (
 UPDATE_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_update_host.c",
     ROOT / "src" / "core" / "update.c",
+    ROOT / "src" / "core" / "string.c",
+)
+UPDATE_RUNTIME_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_update_runtime_host.c",
+    ROOT / "src" / "core" / "update_runtime.c",
     ROOT / "src" / "core" / "string.c",
 )
 STATE_SOURCE_FILES = (
@@ -784,6 +791,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return PACKAGE_RESULT_DIR, PACKAGE_BINARY, PACKAGE_SOURCE_FILES, "package-host"
     if case_id == "host:core:update":
         return UPDATE_RESULT_DIR, UPDATE_BINARY, UPDATE_SOURCE_FILES, "update-host"
+    if case_id == "host:core:update-runtime":
+        return (UPDATE_RUNTIME_RESULT_DIR, UPDATE_RUNTIME_BINARY,
+                UPDATE_RUNTIME_SOURCE_FILES, "update-runtime-host")
     if case_id == "host:core:state":
         return STATE_RESULT_DIR, STATE_BINARY, STATE_SOURCE_FILES, "state-host"
     if case_id == "host:core:device-manager":
@@ -1158,6 +1168,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:core:crypto", "host:core:scheduling",
                                  "host:core:app-package", "host:core:state",
                                  "host:core:update",
+                                 "host:core:update-runtime",
                                  "host:core:device-manager", "host:core:app-api",
                                  "host:core:app-files", "host:core:app-builtin",
                                  "host:core:app-loader", "host:ui:taskbar",
