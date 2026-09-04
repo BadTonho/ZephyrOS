@@ -5354,3 +5354,15 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   terminou `PASS` com cobertura instrumentada e sem hardware ou rede externa.
   A sincronizacao, renderizacao e `make catalog-test` passaram. O catalogo
   registra 7.219 superficies, 5.267 `COVERED`, 1.952 `PENDING` e 139 casos.
+
+- Incremento Process/runtime concluido em 2026-09-04 11:45 (America/Sao_Paulo).
+  A fixture host-only existente foi expandida para exercitar o bootstrap sem
+  cache, a pre-condicao invalida de inicio do scheduler, o descarte apos falha
+  de criacao e os caminhos de copia e cancelamento de uma espera ativa. O
+  teste `make test-process-host` passou apos `q3check`, build limpo e os
+  relatorios instrumentados; sincronizacao, renderizacao, `make catalog-test`
+  e os testes dos runners tambem passaram. Cinco superficies reais de
+  `src/process/process.c` deixaram `PENDING`; as rotinas de stack que exigem
+  endereco de 32 bits permanecem explicitamente pendentes para fixture QEMU.
+  O catalogo registra 7.219 superficies, 5.272 `COVERED`, 1.947 `PENDING` e
+  139 casos.
