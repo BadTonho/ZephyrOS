@@ -68,9 +68,10 @@ evidencia declarativa das 25 constantes da ABI de syscalls e revalidaram o
 caso de panic host-only apos o build limpo. O caso adicional
 `host:shell:diagnostics` cobre diretamente os dispatchers de `pwd`, `cd`,
 `mouse`, `log`, `timer`, `clock`, `irqstat`, `wait`, `wqinfo`, `workq`, `tls`,
-`vfs`, `mount`, `devcheck`, `devices`, `device-info` e `usb` com VFS, mouse,
+`vfs`, `mount`, `devcheck`, `devices`, `device-info`, `usb`, `slabinfo` e
+`slabtest` com VFS, mouse,
 video, timer, RTC, IRQ, IDT, wait, workqueue, TLS, mounts, descritores, devfs,
-inventario de dispositivos, USB, HID e MSC falsos. O gate estrito e a cobertura
+inventario de dispositivos, USB, HID, MSC e SLAB falsos. O gate estrito e a cobertura
 integral permanecem pendentes para os demais subsistemas sem evidencia
 especifica.
 
@@ -79,7 +80,7 @@ especifica.
 - [x] Fixture host-only criada para `src/shell/shell_commands_diagnostics.c`.
 - [x] Os dispatchers reais de `pwd`, `cd`, `mouse`, `log`, `timer`, `clock`,
       `irqstat`, `wait`, `wqinfo`, `workq`, `tls`, `vfs`, `mount`, `devcheck`, `devices`,
-      `device-info` e `usb` foram exercitados
+      `device-info`, `usb`, `slabinfo` e `slabtest` foram exercitados
       com caminhos válidos,
       argumentos extras, limites,
       estados indisponíveis e preservação da configuração após rejeição.
@@ -88,7 +89,7 @@ especifica.
 - [x] O alvo passou com `HOST_CC`, warnings tratados como erro, sincronização
       e renderização do catálogo; as superfícies cobertas foram vinculadas
       somente às chamadas observadas.
-- [x] O catálogo registra 7.293 superfícies, 6.215 `COVERED`, 1.078
+- [x] O catálogo registra 7.293 superfícies, 6.219 `COVERED`, 1.074
       `PENDING` e 154 casos. As pendências restantes continuam explícitas.
 
 ## Objetivo

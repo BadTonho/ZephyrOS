@@ -22,6 +22,7 @@
 #include "fs/vfs.h"
 #include "fs/storage.h"
 #include "fs/devfs.h"
+#include "memory/slab.h"
 #include "drivers/usb_hid.h"
 #include "drivers/usb_msc.h"
 
@@ -42,6 +43,8 @@ void shell_dispatch_cmd_devcheck(const char* arguments);
 void shell_dispatch_cmd_devices(const char* arguments);
 void shell_dispatch_cmd_device_info(const char* arguments);
 void shell_dispatch_cmd_usb(const char* arguments);
+void shell_dispatch_cmd_slabinfo(const char* arguments);
+void shell_dispatch_cmd_slabtest(const char* arguments);
 
 #define HOST_COVERAGE_CAPACITY 512U
 #define HOST_COVERAGE_LINE_SIZE 32U
@@ -180,6 +183,10 @@ static int fixture_usb_hid_validate_result;
 static int fixture_input_validate_result;
 static int fixture_recovery_state_result;
 static recovery_component_t fixture_recovery_usb;
+static kmem_cache_info_t fixture_slab_info[2];
+static uint32_t fixture_slab_count;
+static int fixture_slab_info_result;
+static int fixture_slab_self_test_result;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -343,6 +350,9 @@ static void fixture_reset(void) {
     fixture_usb_hid_validate_result = OK;
     fixture_input_validate_result = OK;
     fixture_recovery_state_result = OK;
+    fixture_slab_count = 1U;
+    fixture_slab_info_result = OK;
+    fixture_slab_self_test_result = OK;
     kmemset(&fixture_log_stats, 0, sizeof(fixture_log_stats));
     kmemset(fixture_log_records, 0, sizeof(fixture_log_records));
     kmemset(&fixture_log_test, 0, sizeof(fixture_log_test));
@@ -891,6 +901,21 @@ static void fixture_reset(void) {
     fixture_recovery_usb.failures = 0U;
     fixture_recovery_usb.last_error = OK;
     fixture_recovery_usb.last_message = "ready";
+    kmemset(fixture_slab_info, 0, sizeof(fixture_slab_info));
+    copy_text(fixture_slab_info[0].name, sizeof(fixture_slab_info[0].name),
+              "shell-test");
+    fixture_slab_info[0].object_size = 64U;
+    fixture_slab_info[0].alignment = 8U;
+    fixture_slab_info[0].object_stride = 64U;
+    fixture_slab_info[0].objects_per_slab = 8U;
+    fixture_slab_info[0].active_objects = 2U;
+    fixture_slab_info[0].capacity = 8U;
+    fixture_slab_info[0].slabs = 1U;
+    fixture_slab_info[0].pages = 1U;
+    fixture_slab_info[0].allocation_failures = 0U;
+    fixture_slab_info[0].invalid_frees = 0U;
+    fixture_slab_info[0].double_frees = 0U;
+    fixture_slab_info[0].initialized = 1U;
     kmemset(&fixture_mouse_status, 0, sizeof(fixture_mouse_status));
     fixture_mouse_status.initialized = 1U;
     fixture_mouse_status.x = 12;
@@ -1578,6 +1603,18 @@ const char* recovery_state_name(recovery_state_t state) {
     return "UNKNOWN";
 }
 
+int kmem_cache_get_info_at(uint32_t index, kmem_cache_info_t* info) {
+    if (!info) return ERR_NULL;
+    if (fixture_slab_info_result != OK) return fixture_slab_info_result;
+    if (index >= fixture_slab_count) return ERR_INVALID;
+    *info = fixture_slab_info[index];
+    return OK;
+}
+
+int kmem_cache_self_test(void) {
+    return fixture_slab_self_test_result;
+}
+
 int vfs_getcwd(char* path, uint32_t capacity) {
     if (!path || !capacity) return ERR_NULL;
     if (fixture_getcwd_result != OK) return fixture_getcwd_result;
@@ -2250,6 +2287,37 @@ static int test_devices_and_usb(void) {
     return failures;
 }
 
+static int test_slab(void) {
+    int failures = 0;
+
+    fixture_reset();
+    shell_dispatch_cmd_slabinfo("");
+    failures += expect_contains("Caches SLAB:\n");
+    failures += expect_contains("  shell-test obj=64 alinh=8 ativos=2/8 slabs=1 paginas=1 falhas=0\n");
+    fixture_reset();
+    fixture_slab_info[0].initialized = 0U;
+    shell_dispatch_cmd_slabinfo("");
+    failures += expect_text("Caches SLAB:\n");
+    fixture_reset();
+    fixture_slab_count = 0U;
+    shell_dispatch_cmd_slabinfo("");
+    failures += expect_text("Caches SLAB:\n");
+    fixture_reset();
+    shell_dispatch_cmd_slabinfo("extra");
+    failures += expect_text("Uso: slabinfo\n");
+    fixture_reset();
+    shell_dispatch_cmd_slabtest("");
+    failures += expect_text("SLABTest: OK\n");
+    fixture_reset();
+    fixture_slab_self_test_result = ERR_STATE;
+    shell_dispatch_cmd_slabtest("");
+    failures += expect_text("SLABTest: ERRO\n");
+    fixture_reset();
+    shell_dispatch_cmd_slabtest("extra");
+    failures += expect_text("Uso: slabtest\n");
+    return failures;
+}
+
 int main(void) {
     int result;
 
@@ -2258,6 +2326,7 @@ int main(void) {
              test_timer() + test_clock() + test_irqstat() + test_wait() +
              test_wqinfo() + test_workq() + test_tls() + test_vfs();
     result += test_devcheck() + test_devices_and_usb();
+    result += test_slab();
     coverage_active = 0U;
     coverage_emit(result);
     return result ? 1 : 0;
