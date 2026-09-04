@@ -5329,3 +5329,10 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   superfícies `shell_hosted_close`, `shell_hosted_mouse` e `shell_hosted_reset`
   foram confirmadas por execução real. O catálogo registra 7.219 superfícies,
   5.246 `COVERED`, 1.973 `PENDING` e 138 casos.
+- Evidência Drivers/RTC regenerada em 2026-09-04 11:11 (America/Sao_Paulo).
+  `make test-rtc-status-host` terminou `PASS` com CMOS falso e relatório
+  instrumentado sem endereços desconhecidos ou símbolos ambíguos. A execução
+  confirmou novamente as nove superfícies internas de `src/drivers/rtc.c`,
+  incluindo I/O, leitura estável, validação, conversão e inicialização. A
+  sincronização, renderização e `make catalog-test` passaram. O catálogo
+  registra 7.219 superfícies, 5.255 `COVERED`, 1.964 `PENDING` e 138 casos.
