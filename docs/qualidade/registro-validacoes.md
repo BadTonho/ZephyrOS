@@ -5503,6 +5503,21 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `COVERED`, 1.489 `PENDING` e 149 casos. O gate estrito e a validacao TST7
   completa continuam pendentes pelas superficies sem evidencia real.
 
+- Incremento Core/update transacional concluido em 2026-09-04
+  (America/Sao_Paulo). A fixture existente `host:core:update` passou a usar um
+  filesystem FAT12 em memoria, com pacote ZUPD e alvos simulados em buffers
+  estaticos. O caso exercita baseline, leitura e escrita redundante, apply seco
+  e real, staging, backups, journal, commit, rollback, cancelamento, failpoints
+  de substituicao, recuperacao no boot, historico corrompido e sincronizacao de
+  estado. O relatorio `build/test-results/update-host/coverage.json` terminou
+  `PASS`, resolveu todas as 129 superficies de `src/core/update.c` e nao
+  registrou enderecos desconhecidos ou simbolos ambiguos. Passaram
+  `make test-update-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`,
+  sincronizacao, renderizacao, `make catalog-test` e `git diff --check`. O
+  catalogo registra 7.256 superficies, 5.821 `COVERED`, 1.435 `PENDING` e 149
+  casos; o gate estrito e a validacao TST7 completa continuam pendentes pelas
+  superficies sem evidencia real.
+
 - Incremento Core/update remote GitHub concluido em 2026-09-04
   (America/Sao_Paulo). Foi criada a fixture host-only
   `host:core:update-remote-github`, com respostas JSON, HTTP, crypto e

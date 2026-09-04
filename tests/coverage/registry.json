@@ -2663,10 +2663,10 @@
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-update-host PASS com registros U3/U4, validacao de header, paths, tabela de entradas, limites, corrupcao, contratos publicos em filesystem indisponivel e helpers de transacao no relatorio instrumentado",
+      "evidence": "make test-update-host PASS com registros U3/U4, validacao de header, paths, tabela de entradas, transacoes FAT12, slots, apply, rollback, cancelamento, failpoints e recuperacao por boot no relatorio instrumentado",
       "case_definition": {
         "id": "host:core:update",
-        "scenario": "Contratos puros do formato e da maquina de estado de atualizacao U3/U4",
+        "scenario": "Contratos e transacoes FAT12 da maquina de estado de atualizacao U3/U4",
         "owner": "quality",
         "layer": "host",
         "executor": "host",
@@ -2681,11 +2681,11 @@
           "storage": "nenhum; registros estaticos em memoria"
         },
         "preconditions": "compilador C nativo e nm disponiveis",
-        "action": "executar codificacao, decodificacao, validacao e corrupcao controlada de registros U3/U4 e headers ZUPD",
-        "expected": "registros validos fazem round-trip e entradas invalidas retornam os erros canonicos sem estado persistente",
+        "action": "executar codificacao, decodificacao, validacao, apply, rollback, cancelamento, failpoints e recuperacao de registros U3/U4 e headers ZUPD",
+        "expected": "registros validos fazem round-trip, transacoes restauram o estado anterior em falhas e entradas invalidas retornam os erros canonicos",
         "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
-        "effects": "somente buffers estaticos no processo host",
-        "cleanup": "buffers locais descartados; manifesto, logs e cobertura preservados",
+        "effects": "somente buffers estaticos no processo host simulando FAT12; nenhuma escrita real",
+        "cleanup": "arquivos de staging, backup, journal e historico sao removidos ou restaurados pela fixture; manifesto, logs e cobertura preservados",
         "status": "AUTOMATED",
         "surface_ids": [],
         "tags": [
