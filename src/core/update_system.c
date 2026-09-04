@@ -9,6 +9,10 @@
 #include "fs/fs.h"
 #include "process/process.h"
 
+#if defined(ZEPHYROS_HOST_TEST)
+#include "update_system_host.h"
+#endif
+
 #define UPDATE_SYSTEM_DOMAIN "ZEPHYROS-SYSTEM-IMAGE-V1\0"
 #define UPDATE_SYSTEM_DOMAIN_SIZE (sizeof(UPDATE_SYSTEM_DOMAIN) - 1U)
 #define UPDATE_SYSTEM_COMPONENT_HASH_OFFSET 12U
@@ -1338,3 +1342,88 @@ const char* update_system_reason_name(update_system_reason_t reason) {
         default: return "UNKNOWN";
     }
 }
+
+#if defined(ZEPHYROS_HOST_TEST)
+int update_system_host_test_contracts(void) {
+    static const uint8_t raw[UPDATE_SYSTEM_HEADER_SIZE] = {0};
+    static const uint8_t text_data[] = "prefix stable suffix";
+    static const uint8_t invalid_text[] = {'b', 'a', 'd', '/', 0};
+    update_system_remote_stream_t stream;
+    update_system_verification_t verification;
+    update_system_base_t base;
+    update_version_t first = {1U, 2U, 3U};
+    update_version_t second = {1U, 2U, 4U};
+    update_remote_options_t options;
+    http_request_options_t http_options;
+    uint8_t output[CRYPTO_SHA256_SIZE];
+    char text[32];
+    update_remote_github_release_t release;
+
+    kmemset(&options, 0, sizeof(options));
+    if (any_nonzero(NULL, 0U) != 1 || any_nonzero(raw, sizeof(raw)) != 0 ||
+        update_system_remote_copy_text(NULL, 2U, "x") != ERR_NULL ||
+        update_system_remote_copy_text(text, sizeof(text), "stable") != OK ||
+        kstrcmp(text, "stable") != 0 ||
+        update_system_remote_copy_text(text, 4U, "long") != ERR_OVERFLOW ||
+        update_system_remote_http_options(NULL, &http_options) != OK ||
+        update_system_remote_http_options(&options, NULL) != ERR_NULL) {
+        return 90;
+    }
+    if (update_system_remote_contains(text_data, sizeof(text_data) - 1U,
+                                      "stable") != 1 ||
+        update_system_remote_contains(text_data, sizeof(text_data) - 1U,
+                                      "missing") != 0 ||
+        update_system_remote_contains(NULL, 0U, "x") != 0 ||
+        update_system_remote_decimal(0U, text, sizeof(text)) != OK ||
+        kstrcmp(text, "0") != 0 ||
+        update_system_remote_decimal(1234567890U, text, sizeof(text)) != OK ||
+        kstrcmp(text, "1234567890") != 0 ||
+        update_system_remote_decimal(10U, text, 2U) != ERR_OVERFLOW ||
+        update_system_remote_decimal(1U, NULL, sizeof(text)) != ERR_NULL ||
+        update_system_hex_digit(0U) != '0' ||
+        update_system_hex_digit(15U) != 'f') return 91;
+    kmemset(&release, 0, sizeof(release));
+    if (update_system_remote_descriptor_matches(NULL, 0U, &release) !=
+            ERR_NULL ||
+        update_system_read_u16(raw, 0U) != 0U ||
+        update_system_read_u32(raw, 0U) != 0U ||
+        update_system_version_compare(&first, &second) >= 0 ||
+        update_system_version_compare(&second, &first) <= 0 ||
+        update_system_version_compare(&first, &first) != 0 ||
+        update_system_base_equal(NULL, &first, 0U) != 0 ||
+        update_system_copy_fixed_text(NULL, 1U, text, sizeof(text)) != ERR_NULL ||
+        update_system_copy_fixed_text(raw, 4U, text, sizeof(text)) != ERR_INVALID ||
+        update_system_copy_fixed_text(invalid_text, sizeof(invalid_text), text,
+                                      sizeof(text)) != ERR_INVALID ||
+        update_system_reject(UPDATE_SYSTEM_REASON_FORMAT, ERR_INVALID,
+                              "fixture", &verification) != ERR_INVALID ||
+        verification.reason != UPDATE_SYSTEM_REASON_FORMAT) return 92;
+    if (update_system_hash_range(NULL, 0U, 0U, output) != ERR_NULL ||
+        update_system_hash_range("image", 0U, 0U, output) != OK ||
+        update_system_verify_signature("image", 0U) != OK ||
+        update_system_read_base(NULL, 0U, &base) != ERR_NULL ||
+        update_system_read_base(raw, 0U, &base) != OK ||
+        base.version.major != 0U || base.epoch != 0U ||
+        update_system_validate_components(NULL, 0U, &verification) != ERR_NULL ||
+        update_system_validate_components(raw, 0U, &verification) != ERR_INVALID ||
+        update_system_remote_compatible(NULL) != ERR_NULL ||
+        update_system_remote_begin(NULL) != ERR_NULL ||
+        update_system_remote_payload(NULL, NULL, 0U) != ERR_NULL ||
+        update_system_remote_sink(NULL, 0U, NULL) != ERR_NULL ||
+        update_system_remote_finish(NULL) != ERR_INVALID) return 93;
+    kmemset(&stream, 0, sizeof(stream));
+    if (update_system_remote_payload(&stream, NULL, 1U) != ERR_NULL ||
+        update_system_remote_sink(NULL, 1U, &stream) != ERR_NULL ||
+        update_system_remote_finish(&stream) != ERR_INVALID) return 94;
+    kmemset(&options, 0, sizeof(options));
+    if (update_system_remote_wait_http(NULL, NULL) != ERR_NULL ||
+        update_system_init() != OK || update_system_is_ready() != 1 ||
+        update_system_reason_name(UPDATE_SYSTEM_REASON_NONE) == NULL ||
+        update_system_reason_name((update_system_reason_t)0xFFU) == NULL ||
+        update_system_transfer_tag(NULL, NULL, NULL, NULL, NULL) != ERR_NULL ||
+        update_system_check_tag(NULL, NULL, NULL) != ERR_NULL ||
+        update_system_verify_file(NULL, NULL) != ERR_NULL ||
+        update_system_verify_file_for_slot(NULL, NULL) != ERR_NULL) return 95;
+    return OK;
+}
+#endif

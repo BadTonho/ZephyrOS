@@ -2596,6 +2596,58 @@
       }
     },
     {
+      "id": "update-system-host-dynamic",
+      "domain": "core-update-system",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:update-system"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/update-system-host/coverage.json",
+      "coverage_sources": [
+        "src/core/update_system.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-update-system-host PASS com validadores ZSYS, compatibilidade, transporte e contratos publicos offline no relatorio instrumentado",
+      "case_definition": {
+        "id": "host:core:update-system",
+        "scenario": "Contratos de imagem e transferencia remota ZSYS",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "network": "HTTP simulado offline",
+          "storage": "somente buffers estaticos"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "executar validadores de header, compatibilidade, hashes, assinatura, transferencia e estados publicos com dependencias simuladas",
+        "expected": "entradas invalidas retornam erros canonicos; contratos e validadores nao acessam armazenamento ou rede reais",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente buffers estaticos no processo host",
+        "cleanup": "estado de transporte e buffers pertencem ao processo host; manifesto, logs e cobertura preservados",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "update",
+          "system",
+          "zsys",
+          "offline",
+          "negative"
+        ],
+        "status": "AUTOMATED"
+      }
+    },
+    {
       "id": "update-host-dynamic",
       "domain": "core-update",
       "owner": "quality",

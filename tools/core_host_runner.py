@@ -229,6 +229,13 @@ UPDATE_REMOTE_RELEASE_SOURCE_FILES = (
     ROOT / "src" / "core" / "update_remote_release.c",
     ROOT / "src" / "core" / "string.c",
 )
+UPDATE_SYSTEM_RESULT_DIR = ROOT / "build" / "test-results" / "update-system-host"
+UPDATE_SYSTEM_BINARY = ROOT / "build" / "tests" / "test_update_system_host.exe"
+UPDATE_SYSTEM_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_update_system_host.c",
+    ROOT / "src" / "core" / "update_system.c",
+    ROOT / "src" / "core" / "string.c",
+)
 STATE_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_core_state_host.c",
     ROOT / "src" / "core" / "recovery.c",
@@ -854,6 +861,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
     if case_id == "host:core:update-remote-release":
         return (UPDATE_REMOTE_RELEASE_RESULT_DIR, UPDATE_REMOTE_RELEASE_BINARY,
                 UPDATE_REMOTE_RELEASE_SOURCE_FILES, "update-remote-release-host")
+    if case_id == "host:core:update-system":
+        return (UPDATE_SYSTEM_RESULT_DIR, UPDATE_SYSTEM_BINARY,
+                UPDATE_SYSTEM_SOURCE_FILES, "update-system-host")
     if case_id == "host:core:state":
         return STATE_RESULT_DIR, STATE_BINARY, STATE_SOURCE_FILES, "state-host"
     if case_id == "host:core:device-manager":
@@ -1235,6 +1245,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:core:update-remote-system",
                                  "host:core:update-remote-github",
                                  "host:core:update-remote-release",
+                                 "host:core:update-system",
                                  "host:core:device-manager", "host:core:app-api",
                                  "host:core:app-files", "host:core:app-builtin",
                                  "host:core:app-loader", "host:ui:taskbar",
