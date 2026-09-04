@@ -1925,8 +1925,9 @@ host e não acessa hardware ou armazenamento real.
 
 O alvo `test-shell-diagnostics-host` executa os dispatchers reais de `pwd`,
 `cd`, `mouse`, `log`, `timer`, `clock`, `irqstat`, `wait`, `wqinfo`, `workq`,
-`tls`, `vfs`, `mount` e `devcheck` com VFS, mouse, vídeo, timer, RTC, IRQ,
-IDT, wait, workqueue, TLS, mounts, descritores e devfs falsos. A fixture cobre
+`tls`, `vfs`, `mount`, `devcheck`, `devices`, `device-info` e `usb` com VFS,
+mouse, vídeo, timer, RTC, IRQ, IDT, wait, workqueue, TLS, mounts, descritores,
+devfs, inventário de dispositivos, USB, HID e MSC falsos. A fixture cobre
 caminhos válidos, argumentos extras, limites, estados indisponíveis e
 preservação da configuração quando uma preferência é recusada:
 
@@ -1942,5 +1943,6 @@ status, histórico, limpeza, níveis, código de erro, autoteste e entradas
 inválidas. Os caminhos de `timer` e `clock` cobrem status, listagem,
 autoteste, indisponibilidade, fonte RTC, valores monotônicos, datas e o estado
 da fila Bottom-Half por linha de IRQ, filas de espera, waiters, workqueue,
-políticas TLS, mounts, descritores, devfs, listagens, autotestes e estados de
-indisponibilidade, sem tocar em armazenamento real.
+políticas TLS, mounts, descritores, devfs, inventários de dispositivos, USB,
+HID, MSC, listagens, autotestes e estados de indisponibilidade, sem tocar em
+hardware ou armazenamento real.
