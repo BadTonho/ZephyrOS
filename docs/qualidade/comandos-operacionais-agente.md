@@ -372,7 +372,8 @@ O caso `test-rtc-status-host` exercita o RTC com uma porta CMOS simulada no
 build host, sem executar instrucoes privilegiadas. Ele verifica destino nulo,
 inicializacao invalida e valida, leituras BCD/binaria e 12/24 horas, calendario,
 leituras estaveis, autoteste, timeout de atualizacao e estado restaurado. O
-relatorio fica em `build/test-results/rtc-status-host/`:
+relatorio cobre as 17 funcoes de `src/drivers/rtc.c` e fica em
+`build/test-results/rtc-status-host/`:
 
 ```text
 make test-rtc-status-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe

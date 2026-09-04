@@ -5102,3 +5102,14 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `COVERED`, sendo os 95 comandos registrados por integracao e as duas funcoes
   C resolvidas diretamente. O catalogo atual registra 7.219 superficies,
   5.072 `COVERED`, 2.147 `PENDING` e 132 casos.
+
+- Incremento Drivers/RTC — fechamento de cobertura — concluido em 2026-09-03.
+  O caso existente `host:drivers:rtc-status` foi executado novamente depois do
+  build limpo, com CMOS falso e sem I/O privilegiado. O relatorio
+  `build/test-results/rtc-status-host/coverage.json` terminou `PASS`, resolveu
+  as 17 funcoes de `src/drivers/rtc.c`, incluindo I/O CMOS, leituras estaveis,
+  conversao e inicializacao, e nao registrou erros de cobertura.
+
+  Tambem passaram `python tools/test_catalog.py sync`,
+  `python tools/test_catalog.py render` e `make catalog-test`. O catalogo atual
+  registra 7.219 superficies, 5.081 `COVERED`, 2.138 `PENDING` e 132 casos.
