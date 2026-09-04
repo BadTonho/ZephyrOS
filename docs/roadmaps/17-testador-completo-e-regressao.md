@@ -2210,3 +2210,10 @@ pendente.
   `make catalog-test` passaram. O catálogo atual registra 7.219 superfícies,
   5.240 `COVERED`, 1.979 `PENDING` e 138 casos. O fechamento integral ainda
   depende das 1.979 superfícies pendentes restantes.
+- Correção incremental de Shell/commands-core concluída em 2026-09-04 11:00
+  (America/Sao_Paulo). O caminho de falha do loader de aplicativo migrado foi
+  exercitado com resultado `start_failed` e limpeza observável. A evidência
+  dinâmica resolveu `shell_report_builtin_failure`; não restam superfícies
+  `PENDING` nesse arquivo. O catálogo atual registra 7.219 superfícies, 5.241
+  `COVERED`, 1.978 `PENDING` e 138 casos. O restante do fechamento integral
+  continua pendente nos demais subsistemas.

@@ -5305,3 +5305,13 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   runners, `git diff --check` e `make catalog-test`. O catálogo registra 7.219
   superfícies, 5.240 `COVERED`, 1.979 `PENDING` e 138 casos. As pendências
   restantes continuam reais e não foram mascaradas.
+- Fechamento do ramo de falha do loader Shell concluído em 2026-09-04 11:00
+  (America/Sao_Paulo). A fixture `host:shell:commands-core` passou a provocar
+  um resultado `start_failed` para um aplicativo migrado e confirmou a
+  mensagem, a finalização do comando e a limpeza do estado do loader. O
+  relatório dinâmico terminou `PASS` e resolveu a última superfície pendente
+  de `src/shell/shell_commands_core.c`, `shell_report_builtin_failure`.
+  Passaram novamente `make q3check`, `make clean`, `make`,
+  `make test-shell-commands-core-host`, `make catalog-test` e os testes
+  unitários dos runners. O catálogo agora registra 7.219 superfícies, 5.241
+  `COVERED`, 1.978 `PENDING` e 138 casos.
