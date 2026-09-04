@@ -5383,6 +5383,59 @@
       "evidence": "make test-shell-commands-core-host PASS com handlers centrais, caminhos invalidos, fixtures VFS, loader, energia e cobertura instrumentada"
     },
     {
+      "id": "shell-wifi-host-dynamic",
+      "domain": "shell-wifi",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:shell:wifi"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/shell-wifi-host/coverage.json",
+      "coverage_sources": [
+        "src/shell/shell_commands_wifi.c",
+        "src/shell/shell_command_utils.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:shell:wifi",
+        "scenario": "Comando Wi-Fi do Shell sobre inventário PCI/USB e rádio indisponível",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "wifi-manager-static-fixture"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "executar status, inventario PCI/USB, scan, conexao, argumentos invalidos, erros e estados indisponiveis",
+        "expected": "o Shell formata estados, locais, resultados e erros sem aceitar senha ou abrir conexao externa",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente buffers estaticos de saida e fixtures do gerenciador Wi-Fi no processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "shell",
+          "wifi",
+          "pci",
+          "usb",
+          "offline",
+          "coverage"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "make test-shell-commands-wifi-host PASS com status, inventario PCI/USB, scan, conexao, erros e indisponibilidade em cobertura instrumentada"
+    },
+    {
       "id": "assembly-qemu-tst7-dynamic",
       "domain": "drivers-interrupt-assembly",
       "owner": "quality",

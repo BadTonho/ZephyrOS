@@ -237,6 +237,14 @@ class Tst7RunnerContractTests(unittest.TestCase):
             ("test-shell-commands-core-host", "shell-commands-core-host"),
             runner.QUICK_COMMANDS)
 
+    def test_shell_wifi_host_case_is_mapped(self):
+        self.assertEqual(
+            runner.HOST_CASE_TARGETS["host:shell:wifi"],
+            "test-shell-commands-wifi-host")
+        self.assertIn(
+            ("test-shell-commands-wifi-host", "shell-commands-wifi-host"),
+            runner.QUICK_COMMANDS)
+
     def test_blackbox_host_case_is_mapped(self):
         self.assertEqual(runner.HOST_CASE_TARGETS["host:tst5:blackbox"],
                          "test-blackbox-host")
