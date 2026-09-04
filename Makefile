@@ -1859,6 +1859,9 @@ test-shell-dispatch-host: tools\core_host_runner.py tools\coverage_collector.py 
 test-shell-introspection-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_shell_introspection_host.c tests\catalog.json src\shell\shell_introspection.c src\include\apps\shell_introspection.h src\core\string.c
 	python tools\core_host_runner.py --case host:shell:introspection --cc "$(HOST_CC)"
 
+test-spinlock-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_spinlock_host.c tests\catalog.json src\include\core\spinlock.h
+	python tools\core_host_runner.py --case host:core:spinlock --cc "$(HOST_CC)"
+
 test-font-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_font_host.c tests\catalog.json src\drivers\font.c src\drivers\font_data.inc src\include\drivers\font.h
 	python tools\core_host_runner.py --case host:drivers:font --cc "$(HOST_CC)"
 
@@ -2104,3 +2107,4 @@ clean:
 .PHONY: test-mouse-host test-e1000-host test-ac97-host test-rtl8811cu-host
 .PHONY: test-shell-commands-core-host
 .PHONY: test-shell-diagnostics-helpers-host
+.PHONY: test-spinlock-host

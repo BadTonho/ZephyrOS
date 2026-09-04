@@ -5654,3 +5654,12 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   o catálogo registra 7.293 superfícies, 6.083 `COVERED`, 1.210 `PENDING` e
   151 casos. O gate estrito continua pendente pelas superfícies restantes sem
   evidência específica.
+
+- Incremento Core/spinlock — concluído em 2026-09-04 (America/Sao_Paulo). Foi
+  adicionada a fixture host-only `host:core:spinlock`, que chama
+  `spinlock_init`, `spinlock_acquire` e `spinlock_release` e verifica o estado
+  do lock antes e depois das operações. Passaram `make test-spinlock-host`
+  com `HOST_CC`, `make catalog-test`, `make q3check`, `make clean` seguido de
+  `make` e os 164 testes Python unitários. O catálogo registra 7.293
+  superfícies, 6.086 `COVERED`, 1.207 `PENDING` e 152 casos; o gate estrito
+  continua pendente pelas superfícies restantes sem evidência específica.

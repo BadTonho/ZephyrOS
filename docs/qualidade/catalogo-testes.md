@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7293**
-- Casos de teste: **151**
+- Casos de teste: **152**
 - Superfícies aposentadas: **57**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6083 |
+| `COVERED` | 6086 |
 | `MANUAL` | 0 |
-| `PENDING` | 1210 |
+| `PENDING` | 1207 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 151 |
+| `AUTOMATED` | 152 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -635,9 +635,9 @@
 | `api:src/include/core/socket.h:socket_set_nonblocking` | `src/include/core/socket.h` | `socket_set_nonblocking` | `core` | `COVERED` | 4 |
 | `api:src/include/core/socket.h:socket_state_name` | `src/include/core/socket.h` | `socket_state_name` | `core` | `COVERED` | 3 |
 | `api:src/include/core/socket.h:socket_validate_state` | `src/include/core/socket.h` | `socket_validate_state` | `core` | `COVERED` | 4 |
-| `api:src/include/core/spinlock.h:spinlock_acquire` | `src/include/core/spinlock.h` | `spinlock_acquire` | `core` | `PENDING` | 0 |
-| `api:src/include/core/spinlock.h:spinlock_init` | `src/include/core/spinlock.h` | `spinlock_init` | `core` | `PENDING` | 0 |
-| `api:src/include/core/spinlock.h:spinlock_release` | `src/include/core/spinlock.h` | `spinlock_release` | `core` | `PENDING` | 0 |
+| `api:src/include/core/spinlock.h:spinlock_acquire` | `src/include/core/spinlock.h` | `spinlock_acquire` | `core` | `COVERED` | 1 |
+| `api:src/include/core/spinlock.h:spinlock_init` | `src/include/core/spinlock.h` | `spinlock_init` | `core` | `COVERED` | 1 |
+| `api:src/include/core/spinlock.h:spinlock_release` | `src/include/core/spinlock.h` | `spinlock_release` | `core` | `COVERED` | 1 |
 | `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 54 |
 | `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 58 |
 | `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 49 |
@@ -7530,6 +7530,7 @@
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
 | `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
+| `host:core:spinlock` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inicializar, adquirir e liberar um spinlock em fixture estatica | as operacoes publicam os estados livre e adquirido sem residuos | compilador ausente, warning, falha de assercao ou timeout | somente a palavra de estado do lock no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -7544,9 +7545,6 @@
 - `api:src/include/apps/editor.h:editor_run_file`
 - `api:src/include/apps/mediaplayer.h:mp_main`
 - `api:src/include/apps/shell_job.h:shell_storage_start_job`
-- `api:src/include/core/spinlock.h:spinlock_acquire`
-- `api:src/include/core/spinlock.h:spinlock_init`
-- `api:src/include/core/spinlock.h:spinlock_release`
 - `api:src/include/process/process.h:process_context_switch`
 - `api:src/include/process/process.h:process_user_enter`
 - `api:src/include/process/process.h:process_user_termination_enter`
