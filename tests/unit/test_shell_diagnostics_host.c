@@ -5,7 +5,10 @@
 #include "core/errors.h"
 #include "core/log.h"
 #include "core/string.h"
+#include "core/timer.h"
+#include "core/clock.h"
 #include "core/video.h"
+#include "drivers/rtc.h"
 #include "drivers/mouse.h"
 #include "fs/vfs.h"
 
@@ -13,6 +16,8 @@ void shell_dispatch_cmd_pwd(const char* arguments);
 void shell_dispatch_cmd_cd(const char* arguments);
 void shell_dispatch_cmd_mouse(const char* arguments);
 void shell_dispatch_cmd_log(const char* arguments);
+void shell_dispatch_cmd_timer(const char* arguments);
+void shell_dispatch_cmd_clock(const char* arguments);
 
 #define HOST_COVERAGE_CAPACITY 512U
 #define HOST_COVERAGE_LINE_SIZE 32U
@@ -51,6 +56,25 @@ static uint32_t fixture_log_console_calls;
 static uint32_t fixture_log_buffer_calls;
 static log_level_t fixture_log_console_level;
 static log_level_t fixture_log_buffer_level;
+static timer_stats_t fixture_timer_stats;
+static timer_info_t fixture_timer_records[2];
+static timer_self_test_result_t fixture_timer_test;
+static int fixture_timer_stats_result;
+static int fixture_timer_copy_result;
+static int fixture_timer_test_result;
+static uint32_t fixture_timer_copy_count;
+static clock_status_t fixture_clock_status;
+static clock_self_test_result_t fixture_clock_test;
+static int fixture_clock_status_result;
+static int fixture_clock_ticks_result;
+static int fixture_clock_utc_result;
+static int fixture_clock_test_result;
+static uint64_t fixture_clock_ticks;
+static uint64_t fixture_clock_utc;
+static rtc_status_t fixture_rtc_status;
+static rtc_self_test_result_t fixture_rtc_test;
+static int fixture_rtc_status_result;
+static int fixture_rtc_test_result;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -148,6 +172,18 @@ static void fixture_reset(void) {
     fixture_log_buffer_calls = 0U;
     fixture_log_console_level = LOG_LEVEL_INFO;
     fixture_log_buffer_level = LOG_LEVEL_DEBUG;
+    fixture_timer_stats_result = OK;
+    fixture_timer_copy_result = OK;
+    fixture_timer_test_result = OK;
+    fixture_timer_copy_count = 1U;
+    fixture_clock_status_result = OK;
+    fixture_clock_ticks_result = OK;
+    fixture_clock_utc_result = OK;
+    fixture_clock_test_result = OK;
+    fixture_clock_ticks = 123456789ULL;
+    fixture_clock_utc = 1735689600ULL;
+    fixture_rtc_status_result = OK;
+    fixture_rtc_test_result = OK;
     kmemset(&fixture_log_stats, 0, sizeof(fixture_log_stats));
     kmemset(fixture_log_records, 0, sizeof(fixture_log_records));
     kmemset(&fixture_log_test, 0, sizeof(fixture_log_test));
@@ -187,6 +223,89 @@ static void fixture_reset(void) {
     fixture_log_test.clear_behavior = 1U;
     fixture_log_test.text_serialization = 1U;
     fixture_log_test.level_filtering = 1U;
+    kmemset(&fixture_timer_stats, 0, sizeof(fixture_timer_stats));
+    kmemset(fixture_timer_records, 0, sizeof(fixture_timer_records));
+    kmemset(&fixture_timer_test, 0, sizeof(fixture_timer_test));
+    fixture_timer_stats.initialized = 1U;
+    fixture_timer_stats.current_tick = 1000U;
+    fixture_timer_stats.frequency = 100U;
+    fixture_timer_stats.occupancy = 1U;
+    fixture_timer_stats.capacity = TIMER_CAPACITY;
+    fixture_timer_stats.owner_occupancy = 1U;
+    fixture_timer_stats.owner_capacity = TIMER_OWNER_CAPACITY;
+    fixture_timer_stats.armed = 1U;
+    fixture_timer_stats.high_watermark = 2U;
+    fixture_timer_stats.timers_created = 3U;
+    fixture_timer_stats.timers_started = 4U;
+    fixture_timer_stats.expirations = 5U;
+    fixture_timer_stats.cancellations = 6U;
+    fixture_timer_stats.timers_destroyed = 7U;
+    fixture_timer_stats.callbacks = 8U;
+    fixture_timer_stats.callback_errors = 1U;
+    fixture_timer_stats.delayed_callbacks = 2U;
+    fixture_timer_stats.missed_periods = 3U;
+    fixture_timer_stats.invalid_operations = 4U;
+    fixture_timer_records[0].handle = 0x1234U;
+    copy_text(fixture_timer_records[0].owner_name,
+              sizeof(fixture_timer_records[0].owner_name), "SHELL");
+    copy_text(fixture_timer_records[0].name,
+              sizeof(fixture_timer_records[0].name), "heartbeat");
+    fixture_timer_records[0].mode = TIMER_MODE_PERIODIC;
+    fixture_timer_records[0].state = TIMER_STATE_ARMED;
+    fixture_timer_records[0].deadline_tick = 1100U;
+    fixture_timer_records[0].period_ticks = 100U;
+    fixture_timer_records[0].executions = 9U;
+    fixture_timer_records[0].delayed_callbacks = 1U;
+    fixture_timer_records[0].missed_periods = 2U;
+    fixture_timer_records[0].last_lateness_ticks = 3U;
+    fixture_timer_records[0].last_error = -ERR_DISK;
+    fixture_timer_test.conversion_and_limits = 1U;
+    fixture_timer_test.one_shot = 1U;
+    fixture_timer_test.periodic_no_drift = 1U;
+    fixture_timer_test.periodic_coalescing = 1U;
+    fixture_timer_test.cancel_armed = 1U;
+    fixture_timer_test.cancel_pending = 1U;
+    fixture_timer_test.owner_destruction = 1U;
+    fixture_timer_test.stale_handles = 1U;
+    fixture_timer_test.tick_wrap = 1U;
+    fixture_timer_test.capacity = 1U;
+    fixture_timer_test.callback_errors = 1U;
+    fixture_timer_test.invariants = 1U;
+    fixture_timer_test.passed = 11U;
+    fixture_timer_test.failed = 0U;
+    fixture_clock_status.initialized = 1U;
+    fixture_clock_status.monotonic_available = 1U;
+    fixture_clock_status.utc_available = 1U;
+    fixture_clock_status.source = CLOCK_SOURCE_RTC;
+    fixture_clock_status.frequency = 100U;
+    fixture_clock_status.anchor_monotonic_ticks = 100000ULL;
+    fixture_clock_status.anchor_unix_seconds = 1735689600ULL;
+    fixture_clock_status.monotonic_wraps = 2ULL;
+    fixture_clock_status.reads = 12U;
+    fixture_clock_status.last_error = OK;
+    fixture_clock_test.epoch_conversion = 1U;
+    fixture_clock_test.leap_year_conversion = 1U;
+    fixture_clock_test.invalid_date_rejected = 1U;
+    fixture_clock_test.monotonic_rollover = 1U;
+    fixture_clock_test.invariants = 1U;
+    fixture_clock_test.passed = 5U;
+    fixture_clock_test.failed = 0U;
+    fixture_rtc_status.initialized = 1U;
+    fixture_rtc_status.available = 1U;
+    fixture_rtc_status.valid = 1U;
+    fixture_rtc_status.utc.year = 2025U;
+    fixture_rtc_status.utc.month = 1U;
+    fixture_rtc_status.utc.day = 1U;
+    fixture_rtc_status.utc.hour = 0U;
+    fixture_rtc_status.utc.minute = 0U;
+    fixture_rtc_status.utc.second = 0U;
+    fixture_rtc_test.bcd_conversion = 1U;
+    fixture_rtc_test.binary_conversion = 1U;
+    fixture_rtc_test.twelve_hour_conversion = 1U;
+    fixture_rtc_test.calendar_validation = 1U;
+    fixture_rtc_test.invalid_dates_rejected = 1U;
+    fixture_rtc_test.passed = 5U;
+    fixture_rtc_test.failed = 0U;
     kmemset(&fixture_mouse_status, 0, sizeof(fixture_mouse_status));
     fixture_mouse_status.initialized = 1U;
     fixture_mouse_status.x = 12;
@@ -296,6 +415,85 @@ const char* log_level_str(log_level_t level) {
     if (level == LOG_LEVEL_INFO) return "INFO";
     if (level == LOG_LEVEL_DEBUG) return "DEBUG";
     return "INVALID";
+}
+
+int timer_get_stats(timer_stats_t* stats) {
+    if (!stats) return ERR_NULL;
+    if (fixture_timer_stats_result != OK) return fixture_timer_stats_result;
+    *stats = fixture_timer_stats;
+    return OK;
+}
+
+int timer_copy_active(timer_info_t* output, uint32_t max_timers,
+                      uint32_t* out_count) {
+    if (!output || !out_count) return ERR_NULL;
+    if (fixture_timer_copy_result != OK) return fixture_timer_copy_result;
+    if (max_timers < fixture_timer_copy_count) return ERR_OVERFLOW;
+    for (uint32_t index = 0U; index < fixture_timer_copy_count; index++) {
+        output[index] = fixture_timer_records[index];
+    }
+    *out_count = fixture_timer_copy_count;
+    return OK;
+}
+
+int timer_self_test(timer_self_test_result_t* result) {
+    if (!result) return ERR_NULL;
+    *result = fixture_timer_test;
+    return fixture_timer_test_result;
+}
+
+const char* timer_mode_name(timer_mode_t mode) {
+    return mode == TIMER_MODE_PERIODIC ? "periodico" : "one-shot";
+}
+
+const char* timer_state_name(timer_state_t state) {
+    if (state == TIMER_STATE_ARMED) return "armado";
+    if (state == TIMER_STATE_PENDING) return "pendente";
+    return "ocioso";
+}
+
+int clock_get_status(clock_status_t* status) {
+    if (!status) return ERR_NULL;
+    if (fixture_clock_status_result != OK) return fixture_clock_status_result;
+    *status = fixture_clock_status;
+    return OK;
+}
+
+int clock_get_monotonic_ticks(uint64_t* ticks) {
+    if (!ticks) return ERR_NULL;
+    if (fixture_clock_ticks_result != OK) return fixture_clock_ticks_result;
+    *ticks = fixture_clock_ticks;
+    return OK;
+}
+
+int clock_get_utc(uint64_t* utc) {
+    if (!utc) return ERR_NULL;
+    if (fixture_clock_utc_result != OK) return fixture_clock_utc_result;
+    *utc = fixture_clock_utc;
+    return OK;
+}
+
+int clock_self_test(clock_self_test_result_t* result) {
+    if (!result) return ERR_NULL;
+    *result = fixture_clock_test;
+    return fixture_clock_test_result;
+}
+
+const char* clock_source_name(clock_source_t source) {
+    return source == CLOCK_SOURCE_RTC ? "RTC" : "nenhuma";
+}
+
+int rtc_get_status(rtc_status_t* status) {
+    if (!status) return ERR_NULL;
+    if (fixture_rtc_status_result != OK) return fixture_rtc_status_result;
+    *status = fixture_rtc_status;
+    return OK;
+}
+
+int rtc_self_test(rtc_self_test_result_t* result) {
+    if (!result) return ERR_NULL;
+    *result = fixture_rtc_test;
+    return fixture_rtc_test_result;
 }
 
 int vfs_getcwd(char* path, uint32_t capacity) {
@@ -513,11 +711,90 @@ static int test_log(void) {
     return failures;
 }
 
+static int test_timer(void) {
+    int failures = 0;
+
+    fixture_reset();
+    shell_dispatch_cmd_timer("status");
+    failures += expect_contains("Servico de timers: tick=1000 frequencia=100 Hz\n");
+    failures += expect_contains("Proprietarios: 1/16  Timers: 1/32");
+    failures += expect_contains("Callbacks: 8  Erros: 1  Atrasos: 2");
+    fixture_reset();
+    fixture_timer_stats_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_timer("");
+    failures += expect_text("Erro: estatisticas de timer indisponiveis.\n");
+    fixture_reset();
+    fixture_timer_copy_count = 0U;
+    shell_dispatch_cmd_timer("list");
+    failures += expect_text("Nenhum timer criado.\n");
+    fixture_reset();
+    shell_dispatch_cmd_timer("list");
+    failures += expect_contains("handle=0x00001234 owner=SHELL timer=heartbeat\n");
+    failures += expect_contains("modo=periodico estado=armado prazo=1100 periodo=100");
+    failures += expect_contains("execucoes=9 atrasos=1 perdidos=2 ultimo_atraso=3 erro=-3");
+    fixture_reset();
+    fixture_timer_copy_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_timer("list");
+    failures += expect_text("Erro: lista de timers indisponivel.\n");
+    fixture_reset();
+    shell_dispatch_cmd_timer("check");
+    failures += expect_contains("Autoteste de timers (tabelas privadas):\n");
+    failures += expect_contains("Resultado: OK (11 aprovados, 0 falhos)\n");
+    fixture_reset();
+    fixture_timer_test_result = ERR_STATE;
+    fixture_timer_test.failed = 1U;
+    shell_dispatch_cmd_timer("check");
+    failures += expect_contains("Resultado: ERRO (11 aprovados, 1 falhos)\n");
+    fixture_reset();
+    shell_dispatch_cmd_timer("invalid");
+    failures += expect_text("Uso: timer [status|list|check]\n");
+    return failures;
+}
+
+static int test_clock(void) {
+    int failures = 0;
+
+    fixture_reset();
+    shell_dispatch_cmd_clock("status");
+    failures += expect_contains("Clock: inicializado=SIM fonte=RTC PIT=100 Hz UTC=READY wraps=2 reads=12 erro=0\n");
+    failures += expect_contains("anchor_tick=100000 anchor_utc=1735689600\n");
+    failures += expect_contains("monotono_ticks=123456789\n");
+    failures += expect_contains("utc_unix_seconds=1735689600\n");
+    failures += expect_contains("RTC=READY 2025-1-1 0:0:0\n");
+    fixture_reset();
+    fixture_clock_status.source = CLOCK_SOURCE_NONE;
+    fixture_clock_status.utc_available = 0U;
+    fixture_clock_ticks_result = ERR_UNAVAILABLE;
+    fixture_clock_utc_result = ERR_UNAVAILABLE;
+    fixture_rtc_status.valid = 0U;
+    shell_dispatch_cmd_clock("");
+    failures += expect_contains("fonte=nenhuma PIT=100 Hz UTC=UNAVAILABLE");
+    failures += expect_contains("RTC=UNAVAILABLE\n");
+    fixture_reset();
+    fixture_clock_status_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_clock("status");
+    failures += expect_text("Erro: estado do clock indisponivel.\n");
+    fixture_reset();
+    shell_dispatch_cmd_clock("check");
+    failures += expect_contains("Autoteste RTC/clock:\n");
+    failures += expect_contains("Resultado: OK\n");
+    fixture_reset();
+    fixture_rtc_test_result = ERR_STATE;
+    fixture_clock_test.failed = 1U;
+    shell_dispatch_cmd_clock("check");
+    failures += expect_contains("Resultado: ERRO\n");
+    fixture_reset();
+    shell_dispatch_cmd_clock("invalid");
+    failures += expect_text("Uso: clock [status|check]\n");
+    return failures;
+}
+
 int main(void) {
     int result;
 
     coverage_active = 1U;
-    result = test_pwd() + test_cd() + test_mouse() + test_log();
+    result = test_pwd() + test_cd() + test_mouse() + test_log() +
+             test_timer() + test_clock();
     coverage_active = 0U;
     coverage_emit(result);
     return result ? 1 : 0;
