@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7219**
-- Casos de teste: **134**
+- Casos de teste: **135**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 5120 |
+| `COVERED` | 5145 |
 | `MANUAL` | 0 |
-| `PENDING` | 2099 |
+| `PENDING` | 2074 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 134 |
+| `AUTOMATED` | 135 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -608,12 +608,12 @@
 | `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 45 |
 | `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 35 |
 | `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 37 |
-| `api:src/include/core/syscall.h:syscall_enable_user_mode` | `src/include/core/syscall.h` | `syscall_enable_user_mode` | `core` | `COVERED` | 1 |
-| `api:src/include/core/syscall.h:syscall_handler` | `src/include/core/syscall.h` | `syscall_handler` | `core` | `COVERED` | 1 |
-| `api:src/include/core/syscall.h:syscall_init` | `src/include/core/syscall.h` | `syscall_init` | `core` | `COVERED` | 1 |
-| `api:src/include/core/syscall.h:syscall_invoke_kernel` | `src/include/core/syscall.h` | `syscall_invoke_kernel` | `core` | `COVERED` | 1 |
-| `api:src/include/core/syscall.h:syscall_is_ready` | `src/include/core/syscall.h` | `syscall_is_ready` | `core` | `COVERED` | 1 |
-| `api:src/include/core/syscall.h:syscall_user_mode_is_enabled` | `src/include/core/syscall.h` | `syscall_user_mode_is_enabled` | `core` | `COVERED` | 1 |
+| `api:src/include/core/syscall.h:syscall_enable_user_mode` | `src/include/core/syscall.h` | `syscall_enable_user_mode` | `core` | `COVERED` | 2 |
+| `api:src/include/core/syscall.h:syscall_handler` | `src/include/core/syscall.h` | `syscall_handler` | `core` | `COVERED` | 2 |
+| `api:src/include/core/syscall.h:syscall_init` | `src/include/core/syscall.h` | `syscall_init` | `core` | `COVERED` | 2 |
+| `api:src/include/core/syscall.h:syscall_invoke_kernel` | `src/include/core/syscall.h` | `syscall_invoke_kernel` | `core` | `COVERED` | 2 |
+| `api:src/include/core/syscall.h:syscall_is_ready` | `src/include/core/syscall.h` | `syscall_is_ready` | `core` | `COVERED` | 2 |
+| `api:src/include/core/syscall.h:syscall_user_mode_is_enabled` | `src/include/core/syscall.h` | `syscall_user_mode_is_enabled` | `core` | `COVERED` | 2 |
 | `api:src/include/core/tcp.h:tcp_abort` | `src/include/core/tcp.h` | `tcp_abort` | `core` | `COVERED` | 3 |
 | `api:src/include/core/tcp.h:tcp_close` | `src/include/core/tcp.h` | `tcp_close` | `core` | `COVERED` | 3 |
 | `api:src/include/core/tcp.h:tcp_connect` | `src/include/core/tcp.h` | `tcp_connect` | `core` | `COVERED` | 3 |
@@ -3084,40 +3084,40 @@
 | `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 45 |
 | `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 35 |
 | `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 37 |
-| `c:src/core/syscall.c:syscall_copy_user_string` | `src/core/syscall.c` | `syscall_copy_user_string` | `core` | `PENDING` | 0 |
-| `c:src/core/syscall.c:syscall_dispatch` | `src/core/syscall.c` | `syscall_dispatch` | `core` | `COVERED` | 1 |
-| `c:src/core/syscall.c:syscall_dispatch_user` | `src/core/syscall.c` | `syscall_dispatch_user` | `core` | `COVERED` | 1 |
-| `c:src/core/syscall.c:syscall_enable_user_mode` | `src/core/syscall.c` | `syscall_enable_user_mode` | `core` | `PENDING` | 0 |
-| `c:src/core/syscall.c:syscall_handler` | `src/core/syscall.c` | `syscall_handler` | `core` | `COVERED` | 1 |
-| `c:src/core/syscall.c:syscall_init` | `src/core/syscall.c` | `syscall_init` | `core` | `PENDING` | 0 |
-| `c:src/core/syscall.c:syscall_invoke_kernel` | `src/core/syscall.c` | `syscall_invoke_kernel` | `core` | `PENDING` | 0 |
-| `c:src/core/syscall.c:syscall_is_ready` | `src/core/syscall.c` | `syscall_is_ready` | `core` | `PENDING` | 0 |
-| `c:src/core/syscall.c:syscall_is_user_caller` | `src/core/syscall.c` | `syscall_is_user_caller` | `core` | `COVERED` | 1 |
-| `c:src/core/syscall.c:syscall_select_request` | `src/core/syscall.c` | `syscall_select_request` | `core` | `PENDING` | 0 |
-| `c:src/core/syscall.c:syscall_user_chdir` | `src/core/syscall.c` | `syscall_user_chdir` | `core` | `PENDING` | 0 |
-| `c:src/core/syscall.c:syscall_user_console_write` | `src/core/syscall.c` | `syscall_user_console_write` | `core` | `PENDING` | 0 |
-| `c:src/core/syscall.c:syscall_user_file_fsync` | `src/core/syscall.c` | `syscall_user_file_fsync` | `core` | `PENDING` | 0 |
-| `c:src/core/syscall.c:syscall_user_file_ioctl` | `src/core/syscall.c` | `syscall_user_file_ioctl` | `core` | `PENDING` | 0 |
-| `c:src/core/syscall.c:syscall_user_file_lseek` | `src/core/syscall.c` | `syscall_user_file_lseek` | `core` | `PENDING` | 0 |
-| `c:src/core/syscall.c:syscall_user_file_open` | `src/core/syscall.c` | `syscall_user_file_open` | `core` | `PENDING` | 0 |
-| `c:src/core/syscall.c:syscall_user_file_read` | `src/core/syscall.c` | `syscall_user_file_read` | `core` | `PENDING` | 0 |
-| `c:src/core/syscall.c:syscall_user_file_write` | `src/core/syscall.c` | `syscall_user_file_write` | `core` | `PENDING` | 0 |
-| `c:src/core/syscall.c:syscall_user_getcwd` | `src/core/syscall.c` | `syscall_user_getcwd` | `core` | `PENDING` | 0 |
-| `c:src/core/syscall.c:syscall_user_memory` | `src/core/syscall.c` | `syscall_user_memory` | `core` | `PENDING` | 0 |
-| `c:src/core/syscall.c:syscall_user_message_receive` | `src/core/syscall.c` | `syscall_user_message_receive` | `core` | `PENDING` | 0 |
-| `c:src/core/syscall.c:syscall_user_message_send` | `src/core/syscall.c` | `syscall_user_message_send` | `core` | `PENDING` | 0 |
-| `c:src/core/syscall.c:syscall_user_mmap` | `src/core/syscall.c` | `syscall_user_mmap` | `core` | `COVERED` | 1 |
-| `c:src/core/syscall.c:syscall_user_mode_is_enabled` | `src/core/syscall.c` | `syscall_user_mode_is_enabled` | `core` | `COVERED` | 1 |
-| `c:src/core/syscall.c:syscall_user_munmap` | `src/core/syscall.c` | `syscall_user_munmap` | `core` | `COVERED` | 1 |
-| `c:src/core/syscall.c:syscall_user_pipe` | `src/core/syscall.c` | `syscall_user_pipe` | `core` | `PENDING` | 0 |
-| `c:src/core/syscall.c:syscall_user_poll` | `src/core/syscall.c` | `syscall_user_poll` | `core` | `PENDING` | 0 |
-| `c:src/core/syscall.c:syscall_user_select` | `src/core/syscall.c` | `syscall_user_select` | `core` | `PENDING` | 0 |
-| `c:src/core/syscall.c:syscall_user_signal_action` | `src/core/syscall.c` | `syscall_user_signal_action` | `core` | `PENDING` | 0 |
-| `c:src/core/syscall.c:syscall_user_signal_mask` | `src/core/syscall.c` | `syscall_user_signal_mask` | `core` | `PENDING` | 0 |
-| `c:src/core/syscall.c:syscall_user_sync` | `src/core/syscall.c` | `syscall_user_sync` | `core` | `PENDING` | 0 |
-| `c:src/core/syscall.c:syscall_user_uptime` | `src/core/syscall.c` | `syscall_user_uptime` | `core` | `PENDING` | 0 |
-| `c:src/core/syscall.c:syscall_validate_caller` | `src/core/syscall.c` | `syscall_validate_caller` | `core` | `COVERED` | 1 |
-| `c:src/core/syscall.c:syscall_validate_user_caller` | `src/core/syscall.c` | `syscall_validate_user_caller` | `core` | `COVERED` | 1 |
+| `c:src/core/syscall.c:syscall_copy_user_string` | `src/core/syscall.c` | `syscall_copy_user_string` | `core` | `COVERED` | 1 |
+| `c:src/core/syscall.c:syscall_dispatch` | `src/core/syscall.c` | `syscall_dispatch` | `core` | `COVERED` | 2 |
+| `c:src/core/syscall.c:syscall_dispatch_user` | `src/core/syscall.c` | `syscall_dispatch_user` | `core` | `COVERED` | 2 |
+| `c:src/core/syscall.c:syscall_enable_user_mode` | `src/core/syscall.c` | `syscall_enable_user_mode` | `core` | `COVERED` | 1 |
+| `c:src/core/syscall.c:syscall_handler` | `src/core/syscall.c` | `syscall_handler` | `core` | `COVERED` | 2 |
+| `c:src/core/syscall.c:syscall_init` | `src/core/syscall.c` | `syscall_init` | `core` | `COVERED` | 1 |
+| `c:src/core/syscall.c:syscall_invoke_kernel` | `src/core/syscall.c` | `syscall_invoke_kernel` | `core` | `COVERED` | 1 |
+| `c:src/core/syscall.c:syscall_is_ready` | `src/core/syscall.c` | `syscall_is_ready` | `core` | `COVERED` | 1 |
+| `c:src/core/syscall.c:syscall_is_user_caller` | `src/core/syscall.c` | `syscall_is_user_caller` | `core` | `COVERED` | 2 |
+| `c:src/core/syscall.c:syscall_select_request` | `src/core/syscall.c` | `syscall_select_request` | `core` | `COVERED` | 1 |
+| `c:src/core/syscall.c:syscall_user_chdir` | `src/core/syscall.c` | `syscall_user_chdir` | `core` | `COVERED` | 1 |
+| `c:src/core/syscall.c:syscall_user_console_write` | `src/core/syscall.c` | `syscall_user_console_write` | `core` | `COVERED` | 1 |
+| `c:src/core/syscall.c:syscall_user_file_fsync` | `src/core/syscall.c` | `syscall_user_file_fsync` | `core` | `COVERED` | 1 |
+| `c:src/core/syscall.c:syscall_user_file_ioctl` | `src/core/syscall.c` | `syscall_user_file_ioctl` | `core` | `COVERED` | 1 |
+| `c:src/core/syscall.c:syscall_user_file_lseek` | `src/core/syscall.c` | `syscall_user_file_lseek` | `core` | `COVERED` | 1 |
+| `c:src/core/syscall.c:syscall_user_file_open` | `src/core/syscall.c` | `syscall_user_file_open` | `core` | `COVERED` | 1 |
+| `c:src/core/syscall.c:syscall_user_file_read` | `src/core/syscall.c` | `syscall_user_file_read` | `core` | `COVERED` | 1 |
+| `c:src/core/syscall.c:syscall_user_file_write` | `src/core/syscall.c` | `syscall_user_file_write` | `core` | `COVERED` | 1 |
+| `c:src/core/syscall.c:syscall_user_getcwd` | `src/core/syscall.c` | `syscall_user_getcwd` | `core` | `COVERED` | 1 |
+| `c:src/core/syscall.c:syscall_user_memory` | `src/core/syscall.c` | `syscall_user_memory` | `core` | `COVERED` | 1 |
+| `c:src/core/syscall.c:syscall_user_message_receive` | `src/core/syscall.c` | `syscall_user_message_receive` | `core` | `COVERED` | 1 |
+| `c:src/core/syscall.c:syscall_user_message_send` | `src/core/syscall.c` | `syscall_user_message_send` | `core` | `COVERED` | 1 |
+| `c:src/core/syscall.c:syscall_user_mmap` | `src/core/syscall.c` | `syscall_user_mmap` | `core` | `COVERED` | 2 |
+| `c:src/core/syscall.c:syscall_user_mode_is_enabled` | `src/core/syscall.c` | `syscall_user_mode_is_enabled` | `core` | `COVERED` | 2 |
+| `c:src/core/syscall.c:syscall_user_munmap` | `src/core/syscall.c` | `syscall_user_munmap` | `core` | `COVERED` | 2 |
+| `c:src/core/syscall.c:syscall_user_pipe` | `src/core/syscall.c` | `syscall_user_pipe` | `core` | `COVERED` | 1 |
+| `c:src/core/syscall.c:syscall_user_poll` | `src/core/syscall.c` | `syscall_user_poll` | `core` | `COVERED` | 1 |
+| `c:src/core/syscall.c:syscall_user_select` | `src/core/syscall.c` | `syscall_user_select` | `core` | `COVERED` | 1 |
+| `c:src/core/syscall.c:syscall_user_signal_action` | `src/core/syscall.c` | `syscall_user_signal_action` | `core` | `COVERED` | 1 |
+| `c:src/core/syscall.c:syscall_user_signal_mask` | `src/core/syscall.c` | `syscall_user_signal_mask` | `core` | `COVERED` | 1 |
+| `c:src/core/syscall.c:syscall_user_sync` | `src/core/syscall.c` | `syscall_user_sync` | `core` | `COVERED` | 1 |
+| `c:src/core/syscall.c:syscall_user_uptime` | `src/core/syscall.c` | `syscall_user_uptime` | `core` | `COVERED` | 1 |
+| `c:src/core/syscall.c:syscall_validate_caller` | `src/core/syscall.c` | `syscall_validate_caller` | `core` | `COVERED` | 2 |
+| `c:src/core/syscall.c:syscall_validate_user_caller` | `src/core/syscall.c` | `syscall_validate_user_caller` | `core` | `COVERED` | 2 |
 | `c:src/core/tcp.c:tcp_abort` | `src/core/tcp.c` | `tcp_abort` | `core` | `COVERED` | 1 |
 | `c:src/core/tcp.c:tcp_absolute_difference` | `src/core/tcp.c` | `tcp_absolute_difference` | `core` | `COVERED` | 3 |
 | `c:src/core/tcp.c:tcp_accept_fin` | `src/core/tcp.c` | `tcp_accept_fin` | `core` | `COVERED` | 1 |
@@ -7439,6 +7439,7 @@
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
 | `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
+| `host:core:syscall` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, habilitacao ring 3, dispatch de syscalls, limites, copias de usuario, IPC, sinais e rejeicoes ring 0 | dispatcher preserva os codigos canonicos, rejeita chamadas fora de estado e completa os caminhos de usuario e kernel | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado do dispatcher e buffers estaticos da fixture host | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -7843,31 +7844,6 @@
 - `c:src/core/app_remote.c:app_remote_write_record`
 - `c:src/core/app_remote.c:app_remote_write_u16`
 - `c:src/core/app_remote.c:app_remote_write_u32`
-- `c:src/core/syscall.c:syscall_copy_user_string`
-- `c:src/core/syscall.c:syscall_enable_user_mode`
-- `c:src/core/syscall.c:syscall_init`
-- `c:src/core/syscall.c:syscall_invoke_kernel`
-- `c:src/core/syscall.c:syscall_is_ready`
-- `c:src/core/syscall.c:syscall_select_request`
-- `c:src/core/syscall.c:syscall_user_chdir`
-- `c:src/core/syscall.c:syscall_user_console_write`
-- `c:src/core/syscall.c:syscall_user_file_fsync`
-- `c:src/core/syscall.c:syscall_user_file_ioctl`
-- `c:src/core/syscall.c:syscall_user_file_lseek`
-- `c:src/core/syscall.c:syscall_user_file_open`
-- `c:src/core/syscall.c:syscall_user_file_read`
-- `c:src/core/syscall.c:syscall_user_file_write`
-- `c:src/core/syscall.c:syscall_user_getcwd`
-- `c:src/core/syscall.c:syscall_user_memory`
-- `c:src/core/syscall.c:syscall_user_message_receive`
-- `c:src/core/syscall.c:syscall_user_message_send`
-- `c:src/core/syscall.c:syscall_user_pipe`
-- `c:src/core/syscall.c:syscall_user_poll`
-- `c:src/core/syscall.c:syscall_user_select`
-- `c:src/core/syscall.c:syscall_user_signal_action`
-- `c:src/core/syscall.c:syscall_user_signal_mask`
-- `c:src/core/syscall.c:syscall_user_sync`
-- `c:src/core/syscall.c:syscall_user_uptime`
 - `c:src/core/update.c:update_action_fail`
 - `c:src/core/update.c:update_action_reason_name`
 - `c:src/core/update.c:update_apply_file`

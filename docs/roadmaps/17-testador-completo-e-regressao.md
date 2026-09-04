@@ -1528,6 +1528,14 @@ pendente.
   7.196 superficies, 3.953 `COVERED`, 3.243 `PENDING` e 86 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Core/syscall concluido em 2026-09-04. O novo caso
+  `host:core:syscall` usa uma fixture estatica para exercitar o dispatcher real
+  em ring 0 e ring 3, incluindo inicializacao, habilitacao, limites, copias
+  protegidas, VFS/App API, IPC, sinais e rejeicoes de estado. A cobertura
+  instrumentada resolveu as 34 funcoes de `src/core/syscall.c`, sem enderecos
+  desconhecidos ou simbolos ambiguos. O fechamento integral, o gate estrito e
+  a validacao TST7 completa continuam pendentes.
+
 - Incremento Core/app_loader concluido em 2026-09-03. O caso host-only
   `host:core:app-loader` foi adicionado com fixture estatica de processo,
   filesystem, paging e syscall. O teste cobre parser de argumentos, limites,

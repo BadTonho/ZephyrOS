@@ -13170,10 +13170,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:syscall",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/syscall.h:syscall_handler",
@@ -13191,10 +13192,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:syscall",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/syscall.h:syscall_init",
@@ -13212,10 +13214,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:syscall",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/syscall.h:syscall_invoke_kernel",
@@ -13233,10 +13236,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:syscall",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/syscall.h:syscall_is_ready",
@@ -13254,10 +13258,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:syscall",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/syscall.h:syscall_user_mode_is_enabled",
@@ -13275,10 +13280,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:syscall",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/core/tcp.h:tcp_abort",
@@ -68102,9 +68108,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:syscall"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_dispatch",
@@ -68122,10 +68131,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:syscall",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_dispatch_user",
@@ -68143,10 +68153,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:syscall",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_enable_user_mode",
@@ -68162,9 +68173,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:syscall"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_handler",
@@ -68182,10 +68196,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:syscall",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_init",
@@ -68201,9 +68216,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:syscall"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_invoke_kernel",
@@ -68219,9 +68237,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:syscall"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_is_ready",
@@ -68237,9 +68258,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:syscall"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_is_user_caller",
@@ -68257,10 +68281,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:syscall",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_select_request",
@@ -68276,9 +68301,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:syscall"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_user_chdir",
@@ -68294,9 +68322,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:syscall"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_user_console_write",
@@ -68312,9 +68343,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:syscall"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_user_file_fsync",
@@ -68330,9 +68364,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:syscall"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_user_file_ioctl",
@@ -68348,9 +68385,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:syscall"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_user_file_lseek",
@@ -68366,9 +68406,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:syscall"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_user_file_open",
@@ -68384,9 +68427,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:syscall"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_user_file_read",
@@ -68402,9 +68448,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:syscall"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_user_file_write",
@@ -68420,9 +68469,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:syscall"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_user_getcwd",
@@ -68438,9 +68490,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:syscall"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_user_memory",
@@ -68456,9 +68511,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:syscall"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_user_message_receive",
@@ -68474,9 +68532,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:syscall"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_user_message_send",
@@ -68492,9 +68553,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:syscall"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_user_mmap",
@@ -68512,10 +68576,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:syscall",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_user_mode_is_enabled",
@@ -68533,10 +68598,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:syscall",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_user_munmap",
@@ -68554,10 +68620,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:syscall",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_user_pipe",
@@ -68573,9 +68640,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:syscall"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_user_poll",
@@ -68591,9 +68661,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:syscall"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_user_select",
@@ -68609,9 +68682,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:syscall"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_user_signal_action",
@@ -68627,9 +68703,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:syscall"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_user_signal_mask",
@@ -68645,9 +68724,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:syscall"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_user_sync",
@@ -68663,9 +68745,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:syscall"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_user_uptime",
@@ -68681,9 +68766,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:syscall"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_validate_caller",
@@ -68701,10 +68789,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:syscall",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/syscall.c:syscall_validate_user_caller",
@@ -68722,10 +68811,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:core:syscall",
         "qemu:tst4:paging-vma"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/core/tcp.c:tcp_abort",
@@ -172409,6 +172499,81 @@
         "interrupts",
         "coverage",
         "snapshot"
+      ],
+      "status": "AUTOMATED"
+    },
+    {
+      "id": "host:core:syscall",
+      "scenario": "Contrato host-only do dispatcher de syscalls em ring 0 e ring 3",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "user_addresses": "mapa estatico sem hardware"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "exercitar inicializacao, habilitacao ring 3, dispatch de syscalls, limites, copias de usuario, IPC, sinais e rejeicoes ring 0",
+      "expected": "dispatcher preserva os codigos canonicos, rejeita chamadas fora de estado e completa os caminhos de usuario e kernel",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente estado do dispatcher e buffers estaticos da fixture host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "surface_ids": [
+        "api:src/include/core/syscall.h:syscall_enable_user_mode",
+        "api:src/include/core/syscall.h:syscall_handler",
+        "api:src/include/core/syscall.h:syscall_init",
+        "api:src/include/core/syscall.h:syscall_invoke_kernel",
+        "api:src/include/core/syscall.h:syscall_is_ready",
+        "api:src/include/core/syscall.h:syscall_user_mode_is_enabled",
+        "c:src/core/syscall.c:syscall_copy_user_string",
+        "c:src/core/syscall.c:syscall_dispatch",
+        "c:src/core/syscall.c:syscall_dispatch_user",
+        "c:src/core/syscall.c:syscall_enable_user_mode",
+        "c:src/core/syscall.c:syscall_handler",
+        "c:src/core/syscall.c:syscall_init",
+        "c:src/core/syscall.c:syscall_invoke_kernel",
+        "c:src/core/syscall.c:syscall_is_ready",
+        "c:src/core/syscall.c:syscall_is_user_caller",
+        "c:src/core/syscall.c:syscall_select_request",
+        "c:src/core/syscall.c:syscall_user_chdir",
+        "c:src/core/syscall.c:syscall_user_console_write",
+        "c:src/core/syscall.c:syscall_user_file_fsync",
+        "c:src/core/syscall.c:syscall_user_file_ioctl",
+        "c:src/core/syscall.c:syscall_user_file_lseek",
+        "c:src/core/syscall.c:syscall_user_file_open",
+        "c:src/core/syscall.c:syscall_user_file_read",
+        "c:src/core/syscall.c:syscall_user_file_write",
+        "c:src/core/syscall.c:syscall_user_getcwd",
+        "c:src/core/syscall.c:syscall_user_memory",
+        "c:src/core/syscall.c:syscall_user_message_receive",
+        "c:src/core/syscall.c:syscall_user_message_send",
+        "c:src/core/syscall.c:syscall_user_mmap",
+        "c:src/core/syscall.c:syscall_user_mode_is_enabled",
+        "c:src/core/syscall.c:syscall_user_munmap",
+        "c:src/core/syscall.c:syscall_user_pipe",
+        "c:src/core/syscall.c:syscall_user_poll",
+        "c:src/core/syscall.c:syscall_user_select",
+        "c:src/core/syscall.c:syscall_user_signal_action",
+        "c:src/core/syscall.c:syscall_user_signal_mask",
+        "c:src/core/syscall.c:syscall_user_sync",
+        "c:src/core/syscall.c:syscall_user_uptime",
+        "c:src/core/syscall.c:syscall_validate_caller",
+        "c:src/core/syscall.c:syscall_validate_user_caller"
+      ],
+      "tags": [
+        "host",
+        "core",
+        "syscall",
+        "ring0",
+        "ring3",
+        "limits",
+        "coverage"
       ],
       "status": "AUTOMATED"
     }

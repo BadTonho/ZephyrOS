@@ -356,6 +356,17 @@ class CoreHostRunnerTests(unittest.TestCase):
         self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
                       "test_taskbar_host.c", sources)
 
+    def test_syscall_case_has_dispatcher_fixture_sources(self):
+        result_dir, binary, sources, suite = core_host_runner.case_configuration(
+            "host:core:syscall")
+        self.assertEqual(suite, "syscall-host")
+        self.assertEqual(result_dir, core_host_runner.SYSCALL_RESULT_DIR)
+        self.assertEqual(binary, core_host_runner.SYSCALL_BINARY)
+        self.assertIn(core_host_runner.ROOT / "src" / "core" / "syscall.c",
+                      sources)
+        self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
+                      "test_syscall_host.c", sources)
+
     def test_shell_commands_vfs_case_has_pipeline_fixture_sources(self):
         result_dir, binary, sources, suite = core_host_runner.case_configuration(
             "host:shell:commands-vfs")
