@@ -6,6 +6,9 @@
 #include "fs/fs.h"
 #include "fs/storage.h"
 #include "process/process.h"
+#if defined(ZEPHYROS_HOST_TEST)
+#include "update_remote_system_host.h"
+#endif
 
 #define SYSTEM_CACHE_MAGIC "ZSC1"
 #define SYSTEM_CACHE_FORMAT_VERSION 1U
@@ -789,3 +792,151 @@ const char* update_remote_system_reason_name(update_remote_system_reason_t reaso
         default: return "UNKNOWN";
     }
 }
+
+#if defined(ZEPHYROS_HOST_TEST)
+#define SYSTEM_CACHE_HOST_PACKAGE_SIZE (UPDATE_SYSTEM_HEADER_SIZE + 1024U)
+static uint8_t system_cache_host_package_data[SYSTEM_CACHE_HOST_PACKAGE_SIZE];
+
+int update_remote_system_host_test_contracts(void) {
+    uint8_t raw[UPDATE_REMOTE_SYSTEM_CONTROL_SIZE];
+    char text[UPDATE_REMOTE_TAG_SIZE];
+    char path[FS_MAX_PATH];
+    system_cache_record_t record;
+    system_cache_record_t decoded;
+    system_cache_transfer_t transfer;
+    update_system_remote_asset_t asset;
+    update_system_verification_t verification;
+    update_remote_options_t options;
+    update_remote_system_result_t result_out;
+    update_remote_system_status_t status;
+    uint8_t hash[32];
+
+    kmemset(&options, 0, sizeof(options));
+    if (update_remote_system_init() != OK) return 90;
+    kmemset(raw, 0, sizeof(raw));
+    if (system_cache_read_u16(raw) != 0U ||
+        system_cache_read_u32(raw) != 0U) return 101;
+    system_cache_write_u16(raw, 0x1234U);
+    system_cache_write_u32(raw + 2U, 0x89ABCDEFU);
+    if (system_cache_read_u16(raw) != 0x1234U ||
+        system_cache_read_u32(raw + 2U) != 0x89ABCDEFU) return 102;
+    if (system_cache_copy_text(text, sizeof(text), "stable") != OK ||
+        kstrcmp(text, "stable") != 0 ||
+        system_cache_copy_text(text, 4U, "stable") != ERR_OVERFLOW ||
+        system_cache_copy_text(NULL, sizeof(text), "stable") != ERR_NULL) {
+        return 103;
+    }
+    kmemset(raw, 0, sizeof(raw));
+    raw[0] = 'S'; raw[1] = 'T'; raw[2] = 'A'; raw[3] = 'B';
+    if (system_cache_decode_text(raw, 8U, text, sizeof(text)) != OK ||
+        kstrcmp(text, "STAB") != 0 ||
+        system_cache_decode_text(NULL, 8U, text, sizeof(text)) != ERR_NULL) {
+        return 104;
+    }
+    kmemset(&record, 0, sizeof(record));
+    record.sequence = 3U;
+    record.active_slot = 0U;
+    record.package_size = SYSTEM_CACHE_HOST_PACKAGE_SIZE;
+    record.version.major = 2U;
+    record.version.minor = 1U;
+    record.version.patch = 0U;
+    record.epoch = 9U;
+    kmemcpy(record.tag, "stable", 7U);
+    kmemcpy(record.release_id, "R1", 3U);
+    kmemcpy(record.alias, UPDATE_REMOTE_SYSTEM_CACHE_A_ALIAS, 9U);
+    if (system_cache_hash_file("system:/cache.zsys", record.package_size,
+                               record.package_hash) != OK ||
+        system_cache_encode(&record, raw) != OK ||
+        system_cache_decode(raw, &decoded) != OK ||
+        decoded.sequence != record.sequence ||
+        decoded.active_slot != record.active_slot ||
+        kstrcmp(decoded.tag, record.tag) != 0) return 105;
+    record.active_slot = UPDATE_REMOTE_SYSTEM_CACHE_NONE;
+    record.package_size = 0U;
+    record.alias[0] = '\0';
+    if (system_cache_encode(&record, raw) != OK ||
+        system_cache_decode(raw, &decoded) != OK) return 106;
+    raw[0] = 'X';
+    if (system_cache_decode(raw, &decoded) != ERR_INVALID) return 107;
+    record.active_slot = 0U;
+    record.package_size = SYSTEM_CACHE_HOST_PACKAGE_SIZE;
+    kmemcpy(record.alias, UPDATE_REMOTE_SYSTEM_CACHE_A_ALIAS, 9U);
+    if (system_cache_load_control(UPDATE_REMOTE_SYSTEM_STATE_A_ALIAS, raw) !=
+            ERR_NOT_FOUND ||
+        system_cache_map_reason(UPDATE_SYSTEM_REASON_SIGNATURE) !=
+            UPDATE_REMOTE_SYSTEM_REASON_SIGNATURE ||
+        system_cache_map_reason(UPDATE_SYSTEM_REASON_HASH) !=
+            UPDATE_REMOTE_SYSTEM_REASON_HASH ||
+        system_cache_map_reason(UPDATE_SYSTEM_REASON_COMPATIBILITY) !=
+            UPDATE_REMOTE_SYSTEM_REASON_COMPATIBILITY ||
+        system_cache_map_reason(UPDATE_SYSTEM_REASON_BASE_VERSION) !=
+            UPDATE_REMOTE_SYSTEM_REASON_VERSION ||
+        system_cache_map_reason(UPDATE_SYSTEM_REASON_SIZE) !=
+            UPDATE_REMOTE_SYSTEM_REASON_SIZE ||
+        system_cache_map_reason(UPDATE_SYSTEM_REASON_IO) !=
+            UPDATE_REMOTE_SYSTEM_REASON_IO ||
+        system_cache_map_reason(UPDATE_SYSTEM_REASON_FORMAT) !=
+            UPDATE_REMOTE_SYSTEM_REASON_FORMAT) return 108;
+    system_cache_path(0U, path);
+    if (kstrcmp(path, "system:/ZSC0.ZSY") != 0 ||
+        system_cache_hash_file("system:/cache.zsys", 0U, hash) != OK) {
+        return 109;
+    }
+    kmemset(&asset, 0, sizeof(asset));
+    asset.package_size = SYSTEM_CACHE_HOST_PACKAGE_SIZE;
+    kmemcpy(asset.package_hash, record.package_hash, sizeof(hash));
+    kmemset(&transfer, 0, sizeof(transfer));
+    kmemcpy(transfer.volume.id, "SYSVOL", 7U);
+    transfer.target_slot = 0U;
+    if (system_cache_transfer_begin(&asset, &transfer) != OK ||
+        !transfer.writer_active ||
+        system_cache_transfer_write(system_cache_host_package_data, 16U,
+                                    &transfer) != OK ||
+        transfer.received != 16U) return 110;
+    system_cache_transfer_abort(&transfer);
+    if (transfer.writer_active) return 111;
+    kmemset(&transfer, 0, sizeof(transfer));
+    kmemcpy(transfer.volume.id, "SYSVOL", 7U);
+    transfer.target_slot = 0U;
+    if (system_cache_transfer_begin(&asset, &transfer) != OK ||
+        system_cache_transfer_finish(&transfer) != OK ||
+        transfer.writer_active) return 112;
+    if (system_cache_transfer_write(NULL, 0U, NULL) != ERR_NULL ||
+        system_cache_transfer_finish(NULL) != ERR_NULL) return 113;
+    system_cache_record = record;
+    system_cache_record.sequence = 0U;
+    if (system_cache_write_record_locked() != OK ||
+        system_cache_load_locked() != OK) return 114;
+    system_cache_volume_ready = 1U;
+    system_cache_degraded = 0U;
+    system_cache_refresh_status_locked();
+    if (system_cache_verify_locked(&verification) != OK ||
+        system_cache_status.state != UPDATE_REMOTE_SYSTEM_STATE_READY) {
+        return 115;
+    }
+    system_cache_record.active_slot = UPDATE_REMOTE_SYSTEM_CACHE_NONE;
+    system_cache_refresh_status_locked();
+    options.dry_run = 1U;
+    if (update_remote_system_fetch(NULL, &options, &result_out) != ERR_NULL ||
+        update_remote_system_fetch("stable", NULL, &result_out) != ERR_INVALID ||
+        update_remote_system_clear(&options, &result_out) != OK ||
+        !result_out.cache_preserved ||
+        update_remote_system_get_status(NULL) != ERR_NULL ||
+        update_remote_system_get_status(&status) != OK ||
+        update_remote_system_get_cached_path(NULL, sizeof(path)) != ERR_NULL ||
+        update_remote_system_get_cached_path(path, 1U) != ERR_NULL) {
+        return 116;
+    }
+    options.dry_run = 0U;
+    if (update_remote_system_clear(&options, &result_out) != OK ||
+        !result_out.cache_cleared ||
+        update_remote_system_get_cached_path(path, sizeof(path)) != ERR_NOT_FOUND) {
+        return 117;
+    }
+    if (update_remote_system_state_name(UPDATE_REMOTE_SYSTEM_STATE_READY) == NULL ||
+        update_remote_system_reason_name(UPDATE_REMOTE_SYSTEM_REASON_CACHE) == NULL) {
+        return 118;
+    }
+    return OK;
+}
+#endif

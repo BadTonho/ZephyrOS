@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **7252**
-- Casos de teste: **145**
+- Superfícies ativas: **7253**
+- Casos de teste: **146**
 - Superfícies aposentadas: **23**
 
 | Tipo | Quantidade |
 |---|---:|
 | `api_function` | 1541 |
 | `asm_entry` | 101 |
-| `c_function` | 5490 |
+| `c_function` | 5491 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 5616 |
+| `COVERED` | 5651 |
 | `MANUAL` | 0 |
-| `PENDING` | 1636 |
+| `PENDING` | 1602 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 145 |
+| `AUTOMATED` | 146 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -37,7 +37,7 @@
 | `apps` | 134 |
 | `appstore` | 88 |
 | `boot` | 136 |
-| `core` | 2808 |
+| `core` | 2809 |
 | `desktop` | 40 |
 | `drivers` | 932 |
 | `filemanager` | 92 |
@@ -604,10 +604,10 @@
 | `api:src/include/core/spinlock.h:spinlock_acquire` | `src/include/core/spinlock.h` | `spinlock_acquire` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_init` | `src/include/core/spinlock.h` | `spinlock_init` | `core` | `PENDING` | 0 |
 | `api:src/include/core/spinlock.h:spinlock_release` | `src/include/core/spinlock.h` | `spinlock_release` | `core` | `PENDING` | 0 |
-| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 49 |
-| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 53 |
-| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 43 |
-| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 45 |
+| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 50 |
+| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 54 |
+| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 44 |
+| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 46 |
 | `api:src/include/core/syscall.h:syscall_enable_user_mode` | `src/include/core/syscall.h` | `syscall_enable_user_mode` | `core` | `COVERED` | 2 |
 | `api:src/include/core/syscall.h:syscall_handler` | `src/include/core/syscall.h` | `syscall_handler` | `core` | `COVERED` | 2 |
 | `api:src/include/core/syscall.h:syscall_init` | `src/include/core/syscall.h` | `syscall_init` | `core` | `COVERED` | 2 |
@@ -721,13 +721,13 @@
 | `api:src/include/core/update_remote_runtime.h:update_remote_runtime_init` | `src/include/core/update_remote_runtime.h` | `update_remote_runtime_init` | `core` | `COVERED` | 2 |
 | `api:src/include/core/update_remote_runtime.h:update_remote_runtime_reason_name` | `src/include/core/update_remote_runtime.h` | `update_remote_runtime_reason_name` | `core` | `COVERED` | 2 |
 | `api:src/include/core/update_remote_runtime.h:update_remote_runtime_state_name` | `src/include/core/update_remote_runtime.h` | `update_remote_runtime_state_name` | `core` | `COVERED` | 2 |
-| `api:src/include/core/update_remote_system.h:update_remote_system_clear` | `src/include/core/update_remote_system.h` | `update_remote_system_clear` | `core` | `PENDING` | 0 |
-| `api:src/include/core/update_remote_system.h:update_remote_system_fetch` | `src/include/core/update_remote_system.h` | `update_remote_system_fetch` | `core` | `PENDING` | 0 |
-| `api:src/include/core/update_remote_system.h:update_remote_system_get_cached_path` | `src/include/core/update_remote_system.h` | `update_remote_system_get_cached_path` | `core` | `PENDING` | 0 |
-| `api:src/include/core/update_remote_system.h:update_remote_system_get_status` | `src/include/core/update_remote_system.h` | `update_remote_system_get_status` | `core` | `PENDING` | 0 |
-| `api:src/include/core/update_remote_system.h:update_remote_system_init` | `src/include/core/update_remote_system.h` | `update_remote_system_init` | `core` | `PENDING` | 0 |
-| `api:src/include/core/update_remote_system.h:update_remote_system_reason_name` | `src/include/core/update_remote_system.h` | `update_remote_system_reason_name` | `core` | `PENDING` | 0 |
-| `api:src/include/core/update_remote_system.h:update_remote_system_state_name` | `src/include/core/update_remote_system.h` | `update_remote_system_state_name` | `core` | `PENDING` | 0 |
+| `api:src/include/core/update_remote_system.h:update_remote_system_clear` | `src/include/core/update_remote_system.h` | `update_remote_system_clear` | `core` | `COVERED` | 1 |
+| `api:src/include/core/update_remote_system.h:update_remote_system_fetch` | `src/include/core/update_remote_system.h` | `update_remote_system_fetch` | `core` | `COVERED` | 1 |
+| `api:src/include/core/update_remote_system.h:update_remote_system_get_cached_path` | `src/include/core/update_remote_system.h` | `update_remote_system_get_cached_path` | `core` | `COVERED` | 1 |
+| `api:src/include/core/update_remote_system.h:update_remote_system_get_status` | `src/include/core/update_remote_system.h` | `update_remote_system_get_status` | `core` | `COVERED` | 1 |
+| `api:src/include/core/update_remote_system.h:update_remote_system_init` | `src/include/core/update_remote_system.h` | `update_remote_system_init` | `core` | `COVERED` | 1 |
+| `api:src/include/core/update_remote_system.h:update_remote_system_reason_name` | `src/include/core/update_remote_system.h` | `update_remote_system_reason_name` | `core` | `COVERED` | 1 |
+| `api:src/include/core/update_remote_system.h:update_remote_system_state_name` | `src/include/core/update_remote_system.h` | `update_remote_system_state_name` | `core` | `COVERED` | 1 |
 | `api:src/include/core/update_runtime.h:update_runtime_apply_cached` | `src/include/core/update_runtime.h` | `update_runtime_apply_cached` | `core` | `COVERED` | 2 |
 | `api:src/include/core/update_runtime.h:update_runtime_apply_file` | `src/include/core/update_runtime.h` | `update_runtime_apply_file` | `core` | `COVERED` | 2 |
 | `api:src/include/core/update_runtime.h:update_runtime_file_matches` | `src/include/core/update_runtime.h` | `update_runtime_file_matches` | `core` | `COVERED` | 2 |
@@ -3080,10 +3080,10 @@
 | `c:src/core/socket.c:socket_wait_local` | `src/core/socket.c` | `socket_wait_local` | `core` | `COVERED` | 1 |
 | `c:src/core/socket.c:socket_wait_owner` | `src/core/socket.c` | `socket_wait_owner` | `core` | `COVERED` | 3 |
 | `c:src/core/socket.c:socket_wake` | `src/core/socket.c` | `socket_wake` | `core` | `COVERED` | 3 |
-| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 49 |
-| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 53 |
-| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 43 |
-| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 45 |
+| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 50 |
+| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 54 |
+| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 44 |
+| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 46 |
 | `c:src/core/syscall.c:syscall_copy_user_string` | `src/core/syscall.c` | `syscall_copy_user_string` | `core` | `COVERED` | 1 |
 | `c:src/core/syscall.c:syscall_dispatch` | `src/core/syscall.c` | `syscall_dispatch` | `core` | `COVERED` | 2 |
 | `c:src/core/syscall.c:syscall_dispatch_user` | `src/core/syscall.c` | `syscall_dispatch_user` | `core` | `COVERED` | 2 |
@@ -3596,33 +3596,34 @@
 | `c:src/core/update_remote_runtime.c:update_remote_runtime_init` | `src/core/update_remote_runtime.c` | `update_remote_runtime_init` | `core` | `COVERED` | 1 |
 | `c:src/core/update_remote_runtime.c:update_remote_runtime_reason_name` | `src/core/update_remote_runtime.c` | `update_remote_runtime_reason_name` | `core` | `COVERED` | 1 |
 | `c:src/core/update_remote_runtime.c:update_remote_runtime_state_name` | `src/core/update_remote_runtime.c` | `update_remote_runtime_state_name` | `core` | `COVERED` | 1 |
-| `c:src/core/update_remote_system.c:system_cache_copy_text` | `src/core/update_remote_system.c` | `system_cache_copy_text` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_system.c:system_cache_decode` | `src/core/update_remote_system.c` | `system_cache_decode` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_system.c:system_cache_decode_text` | `src/core/update_remote_system.c` | `system_cache_decode_text` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_system.c:system_cache_encode` | `src/core/update_remote_system.c` | `system_cache_encode` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_system.c:system_cache_hash_file` | `src/core/update_remote_system.c` | `system_cache_hash_file` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_system.c:system_cache_load_control` | `src/core/update_remote_system.c` | `system_cache_load_control` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_system.c:system_cache_load_locked` | `src/core/update_remote_system.c` | `system_cache_load_locked` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_system.c:system_cache_map_reason` | `src/core/update_remote_system.c` | `system_cache_map_reason` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_system.c:system_cache_path` | `src/core/update_remote_system.c` | `system_cache_path` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_system.c:system_cache_read_u16` | `src/core/update_remote_system.c` | `system_cache_read_u16` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_system.c:system_cache_read_u32` | `src/core/update_remote_system.c` | `system_cache_read_u32` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_system.c:system_cache_refresh_status_locked` | `src/core/update_remote_system.c` | `system_cache_refresh_status_locked` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_system.c:system_cache_transfer_abort` | `src/core/update_remote_system.c` | `system_cache_transfer_abort` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_system.c:system_cache_transfer_begin` | `src/core/update_remote_system.c` | `system_cache_transfer_begin` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_system.c:system_cache_transfer_finish` | `src/core/update_remote_system.c` | `system_cache_transfer_finish` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_system.c:system_cache_transfer_write` | `src/core/update_remote_system.c` | `system_cache_transfer_write` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_system.c:system_cache_verify_locked` | `src/core/update_remote_system.c` | `system_cache_verify_locked` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_system.c:system_cache_write_record_locked` | `src/core/update_remote_system.c` | `system_cache_write_record_locked` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_system.c:system_cache_write_u16` | `src/core/update_remote_system.c` | `system_cache_write_u16` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_system.c:system_cache_write_u32` | `src/core/update_remote_system.c` | `system_cache_write_u32` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_system.c:update_remote_system_clear` | `src/core/update_remote_system.c` | `update_remote_system_clear` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_system.c:update_remote_system_fetch` | `src/core/update_remote_system.c` | `update_remote_system_fetch` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_system.c:update_remote_system_get_cached_path` | `src/core/update_remote_system.c` | `update_remote_system_get_cached_path` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_system.c:update_remote_system_get_status` | `src/core/update_remote_system.c` | `update_remote_system_get_status` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_system.c:update_remote_system_init` | `src/core/update_remote_system.c` | `update_remote_system_init` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_system.c:update_remote_system_reason_name` | `src/core/update_remote_system.c` | `update_remote_system_reason_name` | `core` | `PENDING` | 0 |
-| `c:src/core/update_remote_system.c:update_remote_system_state_name` | `src/core/update_remote_system.c` | `update_remote_system_state_name` | `core` | `PENDING` | 0 |
+| `c:src/core/update_remote_system.c:system_cache_copy_text` | `src/core/update_remote_system.c` | `system_cache_copy_text` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_system.c:system_cache_decode` | `src/core/update_remote_system.c` | `system_cache_decode` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_system.c:system_cache_decode_text` | `src/core/update_remote_system.c` | `system_cache_decode_text` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_system.c:system_cache_encode` | `src/core/update_remote_system.c` | `system_cache_encode` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_system.c:system_cache_hash_file` | `src/core/update_remote_system.c` | `system_cache_hash_file` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_system.c:system_cache_load_control` | `src/core/update_remote_system.c` | `system_cache_load_control` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_system.c:system_cache_load_locked` | `src/core/update_remote_system.c` | `system_cache_load_locked` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_system.c:system_cache_map_reason` | `src/core/update_remote_system.c` | `system_cache_map_reason` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_system.c:system_cache_path` | `src/core/update_remote_system.c` | `system_cache_path` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_system.c:system_cache_read_u16` | `src/core/update_remote_system.c` | `system_cache_read_u16` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_system.c:system_cache_read_u32` | `src/core/update_remote_system.c` | `system_cache_read_u32` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_system.c:system_cache_refresh_status_locked` | `src/core/update_remote_system.c` | `system_cache_refresh_status_locked` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_system.c:system_cache_transfer_abort` | `src/core/update_remote_system.c` | `system_cache_transfer_abort` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_system.c:system_cache_transfer_begin` | `src/core/update_remote_system.c` | `system_cache_transfer_begin` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_system.c:system_cache_transfer_finish` | `src/core/update_remote_system.c` | `system_cache_transfer_finish` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_system.c:system_cache_transfer_write` | `src/core/update_remote_system.c` | `system_cache_transfer_write` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_system.c:system_cache_verify_locked` | `src/core/update_remote_system.c` | `system_cache_verify_locked` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_system.c:system_cache_write_record_locked` | `src/core/update_remote_system.c` | `system_cache_write_record_locked` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_system.c:system_cache_write_u16` | `src/core/update_remote_system.c` | `system_cache_write_u16` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_system.c:system_cache_write_u32` | `src/core/update_remote_system.c` | `system_cache_write_u32` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_system.c:update_remote_system_clear` | `src/core/update_remote_system.c` | `update_remote_system_clear` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_system.c:update_remote_system_fetch` | `src/core/update_remote_system.c` | `update_remote_system_fetch` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_system.c:update_remote_system_get_cached_path` | `src/core/update_remote_system.c` | `update_remote_system_get_cached_path` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_system.c:update_remote_system_get_status` | `src/core/update_remote_system.c` | `update_remote_system_get_status` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_system.c:update_remote_system_host_test_contracts` | `src/core/update_remote_system.c` | `update_remote_system_host_test_contracts` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_system.c:update_remote_system_init` | `src/core/update_remote_system.c` | `update_remote_system_init` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_system.c:update_remote_system_reason_name` | `src/core/update_remote_system.c` | `update_remote_system_reason_name` | `core` | `COVERED` | 1 |
+| `c:src/core/update_remote_system.c:update_remote_system_state_name` | `src/core/update_remote_system.c` | `update_remote_system_state_name` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_action_fail` | `src/core/update_runtime.c` | `runtime_action_fail` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_alias` | `src/core/update_runtime.c` | `runtime_alias` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_apply_plan` | `src/core/update_runtime.c` | `runtime_apply_plan` | `core` | `PENDING` | 0 |
@@ -7361,6 +7362,7 @@
 | `host:core:update` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar codificacao, decodificacao, validacao e corrupcao controlada de registros U3/U4 e headers ZUPD | registros validos fazem round-trip e entradas invalidas retornam os erros canonicos sem estado persistente | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos no processo host | buffers locais descartados; manifesto, logs e cobertura preservados |
 | `host:core:update-remote` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar serializacao, validacao, cache redundante, download e contratos publicos com fixtures estaticos | entradas validas fazem round-trip e indisponibilidade, corrupcao, cancelamento e limites retornam erros canonicos sem rede ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos no processo host; nenhuma rede ou armazenamento real | estado e arquivos simulados pertencem ao processo host; manifesto, logs e cobertura preservados |
 | `host:core:update-remote-runtime` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar registros, parser de release, transporte HTTP, cache e APIs publicas com fixtures estaticos | formatos validos fazem round-trip e indisponibilidade, corrupcao e limites retornam erros canonicos sem estado persistente | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos no processo host; nenhuma rede ou armazenamento real | estado e buffers pertencem ao processo host; manifesto, logs e cobertura preservados |
+| `host:core:update-remote-system` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar serializacao, cache redundante, hash, transporte transacional e contratos publicos com buffers estaticos | estado valido faz round-trip e indisponibilidade, corrupcao e limites retornam erros canonicos sem rede ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos no processo host | estado, controles e arquivos simulados pertencem ao processo host; manifesto, logs e cobertura preservados |
 | `host:core:update-runtime` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar contratos de registros, manifestos, pacotes, planejamento e comparacao de arquivos runtime | entradas validas fazem round-trip e entradas invalidas retornam erros canonicos sem estado persistente | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos no processo host | buffers locais descartados; manifesto, logs e cobertura preservados |
 | `host:core:update-system-slots` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar codificacao, validacao, journal, redundancia, recuperacao e contratos publicos com buffers estaticos | estado valido faz round-trip e entradas invalidas ou recursos ausentes retornam erros canonicos sem armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos no processo host | estado, controles e arquivos simulados pertencem ao processo host; manifesto, logs e cobertura preservados |
 | `host:core:usb-manager` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inventariar controladores UHCI, EHCI e fora do escopo, sincronizar drivers de classe, consultar portas e dispositivos, executar polling e refresh | estados, identificadores, agregacoes, limites, indisponibilidade e recuperacao preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente fixtures estaticos PCI, UHCI, EHCI, MSC e HID no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7528,13 +7530,6 @@
 - `api:src/include/core/update_remote.h:update_remote_release_fetch`
 - `api:src/include/core/update_remote_github.h:update_remote_github_query`
 - `api:src/include/core/update_remote_github.h:update_remote_github_runtime_query`
-- `api:src/include/core/update_remote_system.h:update_remote_system_clear`
-- `api:src/include/core/update_remote_system.h:update_remote_system_fetch`
-- `api:src/include/core/update_remote_system.h:update_remote_system_get_cached_path`
-- `api:src/include/core/update_remote_system.h:update_remote_system_get_status`
-- `api:src/include/core/update_remote_system.h:update_remote_system_init`
-- `api:src/include/core/update_remote_system.h:update_remote_system_reason_name`
-- `api:src/include/core/update_remote_system.h:update_remote_system_state_name`
 - `api:src/include/core/update_system.h:update_system_check_tag`
 - `api:src/include/core/update_system.h:update_system_init`
 - `api:src/include/core/update_system.h:update_system_is_ready`
@@ -7972,33 +7967,6 @@
 - `c:src/core/update_remote_release.c:update_release_wait_http`
 - `c:src/core/update_remote_release.c:update_remote_release_check`
 - `c:src/core/update_remote_release.c:update_remote_release_fetch`
-- `c:src/core/update_remote_system.c:system_cache_copy_text`
-- `c:src/core/update_remote_system.c:system_cache_decode`
-- `c:src/core/update_remote_system.c:system_cache_decode_text`
-- `c:src/core/update_remote_system.c:system_cache_encode`
-- `c:src/core/update_remote_system.c:system_cache_hash_file`
-- `c:src/core/update_remote_system.c:system_cache_load_control`
-- `c:src/core/update_remote_system.c:system_cache_load_locked`
-- `c:src/core/update_remote_system.c:system_cache_map_reason`
-- `c:src/core/update_remote_system.c:system_cache_path`
-- `c:src/core/update_remote_system.c:system_cache_read_u16`
-- `c:src/core/update_remote_system.c:system_cache_read_u32`
-- `c:src/core/update_remote_system.c:system_cache_refresh_status_locked`
-- `c:src/core/update_remote_system.c:system_cache_transfer_abort`
-- `c:src/core/update_remote_system.c:system_cache_transfer_begin`
-- `c:src/core/update_remote_system.c:system_cache_transfer_finish`
-- `c:src/core/update_remote_system.c:system_cache_transfer_write`
-- `c:src/core/update_remote_system.c:system_cache_verify_locked`
-- `c:src/core/update_remote_system.c:system_cache_write_record_locked`
-- `c:src/core/update_remote_system.c:system_cache_write_u16`
-- `c:src/core/update_remote_system.c:system_cache_write_u32`
-- `c:src/core/update_remote_system.c:update_remote_system_clear`
-- `c:src/core/update_remote_system.c:update_remote_system_fetch`
-- `c:src/core/update_remote_system.c:update_remote_system_get_cached_path`
-- `c:src/core/update_remote_system.c:update_remote_system_get_status`
-- `c:src/core/update_remote_system.c:update_remote_system_init`
-- `c:src/core/update_remote_system.c:update_remote_system_reason_name`
-- `c:src/core/update_remote_system.c:update_remote_system_state_name`
 - `c:src/core/update_runtime.c:runtime_apply_plan`
 - `c:src/core/update_runtime.c:runtime_apply_plan_locked`
 - `c:src/core/update_runtime.c:runtime_build_rollback_plan`
