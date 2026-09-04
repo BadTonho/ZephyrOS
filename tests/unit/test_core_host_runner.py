@@ -367,6 +367,17 @@ class CoreHostRunnerTests(unittest.TestCase):
         self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
                       "test_syscall_host.c", sources)
 
+    def test_process_runtime_case_has_process_fixture_sources(self):
+        result_dir, binary, sources, suite = core_host_runner.case_configuration(
+            "host:process:runtime")
+        self.assertEqual(suite, "process-host")
+        self.assertEqual(result_dir, core_host_runner.PROCESS_RESULT_DIR)
+        self.assertEqual(binary, core_host_runner.PROCESS_BINARY)
+        self.assertIn(core_host_runner.ROOT / "src" / "process" /
+                      "process.c", sources)
+        self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
+                      "test_process_host.c", sources)
+
     def test_shell_commands_vfs_case_has_pipeline_fixture_sources(self):
         result_dir, binary, sources, suite = core_host_runner.case_configuration(
             "host:shell:commands-vfs")

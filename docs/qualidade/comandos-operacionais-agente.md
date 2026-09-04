@@ -82,6 +82,7 @@ make test-shell-job-host
 make test-shell-pipeline-host
 make test-socket-runtime-host
 make test-sysfs-host
+make test-process-host
 ```
 
 O caso de scheduling cobre `wait`, `workqueue` e `irq_deferred` em processo
@@ -327,6 +328,17 @@ sinal, foco, fallback, restauracao e limpeza. O relatorio fica em
 
 ```text
 make test-process-ipc-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O caso `test-process-host` compila `src/process/process.c` real com paging,
+VMA, memoria, SLAB, syscall, sinais, IPC, VFS e scheduler falsos. Ele cobre
+estado inicial, snapshots, limites de criacao, transicoes, cancelamento,
+terminacao, desligamento, wait queues e limpeza da fixture, sem instrucoes
+privilegiadas ou hardware. O relatorio fica em
+`build/test-results/process-host/`:
+
+```text
+make test-process-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
 O caso `test-workqueue-host` exercita a fila de trabalho com autoteste interno,

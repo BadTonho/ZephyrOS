@@ -4392,6 +4392,28 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   superficies, 4.113 `COVERED`, 3.083 `PENDING` e 87 casos; o fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Processos/runtime concluido em 2026-09-04. O caso host-only
+  `host:process:runtime` foi adicionado ao `core_host_runner.py`, ao Makefile,
+  ao registro de cobertura e ao allowlist de host do TST7. A fixture compila
+  `src/process/process.c` real e usa somente processos, paging, VMA, memoria,
+  SLAB, syscall, sinais, IPC, VFS e scheduler estaticos. Foram exercitados
+  inicializacao, getters, snapshots, limites de criacao, transicoes,
+  cancelamento, terminacao, desligamento, wait queues e limpeza.
+
+  Concluida em: 2026-09-04 09:30 (America/Sao_Paulo)
+
+  `make q3check` passou. `make clean` seguido de `make` passou e gerou
+  `build/zephyros.img`; `make test-process-host` passou novamente apos o build
+  limpo. `make catalog-test` passou com 19 testes unitarios e catalogo valido.
+  A suite `python -m unittest tests.unit.test_core_host_runner
+  tests.unit.test_tst7_runner` passou com 71 testes. O relatorio instrumentado
+  `build/test-results/process-host/coverage.json` terminou `PASS`, com
+  `covered=70`, `unknown_addresses=[]` e `ambiguous_symbols=[]`. O catalogo
+  registra 7.219 superficies, 5.183 `COVERED`, 2.036 `PENDING` e 136 casos.
+  As rotas de troca de contexto, entrada de usuario, idle e bootstrap do
+  scheduler continuam pendentes por exigirem evidencia de execucao real; nao
+  foram cobertas por associacao generica.
+
 - Concluida em: 2026-09-02
 
   Incremento Drivers/TSS: foi criado o caso host-only `host:drivers:tss` e o

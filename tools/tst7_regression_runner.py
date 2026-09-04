@@ -124,6 +124,7 @@ HOST_CASE_TARGETS = {
     "host:core:app-loader": "test-app-loader-host",
     "host:ui:taskbar": "test-taskbar-host",
     "host:core:syscall": "test-syscall-host",
+    "host:process:runtime": "test-process-host",
     "host:core:app-catalog": "test-app-catalog-host",
     "host:core:input": "test-input-host",
     "host:core:power": "test-power-host",

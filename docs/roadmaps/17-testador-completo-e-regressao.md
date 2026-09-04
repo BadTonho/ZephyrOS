@@ -1281,6 +1281,26 @@ pendente.
   7.197 superficies, 3.898 `COVERED`, 3.299 `PENDING` e 85 casos. O fechamento
   integral, o gate estrito e a validacao TST7 completa continuam pendentes.
 
+- Incremento Processos/runtime concluido em 2026-09-04. Foi criado o caso
+  host-only `host:process:runtime` e o alvo `make test-process-host`, compilando
+  `src/process/process.c` real com fixtures estaticas de paging, VMA, memoria,
+  SLAB, syscall, sinais, IPC, VFS e scheduler. A fixture cobre estado inicial,
+  snapshots, limites de criacao, transicoes, cancelamento, terminacao,
+  desligamento, wait queues e limpeza, sem executar instrucoes privilegiadas,
+  hardware ou allocator real.
+
+  A execucao instrumentada terminou `PASS`, com `status=PASS`, `covered=70`,
+  `unknown=0` e `ambiguous=0` no relatorio
+  `build/test-results/process-host/coverage.json`. Tambem passaram
+  `make q3check`, `make clean`, `make`, `make test-process-host`,
+  `make catalog-test` e 71 testes unitarios dos runners. O catalogo atual
+  registra 7.219 superficies, 5.183 `COVERED`, 2.036 `PENDING` e 136 casos.
+  As entradas de baixo nivel que dependem de contexto real de entrada
+  (`process_context_switch`, entradas de usuario, idle e bootstrap do
+  scheduler) permanecem pendentes; nao foram marcadas artificialmente.
+  O fechamento integral, o gate estrito e a validacao TST7 completa continuam
+  pendentes.
+
 - Incremento UI/taskbar concluido em 2026-09-03. O novo caso host-only
   `host:ui:taskbar` usa dependencias falsas de VESA, display, desktop, mouse,
   timer e desenho para exercitar TUI e GUI, layouts, limites de botoes, menus,

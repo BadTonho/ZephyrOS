@@ -5230,6 +5230,57 @@
       "evidence": "make test-syscall-host PASS com fixture ring 0/ring 3, mapa de memoria de usuario estatico, limites, IPC, sinais e cobertura instrumentada completa"
     },
     {
+      "id": "process-host-dynamic",
+      "domain": "process-runtime",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:process:runtime"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/process-host/coverage.json",
+      "coverage_sources": [
+        "src/process/process.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:process:runtime",
+        "scenario": "Contrato host-only do ciclo de vida e estados do gerenciador de processos",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "none"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "exercitar inicializacao, snapshots, scheduler, limites de criacao, transicoes, cancelamento, sinais, energia e filas de espera com processos estaticos",
+        "expected": "o gerenciador preserva codigos canonicos, estados, identidade, snapshots, limpeza e invariantes sem executar instrucoes privilegiadas",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente tabelas, processos e buffers estaticos da fixture host",
+        "cleanup": "processo host encerrado, processos estaticos removidos e manifesto, logs e cobertura preservados",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "process",
+          "scheduler",
+          "snapshots",
+          "limits",
+          "recovery",
+          "coverage"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "make test-process-host PASS com fixtures estaticas, snapshots, scheduler, limites, cancelamento, sinais, shutdown cooperativo e cobertura instrumentada"
+    },
+    {
       "id": "assembly-qemu-tst7-dynamic",
       "domain": "drivers-interrupt-assembly",
       "owner": "quality",
