@@ -3613,7 +3613,7 @@
       "include_public_apis": true,
       "case_definition": {
         "id": "host:shell:commands-storage",
-        "scenario": "Caminhos negativos dos comandos de indice e pesquisa",
+        "scenario": "Comandos de armazenamento, bloco, cache e indice com doubles estaticos",
         "owner": "quality",
         "layer": "host",
         "executor": "host",
@@ -3628,15 +3628,15 @@
           "storage": "indice e job falsos"
         },
         "preconditions": "compilador C nativo e nm disponiveis",
-        "action": "enviar argumentos nulos, invalidos, vazios e uma pesquisa sem indice disponivel",
-        "expected": "dispatcher, parser e mensagens de erro preservam os limites e codigos canonicos",
+        "action": "executar caminhos validos, negativos, limites, diagnostico, busca, sync e callbacks de job",
+        "expected": "dispatchers, parsers, formatacao e callbacks preservam limites, estados e codigos canonicos",
         "errors": "compilador ausente, warning, saida inesperada, falha de assercao ou timeout",
         "effects": "somente buffers estaticos de saida e doubles do indice no processo host",
         "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
         "status": "AUTOMATED",
         "surface_ids": []
       },
-      "evidence": "make test-shell-commands-storage-host PASS com index e search; a fixture cobre diretamente os dispatchers e os caminhos negativos de parsing usando indice e job falsos"
+      "evidence": "make test-shell-commands-storage-host PASS com bloco, cache, sync, storage, index, search e job; a fixture cobre diretamente os dispatchers e caminhos validos, negativos e de limite usando doubles estaticos"
     },
     {
       "id": "shell-commands-vfs-host-dynamic",
