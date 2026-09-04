@@ -12999,6 +12999,7 @@
         "host:storage:fs",
         "host:storage:procfs",
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "host:storage:vfs",
         "host:storage:vfs-path",
         "host:storage:wav",
@@ -13066,6 +13067,7 @@
         "host:storage:fs",
         "host:storage:procfs",
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "host:storage:vfs",
         "host:storage:vfs-path",
         "host:storage:wav",
@@ -13125,6 +13127,7 @@
         "host:shell:wifi",
         "host:storage:devfs",
         "host:storage:procfs",
+        "host:storage:storage-fat32",
         "host:storage:vfs",
         "host:tst3:string-compress",
         "qemu:tst5:apps",
@@ -13183,6 +13186,7 @@
         "host:storage:fs",
         "host:storage:procfs",
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "host:storage:vfs",
         "host:storage:vfs-path",
         "host:tst3:string-compress",
@@ -26747,6 +26751,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -26773,6 +26778,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -26799,6 +26805,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -26825,6 +26832,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -26851,6 +26859,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -26877,6 +26886,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -26903,6 +26913,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -26929,6 +26940,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -26955,6 +26967,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -26981,6 +26994,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27007,6 +27021,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27033,6 +27048,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27059,6 +27075,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27085,6 +27102,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27111,6 +27129,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27137,6 +27156,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27163,6 +27183,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27189,6 +27210,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27215,6 +27237,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27241,6 +27264,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27267,6 +27291,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27293,6 +27318,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27319,6 +27345,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27345,6 +27372,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27371,6 +27399,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27397,6 +27426,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27423,6 +27453,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27449,6 +27480,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27475,6 +27507,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27501,6 +27534,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27527,6 +27561,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27553,6 +27588,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27579,6 +27615,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27605,6 +27642,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27631,6 +27669,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27657,6 +27696,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27683,6 +27723,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27709,6 +27750,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27735,6 +27777,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27761,6 +27804,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27787,6 +27831,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27813,6 +27858,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27839,6 +27885,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27865,6 +27912,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27891,6 +27939,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27917,6 +27966,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27943,6 +27993,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -27969,6 +28020,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -68022,6 +68074,7 @@
         "host:storage:fs",
         "host:storage:procfs",
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "host:storage:vfs",
         "host:storage:vfs-path",
         "host:storage:wav",
@@ -68089,6 +68142,7 @@
         "host:storage:fs",
         "host:storage:procfs",
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "host:storage:vfs",
         "host:storage:vfs-path",
         "host:storage:wav",
@@ -68148,6 +68202,7 @@
         "host:shell:wifi",
         "host:storage:devfs",
         "host:storage:procfs",
+        "host:storage:storage-fat32",
         "host:storage:vfs",
         "host:tst3:string-compress",
         "qemu:tst5:apps",
@@ -68206,6 +68261,7 @@
         "host:storage:fs",
         "host:storage:procfs",
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "host:storage:vfs",
         "host:storage:vfs-path",
         "host:tst3:string-compress",
@@ -112016,7 +112072,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -112037,7 +112094,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -112058,10 +112116,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:storage-fat32",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_alias_visitor",
@@ -112079,10 +112138,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:storage-fat32",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_allocate_fat32_cluster",
@@ -112100,10 +112160,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:storage-fat32",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_append_text",
@@ -112121,7 +112182,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -112143,6 +112205,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst5:apps"
       ],
       "tags": [],
@@ -112164,7 +112227,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -112185,7 +112249,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -112204,9 +112269,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage-fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_build_ata_id",
@@ -112224,7 +112292,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -112266,10 +112335,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:storage-fat32",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_build_volume_id",
@@ -112287,7 +112357,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -112308,7 +112379,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -112327,9 +112399,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage-fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_check_directory_visitor",
@@ -112345,9 +112420,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage-fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_check_metadata",
@@ -112363,9 +112441,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage-fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_cluster_is_bad",
@@ -112383,10 +112464,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:storage-fat32",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_cluster_is_end",
@@ -112404,10 +112486,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:storage-fat32",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_configure_fat_type",
@@ -112425,7 +112508,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -112446,7 +112530,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -112468,6 +112553,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:storage",
@@ -112558,7 +112644,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -112739,6 +112826,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
@@ -112763,6 +112851,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
@@ -112783,9 +112872,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage-fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_find_free_directory_slots",
@@ -112803,10 +112895,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:storage-fat32",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_find_long_visitor",
@@ -112825,6 +112918,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
@@ -112870,6 +112964,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst5:apps"
       ],
       "tags": [],
@@ -112891,7 +112986,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -112933,10 +113029,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:storage-fat32",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_get_disk_at",
@@ -112975,7 +113072,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -113044,6 +113142,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst5:apps"
       ],
       "tags": [],
@@ -113089,6 +113188,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
@@ -113135,7 +113235,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -113156,7 +113257,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -113177,7 +113279,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -113198,13 +113301,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:storage",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_lfn_checksum",
@@ -113222,13 +113326,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:storage",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_lfn_copy_units",
@@ -113247,6 +113352,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:storage",
@@ -113272,6 +113378,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:storage",
@@ -113297,6 +113404,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:storage",
@@ -113388,7 +113496,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -113435,6 +113544,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:storage",
@@ -113460,6 +113570,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:storage",
@@ -113482,9 +113593,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage-fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_mark_overlaps",
@@ -113502,7 +113616,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -113521,9 +113636,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage-fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_mount",
@@ -113541,7 +113659,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -113563,6 +113682,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs"
       ],
       "tags": [],
@@ -113585,6 +113705,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst5:apps"
       ],
       "tags": [],
@@ -113607,6 +113728,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst5:apps"
       ],
       "tags": [],
@@ -113629,6 +113751,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:storage",
@@ -113653,7 +113776,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -113675,6 +113799,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:storage",
@@ -113699,7 +113824,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -113720,7 +113846,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -113741,10 +113868,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:storage-fat32",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_read_entry_range",
@@ -113762,7 +113890,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -113783,10 +113912,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:storage-fat32",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_read_fat_bytes",
@@ -113805,6 +113935,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst5:apps"
       ],
       "tags": [],
@@ -113826,7 +113957,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -113848,6 +113980,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:storage",
@@ -113873,6 +114006,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:storage",
@@ -113898,6 +114032,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:storage",
@@ -113922,7 +114057,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -113964,7 +114100,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -113983,9 +114120,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage-fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_rename_file",
@@ -114003,7 +114143,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -114025,6 +114166,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:storage",
@@ -114049,7 +114191,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -114068,9 +114211,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage-fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_slot_writer_begin",
@@ -114088,7 +114234,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -114107,9 +114254,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage-fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_slot_writer_finish",
@@ -114125,9 +114275,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage-fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_slot_writer_flush_locked",
@@ -114143,9 +114296,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage-fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_slot_writer_is_active",
@@ -114163,7 +114319,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -114182,9 +114339,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage-fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_slot_writer_write",
@@ -114200,9 +114360,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage-fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_split_file_path",
@@ -114221,6 +114384,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
@@ -114350,7 +114514,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -114371,7 +114536,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -114414,6 +114580,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:storage",
@@ -114436,9 +114603,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage-fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_transaction_writer_begin",
@@ -114456,7 +114626,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -114475,9 +114646,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage-fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_transaction_writer_is_active",
@@ -114495,7 +114669,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -114514,9 +114689,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage-fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_unmount",
@@ -114598,6 +114776,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst5:apps"
       ],
       "tags": [],
@@ -114619,10 +114798,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:storage-fat32",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_visit_long_sector",
@@ -114641,6 +114821,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:storage",
@@ -114687,6 +114868,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:storage",
@@ -114754,6 +114936,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst4:storage-vfs",
         "qemu:tst5:apps",
         "qemu:tst5:storage",
@@ -114776,9 +114959,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage-fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_write_directory_entry",
@@ -114796,10 +114982,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:storage-fat32",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_write_fat32_entry",
@@ -114817,10 +115004,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:storage-fat32",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_write_fat32_file_unlocked",
@@ -114839,6 +115027,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:storage:storage",
+        "host:storage:storage-fat32",
         "qemu:tst5:apps"
       ],
       "tags": [],
@@ -114860,7 +115049,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage"
+        "host:storage:storage",
+        "host:storage:storage-fat32"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -114881,10 +115071,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:storage-fat32",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/sysfs.c:sysfs_append_char",
@@ -163127,6 +163318,194 @@
         "block",
         "fat12",
         "negative"
+      ]
+    },
+    {
+      "id": "host:storage:storage-fat32",
+      "scenario": "Contrato host-only do backend de storage FAT32 com imagem estatica gravavel",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "storage": "FAT32 in-memory read-write"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "compilar e executar storage FAT32 com validacao de metadados, cadeias, escrita, remocao LFN e escritor transacional",
+      "expected": "operacoes FAT32 validas preservam dados e cadeias, corrupcoes retornam erros canonicos e transacoes concluidas ou abortadas deixam a fixture consistente",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente imagem FAT32 estatica e provider de bloco falso no processo host",
+      "cleanup": "cadeias, entradas temporarias e escritor transacional encerrados; manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "api:src/include/core/string.h:kmemcpy",
+        "api:src/include/core/string.h:kmemset",
+        "api:src/include/core/string.h:kstrcmp",
+        "api:src/include/core/string.h:kstrlen",
+        "api:src/include/fs/storage.h:storage_atomic_write_file",
+        "api:src/include/fs/storage.h:storage_check",
+        "api:src/include/fs/storage.h:storage_create_dir",
+        "api:src/include/fs/storage.h:storage_delete_file",
+        "api:src/include/fs/storage.h:storage_dir_cursor_next",
+        "api:src/include/fs/storage.h:storage_dir_cursor_next_long",
+        "api:src/include/fs/storage.h:storage_dir_cursor_open",
+        "api:src/include/fs/storage.h:storage_dir_cursor_open_long",
+        "api:src/include/fs/storage.h:storage_find_disk",
+        "api:src/include/fs/storage.h:storage_find_system_volume",
+        "api:src/include/fs/storage.h:storage_find_volume",
+        "api:src/include/fs/storage.h:storage_fs_name",
+        "api:src/include/fs/storage.h:storage_get_disk_at",
+        "api:src/include/fs/storage.h:storage_get_file_info",
+        "api:src/include/fs/storage.h:storage_get_free_space",
+        "api:src/include/fs/storage.h:storage_get_mounted_at",
+        "api:src/include/fs/storage.h:storage_get_path_info",
+        "api:src/include/fs/storage.h:storage_get_status",
+        "api:src/include/fs/storage.h:storage_get_volume_at",
+        "api:src/include/fs/storage.h:storage_init",
+        "api:src/include/fs/storage.h:storage_list_dir",
+        "api:src/include/fs/storage.h:storage_list_dir_long",
+        "api:src/include/fs/storage.h:storage_mount",
+        "api:src/include/fs/storage.h:storage_read_file_range",
+        "api:src/include/fs/storage.h:storage_refresh",
+        "api:src/include/fs/storage.h:storage_rename_file",
+        "api:src/include/fs/storage.h:storage_slot_writer_abort",
+        "api:src/include/fs/storage.h:storage_slot_writer_begin",
+        "api:src/include/fs/storage.h:storage_slot_writer_finish",
+        "api:src/include/fs/storage.h:storage_slot_writer_is_active",
+        "api:src/include/fs/storage.h:storage_slot_writer_write",
+        "api:src/include/fs/storage.h:storage_stream_abort",
+        "api:src/include/fs/storage.h:storage_stream_begin",
+        "api:src/include/fs/storage.h:storage_stream_finish",
+        "api:src/include/fs/storage.h:storage_stream_is_active",
+        "api:src/include/fs/storage.h:storage_stream_write",
+        "api:src/include/fs/storage.h:storage_sync_all",
+        "api:src/include/fs/storage.h:storage_sync_all_until",
+        "api:src/include/fs/storage.h:storage_sync_volume",
+        "api:src/include/fs/storage.h:storage_transaction_writer_abort",
+        "api:src/include/fs/storage.h:storage_transaction_writer_begin",
+        "api:src/include/fs/storage.h:storage_transaction_writer_finish",
+        "api:src/include/fs/storage.h:storage_transaction_writer_is_active",
+        "api:src/include/fs/storage.h:storage_transaction_writer_write",
+        "api:src/include/fs/storage.h:storage_unmount",
+        "api:src/include/fs/storage.h:storage_unmount_after_sync",
+        "api:src/include/fs/storage.h:storage_volume_state_name",
+        "api:src/include/fs/storage.h:storage_write_file",
+        "c:src/core/string.c:kmemcpy",
+        "c:src/core/string.c:kmemset",
+        "c:src/core/string.c:kstrcmp",
+        "c:src/core/string.c:kstrlen",
+        "c:src/fs/storage.c:storage_add_disk",
+        "c:src/fs/storage.c:storage_add_volume",
+        "c:src/fs/storage.c:storage_alias_is_used",
+        "c:src/fs/storage.c:storage_alias_visitor",
+        "c:src/fs/storage.c:storage_allocate_fat32_cluster",
+        "c:src/fs/storage.c:storage_append_text",
+        "c:src/fs/storage.c:storage_atomic_write_file",
+        "c:src/fs/storage.c:storage_auto_mount_system",
+        "c:src/fs/storage.c:storage_boot_disk_id",
+        "c:src/fs/storage.c:storage_buffers_equal",
+        "c:src/fs/storage.c:storage_build_ata_id",
+        "c:src/fs/storage.c:storage_build_lfn_entry",
+        "c:src/fs/storage.c:storage_build_volume_id",
+        "c:src/fs/storage.c:storage_check",
+        "c:src/fs/storage.c:storage_check_chain",
+        "c:src/fs/storage.c:storage_check_directory_visitor",
+        "c:src/fs/storage.c:storage_check_metadata",
+        "c:src/fs/storage.c:storage_cluster_is_bad",
+        "c:src/fs/storage.c:storage_cluster_is_end",
+        "c:src/fs/storage.c:storage_configure_fat_type",
+        "c:src/fs/storage.c:storage_copy_label",
+        "c:src/fs/storage.c:storage_copy_text",
+        "c:src/fs/storage.c:storage_delete_file",
+        "c:src/fs/storage.c:storage_find_entry_long",
+        "c:src/fs/storage.c:storage_find_file",
+        "c:src/fs/storage.c:storage_find_file_long",
+        "c:src/fs/storage.c:storage_find_free_directory_slots",
+        "c:src/fs/storage.c:storage_find_long_visitor",
+        "c:src/fs/storage.c:storage_find_volume",
+        "c:src/fs/storage.c:storage_free_mount",
+        "c:src/fs/storage.c:storage_generate_alias",
+        "c:src/fs/storage.c:storage_get_file_info",
+        "c:src/fs/storage.c:storage_get_mounted_fat32",
+        "c:src/fs/storage.c:storage_get_status",
+        "c:src/fs/storage.c:storage_init",
+        "c:src/fs/storage.c:storage_is_extended_type",
+        "c:src/fs/storage.c:storage_is_supported_partition_type",
+        "c:src/fs/storage.c:storage_lfn_append_utf8",
+        "c:src/fs/storage.c:storage_lfn_checksum",
+        "c:src/fs/storage.c:storage_lfn_copy_units",
+        "c:src/fs/storage.c:storage_lfn_reset",
+        "c:src/fs/storage.c:storage_lfn_to_utf8",
+        "c:src/fs/storage.c:storage_log_volume",
+        "c:src/fs/storage.c:storage_long_parse_entry",
+        "c:src/fs/storage.c:storage_lower",
+        "c:src/fs/storage.c:storage_mark_directory_entries_deleted",
+        "c:src/fs/storage.c:storage_mark_overlaps",
+        "c:src/fs/storage.c:storage_mark_volume_error",
+        "c:src/fs/storage.c:storage_mount",
+        "c:src/fs/storage.c:storage_mount_for_volume",
+        "c:src/fs/storage.c:storage_name_to_fat",
+        "c:src/fs/storage.c:storage_next_cluster",
+        "c:src/fs/storage.c:storage_next_component",
+        "c:src/fs/storage.c:storage_parse_bpb",
+        "c:src/fs/storage.c:storage_parse_raw_entry",
+        "c:src/fs/storage.c:storage_probe_candidate",
+        "c:src/fs/storage.c:storage_probe_volume",
+        "c:src/fs/storage.c:storage_publish_fat32_entry",
+        "c:src/fs/storage.c:storage_read_entry_range",
+        "c:src/fs/storage.c:storage_read_fat32_entry",
+        "c:src/fs/storage.c:storage_read_fat_bytes",
+        "c:src/fs/storage.c:storage_read_file_range",
+        "c:src/fs/storage.c:storage_read_relative",
+        "c:src/fs/storage.c:storage_read_u16",
+        "c:src/fs/storage.c:storage_read_u32",
+        "c:src/fs/storage.c:storage_refresh",
+        "c:src/fs/storage.c:storage_register_raw",
+        "c:src/fs/storage.c:storage_release_fat32_chain",
+        "c:src/fs/storage.c:storage_rename_file",
+        "c:src/fs/storage.c:storage_resolve_directory",
+        "c:src/fs/storage.c:storage_scan_mbr",
+        "c:src/fs/storage.c:storage_slot_writer_abort",
+        "c:src/fs/storage.c:storage_slot_writer_begin",
+        "c:src/fs/storage.c:storage_slot_writer_build_entry",
+        "c:src/fs/storage.c:storage_slot_writer_finish",
+        "c:src/fs/storage.c:storage_slot_writer_flush_locked",
+        "c:src/fs/storage.c:storage_slot_writer_is_active",
+        "c:src/fs/storage.c:storage_slot_writer_update_entry_locked",
+        "c:src/fs/storage.c:storage_slot_writer_write",
+        "c:src/fs/storage.c:storage_split_file_path",
+        "c:src/fs/storage.c:storage_sync_all",
+        "c:src/fs/storage.c:storage_sync_all_until",
+        "c:src/fs/storage.c:storage_text_equal",
+        "c:src/fs/storage.c:storage_transaction_writer_abort",
+        "c:src/fs/storage.c:storage_transaction_writer_begin",
+        "c:src/fs/storage.c:storage_transaction_writer_finish",
+        "c:src/fs/storage.c:storage_transaction_writer_is_active",
+        "c:src/fs/storage.c:storage_transaction_writer_write",
+        "c:src/fs/storage.c:storage_upper",
+        "c:src/fs/storage.c:storage_utf8_to_utf16",
+        "c:src/fs/storage.c:storage_visit_long_sector",
+        "c:src/fs/storage.c:storage_volume_index",
+        "c:src/fs/storage.c:storage_walk_directory_long",
+        "c:src/fs/storage.c:storage_write_cluster",
+        "c:src/fs/storage.c:storage_write_directory_entry",
+        "c:src/fs/storage.c:storage_write_fat32_entry",
+        "c:src/fs/storage.c:storage_write_fat32_file_unlocked",
+        "c:src/fs/storage.c:storage_write_file",
+        "c:src/fs/storage.c:storage_write_relative"
+      ],
+      "tags": [
+        "host",
+        "storage",
+        "fat32",
+        "negative",
+        "transaction"
       ]
     },
     {

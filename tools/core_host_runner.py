@@ -63,6 +63,8 @@ FS_RESULT_DIR = ROOT / "build" / "test-results" / "fs-host"
 FS_BINARY = ROOT / "build" / "tests" / "test_fs_host.exe"
 STORAGE_RESULT_DIR = ROOT / "build" / "test-results" / "storage-host"
 STORAGE_BINARY = ROOT / "build" / "tests" / "test_storage_host.exe"
+STORAGE_FAT32_RESULT_DIR = ROOT / "build" / "test-results" / "storage-fat32-host"
+STORAGE_FAT32_BINARY = ROOT / "build" / "tests" / "test_storage_fat32_host.exe"
 BLOCK_RESULT_DIR = ROOT / "build" / "test-results" / "block-host"
 BLOCK_BINARY = ROOT / "build" / "tests" / "test_block_host.exe"
 FAT12_RESULT_DIR = ROOT / "build" / "test-results" / "fat12-host"
@@ -268,6 +270,11 @@ FS_SOURCE_FILES = (
 )
 STORAGE_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_storage_host.c",
+    ROOT / "src" / "fs" / "storage.c",
+    ROOT / "src" / "core" / "string.c",
+)
+STORAGE_FAT32_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_storage_fat32_host.c",
     ROOT / "src" / "fs" / "storage.c",
     ROOT / "src" / "core" / "string.c",
 )
@@ -806,6 +813,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return FS_RESULT_DIR, FS_BINARY, FS_SOURCE_FILES, "fs-host"
     if case_id == "host:storage:storage":
         return STORAGE_RESULT_DIR, STORAGE_BINARY, STORAGE_SOURCE_FILES, "storage-host"
+    if case_id == "host:storage:storage-fat32":
+        return (STORAGE_FAT32_RESULT_DIR, STORAGE_FAT32_BINARY,
+                STORAGE_FAT32_SOURCE_FILES, "storage-fat32-host")
     if case_id == "host:storage:block":
         return BLOCK_RESULT_DIR, BLOCK_BINARY, BLOCK_SOURCE_FILES, "block-host"
     if case_id == "host:storage:fat12":
@@ -1148,7 +1158,8 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:core:input",
                                  "host:core:power", "host:storage:vfs-path",
                                  "host:storage:file-index", "host:storage:fs",
-                                 "host:storage:storage", "host:storage:block",
+                                 "host:storage:storage", "host:storage:storage-fat32",
+                                 "host:storage:block",
                                  "host:storage:fat12", "host:storage:fat32",
                                  "host:storage:vfs",
                                  "host:memory:slab-metadata",
