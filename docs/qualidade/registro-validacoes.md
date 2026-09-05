@@ -5889,3 +5889,17 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   desconhecidos ou símbolos ambíguos. O catálogo registra 7.297 superfícies,
   6.368 `COVERED`, 929 `PENDING` e 156 casos; as pendências restantes
   continuam explícitas.
+
+- Incremento Shell/commands packages — concluído em 2026-09-04
+  (America/Sao_Paulo). Foi criado o caso host-only
+  `host:shell:commands-packages` com entrada interna compilada somente sob
+  `ZEPHYROS_HOST_TEST`. A fixture chamou diretamente os helpers reais de
+  `shell_commands_packages.c` para extensões `.ZPK`, normalização de IDs,
+  tokens com espaços e truncamento, argumentos nulos e seleção de ações de
+  `pkg`, `store` e `update`, sem iniciar jobs nem tocar em armazenamento real.
+  Passaram o alvo específico com `HOST_CC`, `make q3check`, `make clean`,
+  `make`, sincronização/renderização do catálogo e `make catalog-test`. A
+  evidência dinâmica resolveu 10 superfícies reais, sem endereços desconhecidos
+  ou símbolos ambíguos; o catálogo registra 7.299 superfícies, 6.372
+  `COVERED`, 927 `PENDING` e 157 casos. As pendências restantes continuam
+  explícitas.

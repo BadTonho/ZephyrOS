@@ -21,11 +21,27 @@ A infraestrutura TST1–TST7 está concluída para a matriz automatizada existen
 mas o programa de cobertura integral ainda não está concluído. O catálogo
 mantém 156 casos `AUTOMATED`; após os incrementos de Shell, RTC,
 processos/threads, FAT32, update U3/U4, os contratos remotos ZSYS e o
-repositório remoto de aplicativos, registra 7.297 superfícies, 6.368
-`COVERED` e 929 `PENDING`. O próximo objetivo deste
+repositório remoto de aplicativos e dos helpers de pacotes do Shell, registra
+7.299 superfícies, 6.372 `COVERED` e 927 `PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
 Isso não significa declarar hardware físico validado sem equipamento.
+
+### Incremento Shell/commands packages — 2026-09-04
+
+- [x] Foi criado o caso host-only `host:shell:commands-packages`, com hook
+      interno compilado somente sob `ZEPHYROS_HOST_TEST`.
+- [x] A fixture chamou diretamente os helpers de `shell_commands_packages.c`
+      para validar extensões `.ZPK`, normalização de IDs, tokens com espaços e
+      truncamento, argumentos nulos e a matriz de ações de `pkg`, `store` e
+      `update`, sem iniciar jobs ou acessar armazenamento real.
+- [x] Passaram `make test-shell-commands-packages-host` com `HOST_CC`,
+      `make q3check`, `make clean` seguido de `make`, sincronização/renderização
+      do catálogo e `make catalog-test`.
+- [x] A evidência dinâmica resolveu 10 superfícies reais, sem endereços
+      desconhecidos ou símbolos ambíguos. O catálogo registra 7.299
+      superfícies, 6.372 `COVERED` e 927 `PENDING`; as pendências restantes
+      continuam explícitas.
 
 ### Incremento Core/app-remote — 2026-09-04
 
@@ -56,8 +72,8 @@ Isso não significa declarar hardware físico validado sem equipamento.
 
 ### Atualizacao vigente — 2026-09-04
 
-O sincronizador mais recente registra 7.297 superficies, 6.368 `COVERED`,
-929 `PENDING` e 156 casos `AUTOMATED`. Os incrementos mais recentes
+O sincronizador mais recente registra 7.299 superficies, 6.372 `COVERED`,
+927 `PENDING` e 157 casos `AUTOMATED`. Os incrementos mais recentes
 adicionaram o caso host-only `host:shell:diagnostics-helpers`, com evidencia
 real para 34 helpers extraidos de `shell_commands_diagnostics.c` e duas rotinas
 de string, ampliaram `host:process:runtime` com cinco helpers de stack e o

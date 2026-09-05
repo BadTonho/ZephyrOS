@@ -2034,3 +2034,18 @@ O relatorio instrumentado fica em
 `PASS`, com `unknown_addresses=[]` e `ambiguous_symbols=[]`. A fixture usa o
 header interno `shell_checks.h`, compilado somente com `ZEPHYROS_HOST_TEST`, e
 nao acessa hardware, armazenamento ou processos reais.
+
+## Shell: comandos de pacotes host-only
+
+O alvo `test-shell-commands-packages-host` valida os helpers de
+`shell_commands_packages.c` sem iniciar jobs ou acessar o kernel real:
+
+```text
+make test-shell-commands-packages-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+A fixture cobre extensoes de pacotes, normalizacao de IDs, tokens com
+truncamento, argumentos nulos e a selecao de acoes de `pkg`, `store` e
+`update`. O relatorio instrumentado fica em
+`build/test-results/shell-commands-packages-host/coverage.json` e deve
+terminar com `PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`.

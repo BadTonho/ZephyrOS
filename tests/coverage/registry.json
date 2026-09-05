@@ -3639,6 +3639,57 @@
       "evidence": "make test-shell-commands-storage-host PASS com bloco, cache, sync, storage, index, search e job; a fixture cobre diretamente os dispatchers e caminhos validos, negativos e de limite usando doubles estaticos"
     },
     {
+      "id": "shell-commands-packages-host-dynamic",
+      "domain": "shell-packages",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:shell:commands-packages"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/shell-commands-packages-host/coverage.json",
+      "coverage_sources": [
+        "src/shell/shell_commands_packages.c",
+        "src/shell/shell_command_utils.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:shell:commands-packages",
+        "scenario": "Contratos dos comandos de pacotes, loja e atualizacao do Shell",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "exercitar diretamente os parsers de token, normalizacao de IDs, extensoes de pacotes, selecao de jobs e entradas invalidas",
+        "expected": "helpers preservam limites, argumentos nulos, truncamento e acoes aceitas ou rejeitadas sem iniciar jobs",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente buffers estaticos e estado local da fixture no processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "shell",
+          "packages",
+          "updates",
+          "negative",
+          "coverage"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "make test-shell-commands-packages-host PASS com parsers, IDs, extensoes, limites e matriz de acoes do Shell instrumentados"
+    },
+    {
       "id": "shell-network-checks-host-dynamic",
       "domain": "shell-network-checks",
       "owner": "quality",

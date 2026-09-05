@@ -283,6 +283,7 @@ static void cmd_pkg_take_token(const char** cursor, char* output,
                                uint32_t output_size) {
     uint32_t length = 0;
 
+    if (!cursor || !*cursor || !output || output_size == 0U) return;
     while (**cursor == ' ' || **cursor == '\t') (*cursor)++;
     while (**cursor && **cursor != ' ' && **cursor != '\t') {
         if (length + 1U < output_size) output[length++] = **cursor;
@@ -1732,6 +1733,8 @@ static void cmd_update(const char* args) {
 }
 
 static int cmd_pkg_is_file_name(const char* value) {
+    if (!value) return 0;
+
     uint32_t length = kstrlen(value);
 
     if (length < 5U) return 0;
@@ -3117,6 +3120,97 @@ int shell_packages_start_job(const char* command, const char* arguments) {
     }
     return 1;
 }
+
+#ifdef ZEPHYROS_HOST_TEST
+int shell_packages_host_test_contracts(void) {
+    const char* cursor;
+    char token[8];
+    char truncated[4];
+    char package_id[16];
+    static const char* const accepted[][2] = {
+        {"pkg", "verify package.ZPK"},
+        {"pkg", "install package.ZPK"},
+        {"pkg", "remove PACKAGE"},
+        {"store", "remote status"},
+        {"store", "install PACKAGE"},
+        {"store", "update PACKAGE"},
+        {"store", "remove PACKAGE"},
+        {"store", "rollback"},
+        {"update", "apply update.ZUP"},
+        {"update", "rollback"},
+        {"update", "verify update.ZUP"},
+        {"update", "fetch manifest"},
+        {"update", "remote status"},
+        {"update", "github check"},
+        {"update", "system status"}
+    };
+    static const char* const rejected[][2] = {
+        {"pkg", "list"},
+        {"store", "list"},
+        {"store", "status"},
+        {"update", "status"},
+        {"unknown", "install PACKAGE"},
+        {"pkg", ""}
+    };
+
+    if (!cmd_pkg_is_file_name("package.ZPK") ||
+        !cmd_pkg_is_file_name("package.zpk") ||
+        cmd_pkg_is_file_name("package.ZUP") ||
+        cmd_pkg_is_file_name("ZPK") ||
+        cmd_pkg_is_file_name(0)) {
+        LOG_ERROR("SHELL", "Contrato de nome de pacote invalido");
+        return ERR_STATE;
+    }
+
+    kmemcpy(package_id, "zephyrOs", 9U);
+    cmd_pkg_uppercase_id(package_id);
+    if (kstrcmp(package_id, "ZEPHYROS") != 0) {
+        LOG_ERROR("SHELL", "Contrato de normalizacao de pacote invalido");
+        return ERR_STATE;
+    }
+
+    cursor = "  verify EXTRA";
+    kmemset(token, 'X', sizeof(token));
+    cmd_pkg_take_token(&cursor, token, sizeof(token));
+    if (kstrcmp(token, "verify") != 0 || !cmd_pkg_has_trailing_token(cursor) ||
+        cmd_pkg_has_trailing_token(" \t") ||
+        cmd_pkg_has_trailing_token(0)) {
+        LOG_ERROR("SHELL", "Contrato de token de pacote invalido");
+        return ERR_STATE;
+    }
+
+    cursor = "123456";
+    kmemset(truncated, 'X', sizeof(truncated));
+    cmd_pkg_take_token(&cursor, truncated, sizeof(truncated));
+    if (kstrcmp(truncated, "123") != 0 || *cursor != '\0') {
+        LOG_ERROR("SHELL", "Truncamento de token de pacote invalido");
+        return ERR_STATE;
+    }
+
+    for (uint32_t index = 0U;
+         index < sizeof(accepted) / sizeof(accepted[0]); index++) {
+        if (!shell_packages_should_start(accepted[index][0],
+                                          accepted[index][1])) {
+            LOG_ERROR("SHELL", "Acao de pacote aceita foi rejeitada");
+            return ERR_STATE;
+        }
+    }
+    for (uint32_t index = 0U;
+         index < sizeof(rejected) / sizeof(rejected[0]); index++) {
+        if (shell_packages_should_start(rejected[index][0],
+                                        rejected[index][1])) {
+            LOG_ERROR("SHELL", "Acao de pacote invalida foi aceita");
+            return ERR_STATE;
+        }
+    }
+    if (shell_packages_should_start(0, "verify package.ZPK") ||
+        shell_packages_should_start("pkg", 0)) {
+        LOG_ERROR("SHELL", "Argumentos nulos de pacote foram aceitos");
+        return ERR_STATE;
+    }
+    return OK;
+}
+#endif
 
 #define SHELL_PACKAGES_WRAP_ARGS(adapter, handler) \
     void adapter(const char* arguments) { handler(arguments); }

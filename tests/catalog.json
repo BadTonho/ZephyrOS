@@ -835,6 +835,7 @@
       "case_ids": [
         "host:shell:command-utils",
         "host:shell:commands-core",
+        "host:shell:commands-packages",
         "host:shell:wifi",
         "qemu:tst5:network",
         "qemu:tst5:storage",
@@ -861,6 +862,7 @@
       "case_ids": [
         "host:shell:command-utils",
         "host:shell:commands-core",
+        "host:shell:commands-packages",
         "host:shell:wifi",
         "qemu:tst5:network",
         "qemu:tst5:storage",
@@ -887,6 +889,7 @@
       "case_ids": [
         "host:shell:command-utils",
         "host:shell:commands-core",
+        "host:shell:commands-packages",
         "host:shell:wifi",
         "qemu:tst5:network",
         "qemu:tst5:storage",
@@ -913,6 +916,7 @@
       "case_ids": [
         "host:shell:command-utils",
         "host:shell:commands-core",
+        "host:shell:commands-packages",
         "host:shell:wifi",
         "qemu:tst5:network",
         "qemu:tst5:storage",
@@ -939,6 +943,7 @@
       "case_ids": [
         "host:shell:command-utils",
         "host:shell:commands-core",
+        "host:shell:commands-packages",
         "host:shell:wifi",
         "qemu:tst5:network",
         "qemu:tst5:storage",
@@ -965,6 +970,7 @@
       "case_ids": [
         "host:shell:command-utils",
         "host:shell:commands-core",
+        "host:shell:commands-packages",
         "host:shell:wifi",
         "qemu:tst5:network",
         "qemu:tst5:storage",
@@ -991,6 +997,7 @@
       "case_ids": [
         "host:shell:command-utils",
         "host:shell:commands-core",
+        "host:shell:commands-packages",
         "host:shell:wifi",
         "qemu:tst5:network",
         "qemu:tst5:storage",
@@ -1017,6 +1024,7 @@
       "case_ids": [
         "host:shell:command-utils",
         "host:shell:commands-core",
+        "host:shell:commands-packages",
         "host:shell:wifi",
         "qemu:tst5:network",
         "qemu:tst5:storage",
@@ -1043,6 +1051,7 @@
       "case_ids": [
         "host:shell:command-utils",
         "host:shell:commands-core",
+        "host:shell:commands-packages",
         "host:shell:wifi",
         "qemu:tst5:network",
         "qemu:tst5:storage",
@@ -1069,6 +1078,7 @@
       "case_ids": [
         "host:shell:command-utils",
         "host:shell:commands-core",
+        "host:shell:commands-packages",
         "host:shell:wifi",
         "qemu:tst5:network",
         "qemu:tst5:storage",
@@ -2837,10 +2847,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:commands-packages",
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_job.h:shell_storage_start_job",
@@ -3491,6 +3502,28 @@
       "case_ids": [
         "host:shell:network-checks",
         "qemu:tst5:network"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "api:src/include/apps/shell_runtime.h:shell_packages_host_test_contracts",
+      "kind": "api_function",
+      "source": "src/include/apps/shell_runtime.h",
+      "symbol": "shell_packages_host_test_contracts",
+      "linkage": "public",
+      "owner": "apps",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-packages",
+        "qemu:tst5:update-recovery"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -13868,6 +13901,7 @@
         "host:network:udp",
         "host:security:tls",
         "host:security:tls-client",
+        "host:shell:commands-packages",
         "host:storage:block",
         "host:storage:bmp",
         "host:storage:fat12",
@@ -13944,6 +13978,7 @@
         "host:security:tls",
         "host:security:tls-client",
         "host:shell:commands-core",
+        "host:shell:commands-packages",
         "host:shell:wifi",
         "host:storage:block",
         "host:storage:bmp",
@@ -14021,6 +14056,7 @@
         "host:security:tls",
         "host:security:tls-client",
         "host:shell:commands-core",
+        "host:shell:commands-packages",
         "host:shell:diagnostics-helpers",
         "host:shell:wifi",
         "host:storage:devfs",
@@ -14089,6 +14125,7 @@
         "host:security:tls",
         "host:security:tls-client",
         "host:shell:commands-core",
+        "host:shell:commands-packages",
         "host:shell:diagnostics-helpers",
         "host:shell:wifi",
         "host:storage:file-index",
@@ -69427,6 +69464,7 @@
         "host:network:udp",
         "host:security:tls",
         "host:security:tls-client",
+        "host:shell:commands-packages",
         "host:storage:block",
         "host:storage:bmp",
         "host:storage:fat12",
@@ -69503,6 +69541,7 @@
         "host:security:tls",
         "host:security:tls-client",
         "host:shell:commands-core",
+        "host:shell:commands-packages",
         "host:shell:wifi",
         "host:storage:block",
         "host:storage:bmp",
@@ -69580,6 +69619,7 @@
         "host:security:tls",
         "host:security:tls-client",
         "host:shell:commands-core",
+        "host:shell:commands-packages",
         "host:shell:diagnostics-helpers",
         "host:shell:wifi",
         "host:storage:devfs",
@@ -69648,6 +69688,7 @@
         "host:security:tls",
         "host:security:tls-client",
         "host:shell:commands-core",
+        "host:shell:commands-packages",
         "host:shell:diagnostics-helpers",
         "host:shell:wifi",
         "host:storage:file-index",
@@ -136472,6 +136513,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:command-utils",
+        "host:shell:commands-packages",
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
@@ -144767,9 +144809,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-packages"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_packages.c:cmd_pkg_info",
@@ -144821,9 +144866,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-packages"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_packages.c:cmd_pkg_list",
@@ -144913,10 +144961,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:commands-packages",
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_packages.c:cmd_pkg_uppercase_id",
@@ -144932,9 +144981,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-packages"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_packages.c:cmd_pkg_verify",
@@ -146347,6 +146399,24 @@
       "coverage_mode": "integration"
     },
     {
+      "id": "c:src/shell/shell_commands_packages.c:shell_packages_host_test_contracts",
+      "kind": "c_function",
+      "source": "src/shell/shell_commands_packages.c",
+      "symbol": "shell_packages_host_test_contracts",
+      "linkage": "external",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
       "id": "c:src/shell/shell_commands_packages.c:shell_packages_job_cancel",
       "kind": "c_function",
       "source": "src/shell/shell_commands_packages.c",
@@ -146434,10 +146504,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:commands-packages",
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_packages.c:shell_packages_start_job",
@@ -176886,6 +176957,7 @@
         "api:src/include/apps/shell_pipeline.h:shell_pipeline_self_test",
         "api:src/include/apps/shell_pipeline.h:shell_pipeline_try_execute",
         "api:src/include/apps/shell_pipeline.h:shell_pipeline_write",
+        "api:src/include/apps/shell_runtime.h:shell_packages_host_test_contracts",
         "api:src/include/apps/shell_runtime.h:shell_runtime_finish_command",
         "api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key",
         "api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager",
@@ -180571,6 +180643,65 @@
         "interrupts",
         "coverage",
         "snapshot"
+      ],
+      "status": "AUTOMATED"
+    },
+    {
+      "id": "host:shell:commands-packages",
+      "scenario": "Contratos dos comandos de pacotes, loja e atualizacao do Shell",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "exercitar diretamente os parsers de token, normalizacao de IDs, extensoes de pacotes, selecao de jobs e entradas invalidas",
+      "expected": "helpers preservam limites, argumentos nulos, truncamento e acoes aceitas ou rejeitadas sem iniciar jobs",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente buffers estaticos e estado local da fixture no processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "surface_ids": [
+        "api:src/include/apps/shell_command_utils.h:shell_command_args_equal",
+        "api:src/include/apps/shell_command_utils.h:shell_command_match_subcommand",
+        "api:src/include/apps/shell_command_utils.h:shell_command_parse_number",
+        "api:src/include/apps/shell_command_utils.h:shell_command_print_hex",
+        "api:src/include/apps/shell_command_utils.h:shell_command_print_num",
+        "api:src/include/apps/shell_command_utils.h:shell_command_read_four_args",
+        "api:src/include/apps/shell_command_utils.h:shell_command_read_single_arg",
+        "api:src/include/apps/shell_command_utils.h:shell_command_read_token",
+        "api:src/include/apps/shell_command_utils.h:shell_command_read_two_args",
+        "api:src/include/apps/shell_command_utils.h:shell_command_uppercase",
+        "api:src/include/apps/shell_job.h:shell_packages_start_job",
+        "api:src/include/apps/shell_runtime.h:shell_packages_host_test_contracts",
+        "api:src/include/core/string.h:kmemcpy",
+        "api:src/include/core/string.h:kmemset",
+        "api:src/include/core/string.h:kstrcmp",
+        "api:src/include/core/string.h:kstrlen",
+        "c:src/core/string.c:kmemcpy",
+        "c:src/core/string.c:kmemset",
+        "c:src/core/string.c:kstrcmp",
+        "c:src/core/string.c:kstrlen",
+        "c:src/shell/shell_command_utils.c:shell_command_read_token",
+        "c:src/shell/shell_commands_packages.c:cmd_pkg_has_trailing_token",
+        "c:src/shell/shell_commands_packages.c:cmd_pkg_is_file_name",
+        "c:src/shell/shell_commands_packages.c:cmd_pkg_take_token",
+        "c:src/shell/shell_commands_packages.c:cmd_pkg_uppercase_id",
+        "c:src/shell/shell_commands_packages.c:shell_packages_should_start"
+      ],
+      "tags": [
+        "host",
+        "shell",
+        "packages",
+        "updates",
+        "negative",
+        "coverage"
       ],
       "status": "AUTOMATED"
     }
