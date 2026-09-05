@@ -23,8 +23,8 @@ mantém 162 casos `AUTOMATED`; após os incrementos de Shell, RTC,
 processos/threads, FAT32, update U3/U4, os contratos remotos ZSYS e o
 repositório remoto de aplicativos, dos helpers de pacotes do Shell, da
 interface App Store, dos relatórios de rede do Shell, do módulo de
-Configurações, do Desktop e dos comandos de aplicativos, registra 7.315
-superfícies, 6.804 `COVERED` e 511 `PENDING`. O próximo objetivo deste
+Configurações, do Desktop, dos comandos de aplicativos e da evidência RTC,
+registra 7.315 superfícies, 6.813 `COVERED` e 502 `PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
 Isso não significa declarar hardware físico validado sem equipamento.
@@ -2932,3 +2932,16 @@ pendente.
       6.804 `COVERED`, 511 `PENDING`, 59 aposentadas e 162 casos; as pendências
       de outros lotes continuam explícitas e o gate estrito integral permanece
       pendente.
+
+### Evidência Drivers/RTC regenerada — 2026-09-05
+
+- [x] O caso existente `host:drivers:rtc-status` foi executado novamente após
+      o build limpo, com CMOS simulado e sem I/O privilegiado.
+- [x] O relatório `build/test-results/rtc-status-host/coverage.json` terminou
+      `PASS`, sem endereços desconhecidos ou símbolos ambíguos, observando as
+      17 funções de `src/drivers/rtc.c`, inclusive as nove que estavam sem
+      evidência no catálogo.
+- [x] A sincronização, renderização, `make catalog-test` e o teste host-only
+      específico passaram. O catálogo atual registra 7.315 superfícies, sendo
+      6.813 `COVERED` e 502 `PENDING`; as pendências restantes continuam
+      explícitas.

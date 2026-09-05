@@ -6119,3 +6119,13 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   sincronização e a renderização do catálogo passaram; o catálogo registra
   7.315 superfícies, 6.804 `COVERED`, 511 `PENDING`, 59 aposentadas e 162
   casos. As pendências dos demais subsistemas continuam explícitas.
+
+- Evidência Drivers/RTC regenerada — concluída em 2026-09-05
+  (America/Sao_Paulo). O caso existente `host:drivers:rtc-status` foi executado
+  novamente após o build limpo, usando CMOS simulado e sem I/O privilegiado.
+  `build/test-results/rtc-status-host/coverage.json` terminou `PASS`, sem
+  endereços desconhecidos ou símbolos ambíguos, e observou as 17 funções de
+  `src/drivers/rtc.c`, incluindo as nove superfícies que estavam sem evidência
+  no catálogo. Passaram o alvo host-only, a sincronização/renderização e
+  `make catalog-test`. O catálogo atual registra 7.315 superfícies, 6.813
+  `COVERED` e 502 `PENDING`; as demais pendências continuam explícitas.
