@@ -1988,3 +1988,9 @@ PMM, heap, paging user, paging boot e VESA, alem dos caminhos de argumentos
 invalidos, paging boot indisponivel e VESA sem backbuffer. O relatorio deve
 continuar com `unknown_addresses=[]` e `ambiguous_symbols=[]`; nenhuma metrica
 vem de hardware ou estado real do kernel.
+
+A mesma fixture tambem executa `proccheck` sobre um VFS estatico que modela
+`/proc`, `/sys`, atributos de PCI, rede e armazenamento, incluindo leitura por
+cursor, controles de log, processos, EOF, permissoes, caminhos ausentes e
+tentativas de escrita somente leitura. O `shell_introspection.c` real e os
+dispatchers sao usados; nenhum armazenamento ou processo real e acessado.

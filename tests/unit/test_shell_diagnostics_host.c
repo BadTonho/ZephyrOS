@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 #include "apps/shell_command_utils.h"
+#include "apps/shell_introspection.h"
 #include "core/errors.h"
 #include "core/log.h"
 #include "core/string.h"
@@ -29,6 +30,7 @@
 #include "fs/vfs.h"
 #include "fs/storage.h"
 #include "fs/devfs.h"
+#include "fs/procfs.h"
 #include "memory/paging.h"
 #include "memory/slab.h"
 #include "process/process.h"
@@ -69,6 +71,7 @@ void shell_dispatch_cmd_power(const char* arguments);
 void shell_dispatch_cmd_acpi(const char* arguments);
 void shell_dispatch_cmd_kill(const char* arguments);
 void shell_dispatch_cmd_sigtest(const char* arguments);
+void shell_dispatch_cmd_proccheck(const char* arguments);
 void shell_diagnostics_reset(void);
 
 #define HOST_COVERAGE_CAPACITY 512U
@@ -278,6 +281,31 @@ static int fixture_signal_send_result;
 static uint32_t fixture_signal_send_pid;
 static uint32_t fixture_signal_send_number;
 
+#define HOST_VFS_HANDLE_CAPACITY 4U
+#define HOST_VFS_CONTENT_CAPACITY 64U
+
+typedef struct {
+    const char* path;
+    const char* content;
+    uint32_t size;
+    uint8_t writable;
+} fixture_vfs_file_t;
+
+typedef struct {
+    fixture_vfs_file_t file;
+    uint32_t offset;
+    uint32_t mode;
+    uint8_t used;
+} fixture_vfs_handle_t;
+
+static fixture_vfs_handle_t fixture_vfs_handles[HOST_VFS_HANDLE_CAPACITY];
+static char fixture_vfs_console_level[HOST_VFS_CONTENT_CAPACITY];
+static char fixture_vfs_buffer_level[HOST_VFS_CONTENT_CAPACITY];
+static uint32_t fixture_vfs_open_calls;
+static uint32_t fixture_vfs_close_calls;
+static uint32_t fixture_procfs_reset_calls;
+static uint8_t fixture_vfs_sysfs_enabled;
+
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
     uintptr_t address = (uintptr_t)function;
@@ -349,9 +377,176 @@ static void output_append(const char* text) {
     video_output[video_output_length] = '\0';
 }
 
+static int fixture_vfs_add_entry(vfs_dir_entry_t* entries, uint32_t capacity,
+                                 uint32_t* count, const char* name,
+                                 vfs_node_type_t type) {
+    if (!entries || !count || !name) return ERR_NULL;
+    if (*count >= capacity) return ERR_OVERFLOW;
+    kmemset(&entries[*count], 0, sizeof(entries[*count]));
+    copy_text(entries[*count].name, sizeof(entries[*count].name), name);
+    entries[*count].type = type;
+    (*count)++;
+    return OK;
+}
+
+static int fixture_vfs_list(const char* path, vfs_dir_entry_t* entries,
+                            uint32_t capacity, uint32_t* out_count) {
+    uint32_t count = 0U;
+    int result = OK;
+
+    if (!path || !entries || !out_count) return ERR_NULL;
+    if (!fixture_vfs_sysfs_enabled && path[0] == '/' && path[1] == 's' &&
+        path[2] == 'y' && path[3] == 's' && path[4] == '/') {
+        *out_count = 0U;
+        return ERR_NOT_FOUND;
+    }
+    if (kstrcmp(path, "/proc") == 0) {
+        result = fixture_vfs_add_entry(entries, capacity, &count, "1",
+                                       VFS_NODE_DIRECTORY);
+        if (result == OK) result = fixture_vfs_add_entry(
+            entries, capacity, &count, "uptime", VFS_NODE_REGULAR);
+        if (result == OK) result = fixture_vfs_add_entry(
+            entries, capacity, &count, "meminfo", VFS_NODE_REGULAR);
+        if (result == OK) result = fixture_vfs_add_entry(
+            entries, capacity, &count, "cpuinfo", VFS_NODE_REGULAR);
+        if (result == OK) result = fixture_vfs_add_entry(
+            entries, capacity, &count, "version", VFS_NODE_REGULAR);
+        if (result == OK) result = fixture_vfs_add_entry(
+            entries, capacity, &count, "cmdline", VFS_NODE_REGULAR);
+        if (result == OK) result = fixture_vfs_add_entry(
+            entries, capacity, &count, "sys", VFS_NODE_DIRECTORY);
+    } else if (kstrcmp(path, "/proc/sys") == 0) {
+        result = fixture_vfs_add_entry(entries, capacity, &count, "kernel",
+                                       VFS_NODE_DIRECTORY);
+    } else if (kstrcmp(path, "/proc/sys/kernel") == 0) {
+        result = fixture_vfs_add_entry(entries, capacity, &count,
+                                       "console_log_level", VFS_NODE_REGULAR);
+        if (result == OK) result = fixture_vfs_add_entry(
+            entries, capacity, &count, "buffer_log_level", VFS_NODE_REGULAR);
+    } else if (kstrcmp(path, "/sys") == 0) {
+        result = fixture_vfs_add_entry(entries, capacity, &count, "bus",
+                                       VFS_NODE_DIRECTORY);
+        if (result == OK) result = fixture_vfs_add_entry(
+            entries, capacity, &count, "class", VFS_NODE_DIRECTORY);
+        if (result == OK) result = fixture_vfs_add_entry(
+            entries, capacity, &count, "power", VFS_NODE_DIRECTORY);
+    } else if (kstrcmp(path, "/sys/bus") == 0) {
+        result = fixture_vfs_add_entry(entries, capacity, &count, "pci",
+                                       VFS_NODE_DIRECTORY);
+    } else if (kstrcmp(path, "/sys/bus/pci") == 0) {
+        result = fixture_vfs_add_entry(entries, capacity, &count, "devices",
+                                       VFS_NODE_DIRECTORY);
+    } else if (kstrcmp(path, "/sys/bus/pci/devices") == 0) {
+        result = fixture_vfs_add_entry(entries, capacity, &count, "00:03.0",
+                                       VFS_NODE_DIRECTORY);
+    } else if (kstrcmp(path, "/sys/bus/pci/devices/00:03.0") == 0) {
+        result = fixture_vfs_add_entry(entries, capacity, &count, "vendor",
+                                       VFS_NODE_REGULAR);
+        if (result == OK) result = fixture_vfs_add_entry(
+            entries, capacity, &count, "device", VFS_NODE_REGULAR);
+        if (result == OK) result = fixture_vfs_add_entry(
+            entries, capacity, &count, "class", VFS_NODE_REGULAR);
+    } else if (kstrcmp(path, "/sys/class") == 0) {
+        result = fixture_vfs_add_entry(entries, capacity, &count, "net",
+                                       VFS_NODE_DIRECTORY);
+        if (result == OK) result = fixture_vfs_add_entry(
+            entries, capacity, &count, "block", VFS_NODE_DIRECTORY);
+    } else if (kstrcmp(path, "/sys/class/net") == 0) {
+        result = fixture_vfs_add_entry(entries, capacity, &count, "eth0",
+                                       VFS_NODE_DIRECTORY);
+    } else if (kstrcmp(path, "/sys/class/net/eth0") == 0) {
+        result = fixture_vfs_add_entry(entries, capacity, &count, "address",
+                                       VFS_NODE_REGULAR);
+        if (result == OK) result = fixture_vfs_add_entry(
+            entries, capacity, &count, "state", VFS_NODE_REGULAR);
+    } else if (kstrcmp(path, "/sys/class/block") == 0) {
+        result = fixture_vfs_add_entry(entries, capacity, &count, "hda",
+                                       VFS_NODE_DIRECTORY);
+    } else if (kstrcmp(path, "/sys/class/block/hda") == 0) {
+        result = fixture_vfs_add_entry(entries, capacity, &count, "size",
+                                       VFS_NODE_REGULAR);
+        if (result == OK) result = fixture_vfs_add_entry(
+            entries, capacity, &count, "readonly", VFS_NODE_REGULAR);
+    } else if (kstrcmp(path, "/sys/power") == 0) {
+        result = fixture_vfs_add_entry(entries, capacity, &count, "state",
+                                       VFS_NODE_REGULAR);
+    } else if (kstrcmp(path, "/proc/uptime") == 0 ||
+               kstrcmp(path, "/proc/__missing__") == 0) {
+        result = ERR_INVALID;
+    } else {
+        result = ERR_NOT_FOUND;
+    }
+    *out_count = result == OK ? count : 0U;
+    return result;
+}
+
+static int fixture_vfs_get_file(const char* path, fixture_vfs_file_t* file) {
+    if (!path || !file) return ERR_NULL;
+    if (!fixture_vfs_sysfs_enabled && path[0] == '/' && path[1] == 's' &&
+        path[2] == 'y' && path[3] == 's' && path[4] == '/') {
+        return ERR_NOT_FOUND;
+    }
+    file->path = path;
+    file->writable = 0U;
+    if (kstrcmp(path, "/proc/uptime") == 0) {
+        file->content = "uptime_ticks 120\n";
+    } else if (kstrcmp(path, "/proc/meminfo") == 0) {
+        file->content = "total_bytes 1048576\n";
+    } else if (kstrcmp(path, "/proc/cpuinfo") == 0) {
+        file->content = "processor 0\n";
+    } else if (kstrcmp(path, "/proc/version") == 0) {
+        file->content = "version ZephyrOS\n";
+    } else if (kstrcmp(path, "/proc/cmdline") == 0) {
+        file->content = "cmdline test\n";
+    } else if (kstrcmp(path, "/proc/1/status") == 0) {
+        file->content = "pid 1\nname init\nstate RUNNING\n";
+    } else if (kstrcmp(path, "/proc/1/cmdline") == 0) {
+        file->content = "cmdline init\n";
+    } else if (kstrcmp(path, "/proc/1/maps") == 0) {
+        file->content = "map 0x00400000-0x00401000\n";
+    } else if (kstrcmp(path, "/proc/sys/kernel/console_log_level") == 0) {
+        file->content = fixture_vfs_console_level;
+        file->writable = 1U;
+    } else if (kstrcmp(path, "/proc/sys/kernel/buffer_log_level") == 0) {
+        file->content = fixture_vfs_buffer_level;
+        file->writable = 1U;
+    } else if (kstrcmp(path, "/sys/power/state") == 0) {
+        file->content = "state S3,S5\n";
+    } else if (kstrcmp(path, "/sys/bus/pci/devices/00:03.0/vendor") == 0) {
+        file->content = "vendor 0x1234\n";
+    } else if (kstrcmp(path, "/sys/bus/pci/devices/00:03.0/device") == 0) {
+        file->content = "device 0x5678\n";
+    } else if (kstrcmp(path, "/sys/bus/pci/devices/00:03.0/class") == 0) {
+        file->content = "class network\n";
+    } else if (kstrcmp(path, "/sys/class/net/eth0/address") == 0) {
+        file->content = "address 00:11:22:33:44:55\n";
+    } else if (kstrcmp(path, "/sys/class/net/eth0/state") == 0) {
+        file->content = "state offline\n";
+    } else if (kstrcmp(path, "/sys/class/block/hda/size") == 0) {
+        file->content = "size 2048\n";
+    } else if (kstrcmp(path, "/sys/class/block/hda/readonly") == 0) {
+        file->content = "readonly 1\n";
+    } else {
+        return ERR_NOT_FOUND;
+    }
+    file->size = kstrlen(file->content);
+    return OK;
+}
+
 static void fixture_reset(void) {
     output_reset();
     shell_diagnostics_reset();
+    kmemset(fixture_vfs_handles, 0, sizeof(fixture_vfs_handles));
+    copy_text(fixture_vfs_console_level,
+              sizeof(fixture_vfs_console_level),
+              "console_log_level info\n");
+    copy_text(fixture_vfs_buffer_level,
+              sizeof(fixture_vfs_buffer_level),
+              "buffer_log_level debug\n");
+    fixture_vfs_open_calls = 0U;
+    fixture_vfs_close_calls = 0U;
+    fixture_procfs_reset_calls = 0U;
+    fixture_vfs_sysfs_enabled = 0U;
     copy_text(fixture_cwd, sizeof(fixture_cwd), "/home/test");
     fixture_last_path[0] = '\0';
     fixture_getcwd_result = OK;
@@ -1361,6 +1556,19 @@ int log_set_buffer_level(log_level_t level) {
     return fixture_log_set_buffer_result;
 }
 
+void log_set_level(log_level_t level) {
+    fixture_log_buffer_level = level;
+    fixture_log_console_level = level;
+}
+
+log_level_t log_get_console_level(void) {
+    return fixture_log_console_level;
+}
+
+log_level_t log_get_buffer_level(void) {
+    return fixture_log_buffer_level;
+}
+
 int log_self_test(log_self_test_result_t* result) {
     if (!result) return ERR_NULL;
     *result = fixture_log_test;
@@ -1700,16 +1908,6 @@ int devfs_self_test(devfs_test_result_t* result) {
     return fixture_devfs_test_result;
 }
 
-int shell_introspection_read_file(const char* path, uint8_t* buffer,
-                                  uint32_t capacity, uint32_t* out_size) {
-    (void)path;
-    (void)buffer;
-    (void)capacity;
-    if (!out_size) return ERR_NULL;
-    *out_size = 0U;
-    return ERR_NOT_FOUND;
-}
-
 int pci_init(void) {
     return fixture_scan_pci_result;
 }
@@ -1932,12 +2130,160 @@ const char* device_manager_status_name(device_status_t status) {
 
 int vfs_list_dir(const char* path, vfs_dir_entry_t* entries,
                 uint32_t capacity, uint32_t* out_count) {
-    (void)path;
-    (void)entries;
-    (void)capacity;
-    if (!out_count) return ERR_NULL;
-    *out_count = 0U;
-    return ERR_NOT_FOUND;
+    return fixture_vfs_list(path, entries, capacity, out_count);
+}
+
+int vfs_open(const char* path, uint32_t mode, int32_t* fd_out) {
+    fixture_vfs_file_t file;
+
+    if (!path || !fd_out) return ERR_NULL;
+    *fd_out = VFS_FD_INVALID;
+    if (mode & VFS_MODE_WRITE) {
+        if (kstrcmp(path, "/proc/uptime") == 0 ||
+            kstrcmp(path, "/sys/power/state") == 0) {
+            return ERR_UNAVAILABLE;
+        }
+    }
+    if (fixture_vfs_get_file(path, &file) != OK) {
+        return ERR_NOT_FOUND;
+    }
+    if ((mode & VFS_MODE_WRITE) && !file.writable) {
+        return ERR_UNAVAILABLE;
+    }
+    for (uint32_t index = 0U; index < HOST_VFS_HANDLE_CAPACITY; index++) {
+        if (!fixture_vfs_handles[index].used) {
+            fixture_vfs_handles[index].file = file;
+            fixture_vfs_handles[index].offset = 0U;
+            fixture_vfs_handles[index].mode = mode;
+            fixture_vfs_handles[index].used = 1U;
+            fixture_vfs_open_calls++;
+            *fd_out = (int32_t)(VFS_FD_FIRST_FILE + index);
+            return OK;
+        }
+    }
+    return ERR_UNAVAILABLE;
+}
+
+int vfs_read(int32_t fd, void* buffer, uint32_t size,
+             uint32_t* bytes_read) {
+    uint32_t index;
+    uint32_t available;
+    uint32_t count;
+
+    if (!buffer || !bytes_read || fd < VFS_FD_FIRST_FILE) return ERR_NULL;
+    index = (uint32_t)(fd - VFS_FD_FIRST_FILE);
+    if (index >= HOST_VFS_HANDLE_CAPACITY || !fixture_vfs_handles[index].used) {
+        return ERR_INVALID;
+    }
+    if (!(fixture_vfs_handles[index].mode & VFS_MODE_READ)) {
+        return ERR_UNAVAILABLE;
+    }
+    if (fixture_vfs_handles[index].offset > fixture_vfs_handles[index].file.size) {
+        return ERR_STATE;
+    }
+    available = fixture_vfs_handles[index].file.size -
+                fixture_vfs_handles[index].offset;
+    count = size < available ? size : available;
+    if (count) kmemcpy(buffer,
+                       fixture_vfs_handles[index].file.content +
+                           fixture_vfs_handles[index].offset,
+                       count);
+    fixture_vfs_handles[index].offset += count;
+    *bytes_read = count;
+    return OK;
+}
+
+static int fixture_vfs_bytes_equal(const void* left, const char* right,
+                                   uint32_t size) {
+    const uint8_t* bytes = (const uint8_t*)left;
+
+    if (!left || !right) return 0;
+    for (uint32_t index = 0U; index < size; index++) {
+        if (bytes[index] != (uint8_t)right[index]) return 0;
+    }
+    return 1;
+}
+
+int vfs_write(int32_t fd, const void* buffer, uint32_t size,
+              uint32_t* bytes_written) {
+    uint32_t index;
+    const char* path;
+
+    if (!buffer || !bytes_written || fd < VFS_FD_FIRST_FILE) return ERR_NULL;
+    index = (uint32_t)(fd - VFS_FD_FIRST_FILE);
+    if (index >= HOST_VFS_HANDLE_CAPACITY || !fixture_vfs_handles[index].used) {
+        fprintf(stderr, "write fd=%d size=%lu -> invalid\n", (int)fd,
+                (unsigned long)size);
+        return ERR_INVALID;
+    }
+    path = fixture_vfs_handles[index].file.path;
+    if (!(fixture_vfs_handles[index].mode & VFS_MODE_WRITE)) {
+        return ERR_UNAVAILABLE;
+    }
+    if (size != 6U || !fixture_vfs_bytes_equal(buffer, "debug\n", size)) {
+        return ERR_INVALID;
+    }
+    if (kstrcmp(path, "/proc/sys/kernel/console_log_level") == 0) {
+        copy_text(fixture_vfs_console_level,
+                  sizeof(fixture_vfs_console_level),
+                  "console_log_level debug\n");
+    } else if (kstrcmp(path, "/proc/sys/kernel/buffer_log_level") == 0) {
+        copy_text(fixture_vfs_buffer_level,
+                  sizeof(fixture_vfs_buffer_level),
+                  "buffer_log_level debug\n");
+    } else {
+        return ERR_UNAVAILABLE;
+    }
+    *bytes_written = size;
+    return OK;
+}
+
+int vfs_lseek(int32_t fd, int32_t offset, uint32_t whence,
+              uint32_t* position) {
+    uint32_t index;
+    int64_t target;
+
+    if (!position || fd < VFS_FD_FIRST_FILE) return ERR_NULL;
+    index = (uint32_t)(fd - VFS_FD_FIRST_FILE);
+    if (index >= HOST_VFS_HANDLE_CAPACITY || !fixture_vfs_handles[index].used) {
+        return ERR_INVALID;
+    }
+    if (whence == VFS_SEEK_SET) target = offset;
+    else if (whence == VFS_SEEK_CUR) {
+        target = (int64_t)fixture_vfs_handles[index].offset + offset;
+    } else if (whence == VFS_SEEK_END) {
+        target = (int64_t)fixture_vfs_handles[index].file.size + offset;
+    } else return ERR_INVALID;
+    if (target < 0 || (uint64_t)target > fixture_vfs_handles[index].file.size) {
+        return ERR_INVALID;
+    }
+    fixture_vfs_handles[index].offset = (uint32_t)target;
+    *position = (uint32_t)target;
+    return OK;
+}
+
+int vfs_close(int32_t fd) {
+    uint32_t index;
+
+    if (fd < VFS_FD_FIRST_FILE) return ERR_INVALID;
+    index = (uint32_t)(fd - VFS_FD_FIRST_FILE);
+    if (index >= HOST_VFS_HANDLE_CAPACITY || !fixture_vfs_handles[index].used) {
+        return ERR_INVALID;
+    }
+    fixture_vfs_handles[index].used = 0U;
+    fixture_vfs_close_calls++;
+    return OK;
+}
+
+int procfs_reset_controls(void) {
+    copy_text(fixture_vfs_console_level,
+              sizeof(fixture_vfs_console_level),
+              "console_log_level info\n");
+    copy_text(fixture_vfs_buffer_level,
+              sizeof(fixture_vfs_buffer_level),
+              "buffer_log_level debug\n");
+    fixture_procfs_reset_calls++;
+    return OK;
 }
 
 int usb_manager_get_status(usb_manager_status_t* out_status) {
@@ -3408,6 +3754,27 @@ static int test_signal_commands(void) {
     return failures;
 }
 
+static int test_proccheck(void) {
+    int failures = 0;
+
+    fixture_reset();
+    fixture_vfs_sysfs_enabled = 1U;
+    shell_dispatch_cmd_proccheck("");
+    failures += expect_contains("PROC5 introspeccao: OK");
+    failures += expect_contains(" testes=");
+    failures += expect_contains(" aprovados=");
+    if (fixture_vfs_open_calls != fixture_vfs_close_calls ||
+        fixture_procfs_reset_calls != 2U) {
+        fprintf(stderr, "diagnostics-host: proccheck deixou VFS ou controles ativos\n");
+        failures++;
+    }
+
+    fixture_reset();
+    shell_dispatch_cmd_proccheck("extra");
+    failures += expect_text("Uso: proccheck\n");
+    return failures;
+}
+
 int main(void) {
     int result;
 
@@ -3426,6 +3793,7 @@ int main(void) {
     result += test_memcheck();
     result += test_kmetrics();
     result += test_signal_commands();
+    result += test_proccheck();
     coverage_active = 0U;
     coverage_emit(result);
     return result ? 1 : 0;
