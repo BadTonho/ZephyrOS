@@ -2074,10 +2074,11 @@ O relatório instrumentado fica em
 
 ## Shell/UI: editor de ícones das Configurações host-only
 
-O alvo `test-settings-icons-host` valida a lógica determinística do editor de
-ícones de Configurações com entradas estáticas e doubles de vídeo/GUI. Ele
-cobre seleção, navegação, limites de caractere/cor, encerramento e desenho nos
-caminhos TUI/GUI, sem acessar hardware ou iniciar a interface real:
+O alvo `test-settings-icons-host` valida os contratos determinísticos de
+Configurações com entradas estáticas e doubles de vídeo/GUI. Ele cobre
+inicialização, modos TUI/Classic, preferências, diálogos, ações, mouse,
+storage, seleção, navegação, limites de caractere/cor, encerramento e desenho,
+sem acessar hardware ou iniciar a interface real:
 
 ```text
 make test-settings-icons-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
@@ -2085,7 +2086,8 @@ make test-settings-icons-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 
 O relatório instrumentado fica em
 `build/test-results/settings-icons-host/coverage.json` e deve terminar com
-`status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`.
+`status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`, observando as
+56 funções de `src/settings/settings.c`.
 
 ## Shell/UI: contratos da App Store host-only
 
