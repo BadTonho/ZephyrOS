@@ -13,6 +13,10 @@ recuperacao. Verificacao, preflight, aplicacao e rollback usam
 `src/include/core/update.h`; consulta, download e cache usam
 `src/include/core/update_remote.h`. Nenhum download aplica um pacote.
 
+Em builds host-only, `src/include/ui/updater_test.h` expoe somente o contrato
+interno da fixture deterministica do Updater. Ele nao altera a API publica de
+`updater.h` nem participa do build freestanding.
+
 ## Modos de interface
 
 `updater_open()` escolhe o modo global atual:

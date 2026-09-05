@@ -3771,8 +3771,8 @@
           "hardware": "nenhum"
         },
         "preconditions": "compilador C nativo e nm disponiveis",
-        "action": "validar nomes ZUP, ordenacao, formatacao, selecao, tags ZSYS, hit-test e estados remotos",
-        "expected": "helpers preservam limites, maiusculas, estados e textos canonicos",
+        "action": "validar nomes ZUP, ordenacao, formatacao, historico, cancelamento, selecao, tags ZSYS e preflight de slots",
+        "expected": "helpers preservam limites, maiusculas, estados, textos canonicos e codigos de erro",
         "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
         "effects": "somente estruturas estaticas do processo host; nenhum disco, rede, worker ou hardware real",
         "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
@@ -3786,7 +3786,7 @@
         ],
         "status": "AUTOMATED"
       },
-      "evidence": "make test-updater-host PASS com helpers de nomes, ordenacao, formatacao, tags, selecao e estados remotos; cobertura instrumentada sem servicos externos"
+      "evidence": "make test-updater-host PASS com 24 funcoes reais de updater: nomes, ordenacao, formatacao, historico, cancelamento, tags ZSYS, cache e slots; cobertura instrumentada sem servicos externos, enderecos desconhecidos ou simbolos ambiguos"
     },
     {
       "id": "filemanager-host-dynamic",

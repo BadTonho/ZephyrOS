@@ -2692,6 +2692,84 @@ int updater_host_test_contracts(void) {
     if (kstrcmp(updater_remote_active_job_name(), "AGUARDANDO") != 0) {
         failures++;
     }
+
+    {
+        update_history_entry_t entry;
+
+        kmemset(&entry, 0, sizeof(entry));
+        entry.from_version.major = 1U;
+        entry.from_version.minor = 2U;
+        entry.from_version.patch = 3U;
+        entry.to_version.major = 4U;
+        entry.to_version.minor = 5U;
+        entry.to_version.patch = 6U;
+        entry.from_epoch = 7U;
+        entry.to_epoch = 8U;
+        entry.completed_entries = 2U;
+        entry.entry_count = 4U;
+        updater_history_detail_text(output, sizeof(output), &entry);
+        if (kstrcmp(output, "1.2.3/e7 -> 4.5.6/e8 2/4") != 0) {
+            failures++;
+        }
+        entry.action_reason = UPDATE_ACTION_IO;
+        entry.verification_reason = ZUPD_REASON_HASH;
+        kmemcpy(entry.package_alias, "APP.ZUP", 8U);
+        updater_history_detail_text(output, sizeof(output), &entry);
+        if (kstrcmp(output, "1.2.3/e7 -> 4.5.6/e8 2/4 ACTION/VERIFY APP.ZUP") != 0) {
+            failures++;
+        }
+    }
+
+    updater_host_fixture_clear_message();
+    if (updater_cancel_check(0) != 0) failures++;
+    updater_host_fixture_set_message(IPC_MSG_APP_REQUEST, 0U);
+    if (updater_cancel_check(0) != 0) failures++;
+    updater_host_fixture_set_message(IPC_MSG_KEYBOARD, 0x1CU);
+    if (updater_cancel_check(0) != 0) failures++;
+    updater_host_fixture_set_message(IPC_MSG_KEYBOARD, 0x01U);
+    if (updater_cancel_check(0) != 1) failures++;
+    updater_host_fixture_set_message(IPC_MSG_KEYBOARD, 0x58U);
+    if (updater_cancel_check(0) != 1) failures++;
+
+    updater_host_fixture_set_cached_path(ERR_UNAVAILABLE, 0);
+    if (updater_system_cached_path(output) != ERR_UNAVAILABLE ||
+        updater_last_result != ERR_UNAVAILABLE ||
+        updater_system_result_reason[0] != 'C') failures++;
+    updater_host_fixture_set_cached_path(OK, "ZSYS.ZSY");
+    if (updater_system_cached_path(output) != OK ||
+        kstrcmp(output, "ZSYS.ZSY") != 0) failures++;
+
+    updater_host_fixture_set_slots(ERR_UNAVAILABLE,
+                                   UPDATE_SYSTEM_SLOT_NONE, 0U);
+    if (updater_system_offer_final_reboot() != ERR_STATE) failures++;
+    updater_host_fixture_set_slots(OK, UPDATE_SYSTEM_SLOT_NONE, 0U);
+    if (updater_system_offer_final_reboot() != ERR_STATE) failures++;
+    updater_host_fixture_set_slots(OK, 1U, 27U);
+    if (updater_system_offer_final_reboot() != OK ||
+        updater_system_reboot_sequence != 27U) failures++;
+
+    kmemset(updater_system_tag, 0, sizeof(updater_system_tag));
+    kmemset(updater_system_tag_saved, 0, sizeof(updater_system_tag_saved));
+    kmemcpy(updater_system_tag, "ab", 3U);
+    updater_system_tag_length = 2U;
+    updater_system_tag_editing = 1U;
+    updater_system_tag_key(0x0EU);
+    if (updater_system_tag_length != 1U ||
+        kstrcmp(updater_system_tag, "a") != 0) failures++;
+    updater_host_fixture_set_keyboard_ascii('-');
+    updater_system_tag_key(0x20U);
+    if (updater_system_tag_length != 2U) failures++;
+    updater_host_fixture_set_keyboard_ascii(' ');
+    updater_system_tag_key(0x20U);
+    if (updater_last_result != ERR_INVALID) failures++;
+    updater_system_tag_key(0x1CU);
+    if (updater_system_tag_editing != 0U || !updater_system_tag_dirty) {
+        failures++;
+    }
+    updater_system_tag_editing = 1U;
+    updater_system_tag_key(0x01U);
+    if (updater_system_tag_editing != 0U) failures++;
+
     return failures;
 }
 #endif

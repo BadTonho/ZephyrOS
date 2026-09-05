@@ -2161,7 +2161,8 @@ limpo ao final.
 
 O alvo `test-updater-host` compila o Updater real com um contrato interno
 ativado por `ZEPHYROS_HOST_TEST`. A fixture valida helpers determinísticos de
-nomes `.ZUP`, truncamento, ordenação, formatação, tags ZSYS, seleção, hit-test,
+nomes `.ZUP`, truncamento, ordenação, formatação, histórico, cancelamento por
+teclado, cache, precondições de slots, edição de tags, seleção, hit-test,
 slots e estados de jobs remotos, sem serviço externo, disco, rede ou hardware:
 
 ```text
@@ -2170,8 +2171,10 @@ make test-updater-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 
 O relatório instrumentado fica em
 `build/test-results/updater-host/coverage.json` e deve terminar com
-`status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`. A execução tem
-timeout do runner e deixa manifesto, resultado, logs e cobertura preservados.
+`status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`, observando 24
+funções reais de `src/updater/updater.c` e quatro funções compartilhadas de
+`src/core/string.c`. A execução tem timeout do runner e deixa manifesto,
+resultado, logs e cobertura preservados.
 
 ## File Manager: contratos host-only
 

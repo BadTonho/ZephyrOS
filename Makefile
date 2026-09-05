@@ -1304,7 +1304,7 @@ $(SETTINGS_OBJ): $(SETTINGS_C)
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(UPDATER_OBJ): $(UPDATER_C)
+$(UPDATER_OBJ): $(UPDATER_C) src/include/ui/updater_test.h
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -1976,7 +1976,7 @@ test-shell-commands-apps-host: tools\core_host_runner.py tools\coverage_collecto
 test-shell-checks-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_shell_checks_host.c tests\catalog.json src\shell\shell_checks.c src\include\apps\shell_checks.h src\include\apps\shell_runtime.h src\include\apps\shell_job.h src\include\apps\shell_command_utils.h src\include\core\errors.h src\include\core\log.h src\include\core\string.h src\include\core\video.h src\include\core\app_loader.h src\include\core\app_api.h src\include\core\recovery.h src\include\core\device_manager.h src\include\core\usb_manager.h src\include\drivers\acpi.h src\include\fs\block.h src\include\fs\storage.h
 	python tools\core_host_runner.py --case host:shell:checks --cc "$(HOST_CC)"
 
-test-updater-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_updater_host.c tests\catalog.json src\updater\updater.c src\core\string.c src\include\ui\updater.h src\include\ui\updater_test.h src\include\core\errors.h src\include\core\log.h src\include\core\string.h src\include\core\update.h src\include\core\update_remote.h
+test-updater-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_updater_host.c tests\catalog.json src\updater\updater.c src\core\string.c src\include\ui\updater.h src\include\ui\updater_test.h src\include\core\errors.h src\include\core\keyboard.h src\include\core\log.h src\include\core\recovery.h src\include\core\string.h src\include\core\update.h src\include\core\update_remote.h src\include\core\update_remote_runtime.h src\include\core\update_remote_system.h src\include\core\update_system_slots.h src\include\core\update_remote_config.h src\include\core\update_runtime.h src\include\core\update_system.h src\include\core\video.h src\include\core\wait.h src\include\drivers\vesa.h src\include\fs\fs.h src\include\process\process.h src\include\ui\desktop.h src\include\ui\gui.h src\include\ui\taskbar.h src\include\ui\wm.h
 	python tools\core_host_runner.py --case host:ui:updater --cc "$(HOST_CC)"
 
 test-filemanager-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_filemanager_host.c tests\catalog.json src\filemanager\filemanager.c src\core\string.c src\include\ui\filemanager.h src\include\ui\filemanager_test.h src\include\apps\shell.h src\include\core\errors.h src\include\core\log.h src\include\core\memory.h src\include\core\string.h src\include\core\video.h src\include\core\recovery.h src\include\core\keyboard.h src\include\drivers\font.h src\include\drivers\mouse.h src\include\drivers\vesa.h src\include\fs\fs.h src\include\fs\storage.h src\include\fs\file_index.h src\include\ui\taskbar.h src\include\ui\desktop.h src\include\ui\wm.h src\include\ui\icons.h src\include\ui\gui.h src\include\ui\display.h
