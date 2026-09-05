@@ -3964,6 +3964,11 @@ extern void shell_checks_host_set_image_fixture(const uint8_t* data,
                                                 uint32_t size, int result,
                                                 uint8_t mutate);
 extern void shell_checks_host_set_delete_fixture(uint32_t successes);
+extern void shell_checks_host_set_fault_fixture(uint32_t count, uint32_t pid,
+                                                uint32_t vector, uint32_t error,
+                                                int result);
+extern void shell_checks_host_set_user_create_fixture(int result,
+                                                       uint32_t pid);
 
 int shell_checks_host_test_contracts(void) {
     static const char* app_phases[SHELL_APPCHECK_PHASE_COUNT] = {
@@ -4095,6 +4100,44 @@ int shell_checks_host_test_contracts(void) {
         shell_q2check.fault_result[1] != ERR_STATE) {
         failures++;
     }
+    shell_q2check.initial_fault_count = 10U;
+    shell_q2check.expected_pid = 42U;
+    shell_q2check.summary_result = OK;
+    shell_checks_host_set_fault_fixture(11U, 42U, 14U, 4U, OK);
+    if (shell_q2check_validate_fault(42U, 1U, 0U) != OK ||
+        shell_q2check.summary_result != OK) {
+        failures++;
+    }
+    shell_checks_host_set_fault_fixture(0U, 42U, 14U, 4U, OK);
+    if (shell_q2check_validate_fault(42U, 0U, 0U) != ERR_STATE) {
+        failures++;
+    }
+    shell_q2check.summary_result = OK;
+    shell_checks_host_set_fault_fixture(11U, 42U, 0U, 0U, ERR_STATE);
+    if (shell_q2check_validate_fault(42U, 1U, 0U) != OK ||
+        shell_q2check.summary_result != ERR_STATE) {
+        failures++;
+    }
+    shell_q2check.initial_focus = 5U;
+    shell_q2check.initial_user_count = 2U;
+    shell_q2check.initial_zombie_count = 1U;
+    shell_checks_host_set_process_snapshot(10U, 5U, 2U, 1U);
+    if (shell_q2check_validate_cleanup() != OK) failures++;
+    shell_checks_host_set_process_snapshot(10U, 4U, 2U, 1U);
+    if (shell_q2check_validate_cleanup() != ERR_STATE) failures++;
+    shell_checks_host_set_user_create_fixture(ERR_UNAVAILABLE, 0U);
+    if (shell_q2check_start_fault(2U) != ERR_INVALID ||
+        shell_q2check_start_fault(0U) != ERR_UNAVAILABLE) {
+        failures++;
+    }
+    shell_checks_host_set_user_create_fixture(OK, 42U);
+    shell_user_test_pid = 0U;
+    if (shell_q2check_start_fault(1U) != OK ||
+        shell_q2check.expected_pid != 42U || shell_user_test_pid != 42U) {
+        failures++;
+    }
+    shell_q2check_reset();
+    shell_user_test_pid = 0U;
     shell_regcheck.full_mode = 1U;
     shell_regcheck.state = SHELL_REGCHECK_PREPARE_FULL;
     shell_regcheck_reset();

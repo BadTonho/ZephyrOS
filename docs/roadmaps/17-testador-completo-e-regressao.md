@@ -27,7 +27,7 @@ Configurações, do Desktop, dos comandos de aplicativos, da evidência RTC e
 das fixtures de entrada/hosted, da evidência de panic, da regeneração dos
 relatórios RTC/Shell, da fixture host-only do Updater, da fixture host-only do
 File Manager, da fixture host-only do Task Manager e da validação de
-resultados do Shell Checks, registra 7.326 superfícies, 6.881 `COVERED` e 445
+resultados do Shell Checks, registra 7.326 superfícies, 6.884 `COVERED` e 442
 `PENDING`.
 O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
@@ -121,6 +121,22 @@ Isso não significa declarar hardware físico validado sem equipamento.
       ambíguos. A sincronização do catálogo passou e marcou 2 superfícies
       adicionais como `COVERED`, totalizando 7.326 superfícies, 6.881
       `COVERED`, 445 `PENDING`, 59 aposentadas e 165 casos.
+
+### Incremento Shell Checks: Q2Check de faults e limpeza — 2026-09-05
+
+- [x] A fixture `host:shell:checks` passou a validar o contrato do Q2Check
+      para contagem e resumo de page fault, incluindo fault ausente, PID ou
+      contagem incorreta, resumo inválido e erro de consulta.
+- [x] O mesmo caso validou a limpeza de foco, usuários e zombies, além da
+      rejeição de índice inválido, falha de criação e início válido do fixture
+      de fault, com snapshots estáticos e sem criar processos reais.
+- [x] `make test-shell-checks-host
+      HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` passou; o relatório
+      instrumentado terminou `PASS`, observando 50 funções reais de
+      `src/shell/shell_checks.c`, sem endereços desconhecidos ou símbolos
+      ambíguos. A sincronização do catálogo marcou 3 superfícies adicionais
+      como `COVERED`, totalizando 7.326 superfícies, 6.884 `COVERED`, 442
+      `PENDING`, 59 aposentadas e 165 casos.
 
 ### Incremento Shell/pacotes e atualizacoes — 2026-09-05
 
