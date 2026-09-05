@@ -3960,6 +3960,10 @@ extern void shell_checks_host_set_vma_snapshot(uint32_t active_pages,
                                                uint32_t handled,
                                                uint32_t invalid,
                                                int result);
+extern void shell_checks_host_set_image_fixture(const uint8_t* data,
+                                                uint32_t size, int result,
+                                                uint8_t mutate);
+extern void shell_checks_host_set_delete_fixture(uint32_t successes);
 
 int shell_checks_host_test_contracts(void) {
     static const char* app_phases[SHELL_APPCHECK_PHASE_COUNT] = {
@@ -4286,6 +4290,39 @@ int shell_checks_host_test_contracts(void) {
             image_header.data_size == 0U) {
             failures++;
         }
+
+        image_size = shell_build_demo_image();
+        shell_checks_host_set_image_fixture(appcheck_demo_image, image_size,
+                                            0, 0U);
+        if (shell_verify_image("DEMO.ZAP", image_size) != OK) failures++;
+        shell_checks_host_set_image_fixture(appcheck_demo_image,
+                                            image_size - 1U, 0, 0U);
+        if (shell_verify_image("DEMO.ZAP", image_size) != ERR_STATE) {
+            failures++;
+        }
+        shell_checks_host_set_image_fixture(appcheck_demo_image, image_size,
+                                            -1, 0U);
+        if (shell_verify_image("DEMO.ZAP", image_size) != ERR_DISK) {
+            failures++;
+        }
+        shell_checks_host_set_image_fixture(appcheck_demo_image, image_size,
+                                            0, 1U);
+        if (shell_verify_image("DEMO.ZAP", image_size) != ERR_STATE) {
+            failures++;
+        }
+        if (shell_verify_image(NULL, image_size) != ERR_INVALID ||
+            shell_verify_image("DEMO.ZAP", 0U) != ERR_INVALID ||
+            shell_verify_image("DEMO.ZAP", APP_IMAGE_MAX_FILE_SIZE + 1U) !=
+                ERR_INVALID) {
+            failures++;
+        }
+        shell_checks_host_set_image_fixture(NULL, 0U, 0, 0U);
+
+        shell_checks_host_set_delete_fixture(2U);
+        shell_remove_image("DEMO.ZAP");
+        shell_checks_host_set_delete_fixture(APP_CHECK_DEMO_MAX_CLEANUP);
+        shell_remove_image("DEMO.ZAP");
+        shell_remove_image(NULL);
     }
 
     shell_appcheck_summary_reset(0U);

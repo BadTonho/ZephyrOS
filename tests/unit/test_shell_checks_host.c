@@ -27,6 +27,12 @@ static uint32_t fixture_zombie_count;
 static paging_user_stats_t fixture_paging_stats;
 static page_fault_stats_t fixture_fault_stats;
 static int fixture_fault_stats_result = OK;
+static const uint8_t* fixture_read_data;
+static uint32_t fixture_read_size;
+static int fixture_read_result;
+static uint8_t fixture_read_mutate;
+static uint32_t fixture_delete_successes;
+static uint32_t fixture_delete_calls;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -121,6 +127,24 @@ int process_vma_get_page_fault_stats(page_fault_stats_t* stats) {
     return OK;
 }
 
+int fs_read_file(const char* filename, uint8_t* buffer, uint32_t max_size) {
+    (void)filename;
+    if (fixture_read_result != 0) return fixture_read_result;
+    if (!buffer || fixture_read_size > max_size || !fixture_read_data) {
+        return ERR_INVALID;
+    }
+    kmemcpy(buffer, fixture_read_data, fixture_read_size);
+    if (fixture_read_mutate && fixture_read_size > 0U) buffer[0] ^= 0xFFU;
+    return (int)fixture_read_size;
+}
+
+int fs_delete_file(const char* filename) {
+    (void)filename;
+    fixture_delete_calls++;
+    return fixture_delete_calls <= fixture_delete_successes ? OK :
+           ERR_NOT_FOUND;
+}
+
 void shell_checks_host_set_environment(uint8_t fs_type, int loader_ready) {
     fixture_fs_type = fs_type;
     fixture_loader_ready = loader_ready;
@@ -146,6 +170,19 @@ void shell_checks_host_set_vma_snapshot(uint32_t active_pages,
     fixture_fault_stats.handled = handled;
     fixture_fault_stats.invalid = invalid;
     fixture_fault_stats_result = result;
+}
+
+void shell_checks_host_set_image_fixture(const uint8_t* data, uint32_t size,
+                                         int result, uint8_t mutate) {
+    fixture_read_data = data;
+    fixture_read_size = size;
+    fixture_read_result = result;
+    fixture_read_mutate = mutate;
+}
+
+void shell_checks_host_set_delete_fixture(uint32_t successes) {
+    fixture_delete_successes = successes;
+    fixture_delete_calls = 0U;
 }
 
 int main(void) {

@@ -3920,7 +3920,7 @@
           "hardware": "estado ACPI, USB e dispositivos estatico"
         },
         "preconditions": "compilador C nativo e nm disponiveis",
-        "action": "executar contratos internos de fases, resumos, limites de falhas, estados de job, comparacao de inventarios, validacao de tabelas ACPI/MADT, validacao de resultados de migracao, VMA lazy e page fault e emissao de imagens ZAPP",
+        "action": "executar contratos internos de fases, resumos, limites de falhas, estados de job, comparacao de inventarios, validacao de tabelas ACPI/MADT, validacao de resultados de migracao, VMA lazy e page fault, verificacao de imagens ZAPP e limpeza limitada",
         "expected": "helpers preservam nomes, estados, codigos canonicos, limites, bytes, snapshots de paging e limpeza esperados",
         "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
         "effects": "somente estruturas estaticas da fixture host; nenhum hardware, armazenamento ou processo real",
@@ -3936,7 +3936,7 @@
         ],
         "status": "AUTOMATED"
       },
-      "evidence": "make test-shell-checks-host PASS com fases, resumos, saturacao de falhas, estados de job, comparacoes de inventario, ACPI/MADT, validadores de migracao/VMA/page fault e bytes de fixtures ZAPP; cobertura instrumentada do shell_checks.c sem hardware real"
+      "evidence": "make test-shell-checks-host PASS com fases, resumos, saturacao de falhas, estados de job, comparacoes de inventario, ACPI/MADT, validadores de migracao/VMA/page fault, verificacao de imagens e limpeza limitada; cobertura instrumentada do shell_checks.c sem hardware real"
     },
     {
       "id": "shell-commands-diagnostics-host-dynamic",

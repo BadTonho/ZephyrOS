@@ -27,7 +27,7 @@ Configurações, do Desktop, dos comandos de aplicativos, da evidência RTC e
 das fixtures de entrada/hosted, da evidência de panic, da regeneração dos
 relatórios RTC/Shell, da fixture host-only do Updater, da fixture host-only do
 File Manager, da fixture host-only do Task Manager e da validação de
-resultados do Shell Checks, registra 7.326 superfícies, 6.879 `COVERED` e 447
+resultados do Shell Checks, registra 7.326 superfícies, 6.881 `COVERED` e 445
 `PENDING`.
 O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
@@ -105,6 +105,22 @@ Isso não significa declarar hardware físico validado sem equipamento.
       O catálogo registra 7.326 superfícies, 6.879 `COVERED`, 447 `PENDING`,
       59 aposentadas e 165 casos; as pendências restantes continuam
       explícitas.
+
+### Incremento Shell Checks: verificação e limpeza de imagens — 2026-09-05
+
+- [x] A fixture `host:shell:checks` passou a verificar imagens ZAPP após
+      gravação, cobrindo leitura válida, tamanho divergente, erro de disco,
+      corrupção de conteúdo e argumentos inválidos.
+- [x] A mesma fixture exercitou a limpeza limitada de imagens, incluindo
+      remoção parcial, saturação do limite e caminho nulo, sem tocar no
+      filesystem real.
+- [x] `make test-shell-checks-host
+      HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` passou; o relatório
+      instrumentado terminou `PASS`, observando 47 funções reais de
+      `src/shell/shell_checks.c`, sem endereços desconhecidos ou símbolos
+      ambíguos. A sincronização do catálogo passou e marcou 2 superfícies
+      adicionais como `COVERED`, totalizando 7.326 superfícies, 6.881
+      `COVERED`, 445 `PENDING`, 59 aposentadas e 165 casos.
 
 ### Incremento Shell/pacotes e atualizacoes — 2026-09-05
 
