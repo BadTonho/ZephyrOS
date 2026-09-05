@@ -6448,6 +6448,55 @@
       "evidence": "make test-editor-host PASS com parsing, codificacao, terminadores, sintaxe, cores, edicao de linhas, word-wrap, ciclo de vida, IPC e salvamento instrumentados"
     },
     {
+      "id": "settings-icons-host-dynamic",
+      "domain": "shell-ui-settings",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:ui:settings-icons"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/settings-icons-host/coverage.json",
+      "coverage_sources": [
+        "src/settings/settings.c"
+      ],
+      "include_public_apis": false,
+      "case_definition": {
+        "id": "host:ui:settings-icons",
+        "scenario": "Contratos deterministas do editor de icones das configuracoes",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "exercitar editor de icones simples e desenho hospedado da GUI com entradas estaticas",
+        "expected": "valores, selecao, navegacao e estados de encerramento preservam o contrato observavel",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente buffers estaticos, estado do editor e doubles de video/GUI no processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "ui",
+          "settings",
+          "icons",
+          "limits",
+          "coverage"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "make test-settings-icons-host PASS com selecao, navegacao, limites de valores e desenho TUI/GUI instrumentados"
+    },
+    {
       "id": "assembly-qemu-tst7-dynamic",
       "domain": "drivers-interrupt-assembly",
       "owner": "quality",

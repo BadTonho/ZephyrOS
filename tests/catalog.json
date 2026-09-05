@@ -131719,9 +131719,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:settings-icons"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/settings/settings.c:icon_editor_draw_simple",
@@ -131737,9 +131740,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:settings-icons"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/settings/settings.c:icon_editor_handle_key",
@@ -131755,9 +131761,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:settings-icons"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/settings/settings.c:icon_editor_open",
@@ -131773,9 +131782,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:settings-icons"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/settings/settings.c:init_categories",
@@ -131827,9 +131839,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:settings-icons"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/settings/settings.c:settings_apply_category",
@@ -131941,9 +131956,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:settings-icons"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/settings/settings.c:settings_draw_classic_dialog",
@@ -131998,9 +132016,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:settings-icons"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/settings/settings.c:settings_execute_selected_action",
@@ -132130,9 +132151,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:settings-icons"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/settings/settings.c:settings_gui_draw_main_header",
@@ -132171,10 +132195,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:settings-icons",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/settings/settings.c:settings_gui_draw_num",
@@ -132267,10 +132292,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:settings-icons",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/settings/settings.c:settings_gui_handle_dialog_mouse",
@@ -132373,6 +132399,24 @@
       "kind": "c_function",
       "source": "src/settings/settings.c",
       "symbol": "settings_handle_mouse",
+      "linkage": "external",
+      "owner": "settings",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "c:src/settings/settings.c:settings_host_test_icon_editor",
+      "kind": "c_function",
+      "source": "src/settings/settings.c",
+      "symbol": "settings_host_test_icon_editor",
       "linkage": "external",
       "owner": "settings",
       "layer": "kernel-source",
@@ -132646,10 +132690,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:settings-icons",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/editor.c:alloc_line",
@@ -181334,6 +181379,50 @@
         "interrupts",
         "coverage",
         "snapshot"
+      ],
+      "status": "AUTOMATED"
+    },
+    {
+      "id": "host:ui:settings-icons",
+      "scenario": "Contratos deterministas do editor de icones das configuracoes",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "exercitar editor de icones simples e desenho hospedado da GUI com entradas estaticas",
+      "expected": "valores, selecao, navegacao e estados de encerramento preservam o contrato observavel",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente buffers estaticos, estado do editor e doubles de video/GUI no processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "surface_ids": [
+        "c:src/settings/settings.c:icon_editor_draw",
+        "c:src/settings/settings.c:icon_editor_draw_simple",
+        "c:src/settings/settings.c:icon_editor_handle_key",
+        "c:src/settings/settings.c:icon_editor_open",
+        "c:src/settings/settings.c:int_to_str",
+        "c:src/settings/settings.c:settings_draw",
+        "c:src/settings/settings.c:settings_draw_simple",
+        "c:src/settings/settings.c:settings_gui_draw_icon_editor",
+        "c:src/settings/settings.c:settings_gui_draw_modern_button",
+        "c:src/settings/settings.c:settings_gui_draw_surface",
+        "c:src/settings/settings.c:settings_visible_category_count"
+      ],
+      "tags": [
+        "host",
+        "ui",
+        "settings",
+        "icons",
+        "limits",
+        "coverage"
       ],
       "status": "AUTOMATED"
     }

@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **7307**
-- Casos de teste: **159**
+- Superfícies ativas: **7308**
+- Casos de teste: **160**
 - Superfícies aposentadas: **59**
 
 | Tipo | Quantidade |
 |---|---:|
 | `api_function` | 1578 |
 | `asm_entry` | 101 |
-| `c_function` | 5508 |
+| `c_function` | 5509 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6481 |
+| `COVERED` | 6489 |
 | `MANUAL` | 0 |
-| `PENDING` | 826 |
+| `PENDING` | 819 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 159 |
+| `AUTOMATED` | 160 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -47,7 +47,7 @@
 | `kernel` | 40 |
 | `memory` | 194 |
 | `process` | 259 |
-| `settings` | 55 |
+| `settings` | 56 |
 | `shell` | 1086 |
 | `taskbar` | 47 |
 | `thread` | 34 |
@@ -5970,42 +5970,43 @@
 | `c:src/settings/settings.c:execute_about_action` | `src/settings/settings.c` | `execute_about_action` | `settings` | `PENDING` | 0 |
 | `c:src/settings/settings.c:execute_icons_action` | `src/settings/settings.c` | `execute_icons_action` | `settings` | `PENDING` | 0 |
 | `c:src/settings/settings.c:execute_system_action` | `src/settings/settings.c` | `execute_system_action` | `settings` | `PENDING` | 0 |
-| `c:src/settings/settings.c:icon_editor_draw` | `src/settings/settings.c` | `icon_editor_draw` | `settings` | `PENDING` | 0 |
-| `c:src/settings/settings.c:icon_editor_draw_simple` | `src/settings/settings.c` | `icon_editor_draw_simple` | `settings` | `PENDING` | 0 |
-| `c:src/settings/settings.c:icon_editor_handle_key` | `src/settings/settings.c` | `icon_editor_handle_key` | `settings` | `PENDING` | 0 |
-| `c:src/settings/settings.c:icon_editor_open` | `src/settings/settings.c` | `icon_editor_open` | `settings` | `PENDING` | 0 |
+| `c:src/settings/settings.c:icon_editor_draw` | `src/settings/settings.c` | `icon_editor_draw` | `settings` | `COVERED` | 1 |
+| `c:src/settings/settings.c:icon_editor_draw_simple` | `src/settings/settings.c` | `icon_editor_draw_simple` | `settings` | `COVERED` | 1 |
+| `c:src/settings/settings.c:icon_editor_handle_key` | `src/settings/settings.c` | `icon_editor_handle_key` | `settings` | `COVERED` | 1 |
+| `c:src/settings/settings.c:icon_editor_open` | `src/settings/settings.c` | `icon_editor_open` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:init_categories` | `src/settings/settings.c` | `init_categories` | `settings` | `PENDING` | 0 |
 | `c:src/settings/settings.c:init_system_categories` | `src/settings/settings.c` | `init_system_categories` | `settings` | `PENDING` | 0 |
-| `c:src/settings/settings.c:int_to_str` | `src/settings/settings.c` | `int_to_str` | `settings` | `PENDING` | 0 |
+| `c:src/settings/settings.c:int_to_str` | `src/settings/settings.c` | `int_to_str` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_apply_category` | `src/settings/settings.c` | `settings_apply_category` | `settings` | `PENDING` | 0 |
 | `c:src/settings/settings.c:settings_classic_draw` | `src/settings/settings.c` | `settings_classic_draw` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_classic_layout` | `src/settings/settings.c` | `settings_classic_layout` | `settings` | `PENDING` | 0 |
 | `c:src/settings/settings.c:settings_clear_overlay` | `src/settings/settings.c` | `settings_clear_overlay` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_close` | `src/settings/settings.c` | `settings_close` | `settings` | `PENDING` | 0 |
-| `c:src/settings/settings.c:settings_draw` | `src/settings/settings.c` | `settings_draw` | `settings` | `PENDING` | 0 |
+| `c:src/settings/settings.c:settings_draw` | `src/settings/settings.c` | `settings_draw` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_draw_classic_dialog` | `src/settings/settings.c` | `settings_draw_classic_dialog` | `settings` | `PENDING` | 0 |
 | `c:src/settings/settings.c:settings_draw_classic_main` | `src/settings/settings.c` | `settings_draw_classic_main` | `settings` | `COVERED` | 1 |
-| `c:src/settings/settings.c:settings_draw_simple` | `src/settings/settings.c` | `settings_draw_simple` | `settings` | `PENDING` | 0 |
+| `c:src/settings/settings.c:settings_draw_simple` | `src/settings/settings.c` | `settings_draw_simple` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_execute_selected_action` | `src/settings/settings.c` | `settings_execute_selected_action` | `settings` | `PENDING` | 0 |
 | `c:src/settings/settings.c:settings_get_mode` | `src/settings/settings.c` | `settings_get_mode` | `settings` | `PENDING` | 0 |
 | `c:src/settings/settings.c:settings_gui_category_row_height` | `src/settings/settings.c` | `settings_gui_category_row_height` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_gui_color` | `src/settings/settings.c` | `settings_gui_color` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_gui_dialog_bounds` | `src/settings/settings.c` | `settings_gui_dialog_bounds` | `settings` | `PENDING` | 0 |
 | `c:src/settings/settings.c:settings_gui_draw_dialog_content` | `src/settings/settings.c` | `settings_gui_draw_dialog_content` | `settings` | `PENDING` | 0 |
-| `c:src/settings/settings.c:settings_gui_draw_icon_editor` | `src/settings/settings.c` | `settings_gui_draw_icon_editor` | `settings` | `PENDING` | 0 |
+| `c:src/settings/settings.c:settings_gui_draw_icon_editor` | `src/settings/settings.c` | `settings_gui_draw_icon_editor` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_gui_draw_main_header` | `src/settings/settings.c` | `settings_gui_draw_main_header` | `settings` | `COVERED` | 1 |
-| `c:src/settings/settings.c:settings_gui_draw_modern_button` | `src/settings/settings.c` | `settings_gui_draw_modern_button` | `settings` | `COVERED` | 1 |
+| `c:src/settings/settings.c:settings_gui_draw_modern_button` | `src/settings/settings.c` | `settings_gui_draw_modern_button` | `settings` | `COVERED` | 2 |
 | `c:src/settings/settings.c:settings_gui_draw_num` | `src/settings/settings.c` | `settings_gui_draw_num` | `settings` | `PENDING` | 0 |
 | `c:src/settings/settings.c:settings_gui_draw_option_value` | `src/settings/settings.c` | `settings_gui_draw_option_value` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_gui_draw_process_list` | `src/settings/settings.c` | `settings_gui_draw_process_list` | `settings` | `PENDING` | 0 |
 | `c:src/settings/settings.c:settings_gui_draw_storage_status` | `src/settings/settings.c` | `settings_gui_draw_storage_status` | `settings` | `PENDING` | 0 |
-| `c:src/settings/settings.c:settings_gui_draw_surface` | `src/settings/settings.c` | `settings_gui_draw_surface` | `settings` | `COVERED` | 1 |
+| `c:src/settings/settings.c:settings_gui_draw_surface` | `src/settings/settings.c` | `settings_gui_draw_surface` | `settings` | `COVERED` | 2 |
 | `c:src/settings/settings.c:settings_gui_handle_dialog_mouse` | `src/settings/settings.c` | `settings_gui_handle_dialog_mouse` | `settings` | `PENDING` | 0 |
 | `c:src/settings/settings.c:settings_gui_handle_icon_mouse` | `src/settings/settings.c` | `settings_gui_handle_icon_mouse` | `settings` | `PENDING` | 0 |
 | `c:src/settings/settings.c:settings_gui_hit` | `src/settings/settings.c` | `settings_gui_hit` | `settings` | `PENDING` | 0 |
 | `c:src/settings/settings.c:settings_gui_value_width` | `src/settings/settings.c` | `settings_gui_value_width` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_handle_key` | `src/settings/settings.c` | `settings_handle_key` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_handle_mouse` | `src/settings/settings.c` | `settings_handle_mouse` | `settings` | `PENDING` | 0 |
+| `c:src/settings/settings.c:settings_host_test_icon_editor` | `src/settings/settings.c` | `settings_host_test_icon_editor` | `settings` | `PENDING` | 0 |
 | `c:src/settings/settings.c:settings_hosted_close` | `src/settings/settings.c` | `settings_hosted_close` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_hosted_draw` | `src/settings/settings.c` | `settings_hosted_draw` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_hosted_key` | `src/settings/settings.c` | `settings_hosted_key` | `settings` | `COVERED` | 1 |
@@ -6018,7 +6019,7 @@
 | `c:src/settings/settings.c:settings_sync_mouse_preferences` | `src/settings/settings.c` | `settings_sync_mouse_preferences` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_update_taskbar_position_options` | `src/settings/settings.c` | `settings_update_taskbar_position_options` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_update_window_order_values` | `src/settings/settings.c` | `settings_update_window_order_values` | `settings` | `COVERED` | 1 |
-| `c:src/settings/settings.c:settings_visible_category_count` | `src/settings/settings.c` | `settings_visible_category_count` | `settings` | `COVERED` | 1 |
+| `c:src/settings/settings.c:settings_visible_category_count` | `src/settings/settings.c` | `settings_visible_category_count` | `settings` | `COVERED` | 2 |
 | `c:src/shell/editor.c:alloc_line` | `src/shell/editor.c` | `alloc_line` | `shell` | `COVERED` | 1 |
 | `c:src/shell/editor.c:detect_encoding` | `src/shell/editor.c` | `detect_encoding` | `shell` | `COVERED` | 1 |
 | `c:src/shell/editor.c:detect_line_ending` | `src/shell/editor.c` | `detect_line_ending` | `shell` | `COVERED` | 1 |
@@ -7552,6 +7553,7 @@
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
 | `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
+| `host:ui:settings-icons` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar editor de icones simples e desenho hospedado da GUI com entradas estaticas | valores, selecao, navegacao e estados de encerramento preservam o contrato observavel | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos, estado do editor e doubles de video/GUI no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -7863,24 +7865,16 @@
 - `c:src/settings/settings.c:execute_about_action`
 - `c:src/settings/settings.c:execute_icons_action`
 - `c:src/settings/settings.c:execute_system_action`
-- `c:src/settings/settings.c:icon_editor_draw`
-- `c:src/settings/settings.c:icon_editor_draw_simple`
-- `c:src/settings/settings.c:icon_editor_handle_key`
-- `c:src/settings/settings.c:icon_editor_open`
 - `c:src/settings/settings.c:init_categories`
 - `c:src/settings/settings.c:init_system_categories`
-- `c:src/settings/settings.c:int_to_str`
 - `c:src/settings/settings.c:settings_apply_category`
 - `c:src/settings/settings.c:settings_classic_layout`
 - `c:src/settings/settings.c:settings_close`
-- `c:src/settings/settings.c:settings_draw`
 - `c:src/settings/settings.c:settings_draw_classic_dialog`
-- `c:src/settings/settings.c:settings_draw_simple`
 - `c:src/settings/settings.c:settings_execute_selected_action`
 - `c:src/settings/settings.c:settings_get_mode`
 - `c:src/settings/settings.c:settings_gui_dialog_bounds`
 - `c:src/settings/settings.c:settings_gui_draw_dialog_content`
-- `c:src/settings/settings.c:settings_gui_draw_icon_editor`
 - `c:src/settings/settings.c:settings_gui_draw_num`
 - `c:src/settings/settings.c:settings_gui_draw_process_list`
 - `c:src/settings/settings.c:settings_gui_draw_storage_status`
@@ -7888,6 +7882,7 @@
 - `c:src/settings/settings.c:settings_gui_handle_icon_mouse`
 - `c:src/settings/settings.c:settings_gui_hit`
 - `c:src/settings/settings.c:settings_handle_mouse`
+- `c:src/settings/settings.c:settings_host_test_icon_editor`
 - `c:src/settings/settings.c:settings_hosted_mouse`
 - `c:src/settings/settings.c:settings_init`
 - `c:src/settings/settings.c:settings_select_mode`

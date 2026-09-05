@@ -1,4 +1,7 @@
 #include "ui/settings.h"
+#ifdef ZEPHYROS_HOST_TEST
+#include "settings_test.h"
+#endif
 #include "core/video.h"
 #include "core/keyboard.h"
 #include "ui/taskbar.h"
@@ -91,7 +94,6 @@ static const char* mouse_speed_values[] = {
 static const char* mouse_primary_values[] = {"Esquerdo", "Direito"};
 
 static void settings_draw_classic_main(void);
-static void settings_draw_classic_icon_editor(void);
 static void settings_draw_classic_dialog(void);
 static int settings_classic_layout(void);
 static void settings_classic_draw(void);
@@ -740,7 +742,6 @@ static void execute_system_action(int option) {
             video_clear();
             video_print_at(10, 8, "Processos Ativos:", 0x0F);
             extern process_t* processes[];
-            extern uint32_t process_count;
             int y = 10;
             for (int i = 0; i < 64 && y < 20; i++) {
                 if (processes[i] && processes[i]->state != 0) {
@@ -1559,3 +1560,66 @@ int settings_handle_mouse(mouse_event_t* event) {
     settings_draw();
     return 1;
 }
+
+#ifdef ZEPHYROS_HOST_TEST
+int settings_host_test_icon_editor(void) {
+    static icon_entry_t entries[2] = {
+        {'A', 1U, 2U},
+        {'B', 3U, 4U}
+    };
+    static const char* names[2] = {"Primeiro", "Segundo"};
+    int failures = 0;
+
+    settings_mode = SETTINGS_MODE_SIMPLE;
+    icon_editor_active = 0;
+    icon_editor_open("Icones de teste", 0, 0, 0);
+    if (icon_editor_active) failures++;
+
+    icon_editor_open("Icones de teste", entries, 2, names);
+    if (!icon_editor_active || icon_editor_selected != 0 ||
+        icon_editor_field != 0 || icon_editor_count != 2) {
+        failures++;
+    }
+    if (icon_editor_handle_key(0x80U) != 1) failures++;
+    if (icon_editor_handle_key(0x50U) != 1 || icon_editor_selected != 1) {
+        failures++;
+    }
+    if (icon_editor_handle_key(0x48U) != 1 || icon_editor_selected != 0) {
+        failures++;
+    }
+    if (icon_editor_handle_key(0x4DU) != 1 || icon_editor_field != 1) {
+        failures++;
+    }
+    if (icon_editor_handle_key(0x4DU) != 1 || icon_editor_field != 2) {
+        failures++;
+    }
+    if (icon_editor_handle_key(0x4BU) != 1 || icon_editor_field != 1) {
+        failures++;
+    }
+    entries[0].color = 0U;
+    if (icon_editor_handle_key(0x0AU) != 1 || entries[0].color != 0xFFU) {
+        failures++;
+    }
+    if (icon_editor_handle_key(0x0DU) != 1 || entries[0].color != 0U) {
+        failures++;
+    }
+    if (icon_editor_handle_key(0x4BU) != 1 || icon_editor_field != 0) {
+        failures++;
+    }
+    entries[0].ch = 0x7EU;
+    if (icon_editor_handle_key(0x0DU) != 1 || entries[0].ch != 0x20) {
+        failures++;
+    }
+    if (icon_editor_handle_key(0x0AU) != 1 || entries[0].ch != 0x7E) {
+        failures++;
+    }
+    settings_gui_x = 0;
+    settings_gui_y = 0;
+    settings_gui_width = SETTINGS_CLASSIC_DEFAULT_WIDTH;
+    settings_gui_height = SETTINGS_CLASSIC_DEFAULT_HEIGHT;
+    settings_gui_draw_icon_editor();
+    if (icon_editor_handle_key(0x1CU) != 1 || icon_editor_active) failures++;
+
+    return failures;
+}
+#endif
