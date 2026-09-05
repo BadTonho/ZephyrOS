@@ -390,3 +390,15 @@ entrada para chamar diretamente os parsers, validadores de IPv4, conversores
 de ticks, nomes de estado e contratos de identificadores de
 `shell_commands_network.c`, incluindo limites e argumentos nulos. A entrada e
 removida do build normal pelo pre-processador e nao altera a ABI publica.
+
+O bridge tambem declara `shell_packages_host_test_contracts()` somente para
+builds `ZEPHYROS_HOST_TEST`. A fixture `host:shell:commands-packages` chama
+diretamente os helpers de `shell_commands_packages.c` para validar extensoes de
+pacotes, normalizacao de IDs, tokens com espacos e truncamento, argumentos
+nulos e a matriz de acoes que inicia ou nao jobs de `pkg`, `store` e `update`.
+Ela nao inicia jobs nem acessa armazenamento, rede, hardware ou estado
+persistentemente compartilhado pelo Shell.
+
+O relatorio instrumentado fica em
+`build/test-results/shell-commands-packages-host/coverage.json`; a
+sincronizacao associa somente as superficies realmente chamadas pela fixture.

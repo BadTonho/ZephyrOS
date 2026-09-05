@@ -135,6 +135,8 @@ SHELL_COMMANDS_STORAGE_RESULT_DIR = ROOT / "build" / "test-results" / "shell-com
 SHELL_COMMANDS_STORAGE_BINARY = ROOT / "build" / "tests" / "test_shell_commands_storage_host.exe"
 SHELL_NETWORK_CHECKS_RESULT_DIR = ROOT / "build" / "test-results" / "shell-network-checks-host"
 SHELL_NETWORK_CHECKS_BINARY = ROOT / "build" / "tests" / "test_shell_network_checks_host.exe"
+SHELL_COMMANDS_PACKAGES_RESULT_DIR = ROOT / "build" / "test-results" / "shell-commands-packages-host"
+SHELL_COMMANDS_PACKAGES_BINARY = ROOT / "build" / "tests" / "test_shell_commands_packages_host.exe"
 SHELL_DIAGNOSTICS_RESULT_DIR = ROOT / "build" / "test-results" / "shell-diagnostics-host"
 SHELL_DIAGNOSTICS_BINARY = ROOT / "build" / "tests" / "test_shell_diagnostics_host.exe"
 SHELL_CHECKS_RESULT_DIR = ROOT / "build" / "test-results" / "shell-checks-host"
@@ -158,6 +160,12 @@ NETWORK_SOURCE_FILES = (
 SHELL_NETWORK_CHECKS_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_shell_network_checks_host.c",
     ROOT / "src" / "shell" / "shell_commands_network.c",
+    ROOT / "src" / "shell" / "shell_command_utils.c",
+    ROOT / "src" / "core" / "string.c",
+)
+SHELL_COMMANDS_PACKAGES_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_shell_commands_packages_host.c",
+    ROOT / "src" / "shell" / "shell_commands_packages.c",
     ROOT / "src" / "shell" / "shell_command_utils.c",
     ROOT / "src" / "core" / "string.c",
 )
@@ -1012,6 +1020,11 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
                 SHELL_NETWORK_CHECKS_BINARY,
                 SHELL_NETWORK_CHECKS_SOURCE_FILES,
                 "shell-network-checks-host")
+    if case_id == "host:shell:commands-packages":
+        return (SHELL_COMMANDS_PACKAGES_RESULT_DIR,
+                SHELL_COMMANDS_PACKAGES_BINARY,
+                SHELL_COMMANDS_PACKAGES_SOURCE_FILES,
+                "shell-commands-packages-host")
     if case_id == "host:shell:checks":
         return (SHELL_CHECKS_RESULT_DIR, SHELL_CHECKS_BINARY,
                 SHELL_CHECKS_SOURCE_FILES, "shell-checks-host")
@@ -1358,6 +1371,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:core:spinlock",
                                  "host:shell:dispatch", "host:shell:commands-storage",
                                  "host:shell:network-checks",
+                                 "host:shell:commands-packages",
                                  "host:shell:checks",
                                  "host:shell:diagnostics",
                                  "host:shell:introspection",
