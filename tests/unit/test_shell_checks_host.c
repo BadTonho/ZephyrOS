@@ -3,9 +3,14 @@
 
 #include "apps/shell_checks.h"
 #include "core/app_loader.h"
+#include "core/errors.h"
 #include "core/log.h"
+#include "core/string.h"
 #include "core/video.h"
 #include "fs/fs.h"
+#include "memory/paging.h"
+#include "memory/vma.h"
+#include "process/process.h"
 
 #define HOST_COVERAGE_CAPACITY 2048U
 #define HOST_COVERAGE_LINE_SIZE 32U
@@ -15,6 +20,13 @@ static uint32_t coverage_count;
 static uint8_t coverage_active;
 static uint8_t fixture_fs_type = FS_TYPE_FAT32;
 static int fixture_loader_ready = 1;
+static process_t fixture_current_process;
+static uint32_t fixture_focus;
+static uint32_t fixture_user_count;
+static uint32_t fixture_zombie_count;
+static paging_user_stats_t fixture_paging_stats;
+static page_fault_stats_t fixture_fault_stats;
+static int fixture_fault_stats_result = OK;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -82,9 +94,58 @@ int app_loader_is_ready(void) {
     return fixture_loader_ready;
 }
 
+process_t* process_get_current(void) {
+    return fixture_current_process.pid ? &fixture_current_process : NULL;
+}
+
+uint32_t process_get_focus(void) {
+    return fixture_focus;
+}
+
+uint32_t process_get_user_count(void) {
+    return fixture_user_count;
+}
+
+uint32_t process_get_state_count(process_state_t state) {
+    return state == PROCESS_STATE_ZOMBIE ? fixture_zombie_count : 0U;
+}
+
+void paging_get_user_stats(paging_user_stats_t* stats) {
+    if (stats) *stats = fixture_paging_stats;
+}
+
+int process_vma_get_page_fault_stats(page_fault_stats_t* stats) {
+    if (fixture_fault_stats_result != OK) return fixture_fault_stats_result;
+    if (!stats) return ERR_NULL;
+    *stats = fixture_fault_stats;
+    return OK;
+}
+
 void shell_checks_host_set_environment(uint8_t fs_type, int loader_ready) {
     fixture_fs_type = fs_type;
     fixture_loader_ready = loader_ready;
+}
+
+void shell_checks_host_set_process_snapshot(uint32_t pid, uint32_t focus,
+                                             uint32_t user_count,
+                                             uint32_t zombie_count) {
+    kmemset(&fixture_current_process, 0, sizeof(fixture_current_process));
+    fixture_current_process.pid = pid;
+    fixture_focus = focus;
+    fixture_user_count = user_count;
+    fixture_zombie_count = zombie_count;
+}
+
+void shell_checks_host_set_vma_snapshot(uint32_t active_pages,
+                                         uint32_t active_directories,
+                                         uint32_t handled, uint32_t invalid,
+                                         int result) {
+    kmemset(&fixture_paging_stats, 0, sizeof(fixture_paging_stats));
+    fixture_paging_stats.active_pages = active_pages;
+    fixture_paging_stats.active_directories = active_directories;
+    fixture_fault_stats.handled = handled;
+    fixture_fault_stats.invalid = invalid;
+    fixture_fault_stats_result = result;
 }
 
 int main(void) {

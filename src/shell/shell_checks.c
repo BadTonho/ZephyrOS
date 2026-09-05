@@ -3951,6 +3951,15 @@ void shell_dispatch_cmd_usertest(const char* arguments) {
 #ifdef ZEPHYROS_HOST_TEST
 extern void shell_checks_host_set_environment(uint8_t fs_type,
                                               int loader_ready);
+extern void shell_checks_host_set_process_snapshot(uint32_t pid,
+                                                   uint32_t focus,
+                                                   uint32_t user_count,
+                                                   uint32_t zombie_count);
+extern void shell_checks_host_set_vma_snapshot(uint32_t active_pages,
+                                               uint32_t active_directories,
+                                               uint32_t handled,
+                                               uint32_t invalid,
+                                               int result);
 
 int shell_checks_host_test_contracts(void) {
     static const char* app_phases[SHELL_APPCHECK_PHASE_COUNT] = {
@@ -4288,6 +4297,61 @@ int shell_checks_host_test_contracts(void) {
     shell_appcheck_migration_pid = 0U;
     shell_appcheck_vma_pid = 0U;
     shell_appcheck_fault_pid = 0U;
+
+    shell_appcheck_user_count = 2U;
+    shell_appcheck_zombie_count = 1U;
+    shell_checks_host_set_process_snapshot(7U, 7U, 2U, 1U);
+    {
+        app_loader_result_t result;
+
+        kmemset(&result, 0, sizeof(result));
+        result.exit_code = OK;
+        result.focus_acquired = 1U;
+        if (shell_appcheck_migration_is_valid(&result) != OK) failures++;
+        result.focus_acquired = 0U;
+        if (shell_appcheck_migration_is_valid(&result) != ERR_STATE) {
+            failures++;
+        }
+        if (shell_appcheck_migration_is_valid(NULL) != ERR_STATE) failures++;
+    }
+
+    shell_appcheck_vma_initial_pages = 4U;
+    shell_appcheck_vma_initial_directories = 2U;
+    shell_appcheck_vma_initial_users = 2U;
+    shell_appcheck_vma_initial_zombies = 1U;
+    shell_appcheck_vma_initial_faults.handled = 10U;
+    shell_appcheck_vma_initial_faults.invalid = 3U;
+    shell_checks_host_set_process_snapshot(7U, 7U, 2U, 1U);
+    shell_checks_host_set_vma_snapshot(4U, 2U, 11U, 3U, OK);
+    {
+        app_loader_result_t result;
+
+        kmemset(&result, 0, sizeof(result));
+        result.pid = 8U;
+        result.exit_code = APP_EXIT_SUCCESS;
+        result.focus_acquired = 1U;
+        if (shell_appcheck_vma_is_valid(&result) != OK) failures++;
+        result.faulted = 1U;
+        if (shell_appcheck_vma_is_valid(&result) != ERR_STATE) failures++;
+    }
+
+    shell_checks_host_set_vma_snapshot(4U, 2U, 12U, 4U, OK);
+    {
+        app_loader_result_t result;
+
+        kmemset(&result, 0, sizeof(result));
+        result.pid = 9U;
+        result.faulted = 1U;
+        result.exit_code = APP_EXIT_FROM_SIGNAL(APP_SIGNAL_SEGV);
+        result.termination_signal = APP_SIGNAL_SEGV;
+        result.focus_acquired = 1U;
+        if (shell_appcheck_fault_is_valid(&result) != OK) failures++;
+        result.termination_signal = 0U;
+        if (shell_appcheck_fault_is_valid(&result) != ERR_STATE) failures++;
+    }
+
+    shell_checks_host_set_process_snapshot(0U, 0U, 0U, 0U);
+    shell_checks_host_set_vma_snapshot(0U, 0U, 0U, 0U, ERR_UNAVAILABLE);
     return failures;
 }
 #endif

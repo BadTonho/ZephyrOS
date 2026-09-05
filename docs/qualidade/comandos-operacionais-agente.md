@@ -2176,6 +2176,24 @@ funções reais de `src/updater/updater.c` e quatro funções compartilhadas de
 `src/core/string.c`. A execução tem timeout do runner e deixa manifesto,
 resultado, logs e cobertura preservados.
 
+## Shell Checks: validadores de resultados host-only
+
+O alvo `test-shell-checks-host` compila `shell_checks.c` com
+`ZEPHYROS_HOST_TEST` e snapshots estáticos de processo, paging e page faults.
+A fixture valida resultados de migração de aplicativos, VMA lazy e page fault,
+incluindo rejeições de foco, PID, estado e contadores, sem iniciar processo,
+usar hardware, disco ou rede:
+
+```text
+make test-shell-checks-host HOST_CC=C:\\msys64\\ucrt64\\bin\gcc.exe
+```
+
+O relatório instrumentado fica em
+`build/test-results/shell-checks-host/coverage.json` e deve terminar com
+`status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`, observando 45
+funções reais de `src/shell/shell_checks.c`. A execução tem timeout do runner e
+preserva manifesto, resultado, logs e cobertura.
+
 ## File Manager: contratos host-only
 
 O alvo `test-filemanager-host` compila o Explorer real com a fixture interna

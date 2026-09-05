@@ -26,8 +26,9 @@ interface App Store, dos relatórios de rede do Shell, do módulo de
 Configurações, do Desktop, dos comandos de aplicativos, da evidência RTC e
 das fixtures de entrada/hosted, da evidência de panic, da regeneração dos
 relatórios RTC/Shell, da fixture host-only do Updater, da fixture host-only do
-File Manager e da fixture host-only do Task Manager, registra 7.326
-superfícies, 6.876 `COVERED` e 450 `PENDING`.
+File Manager, da fixture host-only do Task Manager e da validação de
+resultados do Shell Checks, registra 7.326 superfícies, 6.879 `COVERED` e 447
+`PENDING`.
 O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
@@ -86,6 +87,24 @@ Isso não significa declarar hardware físico validado sem equipamento.
       símbolos ambíguos. O catálogo registra 7.326 superfícies, 6.876
       `COVERED`, 450 `PENDING`, 59 aposentadas e 165 casos; as demais
       pendências continuam explícitas.
+
+### Incremento Shell Checks: resultados de aplicativos e paging — 2026-09-05
+
+- [x] A fixture existente `host:shell:checks` passou a validar diretamente
+      resultados de migração de aplicativos, VMA lazy e page fault, com
+      snapshots falsos de processo, paging e contadores de faults.
+- [x] Foram exercitados caminhos válidos e rejeições por resultado incompleto,
+      fault inesperado, foco ausente, PID inválido e contadores inconsistentes.
+      A fixture não inicia processos, não usa paging real e não acessa disco,
+      rede ou hardware.
+- [x] `make test-shell-checks-host
+      HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` passou; o relatório dinâmico
+      terminou `PASS`, observando 45 funções reais de
+      `src/shell/shell_checks.c`, sem endereços desconhecidos ou símbolos
+      ambíguos. A sincronização/renderização e `make catalog-test` passaram.
+      O catálogo registra 7.326 superfícies, 6.879 `COVERED`, 447 `PENDING`,
+      59 aposentadas e 165 casos; as pendências restantes continuam
+      explícitas.
 
 ### Incremento Shell/pacotes e atualizacoes — 2026-09-05
 
