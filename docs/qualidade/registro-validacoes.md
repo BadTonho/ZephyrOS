@@ -6037,6 +6037,19 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   superfícies, 6.525 `COVERED`, 784 `PENDING`, 59 aposentadas e 161 casos; as
   pendências restantes continuam explícitas.
 
+- Incremento Shell/UI App Store — interface concluído em 2026-09-05
+  (America/Sao_Paulo). O caso `host:ui:appstore` foi ampliado com doubles de
+  vídeo, GUI, Desktop, Window Manager, taskbar, catálogo remoto e recovery.
+  A fixture passou a exercitar desenho Simple/Classic, modo remoto, seleção,
+  confirmação, teclado, mouse, callbacks hospedados, ações e estados
+  indisponíveis. `make test-appstore-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` passou com `-Wall -Wextra
+  -Werror`; a cobertura observou 77 superfícies sem endereços desconhecidos
+  ou símbolos ambíguos. A sincronização, renderização e `make catalog-test`
+  passaram. O catálogo registra 7.311 superfícies, 6.564 `COVERED`, 747
+  `PENDING`, 59 aposentadas e 161 casos; workers, inicialização real e
+  refreshes com backends permanecem pendentes.
+
 - Incremento Shell/UI — contratos do Desktop concluído em 2026-09-05
   (America/Sao_Paulo). Foi criado o caso host-only `host:ui:desktop` com
   doubles estáticos de VESA, vídeo, display, taskbar, ícones, GUI, mouse e

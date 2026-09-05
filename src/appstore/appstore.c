@@ -2116,12 +2116,158 @@ static int appstore_host_geometry_contracts(void) {
                                 !appstore_point_in(10, 15, 10, 10, 5, 5));
 }
 
+static void appstore_host_reset_job(void) {
+    appstore_busy = 0;
+    appstore_queued_type = APPSTORE_JOB_NONE;
+    appstore_job.type = APPSTORE_JOB_NONE;
+    appstore_running_job.type = APPSTORE_JOB_NONE;
+    appstore_clear_context();
+}
+
+static int appstore_host_ui_contracts(void) {
+    mouse_event_t event;
+
+    appstore_host_prepare_entries();
+    kmemcpy(appstore_entries[0].source.name, "Core", 5U);
+    kmemcpy(appstore_entries[0].source.version, "1.0", 4U);
+    kmemcpy(appstore_entries[0].source.dependencies[0], "BASE", 5U);
+    appstore_entries[0].source.dependency_count = 1U;
+    appstore_entries[0].source_size = 4096U;
+    appstore_entries[0].capabilities = APP_CATALOG_CAPABILITY_VERIFY |
+        APP_CATALOG_CAPABILITY_INSTALL | APP_CATALOG_CAPABILITY_RUN |
+        APP_CATALOG_CAPABILITY_REMOVE | APP_CATALOG_CAPABILITY_UPDATE;
+    kmemcpy(appstore_entries[1].source.name, "Tool", 5U);
+    kmemcpy(appstore_entries[1].source.version, "2.0", 4U);
+    kmemcpy(appstore_entries[1].installed.version, "1.0", 4U);
+    appstore_entries[1].capabilities = appstore_entries[0].capabilities;
+    appstore_action.plan.entry_count = 1U;
+    appstore_action.plan.target_index = 0U;
+    kmemcpy(appstore_action.plan.entries[0].id, "CORE", 5U);
+    kmemcpy(appstore_action.plan.entries[0].from_version, "1.0", 4U);
+    kmemcpy(appstore_action.plan.entries[0].to_version, "2.0", 4U);
+    appstore_action.plan.entries[0].action = APP_PACKAGE_PLAN_ACTION_UPDATE;
+    appstore_active = 1;
+    appstore_hosted = 0;
+    appstore_mode = APPSTORE_MODE_SIMPLE;
+    appstore_tab = APPSTORE_TAB_CATALOG;
+    appstore_selected = 0;
+    appstore_gui_width = APPSTORE_CLASSIC_DEFAULT_WIDTH;
+    appstore_gui_height = APPSTORE_CLASSIC_DEFAULT_HEIGHT;
+    appstore_draw();
+    appstore_handle_key(APPSTORE_SCANCODE_DOWN);
+    appstore_handle_key(APPSTORE_SCANCODE_UP);
+    appstore_handle_key(APPSTORE_SCANCODE_TAB);
+    appstore_handle_key(APPSTORE_SCANCODE_TAB);
+    appstore_handle_key(APPSTORE_SCANCODE_TAB);
+    appstore_handle_key(APPSTORE_SCANCODE_V);
+    appstore_host_reset_job();
+    appstore_handle_key(APPSTORE_SCANCODE_I);
+    appstore_host_reset_job();
+    appstore_handle_key(APPSTORE_SCANCODE_U);
+    appstore_host_reset_job();
+    appstore_handle_key(APPSTORE_SCANCODE_A);
+    appstore_host_reset_job();
+    appstore_handle_key(APPSTORE_SCANCODE_R);
+    appstore_host_reset_job();
+    appstore_handle_key(APPSTORE_SCANCODE_B);
+    appstore_host_reset_job();
+    appstore_handle_key(APPSTORE_SCANCODE_F5);
+    appstore_close();
+    appstore_host_reset_job();
+    appstore_initialized = 0;
+    if (appstore_host_expect(appstore_open() == ERR_STATE) != OK) {
+        return ERR_STATE;
+    }
+    appstore_initialized = 1;
+    appstore_hosted = 0;
+    if (appstore_host_expect(appstore_open() == OK) != OK) return ERR_STATE;
+    appstore_host_reset_job();
+    appstore_close();
+    appstore_host_reset_job();
+    appstore_hosted = 1;
+    appstore_active = 1;
+    appstore_tab = APPSTORE_TAB_REMOTE;
+    appstore_selected = 0;
+    appstore_gui_x = 10;
+    appstore_gui_y = 20;
+    appstore_gui_width = APPSTORE_CLASSIC_DEFAULT_WIDTH;
+    appstore_gui_height = APPSTORE_CLASSIC_DEFAULT_HEIGHT;
+    appstore_remote_status.enabled = 1U;
+    appstore_remote_status.network_ready = 1U;
+    appstore_remote_status.catalog_available = 1U;
+    appstore_remote_status.cache_state = APP_REMOTE_CACHE_VALID;
+    appstore_remote_entries[0].cached = 1U;
+    appstore_remote_entries[0].installed = 1U;
+    appstore_remote_entries[0].state = APP_REMOTE_ENTRY_UPDATE_AVAILABLE;
+    appstore_mode = APPSTORE_MODE_CLASSIC;
+    appstore_tab = APPSTORE_TAB_CATALOG;
+    appstore_selected = 0;
+    appstore_entries[0].capabilities = APP_CATALOG_CAPABILITY_VERIFY |
+        APP_CATALOG_CAPABILITY_INSTALL | APP_CATALOG_CAPABILITY_RUN |
+        APP_CATALOG_CAPABILITY_REMOVE;
+    appstore_hosted_draw(appstore_gui_x, appstore_gui_y,
+                         appstore_gui_width, appstore_gui_height);
+    appstore_entries[0].capabilities = APP_CATALOG_CAPABILITY_VERIFY |
+        APP_CATALOG_CAPABILITY_INSTALL | APP_CATALOG_CAPABILITY_RUN |
+        APP_CATALOG_CAPABILITY_REMOVE | APP_CATALOG_CAPABILITY_UPDATE;
+    appstore_hosted_draw(appstore_gui_x, appstore_gui_y,
+                         appstore_gui_width, appstore_gui_height);
+    appstore_confirm = APPSTORE_CONFIRM_INSTALL;
+    appstore_copy_text(appstore_confirm_key, sizeof(appstore_confirm_key),
+                       "core");
+    appstore_confirm_generation = appstore_generation;
+    event.event = MOUSE_EVENT_PRESS;
+    event.changed = MOUSE_BTN_LEFT;
+    event.x = appstore_gui_x + (appstore_gui_width - 420) / 2 + 83;
+    event.y = appstore_gui_y + (appstore_gui_height - 170) / 2 + 117;
+    appstore_handle_mouse(&event);
+    appstore_host_reset_job();
+    appstore_tab = APPSTORE_TAB_REMOTE;
+    appstore_selected = 0;
+    appstore_handle_key(APPSTORE_SCANCODE_F5);
+    appstore_host_reset_job();
+    appstore_handle_key(APPSTORE_SCANCODE_E);
+    appstore_host_reset_job();
+    appstore_handle_key(APPSTORE_SCANCODE_D);
+    appstore_host_reset_job();
+    appstore_handle_key(APPSTORE_SCANCODE_I);
+    appstore_host_reset_job();
+    appstore_handle_key(APPSTORE_SCANCODE_U);
+    appstore_host_reset_job();
+    appstore_handle_key(APPSTORE_SCANCODE_A);
+    appstore_host_reset_job();
+    appstore_handle_key(APPSTORE_SCANCODE_B);
+    appstore_host_reset_job();
+    event.event = MOUSE_EVENT_PRESS;
+    event.changed = MOUSE_BTN_LEFT;
+    event.x = appstore_gui_x + APPSTORE_CLASSIC_MARGIN + 1;
+    event.y = appstore_gui_y + APPSTORE_CLASSIC_MARGIN + 1;
+    appstore_hosted_mouse(&event, appstore_gui_x, appstore_gui_y,
+                          appstore_gui_width, appstore_gui_height);
+    event.x = appstore_gui_x + 20;
+    event.y = appstore_gui_y + 70;
+    appstore_hosted_mouse(&event, appstore_gui_x, appstore_gui_y,
+                          appstore_gui_width, appstore_gui_height);
+    appstore_hosted_key(APPSTORE_SCANCODE_ESC);
+    appstore_hosted_close();
+    appstore_host_reset_job();
+    appstore_tab = APPSTORE_TAB_REMOTE;
+    appstore_selected = 0;
+    appstore_hosted_draw(appstore_gui_x, appstore_gui_y,
+                         appstore_gui_width, appstore_gui_height);
+    if (appstore_get_mode() == APPSTORE_MODE_CLASSIC &&
+        appstore_is_open() == 0) return OK;
+    LOG_ERROR("APPSTORE", "Fixture host nao restaurou o estado final");
+    return ERR_STATE;
+}
+
 int appstore_host_test_contracts(void) {
     int result = appstore_host_text_contracts();
 
     if (result == OK) result = appstore_host_selection_contracts();
     if (result == OK) result = appstore_host_state_contracts();
     if (result == OK) result = appstore_host_geometry_contracts();
+    if (result == OK) result = appstore_host_ui_contracts();
     return result;
 }
 #endif

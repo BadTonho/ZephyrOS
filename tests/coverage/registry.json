@@ -6396,7 +6396,7 @@
         ],
         "status": "AUTOMATED"
       },
-      "evidence": "make test-appstore-host PASS com formatacao, selecao, planos, estados, rollback, confianca e geometria instrumentados"
+      "evidence": "make test-appstore-host PASS com formatacao, selecao, planos, estados, rollback, confianca, geometria, desenho Simple/Classic, modo remoto, confirmacao, teclado, mouse e callbacks hospedados instrumentados"
     },
     {
       "id": "editor-host-dynamic",
