@@ -5963,3 +5963,13 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   ambíguos. Passaram os dois alvos com `HOST_CC`, sincronização/renderização e
   `make catalog-test`; o catálogo registra 7.307 superfícies, 6.428
   `COVERED`, 879 `PENDING` e 158 casos.
+
+- Incremento Shell/diagnostics summary — concluído em 2026-09-05
+  (America/Sao_Paulo). A fixture existente `host:shell:diagnostics` passou a
+  exercitar o formatador de resumo de um componente `DEGRADED`, validando a
+  saída observável com código de erro e contador de falhas. Passou
+  `make test-shell-diagnostics-host` com `HOST_CC`; a evidência dinâmica
+  resolveu a última superfície pendente de `src/shell/shell_commands_diagnostics.c`,
+  sem endereços desconhecidos ou símbolos ambíguos. A sincronização,
+  renderização e `make catalog-test` passaram; o catálogo registra 7.307
+  superfícies, 6.429 `COVERED`, 878 `PENDING` e 158 casos.

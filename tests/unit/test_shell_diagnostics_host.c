@@ -4208,6 +4208,16 @@ static int test_health(void) {
 
     fixture_reset();
     prepare_health_fixture();
+    fixture_recovery_components[RECOVERY_COMPONENT_NETWORK].state =
+        RECOVERY_STATE_DEGRADED;
+    fixture_recovery_components[RECOVERY_COMPONENT_NETWORK].failures = 2U;
+    fixture_recovery_components[RECOVERY_COMPONENT_NETWORK].last_error =
+        ERR_UNAVAILABLE;
+    shell_dispatch_cmd_health("summary");
+    failures += expect_contains("NETWORK: DEGRADED erro=9 falhas=2\n");
+
+    fixture_reset();
+    prepare_health_fixture();
     shell_dispatch_cmd_health("");
     failures += expect_contains("Estado dos componentes:\n");
     failures += expect_contains("VESA: READY");
