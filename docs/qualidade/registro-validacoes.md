@@ -6276,3 +6276,18 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `ambiguous_symbols=[]`. A sincronização/renderização do catálogo passou e
   marcou 4 superfícies adicionais como `COVERED`, totalizando 7.326
   superfícies, 6.888 `COVERED`, 438 `PENDING`, 59 aposentadas e 165 casos.
+
+- Incremento UI/File Manager - renderização, diálogos e visualização - em
+  2026-09-05 (America/Sao_Paulo). A fixture host-only `host:ui:filemanager`
+  passou a executar os caminhos reais de desenho Simple e Classic, incluindo
+  barras, painéis, listas, volumes, pesquisa, ajuda, diálogos e visualização de
+  diretório, com doubles estáticos de vídeo, GUI, VESA, ícones, taskbar,
+  memória e leitura de arquivos. `make test-filemanager-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` passou com
+  `-Wall -Wextra -Werror`. A cobertura dinâmica observou 81 funções reais de
+  `src/filemanager/filemanager.c`, com `status=PASS`,
+  `unknown_addresses=[]` e `ambiguous_symbols=[]`. A sincronização final do
+  catálogo, `make catalog-test`, o teste dos runners host-only e `git diff
+  --check` passaram. O build limpo também passou e os 126 relatórios host-only
+  restantes foram reconstruídos após `make clean`; as superfícies que não
+  aparecem nos relatórios continuam pendentes.

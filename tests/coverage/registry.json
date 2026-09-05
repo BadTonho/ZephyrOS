@@ -3820,7 +3820,7 @@
           "hardware": "nenhum"
         },
         "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "exercitar contratos de fontes, caminhos, nomes, layout, selecao, historico, pesquisa, mutacoes e estados do Explorer com doubles estaticos",
+        "action": "exercitar contratos de fontes, caminhos, nomes, layout Simple/Classic, selecao, historico, pesquisa, mutacoes, dialogs e desenho do Explorer com doubles estaticos",
         "expected": "helpers preservam limites, normalizacao, navegacao, selecao, paginação e estados de indice sem efeitos externos",
         "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
         "effects": "somente buffers e estado estaticos do processo host; nenhum VFS, disco, rede ou hardware real",
@@ -3836,7 +3836,7 @@
         ],
         "status": "AUTOMATED"
       },
-      "evidence": "make test-filemanager-host PASS com 47 funcoes reais de filemanager.c observadas, cobrindo fontes, refresh, historico, pesquisa, selecao, mutacoes e interacao hospedada, sem enderecos desconhecidos ou simbolos ambiguos"
+      "evidence": "make test-filemanager-host PASS com 81 funcoes reais de filemanager.c observadas, cobrindo fontes, refresh, historico, pesquisa, selecao, mutacoes, desenho Simple/Classic, dialogs e visualizacao, sem enderecos desconhecidos ou simbolos ambiguos"
     },
     {
       "id": "taskmanager-host-dynamic",

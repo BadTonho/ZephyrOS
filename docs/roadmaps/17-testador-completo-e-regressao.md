@@ -27,7 +27,7 @@ Configurações, do Desktop, dos comandos de aplicativos, da evidência RTC e
 das fixtures de entrada/hosted, da evidência de panic, da regeneração dos
 relatórios RTC/Shell, da fixture host-only do Updater, da fixture host-only do
 File Manager, da fixture host-only do Task Manager e da validação de
-resultados do Shell Checks, registra 7.326 superfícies, 6.903 `COVERED` e 423
+resultados do Shell Checks, registra 7.326 superfícies, 6.928 `COVERED` e 398
 `PENDING`.
 O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
@@ -166,11 +166,29 @@ Isso não significa declarar hardware físico validado sem equipamento.
       acessa disco, VFS, rede ou hardware real.
 - [x] `make test-filemanager-host
       HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` passou; o relatorio
-      `build/test-results/filemanager-host/coverage.json` observou 47 funcoes
+      `build/test-results/filemanager-host/coverage.json` observou 81 funcoes
       reais de `src/filemanager/filemanager.c`, com
       `unknown_addresses=[]` e `ambiguous_symbols=[]`. A sincronizacao cobriu
       15 superficies adicionais, totalizando 7.326 superficies, 6.903
-      `COVERED`, 423 `PENDING`, 59 aposentadas e 165 casos.
+      `COVERED`, 398 `PENDING`, 59 aposentadas e 165 casos.
+
+### Incremento UI/File Manager - renderizacao, dialogs e visualizacao - 2026-09-05
+
+- [x] A mesma fixture host-only passou a executar os caminhos reais de desenho
+      Simple e Classic, incluindo barras, paineis, lista de arquivos e volumes,
+      estados de pesquisa, ajuda, dialogs de criacao/renomeacao/exclusao e
+      visualizacao de diretorio, usando apenas doubles estaticos de video, GUI,
+      VESA, icones, taskbar, memoria e leitura de arquivos.
+- [x] `make test-filemanager-host
+      HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` passou com
+      `-Wall -Wextra -Werror`; a cobertura dinamica observou 81 funcoes reais
+      de `src/filemanager/filemanager.c`, com `status=PASS`,
+      `unknown_addresses=[]` e `ambiguous_symbols=[]`.
+- [x] A sincronizacao/renderizacao do catalogo, `make catalog-test`, o teste
+      dos runners host-only e `git diff --check` passaram. O build limpo tambem
+      passou, e os 126 relatorios host-only restantes foram reconstruidos apos
+      `make clean`; as superficies que nao aparecem nos relatorios continuam
+      pendentes.
 
 ### Incremento Shell/pacotes e atualizacoes — 2026-09-05
 
