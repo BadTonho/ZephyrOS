@@ -1960,6 +1960,11 @@ capacidades, servico, fase, quiescencia, estados indisponiveis e falhas de
 consulta, sem habilitar modos reais, desligar, reiniciar ou tocar em energia
 de hardware.
 
+A mesma fixture tambem executa `sigtest` e `kill`. Ela valida o resultado
+estruturado do autoteste de sinais, a conversao de nomes e numeros, o envio
+para um processo de usuario, a propagacao de falha do destino, PID inexistente
+e argumentos invalidos, sem criar processos ou alterar estado persistente.
+
 A mesma fixture tambem executa `cpu usage`, `pagefault`, `vmamap` e
 `schedcheck`. Ela usa estatisticas de scheduler, processos e VMAs falsos para
 validar percentuais, estatisticas de page fault, mapas de codigo/stack,

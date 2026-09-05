@@ -32,6 +32,7 @@
 #include "memory/paging.h"
 #include "memory/slab.h"
 #include "process/process.h"
+#include "process/signal.h"
 #include "drivers/usb_hid.h"
 #include "drivers/usb_msc.h"
 #include "drivers/acpi.h"
@@ -66,6 +67,8 @@ void shell_dispatch_cmd_kmetrics(const char* arguments);
 void shell_dispatch_cmd_device_scan(const char* arguments);
 void shell_dispatch_cmd_power(const char* arguments);
 void shell_dispatch_cmd_acpi(const char* arguments);
+void shell_dispatch_cmd_kill(const char* arguments);
+void shell_dispatch_cmd_sigtest(const char* arguments);
 void shell_diagnostics_reset(void);
 
 #define HOST_COVERAGE_CAPACITY 512U
@@ -269,6 +272,11 @@ static uint32_t fixture_memcheck_frees;
 static uint32_t fixture_process_user_count;
 static uint32_t fixture_process_zombie_count;
 static int fixture_app_foreground_active;
+static process_signal_self_test_t fixture_signal_test;
+static int fixture_signal_test_result;
+static int fixture_signal_send_result;
+static uint32_t fixture_signal_send_pid;
+static uint32_t fixture_signal_send_number;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -582,6 +590,19 @@ static void fixture_reset(void) {
     fixture_process_user_count = 0U;
     fixture_process_zombie_count = 0U;
     fixture_app_foreground_active = 0;
+    kmemset(&fixture_signal_test, 0, sizeof(fixture_signal_test));
+    fixture_signal_test.lifecycle = 1U;
+    fixture_signal_test.actions = 1U;
+    fixture_signal_test.blocking = 1U;
+    fixture_signal_test.coalescing = 1U;
+    fixture_signal_test.fatal_rules = 1U;
+    fixture_signal_test.child_notification = 1U;
+    fixture_signal_test.frame_rules = 1U;
+    fixture_signal_test.invariants = 1U;
+    fixture_signal_test_result = OK;
+    fixture_signal_send_result = OK;
+    fixture_signal_send_pid = 0U;
+    fixture_signal_send_number = 0U;
     kmemset(&fixture_log_stats, 0, sizeof(fixture_log_stats));
     kmemset(fixture_log_records, 0, sizeof(fixture_log_records));
     kmemset(&fixture_log_test, 0, sizeof(fixture_log_test));
@@ -2227,6 +2248,27 @@ int process_is_user(const process_t* proc) {
     return proc == &fixture_user_process && fixture_process_is_user_result;
 }
 
+int process_signal_send(uint32_t pid, uint32_t signal_number) {
+    fixture_signal_send_pid = pid;
+    fixture_signal_send_number = signal_number;
+    return fixture_signal_send_result;
+}
+
+int process_signal_self_test(process_signal_self_test_t* out_test) {
+    if (!out_test) return ERR_NULL;
+    *out_test = fixture_signal_test;
+    return fixture_signal_test_result;
+}
+
+const char* process_signal_name(uint32_t signal_number) {
+    if (signal_number == APP_SIGNAL_INT) return "SIGINT";
+    if (signal_number == APP_SIGNAL_KILL) return "SIGKILL";
+    if (signal_number == APP_SIGNAL_SEGV) return "SIGSEGV";
+    if (signal_number == APP_SIGNAL_TERM) return "SIGTERM";
+    if (signal_number == APP_SIGNAL_CHLD) return "SIGCHLD";
+    return "INVALID";
+}
+
 int process_vma_copy(const process_t* proc, vm_area_info_t* output,
                      uint32_t capacity, uint32_t* out_count) {
     if (!proc || !output || !out_count) return ERR_NULL;
@@ -3315,6 +3357,57 @@ static int test_kmetrics(void) {
     return failures;
 }
 
+static int test_signal_commands(void) {
+    int failures = 0;
+
+    fixture_reset();
+    shell_dispatch_cmd_sigtest("");
+    failures += expect_contains("Autoteste de sinais (fixture privada):\n");
+    failures += expect_contains("  ciclo: OK\n");
+    failures += expect_contains("  SIGKILL/SIGSEGV fatais: OK\n");
+    failures += expect_contains("  invariantes: OK\n");
+    failures += expect_contains("Resultado: OK\n");
+
+    fixture_reset();
+    fixture_signal_test_result = ERR_STATE;
+    shell_dispatch_cmd_sigtest("");
+    failures += expect_contains("Resultado: ERRO\n");
+
+    fixture_reset();
+    shell_dispatch_cmd_sigtest("extra");
+    failures += expect_text("Uso: sigtest\n");
+
+    fixture_reset();
+    shell_dispatch_cmd_kill("TERM 42");
+    failures += expect_contains("Sinal SIGTERM enviado ao PID 42.\n");
+    if (fixture_signal_send_pid != 42U ||
+        fixture_signal_send_number != APP_SIGNAL_TERM) {
+        fprintf(stderr, "diagnostics-host: kill nao encaminhou sinal\n");
+        failures++;
+    }
+
+    fixture_reset();
+    fixture_signal_send_result = ERR_STATE;
+    shell_dispatch_cmd_kill("KILL 42");
+    failures += expect_text("Erro: sinal nao entregue.\n");
+    if (fixture_signal_send_number != APP_SIGNAL_KILL) {
+        fprintf(stderr, "diagnostics-host: kill perdeu codigo do sinal\n");
+        failures++;
+    }
+
+    fixture_reset();
+    shell_dispatch_cmd_kill("TERM 99");
+    failures += expect_text(
+        "Uso: kill -2|-9|-11|-15|-17|INT|KILL|SEGV|TERM|CHLD PID\n");
+
+    fixture_reset();
+    shell_dispatch_cmd_kill("");
+    failures += expect_text(
+        "Uso: kill -2|-9|-11|-15|-17|INT|KILL|SEGV|TERM|CHLD PID\n");
+
+    return failures;
+}
+
 int main(void) {
     int result;
 
@@ -3332,6 +3425,7 @@ int main(void) {
     result += test_schedcheck();
     result += test_memcheck();
     result += test_kmetrics();
+    result += test_signal_commands();
     coverage_active = 0U;
     coverage_emit(result);
     return result ? 1 : 0;
