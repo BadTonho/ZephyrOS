@@ -6322,6 +6322,18 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `git diff --check`; o catálogo registra 7.326 superfícies, 6.936
   `COVERED`, 390 `PENDING`, 59 aposentadas e 165 casos.
 
+- Evidência Shell input/hosted: fechamento dos vínculos host-only — concluído
+  em 2026-09-05 (America/Sao_Paulo). Os casos existentes
+  `host:shell:input` e `host:shell:hosted` foram reexecutados com fixtures
+  estáticas e terminaram `PASS`. Os relatórios instrumentados observaram 16
+  símbolos reais de `src/shell/shell_input.c` e oito de
+  `src/shell/shell_hosted.c`, sem endereços desconhecidos ou símbolos
+  ambíguos. As cinco superfícies que ainda estavam pendentes foram adicionadas
+  ao registro somente depois dessa evidência. A sincronização, renderização,
+  validação do catálogo e `make catalog-test` passaram; o catálogo ficou com
+  7.326 superfícies, 6.950 `COVERED`, 376 `PENDING`, 59 aposentadas e 165
+  casos.
+
 - Evidência RTC: vínculo completo do caso host-only — concluído em
   2026-09-05 (America/Sao_Paulo). O caso existente
   `host:drivers:rtc-status` foi executado com CMOS simulado e terminou `PASS`.

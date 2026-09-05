@@ -3179,6 +3179,18 @@ pendente.
       registra 7.315 superfícies, 6.819 `COVERED`, 496 `PENDING`, 59 aposentadas
       e 162 casos; as pendências restantes continuam explícitas.
 
+### Evidência Shell input/hosted: fechamento dos vínculos host-only — 2026-09-05
+
+- [x] Os casos existentes `host:shell:input` e `host:shell:hosted` foram
+      executados com fixtures estáticas e terminaram `PASS`.
+- [x] Os relatórios instrumentados observaram 16 símbolos reais de
+      `src/shell/shell_input.c` e oito de `src/shell/shell_hosted.c`, sem
+      endereços desconhecidos ou símbolos ambíguos. As cinco superfícies que
+      ainda estavam `PENDING` foram vinculadas somente após essa evidência.
+- [x] A sincronização, renderização e `make catalog-test` passaram. O catálogo
+      atual registra 7.326 superfícies, 6.950 `COVERED`, 376 `PENDING`, 59
+      aposentadas e 165 casos; as demais pendências continuam explícitas.
+
 ### Evidência RTC: vínculo completo do caso host-only — 2026-09-05
 
 - [x] O caso existente `host:drivers:rtc-status` foi executado no build atual
