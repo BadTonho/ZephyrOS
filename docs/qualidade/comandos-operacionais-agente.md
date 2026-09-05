@@ -2253,6 +2253,23 @@ O relatório instrumentado fica em
 115 funções reais de `src/shell/shell_checks.c`. A execução tem timeout do
 runner e preserva manifesto, resultado, logs e cobertura.
 
+## Recovery Loader: contratos host-only
+
+O alvo `test-recovery-loader-host` compila o loader real de recovery com
+instrumentação dinâmica e doubles estáticos para BIOS, console, handoff e
+memória física. A fixture cobre FAT32, readers, política ZSYS, estados de
+slots, hashes, journal, fallback legado e caminhos negativos sem acessar
+endereços físicos no processo host:
+
+```text
+make test-recovery-loader-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O relatório fica em `build/test-results/recovery-loader-host/coverage.json` e
+deve terminar com `status=PASS`, `unknown_addresses=[]` e
+`ambiguous_symbols=[]`. O caso preserva manifesto, resultado, logs, mapa de
+símbolos e cobertura; o build freestanding não usa os buffers do teste.
+
 ## File Manager: contratos host-only
 
 O alvo `test-filemanager-host` compila o Explorer real com a fixture interna

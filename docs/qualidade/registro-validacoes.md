@@ -6478,3 +6478,17 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `unknown_addresses=[]` e `ambiguous_symbols=[]`. O catálogo atual registra
   7.327 superfícies, 7.180 `COVERED`, 147 `PENDING` e 168 casos; as demais
   pendências continuam explícitas.
+
+- Incremento Recovery Loader: FAT32, slots e handoff host-only — concluído em
+  2026-09-05 (America/Sao_Paulo). A fixture `host:boot:recovery-loader`,
+  compilada com `ZEPHYROS_HOST_TEST`, passou a exercitar diretamente as
+  funções reais de `src/boot/recovery_loader.c`, incluindo readers FAT32,
+  política ZSYS, estados e slots, hashes, journal, menu de falha, handoffs,
+  fallback legado e rejeições negativas. BIOS, console, memória física e
+  entradas de boot foram substituídos por stubs e buffers estáticos somente no
+  host. Passou `make test-recovery-loader-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`; a cobertura dinâmica observou
+  68 funções, sem endereços desconhecidos ou símbolos ambíguos. O catálogo foi
+  sincronizado, renderizado e validado; registra 7.329 superfícies, 7.248
+  `COVERED`, 81 `PENDING` e 169 casos. As pendências restantes continuam
+  explícitas.

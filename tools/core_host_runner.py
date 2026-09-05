@@ -837,6 +837,15 @@ RECOVERY_MENU_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_recovery_menu_host.c",
     ROOT / "src" / "boot" / "recovery_menu.c",
 )
+RECOVERY_LOADER_RESULT_DIR = ROOT / "build" / "test-results" / "recovery-loader-host"
+RECOVERY_LOADER_BINARY = ROOT / "build" / "tests" / "test_recovery_loader_host.exe"
+RECOVERY_LOADER_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_recovery_loader_host.c",
+    ROOT / "src" / "boot" / "recovery_loader.c",
+    ROOT / "src" / "core" / "crypto.c",
+    ROOT / "src" / "core" / "crypto_ed25519.c",
+    ROOT / "src" / "core" / "string.c",
+)
 PANIC_RESULT_DIR = ROOT / "build" / "test-results" / "panic-host"
 PANIC_BINARY = ROOT / "build" / "tests" / "test_panic_host.exe"
 PANIC_SOURCE_FILES = (
@@ -1233,6 +1242,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
     if case_id == "host:boot:recovery-menu":
         return (RECOVERY_MENU_RESULT_DIR, RECOVERY_MENU_BINARY,
                 RECOVERY_MENU_SOURCE_FILES, "recovery-menu-host")
+    if case_id == "host:boot:recovery-loader":
+        return (RECOVERY_LOADER_RESULT_DIR, RECOVERY_LOADER_BINARY,
+                RECOVERY_LOADER_SOURCE_FILES, "recovery-loader-host")
     if case_id == "host:kernel:panic":
         return PANIC_RESULT_DIR, PANIC_BINARY, PANIC_SOURCE_FILES, "panic-host"
     if case_id == "host:drivers:pci":
@@ -1339,7 +1351,8 @@ def compiler_command(compiler: str, binary: Path,
     if any(source.name == "panic.c" for source in selected_sources):
         compatibility_flags.append("-Dpanic_halt=host_panic_halt")
     include_directories = []
-    if any(source.name == "recovery_menu.c" for source in selected_sources):
+    if any(source.name in {"recovery_menu.c", "recovery_loader.c"}
+           for source in selected_sources):
         include_directories.extend(["-I", str(ROOT / "src" / "boot")])
     if any(source.name == "settings.c" for source in selected_sources):
         include_directories.extend(["-I", str(ROOT / "src" / "settings")])
@@ -1525,6 +1538,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:shell:commands-vfs",
                                  "host:boot:recovery-runtime",
                                  "host:boot:recovery-menu",
+                                 "host:boot:recovery-loader",
                                  "host:kernel:panic", "host:drivers:pci",
                                  "host:drivers:ata",
                                  "host:drivers:idt",

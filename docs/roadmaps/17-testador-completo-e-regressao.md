@@ -27,13 +27,30 @@ Configurações, do Desktop, dos comandos de aplicativos, da evidência RTC e
 das fixtures de entrada/hosted, da evidência de panic, da regeneração dos
 relatórios RTC/Shell, da fixture host-only do Updater, da fixture host-only do
 File Manager, da fixture host-only do Task Manager, da validação de resultados
-do Shell Checks, da fixture host-only do GUI Test e da fixture host-only do
-menu de recuperação, registra 7.327 superfícies, 7.180 `COVERED` e 147
-`PENDING`, em 168 casos `AUTOMATED`.
+do Shell Checks, da fixture host-only do GUI Test, da fixture host-only do
+menu de recuperação e da fixture host-only do loader de recuperação, registra
+7.329 superfícies, 7.248 `COVERED` e 81 `PENDING`, em 169 casos
+`AUTOMATED`.
 O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
 Isso não significa declarar hardware físico validado sem equipamento.
+
+### Incremento Recovery Loader: FAT32, slots e handoff host-only — 2026-09-05
+
+- [x] A fixture `host:boot:recovery-loader` passou a exercitar diretamente as
+      funções reais do loader de recovery: leitura FAT32, readers, política
+      ZSYS, validação de estado, hashes, slots, journal, menu de falha,
+      handoffs, fallback legado e limites negativos.
+- [x] Endereços físicos, BIOS, console e entradas de boot são substituídos
+      somente sob `ZEPHYROS_HOST_TEST` por buffers e stubs estáticos; o build
+      freestanding mantém o caminho normal do boot.
+- [x] `make test-recovery-loader-host
+      HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` passou com warnings como
+      erros. A cobertura dinâmica observou 68 funções do translation unit,
+      sem endereços desconhecidos ou símbolos ambíguos. O catálogo foi
+      sincronizado, renderizado e validado; agora registra 7.329 superfícies,
+      7.248 `COVERED`, 81 `PENDING` e 169 casos.
 
 ### Incremento Recovery Menu: console e seleção host-only — 2026-09-05
 

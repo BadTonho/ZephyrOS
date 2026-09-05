@@ -4326,6 +4326,58 @@
       "evidence": "make test-recovery-menu-host PASS com todas as funcoes reais de src/boot/recovery_menu.c observadas, incluindo console, glyphs, VESA, menu, navegacao, timeout e confirmacao"
     },
     {
+      "id": "recovery-loader-host-dynamic",
+      "domain": "boot-recovery-loader",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:boot:recovery-loader"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/recovery-loader-host/coverage.json",
+      "coverage_sources": [
+        "src/boot/recovery_loader.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:boot:recovery-loader",
+        "scenario": "Contrato host-only do loader de recovery com FAT32, estado, hashes e handoffs",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "BIOS, FAT32, console e entry points substituidos por stubs estaticos"
+        },
+        "preconditions": "compilador C nativo, nm e layout host de recovery",
+        "action": "exercitar parsing FAT32, readers, politica ZSYS, estados, hashes, slots, menu de falha, handoffs e fallback legado",
+        "expected": "rotas validas e negativas preservam limites, codigos de erro, limpeza e nao tocam enderecos fisicos no host",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de contrato ou timeout",
+        "effects": "somente buffers estaticos de disco, handoff, VESA e componentes no processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "boot",
+          "recovery",
+          "fat32",
+          "slots",
+          "hash",
+          "handoff",
+          "coverage"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "make test-recovery-loader-host PASS com as funcoes reais de src/boot/recovery_loader.c observadas diretamente, sem enderecos desconhecidos ou simbolos ambiguos"
+    },
+    {
       "id": "panic-host-dynamic",
       "domain": "kernel-panic",
       "owner": "quality",

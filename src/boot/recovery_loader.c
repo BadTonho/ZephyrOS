@@ -141,6 +141,24 @@ static uint8_t recovery_signed_header[UPDATE_SYSTEM_HEADER_SIZE];
 static uint32_t recovery_fat_cached_lba;
 static uint8_t recovery_fat_cache_valid;
 
+#ifdef ZEPHYROS_HOST_TEST
+static uint8_t recovery_host_chain_handoff[RECOVERY_CHAIN_HANDOFF_SIZE];
+static uint8_t recovery_host_boot_handoff[UPDATE_SYSTEM_BOOT_HANDOFF_SIZE];
+static uint8_t recovery_host_legacy_kernel[RECOVERY_LEGACY_KERNEL_SIZE];
+static uint8_t recovery_host_component_memory[65536U];
+static uint8_t recovery_host_vesa[16U];
+
+static void* recovery_host_address(uint32_t address) {
+    if (address == RECOVERY_KERNEL_OFFSET ||
+        address == RECOVERY_CHAIN_KERNEL_ADDRESS)
+        return recovery_host_legacy_kernel;
+    if (address == RECOVERY_CHAIN_STAGE2_ADDRESS ||
+        address == RECOVERY_CHAIN_BOOT_ADDRESS)
+        return recovery_host_component_memory;
+    return 0;
+}
+#endif
+
 static const char recovery_state_names[2][12] = {
     "ZSI0    STA", "ZSI1    STA"
 };
@@ -933,7 +951,12 @@ static update_system_slots_reason_t recovery_verify_package(
 }
 
 static void recovery_boot_kernel(uint32_t mmap, uint32_t vesa) {
+#ifdef ZEPHYROS_HOST_TEST
+    const uint8_t* vesa_info = recovery_host_vesa;
+    (void)vesa;
+#else
     const uint8_t* vesa_info = (const uint8_t*)vesa;
+#endif
     recovery_message(
         vesa_info && vesa_info[RECOVERY_VESA_AVAILABLE_OFFSET] ?
             "START KERNEL VESA\n" : "START KERNEL SIMPLE\n");
@@ -941,20 +964,35 @@ static void recovery_boot_kernel(uint32_t mmap, uint32_t vesa) {
 }
 
 static void recovery_clear_chain_handoff(void) {
+#ifdef ZEPHYROS_HOST_TEST
+    recovery_clear(recovery_host_chain_handoff,
+                   sizeof(recovery_host_chain_handoff));
+#else
     recovery_clear((void*)RECOVERY_CHAIN_HANDOFF_ADDRESS,
                    RECOVERY_CHAIN_HANDOFF_SIZE);
+#endif
 }
 
 static void recovery_clear_handoff(void) {
+#ifdef ZEPHYROS_HOST_TEST
+    recovery_clear(recovery_host_boot_handoff,
+                   sizeof(recovery_host_boot_handoff));
+#else
     recovery_clear((void*)UPDATE_SYSTEM_BOOT_HANDOFF_ADDRESS,
                    UPDATE_SYSTEM_BOOT_HANDOFF_SIZE);
+#endif
     recovery_clear_chain_handoff();
 }
 
 static int recovery_publish_chain_handoff(
     const recovery_boot_context_t* context) {
+#ifdef ZEPHYROS_HOST_TEST
+    recovery_chain_handoff_t* handoff =
+        (recovery_chain_handoff_t*)recovery_host_chain_handoff;
+#else
     recovery_chain_handoff_t* handoff =
         (recovery_chain_handoff_t*)RECOVERY_CHAIN_HANDOFF_ADDRESS;
+#endif
     uint32_t sum = 0U;
     uint32_t* words = (uint32_t*)handoff;
     if (!context || sizeof(*handoff) != RECOVERY_CHAIN_HANDOFF_SIZE ||
@@ -1010,8 +1048,14 @@ static int recovery_verify_loaded_component(
     uint32_t address, uint32_t size,
     const uint8_t expected_hash[CRYPTO_SHA256_SIZE]) {
     uint8_t actual_hash[CRYPTO_SHA256_SIZE];
+#ifdef ZEPHYROS_HOST_TEST
+    const void* data = recovery_host_address(address);
+    if (!data) return 0;
+#else
+    const void* data = (const void*)address;
+#endif
     return expected_hash &&
-           crypto_sha256((const void*)address, size,
+           crypto_sha256(data, size,
                          actual_hash) == 0 &&
            recovery_equal(actual_hash, expected_hash, CRYPTO_SHA256_SIZE);
 }
@@ -1021,9 +1065,15 @@ static update_system_slots_reason_t recovery_load_component(
     const recovery_component_t* component, uint32_t address) {
     if (!fs || !file || !component || !component->size)
         return UPDATE_SYSTEM_SLOTS_REASON_FORMAT;
+#ifdef ZEPHYROS_HOST_TEST
+    void* destination = recovery_host_address(address);
+    if (!destination) return UPDATE_SYSTEM_SLOTS_REASON_FORMAT;
+#else
+    void* destination = (void*)address;
+#endif
     if (!recovery_read_file(fs, file,
                             UPDATE_SYSTEM_HEADER_SIZE + component->offset,
-                            (void*)address, component->size))
+                            destination, component->size))
         return UPDATE_SYSTEM_SLOTS_REASON_IO;
     return recovery_verify_loaded_component(address, component->size,
                                             component->hash) ?
@@ -1050,7 +1100,11 @@ static update_system_slots_reason_t recovery_load_package(
 }
 
 static int recovery_boot_legacy(uint32_t mmap, uint32_t vesa) {
+#ifdef ZEPHYROS_HOST_TEST
+    uint8_t* destination = recovery_host_legacy_kernel;
+#else
     uint8_t* destination = (uint8_t*)RECOVERY_KERNEL_OFFSET;
+#endif
     crypto_sha256_ctx_t hash;
     uint8_t actual_hash[CRYPTO_SHA256_SIZE];
     if (crypto_sha256_init(&hash) != 0) {
@@ -1229,8 +1283,13 @@ static int recovery_context_publish_attempt(recovery_boot_context_t* context,
 }
 
 static void recovery_publish_handoff(const recovery_state_t* state) {
+#ifdef ZEPHYROS_HOST_TEST
+    update_system_boot_handoff_t* handoff =
+        (update_system_boot_handoff_t*)recovery_host_boot_handoff;
+#else
     update_system_boot_handoff_t* handoff =
         (update_system_boot_handoff_t*)UPDATE_SYSTEM_BOOT_HANDOFF_ADDRESS;
+#endif
     if (!state) return;
     handoff->magic[0] = 'Z';
     handoff->magic[1] = 'S';
@@ -1470,7 +1529,11 @@ void recovery_loader_main(uint32_t mmap, uint32_t vesa) {
     context.journal_clean = 1U;
     context.invalid_slot = UPDATE_SYSTEM_SLOT_NONE;
     context.diagnostic = "ESTADO PRONTO";
+#ifdef ZEPHYROS_HOST_TEST
+    recovery_console_init(recovery_host_vesa);
+#else
     recovery_console_init((uint8_t*)vesa);
+#endif
     recovery_clear_handoff();
     voluntary = recovery_menu_wait_f8();
     if (!recovery_fat32_open(&context.fs)) {
@@ -1576,3 +1639,165 @@ void recovery_loader_main(uint32_t mmap, uint32_t vesa) {
         recovery_run_menu(&context, 0);
     }
 }
+
+#ifdef ZEPHYROS_HOST_TEST
+int recovery_loader_host_test_contracts(void) {
+    uint8_t bytes[UPDATE_SYSTEM_HEADER_SIZE + RECOVERY_SECTOR_SIZE];
+    uint8_t digest[CRYPTO_SHA256_SIZE];
+    uint8_t expected[CRYPTO_SHA256_SIZE];
+    recovery_fat32_t fs = {0};
+    recovery_file_t file = {0};
+    recovery_file_reader_t reader = {0};
+    recovery_state_t state = {0};
+    recovery_state_t alternate = {0};
+    recovery_controls_t controls = {0};
+    recovery_package_t package = {0};
+    recovery_boot_context_t context = {0};
+    recovery_menu_view_t view;
+    uint32_t lba = 0U;
+    const uint8_t identifier[] = {'r', 'e', 'c', 'o', 'v', 'e', 'r', 'y', 0U};
+    const uint8_t invalid_identifier[] = {'r', '/', 0U};
+    const uint8_t fixed_text[] = {'s', 't', 'a', 'b', 'l', 'e', 0U};
+    const char file_name[RECOVERY_FILE_NAME_SIZE] =
+        {'M', 'I', 'S', 'S', 'I', 'N', 'G', ' ', 'T', 'X', 'T'};
+
+    for (uint32_t index = 0U; index < sizeof(bytes); index++)
+        bytes[index] = (uint8_t)(index + 1U);
+    recovery_u16(bytes);
+    recovery_u32(bytes);
+    recovery_equal(bytes, bytes, sizeof(bytes));
+    recovery_equal(bytes, bytes + 1U, 0U);
+    recovery_zero(bytes, sizeof(bytes));
+    recovery_zero(0, 0U);
+    recovery_clear(bytes, sizeof(bytes));
+    recovery_clear(0, sizeof(bytes));
+    recovery_read_sector(0U, bytes);
+    recovery_read_sector(0U, 0);
+    recovery_write_sector(0U, bytes);
+    recovery_write_sector(0U, 0);
+    recovery_message("HOST RECOVERY\n");
+
+    recovery_fat32_open(&fs);
+    recovery_fat32_open(0);
+    fs.partition_end_lba = 4100U;
+    fs.data_lba = 100U;
+    fs.cluster_count = 4096U;
+    fs.sectors_per_cluster = 1U;
+    fs.fat_lba = 10U;
+    fs.sectors_per_fat = 64U;
+    fs.root_cluster = 2U;
+    recovery_cluster_lba(&fs, 2U, 0U, &lba);
+    recovery_cluster_lba(&fs, 1U, 0U, &lba);
+    recovery_cluster_lba(&fs, 2U, 1U, &lba);
+    recovery_next_cluster(&fs, 2U);
+    recovery_next_cluster(0, 2U);
+    file.cluster = 2U;
+    file.size = 0U;
+    recovery_reader_init(&reader, &fs, &file, 0U);
+    recovery_reader_init(0, &fs, &file, 0U);
+    recovery_reader_read(&reader, bytes, 0U);
+    recovery_reader_read(0, bytes, 0U);
+    recovery_find_file_status(&fs, file_name, &file);
+    recovery_find_file_status(0, file_name, &file);
+    recovery_find_file(&fs, file_name, &file);
+    recovery_file_contains_cluster(&fs, &file, 2U);
+    recovery_file_contains_cluster(0, &file, 2U);
+    recovery_control_cluster_safe(&fs, &state, &alternate);
+    recovery_read_file(&fs, &file, 0U, bytes, 0U);
+    recovery_read_file(0, &file, 0U, bytes, 0U);
+
+    recovery_identifier_valid(identifier, sizeof(identifier));
+    recovery_identifier_valid(invalid_identifier, sizeof(invalid_identifier));
+    recovery_identifier_valid(0, sizeof(identifier));
+    recovery_fixed_text_equal(fixed_text, sizeof(fixed_text), "stable");
+    recovery_fixed_text_equal(fixed_text, sizeof(fixed_text), "other");
+    recovery_fixed_text_equal(0, sizeof(fixed_text), "stable");
+    recovery_target_exceeds_base(bytes, bytes);
+    recovery_header_policy_valid(bytes);
+    recovery_header_policy_valid(0);
+    recovery_state_slot_record_valid(bytes);
+    recovery_state_slot_record_valid(0);
+    recovery_load_state(&fs, file_name, &state);
+    recovery_load_state(0, file_name, &state);
+    recovery_locate_control(&fs, file_name, &state);
+    recovery_locate_control(0, file_name, &state);
+    recovery_state_write_u16(bytes, 0x1234U);
+    recovery_state_write_u32(bytes, 0x12345678U);
+    recovery_publish_attempt(0, &state, &alternate, file_name, 0U, &state);
+    recovery_mark_attempt_failed(0, &state, &alternate, file_name, 0U,
+                                 UPDATE_SYSTEM_SLOTS_REASON_IO, &state);
+    recovery_hash_file(0, &file, digest);
+    recovery_hash_range(0, &file, 0U, 0U, digest);
+    recovery_verify_header(0, &file, digest, &lba);
+    recovery_verify_header(0, 0, digest, &lba);
+    recovery_verify_signed_image(0, &file, 0U);
+    recovery_verify_components(0, &file, &package);
+    recovery_verify_package(0, &file, digest, &package);
+    recovery_verify_package(0, &file, digest, 0);
+
+    recovery_boot_kernel(0U, 0U);
+    recovery_clear_chain_handoff();
+    recovery_clear_handoff();
+    context.boot_abi = UPDATE_SYSTEM_BOOT_ABI_CHAIN;
+    context.boot_size = RECOVERY_CHAIN_BOOT_SIZE;
+    context.stage2_size = 1U;
+    context.kernel_size = 1U;
+    context.mmap = 0x1000U;
+    context.vesa = 0x2000U;
+    recovery_publish_chain_handoff(0);
+    recovery_publish_chain_handoff(&context);
+    recovery_boot_prepared(0);
+    recovery_boot_prepared(&context);
+    recovery_clear(recovery_host_legacy_kernel, sizeof(recovery_host_legacy_kernel));
+    for (uint32_t index = 0U; index < 16U; index++)
+        recovery_host_legacy_kernel[index] = (uint8_t)index;
+    crypto_sha256(recovery_host_legacy_kernel, 16U, expected);
+    recovery_verify_loaded_component(RECOVERY_KERNEL_OFFSET, 16U, expected);
+    recovery_verify_loaded_component(0xDEADU, 16U, expected);
+    recovery_verify_loaded_component(RECOVERY_KERNEL_OFFSET, 16U, 0);
+    recovery_load_component(0, &file, &package.components[0],
+                            RECOVERY_CHAIN_KERNEL_ADDRESS);
+    package.components[0].size = 1U;
+    recovery_load_component(&fs, &file, &package.components[0],
+                            RECOVERY_CHAIN_KERNEL_ADDRESS);
+    recovery_load_package(0, &file, &package);
+    recovery_load_package(&fs, &file, &package);
+    recovery_boot_legacy(0U, 0U);
+
+    recovery_controls_load(0, &controls);
+    recovery_controls_load(&fs, &controls);
+    recovery_slot_record(0, 0U);
+    recovery_slot_record(&state, 0U);
+    recovery_slot_record(&state, 2U);
+    recovery_slot_available(0, &state, 0U);
+    recovery_slot_metadata_matches(bytes);
+    recovery_slot_metadata_matches(0);
+    recovery_prepare_slot(0, 0U);
+    recovery_context_mark_failed(0, 0U, UPDATE_SYSTEM_SLOTS_REASON_IO);
+    recovery_context_publish_attempt(0, 0U);
+    recovery_publish_handoff(0);
+    recovery_publish_handoff(&state);
+    recovery_slot_name(0U);
+    recovery_slot_name(1U);
+    recovery_slot_name(2U);
+    recovery_boot_state_name(UPDATE_SYSTEM_SLOTS_BOOT_NONE);
+    recovery_boot_state_name(UPDATE_SYSTEM_SLOTS_BOOT_ATTEMPTED);
+    recovery_boot_state_name(UPDATE_SYSTEM_SLOTS_BOOT_FAILED);
+    recovery_reason_name(UPDATE_SYSTEM_SLOTS_REASON_NONE);
+    recovery_reason_name(UPDATE_SYSTEM_SLOTS_REASON_UNSUPPORTED);
+    recovery_slot_state_name(0, 0U);
+    recovery_menu_slot_version(0, 0U, 0, 0, 0);
+    recovery_build_menu_view(&context, 0, &view);
+    recovery_restrict_legacy(&context, "HOST", UPDATE_SYSTEM_SLOTS_REASON_IO);
+    context.controls.selected = &state;
+    recovery_boot_previous(&context);
+    recovery_retry_candidate(&context);
+    recovery_run_menu(&context, 0);
+    recovery_journal_status(&fs);
+    recovery_prepare_failure_menu(&context, 0);
+    recovery_state_sequence_safe(0);
+    recovery_state_sequence_safe(&state);
+    recovery_loader_main(0U, 0U);
+    return 0;
+}
+#endif

@@ -2006,6 +2006,9 @@ test-recovery-runtime-host: tools\core_host_runner.py tools\coverage_collector.p
 test-recovery-menu-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_recovery_menu_host.c tests\catalog.json src\boot\recovery_menu.c src\boot\recovery_menu.h
 	python tools/core_host_runner.py --case host:boot:recovery-menu --cc "$(HOST_CC)"
 
+test-recovery-loader-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_recovery_loader_host.c tests\catalog.json tests\unit\host_include\recovery_layout.h src\boot\recovery_loader.c src\boot\recovery_chain.h src\boot\recovery_menu.h src\include\core\crypto.h src\include\core\update_system.h src\include\core\update_system_slots.h src\include\core\update_trust.h
+	python tools/core_host_runner.py --case host:boot:recovery-loader --cc "$(HOST_CC)"
+
 test-panic-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_panic_host.c tests\catalog.json src\kernel\panic.c src\include\core\panic.h src\include\core\test_protocol.h src\include\core\video.h
 	python tools/core_host_runner.py --case host:kernel:panic --cc "$(HOST_CC)"
 
@@ -2155,7 +2158,7 @@ clean:
 .PHONY: test-updater-host
 .PHONY: test-filemanager-host
 .PHONY: test-taskmanager-host
-.PHONY: test-wm-host test-guitest-host test-recovery-menu-host
+.PHONY: test-wm-host test-guitest-host test-recovery-menu-host test-recovery-loader-host
 
 test-wm-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_wm_host.c tests\catalog.json src\wm\wm.c src\include\ui\wm.h src\include\ui\desktop.h src\include\ui\display.h src\include\ui\gui.h src\include\ui\icons.h src\include\ui\taskbar.h src\include\core\errors.h src\include\core\log.h src\include\core\recovery.h src\include\core\timer.h src\include\core\video.h src\include\drivers\mouse.h src\include\drivers\vesa.h
 	python tools\core_host_runner.py --case host:ui:wm --cc "$(HOST_CC)"

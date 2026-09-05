@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **7327**
-- Casos de teste: **168**
+- Superfícies ativas: **7329**
+- Casos de teste: **169**
 - Superfícies aposentadas: **59**
 
 | Tipo | Quantidade |
 |---|---:|
 | `api_function` | 1587 |
 | `asm_entry` | 101 |
-| `c_function` | 5519 |
+| `c_function` | 5521 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7180 |
+| `COVERED` | 7248 |
 | `MANUAL` | 0 |
-| `PENDING` | 147 |
+| `PENDING` | 81 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 168 |
+| `AUTOMATED` | 169 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -36,7 +36,7 @@
 |---|---:|
 | `apps` | 172 |
 | `appstore` | 98 |
-| `boot` | 137 |
+| `boot` | 139 |
 | `core` | 2813 |
 | `desktop` | 40 |
 | `drivers` | 932 |
@@ -1857,72 +1857,74 @@
 | `c:src/appstore/appstore.c:appstore_worker_run` | `src/appstore/appstore.c` | `appstore_worker_run` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_worker_update` | `src/appstore/appstore.c` | `appstore_worker_update` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_worker_verify` | `src/appstore/appstore.c` | `appstore_worker_verify` | `appstore` | `COVERED` | 1 |
-| `c:src/boot/recovery_loader.c:recovery_boot_kernel` | `src/boot/recovery_loader.c` | `recovery_boot_kernel` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_boot_legacy` | `src/boot/recovery_loader.c` | `recovery_boot_legacy` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_boot_prepared` | `src/boot/recovery_loader.c` | `recovery_boot_prepared` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_boot_previous` | `src/boot/recovery_loader.c` | `recovery_boot_previous` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_boot_state_name` | `src/boot/recovery_loader.c` | `recovery_boot_state_name` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_build_menu_view` | `src/boot/recovery_loader.c` | `recovery_build_menu_view` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_clear` | `src/boot/recovery_loader.c` | `recovery_clear` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_clear_chain_handoff` | `src/boot/recovery_loader.c` | `recovery_clear_chain_handoff` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_clear_handoff` | `src/boot/recovery_loader.c` | `recovery_clear_handoff` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_cluster_lba` | `src/boot/recovery_loader.c` | `recovery_cluster_lba` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_context_mark_failed` | `src/boot/recovery_loader.c` | `recovery_context_mark_failed` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_context_publish_attempt` | `src/boot/recovery_loader.c` | `recovery_context_publish_attempt` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_control_cluster_safe` | `src/boot/recovery_loader.c` | `recovery_control_cluster_safe` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_controls_load` | `src/boot/recovery_loader.c` | `recovery_controls_load` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_equal` | `src/boot/recovery_loader.c` | `recovery_equal` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_fat32_open` | `src/boot/recovery_loader.c` | `recovery_fat32_open` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_file_contains_cluster` | `src/boot/recovery_loader.c` | `recovery_file_contains_cluster` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_find_file` | `src/boot/recovery_loader.c` | `recovery_find_file` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_find_file_status` | `src/boot/recovery_loader.c` | `recovery_find_file_status` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_fixed_text_equal` | `src/boot/recovery_loader.c` | `recovery_fixed_text_equal` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_hash_file` | `src/boot/recovery_loader.c` | `recovery_hash_file` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_hash_range` | `src/boot/recovery_loader.c` | `recovery_hash_range` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_header_policy_valid` | `src/boot/recovery_loader.c` | `recovery_header_policy_valid` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_identifier_valid` | `src/boot/recovery_loader.c` | `recovery_identifier_valid` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_journal_status` | `src/boot/recovery_loader.c` | `recovery_journal_status` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_load_component` | `src/boot/recovery_loader.c` | `recovery_load_component` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_load_package` | `src/boot/recovery_loader.c` | `recovery_load_package` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_load_state` | `src/boot/recovery_loader.c` | `recovery_load_state` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_loader_main` | `src/boot/recovery_loader.c` | `recovery_loader_main` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_locate_control` | `src/boot/recovery_loader.c` | `recovery_locate_control` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_mark_attempt_failed` | `src/boot/recovery_loader.c` | `recovery_mark_attempt_failed` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_menu_slot_version` | `src/boot/recovery_loader.c` | `recovery_menu_slot_version` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_message` | `src/boot/recovery_loader.c` | `recovery_message` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_next_cluster` | `src/boot/recovery_loader.c` | `recovery_next_cluster` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_prepare_failure_menu` | `src/boot/recovery_loader.c` | `recovery_prepare_failure_menu` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_prepare_slot` | `src/boot/recovery_loader.c` | `recovery_prepare_slot` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_publish_attempt` | `src/boot/recovery_loader.c` | `recovery_publish_attempt` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_publish_chain_handoff` | `src/boot/recovery_loader.c` | `recovery_publish_chain_handoff` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_publish_handoff` | `src/boot/recovery_loader.c` | `recovery_publish_handoff` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_read_file` | `src/boot/recovery_loader.c` | `recovery_read_file` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_read_sector` | `src/boot/recovery_loader.c` | `recovery_read_sector` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_reader_init` | `src/boot/recovery_loader.c` | `recovery_reader_init` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_reader_read` | `src/boot/recovery_loader.c` | `recovery_reader_read` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_reason_name` | `src/boot/recovery_loader.c` | `recovery_reason_name` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_restrict_legacy` | `src/boot/recovery_loader.c` | `recovery_restrict_legacy` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_retry_candidate` | `src/boot/recovery_loader.c` | `recovery_retry_candidate` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_run_menu` | `src/boot/recovery_loader.c` | `recovery_run_menu` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_slot_available` | `src/boot/recovery_loader.c` | `recovery_slot_available` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_slot_metadata_matches` | `src/boot/recovery_loader.c` | `recovery_slot_metadata_matches` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_slot_name` | `src/boot/recovery_loader.c` | `recovery_slot_name` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_slot_record` | `src/boot/recovery_loader.c` | `recovery_slot_record` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_slot_state_name` | `src/boot/recovery_loader.c` | `recovery_slot_state_name` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_state_sequence_safe` | `src/boot/recovery_loader.c` | `recovery_state_sequence_safe` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_state_slot_record_valid` | `src/boot/recovery_loader.c` | `recovery_state_slot_record_valid` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_state_write_u16` | `src/boot/recovery_loader.c` | `recovery_state_write_u16` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_state_write_u32` | `src/boot/recovery_loader.c` | `recovery_state_write_u32` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_target_exceeds_base` | `src/boot/recovery_loader.c` | `recovery_target_exceeds_base` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_u16` | `src/boot/recovery_loader.c` | `recovery_u16` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_u32` | `src/boot/recovery_loader.c` | `recovery_u32` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_verify_components` | `src/boot/recovery_loader.c` | `recovery_verify_components` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_verify_header` | `src/boot/recovery_loader.c` | `recovery_verify_header` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_verify_loaded_component` | `src/boot/recovery_loader.c` | `recovery_verify_loaded_component` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_verify_package` | `src/boot/recovery_loader.c` | `recovery_verify_package` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_verify_signed_image` | `src/boot/recovery_loader.c` | `recovery_verify_signed_image` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_write_sector` | `src/boot/recovery_loader.c` | `recovery_write_sector` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_loader.c:recovery_zero` | `src/boot/recovery_loader.c` | `recovery_zero` | `boot` | `PENDING` | 0 |
+| `c:src/boot/recovery_loader.c:recovery_boot_kernel` | `src/boot/recovery_loader.c` | `recovery_boot_kernel` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_boot_legacy` | `src/boot/recovery_loader.c` | `recovery_boot_legacy` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_boot_prepared` | `src/boot/recovery_loader.c` | `recovery_boot_prepared` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_boot_previous` | `src/boot/recovery_loader.c` | `recovery_boot_previous` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_boot_state_name` | `src/boot/recovery_loader.c` | `recovery_boot_state_name` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_build_menu_view` | `src/boot/recovery_loader.c` | `recovery_build_menu_view` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_clear` | `src/boot/recovery_loader.c` | `recovery_clear` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_clear_chain_handoff` | `src/boot/recovery_loader.c` | `recovery_clear_chain_handoff` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_clear_handoff` | `src/boot/recovery_loader.c` | `recovery_clear_handoff` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_cluster_lba` | `src/boot/recovery_loader.c` | `recovery_cluster_lba` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_context_mark_failed` | `src/boot/recovery_loader.c` | `recovery_context_mark_failed` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_context_publish_attempt` | `src/boot/recovery_loader.c` | `recovery_context_publish_attempt` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_control_cluster_safe` | `src/boot/recovery_loader.c` | `recovery_control_cluster_safe` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_controls_load` | `src/boot/recovery_loader.c` | `recovery_controls_load` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_equal` | `src/boot/recovery_loader.c` | `recovery_equal` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_fat32_open` | `src/boot/recovery_loader.c` | `recovery_fat32_open` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_file_contains_cluster` | `src/boot/recovery_loader.c` | `recovery_file_contains_cluster` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_find_file` | `src/boot/recovery_loader.c` | `recovery_find_file` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_find_file_status` | `src/boot/recovery_loader.c` | `recovery_find_file_status` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_fixed_text_equal` | `src/boot/recovery_loader.c` | `recovery_fixed_text_equal` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_hash_file` | `src/boot/recovery_loader.c` | `recovery_hash_file` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_hash_range` | `src/boot/recovery_loader.c` | `recovery_hash_range` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_header_policy_valid` | `src/boot/recovery_loader.c` | `recovery_header_policy_valid` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_host_address` | `src/boot/recovery_loader.c` | `recovery_host_address` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_identifier_valid` | `src/boot/recovery_loader.c` | `recovery_identifier_valid` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_journal_status` | `src/boot/recovery_loader.c` | `recovery_journal_status` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_load_component` | `src/boot/recovery_loader.c` | `recovery_load_component` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_load_package` | `src/boot/recovery_loader.c` | `recovery_load_package` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_load_state` | `src/boot/recovery_loader.c` | `recovery_load_state` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_loader_host_test_contracts` | `src/boot/recovery_loader.c` | `recovery_loader_host_test_contracts` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_loader_main` | `src/boot/recovery_loader.c` | `recovery_loader_main` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_locate_control` | `src/boot/recovery_loader.c` | `recovery_locate_control` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_mark_attempt_failed` | `src/boot/recovery_loader.c` | `recovery_mark_attempt_failed` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_menu_slot_version` | `src/boot/recovery_loader.c` | `recovery_menu_slot_version` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_message` | `src/boot/recovery_loader.c` | `recovery_message` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_next_cluster` | `src/boot/recovery_loader.c` | `recovery_next_cluster` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_prepare_failure_menu` | `src/boot/recovery_loader.c` | `recovery_prepare_failure_menu` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_prepare_slot` | `src/boot/recovery_loader.c` | `recovery_prepare_slot` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_publish_attempt` | `src/boot/recovery_loader.c` | `recovery_publish_attempt` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_publish_chain_handoff` | `src/boot/recovery_loader.c` | `recovery_publish_chain_handoff` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_publish_handoff` | `src/boot/recovery_loader.c` | `recovery_publish_handoff` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_read_file` | `src/boot/recovery_loader.c` | `recovery_read_file` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_read_sector` | `src/boot/recovery_loader.c` | `recovery_read_sector` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_reader_init` | `src/boot/recovery_loader.c` | `recovery_reader_init` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_reader_read` | `src/boot/recovery_loader.c` | `recovery_reader_read` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_reason_name` | `src/boot/recovery_loader.c` | `recovery_reason_name` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_restrict_legacy` | `src/boot/recovery_loader.c` | `recovery_restrict_legacy` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_retry_candidate` | `src/boot/recovery_loader.c` | `recovery_retry_candidate` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_run_menu` | `src/boot/recovery_loader.c` | `recovery_run_menu` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_slot_available` | `src/boot/recovery_loader.c` | `recovery_slot_available` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_slot_metadata_matches` | `src/boot/recovery_loader.c` | `recovery_slot_metadata_matches` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_slot_name` | `src/boot/recovery_loader.c` | `recovery_slot_name` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_slot_record` | `src/boot/recovery_loader.c` | `recovery_slot_record` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_slot_state_name` | `src/boot/recovery_loader.c` | `recovery_slot_state_name` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_state_sequence_safe` | `src/boot/recovery_loader.c` | `recovery_state_sequence_safe` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_state_slot_record_valid` | `src/boot/recovery_loader.c` | `recovery_state_slot_record_valid` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_state_write_u16` | `src/boot/recovery_loader.c` | `recovery_state_write_u16` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_state_write_u32` | `src/boot/recovery_loader.c` | `recovery_state_write_u32` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_target_exceeds_base` | `src/boot/recovery_loader.c` | `recovery_target_exceeds_base` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_u16` | `src/boot/recovery_loader.c` | `recovery_u16` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_u32` | `src/boot/recovery_loader.c` | `recovery_u32` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_verify_components` | `src/boot/recovery_loader.c` | `recovery_verify_components` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_verify_header` | `src/boot/recovery_loader.c` | `recovery_verify_header` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_verify_loaded_component` | `src/boot/recovery_loader.c` | `recovery_verify_loaded_component` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_verify_package` | `src/boot/recovery_loader.c` | `recovery_verify_package` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_verify_signed_image` | `src/boot/recovery_loader.c` | `recovery_verify_signed_image` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_write_sector` | `src/boot/recovery_loader.c` | `recovery_write_sector` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_zero` | `src/boot/recovery_loader.c` | `recovery_zero` | `boot` | `COVERED` | 1 |
 | `c:src/boot/recovery_menu.c:recovery_console_clear` | `src/boot/recovery_menu.c` | `recovery_console_clear` | `boot` | `COVERED` | 1 |
 | `c:src/boot/recovery_menu.c:recovery_console_draw_glyph` | `src/boot/recovery_menu.c` | `recovery_console_draw_glyph` | `boot` | `COVERED` | 1 |
 | `c:src/boot/recovery_menu.c:recovery_console_glyph` | `src/boot/recovery_menu.c` | `recovery_console_glyph` | `boot` | `COVERED` | 1 |
@@ -7413,6 +7415,7 @@
 
 | ID | Executor | Perfil | Caso guest | Status | Timeout | Heartbeat | Isolamento | Proprietario | Camada | Pre-condicoes | Acao | Resultado esperado | Erros | Efeitos | Limpeza |
 |---|---|---|---|---|---:|---:|---|---|---|---|---|---|---|---|---|
+| `host:boot:recovery-loader` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo, nm e layout host de recovery | exercitar parsing FAT32, readers, politica ZSYS, estados, hashes, slots, menu de falha, handoffs e fallback legado | rotas validas e negativas preservam limites, codigos de erro, limpeza e nao tocam enderecos fisicos no host | compilador ausente, warning, cobertura incompleta, falha de contrato ou timeout | somente buffers estaticos de disco, handoff, VESA e componentes no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:boot:recovery-menu` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar console, glyphs, VESA, menu, navegacao, timeout, confirmacao e limites | console e menu preservam estados, escolhas, fallback e limites sem hardware real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos VGA/VESA e fila de teclas no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:boot:recovery-runtime` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar preenchimento, copia, comprimento, comparacao e ponto de entrada de log sem executar o loader de recuperacao | utilitarios preservam bytes, limites e ordenacao lexicografica e o ponto de log aceita todos os niveis sem estado residual | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos no processo host; nenhuma imagem ou hardware de boot e acessada | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:app-api` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fachada de arquivos, memoria, IPC e VMA com stubs controlados | APIs publicas preservam erros, limites, estados e dados retornados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado da fachada e backends estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7641,72 +7644,6 @@
 - `asm:src/kernel/switch.asm:process_user_termination_enter`
 - `asm:src/kernel/switch.asm:thread_context_switch`
 - `asm:src/kernel/switch.asm:tss_flush`
-- `c:src/boot/recovery_loader.c:recovery_boot_kernel`
-- `c:src/boot/recovery_loader.c:recovery_boot_legacy`
-- `c:src/boot/recovery_loader.c:recovery_boot_prepared`
-- `c:src/boot/recovery_loader.c:recovery_boot_previous`
-- `c:src/boot/recovery_loader.c:recovery_boot_state_name`
-- `c:src/boot/recovery_loader.c:recovery_build_menu_view`
-- `c:src/boot/recovery_loader.c:recovery_clear`
-- `c:src/boot/recovery_loader.c:recovery_clear_chain_handoff`
-- `c:src/boot/recovery_loader.c:recovery_clear_handoff`
-- `c:src/boot/recovery_loader.c:recovery_cluster_lba`
-- `c:src/boot/recovery_loader.c:recovery_context_mark_failed`
-- `c:src/boot/recovery_loader.c:recovery_context_publish_attempt`
-- `c:src/boot/recovery_loader.c:recovery_control_cluster_safe`
-- `c:src/boot/recovery_loader.c:recovery_controls_load`
-- `c:src/boot/recovery_loader.c:recovery_equal`
-- `c:src/boot/recovery_loader.c:recovery_fat32_open`
-- `c:src/boot/recovery_loader.c:recovery_file_contains_cluster`
-- `c:src/boot/recovery_loader.c:recovery_find_file`
-- `c:src/boot/recovery_loader.c:recovery_find_file_status`
-- `c:src/boot/recovery_loader.c:recovery_fixed_text_equal`
-- `c:src/boot/recovery_loader.c:recovery_hash_file`
-- `c:src/boot/recovery_loader.c:recovery_hash_range`
-- `c:src/boot/recovery_loader.c:recovery_header_policy_valid`
-- `c:src/boot/recovery_loader.c:recovery_identifier_valid`
-- `c:src/boot/recovery_loader.c:recovery_journal_status`
-- `c:src/boot/recovery_loader.c:recovery_load_component`
-- `c:src/boot/recovery_loader.c:recovery_load_package`
-- `c:src/boot/recovery_loader.c:recovery_load_state`
-- `c:src/boot/recovery_loader.c:recovery_loader_main`
-- `c:src/boot/recovery_loader.c:recovery_locate_control`
-- `c:src/boot/recovery_loader.c:recovery_mark_attempt_failed`
-- `c:src/boot/recovery_loader.c:recovery_menu_slot_version`
-- `c:src/boot/recovery_loader.c:recovery_message`
-- `c:src/boot/recovery_loader.c:recovery_next_cluster`
-- `c:src/boot/recovery_loader.c:recovery_prepare_failure_menu`
-- `c:src/boot/recovery_loader.c:recovery_prepare_slot`
-- `c:src/boot/recovery_loader.c:recovery_publish_attempt`
-- `c:src/boot/recovery_loader.c:recovery_publish_chain_handoff`
-- `c:src/boot/recovery_loader.c:recovery_publish_handoff`
-- `c:src/boot/recovery_loader.c:recovery_read_file`
-- `c:src/boot/recovery_loader.c:recovery_read_sector`
-- `c:src/boot/recovery_loader.c:recovery_reader_init`
-- `c:src/boot/recovery_loader.c:recovery_reader_read`
-- `c:src/boot/recovery_loader.c:recovery_reason_name`
-- `c:src/boot/recovery_loader.c:recovery_restrict_legacy`
-- `c:src/boot/recovery_loader.c:recovery_retry_candidate`
-- `c:src/boot/recovery_loader.c:recovery_run_menu`
-- `c:src/boot/recovery_loader.c:recovery_slot_available`
-- `c:src/boot/recovery_loader.c:recovery_slot_metadata_matches`
-- `c:src/boot/recovery_loader.c:recovery_slot_name`
-- `c:src/boot/recovery_loader.c:recovery_slot_record`
-- `c:src/boot/recovery_loader.c:recovery_slot_state_name`
-- `c:src/boot/recovery_loader.c:recovery_state_sequence_safe`
-- `c:src/boot/recovery_loader.c:recovery_state_slot_record_valid`
-- `c:src/boot/recovery_loader.c:recovery_state_write_u16`
-- `c:src/boot/recovery_loader.c:recovery_state_write_u32`
-- `c:src/boot/recovery_loader.c:recovery_target_exceeds_base`
-- `c:src/boot/recovery_loader.c:recovery_u16`
-- `c:src/boot/recovery_loader.c:recovery_u32`
-- `c:src/boot/recovery_loader.c:recovery_verify_components`
-- `c:src/boot/recovery_loader.c:recovery_verify_header`
-- `c:src/boot/recovery_loader.c:recovery_verify_loaded_component`
-- `c:src/boot/recovery_loader.c:recovery_verify_package`
-- `c:src/boot/recovery_loader.c:recovery_verify_signed_image`
-- `c:src/boot/recovery_loader.c:recovery_write_sector`
-- `c:src/boot/recovery_loader.c:recovery_zero`
 - `c:src/kernel/kernel.c:desktop_process_main`
 - `c:src/kernel/kernel.c:global_mouse_handler`
 - `c:src/kernel/kernel.c:kernel_cancel_foreground_app`
