@@ -1925,8 +1925,8 @@ host e não acessa hardware ou armazenamento real.
 
 O alvo `test-shell-diagnostics-host` executa os dispatchers reais de `pwd`,
 `cd`, `mouse`, `log`, `timer`, `clock`, `irqstat`, `wait`, `wqinfo`, `workq`,
-`tls`, `vfs`, `mount`, `devcheck`, `devices`, `device-info`, `usb`, `slabinfo`
-e `slabtest` com VFS,
+`tls`, `vfs`, `mount`, `devcheck`, `devices`, `device-info`, `device-scan`,
+`usb`, `acpi`, `power`, `slabinfo` e `slabtest` com VFS,
 mouse, vídeo, timer, RTC, IRQ, IDT, wait, workqueue, TLS, mounts, descritores,
 devfs, inventário de dispositivos, USB, HID, MSC e SLAB falsos. A fixture cobre
 caminhos válidos, argumentos extras, limites, estados indisponíveis e
@@ -1947,6 +1947,12 @@ da fila Bottom-Half por linha de IRQ, filas de espera, waiters, workqueue,
 políticas TLS, mounts, descritores, devfs, inventários de dispositivos, USB,
 HID, MSC, listagens, autotestes e estados de indisponibilidade, sem tocar em
 hardware ou armazenamento real.
+
+A mesma fixture tambem executa `device-scan` com PCI, USB, storage, VFS,
+indice, dispositivos, rede, Wi-Fi, recovery e yields falsos. Ela valida o
+refresh integrado, a recuperacao de managers nao inicializados, inventarios
+parciais, degradacoes opcionais, falhas de PCI e argumentos invalidos sem
+hardware ou armazenamento reais.
 
 A mesma fixture tambem executa `cpu usage`, `pagefault`, `vmamap` e
 `schedcheck`. Ela usa estatisticas de scheduler, processos e VMAs falsos para

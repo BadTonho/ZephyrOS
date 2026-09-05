@@ -2549,3 +2549,19 @@ pendente.
 - [x] O catálogo registra 7.293 superfícies, 6.241 `COVERED`, 1.052
       `PENDING` e 154 casos. As superfícies sem evidência específica continuam
       explícitas; o gate estrito integral permanece pendente.
+
+### Incremento Shell/diagnostics device-scan — 2026-09-04
+
+- [x] A fixture host-only `host:shell:diagnostics` foi ampliada para chamar o
+      fluxo integrado de `device-scan`.
+- [x] Foram exercitados PCI, USB, storage, mounts, file index, inventário de
+      dispositivos, rede, Wi-Fi, recovery, yields, overflow parcial,
+      inicialização tardia, degradações opcionais, falha fatal, resultado nulo
+      e argumentos inválidos com doubles estáticos.
+- [x] Passaram o alvo host-only, `make q3check`, `make clean`, `make`, os 117
+      alvos host-only, sincronização, renderização, `make catalog-test` e
+      `git diff --check`. A evidência dinâmica cobriu três superfícies reais do
+      dispatcher; `power` e `acpi` permanecem como o próximo incremento.
+- [x] O catálogo registra 7.293 superfícies, 6.244 `COVERED`, 1.049
+      `PENDING` e 154 casos. As pendências restantes continuam explícitas e o
+      gate estrito integral permanece pendente.

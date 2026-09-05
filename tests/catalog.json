@@ -138124,9 +138124,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_devices",
@@ -140842,9 +140845,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_run_memcheck",
@@ -141004,9 +141010,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_devices",
@@ -167460,7 +167469,7 @@
         "hardware": "video, VFS e mouse falsos"
       },
       "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "executar pwd, cd, mouse, log, timer, clock, irqstat, wait, wqinfo, workq, tls, vfs, mount, devcheck, devices, device-info, usb, slabinfo, slabtest, cpu usage, pagefault, vmamap e schedcheck em caminhos validos, invalidos, indisponiveis e de limite",
+      "action": "executar pwd, cd, mouse, log, timer, clock, irqstat, wait, wqinfo, workq, tls, vfs, mount, devcheck, devices, device-info, device-scan, usb, slabinfo, slabtest, cpu usage, pagefault, vmamap, schedcheck e kmetrics em caminhos validos, invalidos, indisponiveis e de limite",
       "expected": "dispatchers preservam saida, estado, configuracao e codigos canonicos",
       "errors": "compilador ausente, warning, saida inesperada, falha de assercao ou timeout",
       "effects": "somente buffers estaticos de saida e doubles locais de VFS, mouse, log, timer, RTC, clock, IRQ, IDT, wait, workqueue, TLS, devfs, device manager, USB, HID, MSC e SLAB; sem armazenamento real",
@@ -167480,6 +167489,7 @@
         "c:src/shell/shell_commands_diagnostics.c:cmd_cpu_usage",
         "c:src/shell/shell_commands_diagnostics.c:cmd_devcheck",
         "c:src/shell/shell_commands_diagnostics.c:cmd_device_info",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_device_scan",
         "c:src/shell/shell_commands_diagnostics.c:cmd_devices",
         "c:src/shell/shell_commands_diagnostics.c:cmd_devices_print_entry",
         "c:src/shell/shell_commands_diagnostics.c:cmd_diagnostics_print_test",
@@ -167562,12 +167572,14 @@
         "c:src/shell/shell_commands_diagnostics.c:cmd_workq_usage",
         "c:src/shell/shell_commands_diagnostics.c:cmd_wqinfo",
         "c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_reset",
+        "c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_run_device_scan",
         "c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_run_memcheck",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_cd",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_clock",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_cpu_usage",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_devcheck",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_device_info",
+        "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_device_scan",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_devices",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_irqstat",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_kmetrics",
