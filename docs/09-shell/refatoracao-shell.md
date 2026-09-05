@@ -421,3 +421,13 @@ make test-appstore-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 O relatório instrumentado fica em
 `build/test-results/appstore-host/coverage.json`; somente as superfícies
 observadas pela execução são sincronizadas no catálogo.
+
+## Relatórios de rede host-only
+
+A fixture `host:shell:network-checks` também chama os helpers reais de
+relatório somente leitura de `shell_commands_network.c`. Ela cobre estado de
+link e interface, MAC e IPv4, último frame Ethernet, rotas, configuração e
+contadores IPv4, lease DHCP, ICMP, status agregado e inventário de dispositivos
+com doubles estáticos. O alvo é
+`make test-shell-network-checks-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`;
+o relatório instrumentado registra somente os símbolos realmente executados.

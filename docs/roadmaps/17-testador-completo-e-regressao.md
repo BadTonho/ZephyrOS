@@ -21,8 +21,9 @@ A infraestrutura TST1–TST7 está concluída para a matriz automatizada existen
 mas o programa de cobertura integral ainda não está concluído. O catálogo
 mantém 156 casos `AUTOMATED`; após os incrementos de Shell, RTC,
 processos/threads, FAT32, update U3/U4, os contratos remotos ZSYS e o
-repositório remoto de aplicativos, dos helpers de pacotes do Shell e da
-interface App Store, registra 7.307 superfícies, 6.383 `COVERED` e 924
+repositório remoto de aplicativos, dos helpers de pacotes do Shell, da
+interface App Store e dos relatórios de rede do Shell, registra 7.307
+superfícies, 6.403 `COVERED` e 904
 `PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
@@ -42,8 +43,25 @@ Isso não significa declarar hardware físico validado sem equipamento.
       desconhecidos ou símbolos ambíguos.
 - [x] Passaram `make test-appstore-host` com `HOST_CC`, sincronização e
       renderização do catálogo e `make catalog-test`. O catálogo registra
-      7.307 superfícies, 6.383 `COVERED`, 924 `PENDING` e 158 casos; as
-      pendências restantes continuam explícitas.
+      7.307 superfícies, 6.403 `COVERED`, 904 `PENDING` e 158 casos; as
+      pendências restantes continuam explícitas após a sincronização dos
+      relatórios mais recentes.
+
+### Incremento Shell/network reports — 2026-09-05
+
+- [x] A fixture host-only `host:shell:network-checks` foi ampliada para chamar
+      os caminhos reais de relatório somente leitura do Shell: estado de link,
+      interface, MAC, IPv4, último frame Ethernet, rotas, configuração e
+      contadores IPv4, lease DHCP, estado ICMP, status agregado e inventário de
+      dispositivos.
+- [x] Os doubles permanecem estáticos e sem rede, hardware ou armazenamento
+      reais. Foram exercitados caminhos nulos, estados vazios e dados válidos;
+      a fixture não inicia jobs nem altera estado persistente.
+- [x] `make test-shell-network-checks-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
+      passou com evidência dinâmica `PASS`, sem endereços desconhecidos ou
+      símbolos ambíguos. A sincronização cobriu 20 superfícies novas no
+      catálogo; o total permanece em 7.307 superfícies, com 6.403 `COVERED`,
+      904 `PENDING` e 158 casos. As pendências continuam explícitas.
 
 ### Incremento Shell/commands packages — 2026-09-04
 

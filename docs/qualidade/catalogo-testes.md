@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6383 |
+| `COVERED` | 6403 |
 | `MANUAL` | 0 |
-| `PENDING` | 924 |
+| `PENDING` | 904 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -1784,13 +1784,13 @@
 | `c:src/appstore/appstore.c:appstore_handle_confirmation_click` | `src/appstore/appstore.c` | `appstore_handle_confirmation_click` | `appstore` | `PENDING` | 0 |
 | `c:src/appstore/appstore.c:appstore_handle_key` | `src/appstore/appstore.c` | `appstore_handle_key` | `appstore` | `PENDING` | 0 |
 | `c:src/appstore/appstore.c:appstore_handle_mouse` | `src/appstore/appstore.c` | `appstore_handle_mouse` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_host_expect` | `src/appstore/appstore.c` | `appstore_host_expect` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_host_geometry_contracts` | `src/appstore/appstore.c` | `appstore_host_geometry_contracts` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_host_prepare_entries` | `src/appstore/appstore.c` | `appstore_host_prepare_entries` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_host_selection_contracts` | `src/appstore/appstore.c` | `appstore_host_selection_contracts` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_host_state_contracts` | `src/appstore/appstore.c` | `appstore_host_state_contracts` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_host_test_contracts` | `src/appstore/appstore.c` | `appstore_host_test_contracts` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_host_text_contracts` | `src/appstore/appstore.c` | `appstore_host_text_contracts` | `appstore` | `PENDING` | 0 |
+| `c:src/appstore/appstore.c:appstore_host_expect` | `src/appstore/appstore.c` | `appstore_host_expect` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_host_geometry_contracts` | `src/appstore/appstore.c` | `appstore_host_geometry_contracts` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_host_prepare_entries` | `src/appstore/appstore.c` | `appstore_host_prepare_entries` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_host_selection_contracts` | `src/appstore/appstore.c` | `appstore_host_selection_contracts` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_host_state_contracts` | `src/appstore/appstore.c` | `appstore_host_state_contracts` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_host_test_contracts` | `src/appstore/appstore.c` | `appstore_host_test_contracts` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_host_text_contracts` | `src/appstore/appstore.c` | `appstore_host_text_contracts` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_hosted_close` | `src/appstore/appstore.c` | `appstore_hosted_close` | `appstore` | `PENDING` | 0 |
 | `c:src/appstore/appstore.c:appstore_hosted_draw` | `src/appstore/appstore.c` | `appstore_hosted_draw` | `appstore` | `PENDING` | 0 |
 | `c:src/appstore/appstore.c:appstore_hosted_key` | `src/appstore/appstore.c` | `appstore_hosted_key` | `appstore` | `PENDING` | 0 |
@@ -6525,10 +6525,10 @@
 | `c:src/shell/shell_commands_network.c:cmd_net_check_qemu_tcp_print` | `src/shell/shell_commands_network.c` | `cmd_net_check_qemu_tcp_print` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_check_qemu_timeout` | `src/shell/shell_commands_network.c` | `cmd_net_check_qemu_timeout` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_destination_name` | `src/shell/shell_commands_network.c` | `cmd_net_destination_name` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_network.c:cmd_net_devices` | `src/shell/shell_commands_network.c` | `cmd_net_devices` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_network.c:cmd_net_devices` | `src/shell/shell_commands_network.c` | `cmd_net_devices` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:cmd_net_dhcp` | `src/shell/shell_commands_network.c` | `cmd_net_dhcp` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_dhcp_acquire` | `src/shell/shell_commands_network.c` | `cmd_net_dhcp_acquire` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:cmd_net_dhcp_print_lease` | `src/shell/shell_commands_network.c` | `cmd_net_dhcp_print_lease` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_network.c:cmd_net_dhcp_print_lease` | `src/shell/shell_commands_network.c` | `cmd_net_dhcp_print_lease` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:cmd_net_dhcp_release` | `src/shell/shell_commands_network.c` | `cmd_net_dhcp_release` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_dhcp_renew` | `src/shell/shell_commands_network.c` | `cmd_net_dhcp_renew` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_dhcp_status` | `src/shell/shell_commands_network.c` | `cmd_net_dhcp_status` | `shell` | `PENDING` | 0 |
@@ -6539,21 +6539,21 @@
 | `c:src/shell/shell_commands_network.c:cmd_net_dns_table` | `src/shell/shell_commands_network.c` | `cmd_net_dns_table` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_ethernet` | `src/shell/shell_commands_network.c` | `cmd_net_ethernet` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_find_arp_entry` | `src/shell/shell_commands_network.c` | `cmd_net_find_arp_entry` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:cmd_net_get_link_state` | `src/shell/shell_commands_network.c` | `cmd_net_get_link_state` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:cmd_net_icmp_print_status` | `src/shell/shell_commands_network.c` | `cmd_net_icmp_print_status` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_network.c:cmd_net_get_link_state` | `src/shell/shell_commands_network.c` | `cmd_net_get_link_state` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_network.c:cmd_net_icmp_print_status` | `src/shell/shell_commands_network.c` | `cmd_net_icmp_print_status` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:cmd_net_info` | `src/shell/shell_commands_network.c` | `cmd_net_info` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_invalid_ipv4` | `src/shell/shell_commands_network.c` | `cmd_net_invalid_ipv4` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:cmd_net_ipv4` | `src/shell/shell_commands_network.c` | `cmd_net_ipv4` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_ipv4_config` | `src/shell/shell_commands_network.c` | `cmd_net_ipv4_config` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:cmd_net_ipv4_print_config` | `src/shell/shell_commands_network.c` | `cmd_net_ipv4_print_config` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:cmd_net_ipv4_print_counters` | `src/shell/shell_commands_network.c` | `cmd_net_ipv4_print_counters` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_network.c:cmd_net_ipv4_print_config` | `src/shell/shell_commands_network.c` | `cmd_net_ipv4_print_config` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_network.c:cmd_net_ipv4_print_counters` | `src/shell/shell_commands_network.c` | `cmd_net_ipv4_print_counters` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:cmd_net_ipv4_status` | `src/shell/shell_commands_network.c` | `cmd_net_ipv4_status` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_parse_ipv4` | `src/shell/shell_commands_network.c` | `cmd_net_parse_ipv4` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:cmd_net_parse_port` | `src/shell/shell_commands_network.c` | `cmd_net_parse_port` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_network.c:cmd_net_print_interface` | `src/shell/shell_commands_network.c` | `cmd_net_print_interface` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:cmd_net_print_ipv4` | `src/shell/shell_commands_network.c` | `cmd_net_print_ipv4` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:cmd_net_print_last_ethernet` | `src/shell/shell_commands_network.c` | `cmd_net_print_last_ethernet` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:cmd_net_print_mac` | `src/shell/shell_commands_network.c` | `cmd_net_print_mac` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_network.c:cmd_net_print_interface` | `src/shell/shell_commands_network.c` | `cmd_net_print_interface` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_network.c:cmd_net_print_ipv4` | `src/shell/shell_commands_network.c` | `cmd_net_print_ipv4` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_network.c:cmd_net_print_last_ethernet` | `src/shell/shell_commands_network.c` | `cmd_net_print_last_ethernet` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_network.c:cmd_net_print_mac` | `src/shell/shell_commands_network.c` | `cmd_net_print_mac` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:cmd_net_qemu_tcp_prepare_dhcp` | `src/shell/shell_commands_network.c` | `cmd_net_qemu_tcp_prepare_dhcp` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_qemu_tcp_run_http` | `src/shell/shell_commands_network.c` | `cmd_net_qemu_tcp_run_http` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_qemu_tcp_wait_close` | `src/shell/shell_commands_network.c` | `cmd_net_qemu_tcp_wait_close` | `shell` | `PENDING` | 0 |
@@ -6562,7 +6562,7 @@
 | `c:src/shell/shell_commands_network.c:cmd_net_socket_check_case` | `src/shell/shell_commands_network.c` | `cmd_net_socket_check_case` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_socket_status` | `src/shell/shell_commands_network.c` | `cmd_net_socket_status` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_socket_table` | `src/shell/shell_commands_network.c` | `cmd_net_socket_table` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:cmd_net_status` | `src/shell/shell_commands_network.c` | `cmd_net_status` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_network.c:cmd_net_status` | `src/shell/shell_commands_network.c` | `cmd_net_status` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:cmd_net_tcp` | `src/shell/shell_commands_network.c` | `cmd_net_tcp` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_tcp_connect` | `src/shell/shell_commands_network.c` | `cmd_net_tcp_connect` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_tcp_status` | `src/shell/shell_commands_network.c` | `cmd_net_tcp_status` | `shell` | `PENDING` | 0 |
@@ -6593,8 +6593,8 @@
 | `c:src/shell/shell_commands_network.c:cmd_route_check_case` | `src/shell/shell_commands_network.c` | `cmd_route_check_case` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_route_default` | `src/shell/shell_commands_network.c` | `cmd_route_default` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_route_delete` | `src/shell/shell_commands_network.c` | `cmd_route_delete` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:cmd_route_print_entry` | `src/shell/shell_commands_network.c` | `cmd_route_print_entry` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:cmd_route_print_result` | `src/shell/shell_commands_network.c` | `cmd_route_print_result` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_network.c:cmd_route_print_entry` | `src/shell/shell_commands_network.c` | `cmd_route_print_entry` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_network.c:cmd_route_print_result` | `src/shell/shell_commands_network.c` | `cmd_route_print_result` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:cmd_route_table` | `src/shell/shell_commands_network.c` | `cmd_route_table` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:cmd_route_validate_gateway` | `src/shell/shell_commands_network.c` | `cmd_route_validate_gateway` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:cmd_route_validate_interface` | `src/shell/shell_commands_network.c` | `cmd_route_validate_interface` | `shell` | `COVERED` | 1 |
@@ -7511,6 +7511,7 @@
 | `host:tst2:protocol-core` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo disponivel | compilar e executar o fake transport do nucleo do protocolo | handshake, sequencia, CRC, entradas invalidas e eventos terminam sem bloqueio | compilador ausente, warning, falha de assercao ou timeout | somente buffers estaticos e transporte falso do teste | processo host encerrado e artefatos preservados pelo runner |
 | `host:tst3:string-compress` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo disponivel | compilar e executar buffers estaticos de strings e compressao | casos validos, vazios, limites, truncamento e overflow retornam o contrato esperado | compilador ausente, warning, falha de assercao ou timeout | somente buffers estaticos e stub de video_print | processo host encerrado e artefatos preservados pelo runner |
 | `host:tst5:blackbox` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo disponivel | compilar e executar o harness black-box com snapshots de terminal falsos | casos TST5 validos encontram o marcador apos nova geracao e caso invalido retorna ERR_NOT_FOUND | compilador ausente, warning, marcador ausente, caso invalido ou timeout | somente buffers estaticos e callbacks falsos do observador | processo host encerrado e relatorio de cobertura preservado |
+| `host:ui:appstore` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar formatacao, selecao, planos, estados, rollback, confianca e geometria da interface com doubles estaticos | helpers preservam limites, selecao, estados de catalogo, planos e coordenadas sem iniciar workers ou tocar em hardware | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers e estruturas estaticas da App Store no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:ui:icons` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar defaults, mutacoes, fallback, cache BMP, limites VESA e falhas controladas | registro vetorial permanece utilizavel sem filesystem e BMPs validos sao aceitos somente no formato esperado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente registro, cache e dispositivos BMP/VESA falsos no processo host | processo host encerrado, cache liberado e manifesto, logs e cobertura preservados |
 | `host:ui:taskbar` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar estados TUI e GUI, layouts, botoes, menus, configuracao, cliques, relogio e limites | taskbar preserva configuracao, geometria, navegacao, selecao de janelas e fallback sem hardware grafico real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente configuracao, botoes, menus e chamadas de desenho dentro da fixture host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `qemu:tst2:boot-ready` | `qemu` | `smoke` | `qemu:tst2:boot-ready` | `AUTOMATED` | 30 | 5 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e o executavel qemu-system-i386 esta disponivel | iniciar o guest em snapshot, enviar HELLO e executar o caso de boot apos READY | o guest publica READY, HEARTBEAT e PASS para o caso solicitado | PANIC, TIMEOUT, ausencia de heartbeat, erro de protocolo ou encerramento inesperado do QEMU | cria um processo QEMU e artefatos temporarios da execucao | encerrar o QEMU via QMP e preservar o relatorio, serial e logs da execucao |
@@ -7550,7 +7551,6 @@
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
 | `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
-| `host:ui:appstore` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar formatacao, selecao, planos, estados, rollback, confianca e geometria da interface com doubles estaticos | helpers preservam limites, selecao, estados de catalogo, planos e coordenadas sem iniciar workers ou tocar em hardware | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers e estruturas estaticas da App Store no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -7643,13 +7643,6 @@
 - `c:src/appstore/appstore.c:appstore_handle_confirmation_click`
 - `c:src/appstore/appstore.c:appstore_handle_key`
 - `c:src/appstore/appstore.c:appstore_handle_mouse`
-- `c:src/appstore/appstore.c:appstore_host_expect`
-- `c:src/appstore/appstore.c:appstore_host_geometry_contracts`
-- `c:src/appstore/appstore.c:appstore_host_prepare_entries`
-- `c:src/appstore/appstore.c:appstore_host_selection_contracts`
-- `c:src/appstore/appstore.c:appstore_host_state_contracts`
-- `c:src/appstore/appstore.c:appstore_host_test_contracts`
-- `c:src/appstore/appstore.c:appstore_host_text_contracts`
 - `c:src/appstore/appstore.c:appstore_hosted_close`
 - `c:src/appstore/appstore.c:appstore_hosted_draw`
 - `c:src/appstore/appstore.c:appstore_hosted_key`
@@ -8117,10 +8110,8 @@
 - `c:src/shell/shell_commands_network.c:cmd_net_check_qemu_tcp`
 - `c:src/shell/shell_commands_network.c:cmd_net_check_qemu_tcp_print`
 - `c:src/shell/shell_commands_network.c:cmd_net_check_qemu_timeout`
-- `c:src/shell/shell_commands_network.c:cmd_net_devices`
 - `c:src/shell/shell_commands_network.c:cmd_net_dhcp`
 - `c:src/shell/shell_commands_network.c:cmd_net_dhcp_acquire`
-- `c:src/shell/shell_commands_network.c:cmd_net_dhcp_print_lease`
 - `c:src/shell/shell_commands_network.c:cmd_net_dhcp_release`
 - `c:src/shell/shell_commands_network.c:cmd_net_dhcp_renew`
 - `c:src/shell/shell_commands_network.c:cmd_net_dhcp_status`
@@ -8131,18 +8122,10 @@
 - `c:src/shell/shell_commands_network.c:cmd_net_dns_table`
 - `c:src/shell/shell_commands_network.c:cmd_net_ethernet`
 - `c:src/shell/shell_commands_network.c:cmd_net_find_arp_entry`
-- `c:src/shell/shell_commands_network.c:cmd_net_get_link_state`
-- `c:src/shell/shell_commands_network.c:cmd_net_icmp_print_status`
 - `c:src/shell/shell_commands_network.c:cmd_net_info`
 - `c:src/shell/shell_commands_network.c:cmd_net_ipv4`
 - `c:src/shell/shell_commands_network.c:cmd_net_ipv4_config`
-- `c:src/shell/shell_commands_network.c:cmd_net_ipv4_print_config`
-- `c:src/shell/shell_commands_network.c:cmd_net_ipv4_print_counters`
 - `c:src/shell/shell_commands_network.c:cmd_net_ipv4_status`
-- `c:src/shell/shell_commands_network.c:cmd_net_print_interface`
-- `c:src/shell/shell_commands_network.c:cmd_net_print_ipv4`
-- `c:src/shell/shell_commands_network.c:cmd_net_print_last_ethernet`
-- `c:src/shell/shell_commands_network.c:cmd_net_print_mac`
 - `c:src/shell/shell_commands_network.c:cmd_net_qemu_tcp_prepare_dhcp`
 - `c:src/shell/shell_commands_network.c:cmd_net_qemu_tcp_run_http`
 - `c:src/shell/shell_commands_network.c:cmd_net_qemu_tcp_wait_close`
@@ -8151,7 +8134,6 @@
 - `c:src/shell/shell_commands_network.c:cmd_net_socket_check_case`
 - `c:src/shell/shell_commands_network.c:cmd_net_socket_status`
 - `c:src/shell/shell_commands_network.c:cmd_net_socket_table`
-- `c:src/shell/shell_commands_network.c:cmd_net_status`
 - `c:src/shell/shell_commands_network.c:cmd_net_tcp`
 - `c:src/shell/shell_commands_network.c:cmd_net_tcp_connect`
 - `c:src/shell/shell_commands_network.c:cmd_net_tcp_status`
@@ -8172,8 +8154,6 @@
 - `c:src/shell/shell_commands_network.c:cmd_route_check_case`
 - `c:src/shell/shell_commands_network.c:cmd_route_default`
 - `c:src/shell/shell_commands_network.c:cmd_route_delete`
-- `c:src/shell/shell_commands_network.c:cmd_route_print_entry`
-- `c:src/shell/shell_commands_network.c:cmd_route_print_result`
 - `c:src/shell/shell_commands_network.c:cmd_selecttest`
 - `c:src/shell/shell_commands_network.c:cmd_skbstat`
 - `c:src/shell/shell_commands_network.c:shell_dispatch_cmd_http`
