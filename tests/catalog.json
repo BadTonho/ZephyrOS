@@ -3452,6 +3452,28 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "api:src/include/apps/shell_runtime.h:shell_network_checks_host_test_contracts",
+      "kind": "api_function",
+      "source": "src/include/apps/shell_runtime.h",
+      "symbol": "shell_network_checks_host_test_contracts",
+      "linkage": "public",
+      "owner": "apps",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks",
+        "qemu:tst5:network"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "api:src/include/apps/shell_runtime.h:shell_network_validate_for_checks",
       "kind": "api_function",
       "source": "src/include/apps/shell_runtime.h",
@@ -142135,9 +142157,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:cmd_net_check",
@@ -142423,9 +142448,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:cmd_net_devices",
@@ -142747,9 +142775,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:cmd_net_ipv4",
@@ -142855,9 +142886,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:cmd_net_parse_port",
@@ -142873,9 +142907,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:cmd_net_print_interface",
@@ -143197,9 +143234,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:cmd_net_udp",
@@ -143371,9 +143411,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:cmd_nslookup",
@@ -143443,9 +143486,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:cmd_ping_parse_count",
@@ -143461,9 +143507,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:cmd_ping_print_event",
@@ -143533,9 +143582,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:cmd_ping_wait",
@@ -143737,9 +143789,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:cmd_route_validate_interface",
@@ -143755,9 +143810,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:cmd_selecttest",
@@ -143988,6 +144046,27 @@
       "coverage_mode": "integration"
     },
     {
+      "id": "c:src/shell/shell_commands_network.c:shell_network_checks_host_test_contracts",
+      "kind": "c_function",
+      "source": "src/shell/shell_commands_network.c",
+      "symbol": "shell_network_checks_host_test_contracts",
+      "linkage": "external",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "c:src/shell/shell_commands_network.c:shell_network_id_equal",
       "kind": "c_function",
       "source": "src/shell/shell_commands_network.c",
@@ -144001,9 +144080,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:shell_network_job_block_tick",
@@ -144091,9 +144173,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:shell_network_job_check_stage_name",
@@ -144109,9 +144194,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:shell_network_job_drain",
@@ -168642,7 +168730,24 @@
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "surface_ids": [
         "api:src/include/apps/shell_job.h:shell_network_start_job",
+        "api:src/include/apps/shell_runtime.h:shell_network_checks_host_test_contracts",
         "api:src/include/apps/shell_runtime.h:shell_network_validate_for_checks",
+        "c:src/shell/shell_commands_network.c:cmd_net_build_http_url",
+        "c:src/shell/shell_commands_network.c:cmd_net_destination_name",
+        "c:src/shell/shell_commands_network.c:cmd_net_invalid_ipv4",
+        "c:src/shell/shell_commands_network.c:cmd_net_parse_ipv4",
+        "c:src/shell/shell_commands_network.c:cmd_net_parse_port",
+        "c:src/shell/shell_commands_network.c:cmd_net_ticks_to_milliseconds",
+        "c:src/shell/shell_commands_network.c:cmd_network_state_color",
+        "c:src/shell/shell_commands_network.c:cmd_ping_parse_args",
+        "c:src/shell/shell_commands_network.c:cmd_ping_parse_count",
+        "c:src/shell/shell_commands_network.c:cmd_ping_target_is_numeric",
+        "c:src/shell/shell_commands_network.c:cmd_route_validate_gateway",
+        "c:src/shell/shell_commands_network.c:cmd_route_validate_interface",
+        "c:src/shell/shell_commands_network.c:shell_network_checks_host_test_contracts",
+        "c:src/shell/shell_commands_network.c:shell_network_id_equal",
+        "c:src/shell/shell_commands_network.c:shell_network_job_check_stage_is_optional",
+        "c:src/shell/shell_commands_network.c:shell_network_job_check_stage_name",
         "c:src/shell/shell_commands_network.c:shell_network_validate_for_checks",
         "c:src/shell/shell_commands_network.c:shell_regcheck_same_network",
         "c:src/shell/shell_commands_network.c:shell_regcheck_validate_arp",
@@ -174722,6 +174827,7 @@
         "api:src/include/apps/shell_pipeline.h:shell_pipeline_self_test",
         "api:src/include/apps/shell_pipeline.h:shell_pipeline_try_execute",
         "api:src/include/apps/shell_pipeline.h:shell_pipeline_write",
+        "api:src/include/apps/shell_runtime.h:shell_network_checks_host_test_contracts",
         "api:src/include/apps/shell_runtime.h:shell_network_validate_for_checks",
         "api:src/include/apps/shell_runtime.h:shell_runtime_finish_command",
         "api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key",

@@ -2005,7 +2005,17 @@ os codigos e a saida observavel sem hardware ou estado persistente.
 O alvo `make test-shell-network-checks-host` valida o gate de invariantes de
 rede usado pelo Shell com uma interface PCI estatica. Ele exercita o estado
 coerente, rejeita uma interface inconsistente e propaga `ERR_UNAVAILABLE`, sem
-driver, hardware, armazenamento ou rede reais.
+driver, hardware, armazenamento ou rede reais. A mesma fixture tambem chama
+diretamente os helpers internos compilados sob `ZEPHYROS_HOST_TEST`: parsers de
+IPv4, porta, ping e URL, validadores de gateway/interface, estados de
+interface, destinos Ethernet, identificadores, conversao de ticks e fases do
+job de rede.
+
+O relatorio instrumentado fica em
+`build/test-results/shell-network-checks-host/coverage.json` e deve terminar
+com `status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`. A
+sincronizacao associa somente as superficies listadas em
+`covered_surface_ids`; o caso nao cobre automaticamente o restante do arquivo.
 
 ## Shell: helpers internos de checks host-only
 

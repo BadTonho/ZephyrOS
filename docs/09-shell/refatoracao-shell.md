@@ -382,3 +382,11 @@ doubles estaticos e valida entradas invalidas, limites e limpeza sem hardware.
 de `shell_checks.c` para validar fases, resumos, saturacao de falhas, estados
 de job, comparacao de inventarios, tabelas ACPI/MADT e montagem de fixtures
 ZAPP. Esse ponto de entrada nao participa do build normal nem cria ABI publica.
+
+O bridge `shell_runtime.h` tambem declara
+`shell_network_checks_host_test_contracts()` somente para builds
+`ZEPHYROS_HOST_TEST`. A fixture `host:shell:network-checks` usa esse ponto de
+entrada para chamar diretamente os parsers, validadores de IPv4, conversores
+de ticks, nomes de estado e contratos de identificadores de
+`shell_commands_network.c`, incluindo limites e argumentos nulos. A entrada e
+removida do build normal pelo pre-processador e nao altera a ABI publica.

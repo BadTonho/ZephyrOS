@@ -19,10 +19,10 @@ equipamento e evidência correspondente.
 
 A infraestrutura TST1–TST7 está concluída para a matriz automatizada existente,
 mas o programa de cobertura integral ainda não está concluído. O catálogo
-mantém 154 casos `AUTOMATED`; após os incrementos de Shell, RTC,
+mantém 156 casos `AUTOMATED`; após os incrementos de Shell, RTC,
 processos/threads, FAT32, update U3/U4, os contratos remotos ZSYS e o
-repositório remoto de aplicativos, registra 7.293 superfícies, 6.215
-`COVERED` e 1.078 `PENDING`. O próximo objetivo deste
+repositório remoto de aplicativos, registra 7.297 superfícies, 6.368
+`COVERED` e 929 `PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
 Isso não significa declarar hardware físico validado sem equipamento.
@@ -56,8 +56,8 @@ Isso não significa declarar hardware físico validado sem equipamento.
 
 ### Atualizacao vigente — 2026-09-04
 
-O sincronizador mais recente registra 7.293 superficies, 6.215 `COVERED`,
-1.078 `PENDING` e 154 casos `AUTOMATED`. Os incrementos mais recentes
+O sincronizador mais recente registra 7.297 superficies, 6.368 `COVERED`,
+929 `PENDING` e 156 casos `AUTOMATED`. Os incrementos mais recentes
 adicionaram o caso host-only `host:shell:diagnostics-helpers`, com evidencia
 real para 34 helpers extraidos de `shell_commands_diagnostics.c` e duas rotinas
 de string, ampliaram `host:process:runtime` com cinco helpers de stack e o
@@ -2655,3 +2655,21 @@ pendente.
       6.351 `COVERED` e 944 `PENDING`. As pendências restantes continuam
       explícitas e não foram associadas por pertencerem apenas ao mesmo
       arquivo.
+
+### Incremento Shell/network helpers — 2026-09-04
+
+- [x] A fixture host-only `host:shell:network-checks` foi ampliada com um
+      contrato interno compilado somente sob `ZEPHYROS_HOST_TEST`, chamando
+      diretamente os helpers reais de `shell_commands_network.c`.
+- [x] Foram exercitados parsers de IPv4, portas, ping e URLs, limites,
+      argumentos nulos, destinos Ethernet, estados de interface, comparação
+      de identificadores, validação de gateway/interface, conversão de ticks
+      e estados/fases do job cooperativo.
+- [x] Passaram `make test-shell-network-checks-host` com `HOST_CC`, a matriz
+      host-only completa com 117/117 alvos, `make q3check`, `make clean`
+      seguido de `make`, sincronização/renderização do catálogo, `make
+      catalog-test` e `git diff --check`.
+- [x] A evidência dinâmica cobriu 30 superfícies reais, sem endereços
+      desconhecidos ou símbolos ambíguos. O catálogo registra 7.297
+      superfícies, 6.368 `COVERED`, 929 `PENDING` e 156 casos; as pendências
+      restantes continuam explícitas.

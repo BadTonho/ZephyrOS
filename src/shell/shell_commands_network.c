@@ -5442,4 +5442,157 @@ void shell_dispatch_cmd_http(const char* arguments) {
     cmd_http(arguments);
 }
 
+#ifdef ZEPHYROS_HOST_TEST
+int shell_network_checks_host_test_contracts(void) {
+    network_interface_info_t left;
+    network_interface_info_t right;
+    ipv4_status_t ipv4;
+    char target[32];
+    char url[32];
+    uint32_t address = 0U;
+    uint16_t port = 0U;
+    uint8_t count = 0U;
+    int result;
+
+    if (cmd_network_state_color(NETWORK_INTERFACE_ACTIVE) != 0x0A ||
+        cmd_network_state_color(NETWORK_INTERFACE_DRIVER_MISSING) != 0x0E ||
+        cmd_network_state_color(NETWORK_INTERFACE_UNSUPPORTED) != 0x0C ||
+        cmd_network_state_color(NETWORK_INTERFACE_DRIVER_ERROR) != 0x0C) {
+        LOG_ERROR("SHELL", "Contrato interno de rede falhou");
+        return ERR_STATE;
+    }
+    if (kstrcmp(cmd_net_destination_name(
+                    ETHERNET_DESTINATION_LOCAL_UNICAST),
+                "UNICAST LOCAL") != 0 ||
+        kstrcmp(cmd_net_destination_name(ETHERNET_DESTINATION_BROADCAST),
+                "BROADCAST") != 0 ||
+        kstrcmp(cmd_net_destination_name(ETHERNET_DESTINATION_UNKNOWN),
+                "DESCONHECIDO") != 0) {
+        LOG_ERROR("SHELL", "Nome de destino Ethernet incoerente");
+        return ERR_STATE;
+    }
+    if (cmd_net_parse_ipv4("192.168.1.7", &address) != OK ||
+        address != 0xC0A80107U ||
+        cmd_net_parse_ipv4("256.1.1.1", &address) != ERR_INVALID ||
+        cmd_net_parse_ipv4("1.2.3", &address) != ERR_INVALID ||
+        cmd_net_parse_ipv4("1.2.3.4x", &address) != ERR_INVALID ||
+        cmd_net_parse_ipv4(0, &address) != ERR_NULL ||
+        cmd_net_parse_ipv4("1.2.3.4", 0) != ERR_NULL) {
+        LOG_ERROR("SHELL", "Contrato de parsing IPv4 falhou");
+        return ERR_STATE;
+    }
+    if (cmd_net_parse_port("443", &port) != OK || port != 443U ||
+        cmd_net_parse_port("65536", &port) != ERR_INVALID ||
+        cmd_net_parse_port("0", &port) != ERR_INVALID ||
+        cmd_net_parse_port("", &port) != ERR_INVALID ||
+        cmd_net_parse_port("80x", &port) != ERR_INVALID ||
+        cmd_net_parse_port(0, &port) != ERR_NULL ||
+        cmd_net_parse_port("80", 0) != ERR_NULL) {
+        LOG_ERROR("SHELL", "Contrato de parsing de porta falhou");
+        return ERR_STATE;
+    }
+    if (cmd_ping_parse_count("10", &count) != OK || count != 10U ||
+        cmd_ping_parse_count("0", &count) != ERR_INVALID ||
+        cmd_ping_parse_count("11", &count) != ERR_INVALID ||
+        cmd_ping_parse_count("", &count) != ERR_INVALID ||
+        cmd_ping_parse_count(0, &count) != ERR_NULL ||
+        cmd_ping_parse_count("1", 0) != ERR_NULL) {
+        LOG_ERROR("SHELL", "Contrato de quantidade do ping falhou");
+        return ERR_STATE;
+    }
+    if (!cmd_ping_target_is_numeric("192.168.1.1") ||
+        cmd_ping_target_is_numeric("zephyros") ||
+        cmd_ping_target_is_numeric(0)) {
+        LOG_ERROR("SHELL", "Contrato de destino do ping falhou");
+        return ERR_STATE;
+    }
+    if (cmd_ping_parse_args("192.168.1.1 3", target, sizeof(target),
+                            &count) != OK ||
+        kstrcmp(target, "192.168.1.1") != 0 || count != 3U ||
+        cmd_ping_parse_args("example.test", target, sizeof(target),
+                            &count) != OK || count != ICMP_PING_DEFAULT_COUNT ||
+        cmd_ping_parse_args("192.168.1.1 0", target, sizeof(target),
+                            &count) != ERR_INVALID ||
+        cmd_ping_parse_args("123456", target, 4U, &count) != ERR_OVERFLOW ||
+        cmd_ping_parse_args(0, target, sizeof(target), &count) != ERR_NULL) {
+        LOG_ERROR("SHELL", "Contrato de argumentos do ping falhou");
+        return ERR_STATE;
+    }
+    if (cmd_net_build_http_url("example.test", url, sizeof(url)) != OK ||
+        kstrcmp(url, "http://example.test/") != 0 ||
+        cmd_net_build_http_url("", url, sizeof(url)) != ERR_OVERFLOW ||
+        cmd_net_build_http_url("example.test", url, 20U) != ERR_OVERFLOW ||
+        cmd_net_build_http_url(0, url, sizeof(url)) != ERR_NULL ||
+        cmd_net_build_http_url("example.test", 0, sizeof(url)) != ERR_NULL) {
+        LOG_ERROR("SHELL", "Contrato de URL HTTP falhou");
+        return ERR_STATE;
+    }
+    if (!shell_network_id_equal("eth0", "ETH0") ||
+        !shell_network_id_equal("pci:00:03.0", "PCI-00-03.0") ||
+        shell_network_id_equal("eth0", "eth1") ||
+        shell_network_id_equal(0, "eth0")) {
+        LOG_ERROR("SHELL", "Comparacao de identificador de rede falhou");
+        return ERR_STATE;
+    }
+    kmemset(&left, 0, sizeof(left));
+    right = left;
+    if (!shell_regcheck_same_network(&left, &right)) {
+        LOG_ERROR("SHELL", "Comparacao de estado de rede falhou");
+        return ERR_STATE;
+    }
+    right.device = 1U;
+    if (shell_regcheck_same_network(&left, &right)) {
+        LOG_ERROR("SHELL", "Diferenca de estado de rede nao detectada");
+        return ERR_STATE;
+    }
+
+    kmemset(&ipv4, 0, sizeof(ipv4));
+    if (cmd_route_validate_gateway(&ipv4, 0U) != ERR_INVALID) {
+        LOG_ERROR("SHELL", "Gateway sem IPv4 nao foi rejeitado");
+        return ERR_STATE;
+    }
+    ipv4.configured = 1U;
+    ipv4.local_ip = 0xC0A8010AU;
+    ipv4.subnet_mask = 0xFFFFFF00U;
+    if (cmd_route_validate_gateway(&ipv4, 0U) != OK ||
+        cmd_route_validate_gateway(&ipv4, 0xC0A801FEU) != OK ||
+        cmd_route_validate_gateway(&ipv4, 0xC0A8010AU) != ERR_INVALID ||
+        cmd_route_validate_gateway(&ipv4, 0xC0A80201U) != ERR_INVALID ||
+        cmd_route_validate_gateway(&ipv4, 0xC0A80100U) != ERR_INVALID ||
+        cmd_route_validate_gateway(&ipv4, 0xFFFFFFFFU) != ERR_INVALID) {
+        LOG_ERROR("SHELL", "Contrato de gateway IPv4 falhou");
+        return ERR_STATE;
+    }
+    result = cmd_route_validate_interface("eth0", &ipv4);
+    if (result != OK) {
+        LOG_ERROR("SHELL", "Interface IPv4 valida foi rejeitada");
+        return ERR_STATE;
+    }
+    if (cmd_route_validate_interface("missing", &ipv4) != ERR_NOT_FOUND ||
+        cmd_route_validate_interface(0, &ipv4) != ERR_NULL) {
+        LOG_ERROR("SHELL", "Interface IPv4 invalida nao foi rejeitada");
+        return ERR_STATE;
+    }
+    if (cmd_net_ticks_to_milliseconds(7U) != 7U ||
+        cmd_net_ticks_to_milliseconds(0xFFFFFFFFU) != 0xFFFFFFFFU) {
+        LOG_ERROR("SHELL", "Conversao de ticks de rede falhou");
+        return ERR_STATE;
+    }
+    if (!shell_network_job_check_stage_is_optional(
+            SHELL_NETWORK_CHECK_STAGE_INTERFACE) ||
+        !shell_network_job_check_stage_is_optional(
+            SHELL_NETWORK_CHECK_STAGE_ETHERNET) ||
+        shell_network_job_check_stage_is_optional(
+            SHELL_NETWORK_CHECK_STAGE_GENERAL) ||
+        kstrcmp(shell_network_job_check_stage_name(
+                    SHELL_NETWORK_CHECK_STAGE_HTTP), "http") != 0 ||
+        kstrcmp(shell_network_job_check_stage_name(
+                    SHELL_NETWORK_CHECK_STAGE_DONE), "concluindo") != 0) {
+        LOG_ERROR("SHELL", "Contrato de fases do job de rede falhou");
+        return ERR_STATE;
+    }
+    return OK;
+}
+#endif
+
 #undef SHELL_NETWORK_WRAP_ARGS
