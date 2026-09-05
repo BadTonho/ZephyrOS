@@ -135626,9 +135626,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_appcheck_finish_migration",
@@ -135725,9 +135728,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_appcheck_phase_name",
@@ -135887,9 +135893,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_blkcheck_case_name",
@@ -169805,8 +169814,8 @@
         "hardware": "estado ACPI, USB e dispositivos estatico"
       },
       "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "executar contratos internos de fases, resumos, limites de falhas, estados de job, comparacao de inventarios, validacao de tabelas ACPI/MADT e emissao de imagens ZAPP",
-      "expected": "helpers preservam nomes, estados, codigos canonicos, limites, bytes e limpeza esperados",
+      "action": "executar contratos internos de fases, resumos, limites de falhas, estados de job, comparacao de inventarios, validacao de tabelas ACPI/MADT, validacao de resultados de migracao, VMA lazy e page fault e emissao de imagens ZAPP",
+      "expected": "helpers preservam nomes, estados, codigos canonicos, limites, bytes, snapshots de paging e limpeza esperados",
       "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
       "effects": "somente estruturas estaticas da fixture host; nenhum hardware, armazenamento ou processo real",
       "cleanup": "estado interno resetado, processo host encerrado e manifesto, logs e cobertura preservados",
@@ -169823,15 +169832,18 @@
         "c:src/shell/shell_checks.c:cmd_appcheck_print_result",
         "c:src/shell/shell_checks.c:cmd_appcheck_print_result_with_expectation",
         "c:src/shell/shell_checks.c:shell_appcheck_copy_failure_label",
+        "c:src/shell/shell_checks.c:shell_appcheck_fault_is_valid",
         "c:src/shell/shell_checks.c:shell_appcheck_has_pending_work",
         "c:src/shell/shell_checks.c:shell_appcheck_is_compact_job",
         "c:src/shell/shell_checks.c:shell_appcheck_label_is_unavailable",
+        "c:src/shell/shell_checks.c:shell_appcheck_migration_is_valid",
         "c:src/shell/shell_checks.c:shell_appcheck_phase_name",
         "c:src/shell/shell_checks.c:shell_appcheck_print_summary",
         "c:src/shell/shell_checks.c:shell_appcheck_record_result",
         "c:src/shell/shell_checks.c:shell_appcheck_set_phase",
         "c:src/shell/shell_checks.c:shell_appcheck_summary_finish",
         "c:src/shell/shell_checks.c:shell_appcheck_summary_reset",
+        "c:src/shell/shell_checks.c:shell_appcheck_vma_is_valid",
         "c:src/shell/shell_checks.c:shell_blkcheck_case_name",
         "c:src/shell/shell_checks.c:shell_blkcheck_copy_failure",
         "c:src/shell/shell_checks.c:shell_blkcheck_copy_id",

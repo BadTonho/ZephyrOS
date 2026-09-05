@@ -6210,3 +6210,21 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `unknown_addresses=[]` e `ambiguous_symbols=[]`. O catálogo registra 7.326
   superfícies, 6.876 `COVERED`, 450 `PENDING`, 59 aposentadas e 165 casos;
   as pendências dos demais subsistemas continuam explícitas.
+
+- Incremento Shell Checks: resultados de aplicativos e paging — concluído em
+  2026-09-05 (America/Sao_Paulo). A fixture existente
+  `host:shell:checks`, compilada com `ZEPHYROS_HOST_TEST`, passou a exercitar
+  diretamente `shell_appcheck_migration_is_valid`,
+  `shell_appcheck_vma_is_valid` e `shell_appcheck_fault_is_valid`, usando
+  snapshots estáticos de processo, paging e contadores de faults. Foram
+  validados caminhos válidos e rejeições por resultado incompleto, fault
+  inesperado, foco, PID e contadores inconsistentes. Não houve processo,
+  paging real, disco, rede ou hardware, nem espera indefinida.
+  Passou `make test-shell-checks-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\gcc.exe`; o build limpo, a sincronização e
+  renderização do catálogo, `make catalog-test` e `git diff --check` também
+  passaram. O relatório `build/test-results/shell-checks-host/coverage.json`
+  terminou `PASS`, com 45 funções reais de `src/shell/shell_checks.c`,
+  `unknown_addresses=[]` e `ambiguous_symbols=[]`. O catálogo registra 7.326
+  superfícies, 6.879 `COVERED`, 447 `PENDING`, 59 aposentadas e 165 casos;
+  as pendências dos demais subsistemas continuam explícitas.

@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6876 |
+| `COVERED` | 6879 |
 | `MANUAL` | 0 |
-| `PENDING` | 450 |
+| `PENDING` | 447 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -6140,12 +6140,12 @@
 | `c:src/shell/shell_checks.c:cmd_regcheck` | `src/shell/shell_checks.c` | `cmd_regcheck` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:cmd_usertest` | `src/shell/shell_checks.c` | `cmd_usertest` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_appcheck_copy_failure_label` | `src/shell/shell_checks.c` | `shell_appcheck_copy_failure_label` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_checks.c:shell_appcheck_fault_is_valid` | `src/shell/shell_checks.c` | `shell_appcheck_fault_is_valid` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_checks.c:shell_appcheck_fault_is_valid` | `src/shell/shell_checks.c` | `shell_appcheck_fault_is_valid` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_appcheck_finish_migration` | `src/shell/shell_checks.c` | `shell_appcheck_finish_migration` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_appcheck_has_pending_work` | `src/shell/shell_checks.c` | `shell_appcheck_has_pending_work` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_appcheck_is_compact_job` | `src/shell/shell_checks.c` | `shell_appcheck_is_compact_job` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_appcheck_label_is_unavailable` | `src/shell/shell_checks.c` | `shell_appcheck_label_is_unavailable` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_checks.c:shell_appcheck_migration_is_valid` | `src/shell/shell_checks.c` | `shell_appcheck_migration_is_valid` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_checks.c:shell_appcheck_migration_is_valid` | `src/shell/shell_checks.c` | `shell_appcheck_migration_is_valid` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_appcheck_phase_name` | `src/shell/shell_checks.c` | `shell_appcheck_phase_name` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_appcheck_print_summary` | `src/shell/shell_checks.c` | `shell_appcheck_print_summary` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_appcheck_record_result` | `src/shell/shell_checks.c` | `shell_appcheck_record_result` | `shell` | `COVERED` | 1 |
@@ -6153,7 +6153,7 @@
 | `c:src/shell/shell_checks.c:shell_appcheck_start_migration` | `src/shell/shell_checks.c` | `shell_appcheck_start_migration` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_appcheck_summary_finish` | `src/shell/shell_checks.c` | `shell_appcheck_summary_finish` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_appcheck_summary_reset` | `src/shell/shell_checks.c` | `shell_appcheck_summary_reset` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_checks.c:shell_appcheck_vma_is_valid` | `src/shell/shell_checks.c` | `shell_appcheck_vma_is_valid` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_checks.c:shell_appcheck_vma_is_valid` | `src/shell/shell_checks.c` | `shell_appcheck_vma_is_valid` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_blkcheck_case_name` | `src/shell/shell_checks.c` | `shell_blkcheck_case_name` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_blkcheck_cleanup` | `src/shell/shell_checks.c` | `shell_blkcheck_cleanup` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_blkcheck_copy_failure` | `src/shell/shell_checks.c` | `shell_blkcheck_copy_failure` | `shell` | `COVERED` | 1 |
@@ -7494,7 +7494,7 @@
 | `host:process:threads` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, criacao, selecao, yield, bloqueio, espera, cancelamento, desbloqueio, timeouts, limites e limpeza com threads e stacks estaticas | o scheduler preserva estados, identidade, filas de espera, codigos canonicos e limpeza sem executar troca de contexto Assembly | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas, threads e stacks estaticas da fixture host | processo host encerrado, threads estaticas removidas e manifesto, logs e cobertura preservados |
 | `host:security:tls` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar politica, estados, validade, cadeia, SAN, pinning, rotacao, revogacao e autoteste TLS com relogio e RNG falsos | identidades validas sao aceitas, rejeicoes retornam motivo canonico e capacidades indisponiveis permanecem explicitas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado TLS, politica e dependencias falsas no processo host | estado TLS e dependencias falsas reiniciados e artefatos preservados |
 | `host:security:tls-client` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar tls_client.c com engine BearSSL, socket, relogio e RNG falsos | handshake, envio, recepcao, EOF, estados de erro e limpeza preservam os contratos do adaptador | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do adaptador e fixtures do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
-| `host:shell:checks` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar contratos internos de fases, resumos, limites de falhas, estados de job, comparacao de inventarios, validacao de tabelas ACPI/MADT e emissao de imagens ZAPP | helpers preservam nomes, estados, codigos canonicos, limites, bytes e limpeza esperados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estruturas estaticas da fixture host; nenhum hardware, armazenamento ou processo real | estado interno resetado, processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:shell:checks` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar contratos internos de fases, resumos, limites de falhas, estados de job, comparacao de inventarios, validacao de tabelas ACPI/MADT, validacao de resultados de migracao, VMA lazy e page fault e emissao de imagens ZAPP | helpers preservam nomes, estados, codigos canonicos, limites, bytes, snapshots de paging e limpeza esperados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estruturas estaticas da fixture host; nenhum hardware, armazenamento ou processo real | estado interno resetado, processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:command-utils` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar parsing, validacao de argumentos, normalizacao e formatacao | utilitarios aceitam entradas validas, rejeitam limites e formatam valores corretamente | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos de entrada, saida e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:commands-apps` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar comandos de aplicativos, modos de interface, display, editor, icones, cenas, player e caminhos indisponiveis com doubles estaticos | handlers validos e invalidos preservam limites, codigos canonicos, transicoes e limpeza sem hardware ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e estado local da fixture no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:commands-core` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar handlers de ajuda, terminal, VFS, processos, threads, memoria, som, energia, compressao e resultados de loader com dependencias estaticas falsas | comandos validos e invalidos preservam seus retornos, mensagens, callbacks e limpeza sem hardware ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers e contadores estaticos da fixture host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7831,11 +7831,8 @@
 - `c:src/shell/shell_checks.c:cmd_q2check`
 - `c:src/shell/shell_checks.c:cmd_regcheck`
 - `c:src/shell/shell_checks.c:cmd_usertest`
-- `c:src/shell/shell_checks.c:shell_appcheck_fault_is_valid`
 - `c:src/shell/shell_checks.c:shell_appcheck_finish_migration`
-- `c:src/shell/shell_checks.c:shell_appcheck_migration_is_valid`
 - `c:src/shell/shell_checks.c:shell_appcheck_start_migration`
-- `c:src/shell/shell_checks.c:shell_appcheck_vma_is_valid`
 - `c:src/shell/shell_checks.c:shell_blkcheck_cleanup`
 - `c:src/shell/shell_checks.c:shell_blkcheck_fat12`
 - `c:src/shell/shell_checks.c:shell_blkcheck_fat32_step`
