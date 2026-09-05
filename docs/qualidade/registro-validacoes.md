@@ -6022,6 +6022,17 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`, `make q3check`, `make clean`,
   `make` e `make catalog-test`. A evidência resolveu 28 superfícies C e quatro
   contratos de API diretamente chamados, sem endereços desconhecidos ou
-  símbolos ambíguos. O catálogo registra 7.307 superfícies, 6.481 `COVERED`,
-  826 `PENDING`, 59 aposentadas e 159 casos; as pendências restantes continuam
+  símbolos ambíguos. O catálogo registra 7.308 superfícies, 6.489 `COVERED`,
+  819 `PENDING`, 59 aposentadas e 160 casos; as pendências restantes continuam
+  explícitas.
+
+- Incremento Shell/UI — editor de ícones das Configurações concluído em
+  2026-09-05 (America/Sao_Paulo). A fixture `host:ui:settings-icons` usou
+  entradas estáticas e doubles de vídeo/GUI para exercitar abertura válida e
+  inválida, seleção, navegação, limites de caractere/cor, encerramento e
+  desenho TUI/GUI. Passou `make test-settings-icons-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`; a compilação usou `-Wall
+  -Wextra -Werror` e a cobertura terminou sem endereços desconhecidos ou
+  símbolos ambíguos. O catálogo registra 7.308 superfícies, 6.489 `COVERED`,
+  819 `PENDING`, 59 aposentadas e 160 casos; as pendências restantes continuam
   explícitas.

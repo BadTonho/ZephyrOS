@@ -328,6 +328,12 @@ EDITOR_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_editor_host.c",
     ROOT / "src" / "shell" / "editor.c",
 )
+SETTINGS_ICONS_RESULT_DIR = ROOT / "build" / "test-results" / "settings-icons-host"
+SETTINGS_ICONS_BINARY = ROOT / "build" / "tests" / "test_settings_host.exe"
+SETTINGS_ICONS_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_settings_host.c",
+    ROOT / "src" / "settings" / "settings.c",
+)
 SYSCALL_RESULT_DIR = ROOT / "build" / "test-results" / "syscall-host"
 SYSCALL_BINARY = ROOT / "build" / "tests" / "test_syscall_host.exe"
 SYSCALL_SOURCE_FILES = (
@@ -941,6 +947,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return APPSTORE_RESULT_DIR, APPSTORE_BINARY, APPSTORE_SOURCE_FILES, "appstore-host"
     if case_id == "host:shell:editor":
         return EDITOR_RESULT_DIR, EDITOR_BINARY, EDITOR_SOURCE_FILES, "editor-host"
+    if case_id == "host:ui:settings-icons":
+        return (SETTINGS_ICONS_RESULT_DIR, SETTINGS_ICONS_BINARY,
+                SETTINGS_ICONS_SOURCE_FILES, "settings-icons-host")
     if case_id == "host:core:syscall":
         return SYSCALL_RESULT_DIR, SYSCALL_BINARY, SYSCALL_SOURCE_FILES, "syscall-host"
     if case_id == "host:process:runtime":
@@ -1250,6 +1259,9 @@ def compiler_command(compiler: str, binary: Path,
         compatibility_flags.extend(["-Wno-int-to-pointer-cast",
                                     "-Wno-pointer-to-int-cast",
                                     "-Dasm=__asm__"])
+    include_directories = []
+    if any(source.name == "settings.c" for source in selected_sources):
+        include_directories.extend(["-I", str(ROOT / "src" / "settings")])
     return [
         compiler, "-std=c11", "-O0", "-fno-inline", "-ffunction-sections",
         "-fdata-sections", "-fno-unwind-tables",
@@ -1259,6 +1271,7 @@ def compiler_command(compiler: str, binary: Path,
         "-I", str(ROOT / "tests" / "unit" / "host_include"),
         "-I", str(ROOT / "src" / "include"),
         "-I", str(ROOT / "src" / "core"),
+        *include_directories,
         *(str(source) for source in selected_sources), "-Wl,--gc-sections",
         "-o", str(binary),
     ]
@@ -1391,6 +1404,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:shell:network-checks",
                                  "host:shell:commands-packages",
                                  "host:shell:editor",
+                                 "host:ui:settings-icons",
                                  "host:shell:checks",
                                  "host:shell:diagnostics",
                                  "host:shell:introspection",

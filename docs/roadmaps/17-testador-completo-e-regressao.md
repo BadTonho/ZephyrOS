@@ -19,11 +19,11 @@ equipamento e evidência correspondente.
 
 A infraestrutura TST1–TST7 está concluída para a matriz automatizada existente,
 mas o programa de cobertura integral ainda não está concluído. O catálogo
-mantém 159 casos `AUTOMATED`; após os incrementos de Shell, RTC,
+mantém 160 casos `AUTOMATED`; após os incrementos de Shell, RTC,
 processos/threads, FAT32, update U3/U4, os contratos remotos ZSYS e o
 repositório remoto de aplicativos, dos helpers de pacotes do Shell, da
-interface App Store e dos relatórios de rede do Shell, registra 7.307
-superfícies, 6.481 `COVERED` e 826
+interface App Store, dos relatórios de rede do Shell e do editor de ícones,
+registra 7.308 superfícies, 6.489 `COVERED` e 819
 `PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
@@ -143,8 +143,22 @@ Isso não significa declarar hardware físico validado sem equipamento.
       `make q3check`, `make clean`, `make` e `make catalog-test` passaram. A
       evidência resolveu 37 superfícies C e nove contratos de API diretamente
       chamados; não houve endereço desconhecido nem símbolo ambíguo. O catálogo
-      registra 7.307 superfícies, 6.481 `COVERED`, 826 `PENDING`, 59 aposentadas
-      e 159 casos. As pendências de UI/runtime continuam explícitas.
+      registra 7.308 superfícies, 6.489 `COVERED`, 819 `PENDING`, 59 aposentadas
+      e 160 casos. As pendências de UI/runtime continuam explícitas.
+
+### Incremento Shell/UI — editor de ícones das Configurações — 2026-09-05
+
+- [x] Foi criada a fixture host-only `host:ui:settings-icons`, com entradas
+      estáticas e doubles de vídeo/GUI; nenhuma tela real ou hardware é usado.
+- [x] O caso validou abertura e rejeição de entradas inválidas, seleção,
+      navegação entre itens e campos, limites de caractere/cor, encerramento e
+      desenho TUI/GUI do editor de ícones.
+- [x] `make test-settings-icons-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
+      passou com warnings tratados como erro e cobertura dinâmica sem símbolos
+      ambíguos. A evidência resolveu oito superfícies que estavam pendentes em
+      `src/settings/settings.c`; o catálogo registra 7.308 superfícies,
+      6.489 `COVERED`, 819 `PENDING`, 59 aposentadas e 160 casos. As demais
+      rotas de Configurações continuam explícitas para próximos subblocos.
 
 ### Incremento Shell/UI App Store — 2026-09-05
 

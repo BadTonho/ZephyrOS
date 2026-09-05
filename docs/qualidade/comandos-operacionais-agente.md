@@ -2072,6 +2072,21 @@ O relatório instrumentado fica em
 `build/test-results/editor-host/coverage.json` e deve terminar com
 `status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`.
 
+## Shell/UI: editor de ícones das Configurações host-only
+
+O alvo `test-settings-icons-host` valida a lógica determinística do editor de
+ícones de Configurações com entradas estáticas e doubles de vídeo/GUI. Ele
+cobre seleção, navegação, limites de caractere/cor, encerramento e desenho nos
+caminhos TUI/GUI, sem acessar hardware ou iniciar a interface real:
+
+```text
+make test-settings-icons-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O relatório instrumentado fica em
+`build/test-results/settings-icons-host/coverage.json` e deve terminar com
+`status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`.
+
 ## Shell/UI: contratos da App Store host-only
 
 O alvo `test-appstore-host` valida os helpers determinísticos da App Store
