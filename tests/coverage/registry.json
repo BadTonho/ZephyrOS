@@ -3124,7 +3124,27 @@
         "status": "AUTOMATED",
         "surface_ids": [
           "api:src/include/drivers/rtc.h:rtc_get_status",
-          "c:src/drivers/rtc.c:rtc_get_status"
+          "api:src/include/drivers/rtc.h:rtc_init",
+          "api:src/include/drivers/rtc.h:rtc_read_utc",
+          "api:src/include/drivers/rtc.h:rtc_self_test",
+          "api:src/include/drivers/rtc.h:rtc_validate_state",
+          "c:src/drivers/rtc.c:rtc_datetime_valid",
+          "c:src/drivers/rtc.c:rtc_days_in_month",
+          "c:src/drivers/rtc.c:rtc_decode_snapshot",
+          "c:src/drivers/rtc.c:rtc_decode_value",
+          "c:src/drivers/rtc.c:rtc_get_status",
+          "c:src/drivers/rtc.c:rtc_inb",
+          "c:src/drivers/rtc.c:rtc_init",
+          "c:src/drivers/rtc.c:rtc_is_leap_year",
+          "c:src/drivers/rtc.c:rtc_outb",
+          "c:src/drivers/rtc.c:rtc_raw_equal",
+          "c:src/drivers/rtc.c:rtc_read_raw",
+          "c:src/drivers/rtc.c:rtc_read_raw_once",
+          "c:src/drivers/rtc.c:rtc_read_register",
+          "c:src/drivers/rtc.c:rtc_read_utc",
+          "c:src/drivers/rtc.c:rtc_self_test",
+          "c:src/drivers/rtc.c:rtc_validate_state",
+          "c:src/drivers/rtc.c:rtc_wait_update_complete"
         ],
         "tags": [
           "host",
