@@ -6120,6 +6120,17 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   7.315 superfícies, 6.804 `COVERED`, 511 `PENDING`, 59 aposentadas e 162
   casos. As pendências dos demais subsistemas continuam explícitas.
 
+- Evidência Shell/input e hosted regenerada — concluída em 2026-09-05
+  (America/Sao_Paulo). Os casos existentes `host:shell:input` e
+  `host:shell:hosted` foram reexecutados após o build limpo com fixtures
+  estáticas e sem hardware. Os relatórios dinâmicos terminaram `PASS`, sem
+  endereços desconhecidos ou símbolos ambíguos, e observaram as duas
+  superfícies internas de `src/shell/shell_input.c` e as três de
+  `src/shell/shell_hosted.c`. Passaram os dois alvos host-only, a
+  sincronização/renderização e `make catalog-test`. O catálogo atual registra
+  7.315 superfícies, 6.818 `COVERED` e 497 `PENDING`; as demais pendências
+  continuam explícitas.
+
 - Evidência Drivers/RTC regenerada — concluída em 2026-09-05
   (America/Sao_Paulo). O caso existente `host:drivers:rtc-status` foi executado
   novamente após o build limpo, usando CMOS simulado e sem I/O privilegiado.
