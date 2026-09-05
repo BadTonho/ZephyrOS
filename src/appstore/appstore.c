@@ -1,4 +1,5 @@
 #include "ui/appstore.h"
+#include "ui/appstore_test.h"
 #include "core/app_catalog.h"
 #include "core/app_loader.h"
 #include "core/app_package.h"
@@ -1162,7 +1163,7 @@ static void appstore_draw_simple(void) {
     video_print_at(2, 0, "ZephyrOS App Store", 0x1F);
     for (int index = 0; index < 3; index++) {
         video_print_at(2 + index * 15, 2, names[index],
-                       appstore_tab == index ? 0x1F : 0x07);
+                       (int)appstore_tab == index ? 0x1F : 0x07);
     }
     if (appstore_tab == APPSTORE_TAB_DETAILS) appstore_simple_draw_details();
     else {
@@ -1186,7 +1187,7 @@ static void appstore_gui_draw_tabs(int x, int y) {
     for (int index = 0; index < APPSTORE_TAB_COUNT; index++) {
         gui_draw_modern_button((uint32_t)(x + index * 124), (uint32_t)y,
                                116, APPSTORE_BUTTON_HEIGHT, names[index],
-                               appstore_tab == index ? GUI_BUTTON_STATE_PRESSED :
+                               (int)appstore_tab == index ? GUI_BUTTON_STATE_PRESSED :
                                                        GUI_BUTTON_STATE_NORMAL);
     }
 }
@@ -1892,6 +1893,220 @@ int appstore_is_open(void) {
 appstore_mode_t appstore_get_mode(void) {
     return appstore_mode;
 }
+
+#ifdef ZEPHYROS_HOST_TEST
+static int appstore_host_expect(int condition) {
+    if (condition) return OK;
+    LOG_ERROR("APPSTORE", "Contrato host da App Store falhou");
+    return ERR_STATE;
+}
+
+static int appstore_host_text_contracts(void) {
+    app_package_info_t info;
+    char output[APPSTORE_TEXT_SIZE];
+    char small_output[5];
+
+    kmemset(&info, 0, sizeof(info));
+    appstore_copy_text(output, sizeof(output), 0);
+    if (appstore_host_expect(output[0] == '\0') != OK) {
+        LOG_ERROR("APPSTORE", "Falha no contrato de texto vazio");
+        return ERR_STATE;
+    }
+    appstore_copy_text(output, sizeof(output), "App Store");
+    appstore_append_text(output, sizeof(output), " OK");
+    if (appstore_host_expect(kstrcmp(output, "App Store OK") == 0) != OK) {
+        return ERR_STATE;
+    }
+    appstore_copy_text(small_output, sizeof(small_output), "123456");
+    if (appstore_host_expect(kstrcmp(small_output, "1234") == 0) != OK) {
+        return ERR_STATE;
+    }
+    appstore_u32_text(0U, output, sizeof(output));
+    if (appstore_host_expect(kstrcmp(output, "0") == 0) != OK) {
+        return ERR_STATE;
+    }
+    appstore_u32_text(0xFFFFFFFFU, output, sizeof(output));
+    if (appstore_host_expect(kstrcmp(output, "4294967295") == 0) != OK) {
+        return ERR_STATE;
+    }
+    appstore_dependencies_text(&info, output, sizeof(output));
+    if (appstore_host_expect(kstrcmp(output, "nenhuma") == 0) != OK) {
+        return ERR_STATE;
+    }
+    info.dependency_count = 2U;
+    kmemcpy(info.dependencies[0], "BASE", 5U);
+    kmemcpy(info.dependencies[1], "UI", 3U);
+    appstore_dependencies_text(&info, output, sizeof(output));
+    if (appstore_host_expect(kstrcmp(output, "BASE, UI") == 0) != OK) {
+        return ERR_STATE;
+    }
+    kmemset(&appstore_action, 0, sizeof(appstore_action));
+    appstore_blockers_text(output, sizeof(output));
+    if (appstore_host_expect(kstrcmp(output, "nenhum") == 0) != OK) {
+        return ERR_STATE;
+    }
+    appstore_action.blocker_count = 2U;
+    kmemcpy(appstore_action.blocker_ids[0], "MISS", 5U);
+    kmemcpy(appstore_action.blocker_ids[1], "FULL", 5U);
+    appstore_action.blocker_overflow = 1U;
+    appstore_blockers_text(output, sizeof(output));
+    return appstore_host_expect(kstrcmp(output, "MISS, FULL, ...") == 0);
+}
+
+static void appstore_host_prepare_entries(void) {
+    kmemset(appstore_entries, 0, sizeof(appstore_entries));
+    appstore_entry_count = 3U;
+    kmemcpy(appstore_entries[0].alias, "core", 5U);
+    kmemcpy(appstore_entries[0].source.id, "CORE", 5U);
+    appstore_entries[0].has_source = 1U;
+    appstore_entries[0].state = APP_CATALOG_STATE_AVAILABLE;
+    kmemcpy(appstore_entries[1].alias, "tool", 5U);
+    kmemcpy(appstore_entries[1].source.id, "TOOL", 5U);
+    kmemcpy(appstore_entries[1].installed.id, "TOOL", 5U);
+    appstore_entries[1].has_source = 1U;
+    appstore_entries[1].has_installed = 1U;
+    appstore_entries[1].state = APP_CATALOG_STATE_UPDATE_AVAILABLE;
+    kmemcpy(appstore_entries[2].installed.id, "OLD", 4U);
+    appstore_entries[2].has_installed = 1U;
+    appstore_entries[2].state = APP_CATALOG_STATE_INSTALLED;
+    kmemset(appstore_remote_entries, 0, sizeof(appstore_remote_entries));
+    appstore_remote_count = 2U;
+    kmemcpy(appstore_remote_entries[0].info.id, "REMOTE", 7U);
+    appstore_remote_entries[0].installed = 1U;
+    kmemcpy(appstore_remote_entries[1].info.id, "OTHER", 6U);
+}
+
+static int appstore_host_selection_contracts(void) {
+    char output[APPSTORE_TEXT_SIZE];
+
+    appstore_host_prepare_entries();
+    appstore_tab = APPSTORE_TAB_CATALOG;
+    appstore_selected = -1;
+    appstore_scroll = 0;
+    appstore_gui_height = APPSTORE_CLASSIC_DEFAULT_HEIGHT;
+    if (appstore_host_expect(appstore_visible_count() == 2U &&
+                             appstore_visible_index(0U) == 0 &&
+                             appstore_visible_index(1U) == 1 &&
+                             appstore_visible_index(2U) == -1) != OK) {
+        LOG_ERROR("APPSTORE", "Falha no contrato de selecao inicial");
+        return ERR_STATE;
+    }
+    appstore_select_first_visible();
+    if (appstore_host_expect(appstore_selected == 0) != OK) return ERR_STATE;
+    if (appstore_host_expect(appstore_restore_selection("tool", 0) == 1 &&
+                             appstore_selected == 1) != OK) return ERR_STATE;
+    appstore_selected_key(APPSTORE_JOB_VERIFY, output, sizeof(output));
+    if (appstore_host_expect(kstrcmp(output, "tool") == 0) != OK) {
+        return ERR_STATE;
+    }
+    appstore_selected_key(APPSTORE_JOB_RUN, output, sizeof(output));
+    if (appstore_host_expect(kstrcmp(output, "TOOL") == 0) != OK) {
+        return ERR_STATE;
+    }
+    appstore_change_selection(1);
+    if (appstore_host_expect(appstore_selected == 0) != OK) return ERR_STATE;
+    appstore_change_selection(-1);
+    if (appstore_host_expect(appstore_selected == 1) != OK) return ERR_STATE;
+    appstore_tab = APPSTORE_TAB_INSTALLED;
+    if (appstore_host_expect(appstore_visible_count() == 2U &&
+                             appstore_visible_index(0U) == 1 &&
+                             appstore_visible_index(1U) == 2) != OK) {
+        return ERR_STATE;
+    }
+    appstore_tab = APPSTORE_TAB_REMOTE;
+    appstore_selected = 0;
+    appstore_selected_key(APPSTORE_JOB_RUN, output, sizeof(output));
+    if (appstore_host_expect(kstrcmp(output, "REMOTE") == 0 &&
+                             appstore_selected_entry() == 0 &&
+                             appstore_selected_remote_entry() != 0) != OK) {
+        return ERR_STATE;
+    }
+    appstore_tab = APPSTORE_TAB_CATALOG;
+    appstore_selected = -1;
+    appstore_selected_key(APPSTORE_JOB_RUN, output, sizeof(output));
+    return appstore_host_expect(output[0] == '\0');
+}
+
+static int appstore_host_state_contracts(void) {
+    app_catalog_entry_t* entry;
+    app_package_info_t* info;
+
+    appstore_host_prepare_entries();
+    entry = &appstore_entries[1];
+    info = (app_package_info_t*)&entry->installed;
+    appstore_action.plan.entry_count = 1U;
+    appstore_action.plan.target_index = 0U;
+    appstore_action.plan.entries[0].action = APP_PACKAGE_PLAN_ACTION_UPDATE;
+    kmemcpy(appstore_action.plan.entries[0].from_version, "2.0", 4U);
+    kmemcpy(appstore_action.plan.entries[0].to_version, "1.0", 4U);
+    if (appstore_host_expect(appstore_plan_is_downgrade() == 1) != OK) {
+        LOG_ERROR("APPSTORE", "Falha no contrato de plano de downgrade");
+        return ERR_STATE;
+    }
+    appstore_action.plan.entries[0].action = APP_PACKAGE_PLAN_ACTION_INSTALL;
+    if (appstore_host_expect(appstore_plan_is_downgrade() == 0) != OK) {
+        return ERR_STATE;
+    }
+    if (appstore_host_expect(appstore_entry_info(entry) ==
+                             &entry->source &&
+                             kstrcmp(appstore_entry_label(entry), "TOOL") == 0 &&
+                             appstore_entry_color(0) == 0x08U &&
+                             appstore_gui_entry_color(0) ==
+                                 GUI_MODERN_COLOR_BORDER_INACTIVE) != OK) {
+        return ERR_STATE;
+    }
+    entry->state = APP_CATALOG_STATE_INVALID;
+    if (appstore_host_expect(appstore_entry_color(entry) == 0x0CU &&
+                             appstore_gui_entry_color(entry) == 0x00D65A5AU) != OK) {
+        return ERR_STATE;
+    }
+    entry->state = APP_CATALOG_STATE_BLOCKED;
+    if (appstore_host_expect(appstore_entry_color(entry) == 0x0EU &&
+                             appstore_gui_entry_color(entry) == 0x00E0A850U) != OK) {
+        return ERR_STATE;
+    }
+    entry->state = APP_CATALOG_STATE_UPDATE_AVAILABLE;
+    if (appstore_host_expect(kstrcmp(appstore_entry_trust(entry, info),
+                                     "N/D") == 0) != OK) return ERR_STATE;
+    appstore_clear_context();
+    appstore_set_result(APPSTORE_RESULT_INSTALL, ERR_INVALID, "rejeitado");
+    return appstore_host_expect(appstore_confirm == APPSTORE_CONFIRM_NONE &&
+                                appstore_last_result == ERR_INVALID &&
+                                kstrcmp(appstore_result_text, "rejeitado") == 0);
+}
+
+static int appstore_host_geometry_contracts(void) {
+    int x;
+    int y;
+    int width;
+
+    if (appstore_host_expect(appstore_action_buttons_per_row(760) == 6 &&
+                             appstore_action_buttons_per_row(759) == 3 &&
+                             appstore_remote_buttons_per_row(780) == 7 &&
+                             appstore_remote_buttons_per_row(779) == 4) != OK) {
+        LOG_ERROR("APPSTORE", "Falha no contrato de geometria");
+        return ERR_STATE;
+    }
+    appstore_action_button_position(10, 20, 760, 560, 5, &x, &y);
+    if (appstore_host_expect(x == 646 && y == 536) != OK) return ERR_STATE;
+    appstore_remote_button_position(10, 20, 780, 560, 6, &x, &y, &width);
+    if (appstore_host_expect(x == 670 && y == 536 && width == 100) != OK) {
+        return ERR_STATE;
+    }
+    return appstore_host_expect(appstore_point_in(10, 10, 10, 10, 5, 5) &&
+                                !appstore_point_in(15, 10, 10, 10, 5, 5) &&
+                                !appstore_point_in(10, 15, 10, 10, 5, 5));
+}
+
+int appstore_host_test_contracts(void) {
+    int result = appstore_host_text_contracts();
+
+    if (result == OK) result = appstore_host_selection_contracts();
+    if (result == OK) result = appstore_host_state_contracts();
+    if (result == OK) result = appstore_host_geometry_contracts();
+    return result;
+}
+#endif
 
 static void appstore_hosted_draw(int x, int y, int width, int height) {
     appstore_gui_x = x;

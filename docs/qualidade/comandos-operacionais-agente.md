@@ -2049,3 +2049,18 @@ truncamento, argumentos nulos e a selecao de acoes de `pkg`, `store` e
 `update`. O relatorio instrumentado fica em
 `build/test-results/shell-commands-packages-host/coverage.json` e deve
 terminar com `PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`.
+
+## Shell/UI: contratos da App Store host-only
+
+O alvo `test-appstore-host` valida os helpers determinísticos da App Store
+sem iniciar workers, acessar armazenamento, rede ou hardware:
+
+```text
+make test-appstore-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+A fixture cobre formatação e truncamento, dependências e bloqueios, seleção e
+restauração, planos de downgrade, estados, rollback, confiança e geometria da
+interface. O relatório instrumentado fica em
+`build/test-results/appstore-host/coverage.json` e deve terminar com
+`status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`.
