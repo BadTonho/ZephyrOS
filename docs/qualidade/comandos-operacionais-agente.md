@@ -1996,3 +1996,8 @@ tentativas de escrita somente leitura. Ela tambem executa `devices -v` e
 `device-info` pelo caminho sysfs real, lendo atributos PCI da fixture e
 verificando o fechamento dos handles. O `shell_introspection.c` real e os
 dispatchers sao usados; nenhum armazenamento ou processo real e acessado.
+
+A mesma fixture executa `health`, `health summary` e `health check` com estado
+estatico de componentes, VFS, processos, memoria, rede, sockets, cache e
+recuperacao. Tambem valida argumentos invalidos e VFS indisponivel, preservando
+os codigos e a saida observavel sem hardware ou estado persistente.

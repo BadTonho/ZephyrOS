@@ -5842,3 +5842,13 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   Passaram o alvo específico e a sincronização da evidência dinâmica; o
   catálogo ficou com 7.293 superfícies, sendo 6.269 `COVERED` e 1.024
   `PENDING`. As pendências restantes continuam explícitas.
+
+- Incremento Shell/diagnostics health — concluído em 2026-09-04
+  (America/Sao_Paulo). A fixture host-only `host:shell:diagnostics` passou a
+  chamar os dispatchers reais de `health`, `health summary` e `health check`,
+  cobrindo argumentos inválidos, resumo, verificação saudável e VFS
+  indisponível com estado estático. Passaram o alvo específico, `make q3check`,
+  `make clean` e `make`, além da matriz host-only completa com 115/115 alvos.
+  A evidência foi sincronizada, o catálogo e a visão renderizada foram
+  validados e ficaram com 7.293 superfícies, sendo 6.309 `COVERED` e 984
+  `PENDING`; as pendências restantes continuam explícitas.

@@ -4,8 +4,17 @@
 #include "apps/shell_command_utils.h"
 #include "apps/shell_introspection.h"
 #include "core/errors.h"
+#include "core/app_api.h"
+#include "core/app_catalog.h"
+#include "core/app_loader.h"
+#include "core/app_package.h"
 #include "core/log.h"
 #include "core/string.h"
+#include "core/net_buffer.h"
+#include "core/net_socket.h"
+#include "core/sk_buff.h"
+#include "core/socket.h"
+#include "core/syscall.h"
 #include "core/timer.h"
 #include "core/clock.h"
 #include "core/keyboard.h"
@@ -22,12 +31,16 @@
 #include "core/wait.h"
 #include "core/workqueue.h"
 #include "core/memory.h"
+#include "core/update.h"
+#include "core/update_remote.h"
 #include "apps/shell_runtime.h"
 #include "drivers/idt.h"
 #include "drivers/rtc.h"
 #include "drivers/mouse.h"
 #include "drivers/vesa.h"
 #include "fs/vfs.h"
+#include "fs/block_cache.h"
+#include "fs/fs.h"
 #include "fs/storage.h"
 #include "fs/devfs.h"
 #include "fs/procfs.h"
@@ -72,6 +85,7 @@ void shell_dispatch_cmd_acpi(const char* arguments);
 void shell_dispatch_cmd_kill(const char* arguments);
 void shell_dispatch_cmd_sigtest(const char* arguments);
 void shell_dispatch_cmd_proccheck(const char* arguments);
+void shell_dispatch_cmd_health(const char* arguments);
 void shell_diagnostics_reset(void);
 
 #define HOST_COVERAGE_CAPACITY 512U
@@ -280,6 +294,31 @@ static int fixture_signal_test_result;
 static int fixture_signal_send_result;
 static uint32_t fixture_signal_send_pid;
 static uint32_t fixture_signal_send_number;
+static recovery_component_t fixture_recovery_components[RECOVERY_COMPONENT_COUNT];
+static app_api_version_t fixture_app_api_version;
+static update_capabilities_t fixture_update_capabilities;
+static update_status_t fixture_update_status;
+static update_remote_status_t fixture_update_remote_status;
+static app_catalog_status_t fixture_app_catalog_status;
+static net_buffer_stats_t fixture_net_buffer_stats;
+static sk_buff_stats_t fixture_skb_stats;
+static net_socket_status_t fixture_net_socket_status;
+static socket_status_t fixture_socket_status;
+static socket_self_test_result_t fixture_socket_test;
+static block_cache_stats_t fixture_block_cache_stats;
+static block_durability_status_t fixture_block_durability;
+static process_signal_stats_t fixture_signal_stats;
+static input_metrics_t fixture_input_metrics;
+static process_user_fault_summary_t fixture_user_fault;
+process_t* processes[MAX_PROCESSES];
+
+static const char* fixture_recovery_names[RECOVERY_COMPONENT_COUNT] = {
+    "VESA", "BACKBUFFER", "ATA", "FILESYSTEM", "AC97",
+    "SYSTEM_PROCESS", "SHELL", "DESKTOP", "TASKBAR", "WM",
+    "TASKMANAGER", "FILEMANAGER", "SETTINGS", "MEDIAPLAYER", "EDITOR",
+    "GUITEST", "APP_LOADER", "ACPI", "DEVICES", "NETWORK", "POWER",
+    "UPDATE", "SYSTEM_UPDATER", "APP_STORE", "STORAGE", "USB"
+};
 
 #define HOST_VFS_HANDLE_CAPACITY 4U
 #define HOST_VFS_CONTENT_CAPACITY 64U
@@ -1375,6 +1414,92 @@ static void fixture_reset(void) {
     fixture_recovery_usb.failures = 0U;
     fixture_recovery_usb.last_error = OK;
     fixture_recovery_usb.last_message = "ready";
+    kmemset(fixture_recovery_components, 0,
+            sizeof(fixture_recovery_components));
+    for (uint32_t index = 0U; index < RECOVERY_COMPONENT_COUNT; index++) {
+        fixture_recovery_components[index].name = fixture_recovery_names[index];
+        fixture_recovery_components[index].state = RECOVERY_STATE_READY;
+        fixture_recovery_components[index].last_error = OK;
+        fixture_recovery_components[index].last_message = "ready";
+    }
+    fixture_recovery_components[RECOVERY_COMPONENT_USB] = fixture_recovery_usb;
+    kmemset(&fixture_app_api_version, 0, sizeof(fixture_app_api_version));
+    fixture_app_api_version.major = 1U;
+    fixture_app_api_version.minor = 0U;
+    kmemset(&fixture_update_capabilities, 0,
+            sizeof(fixture_update_capabilities));
+    fixture_update_capabilities.verifier_ready = 1U;
+    fixture_update_capabilities.local_file_available = 1U;
+    fixture_update_capabilities.apply_available = 1U;
+    fixture_update_capabilities.rollback_available = 1U;
+    fixture_update_capabilities.remote_available = 1U;
+    fixture_update_capabilities.persistent_state_ready = 1U;
+    fixture_update_capabilities.history_available = 1U;
+    kmemset(&fixture_update_status, 0, sizeof(fixture_update_status));
+    fixture_update_status.state_store = UPDATE_STORE_VALID;
+    fixture_update_status.current_files = UPDATE_STORE_VALID;
+    fixture_update_status.history_store = UPDATE_STORE_VALID;
+    fixture_update_status.capabilities = fixture_update_capabilities;
+    kmemset(&fixture_update_remote_status, 0,
+            sizeof(fixture_update_remote_status));
+    fixture_update_remote_status.state = UPDATE_REMOTE_STATE_READY;
+    fixture_update_remote_status.reason = UPDATE_REMOTE_REASON_NONE;
+    fixture_update_remote_status.cache_store = UPDATE_REMOTE_STORE_VALID;
+    fixture_update_remote_status.initialized = 1U;
+    fixture_update_remote_status.enabled = 1U;
+    fixture_update_remote_status.network_ready = 1U;
+    kmemset(&fixture_app_catalog_status, 0,
+            sizeof(fixture_app_catalog_status));
+    fixture_app_catalog_status.source_count = 1U;
+    fixture_app_catalog_status.valid_source_count = 1U;
+    fixture_app_catalog_status.entry_count = 1U;
+    kmemset(&fixture_net_buffer_stats, 0, sizeof(fixture_net_buffer_stats));
+    fixture_net_buffer_stats.initialized = 1U;
+    fixture_net_buffer_stats.last_error = OK;
+    kmemset(&fixture_skb_stats, 0, sizeof(fixture_skb_stats));
+    fixture_skb_stats.initialized = 1U;
+    fixture_skb_stats.last_error = OK;
+    kmemset(&fixture_net_socket_status, 0,
+            sizeof(fixture_net_socket_status));
+    fixture_net_socket_status.initialized = 1U;
+    fixture_net_socket_status.last_error = OK;
+    kmemset(&fixture_socket_status, 0, sizeof(fixture_socket_status));
+    fixture_socket_status.initialized = 1U;
+    fixture_socket_status.last_error = OK;
+    kmemset(&fixture_socket_test, 0, sizeof(fixture_socket_test));
+    fixture_socket_test.lifecycle = 1U;
+    fixture_socket_test.fd_mapping = 1U;
+    fixture_socket_test.duplicate_bind = 1U;
+    fixture_socket_test.unix_bind_connect = 1U;
+    fixture_socket_test.unix_accept = 1U;
+    fixture_socket_test.stream_io = 1U;
+    fixture_socket_test.queue_full = 1U;
+    fixture_socket_test.nonblocking = 1U;
+    fixture_socket_test.close_wakeup = 1U;
+    fixture_socket_test.eof = 1U;
+    fixture_socket_test.cancellation = 1U;
+    fixture_socket_test.invalid_inputs = 1U;
+    fixture_socket_test.invariants = 1U;
+    fixture_socket_test.passed = 13U;
+    kmemset(&fixture_block_cache_stats, 0,
+            sizeof(fixture_block_cache_stats));
+    fixture_block_cache_stats.durability_state = BLOCK_DURABILITY_READY;
+    fixture_block_cache_stats.last_error = OK;
+    fixture_block_cache_stats.last_sync_error = OK;
+    kmemset(&fixture_block_durability, 0,
+            sizeof(fixture_block_durability));
+    fixture_block_durability.state = BLOCK_DURABILITY_READY;
+    fixture_block_durability.last_error = OK;
+    kmemset(&fixture_signal_stats, 0, sizeof(fixture_signal_stats));
+    fixture_signal_stats.initialized = 1U;
+    fixture_signal_stats.last_error = OK;
+    kmemset(&fixture_input_metrics, 0, sizeof(fixture_input_metrics));
+    fixture_input_metrics.initialized = 1U;
+    fixture_input_metrics.key_capacity = INPUT_KEY_QUEUE_CAPACITY;
+    fixture_input_metrics.pointer_capacity = INPUT_POINTER_QUEUE_CAPACITY;
+    kmemset(&fixture_user_fault, 0, sizeof(fixture_user_fault));
+    kmemset(processes, 0, sizeof(processes));
+    processes[0] = &fixture_user_process;
     kmemset(fixture_slab_info, 0, sizeof(fixture_slab_info));
     copy_text(fixture_slab_info[0].name, sizeof(fixture_slab_info[0].name),
               "shell-test");
@@ -1488,8 +1613,35 @@ static int expect_text(const char* text) {
 
 static int expect_contains(const char* text) {
     if (contains_text(text)) return 0;
-    fprintf(stderr, "diagnostics-host: trecho ausente: %s\n", text);
+    fprintf(stderr, "diagnostics-host: trecho ausente: %s\nsaida=%s\n",
+            text, video_output);
     return 1;
+}
+
+static void prepare_health_fixture(void) {
+    fixture_irq_status.rejected = 0U;
+    fixture_irq_status.context_errors = 0U;
+    fixture_wait_stats.registration_rejections = 0U;
+    fixture_wait_stats.context_errors = 0U;
+    fixture_wait_stats.orphan_errors = 0U;
+    fixture_workq_stats.rejected = 0U;
+    fixture_workq_stats.callback_errors = 0U;
+    fixture_workq_stats.context_errors = 0U;
+    fixture_workq_stats.wake_errors = 0U;
+    fixture_workq_stats.invariant_errors = 0U;
+    fixture_vfs_status.device_capacity = DEVFS_MAX_NODES;
+    fixture_vfs_status.devices_active = DEVFS_MAX_NODES;
+    fixture_socket_status.active_count = 0U;
+    fixture_socket_status.failures = 0U;
+    fixture_net_socket_status.wait_failures = 0U;
+    fixture_block_cache_stats.dirty_entries = 0U;
+    fixture_block_cache_stats.writeback_entries = 0U;
+    fixture_net_buffer_stats.active_buffers = 0U;
+    fixture_net_buffer_stats.invalid_transitions = 0U;
+    fixture_net_buffer_stats.duplicate_completions = 0U;
+    fixture_skb_stats.active_buffers = 0U;
+    fixture_skb_stats.invalid_operations = 0U;
+    fixture_socket_test.failed = 0U;
 }
 
 void video_print(const char* text, uint8_t color) {
@@ -2458,11 +2610,242 @@ int input_validate_state(void) {
     return fixture_input_validate_result;
 }
 
+int app_loader_is_ready(void) {
+    return 1;
+}
+
+uint32_t app_loader_get_foreground_pid(void) {
+    return 0U;
+}
+
+int app_api_is_ready(void) {
+    return 1;
+}
+
+int app_api_get_version(app_api_version_t* version) {
+    if (!version) return ERR_NULL;
+    *version = fixture_app_api_version;
+    return OK;
+}
+
+int app_api_file_is_ready(void) {
+    return 1;
+}
+
+int app_api_ipc_is_ready(void) {
+    return 1;
+}
+
+int syscall_is_ready(void) {
+    return 1;
+}
+
+int syscall_user_mode_is_enabled(void) {
+    return 1;
+}
+
+int idt_is_user_syscall_enabled(void) {
+    return 1;
+}
+
+const char* shell_core_builtin_app_name(shell_builtin_app_t app) {
+    if (app == SHELL_BUILTIN_APP_UPTIME) return "uptime";
+    if (app == SHELL_BUILTIN_APP_MEM) return "mem";
+    return "unknown";
+}
+
+process_t* process_get_current(void) {
+    return &fixture_user_process;
+}
+
+uint32_t process_get_current_pid(void) {
+    return fixture_user_process.pid;
+}
+
+uint32_t process_get_count(void) {
+    return 1U;
+}
+
+uint32_t thread_get_count(void) {
+    return 1U;
+}
+
+uint32_t process_get_focus(void) {
+    return fixture_user_process.pid;
+}
+
+uint32_t process_get_user_fault_count(void) {
+    return 0U;
+}
+
+int process_get_last_user_fault(process_user_fault_summary_t* summary) {
+    if (!summary) return ERR_NULL;
+    *summary = fixture_user_fault;
+    return ERR_NOT_FOUND;
+}
+
+int input_get_metrics(input_metrics_t* metrics) {
+    if (!metrics) return ERR_NULL;
+    *metrics = fixture_input_metrics;
+    return OK;
+}
+
+uint32_t memory_get_total(void) {
+    return 1024U * 1024U;
+}
+
+uint32_t memory_get_total_pages(void) {
+    return 256U;
+}
+
+int paging_is_ready(void) {
+    return 1;
+}
+
+int vfs_is_ready(void) {
+    return 1;
+}
+
+int vfs_validate_state(void) {
+    return OK;
+}
+
+void kmem_cache_get_stats(kmem_slab_stats_t* stats) {
+    if (!stats) return;
+    kmemset(stats, 0, sizeof(*stats));
+    stats->initialized = 1U;
+    stats->valid = 1U;
+    stats->caches = 1U;
+    stats->slabs = 1U;
+    stats->active_objects = 1U;
+    stats->capacity = 8U;
+}
+
+uint32_t recovery_get_count(void) {
+    return RECOVERY_COMPONENT_COUNT;
+}
+
+int recovery_is_available(recovery_component_id_t component) {
+    const recovery_component_t* entry = recovery_get(component);
+    return entry && entry->state == RECOVERY_STATE_READY;
+}
+
+int app_package_is_ready(void) {
+    return 1;
+}
+
+uint8_t fs_get_type(void) {
+    return FS_TYPE_FAT12;
+}
+
+int update_get_capabilities(update_capabilities_t* capabilities) {
+    if (!capabilities) return ERR_NULL;
+    *capabilities = fixture_update_capabilities;
+    return OK;
+}
+
+int update_get_status(update_status_t* status) {
+    if (!status) return ERR_NULL;
+    *status = fixture_update_status;
+    return OK;
+}
+
+int update_remote_get_status(update_remote_status_t* status) {
+    if (!status) return ERR_NULL;
+    *status = fixture_update_remote_status;
+    return OK;
+}
+
+const char* update_remote_reason_name(update_remote_reason_t reason) {
+    if (reason == UPDATE_REMOTE_REASON_NONE) return "NONE";
+    return "NETWORK";
+}
+
+int app_catalog_get_status(app_catalog_status_t* status) {
+    if (!status) return ERR_NULL;
+    *status = fixture_app_catalog_status;
+    return OK;
+}
+
+int process_signal_get_stats(process_signal_stats_t* stats) {
+    if (!stats) return ERR_NULL;
+    *stats = fixture_signal_stats;
+    return OK;
+}
+
+int process_signal_validate_state(void) {
+    return OK;
+}
+
+int block_cache_get_stats(block_cache_stats_t* stats) {
+    if (!stats) return ERR_NULL;
+    *stats = fixture_block_cache_stats;
+    return OK;
+}
+
+int block_cache_get_durability_status(block_durability_status_t* status) {
+    if (!status) return ERR_NULL;
+    *status = fixture_block_durability;
+    return OK;
+}
+
+int net_buffer_get_stats(net_buffer_stats_t* stats) {
+    if (!stats) return ERR_NULL;
+    *stats = fixture_net_buffer_stats;
+    return OK;
+}
+
+int net_buffer_validate_state(void) {
+    return OK;
+}
+
+int skb_get_stats(sk_buff_stats_t* stats) {
+    if (!stats) return ERR_NULL;
+    *stats = fixture_skb_stats;
+    return OK;
+}
+
+int skb_validate_state(void) {
+    return OK;
+}
+
+int socket_get_status(socket_status_t* status) {
+    if (!status) return ERR_NULL;
+    *status = fixture_socket_status;
+    return OK;
+}
+
+int socket_validate_state(void) {
+    return OK;
+}
+
+int socket_self_test(socket_self_test_result_t* result) {
+    if (!result) return ERR_NULL;
+    *result = fixture_socket_test;
+    return OK;
+}
+
+int net_socket_get_status(net_socket_status_t* status) {
+    if (!status) return ERR_NULL;
+    *status = fixture_net_socket_status;
+    return OK;
+}
+
+int wifi_manager_get_status(wifi_manager_status_t* status) {
+    if (!status) return ERR_NULL;
+    kmemset(status, 0, sizeof(*status));
+    status->initialized = 1U;
+    return OK;
+}
+
+int wifi_manager_validate_state(void) {
+    return OK;
+}
+
 const recovery_component_t* recovery_get(recovery_component_id_t component) {
-    if (component == RECOVERY_COMPONENT_USB && fixture_recovery_state_result == OK) {
-        return &fixture_recovery_usb;
-    }
-    return 0;
+    if (component >= RECOVERY_COMPONENT_COUNT ||
+        fixture_recovery_state_result != OK) return 0;
+    return &fixture_recovery_components[component];
 }
 
 const char* recovery_state_name(recovery_state_t state) {
@@ -3803,6 +4186,42 @@ static int test_proccheck(void) {
     return failures;
 }
 
+static int test_health(void) {
+    int failures = 0;
+
+    fixture_reset();
+    shell_dispatch_cmd_health("invalid");
+    failures += expect_text("Uso: health [summary|check]\n");
+
+    fixture_reset();
+    prepare_health_fixture();
+    shell_dispatch_cmd_health("check");
+    failures += expect_contains("Health check: OK\n");
+
+    fixture_reset();
+    prepare_health_fixture();
+    shell_dispatch_cmd_health("summary");
+    failures += expect_contains("Resumo do health:\n");
+    failures += expect_contains("Componentes: READY=26");
+    failures += expect_contains("Update: READY");
+    failures += expect_contains("Kernel: proc=");
+
+    fixture_reset();
+    prepare_health_fixture();
+    shell_dispatch_cmd_health("");
+    failures += expect_contains("Estado dos componentes:\n");
+    failures += expect_contains("VESA: READY");
+    failures += expect_contains("Capacidades de Update:\n");
+    failures += expect_contains("Estado do kernel:\n");
+
+    fixture_reset();
+    prepare_health_fixture();
+    fixture_vfs_status_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_health("check");
+    failures += expect_contains("VFS: UNKNOWN erro=");
+    return failures;
+}
+
 int main(void) {
     int result;
 
@@ -3822,6 +4241,7 @@ int main(void) {
     result += test_kmetrics();
     result += test_signal_commands();
     result += test_proccheck();
+    result += test_health();
     coverage_active = 0U;
     coverage_emit(result);
     return result ? 1 : 0;
