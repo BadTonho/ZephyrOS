@@ -5981,3 +5981,13 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   controlada. A cobertura dinâmica foi sincronizada sem endereços desconhecidos
   ou símbolos ambíguos; `make catalog-test` passou. O catálogo registra 7.307
   superfícies, 6.432 `COVERED`, 875 `PENDING` e 158 casos.
+
+- Incremento Shell/Media Player — concluído em 2026-09-05. A declaração
+  pública `mp_main` foi removida de `src/include/apps/mediaplayer.h` porque a
+  busca no código ativo encontrou somente a declaração, sem implementação ou
+  chamadores. A documentação de aplicativos foi atualizada para refletir a
+  API real, `make q3check`, `make clean`, `make`,
+  `make test-mediaplayer-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` e
+  `make catalog-test` passaram. A superfície foi registrada como `RETIRED`
+  com evidência e substituto; o catálogo registra 7.306 superfícies ativas,
+  6.432 `COVERED`, 874 `PENDING`, 58 aposentadas e 158 casos.

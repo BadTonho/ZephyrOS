@@ -173,12 +173,19 @@ typedef enum {
 ```c
 void mp_init(void);
 int  mp_play_audio(filename);     // Carrega e toca WAV
+int  mp_play_image(filename);     // Carrega e apresenta BMP
+int  mp_play_media(audio, image); // Reproduz audio e imagem
 void mp_stop(void);               // Para reprodução
 void mp_pause(void);              // Pausa/retoma
+void mp_resume(void);              // Retoma reprodução
+mp_status_t* mp_get_status(void);  // Retorna o estado atual
 void mp_update(void);             // Atualiza display
-void mp_draw(void);               // Desenha interface
-int  mp_handle_key(scancode);     // Processa tecla
 ```
+
+`mp_main` não faz parte mais do contrato público: a antiga declaração não
+possuía implementação nem chamadores no código ativo e foi aposentada. O
+fluxo de execução do aplicativo usa as operações do Media Player chamadas
+pelos handlers do Shell.
 
 ### Teclas
 

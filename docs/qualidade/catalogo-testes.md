@@ -4,13 +4,13 @@
 
 ## Resumo
 
-- Superfícies ativas: **7307**
+- Superfícies ativas: **7306**
 - Casos de teste: **158**
-- Superfícies aposentadas: **57**
+- Superfícies aposentadas: **58**
 
 | Tipo | Quantidade |
 |---|---:|
-| `api_function` | 1579 |
+| `api_function` | 1578 |
 | `asm_entry` | 101 |
 | `c_function` | 5507 |
 | `shell_command` | 95 |
@@ -21,7 +21,7 @@
 | `BLOCKED` | 0 |
 | `COVERED` | 6432 |
 | `MANUAL` | 0 |
-| `PENDING` | 875 |
+| `PENDING` | 874 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -34,7 +34,7 @@
 
 | Proprietario | Superficies |
 |---|---:|
-| `apps` | 171 |
+| `apps` | 170 |
 | `appstore` | 95 |
 | `boot` | 136 |
 | `core` | 2813 |
@@ -79,7 +79,6 @@
 | `api:src/include/apps/guitest.h:guitest_open_modern` | `src/include/apps/guitest.h` | `guitest_open_modern` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/mediaplayer.h:mp_get_status` | `src/include/apps/mediaplayer.h` | `mp_get_status` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/mediaplayer.h:mp_init` | `src/include/apps/mediaplayer.h` | `mp_init` | `apps` | `COVERED` | 1 |
-| `api:src/include/apps/mediaplayer.h:mp_main` | `src/include/apps/mediaplayer.h` | `mp_main` | `apps` | `PENDING` | 0 |
 | `api:src/include/apps/mediaplayer.h:mp_pause` | `src/include/apps/mediaplayer.h` | `mp_pause` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/mediaplayer.h:mp_play_audio` | `src/include/apps/mediaplayer.h` | `mp_play_audio` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/mediaplayer.h:mp_play_image` | `src/include/apps/mediaplayer.h` | `mp_play_image` | `apps` | `COVERED` | 1 |
@@ -7563,7 +7562,6 @@
 - `api:src/include/apps/editor.h:editor_open`
 - `api:src/include/apps/editor.h:editor_run`
 - `api:src/include/apps/editor.h:editor_run_file`
-- `api:src/include/apps/mediaplayer.h:mp_main`
 - `api:src/include/process/process.h:process_context_switch`
 - `api:src/include/process/process.h:process_user_enter`
 - `api:src/include/process/process.h:process_user_termination_enter`
@@ -8432,6 +8430,7 @@
 
 ## Aposentadas
 
+- `api:src/include/apps/mediaplayer.h:mp_main` — declaracao publica sem implementacao nem chamadores no codigo ativo; removida do contrato publico
 - `c:src/core/crypto_ed25519.c:fe_cswap` — helper do subconjunto Monocypher sem referencias no codigo ativo; removido para nao manter superficie executavel sem chamador
 - `c:src/core/test_protocol.c:protocol_append_hex` — surface ausente na fonte atual; confirmar remocao ou renomeacao
 - `c:src/core/test_protocol.c:protocol_append_span` — surface ausente na fonte atual; confirmar remocao ou renomeacao
