@@ -12,6 +12,8 @@
 #include "ui/display.h"
 #include "ui/filemanager.h"
 #include "ui/filemanager_test.h"
+#include "ui/gui.h"
+#include "ui/icons.h"
 #include "ui/taskbar.h"
 #include "ui/wm.h"
 
@@ -26,6 +28,10 @@ static int fixture_storage_ready;
 static int fixture_data_present;
 static int fixture_data_mounted;
 static desktop_mode_t fixture_desktop_mode;
+static icon_entry_t fixture_icons[ICON_FM_COUNT] = {
+    {'D', 0x0BU, 0x70U},
+    {'F', 0x07U, 0x70U}
+};
 static storage_volume_t fixture_volumes[2];
 static storage_long_dir_entry_t fixture_data_entries[2];
 static uint32_t fixture_data_entry_count;
@@ -38,6 +44,7 @@ static file_index_result_t fixture_search_result;
 static int fixture_search_result_code;
 static int fixture_rename_result;
 static int fixture_delete_result;
+static uint8_t fixture_view_buffer[4096];
 
 static void fixture_copy(char* destination, const char* source) {
     uint32_t index = 0U;
@@ -64,6 +71,10 @@ static void fixture_reset(void) {
     fixture_data_present = 1;
     fixture_data_mounted = 1;
     fixture_desktop_mode = DESKTOP_MODE_SIMPLE;
+    kmemset(&fixture_vesa_mode, 0, sizeof(fixture_vesa_mode));
+    fixture_vesa_mode.width = VESA_WIDTH_1024;
+    fixture_vesa_mode.height = VESA_HEIGHT_768;
+    fixture_vesa_mode.initialized = 1U;
     fixture_data_entry_count = 2U;
     fixture_root_count = 0U;
     fixture_index_ready = 1;
@@ -162,7 +173,153 @@ vesa_mode_t* vesa_get_mode(void) {
 }
 
 int vesa_has_backbuffer(void) {
-    return 0;
+    return 1;
+}
+
+void vesa_clear(vesa_color_t color) {
+    (void)color;
+}
+
+void vesa_draw_char(int x, int y, char c, vesa_color_t color,
+                    uint32_t scale) {
+    (void)x;
+    (void)y;
+    (void)c;
+    (void)color;
+    (void)scale;
+}
+
+void vesa_frame_begin(void) {}
+
+void vesa_frame_end(void) {}
+
+void video_clear(void) {}
+
+void video_put_char_at(char c, uint8_t color, int x, int y) {
+    (void)c;
+    (void)color;
+    (void)x;
+    (void)y;
+}
+
+void video_print_at(int x, int y, const char* str, uint8_t color) {
+    (void)x;
+    (void)y;
+    (void)str;
+    (void)color;
+}
+
+void video_fill_rect(int x, int y, int w, int h, char c, uint8_t color) {
+    (void)x;
+    (void)y;
+    (void)w;
+    (void)h;
+    (void)c;
+    (void)color;
+}
+
+void video_draw_hline(int x, int y, int w, char c, uint8_t color) {
+    (void)x;
+    (void)y;
+    (void)w;
+    (void)c;
+    (void)color;
+}
+
+void video_draw_vline(int x, int y, int h, char c, uint8_t color) {
+    (void)x;
+    (void)y;
+    (void)h;
+    (void)c;
+    (void)color;
+}
+
+void video_draw_box(int x, int y, int w, int h, uint8_t color) {
+    (void)x;
+    (void)y;
+    (void)w;
+    (void)h;
+    (void)color;
+}
+
+void gui_draw_scaled_text(uint32_t x, uint32_t y, const char* text,
+                          uint32_t color) {
+    (void)x;
+    (void)y;
+    (void)text;
+    (void)color;
+}
+
+void gui_draw_rounded_rect(uint32_t x, uint32_t y, uint32_t width,
+                           uint32_t height, uint32_t radius,
+                           uint32_t color) {
+    (void)x;
+    (void)y;
+    (void)width;
+    (void)height;
+    (void)radius;
+    (void)color;
+}
+
+void gui_draw_flat_border(uint32_t x, uint32_t y, uint32_t width,
+                          uint32_t height, uint32_t color) {
+    (void)x;
+    (void)y;
+    (void)width;
+    (void)height;
+    (void)color;
+}
+
+void gui_draw_scaled_window_frame(uint32_t x, uint32_t y, uint32_t width,
+                                  uint32_t height, const char* title,
+                                  int active) {
+    (void)x;
+    (void)y;
+    (void)width;
+    (void)height;
+    (void)title;
+    (void)active;
+}
+
+icon_entry_t* icons_get_fm(icon_fm_id_t id) {
+    if ((uint32_t)id >= ICON_FM_COUNT) return 0;
+    return &fixture_icons[id];
+}
+
+void taskbar_draw(void) {}
+
+void mouse_invalidate_cursor(void) {}
+
+void wm_request_hosted_redraw(wm_app_type_t app_type) {
+    (void)app_type;
+}
+
+void* kmalloc(uint32_t size) {
+    if (size > sizeof(fixture_view_buffer)) return 0;
+    return fixture_view_buffer;
+}
+
+void kfree(void* ptr) {
+    (void)ptr;
+}
+
+int fs_read_file_at(const char* path, uint8_t* buffer, uint32_t max_size) {
+    (void)path;
+    (void)buffer;
+    (void)max_size;
+    return ERR_UNAVAILABLE;
+}
+
+int storage_read_file_range(const char* id, const char* path,
+                            uint32_t offset, uint8_t* buffer,
+                            uint32_t max_size, uint32_t* out_read) {
+    (void)id;
+    (void)path;
+    (void)offset;
+    (void)buffer;
+    (void)max_size;
+    if (out_read) *out_read = 0U;
+    return ERR_UNAVAILABLE;
 }
 
 int taskbar_get_work_area(tb_rect_t* area) {

@@ -106089,9 +106089,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_boot_directory_exists",
@@ -106153,10 +106156,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:filemanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_classic_draw_help",
@@ -106172,9 +106176,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_classic_draw_input_dialog",
@@ -106190,9 +106197,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_classic_draw_list",
@@ -106210,10 +106220,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:filemanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_classic_draw_page_surface",
@@ -106229,9 +106240,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_classic_draw_search_list",
@@ -106247,9 +106261,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_classic_draw_search_status",
@@ -106265,9 +106282,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_classic_draw_side",
@@ -106285,10 +106305,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:filemanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_classic_draw_status",
@@ -106306,10 +106327,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:filemanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_classic_draw_toolbar",
@@ -106327,10 +106349,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:filemanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_classic_draw_view_file",
@@ -106346,9 +106369,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_classic_get_content_height",
@@ -106516,10 +106542,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:filemanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_display_icon_scale",
@@ -106537,10 +106564,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:filemanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_draw",
@@ -106556,9 +106584,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_draw_address_bar",
@@ -106574,9 +106605,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_draw_all",
@@ -106592,9 +106626,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_draw_classic_all",
@@ -106612,10 +106649,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:filemanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_draw_column_headers",
@@ -106631,9 +106669,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_draw_confirm_delete",
@@ -106649,9 +106690,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_draw_create_dir",
@@ -106667,9 +106711,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_draw_create_file",
@@ -106685,9 +106732,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_draw_file_list",
@@ -106703,9 +106753,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_draw_help",
@@ -106721,9 +106774,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_draw_menu_bar",
@@ -106739,9 +106795,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_draw_rename_file",
@@ -106757,9 +106816,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_draw_separator_bottom",
@@ -106775,9 +106837,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_draw_side_pane",
@@ -106793,9 +106858,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_draw_simple_all",
@@ -106811,9 +106879,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_draw_status_bar",
@@ -106829,9 +106900,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_draw_text_limited",
@@ -106849,10 +106923,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:filemanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_draw_title_bar",
@@ -106868,9 +106943,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_draw_view_file",
@@ -106886,9 +106964,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_ensure_boot_directory",
@@ -107292,9 +107373,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_refresh_files",
@@ -173704,14 +173788,26 @@
         "hardware": "nenhum"
       },
       "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "exercitar contratos de fontes, caminhos, nomes, layout, selecao, historico, pesquisa, mutacoes e estados do Explorer com doubles estaticos",
+      "action": "exercitar contratos de fontes, caminhos, nomes, layout Simple/Classic, selecao, historico, pesquisa, mutacoes, dialogs e desenho do Explorer com doubles estaticos",
       "expected": "helpers preservam limites, normalizacao, navegacao, selecao, paginação e estados de indice sem efeitos externos",
       "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
       "effects": "somente buffers e estado estaticos do processo host; nenhum VFS, disco, rede ou hardware real",
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "surface_ids": [
+        "c:src/filemanager/filemanager.c:fm_block_read_only_mutation",
         "c:src/filemanager/filemanager.c:fm_boot_directory_exists",
         "c:src/filemanager/filemanager.c:fm_build_display_path",
+        "c:src/filemanager/filemanager.c:fm_classic_draw_address",
+        "c:src/filemanager/filemanager.c:fm_classic_draw_help",
+        "c:src/filemanager/filemanager.c:fm_classic_draw_input_dialog",
+        "c:src/filemanager/filemanager.c:fm_classic_draw_list",
+        "c:src/filemanager/filemanager.c:fm_classic_draw_page_surface",
+        "c:src/filemanager/filemanager.c:fm_classic_draw_search_list",
+        "c:src/filemanager/filemanager.c:fm_classic_draw_search_status",
+        "c:src/filemanager/filemanager.c:fm_classic_draw_side",
+        "c:src/filemanager/filemanager.c:fm_classic_draw_status",
+        "c:src/filemanager/filemanager.c:fm_classic_draw_toolbar",
+        "c:src/filemanager/filemanager.c:fm_classic_draw_view_file",
         "c:src/filemanager/filemanager.c:fm_classic_get_content_height",
         "c:src/filemanager/filemanager.c:fm_classic_get_layout",
         "c:src/filemanager/filemanager.c:fm_close",
@@ -173719,6 +173815,27 @@
         "c:src/filemanager/filemanager.c:fm_copy_normalized_path",
         "c:src/filemanager/filemanager.c:fm_delete_selected_file",
         "c:src/filemanager/filemanager.c:fm_display_font_height",
+        "c:src/filemanager/filemanager.c:fm_display_font_width",
+        "c:src/filemanager/filemanager.c:fm_display_icon_scale",
+        "c:src/filemanager/filemanager.c:fm_draw",
+        "c:src/filemanager/filemanager.c:fm_draw_address_bar",
+        "c:src/filemanager/filemanager.c:fm_draw_all",
+        "c:src/filemanager/filemanager.c:fm_draw_classic_all",
+        "c:src/filemanager/filemanager.c:fm_draw_column_headers",
+        "c:src/filemanager/filemanager.c:fm_draw_confirm_delete",
+        "c:src/filemanager/filemanager.c:fm_draw_create_dir",
+        "c:src/filemanager/filemanager.c:fm_draw_create_file",
+        "c:src/filemanager/filemanager.c:fm_draw_file_list",
+        "c:src/filemanager/filemanager.c:fm_draw_help",
+        "c:src/filemanager/filemanager.c:fm_draw_menu_bar",
+        "c:src/filemanager/filemanager.c:fm_draw_rename_file",
+        "c:src/filemanager/filemanager.c:fm_draw_separator_bottom",
+        "c:src/filemanager/filemanager.c:fm_draw_side_pane",
+        "c:src/filemanager/filemanager.c:fm_draw_simple_all",
+        "c:src/filemanager/filemanager.c:fm_draw_status_bar",
+        "c:src/filemanager/filemanager.c:fm_draw_text_limited",
+        "c:src/filemanager/filemanager.c:fm_draw_title_bar",
+        "c:src/filemanager/filemanager.c:fm_draw_view_file",
         "c:src/filemanager/filemanager.c:fm_ensure_boot_directory",
         "c:src/filemanager/filemanager.c:fm_fat_display_name",
         "c:src/filemanager/filemanager.c:fm_get_mode",
@@ -173729,6 +173846,7 @@
         "c:src/filemanager/filemanager.c:fm_join_path",
         "c:src/filemanager/filemanager.c:fm_mouse_select_item",
         "c:src/filemanager/filemanager.c:fm_record_history",
+        "c:src/filemanager/filemanager.c:fm_redraw_file_view",
         "c:src/filemanager/filemanager.c:fm_refresh_files",
         "c:src/filemanager/filemanager.c:fm_rename_selected_file",
         "c:src/filemanager/filemanager.c:fm_rename_target_conflicts",

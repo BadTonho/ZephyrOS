@@ -2833,6 +2833,103 @@ int fm_host_test_contracts(void) {
     str_copy(index_entry.parent_path, "/docs");
     fm_search_build_location(&index_entry, output);
     if (!str_equal(output, "DATA://docs")) failures++;
+
+    fm_hosted = 0;
+    state.running = 1;
+    state.mode = FM_MODE_SIMPLE;
+    state.storage_virtual = 0;
+    state.storage_boot = 1;
+    state.storage_read_only = 0;
+    state.address_mode = 0;
+    state.file_count = 2;
+    state.selected = 0;
+    state.scroll_offset = 0;
+    state.focus_pane = 1;
+    str_copy(state.storage_volume_id, "C:");
+    state.files[0].is_dir = 0;
+    state.files[0].size = 12U;
+    str_copy(state.files[0].name, "notes.txt");
+    state.files[1].is_dir = 1;
+    state.files[1].size = 0U;
+    str_copy(state.files[1].name, "docs");
+    filemanager_host_set_desktop_mode(DESKTOP_MODE_SIMPLE);
+    fm_draw();
+    state.address_mode = 1;
+    str_copy(state.address_buffer, "/docs");
+    fm_draw_address_bar();
+    state.address_mode = 0;
+    fm_draw_help();
+    fm_draw_create_dir();
+    fm_draw_create_file();
+    fm_draw_rename_file();
+    fm_draw_confirm_delete();
+    fm_draw_view_file();
+    state.file_count = 0;
+    fm_draw_status_bar();
+    state.file_count = 2;
+    fm_redraw_file_view();
+
+    state.mode = FM_MODE_SIMPLE;
+    state.storage_virtual = 1;
+    state.storage_boot = 0;
+    state.storage_read_only = 1;
+    state.storage_volume_id[0] = '\0';
+    state.current_path[0] = '\0';
+    state.file_count = 0;
+    state.selected = 0;
+    state.side_selected = 0;
+    state.focus_pane = 0;
+    fm_help_mode = 0;
+    input_mode = 0;
+    rename_mode = 0;
+    confirm_delete = 0;
+    create_dir_mode = 0;
+    create_file_mode = 0;
+    fm_search_active = 0;
+    fm_search_input = 0;
+    filemanager_host_set_desktop_mode(DESKTOP_MODE_CLASSIC);
+    fm_draw();
+
+    fm_search_active = 1;
+    fm_search_input = 0;
+    fm_search_status.returned_matches = 1U;
+    fm_search_status.last_error = OK;
+    fm_search_status.cancelled = 0;
+    fm_search_status.volume_missing = 0;
+    fm_search_status.result_stale = 0;
+    fm_search_status.stale = 0;
+    fm_search_status.building = 0;
+    fm_search_status.partial = 0;
+    fm_search_selected = 0;
+    kmemset(&fm_search_results[0], 0, sizeof(fm_search_results[0]));
+    str_copy(fm_search_results[0].entry.volume_id, "DATA");
+    str_copy(fm_search_results[0].entry.parent_path, "/docs");
+    str_copy(fm_search_results[0].entry.name, "notes.txt");
+    fm_search_results[0].entry.volume_generation = 7U;
+    fm_search_results[0].entry.size = 12U;
+    fm_draw();
+
+    fm_search_active = 0;
+    input_mode = 1;
+    rename_mode = 1;
+    input_pos = 4;
+    str_copy(input_buffer, "name");
+    fm_draw();
+
+    input_mode = 2;
+    rename_mode = 0;
+    state.selected = 1;
+    fm_draw();
+
+    input_mode = 0;
+    fm_help_mode = 1;
+    fm_draw();
+    fm_help_mode = 0;
+
+    fm_hosted = 1;
+    state.mode = FM_MODE_CLASSIC;
+    if (!fm_block_read_only_mutation(0x3CU)) failures++;
+    fm_hosted = 0;
     return failures;
 }
 #endif

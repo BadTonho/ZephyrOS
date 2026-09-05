@@ -2198,9 +2198,10 @@ preserva manifesto, resultado, logs e cobertura.
 
 O alvo `test-filemanager-host` compila o Explorer real com a fixture interna
 ativada por `ZEPHYROS_HOST_TEST`. O caso valida fontes, refresh, caminhos,
-nomes, truncamento, layout, selecao, historico, pesquisa, paginacao,
-renomeacao, exclusao, interacao hospedada e estados do indice com doubles
-estaticos, sem VFS, disco, rede ou hardware reais:
+nomes, truncamento, layout Simple/Classic, selecao, historico, pesquisa,
+paginacao, renomeacao, exclusao, dialogs, desenho, visualizacao,
+interacao hospedada e estados do indice com doubles estaticos, sem VFS,
+disco, rede ou hardware reais:
 
 ```text
 make test-filemanager-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
@@ -2208,7 +2209,7 @@ make test-filemanager-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 
 O relatorio instrumentado fica em
 `build/test-results/filemanager-host/coverage.json` e deve terminar com
-`status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`, observando 47
+`status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`, observando 81
 funcoes reais de `src/filemanager/filemanager.c`. A execucao tem
 timeout do runner e deixa manifesto, resultado, logs e cobertura preservados.
 
