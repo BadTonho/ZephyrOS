@@ -6372,3 +6372,19 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `make catalog-test` e `git diff --check`. O catálogo atual registra 7.326
   superfícies, 6.957 `COVERED`, 369 `PENDING`, 59 aposentadas e 165 casos;
   as demais pendências continuam explícitas.
+
+- Incremento Shell Checks: comandos e finalizações negativas — concluído em
+  2026-09-05 (America/Sao_Paulo). A fixture `host:shell:checks`, compilada com
+  `ZEPHYROS_HOST_TEST`, passou a exercitar caminhos negativos determinísticos
+  de `cmd_regcheck` e `cmd_usertest`, finalização do Q2Check após falha de
+  criação, validação de health em estado desconhecido e cancelamento/finalização
+  do BLKCheck. Foram usados somente doubles estáticos para
+  `process_reap_finished_user` e `shell_command_args_equal`; nenhum processo,
+  armazenamento, rede ou hardware real foi acessado. Passaram
+  `make test-shell-checks-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`,
+  `make q3check`, `make clean` seguido de `make`, sincronização/renderização,
+  `make catalog-test` e `git diff --check`. A cobertura dinâmica terminou
+  `PASS`, observando 71 funções reais de `src/shell/shell_checks.c`, com
+  `unknown_addresses=[]` e `ambiguous_symbols=[]`. O catálogo atual registra
+  7.326 superfícies, 6.964 `COVERED`, 362 `PENDING`, 59 aposentadas e 165
+  casos; as demais pendências continuam explícitas.

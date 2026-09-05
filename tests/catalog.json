@@ -135708,9 +135708,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:cmd_usertest",
@@ -135726,9 +135729,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_appcheck_copy_failure_label",
@@ -136227,9 +136233,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_blkcheck_job_drain",
@@ -136263,9 +136272,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_blkcheck_job_step",
@@ -136957,9 +136969,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_q2check_handle_user_test_result",
@@ -136975,9 +136990,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_q2check_print_result",
@@ -137539,9 +137557,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_regcheck_validate_loader_result",
@@ -170042,6 +170063,8 @@
         "c:src/shell/shell_checks.c:cmd_appcheck_print_expected_result",
         "c:src/shell/shell_checks.c:cmd_appcheck_print_result",
         "c:src/shell/shell_checks.c:cmd_appcheck_print_result_with_expectation",
+        "c:src/shell/shell_checks.c:cmd_regcheck",
+        "c:src/shell/shell_checks.c:cmd_usertest",
         "c:src/shell/shell_checks.c:shell_appcheck_copy_failure_label",
         "c:src/shell/shell_checks.c:shell_appcheck_fault_is_valid",
         "c:src/shell/shell_checks.c:shell_appcheck_has_pending_work",
@@ -170059,6 +170082,8 @@
         "c:src/shell/shell_checks.c:shell_blkcheck_copy_failure",
         "c:src/shell/shell_checks.c:shell_blkcheck_copy_id",
         "c:src/shell/shell_checks.c:shell_blkcheck_fail",
+        "c:src/shell/shell_checks.c:shell_blkcheck_job_cancel",
+        "c:src/shell/shell_checks.c:shell_blkcheck_job_finish",
         "c:src/shell/shell_checks.c:shell_blkcheck_phase_name",
         "c:src/shell/shell_checks.c:shell_build_demo_image",
         "c:src/shell/shell_checks.c:shell_build_input_test_image",
@@ -170079,6 +170104,8 @@
         "c:src/shell/shell_checks.c:shell_demo_emit_mov",
         "c:src/shell/shell_checks.c:shell_demo_emit_syscall",
         "c:src/shell/shell_checks.c:shell_demo_patch_u32",
+        "c:src/shell/shell_checks.c:shell_q2check_finish",
+        "c:src/shell/shell_checks.c:shell_q2check_handle_user_test_result",
         "c:src/shell/shell_checks.c:shell_q2check_print_result",
         "c:src/shell/shell_checks.c:shell_q2check_reset",
         "c:src/shell/shell_checks.c:shell_q2check_start_fault",
@@ -170099,6 +170126,7 @@
         "c:src/shell/shell_checks.c:shell_regcheck_validate_acpi_power",
         "c:src/shell/shell_checks.c:shell_regcheck_validate_acpi_recovery",
         "c:src/shell/shell_checks.c:shell_regcheck_validate_cleanup",
+        "c:src/shell/shell_checks.c:shell_regcheck_validate_health",
         "c:src/shell/shell_checks.c:shell_regcheck_validate_loader_result",
         "c:src/shell/shell_checks.c:shell_regcheck_validate_processes",
         "c:src/shell/shell_checks.c:shell_remove_image",

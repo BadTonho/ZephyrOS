@@ -4620,6 +4620,17 @@ int shell_checks_host_test_contracts(void) {
 
     shell_checks_host_set_process_snapshot(0U, 0U, 0U, 0U);
     shell_checks_host_set_vma_snapshot(0U, 0U, 0U, 0U, ERR_UNAVAILABLE);
+
+    cmd_regcheck("argumento-invalido");
+    shell_regcheck_reset();
+    shell_checks_host_set_user_create_fixture(ERR_UNAVAILABLE, 0U);
+    cmd_usertest("fault");
+    shell_q2check_reset();
+    shell_q2check_handle_user_test_result(0U, 0U);
+    shell_q2check_reset();
+    if (shell_regcheck_validate_health() != ERR_STATE) failures++;
+    if (shell_blkcheck_job_cancel(NULL) != OK) failures++;
+    shell_blkcheck_job_finish(NULL, SHELL_JOB_STATE_CANCELLED, ERR_CANCELLED);
     return failures;
 }
 #endif

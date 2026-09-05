@@ -27,8 +27,9 @@ Configurações, do Desktop, dos comandos de aplicativos, da evidência RTC e
 das fixtures de entrada/hosted, da evidência de panic, da regeneração dos
 relatórios RTC/Shell, da fixture host-only do Updater, da fixture host-only do
 File Manager, da fixture host-only do Task Manager e da validação de
-resultados do Shell Checks, da expansão do ciclo de vida do Task Manager,
-registra 7.326 superfícies, 6.957 `COVERED` e 369 `PENDING`.
+resultados do Shell Checks, da expansão do ciclo de vida do Task Manager e dos
+caminhos negativos de finalização do Shell Checks, registra 7.326 superfícies,
+6.964 `COVERED` e 362 `PENDING`.
 O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
@@ -3234,4 +3235,24 @@ pendente.
 - [x] A sincronização, validação e renderização do catálogo, `make catalog-test`
       e `git diff --check` passaram. O catálogo atual registra 7.326 superfícies,
       6.957 `COVERED`, 369 `PENDING`, 59 aposentadas e 165 casos; as pendências
+      restantes continuam explícitas.
+
+### Evidência Shell Checks: comandos e finalizações negativas — 2026-09-05
+
+- [x] A fixture `host:shell:checks` foi ampliada com caminhos negativos
+      determinísticos para `cmd_regcheck` e `cmd_usertest`, finalização do
+      Q2Check após falha de criação, validação de health em estado desconhecido
+      e cancelamento/finalização do BLKCheck. Nenhum processo, armazenamento,
+      rede ou hardware real foi acessado.
+- [x] Foram adicionados somente doubles estáticos para
+      `process_reap_finished_user` e `shell_command_args_equal`, exigidos pelo
+      link host-only desses caminhos. O build normal não usa esses doubles.
+- [x] `make test-shell-checks-host
+      HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` terminou `PASS` depois de
+      `make q3check` e de `make clean` seguido de `make`. O relatório dinâmico
+      observou 71 funções reais de `src/shell/shell_checks.c`, com
+      `unknown_addresses=[]` e `ambiguous_symbols=[]`.
+- [x] A sincronização, validação e renderização do catálogo, `make catalog-test`
+      e `git diff --check` passaram. O catálogo atual registra 7.326 superfícies,
+      6.964 `COVERED`, 362 `PENDING`, 59 aposentadas e 165 casos; as pendências
       restantes continuam explícitas.

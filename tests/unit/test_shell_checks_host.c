@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 #include "apps/shell_checks.h"
+#include "apps/shell_command_utils.h"
 #include "apps/shell_job.h"
 #include "core/app_loader.h"
 #include "core/errors.h"
@@ -305,6 +306,15 @@ int process_cancel_user_test(uint32_t pid, uint32_t exit_code) {
     (void)pid;
     (void)exit_code;
     return fixture_cancel_foreground_result;
+}
+
+int process_reap_finished_user(void) {
+    return OK;
+}
+
+int shell_command_args_equal(const char* args, const char* expected) {
+    if (!args || !expected) return args == expected;
+    return kstrcmp(args, expected) == 0;
 }
 
 void shell_checks_host_set_recovery_state(recovery_component_id_t component,
