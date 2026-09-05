@@ -3972,6 +3972,16 @@ extern void shell_checks_host_set_user_create_fixture(int result,
 extern void shell_checks_host_set_process_count(uint32_t count);
 extern void shell_checks_host_set_foreground_fixture(int active);
 extern void shell_checks_host_set_run_image_fixture(int result, uint32_t pid);
+extern void shell_checks_host_set_recovery_state(
+    recovery_component_id_t component, recovery_state_t state);
+extern void shell_checks_host_set_ticks(uint32_t ticks);
+extern void shell_checks_host_set_job_fixture(int active, int start_result,
+                                              uint32_t generation);
+extern void shell_checks_host_set_cancel_fixture(int result,
+                                                 uint8_t requested);
+extern int shell_checks_host_job_filter_installed(void);
+extern int shell_checks_host_job_active(void);
+extern int shell_checks_host_cancel_requested(void);
 
 int shell_checks_host_test_contracts(void) {
     static const char* app_phases[SHELL_APPCHECK_PHASE_COUNT] = {
@@ -3995,6 +4005,9 @@ int shell_checks_host_test_contracts(void) {
     usb_controller_info_t usb_right;
     acpi_table_info_t table;
     acpi_madt_entry_t madt_entry;
+    acpi_status_t acpi_status;
+    acpi_power_info_t acpi_power;
+    shell_job_context_t job_context;
     int failures = 0;
 
     shell_appcheck_summary_reset(1U);
@@ -4141,6 +4154,117 @@ int shell_checks_host_test_contracts(void) {
     }
     shell_q2check_reset();
     shell_user_test_pid = 0U;
+    shell_regcheck.state = SHELL_REGCHECK_PREPARE_BASE;
+    if (!shell_regcheck_is_preparing()) failures++;
+    shell_regcheck.state = SHELL_REGCHECK_WAIT_DEMO;
+    if (shell_regcheck_is_preparing()) failures++;
+    shell_waiting_user_test = 1;
+    if (!shell_checks_input_blocked()) failures++;
+    shell_waiting_user_test = 0;
+
+    kmemset(&acpi_status, 0, sizeof(acpi_status));
+    kmemset(&acpi_power, 0, sizeof(acpi_power));
+    acpi_power.initialized = 1U;
+    if (shell_regcheck_validate_acpi_power(&acpi_status, &acpi_power) != OK) {
+        failures++;
+    }
+    acpi_power.fadt_power_fields_present = 1U;
+    if (shell_regcheck_validate_acpi_power(&acpi_status, &acpi_power) !=
+        ERR_STATE) {
+        failures++;
+    }
+    acpi_power.fadt_power_fields_present = 0U;
+    acpi_power.reset_register_present = 1U;
+    acpi_power.reset_register_valid = 1U;
+    acpi_power.reset_register.address_space_id = ACPI_ADDRESS_SPACE_SYSTEM_IO;
+    acpi_power.reset_register.address = 0xCF9U;
+    acpi_power.reset_register.register_bit_width = 8U;
+    if (shell_regcheck_validate_acpi_power(&acpi_status, &acpi_power) != OK) {
+        failures++;
+    }
+    acpi_power.reset_register.address = SHELL_ACPI_IO_MAX_PORT + 1U;
+    if (shell_regcheck_validate_acpi_power(&acpi_status, &acpi_power) !=
+        ERR_STATE) {
+        failures++;
+    }
+    acpi_power.reset_register.address = 0xCF9U;
+    acpi_power.reset_register_valid = 0U;
+    acpi_power.reset_register_present = 0U;
+    shell_checks_host_set_recovery_state(RECOVERY_COMPONENT_ACPI,
+                                         RECOVERY_STATE_DISABLED);
+    if (shell_regcheck_validate_acpi_recovery(&acpi_status) != OK) failures++;
+    acpi_status.available = 1U;
+    acpi_status.partial = 0U;
+    acpi_status.fadt_present = 1U;
+    acpi_status.dsdt_present = 1U;
+    if (shell_regcheck_validate_acpi_recovery(&acpi_status) != ERR_STATE) {
+        failures++;
+    }
+    shell_checks_host_set_recovery_state(RECOVERY_COMPONENT_ACPI,
+                                         RECOVERY_STATE_READY);
+    if (shell_regcheck_validate_acpi_recovery(&acpi_status) != OK) failures++;
+    shell_checks_host_set_recovery_state(RECOVERY_COMPONENT_ACPI,
+                                         RECOVERY_STATE_DEGRADED);
+    acpi_status.partial = 1U;
+    if (shell_regcheck_validate_acpi_recovery(&acpi_status) != OK) failures++;
+    if (shell_regcheck_validate_acpi_recovery(NULL) != ERR_STATE) failures++;
+
+    kmemset(&job_context, 0, sizeof(job_context));
+    shell_regcheck.full_mode = 0U;
+    shell_regcheck_prepare_progress(&job_context, "fase", 2U);
+    if (kstrcmp(job_context.phase, "fase") != 0 ||
+        job_context.progress != 2U || job_context.total != 5U) {
+        failures++;
+    }
+    shell_checks_host_set_ticks(200U);
+    if (shell_regcheck_prepare_pending(&job_context) != SHELL_JOB_STEP_PENDING ||
+        job_context.next_wake_tick != 201U || !job_context.next_wake_active) {
+        failures++;
+    }
+
+    shell_q2check_reset();
+    shell_regcheck_reset();
+    shell_waiting_user_test = 0;
+    shell_appcheck_loader_pid = 0U;
+    shell_appcheck_migration_pid = 0U;
+    shell_appcheck_vma_pid = 0U;
+    shell_appcheck_fault_pid = 0U;
+    kmemset(&job_context, 0, sizeof(job_context));
+    if (shell_checks_job_drain(&job_context) != SHELL_JOB_STEP_COMPLETE) {
+        failures++;
+    }
+    shell_q2check.state = SHELL_Q2CHECK_FIRST_FAULT;
+    if (shell_checks_job_drain(&job_context) != SHELL_JOB_STEP_PENDING) {
+        failures++;
+    }
+    shell_q2check_reset();
+    shell_regcheck_reset();
+    shell_checks_job_finish(&job_context, SHELL_JOB_STATE_SUCCEEDED, OK);
+    shell_checks_job_finish(&job_context, SHELL_JOB_STATE_CANCELLED,
+                            ERR_CANCELLED);
+    shell_checks_job_finish(&job_context, SHELL_JOB_STATE_FAILED, ERR_STATE);
+
+    shell_regcheck.state = SHELL_REGCHECK_WAIT_CANCEL;
+    shell_checks_host_set_job_fixture(1, OK, 1U);
+    shell_checks_host_set_foreground_fixture(1);
+    shell_checks_host_set_cancel_fixture(OK, 0U);
+    if (!shell_checks_should_cancel_focused_user(SHELL_REGCHECK_SCANCODE_F11) ||
+        !shell_checks_handle_job_key(SHELL_REGCHECK_SCANCODE_F11)) {
+        failures++;
+    }
+    shell_checks_host_set_cancel_fixture(ERR_STATE, 0U);
+    if (!shell_checks_handle_job_key(SHELL_REGCHECK_SCANCODE_F11) ||
+        !shell_checks_host_cancel_requested()) {
+        failures++;
+    }
+    if (shell_checks_should_cancel_focused_user(0U) ||
+        shell_checks_handle_job_key(0U)) {
+        failures++;
+    }
+    shell_checks_host_set_foreground_fixture(0);
+    shell_checks_host_set_job_fixture(0, OK, 1U);
+    shell_regcheck_reset();
+
     shell_regcheck.full_mode = 1U;
     shell_regcheck.state = SHELL_REGCHECK_PREPARE_FULL;
     shell_regcheck_reset();

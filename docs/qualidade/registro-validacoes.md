@@ -6291,3 +6291,19 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   --check` passaram. O build limpo também passou e os 126 relatórios host-only
   restantes foram reconstruídos após `make clean`; as superfícies que não
   aparecem nos relatórios continuam pendentes.
+
+- Incremento Shell Checks: estados, cancelamento e snapshots de energia —
+  concluído em 2026-09-05 (America/Sao_Paulo). A fixture existente
+  `host:shell:checks`, compilada com `ZEPHYROS_HOST_TEST`, passou a exercitar
+  estados de job, drenagem, finalização, bloqueio de entrada e cancelamento
+  cooperativo, além dos validadores de snapshot ACPI, energia e recovery.
+  Foram usados apenas doubles estáticos, sem hardware, armazenamento,
+  processo real ou espera indefinida. Passou
+  `make test-shell-checks-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`;
+  a cobertura dinâmica terminou `PASS`, observando 64 funções reais de
+  `src/shell/shell_checks.c`, com `unknown_addresses=[]` e
+  `ambiguous_symbols=[]`. Também passaram `make q3check`, `make clean`
+  seguido de `make`, sincronização/renderização do catálogo,
+  `make catalog-test` e `git diff --check`. O catálogo registra 7.326
+  superfícies, 6.930 `COVERED`, 396 `PENDING`, 59 aposentadas e 165 casos;
+  as demais pendências continuam explícitas.

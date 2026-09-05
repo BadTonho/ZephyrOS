@@ -2190,9 +2190,11 @@ make test-shell-checks-host HOST_CC=C:\\msys64\\ucrt64\\bin\gcc.exe
 
 O relatório instrumentado fica em
 `build/test-results/shell-checks-host/coverage.json` e deve terminar com
-`status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`, observando 54
-funções reais de `src/shell/shell_checks.c`. A execução tem timeout do runner e
-preserva manifesto, resultado, logs e cobertura.
+`status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`, observando 64
+funções reais de `src/shell/shell_checks.c`. A fixture também exercita estados
+de job, cancelamento cooperativo e snapshots de ACPI, energia e recovery. A
+execução tem timeout do runner e preserva manifesto, resultado, logs e
+cobertura.
 
 ## File Manager: contratos host-only
 

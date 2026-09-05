@@ -27,12 +27,29 @@ Configurações, do Desktop, dos comandos de aplicativos, da evidência RTC e
 das fixtures de entrada/hosted, da evidência de panic, da regeneração dos
 relatórios RTC/Shell, da fixture host-only do Updater, da fixture host-only do
 File Manager, da fixture host-only do Task Manager e da validação de
-resultados do Shell Checks, registra 7.326 superfícies, 6.928 `COVERED` e 398
+resultados do Shell Checks, registra 7.326 superfícies, 6.930 `COVERED` e 396
 `PENDING`.
 O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
 Isso não significa declarar hardware físico validado sem equipamento.
+
+### Incremento Shell Checks: estados, cancelamento e snapshots de energia — 2026-09-05
+
+- [x] A fixture `host:shell:checks` passou a exercitar estados de job,
+      drenagem, finalização, bloqueio de entrada e cancelamento cooperativo,
+      incluindo a rejeição de scancode fora da fase de cancelamento.
+- [x] Foram validados snapshots de energia ACPI, limites do registrador de
+      reset e coerência de recovery para estados `DISABLED`, `DEGRADED` e
+      `READY`, usando apenas doubles estáticos.
+- [x] `make test-shell-checks-host
+      HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` passou; a cobertura dinâmica
+      observou 64 funções reais de `src/shell/shell_checks.c`, sem endereços
+      desconhecidos ou símbolos ambíguos. A etapa também passou por
+      `make q3check`, build limpo, sincronização/renderização do catálogo,
+      `make catalog-test` e `git diff --check`. O catálogo registra 7.326
+      superfícies, 6.930 `COVERED`, 396 `PENDING`, 59 aposentadas e 165 casos;
+      as demais pendências continuam explícitas.
 
 ### Incremento UI/File Manager host-only — 2026-09-05
 
