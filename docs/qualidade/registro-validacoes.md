@@ -5852,3 +5852,12 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   A evidência foi sincronizada, o catálogo e a visão renderizada foram
   validados e ficaram com 7.293 superfícies, sendo 6.309 `COVERED` e 984
   `PENDING`; as pendências restantes continuam explícitas.
+
+- Incremento Shell/network-checks — concluído em 2026-09-04
+  (America/Sao_Paulo). Foi criado o caso host-only
+  `host:shell:network-checks`, que chama a validação real de invariantes de
+  rede do Shell com uma interface PCI estática. A fixture passou pelo estado
+  coerente, rejeitou interface inconsistente com `ERR_STATE` e propagou
+  `ERR_UNAVAILABLE` quando o estado agregado não estava disponível. Passaram
+  o alvo específico, sincronização/renderização e `make catalog-test`; o
+  catálogo ficou com 7.293 superfícies, sendo 6.319 `COVERED` e 974 `PENDING`.

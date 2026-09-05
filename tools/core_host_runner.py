@@ -133,6 +133,8 @@ SHELL_DISPATCH_RESULT_DIR = ROOT / "build" / "test-results" / "shell-dispatch-ho
 SHELL_DISPATCH_BINARY = ROOT / "build" / "tests" / "test_shell_dispatch_host.exe"
 SHELL_COMMANDS_STORAGE_RESULT_DIR = ROOT / "build" / "test-results" / "shell-commands-storage-host"
 SHELL_COMMANDS_STORAGE_BINARY = ROOT / "build" / "tests" / "test_shell_commands_storage_host.exe"
+SHELL_NETWORK_CHECKS_RESULT_DIR = ROOT / "build" / "test-results" / "shell-network-checks-host"
+SHELL_NETWORK_CHECKS_BINARY = ROOT / "build" / "tests" / "test_shell_network_checks_host.exe"
 SHELL_DIAGNOSTICS_RESULT_DIR = ROOT / "build" / "test-results" / "shell-diagnostics-host"
 SHELL_DIAGNOSTICS_BINARY = ROOT / "build" / "tests" / "test_shell_diagnostics_host.exe"
 SPINLOCK_RESULT_DIR = ROOT / "build" / "test-results" / "spinlock-host"
@@ -149,6 +151,11 @@ NETWORK_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_network_host.c",
     ROOT / "src" / "core" / "net_buffer.c",
     ROOT / "src" / "core" / "log.c",
+    ROOT / "src" / "core" / "string.c",
+)
+SHELL_NETWORK_CHECKS_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_shell_network_checks_host.c",
+    ROOT / "src" / "shell" / "shell_commands_network.c",
     ROOT / "src" / "core" / "string.c",
 )
 NETWORK_MANAGER_SOURCE_FILES = (
@@ -992,6 +999,11 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
                  ROOT / "src" / "shell" / "shell_commands_storage.c",
                  ROOT / "src" / "core" / "string.c"),
                 "shell-commands-storage-host")
+    if case_id == "host:shell:network-checks":
+        return (SHELL_NETWORK_CHECKS_RESULT_DIR,
+                SHELL_NETWORK_CHECKS_BINARY,
+                SHELL_NETWORK_CHECKS_SOURCE_FILES,
+                "shell-network-checks-host")
     if case_id == "host:shell:diagnostics":
         return (SHELL_DIAGNOSTICS_RESULT_DIR, SHELL_DIAGNOSTICS_BINARY,
                 (ROOT / "tests" / "unit" / "test_shell_diagnostics_host.c",
@@ -1181,6 +1193,9 @@ def compiler_command(compiler: str, binary: Path,
         compatibility_flags.append("-fno-builtin")
     if any(source.name == "wav.c" for source in selected_sources):
         compatibility_flags.append("-fno-builtin")
+    if any(source.name == "shell_commands_network.c"
+           for source in selected_sources):
+        compatibility_flags.append("-Wno-address")
     if any(source.name == "syscall.c" for source in selected_sources):
         compatibility_flags.extend(["-Wno-int-to-pointer-cast", "-Dasm=__asm__"])
     if any(source.name == "process.c" for source in selected_sources):
@@ -1328,6 +1343,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:core:workqueue", "host:core:bearssl-compat",
                                  "host:core:spinlock",
                                  "host:shell:dispatch", "host:shell:commands-storage",
+                                 "host:shell:network-checks",
                                  "host:shell:diagnostics",
                                  "host:shell:introspection",
                                  "host:drivers:font", "host:drivers:rtc-status",

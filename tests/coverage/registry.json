@@ -3639,6 +3639,56 @@
       "evidence": "make test-shell-commands-storage-host PASS com bloco, cache, sync, storage, index, search e job; a fixture cobre diretamente os dispatchers e caminhos validos, negativos e de limite usando doubles estaticos"
     },
     {
+      "id": "shell-network-checks-host-dynamic",
+      "domain": "shell-network-checks",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/shell-network-checks-host/coverage.json",
+      "coverage_sources": [
+        "src/shell/shell_commands_network.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:shell:network-checks",
+        "scenario": "Invariantes dos contratos de rede usados pelo Shell",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "estado de rede estatico"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "executar a validacao de rede do Shell com interface PCI estatica, dependencias de protocolo coerentes e cenarios de entrada invalida e indisponivel",
+        "expected": "a validacao aceita o estado coerente, rejeita interface inconsistente e propaga ERR_UNAVAILABLE sem residuos",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente estruturas estaticas da fixture host; nenhum driver, hardware, armazenamento ou rede real",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "shell",
+          "network",
+          "invariants",
+          "negative",
+          "coverage"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "make test-shell-network-checks-host PASS com estado de rede coerente, interface invalida e dependencia indisponivel; cobertura instrumentada de shell_commands_network.c sem hardware ou rede real"
+    },
+    {
       "id": "shell-commands-diagnostics-host-dynamic",
       "domain": "shell-diagnostics",
       "owner": "quality",

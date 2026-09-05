@@ -2001,3 +2001,8 @@ A mesma fixture executa `health`, `health summary` e `health check` com estado
 estatico de componentes, VFS, processos, memoria, rede, sockets, cache e
 recuperacao. Tambem valida argumentos invalidos e VFS indisponivel, preservando
 os codigos e a saida observavel sem hardware ou estado persistente.
+
+O alvo `make test-shell-network-checks-host` valida o gate de invariantes de
+rede usado pelo Shell com uma interface PCI estatica. Ele exercita o estado
+coerente, rejeita uma interface inconsistente e propaga `ERR_UNAVAILABLE`, sem
+driver, hardware, armazenamento ou rede reais.
