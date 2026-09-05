@@ -6152,3 +6152,13 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `make test-panic-host`, build limpo, sincronização/renderização,
   `make catalog-test` e `git diff --check`. O catálogo registra 7.315
   superfícies, 6.805 `COVERED`, 510 `PENDING`, 59 aposentadas e 162 casos.
+
+- Evidência RTC e Shell regenerada — concluída em 2026-09-05
+  (America/Sao_Paulo). Os casos `host:drivers:rtc-status`, `host:shell:input`,
+  `host:shell:hosted` e `host:shell:checks` foram executados novamente no
+  mesmo estado de build, com fixtures estáticas e sem hardware real. Os quatro
+  relatórios dinâmicos terminaram `PASS` e observaram 17 funções de RTC, 16 de
+  Shell input, oito de Shell hosted e 42 de `shell_checks.c`, sem endereços
+  desconhecidos ou símbolos ambíguos. Passaram a sincronização/renderização e
+  `make catalog-test`; o catálogo registra 7.315 superfícies, 6.819
+  `COVERED`, 496 `PENDING`, 59 aposentadas e 162 casos.
