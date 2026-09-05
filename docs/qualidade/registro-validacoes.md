@@ -5834,3 +5834,11 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   sincronização/renderização do catálogo, `make catalog-test` e
   `git diff --check`; o catálogo ficou com 7.293 superfícies, sendo 6.267
   `COVERED` e 1.026 `PENDING`. As pendências restantes continuam explícitas.
+
+- Incremento Shell/diagnostics sysfs — concluído em 2026-09-04
+  (America/Sao_Paulo). A fixture host-only `host:shell:diagnostics` passou a
+  executar `devices -v` e `device-info` pelo caminho real de atributos sysfs,
+  verificando vendor, device, class e fechamento dos handles no VFS estático.
+  Passaram o alvo específico e a sincronização da evidência dinâmica; o
+  catálogo ficou com 7.293 superfícies, sendo 6.269 `COVERED` e 1.024
+  `PENDING`. As pendências restantes continuam explícitas.
