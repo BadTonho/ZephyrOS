@@ -86,12 +86,17 @@ uint8_t detect_line_ending(const uint8_t* data, uint32_t size) {
 ```c
 void editor_init(void);
 int  editor_open(filename);             // Abre arquivo
-int  editor_save(void);                 // Salva arquivo
-int  editor_save_as(filename);          // Salva como
+void editor_new(void);                  // Cria documento vazio
+void editor_run(void);                  // Executa editor interativo
+void editor_run_file(filename);         // Abre arquivo no editor
 void editor_close(void);                // Fecha editor
-void editor_draw(void);                 // Redesenha tela
 int  editor_handle_key(scancode);       // Processa tecla
+uint8_t editor_is_running(void);        // Informa se esta aberto
 ```
+
+`editor_main` não faz parte mais do contrato público: a antiga declaração não
+possuía implementação nem chamadores no código ativo e foi aposentada. O
+Shell usa `editor_run` e `editor_run_file` para iniciar o fluxo interativo.
 
 ### Teclas
 
