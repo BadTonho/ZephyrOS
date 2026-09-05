@@ -12,7 +12,9 @@
 #include "core/input.h"
 #include "core/recovery.h"
 #include "core/device_manager.h"
+#include "core/network_manager.h"
 #include "core/usb_manager.h"
+#include "core/wifi_manager.h"
 #include "core/tls.h"
 #include "core/video.h"
 #include "core/wait.h"
@@ -31,6 +33,8 @@
 #include "process/process.h"
 #include "drivers/usb_hid.h"
 #include "drivers/usb_msc.h"
+#include "drivers/pci.h"
+#include "fs/file_index.h"
 
 void shell_dispatch_cmd_pwd(const char* arguments);
 void shell_dispatch_cmd_cd(const char* arguments);
@@ -57,6 +61,9 @@ void shell_dispatch_cmd_vmamap(const char* arguments);
 void shell_dispatch_cmd_schedcheck(const char* arguments);
 void shell_dispatch_cmd_memcheck(const char* arguments);
 void shell_dispatch_cmd_kmetrics(const char* arguments);
+void shell_dispatch_cmd_device_scan(const char* arguments);
+void shell_dispatch_cmd_power(const char* arguments);
+void shell_dispatch_cmd_acpi(const char* arguments);
 void shell_diagnostics_reset(void);
 
 #define HOST_COVERAGE_CAPACITY 512U
@@ -205,6 +212,21 @@ static int fixture_usb_hid_validate_result;
 static int fixture_input_validate_result;
 static int fixture_recovery_state_result;
 static recovery_component_t fixture_recovery_usb;
+static int fixture_recovery_mark_result;
+static recovery_component_id_t fixture_recovery_last_component;
+static recovery_state_t fixture_recovery_last_state;
+static uint32_t fixture_recovery_mark_calls;
+static int fixture_scan_pci_result;
+static int fixture_scan_usb_refresh_result;
+static int fixture_scan_usb_init_result;
+static int fixture_scan_storage_result;
+static int fixture_scan_mount_result;
+static int fixture_scan_index_result;
+static int fixture_scan_devices_result;
+static int fixture_scan_network_result;
+static int fixture_scan_wifi_refresh_result;
+static int fixture_scan_wifi_init_result;
+static uint32_t fixture_yield_calls;
 static kmem_cache_info_t fixture_slab_info[2];
 static uint32_t fixture_slab_count;
 static int fixture_slab_info_result;
@@ -401,6 +423,21 @@ static void fixture_reset(void) {
     fixture_usb_hid_validate_result = OK;
     fixture_input_validate_result = OK;
     fixture_recovery_state_result = OK;
+    fixture_recovery_mark_result = OK;
+    fixture_recovery_last_component = RECOVERY_COMPONENT_COUNT;
+    fixture_recovery_last_state = RECOVERY_STATE_UNKNOWN;
+    fixture_recovery_mark_calls = 0U;
+    fixture_scan_pci_result = OK;
+    fixture_scan_usb_refresh_result = OK;
+    fixture_scan_usb_init_result = OK;
+    fixture_scan_storage_result = OK;
+    fixture_scan_mount_result = OK;
+    fixture_scan_index_result = OK;
+    fixture_scan_devices_result = OK;
+    fixture_scan_network_result = OK;
+    fixture_scan_wifi_refresh_result = OK;
+    fixture_scan_wifi_init_result = OK;
+    fixture_yield_calls = 0U;
     fixture_slab_count = 1U;
     fixture_slab_info_result = OK;
     fixture_slab_self_test_result = OK;
@@ -1525,6 +1562,77 @@ int shell_introspection_read_file(const char* path, uint8_t* buffer,
     return ERR_NOT_FOUND;
 }
 
+int pci_init(void) {
+    return fixture_scan_pci_result;
+}
+
+int usb_manager_refresh(void) {
+    return fixture_scan_usb_refresh_result;
+}
+
+int usb_manager_init(void) {
+    return fixture_scan_usb_init_result;
+}
+
+int storage_refresh(void) {
+    return fixture_scan_storage_result;
+}
+
+int vfs_refresh_mounts(void) {
+    return fixture_scan_mount_result;
+}
+
+int file_index_rebuild(void) {
+    return fixture_scan_index_result;
+}
+
+int device_manager_refresh(void) {
+    return fixture_scan_devices_result;
+}
+
+int network_manager_refresh(void) {
+    return fixture_scan_network_result;
+}
+
+int wifi_manager_refresh(void) {
+    return fixture_scan_wifi_refresh_result;
+}
+
+int wifi_manager_init(void) {
+    return fixture_scan_wifi_init_result;
+}
+
+void process_yield(void) {
+    fixture_yield_calls++;
+}
+
+int recovery_mark_ready(recovery_component_id_t component) {
+    fixture_recovery_last_component = component;
+    fixture_recovery_last_state = RECOVERY_STATE_READY;
+    fixture_recovery_mark_calls++;
+    return fixture_recovery_mark_result;
+}
+
+int recovery_mark_degraded(recovery_component_id_t component,
+                           int error_code, const char* message) {
+    (void)error_code;
+    (void)message;
+    fixture_recovery_last_component = component;
+    fixture_recovery_last_state = RECOVERY_STATE_DEGRADED;
+    fixture_recovery_mark_calls++;
+    return fixture_recovery_mark_result;
+}
+
+int recovery_mark_disabled(recovery_component_id_t component,
+                           int error_code, const char* message) {
+    (void)error_code;
+    (void)message;
+    fixture_recovery_last_component = component;
+    fixture_recovery_last_state = RECOVERY_STATE_DISABLED;
+    fixture_recovery_mark_calls++;
+    return fixture_recovery_mark_result;
+}
+
 int device_manager_get_count(uint32_t* out_count) {
     if (!out_count) return ERR_NULL;
     if (fixture_device_count_result != OK) return fixture_device_count_result;
@@ -2590,6 +2698,76 @@ static int test_devices_and_usb(void) {
     return failures;
 }
 
+static int test_device_scan(void) {
+    int failures = 0;
+    shell_device_scan_result_t scan;
+
+    fixture_reset();
+    if (shell_diagnostics_run_device_scan(&scan) != OK ||
+        scan.pci_result != OK || scan.devices_result != OK ||
+        scan.usb_result != OK || scan.storage_result != OK ||
+        scan.network_result != OK || scan.wifi_result != OK ||
+        fixture_yield_calls != 6U ||
+        fixture_recovery_last_component != RECOVERY_COMPONENT_DEVICES ||
+        fixture_recovery_last_state != RECOVERY_STATE_READY) {
+        fprintf(stderr, "diagnostics-host: device-scan valido inesperado\n");
+        failures++;
+    }
+    if (shell_diagnostics_run_device_scan(0) != ERR_NULL) {
+        fprintf(stderr, "diagnostics-host: device-scan aceitou resultado nulo\n");
+        failures++;
+    }
+    fixture_reset();
+    shell_dispatch_cmd_device_scan("");
+    failures += expect_text("Varredura PCI concluida; inventario atualizado.\n");
+
+    fixture_reset();
+    fixture_scan_usb_refresh_result = ERR_STATE;
+    fixture_scan_wifi_refresh_result = ERR_STATE;
+    if (shell_diagnostics_run_device_scan(&scan) != OK ||
+        scan.usb_result != OK || scan.wifi_result != OK) {
+        fprintf(stderr, "diagnostics-host: device-scan nao recuperou managers\n");
+        failures++;
+    }
+
+    fixture_reset();
+    fixture_scan_pci_result = ERR_OVERFLOW;
+    fixture_scan_devices_result = ERR_OVERFLOW;
+    if (shell_diagnostics_run_device_scan(&scan) != ERR_OVERFLOW ||
+        fixture_recovery_last_state != RECOVERY_STATE_DEGRADED) {
+        fprintf(stderr, "diagnostics-host: device-scan parcial nao publicado\n");
+        failures++;
+    }
+    fixture_reset();
+    fixture_scan_pci_result = ERR_OVERFLOW;
+    fixture_scan_devices_result = ERR_OVERFLOW;
+    shell_dispatch_cmd_device_scan("");
+    failures += expect_text("Varredura PCI/USB parcial; inventario atualizado.\n");
+
+    fixture_reset();
+    fixture_scan_network_result = ERR_UNAVAILABLE;
+    fixture_scan_wifi_refresh_result = ERR_UNAVAILABLE;
+    fixture_scan_storage_result = ERR_DISK;
+    shell_dispatch_cmd_device_scan("");
+    failures += expect_contains("Aviso: inventario de rede indisponivel.\n");
+    failures += expect_contains("Aviso: inventario Wi-Fi indisponivel.\n");
+    failures += expect_contains("Aviso: inventario de storage degradado.\n");
+    failures += expect_contains("Varredura PCI concluida; inventario atualizado.\n");
+
+    fixture_reset();
+    fixture_scan_pci_result = ERR_DISK;
+    shell_dispatch_cmd_device_scan("");
+    failures += expect_text("Erro: varredura PCI indisponivel.\n");
+    if (fixture_recovery_last_state != RECOVERY_STATE_DISABLED) {
+        fprintf(stderr, "diagnostics-host: falha PCI nao desabilitou Devices\n");
+        failures++;
+    }
+    fixture_reset();
+    shell_dispatch_cmd_device_scan("extra");
+    failures += expect_text("Uso: device-scan\n");
+    return failures;
+}
+
 static int test_slab(void) {
     int failures = 0;
 
@@ -2832,6 +3010,7 @@ int main(void) {
              test_timer() + test_clock() + test_irqstat() + test_wait() +
              test_wqinfo() + test_workq() + test_tls() + test_vfs();
     result += test_devcheck() + test_devices_and_usb();
+    result += test_device_scan();
     result += test_slab();
     result += test_cpu_usage();
     result += test_pagefault_and_vmamap();

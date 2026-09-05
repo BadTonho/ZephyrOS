@@ -5783,3 +5783,18 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   passaram. A evidência foi sincronizada e a visão renderizada. O catálogo
   registra 7.293 superfícies, 6.241 `COVERED`, 1.052 `PENDING` e 154 casos;
   as pendências restantes continuam explícitas.
+
+- Incremento Shell/diagnostics device-scan — concluído em 2026-09-04
+  (America/Sao_Paulo). A fixture host-only `host:shell:diagnostics` passou a
+  exercitar o fluxo integrado de `device-scan`, incluindo PCI, USB, storage,
+  refresh de mounts, file index, inventário de dispositivos, rede, Wi-Fi,
+  recovery e os seis pontos de `process_yield`. Foram validados o caminho
+  pronto, a inicialização tardia de USB/Wi-Fi, inventários parciais por
+  overflow, degradações opcionais, falha fatal de PCI, resultado nulo e
+  argumentos inválidos, sempre com doubles estáticos e sem hardware real.
+  Passaram `make test-shell-diagnostics-host` com `HOST_CC`, `make q3check`,
+  `make clean`, `make`, os 117 alvos host-only, sincronização, renderização,
+  `make catalog-test` e `git diff --check`. A evidência dinâmica resolveu
+  três superfícies reais de `src/shell/shell_commands_diagnostics.c`; o
+  catálogo registra 7.293 superfícies, 6.244 `COVERED`, 1.049 `PENDING` e
+  154 casos. `power` e `acpi` continuam separados para o próximo incremento.
