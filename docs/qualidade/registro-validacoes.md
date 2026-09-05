@@ -5973,3 +5973,11 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   sem endereços desconhecidos ou símbolos ambíguos. A sincronização,
   renderização e `make catalog-test` passaram; o catálogo registra 7.307
   superfícies, 6.429 `COVERED`, 878 `PENDING` e 158 casos.
+
+- Incremento Core/panic — concluído em 2026-09-05. A fixture existente
+  `host:kernel:panic` passou com `HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`.
+  A execução chamou diretamente `panic`, `panic_halt` e `panic_memory`,
+  incluindo mensagens definidas/ausentes, métricas máximas e interrupção
+  controlada. A cobertura dinâmica foi sincronizada sem endereços desconhecidos
+  ou símbolos ambíguos; `make catalog-test` passou. O catálogo registra 7.307
+  superfícies, 6.432 `COVERED`, 875 `PENDING` e 158 casos.

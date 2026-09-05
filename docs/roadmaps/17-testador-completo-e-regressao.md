@@ -23,7 +23,7 @@ mantém 158 casos `AUTOMATED`; após os incrementos de Shell, RTC,
 processos/threads, FAT32, update U3/U4, os contratos remotos ZSYS e o
 repositório remoto de aplicativos, dos helpers de pacotes do Shell, da
 interface App Store e dos relatórios de rede do Shell, registra 7.307
-superfícies, 6.429 `COVERED` e 878
+superfícies, 6.432 `COVERED` e 875
 `PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
@@ -89,6 +89,20 @@ Isso não significa declarar hardware físico validado sem equipamento.
       pendente de `src/shell/shell_commands_diagnostics.c`; não houve endereços
       desconhecidos ou símbolos ambíguos. O catálogo registra 7.307
       superfícies, 6.429 `COVERED`, 878 `PENDING` e 158 casos.
+
+### Incremento Core/panic — 2026-09-05
+
+- [x] A fixture host-only existente `host:kernel:panic` foi reexecutada com
+      cobertura dinâmica real, exercitando diretamente `panic`, `panic_halt` e
+      `panic_memory` por meio do contrato público de `core/panic.h`.
+- [x] Foram confirmados os caminhos de mensagem ausente, mensagem definida,
+      métricas de memória e interrupção controlada, sem hardware ou processo
+      QEMU.
+- [x] `make test-panic-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`,
+      sincronização, renderização e `make catalog-test` passaram. A evidência
+      cobriu as três superfícies públicas de `src/include/core/panic.h`; o
+      catálogo registra 7.307 superfícies, 6.432 `COVERED`, 875 `PENDING` e
+      158 casos.
 
 ### Incremento Shell/UI App Store — 2026-09-05
 
