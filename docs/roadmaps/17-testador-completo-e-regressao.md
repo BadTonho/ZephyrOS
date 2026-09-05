@@ -27,8 +27,8 @@ Configurações, do Desktop, dos comandos de aplicativos, da evidência RTC e
 das fixtures de entrada/hosted, da evidência de panic, da regeneração dos
 relatórios RTC/Shell, da fixture host-only do Updater, da fixture host-only do
 File Manager, da fixture host-only do Task Manager e da validação de
-resultados do Shell Checks, registra 7.326 superfícies, 6.936 `COVERED` e 390
-`PENDING`.
+resultados do Shell Checks, da expansão do ciclo de vida do Task Manager,
+registra 7.326 superfícies, 6.957 `COVERED` e 369 `PENDING`.
 O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
@@ -3218,3 +3218,20 @@ pendente.
       superfícies, 6.945 `COVERED`, 381 `PENDING`, 59 aposentadas e 165 casos.
       O gate estrito integral continua pendente por causa das demais superfícies
       sem executor ou relatório preservado.
+
+### Evidência Task Manager: ciclo de vida completo da fixture — 2026-09-05
+
+- [x] A fixture `host:shell:taskmanager` foi reexecutada depois de
+      `make q3check` e de `make clean` seguido de `make`. Ela confirmou os
+      contratos de inicialização, estado fechado, GUI indisponível, parsing de
+      status nulo, memória procfs ausente, barra gráfica, busca de thread vazia,
+      fechamento e minimização segura sem GUI, usando doubles estáticos.
+- [x] `make test-taskmanager-host
+      HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` terminou `PASS` com
+      `-Wall -Wextra -Werror`. O relatório dinâmico observou 54 funções reais de
+      `src/shell/taskmanager.c`, com `unknown_addresses=[]` e
+      `ambiguous_symbols=[]`.
+- [x] A sincronização, validação e renderização do catálogo, `make catalog-test`
+      e `git diff --check` passaram. O catálogo atual registra 7.326 superfícies,
+      6.957 `COVERED`, 369 `PENDING`, 59 aposentadas e 165 casos; as pendências
+      restantes continuam explícitas.

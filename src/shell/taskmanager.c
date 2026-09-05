@@ -2947,6 +2947,10 @@ int taskmgr_host_test_contracts(void) {
     TASKMGR_EXPECT(!taskmgr_is_open());
     TASKMGR_EXPECT(!taskmgr_is_gui_open());
     TASKMGR_EXPECT(!taskmgr_is_gui_minimized());
+    taskmgr_close();
+    TASKMGR_EXPECT(!taskmgr_is_open());
+    taskmgr_gui_minimize();
+    TASKMGR_EXPECT(!taskmgr_is_gui_minimized());
     taskmgr_gui_draw_bar(1, 1, 16, 150U, GUI_MODERN_COLOR_ACCENT);
     TASKMGR_EXPECT(taskmgr_gui_refresh_memory_view() == ERR_NOT_FOUND);
     TASKMGR_EXPECT(taskmgr_gui_parse_status(NULL, 0U, &view) == ERR_NULL);

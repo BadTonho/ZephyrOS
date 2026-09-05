@@ -6357,3 +6357,18 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   7.326 superfícies, 6.945 `COVERED`, 381 `PENDING`, 59 aposentadas e 165
   casos. O gate estrito integral continua pendente por causa das demais
   superfícies sem executor ou relatório preservado.
+
+- Incremento Task Manager: ciclo de vida e limites de GUI — concluído em
+  2026-09-05 (America/Sao_Paulo). A fixture `host:shell:taskmanager`, ativada
+  por `ZEPHYROS_HOST_TEST`, passou a exercitar também `taskmgr_close` e o
+  caminho seguro de `taskmgr_gui_minimize` quando a GUI está indisponível,
+  além dos contratos de inicialização, estado fechado, parsing de status nulo,
+  memória procfs ausente, barra gráfica e busca de thread vazia. O alvo
+  `make test-taskmanager-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
+  terminou `PASS` com `-Wall -Wextra -Werror`; a cobertura dinâmica observou
+  54 funções reais de `src/shell/taskmanager.c`, com
+  `unknown_addresses=[]` e `ambiguous_symbols=[]`. Também passaram
+  `make q3check`, `make clean` seguido de `make`, sincronização/renderização,
+  `make catalog-test` e `git diff --check`. O catálogo atual registra 7.326
+  superfícies, 6.957 `COVERED`, 369 `PENDING`, 59 aposentadas e 165 casos;
+  as demais pendências continuam explícitas.

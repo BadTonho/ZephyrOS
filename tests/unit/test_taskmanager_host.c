@@ -14,6 +14,8 @@
 #include "ui/display.h"
 #include "ui/gui.h"
 #include "ui/taskbar.h"
+#include "ui/desktop.h"
+#include "ui/wm.h"
 
 #define HOST_COVERAGE_CAPACITY 512U
 #define HOST_COVERAGE_LINE_SIZE 32U
@@ -118,6 +120,18 @@ int recovery_is_enabled(recovery_component_id_t component) {
 
 void taskbar_remove_app(tb_app_type_t app) {
     (void)app;
+}
+
+void desktop_set_active(int active) {
+    (void)active;
+}
+
+void desktop_draw(void) {
+}
+
+int wm_close_hosted_app(wm_app_type_t app_type) {
+    (void)app_type;
+    return OK;
 }
 
 int taskbar_get_work_area(tb_rect_t* area) {
