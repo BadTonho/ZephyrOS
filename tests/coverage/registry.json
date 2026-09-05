@@ -3687,7 +3687,7 @@
         ],
         "status": "AUTOMATED"
       },
-      "evidence": "make test-shell-commands-packages-host PASS com parsers, IDs, extensoes, limites e matriz de acoes do Shell instrumentados"
+      "evidence": "make test-shell-commands-packages-host PASS com cobertura dinamica real das 96 funcoes C de pacotes, App Store e atualizacoes; a fixture usa doubles estaticos para sucesso, erro, limites, jobs e caminhos remotos sem I/O externo"
     },
     {
       "id": "shell-network-checks-host-dynamic",

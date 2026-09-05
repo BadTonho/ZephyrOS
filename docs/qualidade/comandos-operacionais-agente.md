@@ -2050,18 +2050,24 @@ até possuir um executor real.
 
 ## Shell: comandos de pacotes host-only
 
-O alvo `test-shell-commands-packages-host` valida os helpers de
-`shell_commands_packages.c` sem iniciar jobs ou acessar o kernel real:
+O alvo `test-shell-commands-packages-host` valida os comandos de pacotes,
+App Store e atualizacao de `shell_commands_packages.c` sem iniciar jobs reais
+ou acessar o kernel real:
 
 ```text
 make test-shell-commands-packages-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
 A fixture cobre extensoes de pacotes, normalizacao de IDs, tokens com
-truncamento, argumentos nulos e a selecao de acoes de `pkg`, `store` e
-`update`. O relatorio instrumentado fica em
+truncamento, argumentos nulos, formatadores, preflight, historico,
+diagnosticos, rollback, failpoints, jobs, dispatchers e a selecao de acoes de
+`pkg`, `store` e `update`. Doubles estaticos cobrem dependencias de catalogo,
+pacotes, repositorio remoto, atualizacao, runtime, slots, recovery, filesystem,
+IPC, teclado e jobs, sem rede, disco ou allocator reais. O relatorio fica em
 `build/test-results/shell-commands-packages-host/coverage.json` e deve
-terminar com `PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`.
+terminar com `PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`; a
+execucao validada observou 96 funcoes C de
+`src/shell/shell_commands_packages.c`.
 
 ## Shell/UI: núcleo determinístico do Editor host-only
 
