@@ -125352,9 +125352,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:kernel:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/kernel/kernel.c:kernel_cancel_foreground_app",
@@ -125370,9 +125373,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:kernel:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/kernel/kernel.c:kernel_dispatch_async_work",
@@ -125388,9 +125394,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:kernel:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/kernel/kernel.c:kernel_dispatch_deferred_work",
@@ -125406,9 +125415,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:kernel:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/kernel/kernel.c:kernel_dispatch_input_work",
@@ -125447,9 +125459,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:kernel:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/kernel/kernel.c:kernel_dispatch_timers",
@@ -125465,9 +125480,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:kernel:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/kernel/kernel.c:kernel_handle_taskbar_mouse",
@@ -125483,9 +125501,33 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:kernel:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/kernel/kernel.c:kernel_host_test_run_finite_routes",
+      "kind": "c_function",
+      "source": "src/kernel/kernel.c",
+      "symbol": "kernel_host_test_run_finite_routes",
+      "linkage": "external",
+      "owner": "kernel",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:kernel:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/kernel/kernel.c:kernel_index_work_callback",
@@ -125526,11 +125568,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:kernel:runtime",
         "qemu:tst5:apps",
         "qemu:tst5:input"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/kernel/kernel.c:kernel_irq_work_notify",
@@ -125548,11 +125591,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:kernel:runtime",
         "qemu:tst5:apps",
         "qemu:tst5:input"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/kernel/kernel.c:kernel_main",
@@ -125586,9 +125630,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:kernel:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/kernel/kernel.c:kernel_poll_usb",
@@ -125604,9 +125651,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:kernel:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/kernel/kernel.c:kernel_redraw_after_menu_close",
@@ -125622,9 +125672,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:kernel:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/kernel/kernel.c:kernel_request_shell_app",
@@ -125640,9 +125693,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:kernel:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/kernel/kernel.c:kernel_retry_shell_request",
@@ -125658,9 +125714,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:kernel:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/kernel/kernel.c:kernel_send_shell_request",
@@ -125676,9 +125735,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:kernel:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/kernel/kernel.c:kernel_start_automatic_dhcp",
@@ -125694,9 +125756,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:kernel:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/kernel/kernel.c:kernel_timer_work_callback",
@@ -125712,9 +125777,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:kernel:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/kernel/kernel.c:kernel_timer_work_notify",
@@ -125730,9 +125798,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:kernel:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/kernel/kernel.c:kernel_wake_shell_for_event",
@@ -125769,9 +125840,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:kernel:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/kernel/kernel.c:kernel_workqueue_init",
@@ -125787,9 +125861,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:kernel:runtime"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/kernel/kernel.c:shell_process_main",
@@ -168686,6 +168763,63 @@
         "panic",
         "diagnostics",
         "halt",
+        "limits",
+        "coverage"
+      ]
+    },
+    {
+      "id": "host:kernel:runtime",
+      "scenario": "Rotas finitas host-only do runtime do kernel",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "hardware": "kernel-dependency-stubs",
+        "loops": "entry-processes-excluded"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "exercitar workqueue, callbacks, polling, despacho, mouse, solicitacoes de Shell e DHCP sem iniciar loops de processo",
+      "expected": "rotas finitas retornam codigos coerentes, preservam pre-condicoes e completam com dependencias estaticas falsas",
+      "errors": "compilador ausente, warning, cobertura incompleta, erro de assercao ou timeout",
+      "effects": "somente estado estatico do kernel e dependencias falsas no processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "c:src/kernel/kernel.c:global_mouse_handler",
+        "c:src/kernel/kernel.c:kernel_cancel_foreground_app",
+        "c:src/kernel/kernel.c:kernel_dispatch_async_work",
+        "c:src/kernel/kernel.c:kernel_dispatch_deferred_work",
+        "c:src/kernel/kernel.c:kernel_dispatch_legacy_async",
+        "c:src/kernel/kernel.c:kernel_dispatch_timers",
+        "c:src/kernel/kernel.c:kernel_handle_taskbar_mouse",
+        "c:src/kernel/kernel.c:kernel_host_test_run_finite_routes",
+        "c:src/kernel/kernel.c:kernel_irq_work_callback",
+        "c:src/kernel/kernel.c:kernel_irq_work_notify",
+        "c:src/kernel/kernel.c:kernel_network_work_callback",
+        "c:src/kernel/kernel.c:kernel_poll_usb",
+        "c:src/kernel/kernel.c:kernel_redraw_after_menu_close",
+        "c:src/kernel/kernel.c:kernel_request_shell_app",
+        "c:src/kernel/kernel.c:kernel_retry_shell_request",
+        "c:src/kernel/kernel.c:kernel_send_shell_request",
+        "c:src/kernel/kernel.c:kernel_start_automatic_dhcp",
+        "c:src/kernel/kernel.c:kernel_timer_work_callback",
+        "c:src/kernel/kernel.c:kernel_timer_work_notify",
+        "c:src/kernel/kernel.c:kernel_wake_shell_for_process_event",
+        "c:src/kernel/kernel.c:kernel_workqueue_init"
+      ],
+      "tags": [
+        "host",
+        "kernel",
+        "runtime",
+        "workqueue",
+        "callbacks",
         "limits",
         "coverage"
       ]

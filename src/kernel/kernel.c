@@ -67,6 +67,9 @@
 #include "ui/display.h"
 #include "apps/taskmanager.h"
 #include "apps/guitest.h"
+#ifdef ZEPHYROS_HOST_TEST
+#include "kernel_host_test.h"
+#endif
 
 #define SHELL_KEYBOARD_DISPATCH_BUDGET (IPC_MSG_QUEUE_SIZE / 2U)
 #define KERNEL_USB_POLL_BUDGET 4U
@@ -723,6 +726,49 @@ static int kernel_start_automatic_dhcp(void) {
     LOG_WARN("KERNEL", "Nenhuma NIC ativa com link para DHCP automatico");
     return ERR_NOT_FOUND;
 }
+
+#ifdef ZEPHYROS_HOST_TEST
+int kernel_host_test_run_finite_routes(void) {
+    mouse_event_t event = {0};
+    uint32_t generation = process_get_event_generation();
+    uint8_t fallback = 0U;
+
+    kernel_service_fallback = 0;
+    kernel_network_poll_enabled = 1;
+    kernel_usb_poll_enabled = 1;
+    kernel_deferred_enabled = 1;
+    kernel_workqueue_enabled = 0;
+    kernel_shell_pid = 0U;
+    kernel_pending_shell_request = 0U;
+    kernel_last_process_event_generation = generation;
+
+    if (kernel_send_shell_request(IPC_APP_OPEN_SHELL) != 0) return 1;
+    if (!kernel_cancel_foreground_app()) return 2;
+    kernel_request_shell_app(0);
+    kernel_retry_shell_request();
+    kernel_wake_shell_for_process_event();
+    if (kernel_workqueue_init() != OK) return 3;
+    kernel_dispatch_deferred_work();
+    kernel_workqueue_enabled = 0;
+    kernel_dispatch_async_work();
+    kernel_workqueue_enabled = 1;
+    if (workqueue_needs_fallback(&fallback) != OK || fallback) return 4;
+    kernel_dispatch_async_work();
+    if (kernel_dispatch_timers() != 0U) return 5;
+    if (kernel_irq_work_callback(&kernel_irq_work) != OK) return 6;
+    if (kernel_timer_work_callback(&kernel_timer_work) != OK) return 7;
+    if (kernel_network_work_callback(&kernel_network_work) != OK) return 8;
+    kernel_irq_work_notify(&kernel_irq_work);
+    kernel_timer_work_notify(&kernel_timer_work);
+    kernel_poll_usb();
+    kernel_redraw_after_menu_close();
+    event.event = MOUSE_EVENT_MOVE;
+    global_mouse_handler(&event);
+    if (kernel_handle_taskbar_mouse(&event) != 0) return 9;
+    if (kernel_start_automatic_dhcp() != ERR_NOT_FOUND) return 10;
+    return 0;
+}
+#endif
 
 void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     vesa_init(vesa_info_addr);

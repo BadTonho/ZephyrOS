@@ -7,6 +7,20 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## 2026-09-05 - Rotas finitas do runtime do kernel
+
+- Caso: `host:kernel:runtime` / `make test-kernel-host`.
+- Fixture: dependências estáticas para workqueue, IRQ deferred, timer, rede,
+  USB, processo, Shell, UI, file index e logs; nenhum hardware ou processo
+  infinito foi iniciado.
+- Cobertura: 21 funções reais de `src/kernel/kernel.c`, incluindo despacho
+  assíncrono, callbacks, polling, mouse, solicitações ao Shell, redesenho e
+  DHCP; o relatório não teve endereços desconhecidos nem símbolos ambíguos.
+- Resultado: `PASS` com `-Wall -Wextra -Werror`; a sincronização do catálogo
+  passou e o catálogo registra 7.330 superfícies, 7.267 `COVERED`, 63
+  `PENDING` e 170 casos. `kernel_main` e as entradas de processo com loops
+  permanentes continuam explicitamente pendentes.
+
 ## 2026-09-05 - Rota `panic_halt` com evidência host-only
 
 - Caso: `host:kernel:panic` / `make test-panic-host`.

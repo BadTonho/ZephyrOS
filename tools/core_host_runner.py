@@ -852,6 +852,12 @@ PANIC_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_panic_host.c",
     ROOT / "src" / "kernel" / "panic.c",
 )
+KERNEL_RESULT_DIR = ROOT / "build" / "test-results" / "kernel-host"
+KERNEL_BINARY = ROOT / "build" / "tests" / "test_kernel_host.exe"
+KERNEL_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_kernel_host.c",
+    ROOT / "src" / "kernel" / "kernel.c",
+)
 PCI_RESULT_DIR = ROOT / "build" / "test-results" / "pci-host"
 PCI_BINARY = ROOT / "build" / "tests" / "test_pci_host.exe"
 PCI_SOURCE_FILES = (
@@ -1247,6 +1253,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
                 RECOVERY_LOADER_SOURCE_FILES, "recovery-loader-host")
     if case_id == "host:kernel:panic":
         return PANIC_RESULT_DIR, PANIC_BINARY, PANIC_SOURCE_FILES, "panic-host"
+    if case_id == "host:kernel:runtime":
+        return KERNEL_RESULT_DIR, KERNEL_BINARY, KERNEL_SOURCE_FILES, "kernel-host"
     if case_id == "host:drivers:pci":
         return PCI_RESULT_DIR, PCI_BINARY, PCI_SOURCE_FILES, "pci-host"
     if case_id == "host:drivers:ata":
@@ -1347,6 +1355,9 @@ def compiler_command(compiler: str, binary: Path,
     if any(source.name == "thread.c" for source in selected_sources):
         compatibility_flags.extend(["-Wno-int-to-pointer-cast",
                                     "-Wno-pointer-to-int-cast",
+                                    "-Dasm=__asm__"])
+    if any(source.name == "kernel.c" for source in selected_sources):
+        compatibility_flags.extend(["-Wno-int-to-pointer-cast",
                                     "-Dasm=__asm__"])
     include_directories = []
     if any(source.name in {"recovery_menu.c", "recovery_loader.c"}
@@ -1537,7 +1548,8 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:boot:recovery-runtime",
                                  "host:boot:recovery-menu",
                                  "host:boot:recovery-loader",
-                                 "host:kernel:panic", "host:drivers:pci",
+                                 "host:kernel:panic", "host:kernel:runtime",
+                                 "host:drivers:pci",
                                  "host:drivers:ata",
                                  "host:drivers:idt",
                                  "host:ui:icons", "host:drivers:vesa",

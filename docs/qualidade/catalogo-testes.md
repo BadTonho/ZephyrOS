@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **7329**
-- Casos de teste: **169**
+- Superfícies ativas: **7330**
+- Casos de teste: **170**
 - Superfícies aposentadas: **59**
 
 | Tipo | Quantidade |
 |---|---:|
 | `api_function` | 1587 |
 | `asm_entry` | 101 |
-| `c_function` | 5521 |
+| `c_function` | 5522 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7250 |
+| `COVERED` | 7269 |
 | `MANUAL` | 0 |
-| `PENDING` | 79 |
+| `PENDING` | 61 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 169 |
+| `AUTOMATED` | 170 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -44,7 +44,7 @@
 | `fs` | 957 |
 | `gui` | 30 |
 | `icons` | 18 |
-| `kernel` | 40 |
+| `kernel` | 41 |
 | `memory` | 194 |
 | `process` | 259 |
 | `settings` | 57 |
@@ -5647,30 +5647,31 @@
 | `c:src/icons/icons.c:icons_set_wm` | `src/icons/icons.c` | `icons_set_wm` | `icons` | `COVERED` | 1 |
 | `c:src/icons/icons.c:icons_warn_once` | `src/icons/icons.c` | `icons_warn_once` | `icons` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:desktop_process_main` | `src/kernel/kernel.c` | `desktop_process_main` | `kernel` | `PENDING` | 0 |
-| `c:src/kernel/kernel.c:global_mouse_handler` | `src/kernel/kernel.c` | `global_mouse_handler` | `kernel` | `PENDING` | 0 |
-| `c:src/kernel/kernel.c:kernel_cancel_foreground_app` | `src/kernel/kernel.c` | `kernel_cancel_foreground_app` | `kernel` | `PENDING` | 0 |
-| `c:src/kernel/kernel.c:kernel_dispatch_async_work` | `src/kernel/kernel.c` | `kernel_dispatch_async_work` | `kernel` | `PENDING` | 0 |
-| `c:src/kernel/kernel.c:kernel_dispatch_deferred_work` | `src/kernel/kernel.c` | `kernel_dispatch_deferred_work` | `kernel` | `PENDING` | 0 |
+| `c:src/kernel/kernel.c:global_mouse_handler` | `src/kernel/kernel.c` | `global_mouse_handler` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_cancel_foreground_app` | `src/kernel/kernel.c` | `kernel_cancel_foreground_app` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_dispatch_async_work` | `src/kernel/kernel.c` | `kernel_dispatch_async_work` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_dispatch_deferred_work` | `src/kernel/kernel.c` | `kernel_dispatch_deferred_work` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_dispatch_input_work` | `src/kernel/kernel.c` | `kernel_dispatch_input_work` | `kernel` | `COVERED` | 3 |
-| `c:src/kernel/kernel.c:kernel_dispatch_legacy_async` | `src/kernel/kernel.c` | `kernel_dispatch_legacy_async` | `kernel` | `PENDING` | 0 |
-| `c:src/kernel/kernel.c:kernel_dispatch_timers` | `src/kernel/kernel.c` | `kernel_dispatch_timers` | `kernel` | `PENDING` | 0 |
-| `c:src/kernel/kernel.c:kernel_handle_taskbar_mouse` | `src/kernel/kernel.c` | `kernel_handle_taskbar_mouse` | `kernel` | `PENDING` | 0 |
+| `c:src/kernel/kernel.c:kernel_dispatch_legacy_async` | `src/kernel/kernel.c` | `kernel_dispatch_legacy_async` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_dispatch_timers` | `src/kernel/kernel.c` | `kernel_dispatch_timers` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_handle_taskbar_mouse` | `src/kernel/kernel.c` | `kernel_handle_taskbar_mouse` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_host_test_run_finite_routes` | `src/kernel/kernel.c` | `kernel_host_test_run_finite_routes` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_index_work_callback` | `src/kernel/kernel.c` | `kernel_index_work_callback` | `kernel` | `COVERED` | 3 |
-| `c:src/kernel/kernel.c:kernel_irq_work_callback` | `src/kernel/kernel.c` | `kernel_irq_work_callback` | `kernel` | `COVERED` | 2 |
-| `c:src/kernel/kernel.c:kernel_irq_work_notify` | `src/kernel/kernel.c` | `kernel_irq_work_notify` | `kernel` | `COVERED` | 2 |
+| `c:src/kernel/kernel.c:kernel_irq_work_callback` | `src/kernel/kernel.c` | `kernel_irq_work_callback` | `kernel` | `COVERED` | 3 |
+| `c:src/kernel/kernel.c:kernel_irq_work_notify` | `src/kernel/kernel.c` | `kernel_irq_work_notify` | `kernel` | `COVERED` | 3 |
 | `c:src/kernel/kernel.c:kernel_main` | `src/kernel/kernel.c` | `kernel_main` | `kernel` | `PENDING` | 0 |
-| `c:src/kernel/kernel.c:kernel_network_work_callback` | `src/kernel/kernel.c` | `kernel_network_work_callback` | `kernel` | `PENDING` | 0 |
-| `c:src/kernel/kernel.c:kernel_poll_usb` | `src/kernel/kernel.c` | `kernel_poll_usb` | `kernel` | `PENDING` | 0 |
-| `c:src/kernel/kernel.c:kernel_redraw_after_menu_close` | `src/kernel/kernel.c` | `kernel_redraw_after_menu_close` | `kernel` | `PENDING` | 0 |
-| `c:src/kernel/kernel.c:kernel_request_shell_app` | `src/kernel/kernel.c` | `kernel_request_shell_app` | `kernel` | `PENDING` | 0 |
-| `c:src/kernel/kernel.c:kernel_retry_shell_request` | `src/kernel/kernel.c` | `kernel_retry_shell_request` | `kernel` | `PENDING` | 0 |
-| `c:src/kernel/kernel.c:kernel_send_shell_request` | `src/kernel/kernel.c` | `kernel_send_shell_request` | `kernel` | `PENDING` | 0 |
-| `c:src/kernel/kernel.c:kernel_start_automatic_dhcp` | `src/kernel/kernel.c` | `kernel_start_automatic_dhcp` | `kernel` | `PENDING` | 0 |
-| `c:src/kernel/kernel.c:kernel_timer_work_callback` | `src/kernel/kernel.c` | `kernel_timer_work_callback` | `kernel` | `PENDING` | 0 |
-| `c:src/kernel/kernel.c:kernel_timer_work_notify` | `src/kernel/kernel.c` | `kernel_timer_work_notify` | `kernel` | `PENDING` | 0 |
+| `c:src/kernel/kernel.c:kernel_network_work_callback` | `src/kernel/kernel.c` | `kernel_network_work_callback` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_poll_usb` | `src/kernel/kernel.c` | `kernel_poll_usb` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_redraw_after_menu_close` | `src/kernel/kernel.c` | `kernel_redraw_after_menu_close` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_request_shell_app` | `src/kernel/kernel.c` | `kernel_request_shell_app` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_retry_shell_request` | `src/kernel/kernel.c` | `kernel_retry_shell_request` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_send_shell_request` | `src/kernel/kernel.c` | `kernel_send_shell_request` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_start_automatic_dhcp` | `src/kernel/kernel.c` | `kernel_start_automatic_dhcp` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_timer_work_callback` | `src/kernel/kernel.c` | `kernel_timer_work_callback` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_timer_work_notify` | `src/kernel/kernel.c` | `kernel_timer_work_notify` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_wake_shell_for_event` | `src/kernel/kernel.c` | `kernel_wake_shell_for_event` | `kernel` | `COVERED` | 1 |
-| `c:src/kernel/kernel.c:kernel_wake_shell_for_process_event` | `src/kernel/kernel.c` | `kernel_wake_shell_for_process_event` | `kernel` | `PENDING` | 0 |
-| `c:src/kernel/kernel.c:kernel_workqueue_init` | `src/kernel/kernel.c` | `kernel_workqueue_init` | `kernel` | `PENDING` | 0 |
+| `c:src/kernel/kernel.c:kernel_wake_shell_for_process_event` | `src/kernel/kernel.c` | `kernel_wake_shell_for_process_event` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_workqueue_init` | `src/kernel/kernel.c` | `kernel_workqueue_init` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:shell_process_main` | `src/kernel/kernel.c` | `shell_process_main` | `kernel` | `PENDING` | 0 |
 | `c:src/kernel/kernel.c:system_process_main` | `src/kernel/kernel.c` | `system_process_main` | `kernel` | `PENDING` | 0 |
 | `c:src/kernel/kernel.c:test_protocol_process_main` | `src/kernel/kernel.c` | `test_protocol_process_main` | `kernel` | `PENDING` | 0 |
@@ -7477,6 +7478,7 @@
 | `host:gui:display` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar inicializacao, disponibilidade VESA, parsing de escala, conversao de pixels e refresh das cenas | metricas e escalas validas funcionam, limites retornam erros canonicos e falha de reflow restaura a escala anterior | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do display e callbacks falsos de VESA, desktop, taskbar e Window Manager | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:gui:widgets` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar temas, desenho de texto nativo e escalado, medicao, paineis, formas, gradientes, botoes e molduras em framebuffer falso | temas invalidos e estados indisponiveis retornam ou preservam o contrato, limites nao escapam do framebuffer e as primitivas encaminham o desenho para VESA | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente metricas, fonte, framebuffer e contadores estaticos falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:kernel:panic` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar panic, panic_memory, mensagens padrao e explicitas, metricas zero e nao zero e encaminhamento ao protocolo | panic publica a razao correta, desenha o diagnostico completo, descarrega a tela e interrompe apenas o fluxo de teste | compilador ausente, warning, cobertura incompleta, retorno inesperado do halt, falha de assercao ou timeout | somente buffers, contadores de video e razao do protocolo no processo host; nenhum halt real e executado | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:kernel:runtime` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar workqueue, callbacks, polling, despacho, mouse, solicitacoes de Shell e DHCP sem iniciar loops de processo | rotas finitas retornam codigos coerentes, preservam pre-condicoes e completam com dependencias estaticas falsas | compilador ausente, warning, cobertura incompleta, erro de assercao ou timeout | somente estado estatico do kernel e dependencias falsas no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:memory:memory` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar inicializacao E820, alocacao e liberacao PMM por zona, heap, alinhamento e estatisticas | PMM e heap rejeitam limites invalidos, contabilizam falhas e restauram todas as paginas e blocos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente mapa E820, bitmap PMM e heap estaticos no processo host | paginas e blocos liberados, estatisticas restauradas e artefatos preservados |
 | `host:memory:paging` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar init, mapeamento, diretorios de usuario, faults lazy, copias, limites e cleanup com PMM falso | o paging respeita os limites de usuario, rejeita estados invalidos e restaura os recursos da fixture | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente diretorios, tabelas e paginas estaticos no processo host | diretorios e tabelas liberados, pagina de usuario coletada e artefatos preservados |
 | `host:memory:slab-metadata` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar inicializacao, limites, metadados, estatisticas e limpeza do registrador SLAB sem alocar paginas reais | estado publicado, informacoes por indice, duplicidade e limpeza respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas de metadados no processo host; nenhuma pagina real e alocada | cache temporario destruido e manifesto, logs e cobertura preservados |
@@ -7644,25 +7646,7 @@
 - `asm:src/kernel/switch.asm:thread_context_switch`
 - `asm:src/kernel/switch.asm:tss_flush`
 - `c:src/kernel/kernel.c:desktop_process_main`
-- `c:src/kernel/kernel.c:global_mouse_handler`
-- `c:src/kernel/kernel.c:kernel_cancel_foreground_app`
-- `c:src/kernel/kernel.c:kernel_dispatch_async_work`
-- `c:src/kernel/kernel.c:kernel_dispatch_deferred_work`
-- `c:src/kernel/kernel.c:kernel_dispatch_legacy_async`
-- `c:src/kernel/kernel.c:kernel_dispatch_timers`
-- `c:src/kernel/kernel.c:kernel_handle_taskbar_mouse`
 - `c:src/kernel/kernel.c:kernel_main`
-- `c:src/kernel/kernel.c:kernel_network_work_callback`
-- `c:src/kernel/kernel.c:kernel_poll_usb`
-- `c:src/kernel/kernel.c:kernel_redraw_after_menu_close`
-- `c:src/kernel/kernel.c:kernel_request_shell_app`
-- `c:src/kernel/kernel.c:kernel_retry_shell_request`
-- `c:src/kernel/kernel.c:kernel_send_shell_request`
-- `c:src/kernel/kernel.c:kernel_start_automatic_dhcp`
-- `c:src/kernel/kernel.c:kernel_timer_work_callback`
-- `c:src/kernel/kernel.c:kernel_timer_work_notify`
-- `c:src/kernel/kernel.c:kernel_wake_shell_for_process_event`
-- `c:src/kernel/kernel.c:kernel_workqueue_init`
 - `c:src/kernel/kernel.c:shell_process_main`
 - `c:src/kernel/kernel.c:system_process_main`
 - `c:src/kernel/kernel.c:test_protocol_process_main`
