@@ -2,11 +2,16 @@
 #include <stdio.h>
 
 #include "apps/shell_checks.h"
+#include "apps/shell_job.h"
 #include "core/app_loader.h"
 #include "core/errors.h"
+#include "core/keyboard.h"
 #include "core/log.h"
+#include "core/recovery.h"
 #include "core/string.h"
+#include "core/timer.h"
 #include "core/video.h"
+#include "drivers/acpi.h"
 #include "fs/fs.h"
 #include "memory/paging.h"
 #include "memory/vma.h"
@@ -42,6 +47,14 @@ static uint32_t fixture_process_count;
 static int fixture_foreground_active;
 static int fixture_run_image_result = OK;
 static uint32_t fixture_run_image_pid;
+static recovery_component_t fixture_recovery[RECOVERY_COMPONENT_COUNT];
+static uint32_t fixture_ticks;
+static int fixture_job_active;
+static int fixture_job_start_result = OK;
+static uint32_t fixture_job_generation = 1U;
+static int fixture_cancel_foreground_result = OK;
+static uint8_t fixture_cancel_requested;
+static keyboard_focus_cancel_filter_t fixture_cancel_filter;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -107,6 +120,15 @@ uint8_t fs_get_type(void) {
 
 int app_loader_is_ready(void) {
     return fixture_loader_ready;
+}
+
+int app_loader_cancel_foreground(uint32_t exit_code) {
+    (void)exit_code;
+    return fixture_cancel_foreground_result;
+}
+
+void app_loader_set_operation_generation(uint32_t generation) {
+    fixture_job_generation = generation;
 }
 
 process_t* process_get_current(void) {
@@ -194,6 +216,130 @@ int fs_delete_file(const char* filename) {
     fixture_delete_calls++;
     return fixture_delete_calls <= fixture_delete_successes ? OK :
            ERR_NOT_FOUND;
+}
+
+const recovery_component_t* recovery_get(recovery_component_id_t component) {
+    if (component >= RECOVERY_COMPONENT_COUNT) return NULL;
+    return &fixture_recovery[component];
+}
+
+uint32_t recovery_get_count(void) {
+    return RECOVERY_COMPONENT_COUNT;
+}
+
+int recovery_is_available(recovery_component_id_t component) {
+    const recovery_component_t* entry = recovery_get(component);
+
+    return entry && entry->state == RECOVERY_STATE_READY;
+}
+
+int recovery_is_enabled(recovery_component_id_t component) {
+    const recovery_component_t* entry = recovery_get(component);
+
+    return entry && entry->state != RECOVERY_STATE_DISABLED;
+}
+
+uint32_t timer_get_ticks(void) {
+    return fixture_ticks;
+}
+
+void shell_job_set_phase(shell_job_context_t* context, const char* phase) {
+    uint32_t length;
+
+    if (!context || !phase) return;
+    length = kstrlen(phase);
+    if (length >= SHELL_JOB_PHASE_SIZE) length = SHELL_JOB_PHASE_SIZE - 1U;
+    kmemcpy(context->phase, phase, length);
+    context->phase[length] = '\0';
+}
+
+void shell_job_set_progress(shell_job_context_t* context, uint32_t progress,
+                            uint32_t total) {
+    if (!context) return;
+    context->progress = progress;
+    context->total = total;
+}
+
+void shell_job_set_next_wake(shell_job_context_t* context,
+                             uint32_t next_wake_tick) {
+    if (!context) return;
+    context->next_wake_tick = next_wake_tick;
+    context->next_wake_active = 1U;
+}
+
+int shell_job_is_active(void) {
+    return fixture_job_active;
+}
+
+int shell_job_start(const shell_job_definition_t* definition,
+                    const char* arguments) {
+    (void)definition;
+    (void)arguments;
+    if (fixture_job_start_result != OK) return fixture_job_start_result;
+    fixture_job_active = 1;
+    return OK;
+}
+
+uint32_t shell_job_get_generation(void) {
+    return fixture_job_generation;
+}
+
+void shell_job_request_cancel(void) {
+    fixture_cancel_requested = 1U;
+}
+
+void keyboard_set_focus_cancel_filter(keyboard_focus_cancel_filter_t filter) {
+    fixture_cancel_filter = filter;
+}
+
+void shell_runtime_reset_input(void) {
+}
+
+void shell_runtime_finish_command(void) {
+}
+
+void shell_print_prompt(void) {
+}
+
+int process_cancel_user_test(uint32_t pid, uint32_t exit_code) {
+    (void)pid;
+    (void)exit_code;
+    return fixture_cancel_foreground_result;
+}
+
+void shell_checks_host_set_recovery_state(recovery_component_id_t component,
+                                          recovery_state_t state) {
+    if (component < RECOVERY_COMPONENT_COUNT) {
+        fixture_recovery[component].state = state;
+    }
+}
+
+void shell_checks_host_set_ticks(uint32_t ticks) {
+    fixture_ticks = ticks;
+}
+
+void shell_checks_host_set_job_fixture(int active, int start_result,
+                                       uint32_t generation) {
+    fixture_job_active = active;
+    fixture_job_start_result = start_result;
+    fixture_job_generation = generation;
+}
+
+void shell_checks_host_set_cancel_fixture(int result, uint8_t requested) {
+    fixture_cancel_foreground_result = result;
+    fixture_cancel_requested = requested;
+}
+
+int shell_checks_host_job_filter_installed(void) {
+    return fixture_cancel_filter != NULL;
+}
+
+int shell_checks_host_job_active(void) {
+    return fixture_job_active;
+}
+
+int shell_checks_host_cancel_requested(void) {
+    return fixture_cancel_requested != 0U;
 }
 
 void shell_checks_host_set_environment(uint8_t fs_type, int loader_ready) {
