@@ -150,6 +150,7 @@ novo; o handshake e inerte no boot normal ate a validacao de `HELLO`.
 | `src/include/ui/appstore_test.h` | `docs/09-shell/refatoracao-shell.md` |
 | `src/include/ui/taskbar.h` | `docs/12-desktop/desktop.md` |
 | `src/include/ui/updater.h` | `docs/14-atualizacoes/system-updater.md` |
+| `src/include/ui/updater_test.h` | `docs/14-atualizacoes/system-updater.md` |
 | `src/include/ui/wm.h` | `docs/12-desktop/desktop.md` |
 
 O contrato de `src/include/process/process.h` inclui, desde a K2, os

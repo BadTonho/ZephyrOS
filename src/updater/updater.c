@@ -22,6 +22,7 @@
 #include "ui/gui.h"
 #include "ui/taskbar.h"
 #include "ui/wm.h"
+#include "ui/updater_test.h"
 
 #define UPDATER_MAX_PACKAGES 16
 #define UPDATER_PACKAGE_NAME_SIZE 13
@@ -1125,7 +1126,7 @@ static void updater_simple_draw_tabs(void) {
     int x = 2;
 
     for (int index = 0; index < UPDATER_SIMPLE_TAB_COUNT; index++) {
-        uint8_t color = updater_tab == index ? 0x1F : 0x07;
+        uint8_t color = updater_tab == (updater_tab_t)index ? 0x1F : 0x07;
 
         video_print_at(x, 2, names[index], color);
         x += (int)kstrlen(names[index]) + 1;
@@ -1500,7 +1501,7 @@ static void updater_gui_draw_tabs(int x, int y, int width) {
         gui_draw_button(
             (uint32_t)(x + index * (tab_width + UPDATER_CLASSIC_TAB_GAP)),
             (uint32_t)y, (uint32_t)tab_width, 28, names[index],
-            updater_tab == index);
+            updater_tab == (updater_tab_t)index);
     }
 }
 
@@ -2581,3 +2582,116 @@ static void updater_hosted_close(void) {
     updater_confirm = UPDATER_CONFIRM_NONE;
     LOG_INFO("UPDATER", "System Updater Classic fechado");
 }
+
+#ifdef ZEPHYROS_HOST_TEST
+int updater_host_test_contracts(void) {
+    update_version_t version = {1U, 20U, 300U};
+    char output[64];
+    int failures = 0;
+
+    if (updater_is_zup_name(NULL) || updater_is_zup_name("A.ZU") ||
+        !updater_is_zup_name("update.zup") ||
+        updater_is_zup_name("update.bin")) failures++;
+    updater_copy_name(output, "update.zup");
+    if (kstrcmp(output, "UPDATE.ZUP") != 0) failures++;
+    updater_copy_name(output, "abcdefghijklmnop.zup");
+    if (kstrcmp(output, "ABCDEFGHIJKL") != 0) failures++;
+
+    updater_package_count = 3;
+    updater_copy_name(updater_packages[0].name, "z.zup");
+    updater_copy_name(updater_packages[1].name, "a.zup");
+    updater_copy_name(updater_packages[2].name, "m.zup");
+    updater_sort_packages();
+    if (kstrcmp(updater_packages[0].name, "A.ZUP") != 0 ||
+        kstrcmp(updater_packages[1].name, "M.ZUP") != 0 ||
+        kstrcmp(updater_packages[2].name, "Z.ZUP") != 0) failures++;
+
+    updater_u32_text(0U, output);
+    if (kstrcmp(output, "0") != 0) failures++;
+    updater_u32_text(4294967295U, output);
+    if (kstrcmp(output, "4294967295") != 0) failures++;
+    output[0] = '\0';
+    updater_text_append(output, sizeof(output), "prefix");
+    updater_text_append(output, 7U, "suffix");
+    if (kstrcmp(output, "prefix") != 0) failures++;
+    output[0] = '\0';
+    updater_text_append_u32(output, sizeof(output), 42U);
+    updater_text_append(output, sizeof(output), "/");
+    updater_text_append_version(output, sizeof(output), &version, 9U);
+    if (kstrcmp(output, "42/1.20.300/e9") != 0) failures++;
+    updater_version_text(output, sizeof(output), &version, 9U);
+    if (kstrcmp(output, "1.20.300 epoch=9") != 0) failures++;
+
+    updater_system_tag_length = 0U;
+    if (updater_system_tag_valid()) failures++;
+    kmemcpy(updater_system_tag, "stable-1", 9U);
+    updater_system_tag_length = 8U;
+    if (!updater_system_tag_valid()) failures++;
+    updater_system_tag[6] = ' ';
+    if (updater_system_tag_valid()) failures++;
+    updater_system_tag_length = UPDATE_REMOTE_TAG_SIZE;
+    if (updater_system_tag_valid()) failures++;
+    kmemset(updater_system_tag, 0, sizeof(updater_system_tag));
+    kmemset(updater_system_tag_saved, 0, sizeof(updater_system_tag_saved));
+    kmemcpy(updater_system_tag, "stable", 7U);
+    updater_system_tag_length = 6U;
+    updater_system_tag_begin();
+    kmemcpy(updater_system_tag, "changed", 8U);
+    updater_system_tag_length = 7U;
+    updater_system_tag_finish(0);
+    if (kstrcmp(updater_system_tag, "stable") != 0 ||
+        updater_system_tag_editing) failures++;
+    updater_system_tag_begin();
+    kmemcpy(updater_system_tag, "bad tag", 8U);
+    updater_system_tag_length = 7U;
+    updater_system_tag_finish(1);
+    if (updater_last_result != ERR_INVALID || !updater_system_tag_editing) {
+        failures++;
+    }
+    kmemcpy(updater_system_tag, "release-1", 9U);
+    updater_system_tag_length = 9U;
+    updater_system_tag_finish(1);
+    if (updater_system_tag_editing || !updater_system_tag_dirty) failures++;
+
+    updater_package_count = 0;
+    updater_selected = 0;
+    if (updater_selected_package() != 0) failures++;
+    updater_package_count = 2;
+    updater_selected = 1;
+    if (!updater_selected_package() ||
+        kstrcmp(updater_selected_package(), "M.ZUP") != 0) failures++;
+    updater_selected = -1;
+    if (updater_selected_package() != 0) failures++;
+    updater_selected = 0;
+    updater_gui_height = 560;
+    updater_scroll = 0;
+    updater_change_selection(-1);
+    if (updater_selected != 1) failures++;
+    updater_change_selection(1);
+    if (updater_selected != 0) failures++;
+
+    if (updater_point_in(10, 10, 10, 10, 4, 4) != 1 ||
+        updater_point_in(14, 10, 10, 10, 4, 4) != 0 ||
+        updater_gui_tab_width(600) != 93 ||
+        kstrcmp(updater_system_slot_name(0U), "A") != 0 ||
+        kstrcmp(updater_system_slot_name(1U), "B") != 0 ||
+        kstrcmp(updater_system_slot_name(2U), "NONE") != 0) {
+        failures++;
+    }
+    updater_remote_job = UPDATER_REMOTE_JOB_CHECK;
+    updater_remote_job_running = UPDATER_REMOTE_JOB_NONE;
+    if (kstrcmp(updater_remote_active_job_name(), "CONSULTANDO") != 0) {
+        failures++;
+    }
+    updater_remote_job_running = UPDATER_REMOTE_JOB_SYSTEM_CANCEL;
+    if (kstrcmp(updater_remote_active_job_name(), "ZSYS CANCELANDO") != 0) {
+        failures++;
+    }
+    updater_remote_job = UPDATER_REMOTE_JOB_NONE;
+    updater_remote_job_running = UPDATER_REMOTE_JOB_NONE;
+    if (kstrcmp(updater_remote_active_job_name(), "AGUARDANDO") != 0) {
+        failures++;
+    }
+    return failures;
+}
+#endif

@@ -163,6 +163,12 @@ Reiniciar agora abre uma confirmacao final, verifica se a sequencia apresentada
 nao mudou e chama o preflight redundante dos slots imediatamente antes de
 `power_reboot()`. Nenhum retorno cancela o pendente ou promove o candidato.
 
+O header interno `src/include/ui/updater_test.h` publica somente o contrato
+`updater_host_test_contracts()` quando o build host-only define
+`ZEPHYROS_HOST_TEST`. Esse fixture cobre helpers determinísticos de nomes,
+ordenação, formatação, seleção, tags ZSYS, hit-test e estados remotos sem
+serviços externos, disco, rede ou hardware.
+
 ## Referencias
 
 - [Contrato ZUPD v1](contrato-zupd-v1.md)

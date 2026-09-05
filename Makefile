@@ -1976,6 +1976,9 @@ test-shell-commands-apps-host: tools\core_host_runner.py tools\coverage_collecto
 test-shell-checks-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_shell_checks_host.c tests\catalog.json src\shell\shell_checks.c src\include\apps\shell_checks.h src\include\apps\shell_runtime.h src\include\apps\shell_job.h src\include\apps\shell_command_utils.h src\include\core\errors.h src\include\core\log.h src\include\core\string.h src\include\core\video.h src\include\core\app_loader.h src\include\core\app_api.h src\include\core\recovery.h src\include\core\device_manager.h src\include\core\usb_manager.h src\include\drivers\acpi.h src\include\fs\block.h src\include\fs\storage.h
 	python tools\core_host_runner.py --case host:shell:checks --cc "$(HOST_CC)"
 
+test-updater-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_updater_host.c tests\catalog.json src\updater\updater.c src\core\string.c src\include\ui\updater.h src\include\ui\updater_test.h src\include\core\errors.h src\include\core\log.h src\include\core\string.h src\include\core\update.h src\include\core\update_remote.h
+	python tools\core_host_runner.py --case host:ui:updater --cc "$(HOST_CC)"
+
 test-shell-diagnostics-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_shell_diagnostics_host.c tests\catalog.json src\shell\shell_commands_diagnostics.c src\shell\shell_diagnostics_helpers.c src\shell\shell_command_utils.c src\shell\shell_introspection.c src\core\string.c src\include\apps\shell_diagnostics_helpers.h src\include\apps\shell_command_utils.h src\include\apps\shell_introspection.h src\include\apps\shell_runtime.h src\include\core\errors.h src\include\core\keyboard.h src\include\core\log.h src\include\core\memory.h src\include\core\string.h src\include\core\video.h src\include\core\device_manager.h src\include\core\input.h src\include\core\network_manager.h src\include\core\power.h src\include\core\recovery.h src\include\core\usb_manager.h src\include\core\wifi_manager.h src\include\drivers\acpi.h src\include\drivers\mouse.h src\include\drivers\pci.h src\include\drivers\usb_hid.h src\include\drivers\usb_msc.h src\include\drivers\vesa.h src\include\fs\devfs.h src\include\fs\file_index.h src\include\fs\procfs.h src\include\fs\vfs.h src\include\memory\paging.h src\include\memory\slab.h src\include\process\process.h
 	python tools\core_host_runner.py --case host:shell:diagnostics --cc "$(HOST_CC)"
 
@@ -2140,3 +2143,4 @@ clean:
 .PHONY: test-spinlock-host
 .PHONY: test-shell-commands-storage-host test-shell-network-checks-host test-shell-commands-packages-host test-shell-commands-apps-host test-shell-checks-host
 .PHONY: test-shell-diagnostics-host
+.PHONY: test-updater-host

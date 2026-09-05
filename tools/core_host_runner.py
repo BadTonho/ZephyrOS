@@ -143,6 +143,8 @@ SHELL_DIAGNOSTICS_RESULT_DIR = ROOT / "build" / "test-results" / "shell-diagnost
 SHELL_DIAGNOSTICS_BINARY = ROOT / "build" / "tests" / "test_shell_diagnostics_host.exe"
 SHELL_CHECKS_RESULT_DIR = ROOT / "build" / "test-results" / "shell-checks-host"
 SHELL_CHECKS_BINARY = ROOT / "build" / "tests" / "test_shell_checks_host.exe"
+UPDATER_RESULT_DIR = ROOT / "build" / "test-results" / "updater-host"
+UPDATER_BINARY = ROOT / "build" / "tests" / "test_updater_host.exe"
 SPINLOCK_RESULT_DIR = ROOT / "build" / "test-results" / "spinlock-host"
 SPINLOCK_BINARY = ROOT / "build" / "tests" / "test_spinlock_host.exe"
 DEFAULT_TIMEOUT = 120.0
@@ -179,6 +181,11 @@ SHELL_COMMANDS_APPS_SOURCE_FILES = (
 SHELL_CHECKS_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_shell_checks_host.c",
     ROOT / "src" / "shell" / "shell_checks.c",
+    ROOT / "src" / "core" / "string.c",
+)
+UPDATER_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_updater_host.c",
+    ROOT / "src" / "updater" / "updater.c",
     ROOT / "src" / "core" / "string.c",
 )
 NETWORK_MANAGER_SOURCE_FILES = (
@@ -1074,6 +1081,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
     if case_id == "host:shell:checks":
         return (SHELL_CHECKS_RESULT_DIR, SHELL_CHECKS_BINARY,
                 SHELL_CHECKS_SOURCE_FILES, "shell-checks-host")
+    if case_id == "host:ui:updater":
+        return UPDATER_RESULT_DIR, UPDATER_BINARY, UPDATER_SOURCE_FILES, "updater-host"
     if case_id == "host:shell:diagnostics":
         return (SHELL_DIAGNOSTICS_RESULT_DIR, SHELL_DIAGNOSTICS_BINARY,
                 (ROOT / "tests" / "unit" / "test_shell_diagnostics_host.c",
@@ -1397,7 +1406,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:core:device-manager", "host:core:app-api",
                                  "host:core:app-files", "host:core:app-builtin",
                                  "host:core:app-loader", "host:ui:taskbar",
-                                 "host:ui:appstore",
+                                 "host:ui:appstore", "host:ui:updater",
                                  "host:core:syscall",
                                  "host:process:runtime",
                                  "host:process:threads",
