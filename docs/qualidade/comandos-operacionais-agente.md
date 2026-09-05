@@ -2157,6 +2157,22 @@ executado em passo único no host para impedir loop infinito; a inicialização,
 os refreshes e as operações usam doubles determinísticos e deixam o estado
 limpo ao final.
 
+## UI/Updater: contratos host-only
+
+O alvo `test-updater-host` compila o Updater real com um contrato interno
+ativado por `ZEPHYROS_HOST_TEST`. A fixture valida helpers determinísticos de
+nomes `.ZUP`, truncamento, ordenação, formatação, tags ZSYS, seleção, hit-test,
+slots e estados de jobs remotos, sem serviço externo, disco, rede ou hardware:
+
+```text
+make test-updater-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O relatório instrumentado fica em
+`build/test-results/updater-host/coverage.json` e deve terminar com
+`status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`. A execução tem
+timeout do runner e deixa manifesto, resultado, logs e cobertura preservados.
+
 ## Shell: relatórios de rede host-only
 
 O alvo `test-shell-network-checks-host` também exercita os relatórios somente

@@ -3740,6 +3740,55 @@
       "evidence": "make test-shell-network-checks-host PASS com estado de rede coerente, interface invalida e dependencia indisponivel; cobertura instrumentada de shell_commands_network.c, incluindo o contrato host-only do proprio caso, sem hardware ou rede real"
     },
     {
+      "id": "updater-host-dynamic",
+      "domain": "updater",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:ui:updater"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/updater-host/coverage.json",
+      "coverage_sources": [
+        "src/updater/updater.c"
+      ],
+      "include_public_apis": false,
+      "case_definition": {
+        "id": "host:ui:updater",
+        "scenario": "Contratos deterministas do System Updater sem servicos externos",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "nenhum"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "validar nomes ZUP, ordenacao, formatacao, selecao, tags ZSYS, hit-test e estados remotos",
+        "expected": "helpers preservam limites, maiusculas, estados e textos canonicos",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente estruturas estaticas do processo host; nenhum disco, rede, worker ou hardware real",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "updater",
+          "limits",
+          "formatting",
+          "coverage"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "make test-updater-host PASS com helpers de nomes, ordenacao, formatacao, tags, selecao e estados remotos; cobertura instrumentada sem servicos externos"
+    },
+    {
       "id": "shell-checks-host-dynamic",
       "domain": "shell-checks",
       "owner": "quality",

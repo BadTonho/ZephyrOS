@@ -6162,3 +6162,18 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   desconhecidos ou símbolos ambíguos. Passaram a sincronização/renderização e
   `make catalog-test`; o catálogo registra 7.315 superfícies, 6.819
   `COVERED`, 496 `PENDING`, 59 aposentadas e 162 casos.
+
+- Incremento UI/Updater host-only — concluído em 2026-09-05
+  (America/Sao_Paulo). Foi criada a fixture `host:ui:updater`, compilada com
+  `ZEPHYROS_HOST_TEST`, para exercitar diretamente nomes `.ZUP`, cópia e
+  truncamento, ordenação, formatação numérica e de versão, tags ZSYS, seleção,
+  hit-test, slots e estados de jobs remotos. O caso usa buffers e estado
+  estáticos, não acessa serviço externo, disco, rede ou hardware e não espera
+  indefinidamente. Passaram `make test-updater-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`, `make q3check`, `make clean`
+  seguido de `make`, a reexecução dos relatórios host dependentes,
+  sincronização/renderização e `make catalog-test`. A cobertura dinâmica
+  terminou `PASS`, observando 19 superfícies de `src/updater/updater.c`, sem
+  endereços desconhecidos ou símbolos ambíguos. O catálogo registra 7.317
+  superfícies, 6.839 `COVERED`, 478 `PENDING`, 59 aposentadas e 163 casos;
+  as pendências restantes continuam explícitas.

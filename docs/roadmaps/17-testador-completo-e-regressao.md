@@ -19,17 +19,36 @@ equipamento e evidência correspondente.
 
 A infraestrutura TST1–TST7 está concluída para a matriz automatizada existente,
 mas o programa de cobertura integral ainda não está concluído. O catálogo
-mantém 162 casos `AUTOMATED`; após os incrementos de Shell, RTC,
+mantém 163 casos `AUTOMATED`; após os incrementos de Shell, RTC,
 processos/threads, FAT32, update U3/U4, os contratos remotos ZSYS e o
 repositório remoto de aplicativos, dos helpers de pacotes do Shell, da
 interface App Store, dos relatórios de rede do Shell, do módulo de
 Configurações, do Desktop, dos comandos de aplicativos, da evidência RTC e
-das fixtures de entrada/hosted, da evidência de panic e da regeneração dos
-relatórios RTC/Shell, registra 7.315 superfícies, 6.819 `COVERED` e 496
-`PENDING`. O próximo objetivo deste
+das fixtures de entrada/hosted, da evidência de panic, da regeneração dos
+relatórios RTC/Shell e da fixture host-only do Updater, registra 7.317
+superfícies, 6.839 `COVERED` e 478 `PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
 Isso não significa declarar hardware físico validado sem equipamento.
+
+### Evidência UI/Updater host-only — 2026-09-05
+
+- [x] Foi criada a fixture `host:ui:updater`, com contrato interno ativado
+      somente por `ZEPHYROS_HOST_TEST`; o caminho normal do System Updater não
+      muda e nenhum serviço externo, disco, rede ou hardware é acessado.
+- [x] O caso exercitou diretamente nomes `.ZUP`, cópia e truncamento,
+      ordenação, formatação numérica e de versão, tags ZSYS, seleção, hit-test,
+      abas, nomes de slots e estados de jobs remotos, incluindo limites e
+      rejeições determinísticas.
+- [x] Passaram `make test-updater-host
+      HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`, `make q3check`, `make clean`
+      seguido de `make`, a reexecução dos relatórios host dependentes,
+      sincronização/renderização e `make catalog-test`. A cobertura dinâmica
+      terminou `PASS`, observando 19 superfícies de
+      `src/updater/updater.c`, sem endereços desconhecidos ou símbolos
+      ambíguos. O catálogo registra 7.317 superfícies, 6.839 `COVERED`, 478
+      `PENDING`, 59 aposentadas e 163 casos; as demais pendências continuam
+      explícitas.
 
 ### Incremento Shell/pacotes e atualizacoes — 2026-09-05
 

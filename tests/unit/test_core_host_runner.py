@@ -356,6 +356,17 @@ class CoreHostRunnerTests(unittest.TestCase):
         self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
                       "test_taskbar_host.c", sources)
 
+    def test_updater_case_has_contract_fixture_sources(self):
+        result_dir, binary, sources, suite = core_host_runner.case_configuration(
+            "host:ui:updater")
+        self.assertEqual(suite, "updater-host")
+        self.assertEqual(result_dir, core_host_runner.UPDATER_RESULT_DIR)
+        self.assertEqual(binary, core_host_runner.UPDATER_BINARY)
+        self.assertIn(core_host_runner.ROOT / "src" / "updater" /
+                      "updater.c", sources)
+        self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
+                      "test_updater_host.c", sources)
+
     def test_syscall_case_has_dispatcher_fixture_sources(self):
         result_dir, binary, sources, suite = core_host_runner.case_configuration(
             "host:core:syscall")
