@@ -3737,7 +3737,7 @@
         ],
         "status": "AUTOMATED"
       },
-      "evidence": "make test-shell-network-checks-host PASS com estado de rede coerente, interface invalida e dependencia indisponivel; cobertura instrumentada de shell_commands_network.c sem hardware ou rede real"
+      "evidence": "make test-shell-network-checks-host PASS com estado de rede coerente, interface invalida e dependencia indisponivel; cobertura instrumentada de shell_commands_network.c, incluindo o contrato host-only do proprio caso, sem hardware ou rede real"
     },
     {
       "id": "shell-checks-host-dynamic",

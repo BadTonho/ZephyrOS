@@ -23,11 +23,28 @@ mantém 161 casos `AUTOMATED`; após os incrementos de Shell, RTC,
 processos/threads, FAT32, update U3/U4, os contratos remotos ZSYS e o
 repositório remoto de aplicativos, dos helpers de pacotes do Shell, da
 interface App Store, dos relatórios de rede do Shell e do módulo de
-Configurações e do Desktop, registra 7.312 superfícies, 6.602 `COVERED` e 710
+Configurações e do Desktop, registra 7.314 superfícies, 6.706 `COVERED` e 608
 `PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
 Isso não significa declarar hardware físico validado sem equipamento.
+
+### Incremento Shell/rede — 2026-09-05
+
+- [x] A fixture host-only `host:shell:network-checks` passou a exercitar os
+      handlers, dispatchers, jobs cooperativos, esperas limitadas, seleção de
+      sockets e formatadores de rede de `shell_commands_network.c`, incluindo
+      entradas válidas, estados vazios, argumentos inválidos e dependências
+      indisponíveis.
+- [x] Foram usados doubles estáticos para rede, processos, VFS, IPC, vídeo,
+      timer e jobs. Nenhum hardware, rede externa, armazenamento ou allocator
+      real foi acessado; a execução não aceita retry nem espera indefinida.
+- [x] `make test-shell-network-checks-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
+      passou com `-Wall -Wextra -Werror` e cobertura dinâmica `PASS`, com 148
+      superfícies C de rede observadas no relatório, incluindo o helper
+      host-only, sem endereços desconhecidos ou símbolos ambíguos. O catálogo
+      registra 7.314 superfícies, 6.706 `COVERED`, 608 `PENDING`, 59 aposentadas
+      e 161 casos; as pendências de outros subsistemas continuam explícitas.
 
 ### Incremento Shell/checks e fixtures ZAPP — 2026-09-05
 

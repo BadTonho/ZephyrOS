@@ -2017,6 +2017,12 @@ com `status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`. A
 sincronizacao associa somente as superficies listadas em
 `covered_surface_ids`; o caso nao cobre automaticamente o restante do arquivo.
 
+Nesta etapa, a fixture tambem chama o contrato host-only
+`shell_network_host_test_contracts`, cobrindo os handlers, dispatchers, jobs,
+esperas e selecao de rede em `shell_commands_network.c`. A evidencia observada
+inclui 148 superficies C de rede, com doubles estaticos e sem hardware, rede
+externa, armazenamento ou espera indefinida.
+
 ## Shell: helpers internos de checks host-only
 
 O alvo `test-shell-checks-host` executa a fixture host-only

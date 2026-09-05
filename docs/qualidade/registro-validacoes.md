@@ -6076,3 +6076,16 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   versão. O catálogo registra 7.312 superfícies, 6.602 `COVERED`, 710
   `PENDING`, 59 aposentadas e 161 casos; as pendências restantes continuam
   explícitas.
+
+- Incremento Shell/rede — comandos e jobs concluído em 2026-09-05
+  (America/Sao_Paulo). A fixture `host:shell:network-checks` foi ampliada para
+  executar handlers, dispatchers, jobs cooperativos, esperas limitadas,
+  seleção de sockets e formatadores de `shell_commands_network.c`, incluindo
+  estados vazios, argumentos inválidos e dependências indisponíveis. Passou
+  `make test-shell-network-checks-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` com `-Wall -Wextra -Werror`.
+  A cobertura dinâmica terminou `PASS` e observou 148 superfícies C de rede,
+  incluindo o helper host-only, sem endereços desconhecidos ou símbolos
+  ambíguos. O catálogo registra 7.314 superfícies, 6.706 `COVERED`, 608
+  `PENDING`, 59 aposentadas e 161 casos; as pendências de outros subsistemas
+  continuam explícitas.

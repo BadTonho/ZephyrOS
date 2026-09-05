@@ -5443,6 +5443,178 @@ void shell_dispatch_cmd_http(const char* arguments) {
 }
 
 #ifdef ZEPHYROS_HOST_TEST
+int shell_network_host_test_contracts(void) {
+    shell_net_qemu_check_t qemu_check;
+    shell_net_qemu_dhcp_check_t dhcp_check;
+    shell_net_qemu_tcp_check_t tcp_check;
+    shell_job_context_t context;
+    udp_status_t udp_status;
+    dhcp_status_t dhcp_status;
+    icmp_status_t icmp_status;
+    arp_cache_entry_info_t arp_entry;
+    int32_t listener_fd = VFS_FD_INVALID;
+    int32_t client_fd = VFS_FD_INVALID;
+    int32_t server_fd = VFS_FD_INVALID;
+    http_status_t http_status;
+
+    kmemset(&qemu_check, 0, sizeof(qemu_check));
+    kmemset(&dhcp_check, 0, sizeof(dhcp_check));
+    kmemset(&tcp_check, 0, sizeof(tcp_check));
+    kmemset(&context, 0, sizeof(context));
+    kmemset(&udp_status, 0, sizeof(udp_status));
+    kmemset(&dhcp_status, 0, sizeof(dhcp_status));
+    kmemset(&icmp_status, 0, sizeof(icmp_status));
+    kmemset(&arp_entry, 0, sizeof(arp_entry));
+    kmemset(&http_status, 0, sizeof(http_status));
+    context.started_tick = timer_get_ticks();
+
+    cmd_net("");
+    cmd_net("status");
+    cmd_net("devices");
+    cmd_net("info eth0");
+    cmd_net("ethernet eth0");
+    cmd_net("test eth0");
+    cmd_net_arp("");
+    cmd_net_arp_status();
+    cmd_net_arp_config("");
+    cmd_net_arp_resolve("");
+    cmd_net_arp_table();
+    cmd_net_arp_clear();
+    cmd_net_ipv4("");
+    cmd_net_ipv4_status();
+    cmd_net_ipv4_config("");
+    cmd_net_udp("");
+    cmd_net_udp_status();
+    cmd_net_dhcp("");
+    cmd_net_dhcp_status();
+    cmd_net_dhcp_acquire("");
+    cmd_net_dhcp_renew();
+    cmd_net_dhcp_release();
+    if (cmd_net_dhcp_wait(&dhcp_status) != ERR_TIMEOUT) {
+        LOG_ERROR("SHELL", "Guarda DHCP da fixture nao expirou");
+        return ERR_STATE;
+    }
+    cmd_net_dns("");
+    cmd_net_dns_status();
+    cmd_net_dns_config("");
+    cmd_net_dns_table();
+    cmd_net_dns("clear");
+    cmd_nslookup("");
+    cmd_ping("");
+    icmp_status.target_ip = 0xC0A80101U;
+    icmp_status.requested_count = 1U;
+    icmp_status.last_event = ICMP_PING_EVENT_TIMEOUT;
+    cmd_ping_print_event(&icmp_status);
+    cmd_ping_print_summary(&icmp_status);
+    cmd_net_tcp("");
+    cmd_net_tcp_status();
+    cmd_net_tcp_connect("");
+    cmd_net_socket("");
+    cmd_net_socket_status();
+    cmd_net_socket_table();
+    cmd_net_socket_check();
+    cmd_http("");
+    cmd_http_status();
+    cmd_http_print_preview();
+    cmd_route_add("");
+    cmd_route_delete("");
+    cmd_route_default("");
+    cmd_route_check();
+    cmd_route("invalid");
+    cmd_selecttest("invalid");
+    cmd_skbstat("");
+    cmd_netstat("invalid");
+    cmd_net_check(0);
+
+    shell_dispatch_cmd_skbstat("invalid");
+    shell_dispatch_cmd_sockstat("invalid");
+    shell_dispatch_cmd_selecttest("invalid");
+    shell_dispatch_cmd_netstat("invalid");
+    shell_dispatch_cmd_route("invalid");
+    shell_dispatch_cmd_net("");
+    shell_dispatch_cmd_ping("");
+    shell_dispatch_cmd_nslookup("");
+    shell_dispatch_cmd_http("");
+
+    if (cmd_dns_wait(0, 0) != ERR_NULL ||
+        cmd_ping_resolve_target(0, 0) != ERR_NULL ||
+        cmd_ping_wait(0U, 0) != ERR_NULL ||
+        cmd_net_wait_socket_connected(0U, 0) != ERR_NULL ||
+        cmd_http_wait(0) != ERR_NULL ||
+        cmd_http_execute(0, 0U, 0) != ERR_NULL ||
+        cmd_net_find_arp_entry(0U, 0, 0) != ERR_NULL ||
+        cmd_net_wait_arp_state(0U, ARP_ENTRY_FAILED) == OK ||
+        cmd_net_check_qemu_reply(0, 0) != ERR_NULL ||
+        cmd_net_check_qemu_timeout(0, 0) != ERR_NULL ||
+        cmd_net_check_qemu_icmp(0, 0, 0) != ERR_NULL ||
+        cmd_net_check_qemu_dns(0, 0, 0) != ERR_NULL ||
+        cmd_net_qemu_tcp_prepare_dhcp(0, 0) != ERR_NULL ||
+        cmd_net_qemu_tcp_run_http(0, 0) != ERR_NULL) {
+        LOG_ERROR("SHELL", "Contrato de esperas de rede falhou");
+        return ERR_STATE;
+    }
+    if (cmd_net_check_qemu_dhcp_acquire(
+            "eth0", &udp_status, &dhcp_status, &dhcp_check) == OK ||
+        cmd_net_check_qemu_dhcp_ping(&dhcp_check) == OK) {
+        LOG_ERROR("SHELL", "Fixture QEMU de rede aceitou operacao ausente");
+        return ERR_STATE;
+    }
+    cmd_net_check_qemu_dhcp_print(&dhcp_check, 0U);
+    cmd_net_check_qemu_tcp_print(&tcp_check, 0U);
+    cmd_net_check_print_case("fixture", 0U);
+    cmd_net_check_qemu_dhcp("");
+    cmd_net_check_qemu_tcp("");
+    cmd_net_check_qemu_static("");
+    cmd_net_check_qemu_multi("");
+    cmd_net_check_qemu("");
+    cmd_net_qemu_tcp_wait_close(0U);
+
+    context.started_tick = timer_get_ticks();
+    if (shell_network_job_block_tick() != 0 ||
+        shell_network_job_timeout(&context, 1U) != 0) {
+        LOG_ERROR("SHELL", "Contrato de job de rede falhou");
+        return ERR_STATE;
+    }
+    shell_network_job_print_error("fixture", ERR_INVALID);
+    kmemcpy(shell_network_job.target, "fixture", 8U);
+    shell_network_job.target_ip = 0xC0A80101U;
+    shell_network_job_print_ping_header();
+    shell_network_job.check_stage = SHELL_NETWORK_CHECK_STAGE_DONE;
+    if (shell_network_job_check_emit_stage(&context) != ERR_STATE) {
+        return ERR_STATE;
+    }
+    context.cancel_requested = 1U;
+    if (shell_network_job_check_report_step(&context) !=
+        SHELL_JOB_STEP_CANCELLED ||
+        shell_network_job_step(0) != SHELL_JOB_STEP_FAILED ||
+        shell_network_job_cancel(&context) != OK ||
+        shell_network_job_drain(0) != SHELL_JOB_STEP_COMPLETE) {
+        return ERR_STATE;
+    }
+    shell_network_job_finish(&context, SHELL_JOB_STATE_CANCELLED,
+                             ERR_TIMEOUT);
+    shell_network_job_finish(&context, SHELL_JOB_STATE_SUCCEEDED, OK);
+    if (shell_network_job_prepare_check(0) != ERR_NULL ||
+        shell_network_job_start("") != ERR_STATE ||
+        shell_network_start_dns_job("") != 1 ||
+        shell_network_start_ping_job("") != 1 ||
+        shell_network_start_http_job("") != 1 ||
+        shell_network_start_dhcp_job("") != 0 ||
+        shell_network_start_job(0, 0) != 0 ||
+        shell_network_start_job("unknown", "") != 0) {
+        return ERR_STATE;
+    }
+    if (shell_selecttest_open_socket(0, &client_fd, &server_fd) != ERR_NULL ||
+        shell_selecttest_open_socket(&listener_fd, &client_fd, 0) != ERR_NULL ||
+        shell_selecttest_no_waiters() != OK) {
+        return ERR_STATE;
+    }
+    shell_selecttest_join_worker(0);
+    shell_selecttest_cancel_worker();
+    shell_selecttest_close_worker();
+    return OK;
+}
+
 int shell_network_checks_host_test_contracts(void) {
     network_interface_info_t left;
     network_interface_info_t right;
