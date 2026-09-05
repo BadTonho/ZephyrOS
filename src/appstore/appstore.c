@@ -2034,6 +2034,24 @@ static int appstore_host_state_contracts(void) {
     appstore_host_prepare_entries();
     entry = &appstore_entries[1];
     info = (app_package_info_t*)&entry->installed;
+    entry->capabilities = APP_CATALOG_CAPABILITY_INSTALL |
+                          APP_CATALOG_CAPABILITY_UPDATE;
+    if (appstore_host_expect(
+            appstore_can(entry, APP_CATALOG_CAPABILITY_INSTALL) &&
+            appstore_can(entry, APP_CATALOG_CAPABILITY_UPDATE) &&
+            !appstore_can(entry, APP_CATALOG_CAPABILITY_RUN) &&
+            !appstore_can(0, APP_CATALOG_CAPABILITY_INSTALL)) != OK) {
+        LOG_ERROR("APPSTORE", "Falha no contrato de capacidades");
+        return ERR_STATE;
+    }
+    if (appstore_host_expect(!appstore_rollback_is_available(entry) &&
+                             !appstore_rollback_is_available(0) &&
+                             !appstore_remote_rollback_is_available(
+                                 &appstore_remote_entries[0]) &&
+                             !appstore_remote_rollback_is_available(0)) != OK) {
+        LOG_ERROR("APPSTORE", "Falha no contrato de rollback");
+        return ERR_STATE;
+    }
     appstore_action.plan.entry_count = 1U;
     appstore_action.plan.target_index = 0U;
     appstore_action.plan.entries[0].action = APP_PACKAGE_PLAN_ACTION_UPDATE;

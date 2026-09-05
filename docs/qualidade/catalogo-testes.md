@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6432 |
+| `COVERED` | 6435 |
 | `MANUAL` | 0 |
-| `PENDING` | 873 |
+| `PENDING` | 870 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -1753,7 +1753,7 @@
 | `c:src/appstore/appstore.c:appstore_action_buttons_per_row` | `src/appstore/appstore.c` | `appstore_action_buttons_per_row` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_append_text` | `src/appstore/appstore.c` | `appstore_append_text` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_blockers_text` | `src/appstore/appstore.c` | `appstore_blockers_text` | `appstore` | `COVERED` | 1 |
-| `c:src/appstore/appstore.c:appstore_can` | `src/appstore/appstore.c` | `appstore_can` | `appstore` | `PENDING` | 0 |
+| `c:src/appstore/appstore.c:appstore_can` | `src/appstore/appstore.c` | `appstore_can` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_change_selection` | `src/appstore/appstore.c` | `appstore_change_selection` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_clear_context` | `src/appstore/appstore.c` | `appstore_clear_context` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_close` | `src/appstore/appstore.c` | `appstore_close` | `appstore` | `PENDING` | 0 |
@@ -1804,7 +1804,7 @@
 | `c:src/appstore/appstore.c:appstore_refresh_snapshot` | `src/appstore/appstore.c` | `appstore_refresh_snapshot` | `appstore` | `PENDING` | 0 |
 | `c:src/appstore/appstore.c:appstore_remote_button_position` | `src/appstore/appstore.c` | `appstore_remote_button_position` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_remote_buttons_per_row` | `src/appstore/appstore.c` | `appstore_remote_buttons_per_row` | `appstore` | `COVERED` | 1 |
-| `c:src/appstore/appstore.c:appstore_remote_rollback_is_available` | `src/appstore/appstore.c` | `appstore_remote_rollback_is_available` | `appstore` | `PENDING` | 0 |
+| `c:src/appstore/appstore.c:appstore_remote_rollback_is_available` | `src/appstore/appstore.c` | `appstore_remote_rollback_is_available` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_request_install` | `src/appstore/appstore.c` | `appstore_request_install` | `appstore` | `PENDING` | 0 |
 | `c:src/appstore/appstore.c:appstore_request_refresh` | `src/appstore/appstore.c` | `appstore_request_refresh` | `appstore` | `PENDING` | 0 |
 | `c:src/appstore/appstore.c:appstore_request_remote_enable` | `src/appstore/appstore.c` | `appstore_request_remote_enable` | `appstore` | `PENDING` | 0 |
@@ -1815,7 +1815,7 @@
 | `c:src/appstore/appstore.c:appstore_request_update` | `src/appstore/appstore.c` | `appstore_request_update` | `appstore` | `PENDING` | 0 |
 | `c:src/appstore/appstore.c:appstore_request_verify` | `src/appstore/appstore.c` | `appstore_request_verify` | `appstore` | `PENDING` | 0 |
 | `c:src/appstore/appstore.c:appstore_restore_selection` | `src/appstore/appstore.c` | `appstore_restore_selection` | `appstore` | `COVERED` | 1 |
-| `c:src/appstore/appstore.c:appstore_rollback_is_available` | `src/appstore/appstore.c` | `appstore_rollback_is_available` | `appstore` | `PENDING` | 0 |
+| `c:src/appstore/appstore.c:appstore_rollback_is_available` | `src/appstore/appstore.c` | `appstore_rollback_is_available` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_select_first_visible` | `src/appstore/appstore.c` | `appstore_select_first_visible` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_selected_entry` | `src/appstore/appstore.c` | `appstore_selected_entry` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_selected_key` | `src/appstore/appstore.c` | `appstore_selected_key` | `appstore` | `COVERED` | 1 |
@@ -7616,7 +7616,6 @@
 - `asm:src/kernel/switch.asm:process_user_termination_enter`
 - `asm:src/kernel/switch.asm:thread_context_switch`
 - `asm:src/kernel/switch.asm:tss_flush`
-- `c:src/appstore/appstore.c:appstore_can`
 - `c:src/appstore/appstore.c:appstore_close`
 - `c:src/appstore/appstore.c:appstore_confirm_action`
 - `c:src/appstore/appstore.c:appstore_draw`
@@ -7645,7 +7644,6 @@
 - `c:src/appstore/appstore.c:appstore_queue_job`
 - `c:src/appstore/appstore.c:appstore_refresh_remote_snapshot`
 - `c:src/appstore/appstore.c:appstore_refresh_snapshot`
-- `c:src/appstore/appstore.c:appstore_remote_rollback_is_available`
 - `c:src/appstore/appstore.c:appstore_request_install`
 - `c:src/appstore/appstore.c:appstore_request_refresh`
 - `c:src/appstore/appstore.c:appstore_request_remote_enable`
@@ -7655,7 +7653,6 @@
 - `c:src/appstore/appstore.c:appstore_request_run`
 - `c:src/appstore/appstore.c:appstore_request_update`
 - `c:src/appstore/appstore.c:appstore_request_verify`
-- `c:src/appstore/appstore.c:appstore_rollback_is_available`
 - `c:src/appstore/appstore.c:appstore_simple_draw_confirmation`
 - `c:src/appstore/appstore.c:appstore_simple_draw_details`
 - `c:src/appstore/appstore.c:appstore_simple_draw_entries`

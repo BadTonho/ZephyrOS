@@ -39983,9 +39983,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_change_selection",
@@ -40969,9 +40972,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_request_install",
@@ -41170,9 +41176,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_select_first_visible",
@@ -171083,6 +171092,7 @@
         "c:src/appstore/appstore.c:appstore_action_buttons_per_row",
         "c:src/appstore/appstore.c:appstore_append_text",
         "c:src/appstore/appstore.c:appstore_blockers_text",
+        "c:src/appstore/appstore.c:appstore_can",
         "c:src/appstore/appstore.c:appstore_change_selection",
         "c:src/appstore/appstore.c:appstore_clear_context",
         "c:src/appstore/appstore.c:appstore_copy_text",
@@ -171104,7 +171114,9 @@
         "c:src/appstore/appstore.c:appstore_point_in",
         "c:src/appstore/appstore.c:appstore_remote_button_position",
         "c:src/appstore/appstore.c:appstore_remote_buttons_per_row",
+        "c:src/appstore/appstore.c:appstore_remote_rollback_is_available",
         "c:src/appstore/appstore.c:appstore_restore_selection",
+        "c:src/appstore/appstore.c:appstore_rollback_is_available",
         "c:src/appstore/appstore.c:appstore_select_first_visible",
         "c:src/appstore/appstore.c:appstore_selected_entry",
         "c:src/appstore/appstore.c:appstore_selected_key",

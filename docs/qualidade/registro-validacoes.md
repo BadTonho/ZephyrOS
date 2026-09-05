@@ -6001,3 +6001,14 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   como `RETIRED` com evidência e substituto; o catálogo registra 7.305
   superfícies ativas, 6.432 `COVERED`, 873 `PENDING`, 59 aposentadas e 158
   casos.
+
+- Incremento Shell/UI App Store — concluído em 2026-09-05. A fixture
+  `host:ui:appstore` foi ampliada para chamar diretamente `appstore_can`,
+  `appstore_rollback_is_available` e `appstore_remote_rollback_is_available`,
+  cobrindo capacidades permitidas, capacidade ausente e rollback indisponível
+  com entradas estáticas. `make test-appstore-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` passou; a evidência dinâmica
+  resolveu 41 superfícies reais, sem endereços desconhecidos ou símbolos
+  ambíguos. Renderização e `make catalog-test` passaram; o catálogo registra
+  7.305 superfícies ativas, 6.435 `COVERED`, 870 `PENDING`, 59 aposentadas e
+  158 casos.
