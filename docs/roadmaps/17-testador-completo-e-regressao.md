@@ -2580,3 +2580,14 @@ pendente.
       pela evidência dinâmica da fixture; as demais permanecem pendentes.
 - [x] O gate estrito integral permanece pendente até que todas as superfícies
       elegíveis tenham executor e evidência real.
+
+### Incremento Shell/diagnostics sinais — 2026-09-04
+
+- [x] A fixture host-only `host:shell:diagnostics` foi ampliada para chamar os
+      dispatchers reais de `sigtest` e `kill`.
+- [x] Foram exercitados o resultado estruturado do autoteste de sinais, nomes
+      e números de sinais, envio para processo de usuário, falha do destino,
+      PID inexistente e argumentos inválidos, sem estado persistente.
+- [x] `make q3check`, build limpo, matriz host-only completa, sincronização do
+      catálogo e `make catalog-test` passaram; o catálogo ficou com 7.293
+      superfícies, sendo 6.259 `COVERED` e 1.034 `PENDING`.

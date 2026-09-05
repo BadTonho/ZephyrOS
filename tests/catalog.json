@@ -139078,9 +139078,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_kmetrics",
@@ -139812,9 +139815,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_sigtest_print",
@@ -139830,9 +139836,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_slabinfo",
@@ -141118,9 +141127,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_kmetrics",
@@ -141345,9 +141357,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_slabinfo",
@@ -167499,7 +167514,7 @@
         "hardware": "video, VFS e mouse falsos"
       },
       "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "executar pwd, cd, mouse, log, timer, clock, irqstat, wait, wqinfo, workq, tls, vfs, mount, devcheck, devices, device-info, device-scan, usb, acpi, power, slabinfo, slabtest, cpu usage, pagefault, vmamap, schedcheck e kmetrics em caminhos validos, invalidos, indisponiveis e de limite",
+      "action": "executar pwd, cd, mouse, log, timer, clock, irqstat, wait, wqinfo, workq, tls, vfs, mount, devcheck, devices, device-info, device-scan, usb, acpi, power, kill, sigtest, slabinfo, slabtest, cpu usage, pagefault, vmamap, schedcheck e kmetrics em caminhos validos, invalidos, indisponiveis e de limite",
       "expected": "dispatchers preservam saida, estado, configuracao e codigos canonicos",
       "errors": "compilador ausente, warning, saida inesperada, falha de assercao ou timeout",
       "effects": "somente buffers estaticos de saida e doubles locais de VFS, mouse, log, timer, RTC, clock, IRQ, IDT, wait, workqueue, TLS, devfs, device manager, USB, HID, MSC e SLAB; sem armazenamento real",
@@ -167537,6 +167552,7 @@
         "c:src/shell/shell_commands_diagnostics.c:cmd_irqstat_print_test",
         "c:src/shell/shell_commands_diagnostics.c:cmd_irqstat_status",
         "c:src/shell/shell_commands_diagnostics.c:cmd_irqstat_usage",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_kill",
         "c:src/shell/shell_commands_diagnostics.c:cmd_kmetrics",
         "c:src/shell/shell_commands_diagnostics.c:cmd_kmetrics_print_memory",
         "c:src/shell/shell_commands_diagnostics.c:cmd_kmetrics_print_queues",
@@ -167565,6 +167581,8 @@
         "c:src/shell/shell_commands_diagnostics.c:cmd_pwd",
         "c:src/shell/shell_commands_diagnostics.c:cmd_schedcheck",
         "c:src/shell/shell_commands_diagnostics.c:cmd_schedcheck_print_result",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_sigtest",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_sigtest_print",
         "c:src/shell/shell_commands_diagnostics.c:cmd_slabinfo",
         "c:src/shell/shell_commands_diagnostics.c:cmd_slabtest",
         "c:src/shell/shell_commands_diagnostics.c:cmd_sysfs_has_node",
@@ -167621,6 +167639,7 @@
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_device_scan",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_devices",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_irqstat",
+        "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_kill",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_kmetrics",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_log",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_memcheck",
@@ -167630,6 +167649,7 @@
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_power",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_pwd",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_schedcheck",
+        "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_sigtest",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_slabinfo",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_slabtest",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_timer",

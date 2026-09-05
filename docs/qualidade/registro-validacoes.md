@@ -5810,3 +5810,16 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   sincronização, renderização, `make catalog-test` e `git diff --check`.
   A evidência dinâmica será sincronizada para as superfícies efetivamente
   chamadas; as pendências restantes continuam explícitas.
+
+- Incremento Shell/diagnostics sinais — concluído em 2026-09-04
+  (America/Sao_Paulo). A fixture host-only `host:shell:diagnostics` passou a
+  chamar os dispatchers reais de `sigtest` e `kill`. Foram exercitados o
+  resultado estruturado do autoteste, todos os indicadores publicados,
+  conversão de nomes e números, envio para processo de usuário, falha do
+  destino, PID inexistente e argumentos inválidos, usando apenas um processo
+  estático e sem estado persistente. O alvo específico passou com `HOST_CC`;
+  `make q3check`, `make clean`, `make`, a matriz completa de 117 alvos
+  host-only, sincronização/renderização do catálogo, `make catalog-test` e
+  `git diff --check` passaram. O catálogo ficou com 7.293 superfícies, sendo
+  6.259 `COVERED` e 1.034 `PENDING`, e 154 casos; as pendências restantes não
+  foram mascaradas.
