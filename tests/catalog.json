@@ -35655,6 +35655,27 @@
       "coverage_mode": "integration"
     },
     {
+      "id": "api:src/include/ui/filemanager_test.h:fm_host_test_contracts",
+      "kind": "api_function",
+      "source": "src/include/ui/filemanager_test.h",
+      "symbol": "fm_host_test_contracts",
+      "linkage": "public",
+      "owner": "ui",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst5:apps"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
       "id": "api:src/include/ui/gui.h:gui_draw_button",
       "kind": "api_function",
       "source": "src/include/ui/gui.h",
@@ -105975,10 +105996,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:filemanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_classic_draw_address",
@@ -106209,10 +106231,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:filemanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_classic_get_layout",
@@ -106230,10 +106253,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:filemanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_close",
@@ -106269,10 +106293,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:filemanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_copy_normalized_path",
@@ -106288,9 +106313,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_delete_selected_file",
@@ -106755,10 +106783,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:filemanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_get_mode",
@@ -106852,6 +106881,27 @@
       ],
       "tags": [],
       "coverage_mode": "integration"
+    },
+    {
+      "id": "c:src/filemanager/filemanager.c:fm_host_test_contracts",
+      "kind": "c_function",
+      "source": "src/filemanager/filemanager.c",
+      "symbol": "fm_host_test_contracts",
+      "linkage": "external",
+      "owner": "filemanager",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_hosted_close",
@@ -106966,9 +107016,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_mouse_select_item",
@@ -106984,9 +107037,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_navigate_address_value",
@@ -107061,10 +107117,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:filemanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_redraw_file_view",
@@ -107137,9 +107194,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_restore_history_source",
@@ -107230,9 +107290,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_search_begin",
@@ -107266,9 +107329,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_search_button_pressed",
@@ -107341,9 +107407,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_search_refresh",
@@ -107377,9 +107446,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_select_boot_source",
@@ -107475,10 +107547,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:filemanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_side_items_for_height",
@@ -107496,10 +107569,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:filemanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_store_history_source",
@@ -107517,10 +107591,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:filemanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_update",
@@ -107577,10 +107652,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:filemanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_visible_side_items",
@@ -107596,9 +107672,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:int_to_str",
@@ -107616,10 +107695,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:filemanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:str_copy",
@@ -107637,10 +107717,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:filemanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:str_equal",
@@ -107658,10 +107739,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:filemanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:str_len",
@@ -107679,10 +107761,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:filemanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/block.c:block_ata_descriptor",
@@ -173147,6 +173230,64 @@
       "status": "AUTOMATED"
     },
     {
+      "id": "host:ui:filemanager",
+      "scenario": "Contratos deterministas do Explorer sem VFS, disco ou hardware reais",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "hardware": "nenhum"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "exercitar contratos de caminhos, nomes, layout, selecao, historico, pesquisa e estados do Explorer com doubles estaticos",
+      "expected": "helpers preservam limites, normalizacao, navegacao, selecao, paginação e estados de indice sem efeitos externos",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente buffers e estado estaticos do processo host; nenhum VFS, disco, rede ou hardware real",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "surface_ids": [
+        "c:src/filemanager/filemanager.c:fm_build_display_path",
+        "c:src/filemanager/filemanager.c:fm_classic_get_content_height",
+        "c:src/filemanager/filemanager.c:fm_classic_get_layout",
+        "c:src/filemanager/filemanager.c:fm_copy_display_text",
+        "c:src/filemanager/filemanager.c:fm_copy_normalized_path",
+        "c:src/filemanager/filemanager.c:fm_fat_display_name",
+        "c:src/filemanager/filemanager.c:fm_host_test_contracts",
+        "c:src/filemanager/filemanager.c:fm_join_path",
+        "c:src/filemanager/filemanager.c:fm_mouse_select_item",
+        "c:src/filemanager/filemanager.c:fm_record_history",
+        "c:src/filemanager/filemanager.c:fm_rename_target_conflicts",
+        "c:src/filemanager/filemanager.c:fm_search_apply_index_status",
+        "c:src/filemanager/filemanager.c:fm_search_build_location",
+        "c:src/filemanager/filemanager.c:fm_search_move_page",
+        "c:src/filemanager/filemanager.c:fm_search_scroll_selection",
+        "c:src/filemanager/filemanager.c:fm_select_virtual_root",
+        "c:src/filemanager/filemanager.c:fm_side_items_for_height",
+        "c:src/filemanager/filemanager.c:fm_store_history_source",
+        "c:src/filemanager/filemanager.c:fm_visible_rows",
+        "c:src/filemanager/filemanager.c:fm_visible_side_items",
+        "c:src/filemanager/filemanager.c:int_to_str",
+        "c:src/filemanager/filemanager.c:str_copy",
+        "c:src/filemanager/filemanager.c:str_equal",
+        "c:src/filemanager/filemanager.c:str_len"
+      ],
+      "tags": [
+        "host",
+        "ui",
+        "filemanager",
+        "limits",
+        "navigation",
+        "coverage"
+      ],
+      "status": "AUTOMATED"
+    },
+    {
       "id": "host:ui:icons",
       "scenario": "Contrato host-only do registro e cache de icones",
       "owner": "quality",
@@ -176271,6 +176412,7 @@
         "api:src/include/ui/filemanager.h:fm_open",
         "api:src/include/ui/filemanager.h:fm_run",
         "api:src/include/ui/filemanager.h:fm_update",
+        "api:src/include/ui/filemanager_test.h:fm_host_test_contracts",
         "api:src/include/ui/gui.h:gui_draw_button",
         "api:src/include/ui/gui.h:gui_draw_flat_border",
         "api:src/include/ui/gui.h:gui_draw_modern_button",

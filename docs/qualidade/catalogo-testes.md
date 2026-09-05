@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **7317**
-- Casos de teste: **163**
+- Superfícies ativas: **7319**
+- Casos de teste: **164**
 - Superfícies aposentadas: **59**
 
 | Tipo | Quantidade |
 |---|---:|
-| `api_function` | 1580 |
+| `api_function` | 1581 |
 | `asm_entry` | 101 |
-| `c_function` | 5516 |
+| `c_function` | 5517 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6839 |
+| `COVERED` | 6850 |
 | `MANUAL` | 0 |
-| `PENDING` | 478 |
+| `PENDING` | 469 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 163 |
+| `AUTOMATED` | 164 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -40,7 +40,7 @@
 | `core` | 2813 |
 | `desktop` | 40 |
 | `drivers` | 932 |
-| `filemanager` | 92 |
+| `filemanager` | 93 |
 | `fs` | 957 |
 | `gui` | 30 |
 | `icons` | 18 |
@@ -51,7 +51,7 @@
 | `shell` | 1088 |
 | `taskbar` | 47 |
 | `thread` | 34 |
-| `ui` | 143 |
+| `ui` | 144 |
 | `updater` | 87 |
 | `wm` | 81 |
 
@@ -1536,6 +1536,7 @@
 | `api:src/include/ui/filemanager.h:fm_open` | `src/include/ui/filemanager.h` | `fm_open` | `ui` | `COVERED` | 1 |
 | `api:src/include/ui/filemanager.h:fm_run` | `src/include/ui/filemanager.h` | `fm_run` | `ui` | `COVERED` | 1 |
 | `api:src/include/ui/filemanager.h:fm_update` | `src/include/ui/filemanager.h` | `fm_update` | `ui` | `COVERED` | 1 |
+| `api:src/include/ui/filemanager_test.h:fm_host_test_contracts` | `src/include/ui/filemanager_test.h` | `fm_host_test_contracts` | `ui` | `COVERED` | 1 |
 | `api:src/include/ui/gui.h:gui_draw_button` | `src/include/ui/gui.h` | `gui_draw_button` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/gui.h:gui_draw_flat_border` | `src/include/ui/gui.h` | `gui_draw_flat_border` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/gui.h:gui_draw_modern_button` | `src/include/ui/gui.h` | `gui_draw_modern_button` | `ui` | `COVERED` | 3 |
@@ -4789,7 +4790,7 @@
 | `c:src/drivers/video.c:video_test_copy_terminal` | `src/drivers/video.c` | `video_test_copy_terminal` | `drivers` | `COVERED` | 3 |
 | `c:src/filemanager/filemanager.c:fm_block_read_only_mutation` | `src/filemanager/filemanager.c` | `fm_block_read_only_mutation` | `filemanager` | `PENDING` | 0 |
 | `c:src/filemanager/filemanager.c:fm_boot_directory_exists` | `src/filemanager/filemanager.c` | `fm_boot_directory_exists` | `filemanager` | `COVERED` | 1 |
-| `c:src/filemanager/filemanager.c:fm_build_display_path` | `src/filemanager/filemanager.c` | `fm_build_display_path` | `filemanager` | `COVERED` | 1 |
+| `c:src/filemanager/filemanager.c:fm_build_display_path` | `src/filemanager/filemanager.c` | `fm_build_display_path` | `filemanager` | `COVERED` | 2 |
 | `c:src/filemanager/filemanager.c:fm_classic_draw_address` | `src/filemanager/filemanager.c` | `fm_classic_draw_address` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_classic_draw_help` | `src/filemanager/filemanager.c` | `fm_classic_draw_help` | `filemanager` | `PENDING` | 0 |
 | `c:src/filemanager/filemanager.c:fm_classic_draw_input_dialog` | `src/filemanager/filemanager.c` | `fm_classic_draw_input_dialog` | `filemanager` | `PENDING` | 0 |
@@ -4801,11 +4802,11 @@
 | `c:src/filemanager/filemanager.c:fm_classic_draw_status` | `src/filemanager/filemanager.c` | `fm_classic_draw_status` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_classic_draw_toolbar` | `src/filemanager/filemanager.c` | `fm_classic_draw_toolbar` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_classic_draw_view_file` | `src/filemanager/filemanager.c` | `fm_classic_draw_view_file` | `filemanager` | `PENDING` | 0 |
-| `c:src/filemanager/filemanager.c:fm_classic_get_content_height` | `src/filemanager/filemanager.c` | `fm_classic_get_content_height` | `filemanager` | `COVERED` | 1 |
-| `c:src/filemanager/filemanager.c:fm_classic_get_layout` | `src/filemanager/filemanager.c` | `fm_classic_get_layout` | `filemanager` | `COVERED` | 1 |
+| `c:src/filemanager/filemanager.c:fm_classic_get_content_height` | `src/filemanager/filemanager.c` | `fm_classic_get_content_height` | `filemanager` | `COVERED` | 2 |
+| `c:src/filemanager/filemanager.c:fm_classic_get_layout` | `src/filemanager/filemanager.c` | `fm_classic_get_layout` | `filemanager` | `COVERED` | 2 |
 | `c:src/filemanager/filemanager.c:fm_close` | `src/filemanager/filemanager.c` | `fm_close` | `filemanager` | `PENDING` | 0 |
-| `c:src/filemanager/filemanager.c:fm_copy_display_text` | `src/filemanager/filemanager.c` | `fm_copy_display_text` | `filemanager` | `COVERED` | 1 |
-| `c:src/filemanager/filemanager.c:fm_copy_normalized_path` | `src/filemanager/filemanager.c` | `fm_copy_normalized_path` | `filemanager` | `PENDING` | 0 |
+| `c:src/filemanager/filemanager.c:fm_copy_display_text` | `src/filemanager/filemanager.c` | `fm_copy_display_text` | `filemanager` | `COVERED` | 2 |
+| `c:src/filemanager/filemanager.c:fm_copy_normalized_path` | `src/filemanager/filemanager.c` | `fm_copy_normalized_path` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_delete_selected_file` | `src/filemanager/filemanager.c` | `fm_delete_selected_file` | `filemanager` | `PENDING` | 0 |
 | `c:src/filemanager/filemanager.c:fm_display_font_height` | `src/filemanager/filemanager.c` | `fm_display_font_height` | `filemanager` | `PENDING` | 0 |
 | `c:src/filemanager/filemanager.c:fm_display_font_width` | `src/filemanager/filemanager.c` | `fm_display_font_width` | `filemanager` | `COVERED` | 1 |
@@ -4830,55 +4831,56 @@
 | `c:src/filemanager/filemanager.c:fm_draw_title_bar` | `src/filemanager/filemanager.c` | `fm_draw_title_bar` | `filemanager` | `PENDING` | 0 |
 | `c:src/filemanager/filemanager.c:fm_draw_view_file` | `src/filemanager/filemanager.c` | `fm_draw_view_file` | `filemanager` | `PENDING` | 0 |
 | `c:src/filemanager/filemanager.c:fm_ensure_boot_directory` | `src/filemanager/filemanager.c` | `fm_ensure_boot_directory` | `filemanager` | `COVERED` | 1 |
-| `c:src/filemanager/filemanager.c:fm_fat_display_name` | `src/filemanager/filemanager.c` | `fm_fat_display_name` | `filemanager` | `COVERED` | 1 |
+| `c:src/filemanager/filemanager.c:fm_fat_display_name` | `src/filemanager/filemanager.c` | `fm_fat_display_name` | `filemanager` | `COVERED` | 2 |
 | `c:src/filemanager/filemanager.c:fm_get_mode` | `src/filemanager/filemanager.c` | `fm_get_mode` | `filemanager` | `PENDING` | 0 |
 | `c:src/filemanager/filemanager.c:fm_go_back` | `src/filemanager/filemanager.c` | `fm_go_back` | `filemanager` | `PENDING` | 0 |
 | `c:src/filemanager/filemanager.c:fm_go_forward` | `src/filemanager/filemanager.c` | `fm_go_forward` | `filemanager` | `PENDING` | 0 |
 | `c:src/filemanager/filemanager.c:fm_go_up` | `src/filemanager/filemanager.c` | `fm_go_up` | `filemanager` | `PENDING` | 0 |
 | `c:src/filemanager/filemanager.c:fm_handle_key` | `src/filemanager/filemanager.c` | `fm_handle_key` | `filemanager` | `COVERED` | 1 |
+| `c:src/filemanager/filemanager.c:fm_host_test_contracts` | `src/filemanager/filemanager.c` | `fm_host_test_contracts` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_hosted_close` | `src/filemanager/filemanager.c` | `fm_hosted_close` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_hosted_draw` | `src/filemanager/filemanager.c` | `fm_hosted_draw` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_hosted_mouse` | `src/filemanager/filemanager.c` | `fm_hosted_mouse` | `filemanager` | `PENDING` | 0 |
 | `c:src/filemanager/filemanager.c:fm_init` | `src/filemanager/filemanager.c` | `fm_init` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_is_running` | `src/filemanager/filemanager.c` | `fm_is_running` | `filemanager` | `PENDING` | 0 |
-| `c:src/filemanager/filemanager.c:fm_join_path` | `src/filemanager/filemanager.c` | `fm_join_path` | `filemanager` | `PENDING` | 0 |
-| `c:src/filemanager/filemanager.c:fm_mouse_select_item` | `src/filemanager/filemanager.c` | `fm_mouse_select_item` | `filemanager` | `PENDING` | 0 |
+| `c:src/filemanager/filemanager.c:fm_join_path` | `src/filemanager/filemanager.c` | `fm_join_path` | `filemanager` | `COVERED` | 1 |
+| `c:src/filemanager/filemanager.c:fm_mouse_select_item` | `src/filemanager/filemanager.c` | `fm_mouse_select_item` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_navigate_address_value` | `src/filemanager/filemanager.c` | `fm_navigate_address_value` | `filemanager` | `PENDING` | 0 |
 | `c:src/filemanager/filemanager.c:fm_navigate_to` | `src/filemanager/filemanager.c` | `fm_navigate_to` | `filemanager` | `PENDING` | 0 |
 | `c:src/filemanager/filemanager.c:fm_open` | `src/filemanager/filemanager.c` | `fm_open` | `filemanager` | `COVERED` | 1 |
-| `c:src/filemanager/filemanager.c:fm_record_history` | `src/filemanager/filemanager.c` | `fm_record_history` | `filemanager` | `COVERED` | 1 |
+| `c:src/filemanager/filemanager.c:fm_record_history` | `src/filemanager/filemanager.c` | `fm_record_history` | `filemanager` | `COVERED` | 2 |
 | `c:src/filemanager/filemanager.c:fm_redraw_file_view` | `src/filemanager/filemanager.c` | `fm_redraw_file_view` | `filemanager` | `PENDING` | 0 |
 | `c:src/filemanager/filemanager.c:fm_refresh_files` | `src/filemanager/filemanager.c` | `fm_refresh_files` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_rename_selected_file` | `src/filemanager/filemanager.c` | `fm_rename_selected_file` | `filemanager` | `PENDING` | 0 |
-| `c:src/filemanager/filemanager.c:fm_rename_target_conflicts` | `src/filemanager/filemanager.c` | `fm_rename_target_conflicts` | `filemanager` | `PENDING` | 0 |
+| `c:src/filemanager/filemanager.c:fm_rename_target_conflicts` | `src/filemanager/filemanager.c` | `fm_rename_target_conflicts` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_restore_history_source` | `src/filemanager/filemanager.c` | `fm_restore_history_source` | `filemanager` | `PENDING` | 0 |
 | `c:src/filemanager/filemanager.c:fm_run` | `src/filemanager/filemanager.c` | `fm_run` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_scroll_file_selection` | `src/filemanager/filemanager.c` | `fm_scroll_file_selection` | `filemanager` | `PENDING` | 0 |
 | `c:src/filemanager/filemanager.c:fm_search_activate_selected` | `src/filemanager/filemanager.c` | `fm_search_activate_selected` | `filemanager` | `PENDING` | 0 |
-| `c:src/filemanager/filemanager.c:fm_search_apply_index_status` | `src/filemanager/filemanager.c` | `fm_search_apply_index_status` | `filemanager` | `PENDING` | 0 |
+| `c:src/filemanager/filemanager.c:fm_search_apply_index_status` | `src/filemanager/filemanager.c` | `fm_search_apply_index_status` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_search_begin` | `src/filemanager/filemanager.c` | `fm_search_begin` | `filemanager` | `PENDING` | 0 |
-| `c:src/filemanager/filemanager.c:fm_search_build_location` | `src/filemanager/filemanager.c` | `fm_search_build_location` | `filemanager` | `PENDING` | 0 |
+| `c:src/filemanager/filemanager.c:fm_search_build_location` | `src/filemanager/filemanager.c` | `fm_search_build_location` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_search_button_pressed` | `src/filemanager/filemanager.c` | `fm_search_button_pressed` | `filemanager` | `PENDING` | 0 |
 | `c:src/filemanager/filemanager.c:fm_search_close` | `src/filemanager/filemanager.c` | `fm_search_close` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_search_handle_key` | `src/filemanager/filemanager.c` | `fm_search_handle_key` | `filemanager` | `PENDING` | 0 |
-| `c:src/filemanager/filemanager.c:fm_search_move_page` | `src/filemanager/filemanager.c` | `fm_search_move_page` | `filemanager` | `PENDING` | 0 |
+| `c:src/filemanager/filemanager.c:fm_search_move_page` | `src/filemanager/filemanager.c` | `fm_search_move_page` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_search_refresh` | `src/filemanager/filemanager.c` | `fm_search_refresh` | `filemanager` | `PENDING` | 0 |
-| `c:src/filemanager/filemanager.c:fm_search_scroll_selection` | `src/filemanager/filemanager.c` | `fm_search_scroll_selection` | `filemanager` | `PENDING` | 0 |
+| `c:src/filemanager/filemanager.c:fm_search_scroll_selection` | `src/filemanager/filemanager.c` | `fm_search_scroll_selection` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_select_boot_source` | `src/filemanager/filemanager.c` | `fm_select_boot_source` | `filemanager` | `PENDING` | 0 |
 | `c:src/filemanager/filemanager.c:fm_select_mode` | `src/filemanager/filemanager.c` | `fm_select_mode` | `filemanager` | `PENDING` | 0 |
 | `c:src/filemanager/filemanager.c:fm_select_mounted_source` | `src/filemanager/filemanager.c` | `fm_select_mounted_source` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_select_system_source` | `src/filemanager/filemanager.c` | `fm_select_system_source` | `filemanager` | `COVERED` | 1 |
-| `c:src/filemanager/filemanager.c:fm_select_virtual_root` | `src/filemanager/filemanager.c` | `fm_select_virtual_root` | `filemanager` | `COVERED` | 1 |
-| `c:src/filemanager/filemanager.c:fm_side_items_for_height` | `src/filemanager/filemanager.c` | `fm_side_items_for_height` | `filemanager` | `COVERED` | 1 |
-| `c:src/filemanager/filemanager.c:fm_store_history_source` | `src/filemanager/filemanager.c` | `fm_store_history_source` | `filemanager` | `COVERED` | 1 |
+| `c:src/filemanager/filemanager.c:fm_select_virtual_root` | `src/filemanager/filemanager.c` | `fm_select_virtual_root` | `filemanager` | `COVERED` | 2 |
+| `c:src/filemanager/filemanager.c:fm_side_items_for_height` | `src/filemanager/filemanager.c` | `fm_side_items_for_height` | `filemanager` | `COVERED` | 2 |
+| `c:src/filemanager/filemanager.c:fm_store_history_source` | `src/filemanager/filemanager.c` | `fm_store_history_source` | `filemanager` | `COVERED` | 2 |
 | `c:src/filemanager/filemanager.c:fm_update` | `src/filemanager/filemanager.c` | `fm_update` | `filemanager` | `PENDING` | 0 |
 | `c:src/filemanager/filemanager.c:fm_validate_storage_source` | `src/filemanager/filemanager.c` | `fm_validate_storage_source` | `filemanager` | `COVERED` | 1 |
-| `c:src/filemanager/filemanager.c:fm_visible_rows` | `src/filemanager/filemanager.c` | `fm_visible_rows` | `filemanager` | `COVERED` | 1 |
-| `c:src/filemanager/filemanager.c:fm_visible_side_items` | `src/filemanager/filemanager.c` | `fm_visible_side_items` | `filemanager` | `PENDING` | 0 |
-| `c:src/filemanager/filemanager.c:int_to_str` | `src/filemanager/filemanager.c` | `int_to_str` | `filemanager` | `COVERED` | 1 |
-| `c:src/filemanager/filemanager.c:str_copy` | `src/filemanager/filemanager.c` | `str_copy` | `filemanager` | `COVERED` | 1 |
-| `c:src/filemanager/filemanager.c:str_equal` | `src/filemanager/filemanager.c` | `str_equal` | `filemanager` | `COVERED` | 1 |
-| `c:src/filemanager/filemanager.c:str_len` | `src/filemanager/filemanager.c` | `str_len` | `filemanager` | `COVERED` | 1 |
+| `c:src/filemanager/filemanager.c:fm_visible_rows` | `src/filemanager/filemanager.c` | `fm_visible_rows` | `filemanager` | `COVERED` | 2 |
+| `c:src/filemanager/filemanager.c:fm_visible_side_items` | `src/filemanager/filemanager.c` | `fm_visible_side_items` | `filemanager` | `COVERED` | 1 |
+| `c:src/filemanager/filemanager.c:int_to_str` | `src/filemanager/filemanager.c` | `int_to_str` | `filemanager` | `COVERED` | 2 |
+| `c:src/filemanager/filemanager.c:str_copy` | `src/filemanager/filemanager.c` | `str_copy` | `filemanager` | `COVERED` | 2 |
+| `c:src/filemanager/filemanager.c:str_equal` | `src/filemanager/filemanager.c` | `str_equal` | `filemanager` | `COVERED` | 2 |
+| `c:src/filemanager/filemanager.c:str_len` | `src/filemanager/filemanager.c` | `str_len` | `filemanager` | `COVERED` | 2 |
 | `c:src/fs/block.c:block_ata_descriptor` | `src/fs/block.c` | `block_ata_descriptor` | `fs` | `COVERED` | 1 |
 | `c:src/fs/block.c:block_ata_read` | `src/fs/block.c` | `block_ata_read` | `fs` | `COVERED` | 1 |
 | `c:src/fs/block.c:block_ata_submit` | `src/fs/block.c` | `block_ata_submit` | `fs` | `COVERED` | 4 |
@@ -7525,6 +7527,7 @@
 | `host:tst5:blackbox` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo disponivel | compilar e executar o harness black-box com snapshots de terminal falsos | casos TST5 validos encontram o marcador apos nova geracao e caso invalido retorna ERR_NOT_FOUND | compilador ausente, warning, marcador ausente, caso invalido ou timeout | somente buffers estaticos e callbacks falsos do observador | processo host encerrado e relatorio de cobertura preservado |
 | `host:ui:appstore` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar formatacao, selecao, planos, estados, rollback, confianca e geometria da interface com doubles estaticos | helpers preservam limites, selecao, estados de catalogo, planos e coordenadas sem iniciar workers ou tocar em hardware | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers e estruturas estaticas da App Store no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:ui:desktop` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, desenho TUI/GUI, modos, selecao, teclado, cliques, arraste, limites e fallback | Desktop preserva estado, layout, selecao, navegacao, hit-testing e limpeza sem hardware real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do Desktop e doubles de video, VESA, taskbar, icons, GUI e mouse no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:ui:filemanager` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar contratos de caminhos, nomes, layout, selecao, historico, pesquisa e estados do Explorer com doubles estaticos | helpers preservam limites, normalizacao, navegacao, selecao, paginação e estados de indice sem efeitos externos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers e estado estaticos do processo host; nenhum VFS, disco, rede ou hardware real | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:ui:icons` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar defaults, mutacoes, fallback, cache BMP, limites VESA e falhas controladas | registro vetorial permanece utilizavel sem filesystem e BMPs validos sao aceitos somente no formato esperado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente registro, cache e dispositivos BMP/VESA falsos no processo host | processo host encerrado, cache liberado e manifesto, logs e cobertura preservados |
 | `host:ui:settings-icons` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, modos TUI/GUI, preferencias, dialogos, mouse, storage e editor de icones com entradas estaticas | estado, valores, selecao, navegacao, dialogos e encerramento preservam o contrato observavel | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado de configuracoes, buffers estaticos e doubles de video/GUI no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:ui:taskbar` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar estados TUI e GUI, layouts, botoes, menus, configuracao, cliques, relogio e limites | taskbar preserva configuracao, geometria, navegacao, selecao de janelas e fallback sem hardware grafico real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente configuracao, botoes, menus e chamadas de desenho dentro da fixture host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7719,7 +7722,6 @@
 - `c:src/filemanager/filemanager.c:fm_classic_draw_search_status`
 - `c:src/filemanager/filemanager.c:fm_classic_draw_view_file`
 - `c:src/filemanager/filemanager.c:fm_close`
-- `c:src/filemanager/filemanager.c:fm_copy_normalized_path`
 - `c:src/filemanager/filemanager.c:fm_delete_selected_file`
 - `c:src/filemanager/filemanager.c:fm_display_font_height`
 - `c:src/filemanager/filemanager.c:fm_draw`
@@ -7745,28 +7747,20 @@
 - `c:src/filemanager/filemanager.c:fm_go_up`
 - `c:src/filemanager/filemanager.c:fm_hosted_mouse`
 - `c:src/filemanager/filemanager.c:fm_is_running`
-- `c:src/filemanager/filemanager.c:fm_join_path`
-- `c:src/filemanager/filemanager.c:fm_mouse_select_item`
 - `c:src/filemanager/filemanager.c:fm_navigate_address_value`
 - `c:src/filemanager/filemanager.c:fm_navigate_to`
 - `c:src/filemanager/filemanager.c:fm_redraw_file_view`
 - `c:src/filemanager/filemanager.c:fm_rename_selected_file`
-- `c:src/filemanager/filemanager.c:fm_rename_target_conflicts`
 - `c:src/filemanager/filemanager.c:fm_restore_history_source`
 - `c:src/filemanager/filemanager.c:fm_scroll_file_selection`
 - `c:src/filemanager/filemanager.c:fm_search_activate_selected`
-- `c:src/filemanager/filemanager.c:fm_search_apply_index_status`
 - `c:src/filemanager/filemanager.c:fm_search_begin`
-- `c:src/filemanager/filemanager.c:fm_search_build_location`
 - `c:src/filemanager/filemanager.c:fm_search_button_pressed`
 - `c:src/filemanager/filemanager.c:fm_search_handle_key`
-- `c:src/filemanager/filemanager.c:fm_search_move_page`
 - `c:src/filemanager/filemanager.c:fm_search_refresh`
-- `c:src/filemanager/filemanager.c:fm_search_scroll_selection`
 - `c:src/filemanager/filemanager.c:fm_select_boot_source`
 - `c:src/filemanager/filemanager.c:fm_select_mode`
 - `c:src/filemanager/filemanager.c:fm_update`
-- `c:src/filemanager/filemanager.c:fm_visible_side_items`
 - `c:src/kernel/kernel.c:desktop_process_main`
 - `c:src/kernel/kernel.c:global_mouse_handler`
 - `c:src/kernel/kernel.c:kernel_cancel_foreground_app`

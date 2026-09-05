@@ -145,6 +145,8 @@ SHELL_CHECKS_RESULT_DIR = ROOT / "build" / "test-results" / "shell-checks-host"
 SHELL_CHECKS_BINARY = ROOT / "build" / "tests" / "test_shell_checks_host.exe"
 UPDATER_RESULT_DIR = ROOT / "build" / "test-results" / "updater-host"
 UPDATER_BINARY = ROOT / "build" / "tests" / "test_updater_host.exe"
+FILEMANAGER_RESULT_DIR = ROOT / "build" / "test-results" / "filemanager-host"
+FILEMANAGER_BINARY = ROOT / "build" / "tests" / "test_filemanager_host.exe"
 SPINLOCK_RESULT_DIR = ROOT / "build" / "test-results" / "spinlock-host"
 SPINLOCK_BINARY = ROOT / "build" / "tests" / "test_spinlock_host.exe"
 DEFAULT_TIMEOUT = 120.0
@@ -186,6 +188,11 @@ SHELL_CHECKS_SOURCE_FILES = (
 UPDATER_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_updater_host.c",
     ROOT / "src" / "updater" / "updater.c",
+    ROOT / "src" / "core" / "string.c",
+)
+FILEMANAGER_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_filemanager_host.c",
+    ROOT / "src" / "filemanager" / "filemanager.c",
     ROOT / "src" / "core" / "string.c",
 )
 NETWORK_MANAGER_SOURCE_FILES = (
@@ -1082,7 +1089,11 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return (SHELL_CHECKS_RESULT_DIR, SHELL_CHECKS_BINARY,
                 SHELL_CHECKS_SOURCE_FILES, "shell-checks-host")
     if case_id == "host:ui:updater":
-        return UPDATER_RESULT_DIR, UPDATER_BINARY, UPDATER_SOURCE_FILES, "updater-host"
+        return (UPDATER_RESULT_DIR, UPDATER_BINARY, UPDATER_SOURCE_FILES,
+                "updater-host")
+    if case_id == "host:ui:filemanager":
+        return (FILEMANAGER_RESULT_DIR, FILEMANAGER_BINARY,
+                FILEMANAGER_SOURCE_FILES, "filemanager-host")
     if case_id == "host:shell:diagnostics":
         return (SHELL_DIAGNOSTICS_RESULT_DIR, SHELL_DIAGNOSTICS_BINARY,
                 (ROOT / "tests" / "unit" / "test_shell_diagnostics_host.c",
@@ -1407,6 +1418,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:core:app-files", "host:core:app-builtin",
                                  "host:core:app-loader", "host:ui:taskbar",
                                  "host:ui:appstore", "host:ui:updater",
+                                 "host:ui:filemanager",
                                  "host:core:syscall",
                                  "host:process:runtime",
                                  "host:process:threads",

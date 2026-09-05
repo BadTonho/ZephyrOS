@@ -2173,6 +2173,23 @@ O relatório instrumentado fica em
 `status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`. A execução tem
 timeout do runner e deixa manifesto, resultado, logs e cobertura preservados.
 
+## File Manager: contratos host-only
+
+O alvo `test-filemanager-host` compila o Explorer real com a fixture interna
+ativada por `ZEPHYROS_HOST_TEST`. O caso valida caminhos, nomes, truncamento,
+layout, selecao, historico, pesquisa, paginacao e estados do indice com
+doubles estaticos, sem VFS, disco, rede ou hardware reais:
+
+```text
+make test-filemanager-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O relatorio instrumentado fica em
+`build/test-results/filemanager-host/coverage.json` e deve terminar com
+`status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`, observando as
+funcoes reais exercitadas de `src/filemanager/filemanager.c`. A execucao tem
+timeout do runner e deixa manifesto, resultado, logs e cobertura preservados.
+
 ## Shell: relatórios de rede host-only
 
 O alvo `test-shell-network-checks-host` também exercita os relatórios somente

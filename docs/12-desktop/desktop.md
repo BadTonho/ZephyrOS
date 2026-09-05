@@ -492,6 +492,11 @@ Falha do indice nao fecha nem degrada o Explorer: a navegacao comum permanece
 independente. O Explorer Simple continua congelado e usa `index`/`search` no
 Shell como fallback.
 
+A fixture interna `filemanager_test.h`, disponivel somente em builds
+`ZEPHYROS_HOST_TEST`, valida diretamente os contratos deterministas de
+caminhos, nomes, layout, selecao, historico e pesquisa sem iniciar o Explorer
+ou acessar VFS, disco, rede e hardware reais.
+
 ## Settings (`settings.c`)
 
 Sistema de configuração geral.

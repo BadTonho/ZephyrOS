@@ -367,6 +367,17 @@ class CoreHostRunnerTests(unittest.TestCase):
         self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
                       "test_updater_host.c", sources)
 
+    def test_filemanager_case_has_contract_fixture_sources(self):
+        result_dir, binary, sources, suite = core_host_runner.case_configuration(
+            "host:ui:filemanager")
+        self.assertEqual(suite, "filemanager-host")
+        self.assertEqual(result_dir, core_host_runner.FILEMANAGER_RESULT_DIR)
+        self.assertEqual(binary, core_host_runner.FILEMANAGER_BINARY)
+        self.assertIn(core_host_runner.ROOT / "src" / "filemanager" /
+                      "filemanager.c", sources)
+        self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
+                      "test_filemanager_host.c", sources)
+
     def test_syscall_case_has_dispatcher_fixture_sources(self):
         result_dir, binary, sources, suite = core_host_runner.case_configuration(
             "host:core:syscall")

@@ -20,6 +20,7 @@
 #include "drivers/mouse.h"
 #include "drivers/vesa.h"
 #include "ui/display.h"
+#include "ui/filemanager_test.h"
 
 /* As primitivas GUI deste arquivo sao usadas pelo Explorer Classic. */
 #define gui_draw_text gui_draw_scaled_text
@@ -2515,6 +2516,140 @@ static void fm_search_move_page(int direction) {
     }
     fm_search_last_clicked = -1;
 }
+
+#ifdef ZEPHYROS_HOST_TEST
+int fm_host_test_contracts(void) {
+    file_index_status_t index_status;
+    file_index_entry_t index_entry;
+    char output[FM_MAX_PATH];
+    char long_path[FM_MAX_PATH];
+    int failures = 0;
+
+    kmemset(&state, 0, sizeof(state));
+    kmemset(&index_status, 0, sizeof(index_status));
+    kmemset(&index_entry, 0, sizeof(index_entry));
+    for (uint32_t index = 0U; index + 1U < sizeof(long_path); index++) {
+        long_path[index] = 'x';
+    }
+    long_path[sizeof(long_path) - 1U] = '\0';
+
+    int_to_str(0U, output);
+    if (!str_equal(output, "0")) failures++;
+    int_to_str(4294967295U, output);
+    if (!str_equal(output, "4294967295")) failures++;
+    str_copy(output, "Explorer");
+    if (!str_equal(output, "Explorer") || str_len(output) != 8) failures++;
+    if (fm_join_path(output, "docs", "readme.txt") != OK ||
+        !str_equal(output, "docs/readme.txt") ||
+        fm_join_path(output, 0, "file") != ERR_NULL ||
+        fm_join_path(output, long_path, "x") != ERR_OVERFLOW) failures++;
+    if (!str_equal("same", "same") || str_equal("a", "b") ||
+        str_equal("a", "ab")) failures++;
+    fm_fat_display_name("SHORT.TXT", output);
+    if (!str_equal(output, "SHORT.TXT")) failures++;
+    fm_fat_display_name(long_path, output);
+    if (str_len(output) != FM_NAME_LEN - 1) failures++;
+
+    state.file_count = 2;
+    state.selected = 0;
+    str_copy(state.files[0].name, "ONE.TXT");
+    str_copy(state.files[1].name, "TWO.TXT");
+    if (!fm_rename_target_conflicts("TWO.TXT") ||
+        fm_rename_target_conflicts("THREE.TXT")) failures++;
+
+    fm_copy_normalized_path(output, "C:\\docs\\file.txt");
+    if (!str_equal(output, "C:/docs/file.txt")) failures++;
+    fm_copy_normalized_path(output, 0);
+    if (output[0] != '\0') failures++;
+    fm_copy_display_text(output, 5, "abcdef", 32);
+    if (!str_equal(output, "abcd")) failures++;
+    fm_copy_display_text(output, sizeof(output), 0, 3);
+    if (output[0] != '\0') failures++;
+
+    state.storage_virtual = 1U;
+    fm_build_display_path(output, sizeof(output));
+    if (!str_equal(output, "Este Computador")) failures++;
+    state.storage_virtual = 0U;
+    state.storage_boot = 1U;
+    str_copy(state.current_path, "/docs");
+    fm_build_display_path(output, sizeof(output));
+    if (!str_equal(output, "C:\\docs")) failures++;
+    state.storage_boot = 0U;
+    str_copy(state.storage_volume_id, "DATA");
+    str_copy(state.current_path, "a/b");
+    fm_build_display_path(output, sizeof(output));
+    if (!str_equal(output, "DATA:\\a\\b")) failures++;
+
+    fm_hosted = 1;
+    fm_hosted_x = 10;
+    fm_hosted_y = 20;
+    fm_hosted_width = 700;
+    fm_hosted_height = 500;
+    if (!fm_classic_get_layout(&state.selected, &state.scroll_offset,
+                               &state.file_count, &state.history_count) ||
+        state.selected != 10 || state.scroll_offset != 20 ||
+        state.file_count != 700 || state.history_count != 500) failures++;
+    if (fm_classic_get_layout(0, &state.scroll_offset,
+                              &state.file_count, &state.history_count)) {
+        failures++;
+    }
+    fm_hosted = 0;
+    if (fm_classic_get_content_height(500) != 354 ||
+        fm_side_items_for_height(0) != 0 ||
+        fm_side_items_for_height(62) != 1) failures++;
+    state.mode = FM_MODE_SIMPLE;
+    if (fm_visible_rows() != 17 || fm_visible_side_items() != 8) failures++;
+
+    index_status.state = FILE_INDEX_STATE_READY;
+    index_status.partial = 1U;
+    index_status.stale = 1U;
+    index_status.last_error = ERR_STATE;
+    index_status.event_generation = 9U;
+    fm_search_apply_index_status(&index_status);
+    if (!fm_search_status.partial || !fm_search_status.stale ||
+        fm_search_status.building || fm_search_status.cancelled ||
+        fm_search_status.last_error != ERR_STATE ||
+        fm_search_event_generation != 9U ||
+        fm_search_index_state != FILE_INDEX_STATE_READY) failures++;
+
+    fm_search_status.returned_matches = 4U;
+    fm_search_selected = 0;
+    fm_search_scroll = 0;
+    if (!fm_search_scroll_selection(-2) || fm_search_selected != 2 ||
+        fm_search_scroll_selection(0)) failures++;
+    fm_search_move_page(1);
+    if (fm_search_selected != 3) failures++;
+    fm_search_move_page(-1);
+    if (fm_search_selected != 0 || fm_search_scroll != 0) failures++;
+    fm_search_active = 0;
+    state.focus_pane = 0;
+    fm_mouse_select_item(2);
+    if (state.focus_pane != 1 || state.selected != 2) failures++;
+
+    str_copy(state.current_path, "docs");
+    state.storage_virtual = 1U;
+    state.storage_boot = 0U;
+    state.history_count = 0;
+    state.history_pos = 0;
+    fm_record_history();
+    fm_record_history();
+    if (state.history_count != 1 || state.history_pos != 0 ||
+        !str_equal(state.history[0], "docs")) failures++;
+    fm_select_virtual_root();
+    if (!state.storage_virtual || !state.storage_read_only ||
+        state.storage_volume_id[0] || state.current_path[0] ||
+        state.selected != 0 || state.scroll_offset != 0) failures++;
+
+    index_entry.volume_id[0] = 'D';
+    index_entry.volume_id[1] = 'A';
+    index_entry.volume_id[2] = 'T';
+    index_entry.volume_id[3] = 'A';
+    str_copy(index_entry.parent_path, "/docs");
+    fm_search_build_location(&index_entry, output);
+    if (!str_equal(output, "DATA://docs")) failures++;
+    return failures;
+}
+#endif
 
 static int fm_search_handle_key(uint8_t scancode) {
     char character = scancode_table[scancode];
