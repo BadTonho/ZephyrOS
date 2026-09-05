@@ -499,6 +499,12 @@ void filemanager_host_set_index_fixture(int ready, int result_code) {
     fixture_search_result_code = result_code;
 }
 
+void filemanager_host_set_index_status(uint32_t event_generation,
+                                       file_index_state_t state) {
+    fixture_index_status.event_generation = event_generation;
+    fixture_index_status.state = state;
+}
+
 void filemanager_host_set_rename_result(int result) {
     fixture_rename_result = result;
 }
