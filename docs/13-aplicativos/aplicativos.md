@@ -97,6 +97,8 @@ uint8_t editor_is_running(void);        // Informa se esta aberto
 `editor_main` não faz parte mais do contrato público: a antiga declaração não
 possuía implementação nem chamadores no código ativo e foi aposentada. O
 Shell usa `editor_run` e `editor_run_file` para iniciar o fluxo interativo.
+O header interno `apps/editor_test.h` e seu contrato host-only só existem para
+fixtures determinísticas de cobertura e não participam do build freestanding.
 
 ### Teclas
 

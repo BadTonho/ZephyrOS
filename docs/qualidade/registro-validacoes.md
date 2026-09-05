@@ -6012,3 +6012,16 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   ambíguos. Renderização e `make catalog-test` passaram; o catálogo registra
   7.305 superfícies ativas, 6.435 `COVERED`, 870 `PENDING`, 59 aposentadas e
   158 casos.
+
+- Incremento Shell/Editor — núcleo determinístico concluído em 2026-09-05
+  (America/Sao_Paulo). Foi criada a fixture `host:shell:editor` com buffers
+  estáticos, allocator falso e instrumentação dinâmica. A execução validou
+  parsing, codificação, terminadores de linha, sintaxe, palavras-chave, cores,
+  conversão de inteiros, edição de linhas, word-wrap, formatação e cleanup,
+  sem hardware ou armazenamento real. Passaram `make test-editor-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`, `make q3check`, `make clean`,
+  `make` e `make catalog-test`. A evidência resolveu 28 superfícies C e quatro
+  contratos de API diretamente chamados, sem endereços desconhecidos ou
+  símbolos ambíguos. O catálogo registra 7.307 superfícies, 6.467 `COVERED`,
+  840 `PENDING`, 59 aposentadas e 159 casos; as pendências restantes continuam
+  explícitas.

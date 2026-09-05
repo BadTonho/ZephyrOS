@@ -19,11 +19,11 @@ equipamento e evidência correspondente.
 
 A infraestrutura TST1–TST7 está concluída para a matriz automatizada existente,
 mas o programa de cobertura integral ainda não está concluído. O catálogo
-mantém 158 casos `AUTOMATED`; após os incrementos de Shell, RTC,
+mantém 159 casos `AUTOMATED`; após os incrementos de Shell, RTC,
 processos/threads, FAT32, update U3/U4, os contratos remotos ZSYS e o
 repositório remoto de aplicativos, dos helpers de pacotes do Shell, da
 interface App Store e dos relatórios de rede do Shell, registra 7.307
-superfícies, 6.432 `COVERED` e 873
+superfícies, 6.467 `COVERED` e 840
 `PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
@@ -130,6 +130,21 @@ Isso não significa declarar hardware físico validado sem equipamento.
       foi registrada como `RETIRED` com evidência e substituto; o catálogo
       registra 7.305 superfícies ativas, 6.432 `COVERED`, 873 `PENDING`, 59
       aposentadas e 158 casos.
+
+### Incremento Shell/Editor — núcleo determinístico — 2026-09-05
+
+- [x] Foi criada a fixture host-only `host:shell:editor`, com buffers estáticos,
+      allocator falso e instrumentação dinâmica; o build freestanding não usa
+      esse header nem esse executor.
+- [x] A fixture exercitou diretamente parsing, codificação, terminadores de
+      linha, sintaxe, palavras-chave, cores, conversão de inteiros, edição de
+      linhas, word-wrap, formatação e cleanup do Editor.
+- [x] `make test-editor-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`,
+      `make q3check`, `make clean`, `make` e `make catalog-test` passaram. A
+      evidência resolveu 28 superfícies C e quatro contratos de API diretamente
+      chamados; não houve endereço desconhecido nem símbolo ambíguo. O catálogo
+      registra 7.307 superfícies, 6.467 `COVERED`, 840 `PENDING`, 59 aposentadas
+      e 159 casos. As pendências de UI/runtime continuam explícitas.
 
 ### Incremento Shell/UI App Store — 2026-09-05
 

@@ -24,6 +24,7 @@ novo; o handshake e inerte no boot normal ate a validacao de `HELLO`.
 | Header publico | Documento canonico |
 |---|---|
 | `src/include/apps/editor.h` | `docs/13-aplicativos/aplicativos.md` |
+| `src/include/apps/editor_test.h` | `docs/13-aplicativos/aplicativos.md` |
 | `src/include/apps/guitest.h` | `docs/13-aplicativos/aplicativos.md` |
 | `src/include/apps/mediaplayer.h` | `docs/13-aplicativos/aplicativos.md` |
 | `src/include/apps/shell.h` | `docs/09-shell/shell.md` |
