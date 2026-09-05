@@ -376,3 +376,9 @@ deterministicos usados pelos comandos de diagnostico. O modulo cobre nomes de
 estado, niveis de log, sinais, mouse, VMA, memoria, sysfs, procfs, USB, ACPI e
 VFS. A fixture `host:shell:diagnostics-helpers` executa esses contratos com
 doubles estaticos e valida entradas invalidas, limites e limpeza sem hardware.
+
+`shell_checks.h` e um header interno de teste, ativo somente com
+`ZEPHYROS_HOST_TEST`. A fixture `host:shell:checks` executa os helpers privados
+de `shell_checks.c` para validar fases, resumos, saturacao de falhas, estados
+de job, comparacao de inventarios, tabelas ACPI/MADT e montagem de fixtures
+ZAPP. Esse ponto de entrada nao participa do build normal nem cria ABI publica.

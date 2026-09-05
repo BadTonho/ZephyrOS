@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **7293**
-- Casos de teste: **155**
+- Superfícies ativas: **7295**
+- Casos de teste: **156**
 - Superfícies aposentadas: **57**
 
 | Tipo | Quantidade |
 |---|---:|
-| `api_function` | 1575 |
+| `api_function` | 1576 |
 | `asm_entry` | 101 |
-| `c_function` | 5497 |
+| `c_function` | 5498 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6319 |
+| `COVERED` | 6351 |
 | `MANUAL` | 0 |
-| `PENDING` | 974 |
+| `PENDING` | 944 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 155 |
+| `AUTOMATED` | 156 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -34,7 +34,7 @@
 
 | Proprietario | Superficies |
 |---|---:|
-| `apps` | 168 |
+| `apps` | 169 |
 | `appstore` | 88 |
 | `boot` | 136 |
 | `core` | 2813 |
@@ -48,7 +48,7 @@
 | `memory` | 194 |
 | `process` | 259 |
 | `settings` | 55 |
-| `shell` | 1082 |
+| `shell` | 1083 |
 | `taskbar` | 47 |
 | `thread` | 34 |
 | `ui` | 141 |
@@ -96,6 +96,7 @@
 | `api:src/include/apps/shell.h:shell_report_app_loader_result` | `src/include/apps/shell.h` | `shell_report_app_loader_result` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell.h:shell_report_user_test_result` | `src/include/apps/shell.h` | `shell_report_user_test_result` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell.h:shell_update_hosted_terminal` | `src/include/apps/shell.h` | `shell_update_hosted_terminal` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_checks.h:shell_checks_host_test_contracts` | `src/include/apps/shell_checks.h` | `shell_checks_host_test_contracts` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_command_utils.h:shell_command_args_equal` | `src/include/apps/shell_command_utils.h` | `shell_command_args_equal` | `apps` | `COVERED` | 6 |
 | `api:src/include/apps/shell_command_utils.h:shell_command_match_subcommand` | `src/include/apps/shell_command_utils.h` | `shell_command_match_subcommand` | `apps` | `COVERED` | 6 |
 | `api:src/include/apps/shell_command_utils.h:shell_command_parse_number` | `src/include/apps/shell_command_utils.h` | `shell_command_parse_number` | `apps` | `COVERED` | 6 |
@@ -153,7 +154,7 @@
 | `api:src/include/apps/shell_introspection.h:shell_introspection_parse_hex_u32` | `src/include/apps/shell_introspection.h` | `shell_introspection_parse_hex_u32` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_introspection.h:shell_introspection_parse_u32` | `src/include/apps/shell_introspection.h` | `shell_introspection_parse_u32` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_introspection.h:shell_introspection_read_file` | `src/include/apps/shell_introspection.h` | `shell_introspection_read_file` | `apps` | `COVERED` | 2 |
-| `api:src/include/apps/shell_job.h:shell_checks_start_job` | `src/include/apps/shell_job.h` | `shell_checks_start_job` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_job.h:shell_checks_start_job` | `src/include/apps/shell_job.h` | `shell_checks_start_job` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_job.h:shell_dispatch_cmd_job` | `src/include/apps/shell_job.h` | `shell_dispatch_cmd_job` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_job.h:shell_job_cancel_requested` | `src/include/apps/shell_job.h` | `shell_job_cancel_requested` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_job.h:shell_job_clear_next_wake` | `src/include/apps/shell_job.h` | `shell_job_clear_next_wake` | `apps` | `COVERED` | 7 |
@@ -187,12 +188,12 @@
 | `api:src/include/apps/shell_pipeline.h:shell_pipeline_self_test` | `src/include/apps/shell_pipeline.h` | `shell_pipeline_self_test` | `apps` | `COVERED` | 6 |
 | `api:src/include/apps/shell_pipeline.h:shell_pipeline_try_execute` | `src/include/apps/shell_pipeline.h` | `shell_pipeline_try_execute` | `apps` | `COVERED` | 6 |
 | `api:src/include/apps/shell_pipeline.h:shell_pipeline_write` | `src/include/apps/shell_pipeline.h` | `shell_pipeline_write` | `apps` | `COVERED` | 6 |
-| `api:src/include/apps/shell_runtime.h:shell_checks_handle_job_key` | `src/include/apps/shell_runtime.h` | `shell_checks_handle_job_key` | `apps` | `COVERED` | 1 |
-| `api:src/include/apps/shell_runtime.h:shell_checks_handle_loader_result` | `src/include/apps/shell_runtime.h` | `shell_checks_handle_loader_result` | `apps` | `COVERED` | 1 |
-| `api:src/include/apps/shell_runtime.h:shell_checks_input_blocked` | `src/include/apps/shell_runtime.h` | `shell_checks_input_blocked` | `apps` | `COVERED` | 1 |
-| `api:src/include/apps/shell_runtime.h:shell_checks_report_user_test_result` | `src/include/apps/shell_runtime.h` | `shell_checks_report_user_test_result` | `apps` | `COVERED` | 1 |
-| `api:src/include/apps/shell_runtime.h:shell_checks_run_app_inputtest` | `src/include/apps/shell_runtime.h` | `shell_checks_run_app_inputtest` | `apps` | `COVERED` | 1 |
-| `api:src/include/apps/shell_runtime.h:shell_checks_should_cancel_focused_user` | `src/include/apps/shell_runtime.h` | `shell_checks_should_cancel_focused_user` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_runtime.h:shell_checks_handle_job_key` | `src/include/apps/shell_runtime.h` | `shell_checks_handle_job_key` | `apps` | `COVERED` | 2 |
+| `api:src/include/apps/shell_runtime.h:shell_checks_handle_loader_result` | `src/include/apps/shell_runtime.h` | `shell_checks_handle_loader_result` | `apps` | `COVERED` | 2 |
+| `api:src/include/apps/shell_runtime.h:shell_checks_input_blocked` | `src/include/apps/shell_runtime.h` | `shell_checks_input_blocked` | `apps` | `COVERED` | 2 |
+| `api:src/include/apps/shell_runtime.h:shell_checks_report_user_test_result` | `src/include/apps/shell_runtime.h` | `shell_checks_report_user_test_result` | `apps` | `COVERED` | 2 |
+| `api:src/include/apps/shell_runtime.h:shell_checks_run_app_inputtest` | `src/include/apps/shell_runtime.h` | `shell_checks_run_app_inputtest` | `apps` | `COVERED` | 2 |
+| `api:src/include/apps/shell_runtime.h:shell_checks_should_cancel_focused_user` | `src/include/apps/shell_runtime.h` | `shell_checks_should_cancel_focused_user` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_runtime.h:shell_core_builtin_app_name` | `src/include/apps/shell_runtime.h` | `shell_core_builtin_app_name` | `apps` | `COVERED` | 3 |
 | `api:src/include/apps/shell_runtime.h:shell_core_handle_loader_result` | `src/include/apps/shell_runtime.h` | `shell_core_handle_loader_result` | `apps` | `COVERED` | 3 |
 | `api:src/include/apps/shell_runtime.h:shell_core_migrated_builtin_is_ready` | `src/include/apps/shell_runtime.h` | `shell_core_migrated_builtin_is_ready` | `apps` | `COVERED` | 3 |
@@ -6113,26 +6114,26 @@
 | `c:src/shell/shell_checks.c:cmd_q2check` | `src/shell/shell_checks.c` | `cmd_q2check` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:cmd_regcheck` | `src/shell/shell_checks.c` | `cmd_regcheck` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:cmd_usertest` | `src/shell/shell_checks.c` | `cmd_usertest` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_appcheck_copy_failure_label` | `src/shell/shell_checks.c` | `shell_appcheck_copy_failure_label` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_checks.c:shell_appcheck_copy_failure_label` | `src/shell/shell_checks.c` | `shell_appcheck_copy_failure_label` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_appcheck_fault_is_valid` | `src/shell/shell_checks.c` | `shell_appcheck_fault_is_valid` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_appcheck_finish_migration` | `src/shell/shell_checks.c` | `shell_appcheck_finish_migration` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_appcheck_has_pending_work` | `src/shell/shell_checks.c` | `shell_appcheck_has_pending_work` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_appcheck_is_compact_job` | `src/shell/shell_checks.c` | `shell_appcheck_is_compact_job` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_checks.c:shell_appcheck_has_pending_work` | `src/shell/shell_checks.c` | `shell_appcheck_has_pending_work` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_checks.c:shell_appcheck_is_compact_job` | `src/shell/shell_checks.c` | `shell_appcheck_is_compact_job` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_appcheck_label_is_unavailable` | `src/shell/shell_checks.c` | `shell_appcheck_label_is_unavailable` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_appcheck_migration_is_valid` | `src/shell/shell_checks.c` | `shell_appcheck_migration_is_valid` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_appcheck_phase_name` | `src/shell/shell_checks.c` | `shell_appcheck_phase_name` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_appcheck_print_summary` | `src/shell/shell_checks.c` | `shell_appcheck_print_summary` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_appcheck_record_result` | `src/shell/shell_checks.c` | `shell_appcheck_record_result` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_appcheck_set_phase` | `src/shell/shell_checks.c` | `shell_appcheck_set_phase` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_checks.c:shell_appcheck_phase_name` | `src/shell/shell_checks.c` | `shell_appcheck_phase_name` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_checks.c:shell_appcheck_print_summary` | `src/shell/shell_checks.c` | `shell_appcheck_print_summary` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_checks.c:shell_appcheck_record_result` | `src/shell/shell_checks.c` | `shell_appcheck_record_result` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_checks.c:shell_appcheck_set_phase` | `src/shell/shell_checks.c` | `shell_appcheck_set_phase` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_appcheck_start_migration` | `src/shell/shell_checks.c` | `shell_appcheck_start_migration` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_appcheck_summary_finish` | `src/shell/shell_checks.c` | `shell_appcheck_summary_finish` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_appcheck_summary_reset` | `src/shell/shell_checks.c` | `shell_appcheck_summary_reset` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_checks.c:shell_appcheck_summary_finish` | `src/shell/shell_checks.c` | `shell_appcheck_summary_finish` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_checks.c:shell_appcheck_summary_reset` | `src/shell/shell_checks.c` | `shell_appcheck_summary_reset` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_appcheck_vma_is_valid` | `src/shell/shell_checks.c` | `shell_appcheck_vma_is_valid` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_blkcheck_case_name` | `src/shell/shell_checks.c` | `shell_blkcheck_case_name` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_checks.c:shell_blkcheck_case_name` | `src/shell/shell_checks.c` | `shell_blkcheck_case_name` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_blkcheck_cleanup` | `src/shell/shell_checks.c` | `shell_blkcheck_cleanup` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_blkcheck_copy_failure` | `src/shell/shell_checks.c` | `shell_blkcheck_copy_failure` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_blkcheck_copy_id` | `src/shell/shell_checks.c` | `shell_blkcheck_copy_id` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_blkcheck_fail` | `src/shell/shell_checks.c` | `shell_blkcheck_fail` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_checks.c:shell_blkcheck_copy_failure` | `src/shell/shell_checks.c` | `shell_blkcheck_copy_failure` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_checks.c:shell_blkcheck_copy_id` | `src/shell/shell_checks.c` | `shell_blkcheck_copy_id` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_checks.c:shell_blkcheck_fail` | `src/shell/shell_checks.c` | `shell_blkcheck_fail` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_blkcheck_fat12` | `src/shell/shell_checks.c` | `shell_blkcheck_fat12` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_blkcheck_fat32_step` | `src/shell/shell_checks.c` | `shell_blkcheck_fat32_step` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_blkcheck_hash_file` | `src/shell/shell_checks.c` | `shell_blkcheck_hash_file` | `shell` | `PENDING` | 0 |
@@ -6141,7 +6142,7 @@
 | `c:src/shell/shell_checks.c:shell_blkcheck_job_drain` | `src/shell/shell_checks.c` | `shell_blkcheck_job_drain` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_blkcheck_job_finish` | `src/shell/shell_checks.c` | `shell_blkcheck_job_finish` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_blkcheck_job_step` | `src/shell/shell_checks.c` | `shell_blkcheck_job_step` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_blkcheck_phase_name` | `src/shell/shell_checks.c` | `shell_blkcheck_phase_name` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_checks.c:shell_blkcheck_phase_name` | `src/shell/shell_checks.c` | `shell_blkcheck_phase_name` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_blkcheck_prepare_fixture` | `src/shell/shell_checks.c` | `shell_blkcheck_prepare_fixture` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_blkcheck_save_inventory` | `src/shell/shell_checks.c` | `shell_blkcheck_save_inventory` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_blkcheck_validate_fixture` | `src/shell/shell_checks.c` | `shell_blkcheck_validate_fixture` | `shell` | `PENDING` | 0 |
@@ -6152,6 +6153,7 @@
 | `c:src/shell/shell_checks.c:shell_build_vma_test_image` | `src/shell/shell_checks.c` | `shell_build_vma_test_image` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_checks_handle_job_key` | `src/shell/shell_checks.c` | `shell_checks_handle_job_key` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_checks_handle_loader_result` | `src/shell/shell_checks.c` | `shell_checks_handle_loader_result` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_checks.c:shell_checks_host_test_contracts` | `src/shell/shell_checks.c` | `shell_checks_host_test_contracts` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_checks_input_blocked` | `src/shell/shell_checks.c` | `shell_checks_input_blocked` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_checks_job_drain` | `src/shell/shell_checks.c` | `shell_checks_job_drain` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_checks_job_finish` | `src/shell/shell_checks.c` | `shell_checks_job_finish` | `shell` | `PENDING` | 0 |
@@ -6160,14 +6162,14 @@
 | `c:src/shell/shell_checks.c:shell_checks_run_app_inputtest` | `src/shell/shell_checks.c` | `shell_checks_run_app_inputtest` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_checks_should_cancel_focused_user` | `src/shell/shell_checks.c` | `shell_checks_should_cancel_focused_user` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_checks_start_job` | `src/shell/shell_checks.c` | `shell_checks_start_job` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_demo_emit_add_ebx` | `src/shell/shell_checks.c` | `shell_demo_emit_add_ebx` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_demo_emit_exit_on_error` | `src/shell/shell_checks.c` | `shell_demo_emit_exit_on_error` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_demo_emit_jne` | `src/shell/shell_checks.c` | `shell_demo_emit_jne` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_demo_emit_jne_near` | `src/shell/shell_checks.c` | `shell_demo_emit_jne_near` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_demo_emit_load_ebx` | `src/shell/shell_checks.c` | `shell_demo_emit_load_ebx` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_demo_emit_mov` | `src/shell/shell_checks.c` | `shell_demo_emit_mov` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_demo_emit_syscall` | `src/shell/shell_checks.c` | `shell_demo_emit_syscall` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_demo_patch_u32` | `src/shell/shell_checks.c` | `shell_demo_patch_u32` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_checks.c:shell_demo_emit_add_ebx` | `src/shell/shell_checks.c` | `shell_demo_emit_add_ebx` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_checks.c:shell_demo_emit_exit_on_error` | `src/shell/shell_checks.c` | `shell_demo_emit_exit_on_error` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_checks.c:shell_demo_emit_jne` | `src/shell/shell_checks.c` | `shell_demo_emit_jne` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_checks.c:shell_demo_emit_jne_near` | `src/shell/shell_checks.c` | `shell_demo_emit_jne_near` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_checks.c:shell_demo_emit_load_ebx` | `src/shell/shell_checks.c` | `shell_demo_emit_load_ebx` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_checks.c:shell_demo_emit_mov` | `src/shell/shell_checks.c` | `shell_demo_emit_mov` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_checks.c:shell_demo_emit_syscall` | `src/shell/shell_checks.c` | `shell_demo_emit_syscall` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_checks.c:shell_demo_patch_u32` | `src/shell/shell_checks.c` | `shell_demo_patch_u32` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_dispatch_cmd_appcheck` | `src/shell/shell_checks.c` | `shell_dispatch_cmd_appcheck` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_dispatch_cmd_blkcheck` | `src/shell/shell_checks.c` | `shell_dispatch_cmd_blkcheck` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_dispatch_cmd_q2check` | `src/shell/shell_checks.c` | `shell_dispatch_cmd_q2check` | `shell` | `PENDING` | 0 |
@@ -6176,27 +6178,27 @@
 | `c:src/shell/shell_checks.c:shell_q2check_finish` | `src/shell/shell_checks.c` | `shell_q2check_finish` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_q2check_handle_user_test_result` | `src/shell/shell_checks.c` | `shell_q2check_handle_user_test_result` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_q2check_print_result` | `src/shell/shell_checks.c` | `shell_q2check_print_result` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_q2check_reset` | `src/shell/shell_checks.c` | `shell_q2check_reset` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_checks.c:shell_q2check_reset` | `src/shell/shell_checks.c` | `shell_q2check_reset` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_q2check_start_fault` | `src/shell/shell_checks.c` | `shell_q2check_start_fault` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_q2check_validate_cleanup` | `src/shell/shell_checks.c` | `shell_q2check_validate_cleanup` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_q2check_validate_fault` | `src/shell/shell_checks.c` | `shell_q2check_validate_fault` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_regcheck_acpi_read_u32` | `src/shell/shell_checks.c` | `shell_regcheck_acpi_read_u32` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_checks.c:shell_regcheck_acpi_read_u32` | `src/shell/shell_checks.c` | `shell_regcheck_acpi_read_u32` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_regcheck_finish` | `src/shell/shell_checks.c` | `shell_regcheck_finish` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_regcheck_finish_after_ring3` | `src/shell/shell_checks.c` | `shell_regcheck_finish_after_ring3` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_regcheck_handle_loader_result` | `src/shell/shell_checks.c` | `shell_regcheck_handle_loader_result` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_regcheck_has_failures` | `src/shell/shell_checks.c` | `shell_regcheck_has_failures` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_checks.c:shell_regcheck_has_failures` | `src/shell/shell_checks.c` | `shell_regcheck_has_failures` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_regcheck_is_preparing` | `src/shell/shell_checks.c` | `shell_regcheck_is_preparing` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_regcheck_prepare_pending` | `src/shell/shell_checks.c` | `shell_regcheck_prepare_pending` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_regcheck_prepare_progress` | `src/shell/shell_checks.c` | `shell_regcheck_prepare_progress` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_regcheck_prepare_step` | `src/shell/shell_checks.c` | `shell_regcheck_prepare_step` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_regcheck_print_failure` | `src/shell/shell_checks.c` | `shell_regcheck_print_failure` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_regcheck_reset` | `src/shell/shell_checks.c` | `shell_regcheck_reset` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_checks.c:shell_regcheck_reset` | `src/shell/shell_checks.c` | `shell_regcheck_reset` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_regcheck_run_full_checks` | `src/shell/shell_checks.c` | `shell_regcheck_run_full_checks` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_regcheck_same_device` | `src/shell/shell_checks.c` | `shell_regcheck_same_device` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_regcheck_same_usb` | `src/shell/shell_checks.c` | `shell_regcheck_same_usb` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_checks.c:shell_regcheck_same_device` | `src/shell/shell_checks.c` | `shell_regcheck_same_device` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_checks.c:shell_regcheck_same_usb` | `src/shell/shell_checks.c` | `shell_regcheck_same_usb` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_regcheck_start_image` | `src/shell/shell_checks.c` | `shell_regcheck_start_image` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_regcheck_valid_acpi_madt_entry` | `src/shell/shell_checks.c` | `shell_regcheck_valid_acpi_madt_entry` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_regcheck_valid_acpi_table` | `src/shell/shell_checks.c` | `shell_regcheck_valid_acpi_table` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_checks.c:shell_regcheck_valid_acpi_madt_entry` | `src/shell/shell_checks.c` | `shell_regcheck_valid_acpi_madt_entry` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_checks.c:shell_regcheck_valid_acpi_table` | `src/shell/shell_checks.c` | `shell_regcheck_valid_acpi_table` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_regcheck_validate_acpi` | `src/shell/shell_checks.c` | `shell_regcheck_validate_acpi` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_regcheck_validate_acpi_power` | `src/shell/shell_checks.c` | `shell_regcheck_validate_acpi_power` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_regcheck_validate_acpi_recovery` | `src/shell/shell_checks.c` | `shell_regcheck_validate_acpi_recovery` | `shell` | `PENDING` | 0 |
@@ -7461,6 +7463,7 @@
 | `host:process:threads` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, criacao, selecao, yield, bloqueio, espera, cancelamento, desbloqueio, timeouts, limites e limpeza com threads e stacks estaticas | o scheduler preserva estados, identidade, filas de espera, codigos canonicos e limpeza sem executar troca de contexto Assembly | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas, threads e stacks estaticas da fixture host | processo host encerrado, threads estaticas removidas e manifesto, logs e cobertura preservados |
 | `host:security:tls` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar politica, estados, validade, cadeia, SAN, pinning, rotacao, revogacao e autoteste TLS com relogio e RNG falsos | identidades validas sao aceitas, rejeicoes retornam motivo canonico e capacidades indisponiveis permanecem explicitas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado TLS, politica e dependencias falsas no processo host | estado TLS e dependencias falsas reiniciados e artefatos preservados |
 | `host:security:tls-client` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar tls_client.c com engine BearSSL, socket, relogio e RNG falsos | handshake, envio, recepcao, EOF, estados de erro e limpeza preservam os contratos do adaptador | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do adaptador e fixtures do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:shell:checks` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar contratos internos de fases, resumos, limites de falhas, estados de job, comparacao de inventarios, validacao de tabelas ACPI/MADT e emissao de imagens ZAPP | helpers preservam nomes, estados, codigos canonicos, limites, bytes e limpeza esperados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estruturas estaticas da fixture host; nenhum hardware, armazenamento ou processo real | estado interno resetado, processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:command-utils` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar parsing, validacao de argumentos, normalizacao e formatacao | utilitarios aceitam entradas validas, rejeitam limites e formatam valores corretamente | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos de entrada, saida e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:commands-core` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar handlers de ajuda, terminal, VFS, processos, threads, memoria, som, energia, compressao e resultados de loader com dependencias estaticas falsas | comandos validos e invalidos preservam seus retornos, mensagens, callbacks e limpeza sem hardware ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers e contadores estaticos da fixture host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:commands-storage` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar caminhos validos, negativos, limites, diagnostico, busca, sync e callbacks de job | dispatchers, parsers, formatacao e callbacks preservam limites, estados e codigos canonicos | compilador ausente, warning, saida inesperada, falha de assercao ou timeout | somente buffers estaticos de saida e doubles do indice no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7985,26 +7988,13 @@
 - `c:src/shell/shell_checks.c:cmd_q2check`
 - `c:src/shell/shell_checks.c:cmd_regcheck`
 - `c:src/shell/shell_checks.c:cmd_usertest`
-- `c:src/shell/shell_checks.c:shell_appcheck_copy_failure_label`
 - `c:src/shell/shell_checks.c:shell_appcheck_fault_is_valid`
 - `c:src/shell/shell_checks.c:shell_appcheck_finish_migration`
-- `c:src/shell/shell_checks.c:shell_appcheck_has_pending_work`
-- `c:src/shell/shell_checks.c:shell_appcheck_is_compact_job`
 - `c:src/shell/shell_checks.c:shell_appcheck_label_is_unavailable`
 - `c:src/shell/shell_checks.c:shell_appcheck_migration_is_valid`
-- `c:src/shell/shell_checks.c:shell_appcheck_phase_name`
-- `c:src/shell/shell_checks.c:shell_appcheck_print_summary`
-- `c:src/shell/shell_checks.c:shell_appcheck_record_result`
-- `c:src/shell/shell_checks.c:shell_appcheck_set_phase`
 - `c:src/shell/shell_checks.c:shell_appcheck_start_migration`
-- `c:src/shell/shell_checks.c:shell_appcheck_summary_finish`
-- `c:src/shell/shell_checks.c:shell_appcheck_summary_reset`
 - `c:src/shell/shell_checks.c:shell_appcheck_vma_is_valid`
-- `c:src/shell/shell_checks.c:shell_blkcheck_case_name`
 - `c:src/shell/shell_checks.c:shell_blkcheck_cleanup`
-- `c:src/shell/shell_checks.c:shell_blkcheck_copy_failure`
-- `c:src/shell/shell_checks.c:shell_blkcheck_copy_id`
-- `c:src/shell/shell_checks.c:shell_blkcheck_fail`
 - `c:src/shell/shell_checks.c:shell_blkcheck_fat12`
 - `c:src/shell/shell_checks.c:shell_blkcheck_fat32_step`
 - `c:src/shell/shell_checks.c:shell_blkcheck_hash_file`
@@ -8013,7 +8003,6 @@
 - `c:src/shell/shell_checks.c:shell_blkcheck_job_drain`
 - `c:src/shell/shell_checks.c:shell_blkcheck_job_finish`
 - `c:src/shell/shell_checks.c:shell_blkcheck_job_step`
-- `c:src/shell/shell_checks.c:shell_blkcheck_phase_name`
 - `c:src/shell/shell_checks.c:shell_blkcheck_prepare_fixture`
 - `c:src/shell/shell_checks.c:shell_blkcheck_save_inventory`
 - `c:src/shell/shell_checks.c:shell_blkcheck_validate_fixture`
@@ -8030,14 +8019,6 @@
 - `c:src/shell/shell_checks.c:shell_checks_run_app_inputtest`
 - `c:src/shell/shell_checks.c:shell_checks_should_cancel_focused_user`
 - `c:src/shell/shell_checks.c:shell_checks_start_job`
-- `c:src/shell/shell_checks.c:shell_demo_emit_add_ebx`
-- `c:src/shell/shell_checks.c:shell_demo_emit_exit_on_error`
-- `c:src/shell/shell_checks.c:shell_demo_emit_jne`
-- `c:src/shell/shell_checks.c:shell_demo_emit_jne_near`
-- `c:src/shell/shell_checks.c:shell_demo_emit_load_ebx`
-- `c:src/shell/shell_checks.c:shell_demo_emit_mov`
-- `c:src/shell/shell_checks.c:shell_demo_emit_syscall`
-- `c:src/shell/shell_checks.c:shell_demo_patch_u32`
 - `c:src/shell/shell_checks.c:shell_dispatch_cmd_appcheck`
 - `c:src/shell/shell_checks.c:shell_dispatch_cmd_blkcheck`
 - `c:src/shell/shell_checks.c:shell_dispatch_cmd_q2check`
@@ -8046,27 +8027,19 @@
 - `c:src/shell/shell_checks.c:shell_q2check_finish`
 - `c:src/shell/shell_checks.c:shell_q2check_handle_user_test_result`
 - `c:src/shell/shell_checks.c:shell_q2check_print_result`
-- `c:src/shell/shell_checks.c:shell_q2check_reset`
 - `c:src/shell/shell_checks.c:shell_q2check_start_fault`
 - `c:src/shell/shell_checks.c:shell_q2check_validate_cleanup`
 - `c:src/shell/shell_checks.c:shell_q2check_validate_fault`
-- `c:src/shell/shell_checks.c:shell_regcheck_acpi_read_u32`
 - `c:src/shell/shell_checks.c:shell_regcheck_finish`
 - `c:src/shell/shell_checks.c:shell_regcheck_finish_after_ring3`
 - `c:src/shell/shell_checks.c:shell_regcheck_handle_loader_result`
-- `c:src/shell/shell_checks.c:shell_regcheck_has_failures`
 - `c:src/shell/shell_checks.c:shell_regcheck_is_preparing`
 - `c:src/shell/shell_checks.c:shell_regcheck_prepare_pending`
 - `c:src/shell/shell_checks.c:shell_regcheck_prepare_progress`
 - `c:src/shell/shell_checks.c:shell_regcheck_prepare_step`
 - `c:src/shell/shell_checks.c:shell_regcheck_print_failure`
-- `c:src/shell/shell_checks.c:shell_regcheck_reset`
 - `c:src/shell/shell_checks.c:shell_regcheck_run_full_checks`
-- `c:src/shell/shell_checks.c:shell_regcheck_same_device`
-- `c:src/shell/shell_checks.c:shell_regcheck_same_usb`
 - `c:src/shell/shell_checks.c:shell_regcheck_start_image`
-- `c:src/shell/shell_checks.c:shell_regcheck_valid_acpi_madt_entry`
-- `c:src/shell/shell_checks.c:shell_regcheck_valid_acpi_table`
 - `c:src/shell/shell_checks.c:shell_regcheck_validate_acpi`
 - `c:src/shell/shell_checks.c:shell_regcheck_validate_acpi_power`
 - `c:src/shell/shell_checks.c:shell_regcheck_validate_acpi_recovery`

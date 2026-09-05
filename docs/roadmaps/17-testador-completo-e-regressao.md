@@ -2637,3 +2637,21 @@ pendente.
 - [x] O alvo específico, a sincronização/renderização e `make catalog-test`
       passaram; o catálogo ficou com 7.293 superfícies, sendo 6.319 `COVERED`
       e 974 `PENDING`. As pendências restantes continuam explícitas.
+
+### Incremento Shell/checks internos — 2026-09-04
+
+- [x] Foi criado o caso host-only `host:shell:checks` com um ponto de entrada
+      interno compilado somente sob `ZEPHYROS_HOST_TEST`; o build normal e a
+      ABI pública permanecem inalterados.
+- [x] A fixture chamou helpers reais de `shell_checks.c` para nomes de fase,
+      resumo compacto, saturação do limite de falhas, estados de job,
+      comparação de inventários, tabelas ACPI/MADT e emissão de bytes das
+      fixtures ZAPP.
+- [x] Passaram o alvo específico, `make q3check`, `make clean`, `make`, a
+      matriz host-only completa com 117/117 alvos, sincronização/renderização
+      do catálogo, `make catalog-test` e `git diff --check`.
+- [x] A evidência dinâmica cobriu 31 símbolos reais de
+      `src/shell/shell_checks.c`; o catálogo registra 7.295 superfícies, sendo
+      6.351 `COVERED` e 944 `PENDING`. As pendências restantes continuam
+      explícitas e não foram associadas por pertencerem apenas ao mesmo
+      arquivo.

@@ -796,6 +796,28 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "api:src/include/apps/shell_checks.h:shell_checks_host_test_contracts",
+      "kind": "api_function",
+      "source": "src/include/apps/shell_checks.h",
+      "symbol": "shell_checks_host_test_contracts",
+      "linkage": "public",
+      "owner": "apps",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks",
+        "qemu:tst5:shell"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "api:src/include/apps/shell_command_utils.h:shell_command_args_equal",
       "kind": "api_function",
       "source": "src/include/apps/shell_command_utils.h",
@@ -2123,10 +2145,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:checks",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_job.h:shell_dispatch_cmd_job",
@@ -3012,10 +3035,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:checks",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_checks_handle_loader_result",
@@ -3033,10 +3057,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:checks",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_checks_input_blocked",
@@ -3054,10 +3079,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:checks",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_checks_report_user_test_result",
@@ -3075,10 +3101,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:checks",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_checks_run_app_inputtest",
@@ -3096,10 +3123,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:checks",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_checks_should_cancel_focused_user",
@@ -3117,10 +3145,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:checks",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_core_builtin_app_name",
@@ -134344,9 +134373,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_appcheck_fault_is_valid",
@@ -134398,9 +134430,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_appcheck_is_compact_job",
@@ -134416,9 +134451,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_appcheck_label_is_unavailable",
@@ -134470,9 +134508,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_appcheck_print_summary",
@@ -134488,9 +134529,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_appcheck_record_result",
@@ -134506,9 +134550,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_appcheck_set_phase",
@@ -134524,9 +134571,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_appcheck_start_migration",
@@ -134560,9 +134610,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_appcheck_summary_reset",
@@ -134578,9 +134631,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_appcheck_vma_is_valid",
@@ -134614,9 +134670,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_blkcheck_cleanup",
@@ -134650,9 +134709,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_blkcheck_copy_id",
@@ -134668,9 +134730,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_blkcheck_fail",
@@ -134686,9 +134751,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_blkcheck_fat12",
@@ -134848,9 +134916,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_blkcheck_prepare_fixture",
@@ -135033,6 +135104,27 @@
       "tags": []
     },
     {
+      "id": "c:src/shell/shell_checks.c:shell_checks_host_test_contracts",
+      "kind": "c_function",
+      "source": "src/shell/shell_checks.c",
+      "symbol": "shell_checks_host_test_contracts",
+      "linkage": "external",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "c:src/shell/shell_checks.c:shell_checks_input_blocked",
       "kind": "c_function",
       "source": "src/shell/shell_checks.c",
@@ -135196,9 +135288,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_demo_emit_exit_on_error",
@@ -135214,9 +135309,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_demo_emit_jne",
@@ -135232,9 +135330,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_demo_emit_jne_near",
@@ -135250,9 +135351,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_demo_emit_load_ebx",
@@ -135268,9 +135372,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_demo_emit_mov",
@@ -135286,9 +135393,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_demo_emit_syscall",
@@ -135304,9 +135414,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_demo_patch_u32",
@@ -135322,9 +135435,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_dispatch_cmd_appcheck",
@@ -135484,9 +135600,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_q2check_start_fault",
@@ -135556,9 +135675,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_regcheck_finish",
@@ -135628,9 +135750,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_regcheck_is_preparing",
@@ -135736,9 +135861,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_regcheck_run_full_checks",
@@ -135772,9 +135900,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_regcheck_same_usb",
@@ -135790,9 +135921,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_regcheck_start_image",
@@ -135826,9 +135960,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_regcheck_valid_acpi_table",
@@ -135844,9 +135981,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_regcheck_validate_acpi",
@@ -167361,6 +167501,79 @@
       ]
     },
     {
+      "id": "host:shell:checks",
+      "scenario": "Helpers internos dos diagnosticos do Shell com fixtures deterministicas",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "hardware": "estado ACPI, USB e dispositivos estatico"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "executar contratos internos de fases, resumos, limites de falhas, estados de job, comparacao de inventarios, validacao de tabelas ACPI/MADT e emissao de imagens ZAPP",
+      "expected": "helpers preservam nomes, estados, codigos canonicos, limites, bytes e limpeza esperados",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente estruturas estaticas da fixture host; nenhum hardware, armazenamento ou processo real",
+      "cleanup": "estado interno resetado, processo host encerrado e manifesto, logs e cobertura preservados",
+      "surface_ids": [
+        "api:src/include/apps/shell_checks.h:shell_checks_host_test_contracts",
+        "api:src/include/apps/shell_job.h:shell_checks_start_job",
+        "api:src/include/apps/shell_runtime.h:shell_checks_handle_job_key",
+        "api:src/include/apps/shell_runtime.h:shell_checks_handle_loader_result",
+        "api:src/include/apps/shell_runtime.h:shell_checks_input_blocked",
+        "api:src/include/apps/shell_runtime.h:shell_checks_report_user_test_result",
+        "api:src/include/apps/shell_runtime.h:shell_checks_run_app_inputtest",
+        "api:src/include/apps/shell_runtime.h:shell_checks_should_cancel_focused_user",
+        "c:src/shell/shell_checks.c:shell_appcheck_copy_failure_label",
+        "c:src/shell/shell_checks.c:shell_appcheck_has_pending_work",
+        "c:src/shell/shell_checks.c:shell_appcheck_is_compact_job",
+        "c:src/shell/shell_checks.c:shell_appcheck_phase_name",
+        "c:src/shell/shell_checks.c:shell_appcheck_print_summary",
+        "c:src/shell/shell_checks.c:shell_appcheck_record_result",
+        "c:src/shell/shell_checks.c:shell_appcheck_set_phase",
+        "c:src/shell/shell_checks.c:shell_appcheck_summary_finish",
+        "c:src/shell/shell_checks.c:shell_appcheck_summary_reset",
+        "c:src/shell/shell_checks.c:shell_blkcheck_case_name",
+        "c:src/shell/shell_checks.c:shell_blkcheck_copy_failure",
+        "c:src/shell/shell_checks.c:shell_blkcheck_copy_id",
+        "c:src/shell/shell_checks.c:shell_blkcheck_fail",
+        "c:src/shell/shell_checks.c:shell_blkcheck_phase_name",
+        "c:src/shell/shell_checks.c:shell_checks_host_test_contracts",
+        "c:src/shell/shell_checks.c:shell_demo_emit_add_ebx",
+        "c:src/shell/shell_checks.c:shell_demo_emit_exit_on_error",
+        "c:src/shell/shell_checks.c:shell_demo_emit_jne",
+        "c:src/shell/shell_checks.c:shell_demo_emit_jne_near",
+        "c:src/shell/shell_checks.c:shell_demo_emit_load_ebx",
+        "c:src/shell/shell_checks.c:shell_demo_emit_mov",
+        "c:src/shell/shell_checks.c:shell_demo_emit_syscall",
+        "c:src/shell/shell_checks.c:shell_demo_patch_u32",
+        "c:src/shell/shell_checks.c:shell_q2check_reset",
+        "c:src/shell/shell_checks.c:shell_regcheck_acpi_read_u32",
+        "c:src/shell/shell_checks.c:shell_regcheck_has_failures",
+        "c:src/shell/shell_checks.c:shell_regcheck_reset",
+        "c:src/shell/shell_checks.c:shell_regcheck_same_device",
+        "c:src/shell/shell_checks.c:shell_regcheck_same_usb",
+        "c:src/shell/shell_checks.c:shell_regcheck_valid_acpi_madt_entry",
+        "c:src/shell/shell_checks.c:shell_regcheck_valid_acpi_table"
+      ],
+      "tags": [
+        "host",
+        "shell",
+        "diagnostics",
+        "negative",
+        "limits",
+        "coverage"
+      ],
+      "status": "AUTOMATED"
+    },
+    {
       "id": "host:shell:command-utils",
       "scenario": "Contrato host-only dos utilitarios de comandos do Shell",
       "owner": "quality",
@@ -175301,6 +175514,7 @@
         "api:src/include/apps/shell.h:shell_report_app_loader_result",
         "api:src/include/apps/shell.h:shell_report_user_test_result",
         "api:src/include/apps/shell.h:shell_update_hosted_terminal",
+        "api:src/include/apps/shell_checks.h:shell_checks_host_test_contracts",
         "api:src/include/apps/shell_input.h:shell_input_cancel_extended",
         "api:src/include/apps/shell_input.h:shell_input_get_buffer",
         "api:src/include/apps/shell_input.h:shell_input_handle_key",

@@ -82,6 +82,7 @@
 #include "apps/shell_command_utils.h"
 #include "apps/shell_runtime.h"
 #include "apps/shell_job.h"
+#include "apps/shell_checks.h"
 
 #define SHELL_Q2CHECK_FAULT_RUNS 2U
 #define SHELL_ACPI_IO_MAX_PORT 0xFFFFU
@@ -3946,6 +3947,273 @@ void shell_dispatch_cmd_usertest(const char* arguments) {
     cmd_usertest(arguments);
     shell_checks_start_job("usertest");
 }
+
+#ifdef ZEPHYROS_HOST_TEST
+int shell_checks_host_test_contracts(void) {
+    static const char* app_phases[SHELL_APPCHECK_PHASE_COUNT] = {
+        "api", "arquivos", "pipes", "caminhos", "dispositivos", "ipc",
+        "loader", "vma/pagefault"
+    };
+    static const char* blk_phases[SHELL_BLKCHECK_PHASE_COUNT] = {
+        "baseline", "failpoints", "cache", "FAT12", "FAT32", "shutdown"
+    };
+    static const char* blk_cases[SHELL_BLKCHECK_PHASE_COUNT] = {
+        "fixtures/inventario", "injecao one-shot", "hash/LRU/dirty",
+        "listagem/leitura/hash", "writeback/sync/limpeza", "sync seguro"
+    };
+    uint8_t code[256];
+    uint8_t bytes[4] = {0x12U, 0x34U, 0x56U, 0x78U};
+    uint32_t offset;
+    shell_job_context_t context;
+    device_info_t device_left;
+    device_info_t device_right;
+    usb_controller_info_t usb_left;
+    usb_controller_info_t usb_right;
+    acpi_table_info_t table;
+    acpi_madt_entry_t madt_entry;
+    int failures = 0;
+
+    shell_appcheck_summary_reset(1U);
+    if (!shell_appcheck_summary.compact ||
+        shell_appcheck_summary.phase != SHELL_APPCHECK_PHASE_API) {
+        failures++;
+    }
+    for (shell_appcheck_phase_t phase = SHELL_APPCHECK_PHASE_API;
+         phase < SHELL_APPCHECK_PHASE_COUNT; phase++) {
+        if (kstrcmp(shell_appcheck_phase_name(phase), app_phases[phase]) != 0) {
+            failures++;
+        }
+    }
+    if (kstrcmp(shell_appcheck_phase_name(SHELL_APPCHECK_PHASE_INVALID),
+                "desconhecida") != 0) {
+        failures++;
+    }
+    shell_appcheck_set_phase(SHELL_APPCHECK_PHASE_PIPES);
+    shell_appcheck_set_phase(SHELL_APPCHECK_PHASE_INVALID);
+    if (shell_appcheck_summary.phase != SHELL_APPCHECK_PHASE_PIPES) {
+        failures++;
+    }
+    shell_appcheck_record_result("ok", OK, OK, 0U);
+    shell_appcheck_record_result("indisponivel", ERR_UNAVAILABLE,
+                                 ERR_UNAVAILABLE, 1U);
+    shell_appcheck_record_result(NULL, ERR_INVALID, OK, 0U);
+    if (!shell_appcheck_summary.phase_seen[SHELL_APPCHECK_PHASE_PIPES] ||
+        !shell_appcheck_summary.phase_unavailable[SHELL_APPCHECK_PHASE_PIPES] ||
+        !shell_appcheck_summary.phase_failed[SHELL_APPCHECK_PHASE_PIPES] ||
+        shell_appcheck_summary.failure_count != 1U ||
+        shell_appcheck_summary.stored_failure_count != 1U ||
+        kstrcmp(shell_appcheck_summary.failures[0].label, "desconhecido") != 0) {
+        failures++;
+    }
+    for (uint32_t index = 0U; index < SHELL_APPCHECK_MAX_FAILURES + 2U;
+         index++) {
+        shell_appcheck_record_result("limite", ERR_STATE, OK, 0U);
+    }
+    if (shell_appcheck_summary.failure_count !=
+            1U + SHELL_APPCHECK_MAX_FAILURES + 2U ||
+        shell_appcheck_summary.stored_failure_count != SHELL_APPCHECK_MAX_FAILURES) {
+        failures++;
+    }
+    shell_appcheck_summary_finish(ERR_STATE);
+    if (shell_appcheck_summary.compact || !shell_appcheck_summary.summary_printed) {
+        failures++;
+    }
+
+    shell_appcheck_summary_reset(1U);
+    kmemset(&context, 0, sizeof(context));
+    kmemcpy(context.arguments, "appcheck compact", 17U);
+    if (!shell_appcheck_is_compact_job(&context)) failures++;
+    context.arguments[8] = 'x';
+    if (shell_appcheck_is_compact_job(&context) ||
+        shell_appcheck_is_compact_job(NULL)) {
+        failures++;
+    }
+    shell_appcheck_summary_finish(OK);
+    shell_appcheck_loader_pid = 1U;
+    if (!shell_appcheck_has_pending_work()) failures++;
+    shell_appcheck_loader_pid = 0U;
+    shell_appcheck_migration_pid = 2U;
+    if (!shell_appcheck_has_pending_work()) failures++;
+    shell_appcheck_migration_pid = 0U;
+    shell_appcheck_vma_pid = 3U;
+    if (!shell_appcheck_has_pending_work()) failures++;
+    shell_appcheck_vma_pid = 0U;
+    shell_appcheck_fault_pid = 4U;
+    if (!shell_appcheck_has_pending_work()) failures++;
+    shell_appcheck_fault_pid = 0U;
+
+    for (shell_blkcheck_phase_t phase = SHELL_BLKCHECK_PHASE_BASELINE;
+         phase < SHELL_BLKCHECK_PHASE_COUNT; phase++) {
+        if (kstrcmp(shell_blkcheck_phase_name(phase), blk_phases[phase]) != 0 ||
+            kstrcmp(shell_blkcheck_case_name(phase), blk_cases[phase]) != 0) {
+            failures++;
+        }
+    }
+    if (kstrcmp(shell_blkcheck_phase_name(SHELL_BLKCHECK_PHASE_INVALID),
+                "desconhecida") != 0 ||
+        kstrcmp(shell_blkcheck_case_name(SHELL_BLKCHECK_PHASE_INVALID),
+                "estado") != 0) {
+        failures++;
+    }
+    kmemset(&shell_blkcheck, 0, sizeof(shell_blkcheck));
+    shell_blkcheck_copy_failure(NULL);
+    if (kstrcmp(shell_blkcheck.failure, "desconhecido") != 0) failures++;
+    shell_blkcheck_copy_failure("primeira falha");
+    shell_blkcheck_fail("segunda falha", ERR_DISK);
+    shell_blkcheck_fail("terceira falha", ERR_STATE);
+    if (shell_blkcheck.failure_count != 2U ||
+        shell_blkcheck.result != ERR_STATE ||
+        kstrcmp(shell_blkcheck.failure, "segunda falha") != 0) {
+        failures++;
+    }
+    shell_blkcheck_copy_id(shell_blkcheck.baseline_ids[0], "ata1p1");
+    shell_blkcheck_copy_id(NULL, "ignorado");
+    if (kstrcmp(shell_blkcheck.baseline_ids[0], "ata1p1") != 0) failures++;
+
+    shell_q2check_reset();
+    if (shell_q2check.state != SHELL_Q2CHECK_IDLE ||
+        shell_q2check.logger_result != ERR_STATE ||
+        shell_q2check.summary_result != ERR_STATE ||
+        shell_q2check.cleanup_result != ERR_STATE ||
+        shell_q2check.fault_result[0] != ERR_STATE ||
+        shell_q2check.fault_result[1] != ERR_STATE) {
+        failures++;
+    }
+    shell_regcheck.full_mode = 1U;
+    shell_regcheck.state = SHELL_REGCHECK_PREPARE_FULL;
+    shell_regcheck_reset();
+    if (shell_regcheck.state != SHELL_REGCHECK_IDLE ||
+        shell_regcheck.health_result != ERR_STATE ||
+        shell_regcheck.cleanup_result != ERR_STATE) {
+        failures++;
+    }
+    shell_regcheck.health_result = OK;
+    shell_regcheck.services_result = OK;
+    shell_regcheck.scheduler_result = OK;
+    shell_regcheck.memory_result = OK;
+    shell_regcheck.package_result = OK;
+    shell_regcheck.thread_result = OK;
+    shell_regcheck.processes_result = OK;
+    shell_regcheck.cleanup_result = OK;
+    if (shell_regcheck_has_failures()) failures++;
+    shell_regcheck.full_mode = 1U;
+    shell_regcheck.device_scan_result = OK;
+    shell_regcheck.block_result = OK;
+    shell_regcheck.devices_result = OK;
+    shell_regcheck.usb_result = OK;
+    shell_regcheck.network_result = OK;
+    shell_regcheck.wifi_result = OK;
+    shell_regcheck.acpi_result = OK;
+    shell_regcheck.power_result = OK;
+    shell_regcheck.index_result = OK;
+    if (shell_regcheck_has_failures()) failures++;
+    shell_regcheck.loader_started = 1U;
+    shell_regcheck.loader_result = ERR_STATE;
+    if (!shell_regcheck_has_failures()) failures++;
+    shell_regcheck_reset();
+
+    kmemset(&device_left, 0, sizeof(device_left));
+    device_left.kind = DEVICE_KIND_PCI;
+    device_left.status = DEVICE_STATUS_READY;
+    device_left.vendor_id = 0x1234U;
+    device_left.device_id = 0x5678U;
+    device_left.class_code = 2U;
+    device_left.subclass_code = 0U;
+    device_left.bus = 1U;
+    device_left.device = 2U;
+    device_left.function = 3U;
+    device_left.irq = 11U;
+    device_left.capacity_sectors = 64U;
+    device_right = device_left;
+    if (!shell_regcheck_same_device(&device_left, &device_right)) failures++;
+    device_right.capacity_sectors++;
+    if (shell_regcheck_same_device(&device_left, &device_right)) failures++;
+
+    kmemset(&usb_left, 0, sizeof(usb_left));
+    usb_left.model = USB_CONTROLLER_MODEL_UHCI;
+    usb_left.state = USB_CONTROLLER_READY;
+    usb_left.reason = USB_CONTROLLER_REASON_DRIVER_READY;
+    usb_left.class_code = USB_CONTROLLER_PCI_CLASS;
+    usb_left.subclass_code = USB_CONTROLLER_PCI_SUBCLASS;
+    usb_left.prog_if = USB_CONTROLLER_PROG_IF_UHCI;
+    usb_left.bars[0] = 0x1000U;
+    usb_right = usb_left;
+    if (!shell_regcheck_same_usb(&usb_left, &usb_right) ||
+        shell_regcheck_same_usb(NULL, &usb_right)) {
+        failures++;
+    }
+    usb_right.bars[0]++;
+    if (shell_regcheck_same_usb(&usb_left, &usb_right)) failures++;
+
+    kmemset(&table, 0, sizeof(table));
+    kmemcpy(table.signature, "FADT", 5U);
+    table.physical_address = 0x1000U;
+    table.length = SHELL_REGCHECK_ACPI_SDT_HEADER_SIZE;
+    table.checksum_valid = 1U;
+    if (!shell_regcheck_valid_acpi_table(&table) ||
+        shell_regcheck_acpi_read_u32(bytes) != 0x78563412U) {
+        failures++;
+    }
+    table.signature[3] = '\0';
+    if (shell_regcheck_valid_acpi_table(&table)) failures++;
+    table.signature[3] = 'T';
+    table.length = SHELL_REGCHECK_ACPI_SDT_HEADER_SIZE - 1U;
+    if (shell_regcheck_valid_acpi_table(&table)) failures++;
+
+    kmemset(&madt_entry, 0, sizeof(madt_entry));
+    madt_entry.type = ACPI_MADT_TYPE_LOCAL_APIC;
+    madt_entry.length = ACPI_MADT_LOCAL_APIC_MIN_LENGTH;
+    madt_entry.raw[0] = madt_entry.type;
+    madt_entry.raw[1] = madt_entry.length;
+    if (!shell_regcheck_valid_acpi_madt_entry(&madt_entry)) failures++;
+    madt_entry.length = ACPI_MADT_ENTRY_HEADER_LENGTH;
+    madt_entry.raw[1] = madt_entry.length;
+    if (shell_regcheck_valid_acpi_madt_entry(&madt_entry)) failures++;
+
+    kmemset(code, 0, sizeof(code));
+    shell_demo_patch_u32(code, 0U, 0x78563412U);
+    if (code[0] != 0x12U || code[1] != 0x34U || code[2] != 0x56U ||
+        code[3] != 0x78U) {
+        failures++;
+    }
+    offset = 0U;
+    shell_demo_emit_mov(code, &offset, 0U, 0x11223344U);
+    shell_demo_emit_load_ebx(code, &offset, 0x12345678U);
+    shell_demo_emit_add_ebx(code, &offset, 3U);
+    shell_demo_emit_syscall(code, &offset);
+    shell_demo_emit_exit_on_error(code, &offset);
+    if (offset == 0U || code[0] != 0xB8U || code[5] != 0x8BU ||
+        code[6] != 0x1DU) {
+        failures++;
+    }
+    offset = 10U;
+    if (shell_demo_emit_jne(code, &offset, 20U) != OK ||
+        offset != 12U || code[10] != 0x75U || code[11] != 0x08U) {
+        failures++;
+    }
+    offset = 0U;
+    if (shell_demo_emit_jne(code, &offset, 200U) != ERR_OVERFLOW ||
+        offset != 0U) {
+        failures++;
+    }
+    offset = 0U;
+    if (shell_demo_emit_jne_near(code, &offset) != 2U || offset != 6U ||
+        code[0] != 0x0FU || code[1] != 0x85U) {
+        failures++;
+    }
+
+    shell_appcheck_summary_reset(0U);
+    shell_q2check_reset();
+    shell_regcheck_reset();
+    kmemset(&shell_blkcheck, 0, sizeof(shell_blkcheck));
+    shell_waiting_user_test = 0;
+    shell_appcheck_loader_pid = 0U;
+    shell_appcheck_migration_pid = 0U;
+    shell_appcheck_vma_pid = 0U;
+    shell_appcheck_fault_pid = 0U;
+    return failures;
+}
+#endif
 
 #undef SHELL_CHECKS_WRAP_ARGS
 #undef SHELL_CHECKS_WRAP_NO_ARGS
