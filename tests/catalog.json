@@ -40105,9 +40105,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_confirm_action",
@@ -40123,9 +40126,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_copy_text",
@@ -40183,9 +40189,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_draw_classic",
@@ -40201,9 +40210,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_draw_classic_remote",
@@ -40219,9 +40231,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_draw_simple",
@@ -40237,9 +40252,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_entry_color",
@@ -40339,9 +40357,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_gui_draw_action_button",
@@ -40357,9 +40378,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_gui_draw_confirmation",
@@ -40375,9 +40399,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_gui_draw_details",
@@ -40393,9 +40420,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_gui_draw_disabled_button",
@@ -40411,9 +40441,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_gui_draw_entries",
@@ -40429,9 +40462,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_gui_draw_remote_details",
@@ -40447,9 +40483,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_gui_draw_surface",
@@ -40465,9 +40504,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_gui_draw_tabs",
@@ -40483,9 +40525,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_gui_entry_color",
@@ -40522,9 +40567,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_handle_confirmation_click",
@@ -40540,9 +40588,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_handle_key",
@@ -40558,9 +40609,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_handle_mouse",
@@ -40576,9 +40630,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_host_expect",
@@ -40627,6 +40684,27 @@
       "kind": "c_function",
       "source": "src/appstore/appstore.c",
       "symbol": "appstore_host_prepare_entries",
+      "linkage": "static",
+      "owner": "appstore",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/appstore/appstore.c:appstore_host_reset_job",
+      "kind": "c_function",
+      "source": "src/appstore/appstore.c",
+      "symbol": "appstore_host_reset_job",
       "linkage": "static",
       "owner": "appstore",
       "layer": "kernel-source",
@@ -40728,6 +40806,27 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/appstore/appstore.c:appstore_host_ui_contracts",
+      "kind": "c_function",
+      "source": "src/appstore/appstore.c",
+      "symbol": "appstore_host_ui_contracts",
+      "linkage": "static",
+      "owner": "appstore",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "c:src/appstore/appstore.c:appstore_hosted_close",
       "kind": "c_function",
       "source": "src/appstore/appstore.c",
@@ -40741,9 +40840,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_hosted_draw",
@@ -40759,9 +40861,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_hosted_key",
@@ -40777,9 +40882,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_hosted_mouse",
@@ -40795,9 +40903,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_init",
@@ -40833,12 +40944,13 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:appstore",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_keep_selection_visible",
@@ -40875,9 +40987,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_plan_is_downgrade",
@@ -40935,9 +41050,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_refresh_remote_snapshot",
@@ -41052,9 +41170,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_request_refresh",
@@ -41070,9 +41191,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_request_remote_enable",
@@ -41088,9 +41212,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_request_remote_fetch",
@@ -41106,9 +41233,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_request_remove",
@@ -41124,9 +41254,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_request_rollback",
@@ -41142,9 +41275,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_request_run",
@@ -41160,9 +41296,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_request_update",
@@ -41178,9 +41317,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_request_verify",
@@ -41196,9 +41338,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_restore_selection",
@@ -41361,9 +41506,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_simple_draw_details",
@@ -41379,9 +41527,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_simple_draw_entries",
@@ -41397,9 +41548,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_u32_text",
@@ -165199,7 +165353,7 @@
       },
       "preconditions": "compilador C nativo e nm disponiveis",
       "action": "validar identificacao USB, revisao, descritores, endpoints Bulk, cabecalho de firmware, estados, callbacks Ethernet, scan, associacao e indisponibilidade segura",
-      "expected": "dispositivos incompatíveis e fixtures invalidas retornam erros canonicos; o dispositivo suportado permanece indisponivel sem firmware e transporte confirmados",
+      "expected": "dispositivos incompatÃ­veis e fixtures invalidas retornam erros canonicos; o dispositivo suportado permanece indisponivel sem firmware e transporte confirmados",
       "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
       "effects": "somente estruturas USB, filesystem, interface Ethernet e estado do driver falso no processo host",
       "cleanup": "estruturas de dispositivo, firmware falso, interface, estado global, manifesto, logs e cobertura permanecem confinados ao processo host",
@@ -167188,8 +167342,8 @@
         "warnings": "error"
       },
       "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "compilar e executar configuraÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o, envio, broadcast, recepÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o, checksum e handlers IPv4",
-      "expected": "datagramas validos sÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o entregues, entradas invÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡lidas sÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o recusadas e o estado ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â© restaurado",
+      "action": "compilar e executar configuraÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o, envio, broadcast, recepÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o, checksum e handlers IPv4",
+      "expected": "datagramas validos sÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o entregues, entradas invÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡lidas sÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o recusadas e o estado ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â© restaurado",
       "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
       "effects": "somente estado IPv4, tabela de rotas e buffers falsos de ARP/Ethernet",
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
@@ -169065,7 +169219,7 @@
       "action": "validar parsers de log, sinais, mouse e VMA, nomes de estados, cores, caminhos sysfs/proc e invariantes de memoria com dependencias estaticas falsas",
       "expected": "entradas validas retornam resultados canonicos; entradas nulas, invalidas e fora dos limites sao rejeitadas sem hardware, allocator ou armazenamento real",
       "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
-      "effects": "somente buffers estaticos, estado de filesystem e paginação falsos no processo host",
+      "effects": "somente buffers estaticos, estado de filesystem e paginaÃ§Ã£o falsos no processo host",
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "surface_ids": [
         "api:src/include/apps/shell_diagnostics_helpers.h:cmd_acpi_mode_name",
@@ -169283,7 +169437,7 @@
     },
     {
       "id": "host:shell:editor",
-      "scenario": "Contratos deterministas do núcleo de edição",
+      "scenario": "Contratos deterministas do nÃºcleo de ediÃ§Ã£o",
       "owner": "quality",
       "layer": "host",
       "executor": "host",
@@ -169780,7 +169934,7 @@
     },
     {
       "id": "host:shell:wifi",
-      "scenario": "Comando Wi-Fi do Shell sobre inventário PCI/USB e rádio indisponível",
+      "scenario": "Comando Wi-Fi do Shell sobre inventÃ¡rio PCI/USB e rÃ¡dio indisponÃ­vel",
       "owner": "quality",
       "layer": "host",
       "executor": "host",
@@ -171617,26 +171771,63 @@
         "c:src/appstore/appstore.c:appstore_can",
         "c:src/appstore/appstore.c:appstore_change_selection",
         "c:src/appstore/appstore.c:appstore_clear_context",
+        "c:src/appstore/appstore.c:appstore_close",
+        "c:src/appstore/appstore.c:appstore_confirm_action",
         "c:src/appstore/appstore.c:appstore_copy_text",
         "c:src/appstore/appstore.c:appstore_dependencies_text",
+        "c:src/appstore/appstore.c:appstore_draw",
+        "c:src/appstore/appstore.c:appstore_draw_classic",
+        "c:src/appstore/appstore.c:appstore_draw_classic_remote",
+        "c:src/appstore/appstore.c:appstore_draw_simple",
         "c:src/appstore/appstore.c:appstore_entry_color",
         "c:src/appstore/appstore.c:appstore_entry_info",
         "c:src/appstore/appstore.c:appstore_entry_label",
         "c:src/appstore/appstore.c:appstore_entry_trust",
+        "c:src/appstore/appstore.c:appstore_get_mode",
+        "c:src/appstore/appstore.c:appstore_gui_draw_action_button",
+        "c:src/appstore/appstore.c:appstore_gui_draw_confirmation",
+        "c:src/appstore/appstore.c:appstore_gui_draw_details",
+        "c:src/appstore/appstore.c:appstore_gui_draw_disabled_button",
+        "c:src/appstore/appstore.c:appstore_gui_draw_entries",
+        "c:src/appstore/appstore.c:appstore_gui_draw_remote_details",
+        "c:src/appstore/appstore.c:appstore_gui_draw_surface",
+        "c:src/appstore/appstore.c:appstore_gui_draw_tabs",
         "c:src/appstore/appstore.c:appstore_gui_entry_color",
+        "c:src/appstore/appstore.c:appstore_gui_line",
+        "c:src/appstore/appstore.c:appstore_handle_confirmation_click",
+        "c:src/appstore/appstore.c:appstore_handle_key",
+        "c:src/appstore/appstore.c:appstore_handle_mouse",
         "c:src/appstore/appstore.c:appstore_host_expect",
         "c:src/appstore/appstore.c:appstore_host_geometry_contracts",
         "c:src/appstore/appstore.c:appstore_host_prepare_entries",
+        "c:src/appstore/appstore.c:appstore_host_reset_job",
         "c:src/appstore/appstore.c:appstore_host_selection_contracts",
         "c:src/appstore/appstore.c:appstore_host_state_contracts",
         "c:src/appstore/appstore.c:appstore_host_test_contracts",
         "c:src/appstore/appstore.c:appstore_host_text_contracts",
+        "c:src/appstore/appstore.c:appstore_host_ui_contracts",
+        "c:src/appstore/appstore.c:appstore_hosted_close",
+        "c:src/appstore/appstore.c:appstore_hosted_draw",
+        "c:src/appstore/appstore.c:appstore_hosted_key",
+        "c:src/appstore/appstore.c:appstore_hosted_mouse",
+        "c:src/appstore/appstore.c:appstore_is_open",
         "c:src/appstore/appstore.c:appstore_keep_selection_visible",
+        "c:src/appstore/appstore.c:appstore_open",
         "c:src/appstore/appstore.c:appstore_plan_is_downgrade",
         "c:src/appstore/appstore.c:appstore_point_in",
+        "c:src/appstore/appstore.c:appstore_queue_job",
         "c:src/appstore/appstore.c:appstore_remote_button_position",
         "c:src/appstore/appstore.c:appstore_remote_buttons_per_row",
         "c:src/appstore/appstore.c:appstore_remote_rollback_is_available",
+        "c:src/appstore/appstore.c:appstore_request_install",
+        "c:src/appstore/appstore.c:appstore_request_refresh",
+        "c:src/appstore/appstore.c:appstore_request_remote_enable",
+        "c:src/appstore/appstore.c:appstore_request_remote_fetch",
+        "c:src/appstore/appstore.c:appstore_request_remove",
+        "c:src/appstore/appstore.c:appstore_request_rollback",
+        "c:src/appstore/appstore.c:appstore_request_run",
+        "c:src/appstore/appstore.c:appstore_request_update",
+        "c:src/appstore/appstore.c:appstore_request_verify",
         "c:src/appstore/appstore.c:appstore_restore_selection",
         "c:src/appstore/appstore.c:appstore_rollback_is_available",
         "c:src/appstore/appstore.c:appstore_select_first_visible",
@@ -171644,6 +171835,9 @@
         "c:src/appstore/appstore.c:appstore_selected_key",
         "c:src/appstore/appstore.c:appstore_selected_remote_entry",
         "c:src/appstore/appstore.c:appstore_set_result",
+        "c:src/appstore/appstore.c:appstore_simple_draw_confirmation",
+        "c:src/appstore/appstore.c:appstore_simple_draw_details",
+        "c:src/appstore/appstore.c:appstore_simple_draw_entries",
         "c:src/appstore/appstore.c:appstore_u32_text",
         "c:src/appstore/appstore.c:appstore_visible_count",
         "c:src/appstore/appstore.c:appstore_visible_index",
@@ -171658,6 +171852,96 @@
         "appstore",
         "packages",
         "negative",
+        "coverage"
+      ],
+      "status": "AUTOMATED"
+    },
+    {
+      "id": "host:ui:desktop",
+      "scenario": "Contratos deterministas do Desktop em modos Simple e Classic",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "display": "VESA, taskbar, icons, GUI e mouse falsos"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "exercitar inicializacao, desenho TUI/GUI, modos, selecao, teclado, cliques, arraste, limites e fallback",
+      "expected": "Desktop preserva estado, layout, selecao, navegacao, hit-testing e limpeza sem hardware real",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente estado estatico do Desktop e doubles de video, VESA, taskbar, icons, GUI e mouse no processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "surface_ids": [
+        "api:src/include/ui/desktop.h:desktop_add_icon",
+        "api:src/include/ui/desktop.h:desktop_draw",
+        "api:src/include/ui/desktop.h:desktop_draw_icons",
+        "api:src/include/ui/desktop.h:desktop_draw_workspace",
+        "api:src/include/ui/desktop.h:desktop_get_mode",
+        "api:src/include/ui/desktop.h:desktop_get_selected_app",
+        "api:src/include/ui/desktop.h:desktop_handle_click",
+        "api:src/include/ui/desktop.h:desktop_handle_key",
+        "api:src/include/ui/desktop.h:desktop_handle_mouse",
+        "api:src/include/ui/desktop.h:desktop_init",
+        "api:src/include/ui/desktop.h:desktop_is_active",
+        "api:src/include/ui/desktop.h:desktop_set_active",
+        "api:src/include/ui/desktop.h:desktop_set_mode",
+        "api:src/include/ui/desktop.h:desktop_update_selection",
+        "c:src/desktop/desktop.c:desktop_add_icon",
+        "c:src/desktop/desktop.c:desktop_apply_drag_preview",
+        "c:src/desktop/desktop.c:desktop_assign_classic_slots",
+        "c:src/desktop/desktop.c:desktop_build_classic_slots",
+        "c:src/desktop/desktop.c:desktop_classic_background",
+        "c:src/desktop/desktop.c:desktop_classic_get_columns",
+        "c:src/desktop/desktop.c:desktop_drag_threshold_reached",
+        "c:src/desktop/desktop.c:desktop_draw",
+        "c:src/desktop/desktop.c:desktop_draw_classic",
+        "c:src/desktop/desktop.c:desktop_draw_classic_bitmap",
+        "c:src/desktop/desktop.c:desktop_draw_classic_workspace",
+        "c:src/desktop/desktop.c:desktop_draw_icons",
+        "c:src/desktop/desktop.c:desktop_draw_icons_classic",
+        "c:src/desktop/desktop.c:desktop_draw_icons_simple",
+        "c:src/desktop/desktop.c:desktop_draw_simple",
+        "c:src/desktop/desktop.c:desktop_draw_workspace",
+        "c:src/desktop/desktop.c:desktop_find_classic_icon",
+        "c:src/desktop/desktop.c:desktop_find_drop_slot",
+        "c:src/desktop/desktop.c:desktop_find_free_slot",
+        "c:src/desktop/desktop.c:desktop_find_nearest_slot",
+        "c:src/desktop/desktop.c:desktop_find_slot_by_grid",
+        "c:src/desktop/desktop.c:desktop_get_icon_entry",
+        "c:src/desktop/desktop.c:desktop_get_mode",
+        "c:src/desktop/desktop.c:desktop_get_selected_app",
+        "c:src/desktop/desktop.c:desktop_handle_click",
+        "c:src/desktop/desktop.c:desktop_handle_key",
+        "c:src/desktop/desktop.c:desktop_handle_mouse",
+        "c:src/desktop/desktop.c:desktop_init",
+        "c:src/desktop/desktop.c:desktop_is_active",
+        "c:src/desktop/desktop.c:desktop_layout_classic",
+        "c:src/desktop/desktop.c:desktop_rects_intersect",
+        "c:src/desktop/desktop.c:desktop_reset_drag",
+        "c:src/desktop/desktop.c:desktop_set_active",
+        "c:src/desktop/desktop.c:desktop_set_mode",
+        "c:src/desktop/desktop.c:desktop_slot_is_occupied",
+        "c:src/desktop/desktop.c:desktop_text_length",
+        "c:src/desktop/desktop.c:desktop_update_drag_preview",
+        "c:src/desktop/desktop.c:desktop_update_selection",
+        "c:src/desktop/desktop.c:draw_single_icon_classic",
+        "c:src/desktop/desktop.c:draw_single_icon_simple"
+      ],
+      "tags": [
+        "host",
+        "ui",
+        "desktop",
+        "tui",
+        "gui",
+        "mouse",
+        "limits",
         "coverage"
       ],
       "status": "AUTOMATED"
@@ -181693,96 +181977,6 @@
         "interrupts",
         "coverage",
         "snapshot"
-      ],
-      "status": "AUTOMATED"
-    },
-    {
-      "id": "host:ui:desktop",
-      "scenario": "Contratos deterministas do Desktop em modos Simple e Classic",
-      "owner": "quality",
-      "layer": "host",
-      "executor": "host",
-      "profile": "host-only",
-      "timeout_seconds": 120,
-      "heartbeat_timeout_seconds": 1,
-      "isolation": "fixture",
-      "parameters": {
-        "compiler": "HOST_CC",
-        "instrumentation": "-finstrument-functions",
-        "warnings": "error",
-        "display": "VESA, taskbar, icons, GUI e mouse falsos"
-      },
-      "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "exercitar inicializacao, desenho TUI/GUI, modos, selecao, teclado, cliques, arraste, limites e fallback",
-      "expected": "Desktop preserva estado, layout, selecao, navegacao, hit-testing e limpeza sem hardware real",
-      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
-      "effects": "somente estado estatico do Desktop e doubles de video, VESA, taskbar, icons, GUI e mouse no processo host",
-      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
-      "surface_ids": [
-        "api:src/include/ui/desktop.h:desktop_add_icon",
-        "api:src/include/ui/desktop.h:desktop_draw",
-        "api:src/include/ui/desktop.h:desktop_draw_icons",
-        "api:src/include/ui/desktop.h:desktop_draw_workspace",
-        "api:src/include/ui/desktop.h:desktop_get_mode",
-        "api:src/include/ui/desktop.h:desktop_get_selected_app",
-        "api:src/include/ui/desktop.h:desktop_handle_click",
-        "api:src/include/ui/desktop.h:desktop_handle_key",
-        "api:src/include/ui/desktop.h:desktop_handle_mouse",
-        "api:src/include/ui/desktop.h:desktop_init",
-        "api:src/include/ui/desktop.h:desktop_is_active",
-        "api:src/include/ui/desktop.h:desktop_set_active",
-        "api:src/include/ui/desktop.h:desktop_set_mode",
-        "api:src/include/ui/desktop.h:desktop_update_selection",
-        "c:src/desktop/desktop.c:desktop_add_icon",
-        "c:src/desktop/desktop.c:desktop_apply_drag_preview",
-        "c:src/desktop/desktop.c:desktop_assign_classic_slots",
-        "c:src/desktop/desktop.c:desktop_build_classic_slots",
-        "c:src/desktop/desktop.c:desktop_classic_background",
-        "c:src/desktop/desktop.c:desktop_classic_get_columns",
-        "c:src/desktop/desktop.c:desktop_drag_threshold_reached",
-        "c:src/desktop/desktop.c:desktop_draw",
-        "c:src/desktop/desktop.c:desktop_draw_classic",
-        "c:src/desktop/desktop.c:desktop_draw_classic_bitmap",
-        "c:src/desktop/desktop.c:desktop_draw_classic_workspace",
-        "c:src/desktop/desktop.c:desktop_draw_icons",
-        "c:src/desktop/desktop.c:desktop_draw_icons_classic",
-        "c:src/desktop/desktop.c:desktop_draw_icons_simple",
-        "c:src/desktop/desktop.c:desktop_draw_simple",
-        "c:src/desktop/desktop.c:desktop_draw_workspace",
-        "c:src/desktop/desktop.c:desktop_find_classic_icon",
-        "c:src/desktop/desktop.c:desktop_find_drop_slot",
-        "c:src/desktop/desktop.c:desktop_find_free_slot",
-        "c:src/desktop/desktop.c:desktop_find_nearest_slot",
-        "c:src/desktop/desktop.c:desktop_find_slot_by_grid",
-        "c:src/desktop/desktop.c:desktop_get_icon_entry",
-        "c:src/desktop/desktop.c:desktop_get_mode",
-        "c:src/desktop/desktop.c:desktop_get_selected_app",
-        "c:src/desktop/desktop.c:desktop_handle_click",
-        "c:src/desktop/desktop.c:desktop_handle_key",
-        "c:src/desktop/desktop.c:desktop_handle_mouse",
-        "c:src/desktop/desktop.c:desktop_init",
-        "c:src/desktop/desktop.c:desktop_is_active",
-        "c:src/desktop/desktop.c:desktop_layout_classic",
-        "c:src/desktop/desktop.c:desktop_rects_intersect",
-        "c:src/desktop/desktop.c:desktop_reset_drag",
-        "c:src/desktop/desktop.c:desktop_set_active",
-        "c:src/desktop/desktop.c:desktop_set_mode",
-        "c:src/desktop/desktop.c:desktop_slot_is_occupied",
-        "c:src/desktop/desktop.c:desktop_text_length",
-        "c:src/desktop/desktop.c:desktop_update_drag_preview",
-        "c:src/desktop/desktop.c:desktop_update_selection",
-        "c:src/desktop/desktop.c:draw_single_icon_classic",
-        "c:src/desktop/desktop.c:draw_single_icon_simple"
-      ],
-      "tags": [
-        "host",
-        "ui",
-        "desktop",
-        "tui",
-        "gui",
-        "mouse",
-        "limits",
-        "coverage"
       ],
       "status": "AUTOMATED"
     }

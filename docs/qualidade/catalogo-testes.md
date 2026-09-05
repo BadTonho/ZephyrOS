@@ -4,7 +4,7 @@
 
 ## Resumo
 
-- Superfícies ativas: **7309**
+- Superfícies ativas: **7311**
 - Casos de teste: **161**
 - Superfícies aposentadas: **59**
 
@@ -12,16 +12,16 @@
 |---|---:|
 | `api_function` | 1578 |
 | `asm_entry` | 101 |
-| `c_function` | 5510 |
+| `c_function` | 5512 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6542 |
+| `COVERED` | 6581 |
 | `MANUAL` | 0 |
-| `PENDING` | 767 |
+| `PENDING` | 730 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -35,7 +35,7 @@
 | Proprietario | Superficies |
 |---|---:|
 | `apps` | 170 |
-| `appstore` | 95 |
+| `appstore` | 97 |
 | `boot` | 136 |
 | `core` | 2813 |
 | `desktop` | 40 |
@@ -1757,64 +1757,66 @@
 | `c:src/appstore/appstore.c:appstore_can` | `src/appstore/appstore.c` | `appstore_can` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_change_selection` | `src/appstore/appstore.c` | `appstore_change_selection` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_clear_context` | `src/appstore/appstore.c` | `appstore_clear_context` | `appstore` | `COVERED` | 1 |
-| `c:src/appstore/appstore.c:appstore_close` | `src/appstore/appstore.c` | `appstore_close` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_confirm_action` | `src/appstore/appstore.c` | `appstore_confirm_action` | `appstore` | `PENDING` | 0 |
+| `c:src/appstore/appstore.c:appstore_close` | `src/appstore/appstore.c` | `appstore_close` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_confirm_action` | `src/appstore/appstore.c` | `appstore_confirm_action` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_copy_text` | `src/appstore/appstore.c` | `appstore_copy_text` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_dependencies_text` | `src/appstore/appstore.c` | `appstore_dependencies_text` | `appstore` | `COVERED` | 1 |
-| `c:src/appstore/appstore.c:appstore_draw` | `src/appstore/appstore.c` | `appstore_draw` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_draw_classic` | `src/appstore/appstore.c` | `appstore_draw_classic` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_draw_classic_remote` | `src/appstore/appstore.c` | `appstore_draw_classic_remote` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_draw_simple` | `src/appstore/appstore.c` | `appstore_draw_simple` | `appstore` | `PENDING` | 0 |
+| `c:src/appstore/appstore.c:appstore_draw` | `src/appstore/appstore.c` | `appstore_draw` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_draw_classic` | `src/appstore/appstore.c` | `appstore_draw_classic` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_draw_classic_remote` | `src/appstore/appstore.c` | `appstore_draw_classic_remote` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_draw_simple` | `src/appstore/appstore.c` | `appstore_draw_simple` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_entry_color` | `src/appstore/appstore.c` | `appstore_entry_color` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_entry_info` | `src/appstore/appstore.c` | `appstore_entry_info` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_entry_label` | `src/appstore/appstore.c` | `appstore_entry_label` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_entry_trust` | `src/appstore/appstore.c` | `appstore_entry_trust` | `appstore` | `COVERED` | 1 |
-| `c:src/appstore/appstore.c:appstore_get_mode` | `src/appstore/appstore.c` | `appstore_get_mode` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_gui_draw_action_button` | `src/appstore/appstore.c` | `appstore_gui_draw_action_button` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_gui_draw_confirmation` | `src/appstore/appstore.c` | `appstore_gui_draw_confirmation` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_gui_draw_details` | `src/appstore/appstore.c` | `appstore_gui_draw_details` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_gui_draw_disabled_button` | `src/appstore/appstore.c` | `appstore_gui_draw_disabled_button` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_gui_draw_entries` | `src/appstore/appstore.c` | `appstore_gui_draw_entries` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_gui_draw_remote_details` | `src/appstore/appstore.c` | `appstore_gui_draw_remote_details` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_gui_draw_surface` | `src/appstore/appstore.c` | `appstore_gui_draw_surface` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_gui_draw_tabs` | `src/appstore/appstore.c` | `appstore_gui_draw_tabs` | `appstore` | `PENDING` | 0 |
+| `c:src/appstore/appstore.c:appstore_get_mode` | `src/appstore/appstore.c` | `appstore_get_mode` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_gui_draw_action_button` | `src/appstore/appstore.c` | `appstore_gui_draw_action_button` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_gui_draw_confirmation` | `src/appstore/appstore.c` | `appstore_gui_draw_confirmation` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_gui_draw_details` | `src/appstore/appstore.c` | `appstore_gui_draw_details` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_gui_draw_disabled_button` | `src/appstore/appstore.c` | `appstore_gui_draw_disabled_button` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_gui_draw_entries` | `src/appstore/appstore.c` | `appstore_gui_draw_entries` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_gui_draw_remote_details` | `src/appstore/appstore.c` | `appstore_gui_draw_remote_details` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_gui_draw_surface` | `src/appstore/appstore.c` | `appstore_gui_draw_surface` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_gui_draw_tabs` | `src/appstore/appstore.c` | `appstore_gui_draw_tabs` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_gui_entry_color` | `src/appstore/appstore.c` | `appstore_gui_entry_color` | `appstore` | `COVERED` | 1 |
-| `c:src/appstore/appstore.c:appstore_gui_line` | `src/appstore/appstore.c` | `appstore_gui_line` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_handle_confirmation_click` | `src/appstore/appstore.c` | `appstore_handle_confirmation_click` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_handle_key` | `src/appstore/appstore.c` | `appstore_handle_key` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_handle_mouse` | `src/appstore/appstore.c` | `appstore_handle_mouse` | `appstore` | `PENDING` | 0 |
+| `c:src/appstore/appstore.c:appstore_gui_line` | `src/appstore/appstore.c` | `appstore_gui_line` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_handle_confirmation_click` | `src/appstore/appstore.c` | `appstore_handle_confirmation_click` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_handle_key` | `src/appstore/appstore.c` | `appstore_handle_key` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_handle_mouse` | `src/appstore/appstore.c` | `appstore_handle_mouse` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_host_expect` | `src/appstore/appstore.c` | `appstore_host_expect` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_host_geometry_contracts` | `src/appstore/appstore.c` | `appstore_host_geometry_contracts` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_host_prepare_entries` | `src/appstore/appstore.c` | `appstore_host_prepare_entries` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_host_reset_job` | `src/appstore/appstore.c` | `appstore_host_reset_job` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_host_selection_contracts` | `src/appstore/appstore.c` | `appstore_host_selection_contracts` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_host_state_contracts` | `src/appstore/appstore.c` | `appstore_host_state_contracts` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_host_test_contracts` | `src/appstore/appstore.c` | `appstore_host_test_contracts` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_host_text_contracts` | `src/appstore/appstore.c` | `appstore_host_text_contracts` | `appstore` | `COVERED` | 1 |
-| `c:src/appstore/appstore.c:appstore_hosted_close` | `src/appstore/appstore.c` | `appstore_hosted_close` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_hosted_draw` | `src/appstore/appstore.c` | `appstore_hosted_draw` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_hosted_key` | `src/appstore/appstore.c` | `appstore_hosted_key` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_hosted_mouse` | `src/appstore/appstore.c` | `appstore_hosted_mouse` | `appstore` | `PENDING` | 0 |
+| `c:src/appstore/appstore.c:appstore_host_ui_contracts` | `src/appstore/appstore.c` | `appstore_host_ui_contracts` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_hosted_close` | `src/appstore/appstore.c` | `appstore_hosted_close` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_hosted_draw` | `src/appstore/appstore.c` | `appstore_hosted_draw` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_hosted_key` | `src/appstore/appstore.c` | `appstore_hosted_key` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_hosted_mouse` | `src/appstore/appstore.c` | `appstore_hosted_mouse` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_init` | `src/appstore/appstore.c` | `appstore_init` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_is_open` | `src/appstore/appstore.c` | `appstore_is_open` | `appstore` | `COVERED` | 3 |
+| `c:src/appstore/appstore.c:appstore_is_open` | `src/appstore/appstore.c` | `appstore_is_open` | `appstore` | `COVERED` | 4 |
 | `c:src/appstore/appstore.c:appstore_keep_selection_visible` | `src/appstore/appstore.c` | `appstore_keep_selection_visible` | `appstore` | `COVERED` | 1 |
-| `c:src/appstore/appstore.c:appstore_open` | `src/appstore/appstore.c` | `appstore_open` | `appstore` | `PENDING` | 0 |
+| `c:src/appstore/appstore.c:appstore_open` | `src/appstore/appstore.c` | `appstore_open` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_plan_is_downgrade` | `src/appstore/appstore.c` | `appstore_plan_is_downgrade` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_point_in` | `src/appstore/appstore.c` | `appstore_point_in` | `appstore` | `COVERED` | 1 |
-| `c:src/appstore/appstore.c:appstore_queue_job` | `src/appstore/appstore.c` | `appstore_queue_job` | `appstore` | `PENDING` | 0 |
+| `c:src/appstore/appstore.c:appstore_queue_job` | `src/appstore/appstore.c` | `appstore_queue_job` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_refresh_remote_snapshot` | `src/appstore/appstore.c` | `appstore_refresh_remote_snapshot` | `appstore` | `PENDING` | 0 |
 | `c:src/appstore/appstore.c:appstore_refresh_snapshot` | `src/appstore/appstore.c` | `appstore_refresh_snapshot` | `appstore` | `PENDING` | 0 |
 | `c:src/appstore/appstore.c:appstore_remote_button_position` | `src/appstore/appstore.c` | `appstore_remote_button_position` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_remote_buttons_per_row` | `src/appstore/appstore.c` | `appstore_remote_buttons_per_row` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_remote_rollback_is_available` | `src/appstore/appstore.c` | `appstore_remote_rollback_is_available` | `appstore` | `COVERED` | 1 |
-| `c:src/appstore/appstore.c:appstore_request_install` | `src/appstore/appstore.c` | `appstore_request_install` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_request_refresh` | `src/appstore/appstore.c` | `appstore_request_refresh` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_request_remote_enable` | `src/appstore/appstore.c` | `appstore_request_remote_enable` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_request_remote_fetch` | `src/appstore/appstore.c` | `appstore_request_remote_fetch` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_request_remove` | `src/appstore/appstore.c` | `appstore_request_remove` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_request_rollback` | `src/appstore/appstore.c` | `appstore_request_rollback` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_request_run` | `src/appstore/appstore.c` | `appstore_request_run` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_request_update` | `src/appstore/appstore.c` | `appstore_request_update` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_request_verify` | `src/appstore/appstore.c` | `appstore_request_verify` | `appstore` | `PENDING` | 0 |
+| `c:src/appstore/appstore.c:appstore_request_install` | `src/appstore/appstore.c` | `appstore_request_install` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_request_refresh` | `src/appstore/appstore.c` | `appstore_request_refresh` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_request_remote_enable` | `src/appstore/appstore.c` | `appstore_request_remote_enable` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_request_remote_fetch` | `src/appstore/appstore.c` | `appstore_request_remote_fetch` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_request_remove` | `src/appstore/appstore.c` | `appstore_request_remove` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_request_rollback` | `src/appstore/appstore.c` | `appstore_request_rollback` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_request_run` | `src/appstore/appstore.c` | `appstore_request_run` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_request_update` | `src/appstore/appstore.c` | `appstore_request_update` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_request_verify` | `src/appstore/appstore.c` | `appstore_request_verify` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_restore_selection` | `src/appstore/appstore.c` | `appstore_restore_selection` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_rollback_is_available` | `src/appstore/appstore.c` | `appstore_rollback_is_available` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_select_first_visible` | `src/appstore/appstore.c` | `appstore_select_first_visible` | `appstore` | `COVERED` | 1 |
@@ -1822,9 +1824,9 @@
 | `c:src/appstore/appstore.c:appstore_selected_key` | `src/appstore/appstore.c` | `appstore_selected_key` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_selected_remote_entry` | `src/appstore/appstore.c` | `appstore_selected_remote_entry` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_set_result` | `src/appstore/appstore.c` | `appstore_set_result` | `appstore` | `COVERED` | 1 |
-| `c:src/appstore/appstore.c:appstore_simple_draw_confirmation` | `src/appstore/appstore.c` | `appstore_simple_draw_confirmation` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_simple_draw_details` | `src/appstore/appstore.c` | `appstore_simple_draw_details` | `appstore` | `PENDING` | 0 |
-| `c:src/appstore/appstore.c:appstore_simple_draw_entries` | `src/appstore/appstore.c` | `appstore_simple_draw_entries` | `appstore` | `PENDING` | 0 |
+| `c:src/appstore/appstore.c:appstore_simple_draw_confirmation` | `src/appstore/appstore.c` | `appstore_simple_draw_confirmation` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_simple_draw_details` | `src/appstore/appstore.c` | `appstore_simple_draw_details` | `appstore` | `COVERED` | 1 |
+| `c:src/appstore/appstore.c:appstore_simple_draw_entries` | `src/appstore/appstore.c` | `appstore_simple_draw_entries` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_u32_text` | `src/appstore/appstore.c` | `appstore_u32_text` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_visible_count` | `src/appstore/appstore.c` | `appstore_visible_count` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_visible_index` | `src/appstore/appstore.c` | `appstore_visible_index` | `appstore` | `COVERED` | 1 |
@@ -7443,7 +7445,7 @@
 | `host:drivers:rng` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver RNG real com capacidades e resultados RDRAND simulados | capacidade, estado, bytes gerados, falhas de hardware e codigos de erro preservam o contrato sem executar instrucoes privilegiadas no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado RNG e valores de entropia estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:rtc-status` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | consultar o estado inicial do RTC com destinos valido e nulo | rtc_get_status rejeita destino nulo e publica snapshot inicial estavel | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do RTC e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:rtl8139` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar PCI, portas I/O, reset, MAC, DMA, transmissoes, recepcoes, IRQ, bottom-half, erros, timeout, quiescencia e limpeza | operacoes validas preservam invariantes do controlador e fixtures invalidas retornam erros canonicos sem I/O privilegiado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente PCI, portas, memoria DMA, relogio, IRQ e controlador RTL8139 falso no processo host | controlador falso resetado, paginas DMA devolvidas e manifesto, logs e cobertura preservados |
-| `host:drivers:rtl8811cu` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar identificacao USB, revisao, descritores, endpoints Bulk, cabecalho de firmware, estados, callbacks Ethernet, scan, associacao e indisponibilidade segura | dispositivos incompatíveis e fixtures invalidas retornam erros canonicos; o dispositivo suportado permanece indisponivel sem firmware e transporte confirmados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estruturas USB, filesystem, interface Ethernet e estado do driver falso no processo host | estruturas de dispositivo, firmware falso, interface, estado global, manifesto, logs e cobertura permanecem confinados ao processo host |
+| `host:drivers:rtl8811cu` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar identificacao USB, revisao, descritores, endpoints Bulk, cabecalho de firmware, estados, callbacks Ethernet, scan, associacao e indisponibilidade segura | dispositivos incompatÃ­veis e fixtures invalidas retornam erros canonicos; o dispositivo suportado permanece indisponivel sem firmware e transporte confirmados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estruturas USB, filesystem, interface Ethernet e estado do driver falso no processo host | estruturas de dispositivo, firmware falso, interface, estado global, manifesto, logs e cobertura permanecem confinados ao processo host |
 | `host:drivers:serial` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver serial real com registradores UART simulados | inicializacao, leitura, filtragem, enfileiramento e flush respeitam o contrato sem acessar portas I/O reais | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado UART e fila de transmissao do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:speaker` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver speaker real com portas PIT e PC speaker simuladas | inicializacao, desligamento, tons, melody e espera por ticks respeitam o contrato sem acessar I/O privilegiado ou executar hlt no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente registradores PIT e PC speaker estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:tss` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver TSS real com carregamento GDT e flush simulados | inicializacao, prontidao e atualizacao de stack preservam o contrato sem executar lgdt, troca de segmentos ou flush privilegiado no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente descritor TSS, GDT e contador de flush do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7465,7 +7467,7 @@
 | `host:network:ethernet` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar registro de interfaces, handlers, polling, frames, transmissao, quiescencia e limpeza com drivers falsos | frames validos sao entregues, entradas invalidas sao rejeitadas e nenhum buffer de rede permanece ativo | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado Ethernet, sk_buff, net_buffer, SLAB e drivers falsos no processo host | buffers, interfaces, handlers e estado temporario encerrados e artefatos preservados |
 | `host:network:http` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar URLs, headers, corpos, streaming, redirects, HTTPS, limites e falhas com DNS, socket, TLS e timer falsos | respostas validas concluem, entradas e transportes invalidos falham com codigo canonico e nenhum estado HTTP residual permanece | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado HTTP, buffers estaticos e transportes falsos no processo host | socket, DNS, cliente TLS e sessao HTTP reiniciados e artefatos preservados |
 | `host:network:icmp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar checksum, echo, timeout, mudanca de configuracao, fila de reply e pacotes ICMP invalidos com IPv4 e timer simulados | echo valido e reply pendente sao processados, timeout e falhas de transporte retornam erros canonicos e o estado e restaurado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado ICMP, buffers estaticos e transportes IPv4 e timer falsos no processo host | estado ICMP, timer e transporte falso retornam ao estado inicial e os artefatos sao preservados |
-| `host:network:ipv4` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar configuraÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o, envio, broadcast, recepÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o, checksum e handlers IPv4 | datagramas validos sÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o entregues, entradas invÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¡lidas sÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â£o recusadas e o estado ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â© restaurado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado IPv4, tabela de rotas e buffers falsos de ARP/Ethernet | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:network:ipv4` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar configuraÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o, envio, broadcast, recepÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o, checksum e handlers IPv4 | datagramas validos sÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o entregues, entradas invÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡lidas sÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o recusadas e o estado ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â© restaurado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado IPv4, tabela de rotas e buffers falsos de ARP/Ethernet | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:network:route` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar rotas base, lookup, limites, overflow e restauracao | rotas validas e invalidas respeitam o contrato, sem residuos globais | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabela estatica de rotas no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:network:socket` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar handles geracionais, conexao, filas RX/TX, eventos, EOF, timeout, cancelamento, limites, reset e limpeza com TCP, timer e VFS falsos | operacoes validas preservam os eventos observaveis, entradas e transportes invalidos retornam codigos canonicos e nenhum socket residual permanece | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado dos sockets, filas de espera, buffers estaticos e transporte TCP falso no processo host | sockets, filas, callbacks TCP e estado de buffers reiniciados e artefatos preservados |
 | `host:network:socket-runtime` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar os caminhos TCP, adaptadores VFS, filas UNIX, espera cancelada, limites e autoteste dos sockets | operacoes validas preservam o estado publicado, erros canonicos permanecem observaveis e nenhum socket, fila ou buffer residual permanece | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico dos sockets e backends falsos no processo host | sockets, descritores, filas, SKBs falsos e estado global restaurados; manifestos, logs e cobertura preservados |
@@ -7485,7 +7487,7 @@
 | `host:shell:commands-vfs` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar grep com entrada fragmentada, comparacao sem diferenca de maiusculas, limites, erros de pipeline e o autoteste pipetest | linhas correspondentes sao encaminhadas, entradas invalidas e limites exibem diagnostico e pipetest preserva resultado e codigo canonico | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos de entrada, saida e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:core` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inicializar o Shell, encaminhar mouse, suspender terminal, concluir comando e restaurar a cena visual | entradas invalidas e inativas sao rejeitadas, scroll ativo e encaminhado, ciclo de terminal restaura prompt e redraw | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente callbacks estaticos do Shell, terminal, taskbar, desktop e aplicativos falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:diagnostics` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar pwd, cd, mouse, log, timer, clock, irqstat, wait, wqinfo, workq, tls, vfs, mount, devcheck, devices, device-info, device-scan, usb, acpi, power, kill, sigtest, proccheck, health, health summary, health check, slabinfo, slabtest, cpu usage, pagefault, vmamap, schedcheck e kmetrics em caminhos validos, invalidos, indisponiveis e de limite; validar devices -v e device-info pelo VFS sysfs estatico | dispatchers preservam saida, estado, configuracao e codigos canonicos | compilador ausente, warning, saida inesperada, falha de assercao ou timeout | somente buffers estaticos de saida e doubles locais de VFS, mouse, log, timer, RTC, clock, IRQ, IDT, wait, workqueue, TLS, devfs, device manager, USB, HID, MSC e SLAB; sem armazenamento real | processo host encerrado e manifesto, logs e cobertura preservados |
-| `host:shell:diagnostics-helpers` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar parsers de log, sinais, mouse e VMA, nomes de estados, cores, caminhos sysfs/proc e invariantes de memoria com dependencias estaticas falsas | entradas validas retornam resultados canonicos; entradas nulas, invalidas e fora dos limites sao rejeitadas sem hardware, allocator ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos, estado de filesystem e paginação falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:shell:diagnostics-helpers` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar parsers de log, sinais, mouse e VMA, nomes de estados, cores, caminhos sysfs/proc e invariantes de memoria com dependencias estaticas falsas | entradas validas retornam resultados canonicos; entradas nulas, invalidas e fora dos limites sao rejeitadas sem hardware, allocator ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos, estado de filesystem e paginaÃ§Ã£o falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:dispatch` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar comandos desconhecidos, entrada normalizada, limite e comando conhecido | dispatcher retorna ERR_NULL para entrada nula e apresenta diagnostico deterministico para comando desconhecido | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e handlers falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:editor` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar parsing de texto, sintaxe, cores, edicao de linhas e word-wrap com buffers estaticos | limites, conversoes, classificacao e operacoes de edicao preservam os contratos observaveis | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos do Editor no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:hosted` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | abrir, reabrir, desenhar, encaminhar tecla e mouse, fechar e rejeitar registro do Shell Classic hospedado | o Shell hospedado publica visibilidade, encaminha callbacks e restaura o estado quando o registro falha | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do adaptador, callbacks do Window Manager e terminal falso no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7515,6 +7517,7 @@
 | `host:tst3:string-compress` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo disponivel | compilar e executar buffers estaticos de strings e compressao | casos validos, vazios, limites, truncamento e overflow retornam o contrato esperado | compilador ausente, warning, falha de assercao ou timeout | somente buffers estaticos e stub de video_print | processo host encerrado e artefatos preservados pelo runner |
 | `host:tst5:blackbox` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo disponivel | compilar e executar o harness black-box com snapshots de terminal falsos | casos TST5 validos encontram o marcador apos nova geracao e caso invalido retorna ERR_NOT_FOUND | compilador ausente, warning, marcador ausente, caso invalido ou timeout | somente buffers estaticos e callbacks falsos do observador | processo host encerrado e relatorio de cobertura preservado |
 | `host:ui:appstore` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar formatacao, selecao, planos, estados, rollback, confianca e geometria da interface com doubles estaticos | helpers preservam limites, selecao, estados de catalogo, planos e coordenadas sem iniciar workers ou tocar em hardware | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers e estruturas estaticas da App Store no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:ui:desktop` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, desenho TUI/GUI, modos, selecao, teclado, cliques, arraste, limites e fallback | Desktop preserva estado, layout, selecao, navegacao, hit-testing e limpeza sem hardware real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do Desktop e doubles de video, VESA, taskbar, icons, GUI e mouse no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:ui:icons` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar defaults, mutacoes, fallback, cache BMP, limites VESA e falhas controladas | registro vetorial permanece utilizavel sem filesystem e BMPs validos sao aceitos somente no formato esperado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente registro, cache e dispositivos BMP/VESA falsos no processo host | processo host encerrado, cache liberado e manifesto, logs e cobertura preservados |
 | `host:ui:settings-icons` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, modos TUI/GUI, preferencias, dialogos, mouse, storage e editor de icones com entradas estaticas | estado, valores, selecao, navegacao, dialogos e encerramento preservam o contrato observavel | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado de configuracoes, buffers estaticos e doubles de video/GUI no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:ui:taskbar` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar estados TUI e GUI, layouts, botoes, menus, configuracao, cliques, relogio e limites | taskbar preserva configuracao, geometria, navegacao, selecao de janelas e fallback sem hardware grafico real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente configuracao, botoes, menus e chamadas de desenho dentro da fixture host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7555,7 +7558,6 @@
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
 | `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
-| `host:ui:desktop` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, desenho TUI/GUI, modos, selecao, teclado, cliques, arraste, limites e fallback | Desktop preserva estado, layout, selecao, navegacao, hit-testing e limpeza sem hardware real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do Desktop e doubles de video, VESA, taskbar, icons, GUI e mouse no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -7615,46 +7617,9 @@
 - `asm:src/kernel/switch.asm:process_user_termination_enter`
 - `asm:src/kernel/switch.asm:thread_context_switch`
 - `asm:src/kernel/switch.asm:tss_flush`
-- `c:src/appstore/appstore.c:appstore_close`
-- `c:src/appstore/appstore.c:appstore_confirm_action`
-- `c:src/appstore/appstore.c:appstore_draw`
-- `c:src/appstore/appstore.c:appstore_draw_classic`
-- `c:src/appstore/appstore.c:appstore_draw_classic_remote`
-- `c:src/appstore/appstore.c:appstore_draw_simple`
-- `c:src/appstore/appstore.c:appstore_get_mode`
-- `c:src/appstore/appstore.c:appstore_gui_draw_action_button`
-- `c:src/appstore/appstore.c:appstore_gui_draw_confirmation`
-- `c:src/appstore/appstore.c:appstore_gui_draw_details`
-- `c:src/appstore/appstore.c:appstore_gui_draw_disabled_button`
-- `c:src/appstore/appstore.c:appstore_gui_draw_entries`
-- `c:src/appstore/appstore.c:appstore_gui_draw_remote_details`
-- `c:src/appstore/appstore.c:appstore_gui_draw_surface`
-- `c:src/appstore/appstore.c:appstore_gui_draw_tabs`
-- `c:src/appstore/appstore.c:appstore_gui_line`
-- `c:src/appstore/appstore.c:appstore_handle_confirmation_click`
-- `c:src/appstore/appstore.c:appstore_handle_key`
-- `c:src/appstore/appstore.c:appstore_handle_mouse`
-- `c:src/appstore/appstore.c:appstore_hosted_close`
-- `c:src/appstore/appstore.c:appstore_hosted_draw`
-- `c:src/appstore/appstore.c:appstore_hosted_key`
-- `c:src/appstore/appstore.c:appstore_hosted_mouse`
 - `c:src/appstore/appstore.c:appstore_init`
-- `c:src/appstore/appstore.c:appstore_open`
-- `c:src/appstore/appstore.c:appstore_queue_job`
 - `c:src/appstore/appstore.c:appstore_refresh_remote_snapshot`
 - `c:src/appstore/appstore.c:appstore_refresh_snapshot`
-- `c:src/appstore/appstore.c:appstore_request_install`
-- `c:src/appstore/appstore.c:appstore_request_refresh`
-- `c:src/appstore/appstore.c:appstore_request_remote_enable`
-- `c:src/appstore/appstore.c:appstore_request_remote_fetch`
-- `c:src/appstore/appstore.c:appstore_request_remove`
-- `c:src/appstore/appstore.c:appstore_request_rollback`
-- `c:src/appstore/appstore.c:appstore_request_run`
-- `c:src/appstore/appstore.c:appstore_request_update`
-- `c:src/appstore/appstore.c:appstore_request_verify`
-- `c:src/appstore/appstore.c:appstore_simple_draw_confirmation`
-- `c:src/appstore/appstore.c:appstore_simple_draw_details`
-- `c:src/appstore/appstore.c:appstore_simple_draw_entries`
 - `c:src/appstore/appstore.c:appstore_worker_build_plan`
 - `c:src/appstore/appstore.c:appstore_worker_finish`
 - `c:src/appstore/appstore.c:appstore_worker_install`

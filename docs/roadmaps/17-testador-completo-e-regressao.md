@@ -23,7 +23,7 @@ mantém 161 casos `AUTOMATED`; após os incrementos de Shell, RTC,
 processos/threads, FAT32, update U3/U4, os contratos remotos ZSYS e o
 repositório remoto de aplicativos, dos helpers de pacotes do Shell, da
 interface App Store, dos relatórios de rede do Shell e do módulo de
-Configurações e do Desktop, registra 7.309 superfícies, 6.525 `COVERED` e 784
+Configurações e do Desktop, registra 7.311 superfícies, 6.564 `COVERED` e 747
 `PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
@@ -186,15 +186,16 @@ Isso não significa declarar hardware físico validado sem equipamento.
       Store: cópia e truncamento de texto, formatação de inteiros, dependências,
       bloqueios, seleção e restauração, planos de downgrade, estados, rollback,
       confiança e geometria dos botões, usando doubles estáticos.
-- [x] A evidência dinâmica terminou `PASS`, com 41 superfícies reais de
-      `src/appstore/appstore.c` e `src/core/string.c`, sem endereços
-      desconhecidos ou símbolos ambíguos.
-- [x] Passou `make test-appstore-host` com `HOST_CC`; a evidência foi
-      incorporada preservando os vínculos anteriores e cobrindo três funções
-      adicionais: capacidades e disponibilidade de rollback. Renderização e
-      `make catalog-test` também passaram. O catálogo registra 7.305
-      superfícies ativas, 6.435 `COVERED`, 870 `PENDING`, 59 aposentadas e 158
-      casos; as pendências restantes continuam explícitas.
+- [x] A evidência dinâmica terminou `PASS`, com 77 superfícies reais de
+      `src/appstore/appstore.c` e `src/core/string.c`, incluindo desenho
+      Simple/Classic, navegação remota, confirmação, teclado, mouse e
+      callbacks hospedados.
+- [x] Passou `make test-appstore-host` com `HOST_CC`, `-Wall -Wextra -Werror`,
+      sem endereços desconhecidos ou símbolos ambíguos. A sincronização,
+      renderização e `make catalog-test` também passaram. O catálogo registra
+      7.311 superfícies, 6.564 `COVERED`, 747 `PENDING`, 59 aposentadas e 161
+      casos; os workers e a inicialização real da App Store continuam
+      explicitamente pendentes para uma etapa posterior.
 
 ### Incremento Shell/network reports — 2026-09-05
 
