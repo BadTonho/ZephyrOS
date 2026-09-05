@@ -2180,6 +2180,25 @@ em `ui/updater_test.h` permanecem vinculados ao caso como contrato de teste.
 A execução tem timeout do runner e deixa manifesto, resultado, logs e
 cobertura preservados.
 
+## UI/Window Manager: contratos host-only
+
+O alvo `test-wm-host` compila o Window Manager real com uma fixture estática
+que percorre os caminhos TUI e GUI hospedada, incluindo criação e destruição
+de janelas, foco, minimização, maximização, atalhos, desenho, drag, resize,
+mouse, reflow, limites e estados gráficos indisponíveis:
+
+```text
+make test-wm-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O relatório instrumentado fica em
+`build/test-results/wm-host/coverage.json` e deve terminar com `status=PASS`,
+`unknown_addresses=[]` e `ambiguous_symbols=[]`, observando as 81 funções de
+`src/wm/wm.c`. Os doubles cobrem VESA, vídeo, Desktop, Taskbar, GUI, Icons,
+Recovery, timer e callbacks de aplicativos sem hardware, armazenamento ou
+rede reais. A execução tem timeout do runner e preserva manifesto, resultado,
+logs e cobertura.
+
 ## Shell Checks: validadores de resultados host-only
 
 O alvo `test-shell-checks-host` compila `shell_checks.c` com

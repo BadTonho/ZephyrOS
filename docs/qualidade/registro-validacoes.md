@@ -6418,3 +6418,19 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   reais de `src/updater/updater.c`, `unknown_addresses=[]` e
   `ambiguous_symbols=[]`. O catálogo atual registra 7.326 superfícies,
   7.049 `COVERED` e 277 `PENDING`; as demais pendências continuam explícitas.
+
+- Incremento UI/Window Manager: TUI, GUI hospedada e interação host-only —
+  concluído em 2026-09-05 (America/Sao_Paulo). A fixture `host:ui:wm`,
+  compilada com `ZEPHYROS_HOST_TEST`, passou a exercitar janelas TUI e
+  hospedadas, desenho, foco, atalhos, botões, ciclo de vida, callbacks, drag,
+  resize, mouse, reflow, limites e estados gráficos indisponíveis. Foram
+  usados doubles estáticos para VESA, vídeo, Desktop, Taskbar, GUI, Icons,
+  Recovery, timer e callbacks de aplicativos; nenhum hardware, armazenamento
+  ou rede real foi acessado. Passaram `make test-wm-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`, `make q3check`, `make clean`
+  seguido de `make`, sincronização/renderização, `make catalog-test` e
+  `git diff --check`. O relatório dinâmico terminou `PASS`, observando as 81
+  funções reais de `src/wm/wm.c`, com `unknown_addresses=[]` e
+  `ambiguous_symbols=[]`. O catálogo atual registra 7.326 superfícies,
+  7.095 `COVERED`, 231 `PENDING` e 166 casos; as demais pendências continuam
+  explícitas.

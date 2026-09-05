@@ -19,7 +19,7 @@ equipamento e evidência correspondente.
 
 A infraestrutura TST1–TST7 está concluída para a matriz automatizada existente,
 mas o programa de cobertura integral ainda não está concluído. O catálogo
-mantém 165 casos `AUTOMATED`; após os incrementos de Shell, RTC,
+mantém 166 casos `AUTOMATED`; após os incrementos de Shell, RTC,
 processos/threads, FAT32, update U3/U4, os contratos remotos ZSYS e o
 repositório remoto de aplicativos, dos helpers de pacotes do Shell, da
 interface App Store, dos relatórios de rede do Shell, do módulo de
@@ -29,11 +29,25 @@ relatórios RTC/Shell, da fixture host-only do Updater, da fixture host-only do
 File Manager, da fixture host-only do Task Manager e da validação de
 resultados do Shell Checks, da expansão do ciclo de vida do Task Manager e dos
 caminhos negativos de finalização do Shell Checks, registra 7.326 superfícies,
-7.049 `COVERED` e 277 `PENDING`.
+7.095 `COVERED` e 231 `PENDING`, em 166 casos `AUTOMATED`.
 O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
 Isso não significa declarar hardware físico validado sem equipamento.
+
+### Incremento Window Manager: TUI, GUI hospedada e interação host-only — 2026-09-05
+
+- [x] A fixture `host:ui:wm` passou a exercitar janelas TUI e hospedadas,
+      desenho, foco, atalhos, botões, ciclo de vida, callbacks, drag, resize,
+      mouse, reflow, limites e estados gráficos indisponíveis.
+- [x] Foram usados doubles estáticos para VESA, vídeo, Desktop, Taskbar, GUI,
+      Icons, Recovery, timer e callbacks de aplicativos. Nenhum hardware,
+      armazenamento ou rede real é acessado.
+- [x] `make test-wm-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` passou
+      com `-Wall -Wextra -Werror`; a cobertura dinâmica observou todas as 81
+      funções de `src/wm/wm.c`, sem endereços desconhecidos ou símbolos
+      ambíguos. A sincronização/renderização e `make catalog-test` passaram;
+      o catálogo agora registra 7.095 `COVERED`, 231 `PENDING` e 166 casos.
 
 ### Incremento UI/Updater: ciclo de vida e operações host-only — 2026-09-05
 

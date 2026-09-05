@@ -6951,6 +6951,58 @@
         "status": "AUTOMATED"
       },
   "evidence": "make test-shell-commands-apps-host PASS com cobertura dinamica real das 30 superficies C de aplicativos, display, editor, icones, cenas e player, incluindo argumentos invalidos e estados indisponiveis"
+    },
+    {
+      "id": "wm-host-dynamic",
+      "domain": "ui-window-manager",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:ui:wm"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/wm-host/coverage.json",
+      "coverage_sources": [
+        "src/wm/wm.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:ui:wm",
+        "scenario": "Contratos deterministas do Window Manager em TUI e GUI hospedada",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "display": "VGA, VESA, Desktop, Taskbar, GUI, Icons e Recovery falsos"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "exercitar janelas TUI, ciclo hospedado GUI, foco, atalhos, botoes, drag, resize, mouse, reflow, limites e estados indisponiveis",
+        "expected": "Window Manager preserva estados, foco, geometria, callbacks, limpeza e fallback sem hardware grafico real",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente estado estatico do WM e doubles de video, VESA, Desktop, Taskbar, GUI, Icons e Recovery no processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "ui",
+          "wm",
+          "tui",
+          "gui",
+          "mouse",
+          "limits",
+          "coverage"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "make test-wm-host PASS com 81 superficies C do WM observadas em janelas TUI, ciclo GUI hospedado, foco, atalhos, desenho, drag, resize, mouse, reflow, limites e limpeza"
     }
   ]
 }

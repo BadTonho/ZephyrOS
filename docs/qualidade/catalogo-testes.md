@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7326**
-- Casos de teste: **165**
+- Casos de teste: **166**
 - Superfícies aposentadas: **59**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7049 |
+| `COVERED` | 7095 |
 | `MANUAL` | 0 |
-| `PENDING` | 277 |
+| `PENDING` | 231 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 165 |
+| `AUTOMATED` | 166 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -1612,42 +1612,42 @@
 | `api:src/include/ui/updater_test.h:updater_host_fixture_set_message` | `src/include/ui/updater_test.h` | `updater_host_fixture_set_message` | `ui` | `COVERED` | 1 |
 | `api:src/include/ui/updater_test.h:updater_host_fixture_set_slots` | `src/include/ui/updater_test.h` | `updater_host_fixture_set_slots` | `ui` | `COVERED` | 1 |
 | `api:src/include/ui/updater_test.h:updater_host_test_contracts` | `src/include/ui/updater_test.h` | `updater_host_test_contracts` | `ui` | `COVERED` | 3 |
-| `api:src/include/ui/wm.h:wm_close_focused` | `src/include/ui/wm.h` | `wm_close_focused` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_close_hosted_app` | `src/include/ui/wm.h` | `wm_close_hosted_app` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_create_window` | `src/include/ui/wm.h` | `wm_create_window` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_destroy_window` | `src/include/ui/wm.h` | `wm_destroy_window` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_draw_all` | `src/include/ui/wm.h` | `wm_draw_all` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_draw_desktop` | `src/include/ui/wm.h` | `wm_draw_desktop` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_draw_title_bar` | `src/include/ui/wm.h` | `wm_draw_title_bar` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_draw_window` | `src/include/ui/wm.h` | `wm_draw_window` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_focus_next` | `src/include/ui/wm.h` | `wm_focus_next` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_focus_prev` | `src/include/ui/wm.h` | `wm_focus_prev` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_focus_window` | `src/include/ui/wm.h` | `wm_focus_window` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_get_config` | `src/include/ui/wm.h` | `wm_get_config` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_get_focused` | `src/include/ui/wm.h` | `wm_get_focused` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_get_focused_id` | `src/include/ui/wm.h` | `wm_get_focused_id` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_get_window` | `src/include/ui/wm.h` | `wm_get_window` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_handle_click` | `src/include/ui/wm.h` | `wm_handle_click` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_handle_key` | `src/include/ui/wm.h` | `wm_handle_key` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_handle_mouse` | `src/include/ui/wm.h` | `wm_handle_mouse` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_init` | `src/include/ui/wm.h` | `wm_init` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_is_active` | `src/include/ui/wm.h` | `wm_is_active` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_is_hosted_app_focused` | `src/include/ui/wm.h` | `wm_is_hosted_app_focused` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_maximize_window` | `src/include/ui/wm.h` | `wm_maximize_window` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_minimize_window` | `src/include/ui/wm.h` | `wm_minimize_window` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_move_window` | `src/include/ui/wm.h` | `wm_move_window` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_reflow_display` | `src/include/ui/wm.h` | `wm_reflow_display` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_register_hosted_app` | `src/include/ui/wm.h` | `wm_register_hosted_app` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_request_hosted_redraw` | `src/include/ui/wm.h` | `wm_request_hosted_redraw` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_resize_window` | `src/include/ui/wm.h` | `wm_resize_window` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_restore_window` | `src/include/ui/wm.h` | `wm_restore_window` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_set_active` | `src/include/ui/wm.h` | `wm_set_active` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_set_border_style` | `src/include/ui/wm.h` | `wm_set_border_style` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_set_btn_order` | `src/include/ui/wm.h` | `wm_set_btn_order` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_set_btn_position` | `src/include/ui/wm.h` | `wm_set_btn_position` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_set_show_title` | `src/include/ui/wm.h` | `wm_set_show_title` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_toggle_window` | `src/include/ui/wm.h` | `wm_toggle_window` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/wm.h:wm_update_cpu_stats` | `src/include/ui/wm.h` | `wm_update_cpu_stats` | `ui` | `COVERED` | 2 |
+| `api:src/include/ui/wm.h:wm_close_focused` | `src/include/ui/wm.h` | `wm_close_focused` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_close_hosted_app` | `src/include/ui/wm.h` | `wm_close_hosted_app` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_create_window` | `src/include/ui/wm.h` | `wm_create_window` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_destroy_window` | `src/include/ui/wm.h` | `wm_destroy_window` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_draw_all` | `src/include/ui/wm.h` | `wm_draw_all` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_draw_desktop` | `src/include/ui/wm.h` | `wm_draw_desktop` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_draw_title_bar` | `src/include/ui/wm.h` | `wm_draw_title_bar` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_draw_window` | `src/include/ui/wm.h` | `wm_draw_window` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_focus_next` | `src/include/ui/wm.h` | `wm_focus_next` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_focus_prev` | `src/include/ui/wm.h` | `wm_focus_prev` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_focus_window` | `src/include/ui/wm.h` | `wm_focus_window` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_get_config` | `src/include/ui/wm.h` | `wm_get_config` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_get_focused` | `src/include/ui/wm.h` | `wm_get_focused` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_get_focused_id` | `src/include/ui/wm.h` | `wm_get_focused_id` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_get_window` | `src/include/ui/wm.h` | `wm_get_window` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_handle_click` | `src/include/ui/wm.h` | `wm_handle_click` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_handle_key` | `src/include/ui/wm.h` | `wm_handle_key` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_handle_mouse` | `src/include/ui/wm.h` | `wm_handle_mouse` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_init` | `src/include/ui/wm.h` | `wm_init` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_is_active` | `src/include/ui/wm.h` | `wm_is_active` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_is_hosted_app_focused` | `src/include/ui/wm.h` | `wm_is_hosted_app_focused` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_maximize_window` | `src/include/ui/wm.h` | `wm_maximize_window` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_minimize_window` | `src/include/ui/wm.h` | `wm_minimize_window` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_move_window` | `src/include/ui/wm.h` | `wm_move_window` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_reflow_display` | `src/include/ui/wm.h` | `wm_reflow_display` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_register_hosted_app` | `src/include/ui/wm.h` | `wm_register_hosted_app` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_request_hosted_redraw` | `src/include/ui/wm.h` | `wm_request_hosted_redraw` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_resize_window` | `src/include/ui/wm.h` | `wm_resize_window` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_restore_window` | `src/include/ui/wm.h` | `wm_restore_window` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_set_active` | `src/include/ui/wm.h` | `wm_set_active` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_set_border_style` | `src/include/ui/wm.h` | `wm_set_border_style` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_set_btn_order` | `src/include/ui/wm.h` | `wm_set_btn_order` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_set_btn_position` | `src/include/ui/wm.h` | `wm_set_btn_position` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_set_show_title` | `src/include/ui/wm.h` | `wm_set_show_title` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_toggle_window` | `src/include/ui/wm.h` | `wm_toggle_window` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/wm.h:wm_update_cpu_stats` | `src/include/ui/wm.h` | `wm_update_cpu_stats` | `ui` | `COVERED` | 3 |
 
 ### asm_entry
 
@@ -7196,87 +7196,87 @@
 | `c:src/updater/updater.c:updater_u32_text` | `src/updater/updater.c` | `updater_u32_text` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_verify_selected` | `src/updater/updater.c` | `updater_verify_selected` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_version_text` | `src/updater/updater.c` | `updater_version_text` | `updater` | `COVERED` | 1 |
-| `c:src/wm/wm.c:draw_buttons_left` | `src/wm/wm.c` | `draw_buttons_left` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:draw_buttons_right` | `src/wm/wm.c` | `draw_buttons_right` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:str_len` | `src/wm/wm.c` | `str_len` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_close_focused` | `src/wm/wm.c` | `wm_close_focused` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_close_hosted_app` | `src/wm/wm.c` | `wm_close_hosted_app` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_create_window` | `src/wm/wm.c` | `wm_create_window` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_destroy_window` | `src/wm/wm.c` | `wm_destroy_window` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_draw_all` | `src/wm/wm.c` | `wm_draw_all` | `wm` | `COVERED` | 1 |
-| `c:src/wm/wm.c:wm_draw_desktop` | `src/wm/wm.c` | `wm_draw_desktop` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_draw_title_bar` | `src/wm/wm.c` | `wm_draw_title_bar` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_draw_window` | `src/wm/wm.c` | `wm_draw_window` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_focus_next` | `src/wm/wm.c` | `wm_focus_next` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_focus_prev` | `src/wm/wm.c` | `wm_focus_prev` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_focus_window` | `src/wm/wm.c` | `wm_focus_window` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_get_config` | `src/wm/wm.c` | `wm_get_config` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_get_focused` | `src/wm/wm.c` | `wm_get_focused` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_get_focused_id` | `src/wm/wm.c` | `wm_get_focused_id` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_get_window` | `src/wm/wm.c` | `wm_get_window` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_gui_begin_drag` | `src/wm/wm.c` | `wm_gui_begin_drag` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_gui_begin_resize` | `src/wm/wm.c` | `wm_gui_begin_resize` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_gui_clear_interaction` | `src/wm/wm.c` | `wm_gui_clear_interaction` | `wm` | `COVERED` | 2 |
-| `c:src/wm/wm.c:wm_gui_close` | `src/wm/wm.c` | `wm_gui_close` | `wm` | `COVERED` | 1 |
-| `c:src/wm/wm.c:wm_gui_color` | `src/wm/wm.c` | `wm_gui_color` | `wm` | `COVERED` | 2 |
-| `c:src/wm/wm.c:wm_gui_constrain_window` | `src/wm/wm.c` | `wm_gui_constrain_window` | `wm` | `COVERED` | 2 |
-| `c:src/wm/wm.c:wm_gui_control_at` | `src/wm/wm.c` | `wm_gui_control_at` | `wm` | `COVERED` | 2 |
-| `c:src/wm/wm.c:wm_gui_control_color` | `src/wm/wm.c` | `wm_gui_control_color` | `wm` | `COVERED` | 2 |
-| `c:src/wm/wm.c:wm_gui_control_rect` | `src/wm/wm.c` | `wm_gui_control_rect` | `wm` | `COVERED` | 2 |
-| `c:src/wm/wm.c:wm_gui_dispatch_key` | `src/wm/wm.c` | `wm_gui_dispatch_key` | `wm` | `COVERED` | 2 |
-| `c:src/wm/wm.c:wm_gui_dispatch_key_sequence` | `src/wm/wm.c` | `wm_gui_dispatch_key_sequence` | `wm` | `COVERED` | 2 |
-| `c:src/wm/wm.c:wm_gui_draw_all` | `src/wm/wm.c` | `wm_gui_draw_all` | `wm` | `COVERED` | 2 |
-| `c:src/wm/wm.c:wm_gui_draw_control` | `src/wm/wm.c` | `wm_gui_draw_control` | `wm` | `COVERED` | 2 |
-| `c:src/wm/wm.c:wm_gui_draw_control_symbol` | `src/wm/wm.c` | `wm_gui_draw_control_symbol` | `wm` | `COVERED` | 2 |
-| `c:src/wm/wm.c:wm_gui_draw_frame` | `src/wm/wm.c` | `wm_gui_draw_frame` | `wm` | `COVERED` | 2 |
-| `c:src/wm/wm.c:wm_gui_draw_title` | `src/wm/wm.c` | `wm_gui_draw_title` | `wm` | `COVERED` | 2 |
-| `c:src/wm/wm.c:wm_gui_draw_window` | `src/wm/wm.c` | `wm_gui_draw_window` | `wm` | `COVERED` | 2 |
-| `c:src/wm/wm.c:wm_gui_enabled` | `src/wm/wm.c` | `wm_gui_enabled` | `wm` | `COVERED` | 2 |
-| `c:src/wm/wm.c:wm_gui_find_app` | `src/wm/wm.c` | `wm_gui_find_app` | `wm` | `COVERED` | 2 |
-| `c:src/wm/wm.c:wm_gui_focus` | `src/wm/wm.c` | `wm_gui_focus` | `wm` | `COVERED` | 2 |
-| `c:src/wm/wm.c:wm_gui_focus_next` | `src/wm/wm.c` | `wm_gui_focus_next` | `wm` | `COVERED` | 1 |
-| `c:src/wm/wm.c:wm_gui_focus_prev` | `src/wm/wm.c` | `wm_gui_focus_prev` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_gui_get_work_area` | `src/wm/wm.c` | `wm_gui_get_work_area` | `wm` | `COVERED` | 2 |
-| `c:src/wm/wm.c:wm_gui_handle_key` | `src/wm/wm.c` | `wm_gui_handle_key` | `wm` | `COVERED` | 2 |
-| `c:src/wm/wm.c:wm_gui_handle_mouse` | `src/wm/wm.c` | `wm_gui_handle_mouse` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_gui_handle_wheel` | `src/wm/wm.c` | `wm_gui_handle_wheel` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_gui_has_live_windows` | `src/wm/wm.c` | `wm_gui_has_live_windows` | `wm` | `COVERED` | 1 |
-| `c:src/wm/wm.c:wm_gui_initialize_window` | `src/wm/wm.c` | `wm_gui_initialize_window` | `wm` | `COVERED` | 2 |
-| `c:src/wm/wm.c:wm_gui_maximize_or_restore` | `src/wm/wm.c` | `wm_gui_maximize_or_restore` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_gui_minimize` | `src/wm/wm.c` | `wm_gui_minimize` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_gui_point_in_content` | `src/wm/wm.c` | `wm_gui_point_in_content` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_gui_point_in_title_bar` | `src/wm/wm.c` | `wm_gui_point_in_title_bar` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_gui_point_in_window` | `src/wm/wm.c` | `wm_gui_point_in_window` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_gui_reset` | `src/wm/wm.c` | `wm_gui_reset` | `wm` | `COVERED` | 2 |
-| `c:src/wm/wm.c:wm_gui_resize_edges_at` | `src/wm/wm.c` | `wm_gui_resize_edges_at` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_gui_return_to_desktop_if_empty` | `src/wm/wm.c` | `wm_gui_return_to_desktop_if_empty` | `wm` | `COVERED` | 1 |
-| `c:src/wm/wm.c:wm_gui_sync_taskbar` | `src/wm/wm.c` | `wm_gui_sync_taskbar` | `wm` | `COVERED` | 2 |
-| `c:src/wm/wm.c:wm_gui_update_drag` | `src/wm/wm.c` | `wm_gui_update_drag` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_gui_update_interaction` | `src/wm/wm.c` | `wm_gui_update_interaction` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_gui_update_resize` | `src/wm/wm.c` | `wm_gui_update_resize` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_gui_window_min_height` | `src/wm/wm.c` | `wm_gui_window_min_height` | `wm` | `COVERED` | 2 |
-| `c:src/wm/wm.c:wm_gui_window_min_width` | `src/wm/wm.c` | `wm_gui_window_min_width` | `wm` | `COVERED` | 2 |
-| `c:src/wm/wm.c:wm_handle_click` | `src/wm/wm.c` | `wm_handle_click` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_handle_key` | `src/wm/wm.c` | `wm_handle_key` | `wm` | `COVERED` | 2 |
-| `c:src/wm/wm.c:wm_handle_mouse` | `src/wm/wm.c` | `wm_handle_mouse` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_init` | `src/wm/wm.c` | `wm_init` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_is_active` | `src/wm/wm.c` | `wm_is_active` | `wm` | `COVERED` | 2 |
-| `c:src/wm/wm.c:wm_is_hosted_app_focused` | `src/wm/wm.c` | `wm_is_hosted_app_focused` | `wm` | `COVERED` | 2 |
-| `c:src/wm/wm.c:wm_maximize_window` | `src/wm/wm.c` | `wm_maximize_window` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_minimize_window` | `src/wm/wm.c` | `wm_minimize_window` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_move_window` | `src/wm/wm.c` | `wm_move_window` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_reflow_display` | `src/wm/wm.c` | `wm_reflow_display` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_register_hosted_app` | `src/wm/wm.c` | `wm_register_hosted_app` | `wm` | `COVERED` | 2 |
-| `c:src/wm/wm.c:wm_request_hosted_redraw` | `src/wm/wm.c` | `wm_request_hosted_redraw` | `wm` | `COVERED` | 1 |
-| `c:src/wm/wm.c:wm_resize_window` | `src/wm/wm.c` | `wm_resize_window` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_restore_window` | `src/wm/wm.c` | `wm_restore_window` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_set_active` | `src/wm/wm.c` | `wm_set_active` | `wm` | `COVERED` | 2 |
-| `c:src/wm/wm.c:wm_set_border_style` | `src/wm/wm.c` | `wm_set_border_style` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_set_btn_order` | `src/wm/wm.c` | `wm_set_btn_order` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_set_btn_position` | `src/wm/wm.c` | `wm_set_btn_position` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_set_show_title` | `src/wm/wm.c` | `wm_set_show_title` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_toggle_window` | `src/wm/wm.c` | `wm_toggle_window` | `wm` | `PENDING` | 0 |
-| `c:src/wm/wm.c:wm_update_cpu_stats` | `src/wm/wm.c` | `wm_update_cpu_stats` | `wm` | `PENDING` | 0 |
+| `c:src/wm/wm.c:draw_buttons_left` | `src/wm/wm.c` | `draw_buttons_left` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:draw_buttons_right` | `src/wm/wm.c` | `draw_buttons_right` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:str_len` | `src/wm/wm.c` | `str_len` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_close_focused` | `src/wm/wm.c` | `wm_close_focused` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_close_hosted_app` | `src/wm/wm.c` | `wm_close_hosted_app` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_create_window` | `src/wm/wm.c` | `wm_create_window` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_destroy_window` | `src/wm/wm.c` | `wm_destroy_window` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_draw_all` | `src/wm/wm.c` | `wm_draw_all` | `wm` | `COVERED` | 2 |
+| `c:src/wm/wm.c:wm_draw_desktop` | `src/wm/wm.c` | `wm_draw_desktop` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_draw_title_bar` | `src/wm/wm.c` | `wm_draw_title_bar` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_draw_window` | `src/wm/wm.c` | `wm_draw_window` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_focus_next` | `src/wm/wm.c` | `wm_focus_next` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_focus_prev` | `src/wm/wm.c` | `wm_focus_prev` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_focus_window` | `src/wm/wm.c` | `wm_focus_window` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_get_config` | `src/wm/wm.c` | `wm_get_config` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_get_focused` | `src/wm/wm.c` | `wm_get_focused` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_get_focused_id` | `src/wm/wm.c` | `wm_get_focused_id` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_get_window` | `src/wm/wm.c` | `wm_get_window` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_gui_begin_drag` | `src/wm/wm.c` | `wm_gui_begin_drag` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_gui_begin_resize` | `src/wm/wm.c` | `wm_gui_begin_resize` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_gui_clear_interaction` | `src/wm/wm.c` | `wm_gui_clear_interaction` | `wm` | `COVERED` | 3 |
+| `c:src/wm/wm.c:wm_gui_close` | `src/wm/wm.c` | `wm_gui_close` | `wm` | `COVERED` | 2 |
+| `c:src/wm/wm.c:wm_gui_color` | `src/wm/wm.c` | `wm_gui_color` | `wm` | `COVERED` | 3 |
+| `c:src/wm/wm.c:wm_gui_constrain_window` | `src/wm/wm.c` | `wm_gui_constrain_window` | `wm` | `COVERED` | 3 |
+| `c:src/wm/wm.c:wm_gui_control_at` | `src/wm/wm.c` | `wm_gui_control_at` | `wm` | `COVERED` | 3 |
+| `c:src/wm/wm.c:wm_gui_control_color` | `src/wm/wm.c` | `wm_gui_control_color` | `wm` | `COVERED` | 3 |
+| `c:src/wm/wm.c:wm_gui_control_rect` | `src/wm/wm.c` | `wm_gui_control_rect` | `wm` | `COVERED` | 3 |
+| `c:src/wm/wm.c:wm_gui_dispatch_key` | `src/wm/wm.c` | `wm_gui_dispatch_key` | `wm` | `COVERED` | 3 |
+| `c:src/wm/wm.c:wm_gui_dispatch_key_sequence` | `src/wm/wm.c` | `wm_gui_dispatch_key_sequence` | `wm` | `COVERED` | 3 |
+| `c:src/wm/wm.c:wm_gui_draw_all` | `src/wm/wm.c` | `wm_gui_draw_all` | `wm` | `COVERED` | 3 |
+| `c:src/wm/wm.c:wm_gui_draw_control` | `src/wm/wm.c` | `wm_gui_draw_control` | `wm` | `COVERED` | 3 |
+| `c:src/wm/wm.c:wm_gui_draw_control_symbol` | `src/wm/wm.c` | `wm_gui_draw_control_symbol` | `wm` | `COVERED` | 3 |
+| `c:src/wm/wm.c:wm_gui_draw_frame` | `src/wm/wm.c` | `wm_gui_draw_frame` | `wm` | `COVERED` | 3 |
+| `c:src/wm/wm.c:wm_gui_draw_title` | `src/wm/wm.c` | `wm_gui_draw_title` | `wm` | `COVERED` | 3 |
+| `c:src/wm/wm.c:wm_gui_draw_window` | `src/wm/wm.c` | `wm_gui_draw_window` | `wm` | `COVERED` | 3 |
+| `c:src/wm/wm.c:wm_gui_enabled` | `src/wm/wm.c` | `wm_gui_enabled` | `wm` | `COVERED` | 3 |
+| `c:src/wm/wm.c:wm_gui_find_app` | `src/wm/wm.c` | `wm_gui_find_app` | `wm` | `COVERED` | 3 |
+| `c:src/wm/wm.c:wm_gui_focus` | `src/wm/wm.c` | `wm_gui_focus` | `wm` | `COVERED` | 3 |
+| `c:src/wm/wm.c:wm_gui_focus_next` | `src/wm/wm.c` | `wm_gui_focus_next` | `wm` | `COVERED` | 2 |
+| `c:src/wm/wm.c:wm_gui_focus_prev` | `src/wm/wm.c` | `wm_gui_focus_prev` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_gui_get_work_area` | `src/wm/wm.c` | `wm_gui_get_work_area` | `wm` | `COVERED` | 3 |
+| `c:src/wm/wm.c:wm_gui_handle_key` | `src/wm/wm.c` | `wm_gui_handle_key` | `wm` | `COVERED` | 3 |
+| `c:src/wm/wm.c:wm_gui_handle_mouse` | `src/wm/wm.c` | `wm_gui_handle_mouse` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_gui_handle_wheel` | `src/wm/wm.c` | `wm_gui_handle_wheel` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_gui_has_live_windows` | `src/wm/wm.c` | `wm_gui_has_live_windows` | `wm` | `COVERED` | 2 |
+| `c:src/wm/wm.c:wm_gui_initialize_window` | `src/wm/wm.c` | `wm_gui_initialize_window` | `wm` | `COVERED` | 3 |
+| `c:src/wm/wm.c:wm_gui_maximize_or_restore` | `src/wm/wm.c` | `wm_gui_maximize_or_restore` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_gui_minimize` | `src/wm/wm.c` | `wm_gui_minimize` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_gui_point_in_content` | `src/wm/wm.c` | `wm_gui_point_in_content` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_gui_point_in_title_bar` | `src/wm/wm.c` | `wm_gui_point_in_title_bar` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_gui_point_in_window` | `src/wm/wm.c` | `wm_gui_point_in_window` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_gui_reset` | `src/wm/wm.c` | `wm_gui_reset` | `wm` | `COVERED` | 3 |
+| `c:src/wm/wm.c:wm_gui_resize_edges_at` | `src/wm/wm.c` | `wm_gui_resize_edges_at` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_gui_return_to_desktop_if_empty` | `src/wm/wm.c` | `wm_gui_return_to_desktop_if_empty` | `wm` | `COVERED` | 2 |
+| `c:src/wm/wm.c:wm_gui_sync_taskbar` | `src/wm/wm.c` | `wm_gui_sync_taskbar` | `wm` | `COVERED` | 3 |
+| `c:src/wm/wm.c:wm_gui_update_drag` | `src/wm/wm.c` | `wm_gui_update_drag` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_gui_update_interaction` | `src/wm/wm.c` | `wm_gui_update_interaction` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_gui_update_resize` | `src/wm/wm.c` | `wm_gui_update_resize` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_gui_window_min_height` | `src/wm/wm.c` | `wm_gui_window_min_height` | `wm` | `COVERED` | 3 |
+| `c:src/wm/wm.c:wm_gui_window_min_width` | `src/wm/wm.c` | `wm_gui_window_min_width` | `wm` | `COVERED` | 3 |
+| `c:src/wm/wm.c:wm_handle_click` | `src/wm/wm.c` | `wm_handle_click` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_handle_key` | `src/wm/wm.c` | `wm_handle_key` | `wm` | `COVERED` | 3 |
+| `c:src/wm/wm.c:wm_handle_mouse` | `src/wm/wm.c` | `wm_handle_mouse` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_init` | `src/wm/wm.c` | `wm_init` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_is_active` | `src/wm/wm.c` | `wm_is_active` | `wm` | `COVERED` | 3 |
+| `c:src/wm/wm.c:wm_is_hosted_app_focused` | `src/wm/wm.c` | `wm_is_hosted_app_focused` | `wm` | `COVERED` | 3 |
+| `c:src/wm/wm.c:wm_maximize_window` | `src/wm/wm.c` | `wm_maximize_window` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_minimize_window` | `src/wm/wm.c` | `wm_minimize_window` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_move_window` | `src/wm/wm.c` | `wm_move_window` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_reflow_display` | `src/wm/wm.c` | `wm_reflow_display` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_register_hosted_app` | `src/wm/wm.c` | `wm_register_hosted_app` | `wm` | `COVERED` | 3 |
+| `c:src/wm/wm.c:wm_request_hosted_redraw` | `src/wm/wm.c` | `wm_request_hosted_redraw` | `wm` | `COVERED` | 2 |
+| `c:src/wm/wm.c:wm_resize_window` | `src/wm/wm.c` | `wm_resize_window` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_restore_window` | `src/wm/wm.c` | `wm_restore_window` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_set_active` | `src/wm/wm.c` | `wm_set_active` | `wm` | `COVERED` | 3 |
+| `c:src/wm/wm.c:wm_set_border_style` | `src/wm/wm.c` | `wm_set_border_style` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_set_btn_order` | `src/wm/wm.c` | `wm_set_btn_order` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_set_btn_position` | `src/wm/wm.c` | `wm_set_btn_position` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_set_show_title` | `src/wm/wm.c` | `wm_set_show_title` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_toggle_window` | `src/wm/wm.c` | `wm_toggle_window` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_update_cpu_stats` | `src/wm/wm.c` | `wm_update_cpu_stats` | `wm` | `COVERED` | 1 |
 
 ### shell_command
 
@@ -7540,6 +7540,7 @@
 | `host:ui:settings-icons` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, modos TUI/GUI, preferencias, dialogos, mouse, storage e editor de icones com entradas estaticas | estado, valores, selecao, navegacao, dialogos e encerramento preservam o contrato observavel | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado de configuracoes, buffers estaticos e doubles de video/GUI no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:ui:taskbar` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar estados TUI e GUI, layouts, botoes, menus, configuracao, cliques, relogio e limites | taskbar preserva configuracao, geometria, navegacao, selecao de janelas e fallback sem hardware grafico real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente configuracao, botoes, menus e chamadas de desenho dentro da fixture host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:ui:updater` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar nomes ZUP, ordenacao, formatacao, historico, cancelamento, selecao, tags ZSYS e preflight de slots | helpers preservam limites, maiusculas, estados, textos canonicos e codigos de erro | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estruturas estaticas do processo host; nenhum disco, rede, worker ou hardware real | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:ui:wm` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar janelas TUI, ciclo hospedado GUI, foco, atalhos, botoes, drag, resize, mouse, reflow, limites e estados indisponiveis | Window Manager preserva estados, foco, geometria, callbacks, limpeza e fallback sem hardware grafico real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do WM e doubles de video, VESA, Desktop, Taskbar, GUI, Icons e Recovery no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `qemu:tst2:boot-ready` | `qemu` | `smoke` | `qemu:tst2:boot-ready` | `AUTOMATED` | 30 | 5 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e o executavel qemu-system-i386 esta disponivel | iniciar o guest em snapshot, enviar HELLO e executar o caso de boot apos READY | o guest publica READY, HEARTBEAT e PASS para o caso solicitado | PANIC, TIMEOUT, ausencia de heartbeat, erro de protocolo ou encerramento inesperado do QEMU | cria um processo QEMU e artefatos temporarios da execucao | encerrar o QEMU via QMP e preservar o relatorio, serial e logs da execucao |
 | `qemu:tst4:execution` | `qemu` | `smoke` | `qemu:tst4:execution` | `AUTOMATED` | 60 | 10 | `snapshot` | `quality` | `qemu` | processos, threads, IPC, wait e workqueue estao READY | executar um unico autoteste interno apos READY | todos os resultados estruturados passam e nenhum estado residual permanece | falha de resultado, invariante, fila, contador, timeout, protocolo ou QEMU | cria somente objetos temporarios dos self-tests existentes | cada self-test desfaz seus objetos e o harness valida as filas finais |
 | `qemu:tst4:memory-slab` | `qemu` | `smoke` | `qemu:tst4:memory-slab` | `AUTOMATED` | 30 | 5 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e paging, PMM, heap e SLAB estao READY | iniciar o guest em snapshot e enviar um unico RUN apos READY | o guest publica READY, HEARTBEAT, BEGIN e PASS, preservando o estado de memoria | falha de pre-condicao, invariante, contador, pagina, protocolo, heartbeat ou QEMU | cria um processo QEMU e recursos temporarios de memoria do autoteste | encerrar o QEMU via QMP e preservar manifesto, serial, logs e resultado |
@@ -7811,52 +7812,6 @@
 - `c:src/shell/shell_checks.c:shell_regcheck_validate_services`
 - `c:src/shell/shell_checks.c:shell_regcheck_validate_usb`
 - `c:src/shell/shell_checks.c:shell_regcheck_validate_usb_entry`
-- `c:src/wm/wm.c:draw_buttons_left`
-- `c:src/wm/wm.c:draw_buttons_right`
-- `c:src/wm/wm.c:str_len`
-- `c:src/wm/wm.c:wm_close_focused`
-- `c:src/wm/wm.c:wm_close_hosted_app`
-- `c:src/wm/wm.c:wm_create_window`
-- `c:src/wm/wm.c:wm_destroy_window`
-- `c:src/wm/wm.c:wm_draw_desktop`
-- `c:src/wm/wm.c:wm_draw_title_bar`
-- `c:src/wm/wm.c:wm_draw_window`
-- `c:src/wm/wm.c:wm_focus_next`
-- `c:src/wm/wm.c:wm_focus_prev`
-- `c:src/wm/wm.c:wm_focus_window`
-- `c:src/wm/wm.c:wm_get_config`
-- `c:src/wm/wm.c:wm_get_focused`
-- `c:src/wm/wm.c:wm_get_focused_id`
-- `c:src/wm/wm.c:wm_get_window`
-- `c:src/wm/wm.c:wm_gui_begin_drag`
-- `c:src/wm/wm.c:wm_gui_begin_resize`
-- `c:src/wm/wm.c:wm_gui_focus_prev`
-- `c:src/wm/wm.c:wm_gui_handle_mouse`
-- `c:src/wm/wm.c:wm_gui_handle_wheel`
-- `c:src/wm/wm.c:wm_gui_maximize_or_restore`
-- `c:src/wm/wm.c:wm_gui_minimize`
-- `c:src/wm/wm.c:wm_gui_point_in_content`
-- `c:src/wm/wm.c:wm_gui_point_in_title_bar`
-- `c:src/wm/wm.c:wm_gui_point_in_window`
-- `c:src/wm/wm.c:wm_gui_resize_edges_at`
-- `c:src/wm/wm.c:wm_gui_update_drag`
-- `c:src/wm/wm.c:wm_gui_update_interaction`
-- `c:src/wm/wm.c:wm_gui_update_resize`
-- `c:src/wm/wm.c:wm_handle_click`
-- `c:src/wm/wm.c:wm_handle_mouse`
-- `c:src/wm/wm.c:wm_init`
-- `c:src/wm/wm.c:wm_maximize_window`
-- `c:src/wm/wm.c:wm_minimize_window`
-- `c:src/wm/wm.c:wm_move_window`
-- `c:src/wm/wm.c:wm_reflow_display`
-- `c:src/wm/wm.c:wm_resize_window`
-- `c:src/wm/wm.c:wm_restore_window`
-- `c:src/wm/wm.c:wm_set_border_style`
-- `c:src/wm/wm.c:wm_set_btn_order`
-- `c:src/wm/wm.c:wm_set_btn_position`
-- `c:src/wm/wm.c:wm_set_show_title`
-- `c:src/wm/wm.c:wm_toggle_window`
-- `c:src/wm/wm.c:wm_update_cpu_stats`
 
 ## Aposentadas
 
