@@ -2,8 +2,10 @@
 #include <stdio.h>
 
 #include "apps/shell_checks.h"
+#include "core/app_loader.h"
 #include "core/log.h"
 #include "core/video.h"
+#include "fs/fs.h"
 
 #define HOST_COVERAGE_CAPACITY 2048U
 #define HOST_COVERAGE_LINE_SIZE 32U
@@ -11,6 +13,8 @@
 static uintptr_t coverage_addresses[HOST_COVERAGE_CAPACITY];
 static uint32_t coverage_count;
 static uint8_t coverage_active;
+static uint8_t fixture_fs_type = FS_TYPE_FAT32;
+static int fixture_loader_ready = 1;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -68,6 +72,19 @@ void log_print(log_level_t level, const char* module, const char* message) {
     (void)level;
     (void)module;
     (void)message;
+}
+
+uint8_t fs_get_type(void) {
+    return fixture_fs_type;
+}
+
+int app_loader_is_ready(void) {
+    return fixture_loader_ready;
+}
+
+void shell_checks_host_set_environment(uint8_t fs_type, int loader_ready) {
+    fixture_fs_type = fs_type;
+    fixture_loader_ready = loader_ready;
 }
 
 int main(void) {

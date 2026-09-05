@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6403 |
+| `COVERED` | 6414 |
 | `MANUAL` | 0 |
-| `PENDING` | 904 |
+| `PENDING` | 893 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -6118,9 +6118,9 @@
 | `c:src/shell/shell_checks.c:cmd_appcheck_loader` | `src/shell/shell_checks.c` | `cmd_appcheck_loader` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:cmd_appcheck_paths` | `src/shell/shell_checks.c` | `cmd_appcheck_paths` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:cmd_appcheck_pipes` | `src/shell/shell_checks.c` | `cmd_appcheck_pipes` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:cmd_appcheck_print_expected_result` | `src/shell/shell_checks.c` | `cmd_appcheck_print_expected_result` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:cmd_appcheck_print_result` | `src/shell/shell_checks.c` | `cmd_appcheck_print_result` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:cmd_appcheck_print_result_with_expectation` | `src/shell/shell_checks.c` | `cmd_appcheck_print_result_with_expectation` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_checks.c:cmd_appcheck_print_expected_result` | `src/shell/shell_checks.c` | `cmd_appcheck_print_expected_result` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_checks.c:cmd_appcheck_print_result` | `src/shell/shell_checks.c` | `cmd_appcheck_print_result` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_checks.c:cmd_appcheck_print_result_with_expectation` | `src/shell/shell_checks.c` | `cmd_appcheck_print_result_with_expectation` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:cmd_q2check` | `src/shell/shell_checks.c` | `cmd_q2check` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:cmd_regcheck` | `src/shell/shell_checks.c` | `cmd_regcheck` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:cmd_usertest` | `src/shell/shell_checks.c` | `cmd_usertest` | `shell` | `PENDING` | 0 |
@@ -6129,7 +6129,7 @@
 | `c:src/shell/shell_checks.c:shell_appcheck_finish_migration` | `src/shell/shell_checks.c` | `shell_appcheck_finish_migration` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_appcheck_has_pending_work` | `src/shell/shell_checks.c` | `shell_appcheck_has_pending_work` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_appcheck_is_compact_job` | `src/shell/shell_checks.c` | `shell_appcheck_is_compact_job` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_checks.c:shell_appcheck_label_is_unavailable` | `src/shell/shell_checks.c` | `shell_appcheck_label_is_unavailable` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_checks.c:shell_appcheck_label_is_unavailable` | `src/shell/shell_checks.c` | `shell_appcheck_label_is_unavailable` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_appcheck_migration_is_valid` | `src/shell/shell_checks.c` | `shell_appcheck_migration_is_valid` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_appcheck_phase_name` | `src/shell/shell_checks.c` | `shell_appcheck_phase_name` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_appcheck_print_summary` | `src/shell/shell_checks.c` | `shell_appcheck_print_summary` | `shell` | `COVERED` | 1 |
@@ -6156,11 +6156,11 @@
 | `c:src/shell/shell_checks.c:shell_blkcheck_prepare_fixture` | `src/shell/shell_checks.c` | `shell_blkcheck_prepare_fixture` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_blkcheck_save_inventory` | `src/shell/shell_checks.c` | `shell_blkcheck_save_inventory` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_blkcheck_validate_fixture` | `src/shell/shell_checks.c` | `shell_blkcheck_validate_fixture` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_build_demo_image` | `src/shell/shell_checks.c` | `shell_build_demo_image` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_build_input_test_image` | `src/shell/shell_checks.c` | `shell_build_input_test_image` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_build_pagefault_fault_image` | `src/shell/shell_checks.c` | `shell_build_pagefault_fault_image` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_build_regcheck_input_image` | `src/shell/shell_checks.c` | `shell_build_regcheck_input_image` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_build_vma_test_image` | `src/shell/shell_checks.c` | `shell_build_vma_test_image` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_checks.c:shell_build_demo_image` | `src/shell/shell_checks.c` | `shell_build_demo_image` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_checks.c:shell_build_input_test_image` | `src/shell/shell_checks.c` | `shell_build_input_test_image` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_checks.c:shell_build_pagefault_fault_image` | `src/shell/shell_checks.c` | `shell_build_pagefault_fault_image` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_checks.c:shell_build_regcheck_input_image` | `src/shell/shell_checks.c` | `shell_build_regcheck_input_image` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_checks.c:shell_build_vma_test_image` | `src/shell/shell_checks.c` | `shell_build_vma_test_image` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_checks_handle_job_key` | `src/shell/shell_checks.c` | `shell_checks_handle_job_key` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_checks_handle_loader_result` | `src/shell/shell_checks.c` | `shell_checks_handle_loader_result` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_checks_host_test_contracts` | `src/shell/shell_checks.c` | `shell_checks_host_test_contracts` | `shell` | `COVERED` | 1 |
@@ -6187,7 +6187,7 @@
 | `c:src/shell/shell_checks.c:shell_dispatch_cmd_usertest` | `src/shell/shell_checks.c` | `shell_dispatch_cmd_usertest` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_q2check_finish` | `src/shell/shell_checks.c` | `shell_q2check_finish` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_q2check_handle_user_test_result` | `src/shell/shell_checks.c` | `shell_q2check_handle_user_test_result` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_q2check_print_result` | `src/shell/shell_checks.c` | `shell_q2check_print_result` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_checks.c:shell_q2check_print_result` | `src/shell/shell_checks.c` | `shell_q2check_print_result` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_q2check_reset` | `src/shell/shell_checks.c` | `shell_q2check_reset` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_q2check_start_fault` | `src/shell/shell_checks.c` | `shell_q2check_start_fault` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_q2check_validate_cleanup` | `src/shell/shell_checks.c` | `shell_q2check_validate_cleanup` | `shell` | `PENDING` | 0 |
@@ -6201,7 +6201,7 @@
 | `c:src/shell/shell_checks.c:shell_regcheck_prepare_pending` | `src/shell/shell_checks.c` | `shell_regcheck_prepare_pending` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_regcheck_prepare_progress` | `src/shell/shell_checks.c` | `shell_regcheck_prepare_progress` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_regcheck_prepare_step` | `src/shell/shell_checks.c` | `shell_regcheck_prepare_step` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_regcheck_print_failure` | `src/shell/shell_checks.c` | `shell_regcheck_print_failure` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_checks.c:shell_regcheck_print_failure` | `src/shell/shell_checks.c` | `shell_regcheck_print_failure` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_regcheck_reset` | `src/shell/shell_checks.c` | `shell_regcheck_reset` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_regcheck_run_full_checks` | `src/shell/shell_checks.c` | `shell_regcheck_run_full_checks` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_regcheck_same_device` | `src/shell/shell_checks.c` | `shell_regcheck_same_device` | `shell` | `COVERED` | 1 |
@@ -7981,15 +7981,11 @@
 - `c:src/shell/shell_checks.c:cmd_appcheck_loader`
 - `c:src/shell/shell_checks.c:cmd_appcheck_paths`
 - `c:src/shell/shell_checks.c:cmd_appcheck_pipes`
-- `c:src/shell/shell_checks.c:cmd_appcheck_print_expected_result`
-- `c:src/shell/shell_checks.c:cmd_appcheck_print_result`
-- `c:src/shell/shell_checks.c:cmd_appcheck_print_result_with_expectation`
 - `c:src/shell/shell_checks.c:cmd_q2check`
 - `c:src/shell/shell_checks.c:cmd_regcheck`
 - `c:src/shell/shell_checks.c:cmd_usertest`
 - `c:src/shell/shell_checks.c:shell_appcheck_fault_is_valid`
 - `c:src/shell/shell_checks.c:shell_appcheck_finish_migration`
-- `c:src/shell/shell_checks.c:shell_appcheck_label_is_unavailable`
 - `c:src/shell/shell_checks.c:shell_appcheck_migration_is_valid`
 - `c:src/shell/shell_checks.c:shell_appcheck_start_migration`
 - `c:src/shell/shell_checks.c:shell_appcheck_vma_is_valid`
@@ -8005,11 +8001,6 @@
 - `c:src/shell/shell_checks.c:shell_blkcheck_prepare_fixture`
 - `c:src/shell/shell_checks.c:shell_blkcheck_save_inventory`
 - `c:src/shell/shell_checks.c:shell_blkcheck_validate_fixture`
-- `c:src/shell/shell_checks.c:shell_build_demo_image`
-- `c:src/shell/shell_checks.c:shell_build_input_test_image`
-- `c:src/shell/shell_checks.c:shell_build_pagefault_fault_image`
-- `c:src/shell/shell_checks.c:shell_build_regcheck_input_image`
-- `c:src/shell/shell_checks.c:shell_build_vma_test_image`
 - `c:src/shell/shell_checks.c:shell_checks_handle_job_key`
 - `c:src/shell/shell_checks.c:shell_checks_handle_loader_result`
 - `c:src/shell/shell_checks.c:shell_checks_job_drain`
@@ -8025,7 +8016,6 @@
 - `c:src/shell/shell_checks.c:shell_dispatch_cmd_usertest`
 - `c:src/shell/shell_checks.c:shell_q2check_finish`
 - `c:src/shell/shell_checks.c:shell_q2check_handle_user_test_result`
-- `c:src/shell/shell_checks.c:shell_q2check_print_result`
 - `c:src/shell/shell_checks.c:shell_q2check_start_fault`
 - `c:src/shell/shell_checks.c:shell_q2check_validate_cleanup`
 - `c:src/shell/shell_checks.c:shell_q2check_validate_fault`
@@ -8036,7 +8026,6 @@
 - `c:src/shell/shell_checks.c:shell_regcheck_prepare_pending`
 - `c:src/shell/shell_checks.c:shell_regcheck_prepare_progress`
 - `c:src/shell/shell_checks.c:shell_regcheck_prepare_step`
-- `c:src/shell/shell_checks.c:shell_regcheck_print_failure`
 - `c:src/shell/shell_checks.c:shell_regcheck_run_full_checks`
 - `c:src/shell/shell_checks.c:shell_regcheck_start_image`
 - `c:src/shell/shell_checks.c:shell_regcheck_validate_acpi`

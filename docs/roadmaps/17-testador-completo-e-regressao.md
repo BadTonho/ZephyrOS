@@ -23,11 +23,26 @@ mantém 156 casos `AUTOMATED`; após os incrementos de Shell, RTC,
 processos/threads, FAT32, update U3/U4, os contratos remotos ZSYS e o
 repositório remoto de aplicativos, dos helpers de pacotes do Shell, da
 interface App Store e dos relatórios de rede do Shell, registra 7.307
-superfícies, 6.403 `COVERED` e 904
+superfícies, 6.414 `COVERED` e 893
 `PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
 Isso não significa declarar hardware físico validado sem equipamento.
+
+### Incremento Shell/checks e fixtures ZAPP — 2026-09-05
+
+- [x] A fixture host-only `host:shell:checks` passou a exercitar diretamente
+      os formatadores de resultado, a classificação de recursos opcionais e a
+      construção das imagens ZAPP de demonstração, VMA, page fault, entrada e
+      cancelamento.
+- [x] Foram validados os estados `FS_TYPE_NONE`/loader indisponível, os
+      formatos de imagem e seus limites estruturais, sem iniciar processos,
+      acessar armazenamento ou depender de hardware real.
+- [x] `make test-shell-checks-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
+      passou com cobertura dinâmica real. A sincronização cobriu 11
+      superfícies novas de `src/shell/shell_checks.c`; o catálogo registra
+      7.307 superfícies, 6.414 `COVERED`, 893 `PENDING` e 158 casos. As
+      pendências restantes continuam explícitas.
 
 ### Incremento Shell/UI App Store — 2026-09-05
 

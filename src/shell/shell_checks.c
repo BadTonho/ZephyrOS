@@ -3949,6 +3949,9 @@ void shell_dispatch_cmd_usertest(const char* arguments) {
 }
 
 #ifdef ZEPHYROS_HOST_TEST
+extern void shell_checks_host_set_environment(uint8_t fs_type,
+                                              int loader_ready);
+
 int shell_checks_host_test_contracts(void) {
     static const char* app_phases[SHELL_APPCHECK_PHASE_COUNT] = {
         "api", "arquivos", "pipes", "caminhos", "dispositivos", "ipc",
@@ -4200,6 +4203,80 @@ int shell_checks_host_test_contracts(void) {
     if (shell_demo_emit_jne_near(code, &offset) != 2U || offset != 6U ||
         code[0] != 0x0FU || code[1] != 0x85U) {
         failures++;
+    }
+
+    shell_checks_host_set_environment(FS_TYPE_NONE, 0);
+    if (!shell_appcheck_label_is_unavailable("file_service_indisponivel") ||
+        !shell_appcheck_label_is_unavailable("loader_indisponivel") ||
+        shell_appcheck_label_is_unavailable("outro")) {
+        failures++;
+    }
+    shell_checks_host_set_environment(FS_TYPE_FAT32, 1);
+    if (shell_appcheck_label_is_unavailable("file_service_indisponivel") ||
+        shell_appcheck_label_is_unavailable("loader_indisponivel")) {
+        failures++;
+    }
+    shell_appcheck_summary_reset(0U);
+    cmd_appcheck_print_result("resultado", OK);
+    cmd_appcheck_print_expected_result("esperado", OK, OK);
+    cmd_appcheck_print_result_with_expectation("com expectativa", OK, OK);
+    shell_q2check_print_result("q2check", OK);
+    shell_regcheck_print_failure("falha", ERR_STATE);
+
+    {
+        app_image_header_t image_header;
+        uint32_t image_size;
+
+        image_size = shell_build_demo_image();
+        kmemcpy(&image_header, appcheck_demo_image,
+                APP_IMAGE_HEADER_SIZE);
+        if (!image_size || image_header.code_size == 0U ||
+            image_size != image_header.data_offset ||
+            image_header.magic[0] != 'Z' || image_header.magic[1] != 'A' ||
+            image_header.magic[2] != 'P' || image_header.magic[3] != 'P') {
+            failures++;
+        }
+        image_size = shell_build_vma_test_image();
+        kmemcpy(&image_header, appcheck_demo_image,
+                APP_IMAGE_HEADER_SIZE);
+        if (!image_size || image_header.code_size == 0U ||
+            image_size != image_header.data_offset + image_header.data_size ||
+            image_header.data_size == 0U) {
+            failures++;
+        }
+        image_size = shell_build_pagefault_fault_image();
+        kmemcpy(&image_header, appcheck_demo_image,
+                APP_IMAGE_HEADER_SIZE);
+        if (!image_size || image_header.code_size == 0U ||
+            image_size != image_header.data_offset ||
+            image_header.data_size != 0U) {
+            failures++;
+        }
+        image_size = shell_build_input_test_image(0U);
+        kmemcpy(&image_header, appcheck_demo_image,
+                APP_IMAGE_HEADER_SIZE);
+        if (!image_size || image_header.code_size == 0U ||
+            image_size <= image_header.data_offset ||
+            image_header.data_size == 0U) {
+            failures++;
+        }
+        image_size = shell_build_input_test_image(1U);
+        kmemcpy(&image_header, appcheck_demo_image,
+                APP_IMAGE_HEADER_SIZE);
+        if (!image_size || image_header.code_size == 0U ||
+            image_size <= image_header.data_offset ||
+            image_header.data_size == 0U) {
+            failures++;
+        }
+        image_size = shell_build_regcheck_input_image(
+            SHELL_REGCHECK_SCANCODE_F11);
+        kmemcpy(&image_header, appcheck_demo_image,
+                APP_IMAGE_HEADER_SIZE);
+        if (!image_size || image_header.code_size == 0U ||
+            image_size <= image_header.data_offset ||
+            image_header.data_size == 0U) {
+            failures++;
+        }
     }
 
     shell_appcheck_summary_reset(0U);
