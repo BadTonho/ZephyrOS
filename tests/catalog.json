@@ -137216,9 +137216,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_regcheck_valid_acpi_madt_entry",
@@ -137330,9 +137333,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_regcheck_validate_devices",
@@ -137384,9 +137390,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_regcheck_validate_packages",
@@ -137438,9 +137447,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_checks.c:shell_regcheck_validate_scheduler",
@@ -169829,7 +169841,7 @@
         "hardware": "estado ACPI, USB e dispositivos estatico"
       },
       "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "executar contratos internos de fases, resumos, limites de falhas, estados de job, Q2Check de faults e limpeza, comparacao de inventarios, validacao de tabelas ACPI/MADT, validacao de resultados de migracao, VMA lazy e page fault, verificacao de imagens ZAPP e limpeza limitada",
+      "action": "executar contratos internos de fases, resumos, limites de falhas, estados de job, Q2Check de faults e limpeza, RegCheck de processos, cleanup, resultados do loader e imagens, comparacao de inventarios, validacao de tabelas ACPI/MADT, validacao de resultados de migracao, VMA lazy e page fault, verificacao de imagens ZAPP e limpeza limitada",
       "expected": "helpers preservam nomes, estados, codigos canonicos, limites, bytes, snapshots de paging e limpeza esperados",
       "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
       "effects": "somente estruturas estaticas da fixture host; nenhum hardware, armazenamento ou processo real",
@@ -169889,8 +169901,12 @@
         "c:src/shell/shell_checks.c:shell_regcheck_reset",
         "c:src/shell/shell_checks.c:shell_regcheck_same_device",
         "c:src/shell/shell_checks.c:shell_regcheck_same_usb",
+        "c:src/shell/shell_checks.c:shell_regcheck_start_image",
         "c:src/shell/shell_checks.c:shell_regcheck_valid_acpi_madt_entry",
         "c:src/shell/shell_checks.c:shell_regcheck_valid_acpi_table",
+        "c:src/shell/shell_checks.c:shell_regcheck_validate_cleanup",
+        "c:src/shell/shell_checks.c:shell_regcheck_validate_loader_result",
+        "c:src/shell/shell_checks.c:shell_regcheck_validate_processes",
         "c:src/shell/shell_checks.c:shell_remove_image",
         "c:src/shell/shell_checks.c:shell_verify_image"
       ],
