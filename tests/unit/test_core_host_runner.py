@@ -378,6 +378,17 @@ class CoreHostRunnerTests(unittest.TestCase):
         self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
                       "test_filemanager_host.c", sources)
 
+    def test_taskmanager_case_has_contract_fixture_sources(self):
+        result_dir, binary, sources, suite = core_host_runner.case_configuration(
+            "host:shell:taskmanager")
+        self.assertEqual(suite, "taskmanager-host")
+        self.assertEqual(result_dir, core_host_runner.TASKMANAGER_RESULT_DIR)
+        self.assertEqual(binary, core_host_runner.TASKMANAGER_BINARY)
+        self.assertIn(core_host_runner.ROOT / "src" / "shell" /
+                      "taskmanager.c", sources)
+        self.assertIn(core_host_runner.ROOT / "tests" / "unit" /
+                      "test_taskmanager_host.c", sources)
+
     def test_syscall_case_has_dispatcher_fixture_sources(self):
         result_dir, binary, sources, suite = core_host_runner.case_configuration(
             "host:core:syscall")

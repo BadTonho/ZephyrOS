@@ -569,6 +569,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -578,7 +579,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_handle_key",
@@ -596,6 +597,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -605,7 +607,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_handle_mouse",
@@ -679,6 +681,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -688,7 +691,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_process_command",
@@ -706,6 +709,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -715,7 +719,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_report_app_loader_result",
@@ -733,6 +737,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -742,7 +747,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_report_user_test_result",
@@ -760,6 +765,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -769,7 +775,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_update_hosted_terminal",
@@ -787,6 +793,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -796,7 +803,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_checks.h:shell_checks_host_test_contracts",
@@ -3597,6 +3604,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -3606,7 +3614,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible",
@@ -3648,6 +3656,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -3657,7 +3666,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_reset_input",
@@ -3675,6 +3684,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -3684,7 +3694,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal",
@@ -3702,6 +3712,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -3711,7 +3722,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal",
@@ -3757,6 +3768,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -3766,7 +3778,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/taskmanager.h:taskmgr_close",
@@ -4059,6 +4071,28 @@
       "kind": "api_function",
       "source": "src/include/apps/taskmanager.h",
       "symbol": "taskmgr_run",
+      "linkage": "public",
+      "owner": "apps",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst5:apps",
+        "qemu:tst5:shell"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
+      "id": "api:src/include/apps/taskmanager_test.h:taskmgr_host_test_contracts",
+      "kind": "api_function",
+      "source": "src/include/apps/taskmanager_test.h",
+      "symbol": "taskmgr_host_test_contracts",
       "linkage": "public",
       "owner": "apps",
       "layer": "public-header",
@@ -22169,11 +22203,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering",
@@ -22191,11 +22226,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering",
@@ -22213,11 +22249,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_get_device",
@@ -22235,11 +22272,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_get_device_at",
@@ -22257,11 +22295,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_get_device_by_id",
@@ -22279,11 +22318,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_get_device_count",
@@ -22301,11 +22341,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_init",
@@ -22323,11 +22364,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_read",
@@ -22345,11 +22387,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_write",
@@ -22367,11 +22410,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/drivers/rng.h:rng_get_bytes",
@@ -134799,6 +134843,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -134808,7 +134853,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell.c:shell_handle_mouse",
@@ -134868,6 +134913,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -134877,7 +134923,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell.c:shell_process_command",
@@ -135064,6 +135110,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -135071,7 +135118,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell.c:shell_runtime_resume_terminal",
@@ -135156,6 +135203,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -135163,7 +135211,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell.c:shell_update_hosted_terminal",
@@ -152292,9 +152340,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:draw_box",
@@ -152310,9 +152361,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:draw_header",
@@ -152346,9 +152400,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:draw_memory",
@@ -152420,10 +152477,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:print_at",
@@ -152439,9 +152497,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:print_num_at",
@@ -152457,9 +152518,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_clamp_window",
@@ -152475,9 +152539,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_close",
@@ -152511,9 +152578,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_find_thread_by_row",
@@ -152547,9 +152617,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_aggregate_load",
@@ -152567,10 +152640,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_append_number",
@@ -152588,10 +152662,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_append_text",
@@ -152609,10 +152684,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_build_proc_path",
@@ -152630,10 +152706,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_collect_process_views_once",
@@ -152651,10 +152728,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_color",
@@ -152693,10 +152771,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_decimal_name",
@@ -152714,10 +152793,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_delete_selected",
@@ -152808,9 +152888,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_draw_history_graph",
@@ -152826,9 +152909,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_draw_memory",
@@ -152864,10 +152950,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_draw_process_details",
@@ -152885,10 +152972,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_draw_processes",
@@ -152945,10 +153033,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_draw_tabs",
@@ -152966,10 +153055,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_draw_threads",
@@ -153026,10 +153116,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_find_process_view_by_pid",
@@ -153045,9 +153136,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_handle_key",
@@ -153140,10 +153234,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_hit",
@@ -153159,9 +153254,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_minimize",
@@ -153197,10 +153295,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_parse_status",
@@ -153239,10 +153338,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_process_list_y",
@@ -153260,10 +153360,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_process_visible_rows",
@@ -153281,10 +153382,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_read_status_value",
@@ -153344,10 +153446,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_reset_history",
@@ -153365,10 +153468,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_restart_selected",
@@ -153422,10 +153526,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_scroll_selected",
@@ -153441,9 +153546,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_state_color",
@@ -153461,10 +153569,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_update",
@@ -153502,9 +153611,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_handle_key",
@@ -153541,6 +153653,27 @@
       "status": "PENDING",
       "case_ids": [],
       "tags": []
+    },
+    {
+      "id": "c:src/shell/taskmanager.c:taskmgr_host_test_contracts",
+      "kind": "c_function",
+      "source": "src/shell/taskmanager.c",
+      "symbol": "taskmgr_host_test_contracts",
+      "linkage": "external",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_hosted_close",
@@ -153731,9 +153864,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_percent",
@@ -153751,10 +153887,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_print_hex_at",
@@ -153770,9 +153907,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_process_state_name",
@@ -153788,9 +153928,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_process_tick_usage",
@@ -153824,9 +153967,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_redraw_after_menu_close",
@@ -153896,9 +154042,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_update_cpu_metrics",
@@ -158957,7 +159106,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:app",
@@ -158979,7 +159128,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:appcheck",
@@ -159003,7 +159152,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:beep",
@@ -159025,7 +159174,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:blkcheck",
@@ -159049,7 +159198,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:blkstat",
@@ -159071,7 +159220,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:cache",
@@ -159093,7 +159242,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:cachestat",
@@ -159115,7 +159264,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:cat",
@@ -159137,7 +159286,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:cd",
@@ -159159,7 +159308,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:clear",
@@ -159181,7 +159330,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:clock",
@@ -159205,7 +159354,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:compress",
@@ -159227,7 +159376,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:cpu",
@@ -159249,7 +159398,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:desktop",
@@ -159271,7 +159420,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:devcheck",
@@ -159295,7 +159444,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:device-info",
@@ -159317,7 +159466,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:device-scan",
@@ -159339,7 +159488,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:devices",
@@ -159361,7 +159510,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:display",
@@ -159383,7 +159532,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:echo",
@@ -159405,7 +159554,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:edit",
@@ -159427,7 +159576,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:explorer",
@@ -159449,7 +159598,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:grep",
@@ -159471,7 +159620,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:guimode",
@@ -159493,7 +159642,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:guitest",
@@ -159515,7 +159664,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:health",
@@ -159539,7 +159688,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:help",
@@ -159561,7 +159710,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:http",
@@ -159583,7 +159732,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:icons",
@@ -159605,7 +159754,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:index",
@@ -159627,7 +159776,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:irqstat",
@@ -159651,7 +159800,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:job",
@@ -159673,7 +159822,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:kill",
@@ -159695,7 +159844,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:kmetrics",
@@ -159719,7 +159868,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:log",
@@ -159741,7 +159890,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:ls",
@@ -159763,7 +159912,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:melody",
@@ -159785,7 +159934,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:mem",
@@ -159807,7 +159956,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:memcheck",
@@ -159831,7 +159980,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:mount",
@@ -159853,7 +160002,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:mouse",
@@ -159875,7 +160024,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:net",
@@ -159899,7 +160048,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:netstat",
@@ -159921,7 +160070,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:nslookup",
@@ -159943,7 +160092,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:pagefault",
@@ -159965,7 +160114,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:ping",
@@ -159987,7 +160136,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:pipetest",
@@ -160009,7 +160158,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:pkg",
@@ -160031,7 +160180,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:pkgcheck",
@@ -160053,7 +160202,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:play",
@@ -160075,7 +160224,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:power",
@@ -160097,7 +160246,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:poweroff",
@@ -160119,7 +160268,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:proccheck",
@@ -160143,7 +160292,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:procs",
@@ -160165,7 +160314,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:pwd",
@@ -160187,7 +160336,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:q2check",
@@ -160209,7 +160358,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:reboot",
@@ -160231,7 +160380,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:regcheck",
@@ -160255,7 +160404,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:route",
@@ -160279,7 +160428,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:schedcheck",
@@ -160303,7 +160452,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:search",
@@ -160325,7 +160474,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:selecttest",
@@ -160347,7 +160496,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:settings",
@@ -160369,7 +160518,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:shutdown",
@@ -160391,7 +160540,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:sigtest",
@@ -160413,7 +160562,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:skbstat",
@@ -160435,7 +160584,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:slabinfo",
@@ -160457,7 +160606,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:slabtest",
@@ -160481,7 +160630,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:sockstat",
@@ -160505,7 +160654,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:stack",
@@ -160527,7 +160676,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:stats",
@@ -160549,7 +160698,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:stop",
@@ -160571,7 +160720,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:storage",
@@ -160595,7 +160744,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:store",
@@ -160617,7 +160766,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:sync",
@@ -160639,7 +160788,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:taskcfg",
@@ -160661,7 +160810,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:taskmgr",
@@ -160683,7 +160832,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:threads",
@@ -160705,7 +160854,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:threadtest",
@@ -160727,7 +160876,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:timer",
@@ -160751,7 +160900,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:tls",
@@ -160775,7 +160924,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:update",
@@ -160797,7 +160946,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:updater",
@@ -160819,7 +160968,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:uptime",
@@ -160841,7 +160990,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:usb",
@@ -160863,7 +161012,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:usertest",
@@ -160885,7 +161034,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:vfs",
@@ -160909,7 +161058,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:view",
@@ -160931,7 +161080,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:vmamap",
@@ -160953,7 +161102,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:wait",
@@ -160977,7 +161126,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:wifi",
@@ -160999,7 +161148,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:wm",
@@ -161021,7 +161170,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:workq",
@@ -161045,7 +161194,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "command:wqinfo",
@@ -161069,7 +161218,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "syscall:0",
@@ -166136,6 +166285,16 @@
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
       "surface_ids": [
+        "api:src/include/drivers/pci.h:pci_enable_bus_mastering",
+        "api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering",
+        "api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering",
+        "api:src/include/drivers/pci.h:pci_get_device",
+        "api:src/include/drivers/pci.h:pci_get_device_at",
+        "api:src/include/drivers/pci.h:pci_get_device_by_id",
+        "api:src/include/drivers/pci.h:pci_get_device_count",
+        "api:src/include/drivers/pci.h:pci_init",
+        "api:src/include/drivers/pci.h:pci_read",
+        "api:src/include/drivers/pci.h:pci_write",
         "c:src/drivers/pci.c:inl",
         "c:src/drivers/pci.c:outl",
         "c:src/drivers/pci.c:pci_enable_bus_mastering",
@@ -170115,15 +170274,31 @@
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
       "surface_ids": [
+        "api:src/include/apps/shell.h:shell_handle_app_request",
+        "api:src/include/apps/shell.h:shell_handle_key",
         "api:src/include/apps/shell.h:shell_handle_mouse",
         "api:src/include/apps/shell.h:shell_init",
+        "api:src/include/apps/shell.h:shell_print_prompt",
+        "api:src/include/apps/shell.h:shell_process_command",
+        "api:src/include/apps/shell.h:shell_report_app_loader_result",
+        "api:src/include/apps/shell.h:shell_report_user_test_result",
+        "api:src/include/apps/shell.h:shell_update_hosted_terminal",
         "api:src/include/apps/shell_runtime.h:shell_runtime_finish_command",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_reset_input",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal",
         "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal_for_scene",
+        "c:src/shell/shell.c:shell_handle_key",
         "c:src/shell/shell.c:shell_handle_mouse",
         "c:src/shell/shell.c:shell_init",
+        "c:src/shell/shell.c:shell_print_prompt",
         "c:src/shell/shell.c:shell_redraw_after_overlay_close",
         "c:src/shell/shell.c:shell_runtime_finish_command",
-        "c:src/shell/shell.c:shell_runtime_suspend_terminal"
+        "c:src/shell/shell.c:shell_runtime_reset_input",
+        "c:src/shell/shell.c:shell_runtime_suspend_terminal",
+        "c:src/shell/shell.c:shell_should_show_prompt"
       ],
       "tags": [
         "host",
@@ -171193,6 +171368,83 @@
         "limits",
         "coverage"
       ]
+    },
+    {
+      "id": "host:shell:taskmanager",
+      "scenario": "Contratos deterministas do Task Manager sem processo ou hardware reais",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "hardware": "nenhum"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "exercitar parsing de procfs, formatacao, limites de caminho, estados, metricas, selecao, layout e desenho com doubles estaticos",
+      "expected": "helpers preservam limites, estados, selecao, metricas e primitivas de apresentacao sem efeitos externos",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente buffers e estado estaticos do processo host; nenhum processo, VFS, disco, rede ou hardware real",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "surface_ids": [
+        "c:src/shell/taskmanager.c:draw_bar",
+        "c:src/shell/taskmanager.c:draw_box",
+        "c:src/shell/taskmanager.c:draw_hline",
+        "c:src/shell/taskmanager.c:num_digits",
+        "c:src/shell/taskmanager.c:print_at",
+        "c:src/shell/taskmanager.c:print_num_at",
+        "c:src/shell/taskmanager.c:taskmgr_clamp_window",
+        "c:src/shell/taskmanager.c:taskmgr_count_process_states",
+        "c:src/shell/taskmanager.c:taskmgr_get_work_area",
+        "c:src/shell/taskmanager.c:taskmgr_gui_aggregate_load",
+        "c:src/shell/taskmanager.c:taskmgr_gui_append_number",
+        "c:src/shell/taskmanager.c:taskmgr_gui_append_text",
+        "c:src/shell/taskmanager.c:taskmgr_gui_build_proc_path",
+        "c:src/shell/taskmanager.c:taskmgr_gui_collect_process_views_once",
+        "c:src/shell/taskmanager.c:taskmgr_gui_copy_text",
+        "c:src/shell/taskmanager.c:taskmgr_gui_decimal_name",
+        "c:src/shell/taskmanager.c:taskmgr_gui_draw_hex",
+        "c:src/shell/taskmanager.c:taskmgr_gui_draw_history_graph",
+        "c:src/shell/taskmanager.c:taskmgr_gui_draw_num",
+        "c:src/shell/taskmanager.c:taskmgr_gui_draw_process_details",
+        "c:src/shell/taskmanager.c:taskmgr_gui_draw_surface",
+        "c:src/shell/taskmanager.c:taskmgr_gui_draw_tabs",
+        "c:src/shell/taskmanager.c:taskmgr_gui_find_process_view",
+        "c:src/shell/taskmanager.c:taskmgr_gui_find_process_view_by_pid",
+        "c:src/shell/taskmanager.c:taskmgr_gui_has_side_details",
+        "c:src/shell/taskmanager.c:taskmgr_gui_hit",
+        "c:src/shell/taskmanager.c:taskmgr_gui_parse_state",
+        "c:src/shell/taskmanager.c:taskmgr_gui_process_list_height",
+        "c:src/shell/taskmanager.c:taskmgr_gui_process_list_y",
+        "c:src/shell/taskmanager.c:taskmgr_gui_process_visible_rows",
+        "c:src/shell/taskmanager.c:taskmgr_gui_refresh_process_views",
+        "c:src/shell/taskmanager.c:taskmgr_gui_reset_history",
+        "c:src/shell/taskmanager.c:taskmgr_gui_sample_history",
+        "c:src/shell/taskmanager.c:taskmgr_gui_scroll_selected",
+        "c:src/shell/taskmanager.c:taskmgr_gui_state_color",
+        "c:src/shell/taskmanager.c:taskmgr_gui_visible_rows",
+        "c:src/shell/taskmanager.c:taskmgr_host_test_contracts",
+        "c:src/shell/taskmanager.c:taskmgr_pages_used",
+        "c:src/shell/taskmanager.c:taskmgr_percent",
+        "c:src/shell/taskmanager.c:taskmgr_print_hex_at",
+        "c:src/shell/taskmanager.c:taskmgr_process_state_name",
+        "c:src/shell/taskmanager.c:taskmgr_process_type",
+        "c:src/shell/taskmanager.c:taskmgr_thread_state_name"
+      ],
+      "tags": [
+        "host",
+        "shell",
+        "taskmanager",
+        "procfs",
+        "limits",
+        "coverage"
+      ],
+      "status": "AUTOMATED"
     },
     {
       "id": "host:shell:wifi",
@@ -175867,6 +176119,7 @@
         "api:src/include/apps/taskmanager.h:taskmgr_open_gui",
         "api:src/include/apps/taskmanager.h:taskmgr_refresh",
         "api:src/include/apps/taskmanager.h:taskmgr_run",
+        "api:src/include/apps/taskmanager_test.h:taskmgr_host_test_contracts",
         "api:src/include/core/app_loader.h:app_loader_build_launch_info",
         "api:src/include/core/app_loader.h:app_loader_cancel_foreground",
         "api:src/include/core/app_loader.h:app_loader_get_foreground_pid",
@@ -178489,6 +178742,7 @@
         "api:src/include/apps/taskmanager.h:taskmgr_open_gui",
         "api:src/include/apps/taskmanager.h:taskmgr_refresh",
         "api:src/include/apps/taskmanager.h:taskmgr_run",
+        "api:src/include/apps/taskmanager_test.h:taskmgr_host_test_contracts",
         "api:src/include/core/app_loader.h:app_loader_build_launch_info",
         "api:src/include/core/app_loader.h:app_loader_cancel_foreground",
         "api:src/include/core/app_loader.h:app_loader_get_foreground_pid",

@@ -1,4 +1,5 @@
 #include "apps/taskmanager.h"
+#include "apps/taskmanager_test.h"
 #include "core/video.h"
 #include "core/keyboard.h"
 #include "core/timer.h"
@@ -2924,6 +2925,192 @@ int taskmgr_gui_handle_mouse(mouse_event_t* event) {
 int taskmgr_is_open(void) {
     return is_open || gui_open;
 }
+
+#ifdef ZEPHYROS_HOST_TEST
+int taskmgr_host_test_contracts(void) {
+    int failures = 0;
+    char buffer[128];
+    char small[8];
+    uint32_t length = 0U;
+    process_state_t process_state = PROCESS_STATE_UNUSED;
+    taskmgr_process_view_t view;
+    tb_rect_t work_area;
+    uint32_t ready;
+    uint32_t running;
+    uint32_t blocked;
+    uint32_t zombie;
+    display_metrics_t metrics;
+
+#define TASKMGR_EXPECT(condition) do { if (!(condition)) failures++; } while (0)
+
+    taskmgr_gui_append_text(buffer, sizeof(buffer), &length, "proc");
+    TASKMGR_EXPECT(kstrcmp(buffer, "proc") == 0 && length == 4U);
+    TASKMGR_EXPECT(taskmgr_gui_append_text(0, sizeof(buffer), &length, "x") ==
+                   ERR_NULL);
+    length = 0U;
+    TASKMGR_EXPECT(taskmgr_gui_append_text(small, 3U, &length, "abc") ==
+                   ERR_OVERFLOW);
+    length = 0U;
+    TASKMGR_EXPECT(taskmgr_gui_append_number(buffer, sizeof(buffer), &length,
+                                             4294967295U) == OK);
+    TASKMGR_EXPECT(kstrcmp(buffer, "4294967295") == 0);
+    TASKMGR_EXPECT(taskmgr_gui_build_proc_path(buffer, sizeof(buffer), 42U,
+                                               "/status") == OK);
+    TASKMGR_EXPECT(kstrcmp(buffer, "/proc/42/status") == 0);
+    TASKMGR_EXPECT(taskmgr_gui_build_proc_path(buffer, 5U, 42U, "/status") ==
+                   ERR_OVERFLOW);
+    TASKMGR_EXPECT(taskmgr_gui_build_proc_path(0, sizeof(buffer), 1U, "") ==
+                   ERR_NULL);
+
+    TASKMGR_EXPECT(taskmgr_gui_parse_state("unused", &process_state) == OK &&
+                   process_state == PROCESS_STATE_UNUSED);
+    TASKMGR_EXPECT(taskmgr_gui_parse_state("ready", &process_state) == OK &&
+                   process_state == PROCESS_STATE_READY);
+    TASKMGR_EXPECT(taskmgr_gui_parse_state("running", &process_state) == OK &&
+                   process_state == PROCESS_STATE_RUNNING);
+    TASKMGR_EXPECT(taskmgr_gui_parse_state("blocked", &process_state) == OK &&
+                   process_state == PROCESS_STATE_BLOCKED);
+    TASKMGR_EXPECT(taskmgr_gui_parse_state("zombie", &process_state) == OK &&
+                   process_state == PROCESS_STATE_ZOMBIE);
+    TASKMGR_EXPECT(taskmgr_gui_parse_state("invalid", &process_state) ==
+                   ERR_INVALID);
+    TASKMGR_EXPECT(taskmgr_gui_parse_state(0, &process_state) == ERR_NULL);
+    TASKMGR_EXPECT(taskmgr_gui_decimal_name("12345") == 1);
+    TASKMGR_EXPECT(taskmgr_gui_decimal_name("") == 0);
+    TASKMGR_EXPECT(taskmgr_gui_decimal_name("12x") == 0);
+    TASKMGR_EXPECT(taskmgr_gui_decimal_name(0) == 0);
+
+    taskmgr_gui_copy_text(buffer, sizeof(buffer), "long task name");
+    TASKMGR_EXPECT(kstrcmp(buffer, "long task name") == 0);
+    taskmgr_gui_copy_text(small, sizeof(small), "123456789");
+    TASKMGR_EXPECT(kstrcmp(small, "1234567") == 0);
+    taskmgr_gui_copy_text(small, sizeof(small), 0);
+    TASKMGR_EXPECT(small[0] == '\0');
+
+    TASKMGR_EXPECT(kstrcmp(taskmgr_process_type(0), "N/D") == 0);
+    TASKMGR_EXPECT(kstrcmp(taskmgr_process_state_name(PROCESS_STATE_READY),
+                           "Pronto") == 0);
+    TASKMGR_EXPECT(kstrcmp(taskmgr_process_state_name(PROCESS_STATE_RUNNING),
+                           "Rodando") == 0);
+    TASKMGR_EXPECT(kstrcmp(taskmgr_process_state_name(PROCESS_STATE_BLOCKED),
+                           "Bloqueado") == 0);
+    TASKMGR_EXPECT(kstrcmp(taskmgr_process_state_name(PROCESS_STATE_ZOMBIE),
+                           "Zombie") == 0);
+    TASKMGR_EXPECT(kstrcmp(taskmgr_process_state_name(PROCESS_STATE_UNUSED),
+                           "Desconhecido") == 0);
+    TASKMGR_EXPECT(kstrcmp(taskmgr_thread_state_name(THREAD_RUNNING),
+                           "Rodando") == 0);
+    TASKMGR_EXPECT(kstrcmp(taskmgr_thread_state_name(THREAD_BLOCKED),
+                           "Bloqueado") == 0);
+    TASKMGR_EXPECT(kstrcmp(taskmgr_thread_state_name(THREAD_FINISHED),
+                           "Finalizado") == 0);
+    TASKMGR_EXPECT(kstrcmp(taskmgr_thread_state_name(THREAD_UNUSED),
+                           "Unused") == 0);
+    TASKMGR_EXPECT(num_digits(0U) == 1 && num_digits(999U) == 3);
+    TASKMGR_EXPECT(taskmgr_pages_used(10U, 4U) == 6U);
+    TASKMGR_EXPECT(taskmgr_pages_used(10U, 11U) == 0U);
+    TASKMGR_EXPECT(taskmgr_percent(25U, 100U) == 25U);
+    TASKMGR_EXPECT(taskmgr_percent(101U, 100U) == 0U);
+    TASKMGR_EXPECT(taskmgr_percent(1U, 0U) == 0U);
+    TASKMGR_EXPECT(taskmgr_gui_state_color(PROCESS_STATE_RUNNING) ==
+                   0x005FBF7FU);
+    TASKMGR_EXPECT(taskmgr_gui_state_color(PROCESS_STATE_READY) ==
+                   GUI_MODERN_COLOR_TEXT);
+    TASKMGR_EXPECT(taskmgr_gui_hit(10, 10, 10, 10, 4, 4));
+    TASKMGR_EXPECT(!taskmgr_gui_hit(14, 10, 10, 10, 4, 4));
+
+    taskmgr_gui_process_view_count = 0U;
+    TASKMGR_EXPECT(taskmgr_gui_find_process_view(0, &view) == ERR_NOT_FOUND);
+    TASKMGR_EXPECT(taskmgr_gui_find_process_view(0, 0) == ERR_NOT_FOUND);
+    taskmgr_gui_process_views[0].pid = 7U;
+    taskmgr_gui_process_views[0].generation = 3U;
+    taskmgr_gui_process_views[0].cpu_usage = 70U;
+    taskmgr_gui_process_views[1].pid = 8U;
+    taskmgr_gui_process_views[1].generation = 4U;
+    taskmgr_gui_process_views[1].cpu_usage = 60U;
+    taskmgr_gui_process_view_count = 2U;
+    TASKMGR_EXPECT(taskmgr_gui_find_process_view(0, &view) == OK &&
+                   view.pid == 7U);
+    TASKMGR_EXPECT(taskmgr_gui_find_process_view_by_pid(8U, &view) == OK &&
+                   view.generation == 4U);
+    TASKMGR_EXPECT(taskmgr_gui_find_process_view_by_pid(99U, &view) ==
+                   ERR_NOT_FOUND);
+    TASKMGR_EXPECT(taskmgr_gui_find_process_view_by_pid(8U, 0) == ERR_NULL);
+    TASKMGR_EXPECT(taskmgr_gui_aggregate_load() == 100U);
+
+    taskmgr_gui_mem_total = 100U;
+    taskmgr_gui_mem_used = 40U;
+    taskmgr_gui_mem_valid = 1U;
+    taskmgr_history_head = 0U;
+    taskmgr_history_count = 0U;
+    taskmgr_gui_sample_history();
+    TASKMGR_EXPECT(taskmgr_history_count == 1U &&
+                   taskmgr_memory_history[0] == 40U &&
+                   taskmgr_load_history[0] == 100U);
+    taskmgr_gui_reset_history();
+    TASKMGR_EXPECT(taskmgr_history_count == 0U &&
+                   taskmgr_memory_history[0] == 0U);
+
+    gui_height = 100;
+    TASKMGR_EXPECT(taskmgr_gui_visible_rows() == 1);
+    gui_height = 1000;
+    TASKMGR_EXPECT(taskmgr_gui_visible_rows() == TSKMGR_GUI_MAX_VISIBLE_ROWS);
+    gui_width = TSKMGR_GUI_LIST_MIN_WIDTH + TSKMGR_GUI_DETAIL_MIN_WIDTH +
+                TSKMGR_GUI_PX(16) + TSKMGR_GUI_MARGIN * 2;
+    TASKMGR_EXPECT(taskmgr_gui_has_side_details());
+    gui_width = 300;
+    TASKMGR_EXPECT(!taskmgr_gui_has_side_details());
+    gui_x = 40;
+    gui_y = 36;
+    gui_height = TSKMGR_GUI_DEFAULT_HEIGHT;
+    TASKMGR_EXPECT(taskmgr_gui_process_list_y() ==
+                   36 + TSKMGR_GUI_PROCESS_LIST_TOP);
+    metrics.scale = DISPLAY_SCALE_NORMAL;
+    TASKMGR_EXPECT(display_get_metrics(&metrics) == OK);
+    TASKMGR_EXPECT(taskmgr_gui_process_list_height() > 0);
+    TASKMGR_EXPECT(taskmgr_gui_process_visible_rows() > 0);
+
+    TASKMGR_EXPECT(taskmgr_get_work_area(&work_area));
+    TASKMGR_EXPECT(work_area.width == 800 && work_area.height == 600);
+    gui_x = -20;
+    gui_y = -10;
+    gui_width = 1000;
+    gui_height = 700;
+    taskmgr_clamp_window();
+    TASKMGR_EXPECT(gui_x == 0 && gui_y == 0 && gui_width == 800 &&
+                   gui_height == 600);
+
+    selected_tab = 1;
+    selected_row = 0;
+    scroll_offset = 0;
+    TASKMGR_EXPECT(taskmgr_gui_scroll_selected(1) == 0);
+    selected_tab = 0;
+    taskmgr_gui_process_view_count = 0U;
+    TASKMGR_EXPECT(taskmgr_gui_scroll_selected(-1) == 0);
+
+    draw_hline(1, 1, 3, COLOR_TEXT);
+    draw_box(1, 1, 5, 3, COLOR_BORDER);
+    print_at(1, 1, "ok", COLOR_TEXT);
+    print_num_at(1, 2, 123U, COLOR_TEXT);
+    taskmgr_print_hex_at(1, 3, 0xABCDU, COLOR_TEXT);
+    draw_bar(1, 4, 10, 150U, 100U, COLOR_BAR_FG, COLOR_BAR_BG);
+    taskmgr_gui_draw_surface(1, 1, 20, 20, GUI_MODERN_COLOR_WINDOW,
+                             GUI_MODERN_COLOR_BORDER_INACTIVE);
+    taskmgr_gui_draw_num(1, 1, 123U, GUI_MODERN_COLOR_TEXT);
+    taskmgr_gui_draw_hex(1, 1, 0x1234U, GUI_MODERN_COLOR_TEXT);
+    taskmgr_gui_draw_history_graph(1, 1, 40, 40, "History", 0,
+                                   GUI_MODERN_COLOR_ACCENT);
+    taskmgr_gui_draw_tabs();
+    taskmgr_gui_draw_process_details(0, 1, 1, 200, 100);
+
+    taskmgr_count_process_states(&ready, &running, &blocked, &zombie);
+    TASKMGR_EXPECT(ready == 0U && running == 0U && blocked == 0U &&
+                   zombie == 0U);
+
+#undef TASKMGR_EXPECT
+    return failures;
+}
+#endif
 
 void taskmgr_run(void) {
     taskmgr_open();

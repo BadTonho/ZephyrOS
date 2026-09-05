@@ -147,6 +147,8 @@ UPDATER_RESULT_DIR = ROOT / "build" / "test-results" / "updater-host"
 UPDATER_BINARY = ROOT / "build" / "tests" / "test_updater_host.exe"
 FILEMANAGER_RESULT_DIR = ROOT / "build" / "test-results" / "filemanager-host"
 FILEMANAGER_BINARY = ROOT / "build" / "tests" / "test_filemanager_host.exe"
+TASKMANAGER_RESULT_DIR = ROOT / "build" / "test-results" / "taskmanager-host"
+TASKMANAGER_BINARY = ROOT / "build" / "tests" / "test_taskmanager_host.exe"
 SPINLOCK_RESULT_DIR = ROOT / "build" / "test-results" / "spinlock-host"
 SPINLOCK_BINARY = ROOT / "build" / "tests" / "test_spinlock_host.exe"
 DEFAULT_TIMEOUT = 120.0
@@ -193,6 +195,12 @@ UPDATER_SOURCE_FILES = (
 FILEMANAGER_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_filemanager_host.c",
     ROOT / "src" / "filemanager" / "filemanager.c",
+    ROOT / "src" / "core" / "string.c",
+)
+TASKMANAGER_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_taskmanager_host.c",
+    ROOT / "src" / "shell" / "taskmanager.c",
+    ROOT / "src" / "shell" / "shell_introspection.c",
     ROOT / "src" / "core" / "string.c",
 )
 NETWORK_MANAGER_SOURCE_FILES = (
@@ -1094,6 +1102,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
     if case_id == "host:ui:filemanager":
         return (FILEMANAGER_RESULT_DIR, FILEMANAGER_BINARY,
                 FILEMANAGER_SOURCE_FILES, "filemanager-host")
+    if case_id == "host:shell:taskmanager":
+        return (TASKMANAGER_RESULT_DIR, TASKMANAGER_BINARY,
+                TASKMANAGER_SOURCE_FILES, "taskmanager-host")
     if case_id == "host:shell:diagnostics":
         return (SHELL_DIAGNOSTICS_RESULT_DIR, SHELL_DIAGNOSTICS_BINARY,
                 (ROOT / "tests" / "unit" / "test_shell_diagnostics_host.c",
@@ -1419,6 +1430,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:core:app-loader", "host:ui:taskbar",
                                  "host:ui:appstore", "host:ui:updater",
                                  "host:ui:filemanager",
+                                 "host:shell:taskmanager",
                                  "host:core:syscall",
                                  "host:process:runtime",
                                  "host:process:threads",

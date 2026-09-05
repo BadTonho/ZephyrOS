@@ -38,6 +38,7 @@ novo; o handshake e inerte no boot normal ate a validacao de `HELLO`.
 | `src/include/apps/shell_pipeline.h` | `docs/09-shell/refatoracao-shell.md` |
 | `src/include/apps/shell_introspection.h` | `docs/09-shell/refatoracao-shell.md` |
 | `src/include/apps/taskmanager.h` | `docs/13-aplicativos/aplicativos.md` |
+| `src/include/apps/taskmanager_test.h` | `docs/09-shell/refatoracao-shell.md` |
 | `src/include/core/app_api.h` | `docs/melhorias futuras/api de aplicativos e syscalls.md` |
 | `src/include/core/app_catalog.h` | `docs/13-aplicativos/app-store.md` |
 | `src/include/core/app_builtin.h` | `docs/melhorias futuras/api de aplicativos e syscalls.md` |

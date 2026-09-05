@@ -406,6 +406,19 @@ O relatorio instrumentado fica em
 `build/test-results/shell-commands-packages-host/coverage.json`; a
 sincronizacao associa somente as superficies realmente chamadas pela fixture.
 
+## Contratos do Task Manager host-only
+
+`taskmanager_test.h` define uma entrada interna ativa somente em
+`ZEPHYROS_HOST_TEST`. A fixture `host:shell:taskmanager` chama os helpers reais
+do Task Manager para validar parsing de snapshots de procfs, formatacao,
+limites de caminho, estados, metricas, selecao, layout e primitivas de desenho
+com doubles estaticos. Ela nao inicia processos, acessa VFS, disco, rede ou
+hardware e nao altera a API publica de `taskmanager.h`.
+
+O relatorio instrumentado fica em
+`build/test-results/taskmanager-host/coverage.json`; somente as superficies
+observadas pela execucao sao associadas ao caso automatizado.
+
 ## Contratos da App Store host-only
 
 `appstore_test.h` define uma entrada interna ativa somente em
