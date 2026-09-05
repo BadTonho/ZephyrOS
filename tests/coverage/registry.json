@@ -3689,6 +3689,56 @@
       "evidence": "make test-shell-network-checks-host PASS com estado de rede coerente, interface invalida e dependencia indisponivel; cobertura instrumentada de shell_commands_network.c sem hardware ou rede real"
     },
     {
+      "id": "shell-checks-host-dynamic",
+      "domain": "shell-checks",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:shell:checks"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/shell-checks-host/coverage.json",
+      "coverage_sources": [
+        "src/shell/shell_checks.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:shell:checks",
+        "scenario": "Helpers internos dos diagnosticos do Shell com fixtures deterministicas",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "estado ACPI, USB e dispositivos estatico"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "executar contratos internos de fases, resumos, limites de falhas, estados de job, comparacao de inventarios, validacao de tabelas ACPI/MADT e emissao de imagens ZAPP",
+        "expected": "helpers preservam nomes, estados, codigos canonicos, limites, bytes e limpeza esperados",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente estruturas estaticas da fixture host; nenhum hardware, armazenamento ou processo real",
+        "cleanup": "estado interno resetado, processo host encerrado e manifesto, logs e cobertura preservados",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "shell",
+          "diagnostics",
+          "negative",
+          "limits",
+          "coverage"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "make test-shell-checks-host PASS com fases, resumos, saturacao de falhas, estados de job, comparacoes de inventario, ACPI/MADT e bytes de fixtures ZAPP; cobertura instrumentada do shell_checks.c sem hardware real"
+    },
+    {
       "id": "shell-commands-diagnostics-host-dynamic",
       "domain": "shell-diagnostics",
       "owner": "quality",

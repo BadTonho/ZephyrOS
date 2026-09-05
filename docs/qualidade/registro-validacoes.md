@@ -5861,3 +5861,16 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `ERR_UNAVAILABLE` quando o estado agregado não estava disponível. Passaram
   o alvo específico, sincronização/renderização e `make catalog-test`; o
   catálogo ficou com 7.293 superfícies, sendo 6.319 `COVERED` e 974 `PENDING`.
+
+- Incremento Shell/checks internos — concluído em 2026-09-04
+  (America/Sao_Paulo). Foi criado o caso host-only `host:shell:checks` com um
+  ponto de entrada interno ativo somente em `ZEPHYROS_HOST_TEST`. A fixture
+  chamou helpers reais de `shell_checks.c` para fases, resumo compacto,
+  saturação de falhas, estados de job, comparação de inventários,
+  validações ACPI/MADT e emissão de fixtures ZAPP. Passaram o alvo específico,
+  `make q3check`, `make clean`, `make`, a matriz host-only completa com 117/117
+  alvos, sincronização/renderização do catálogo, `make catalog-test` e
+  `git diff --check`. A evidência dinâmica cobriu 29 superfícies reais de
+  `src/shell/shell_checks.c`; o catálogo registra 7.295 superfícies, sendo
+  6.351 `COVERED` e 944 `PENDING`. As pendências restantes continuam
+  explícitas.

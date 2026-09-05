@@ -2006,3 +2006,21 @@ O alvo `make test-shell-network-checks-host` valida o gate de invariantes de
 rede usado pelo Shell com uma interface PCI estatica. Ele exercita o estado
 coerente, rejeita uma interface inconsistente e propaga `ERR_UNAVAILABLE`, sem
 driver, hardware, armazenamento ou rede reais.
+
+## Shell: helpers internos de checks host-only
+
+O alvo `test-shell-checks-host` executa a fixture host-only
+`host:shell:checks`. Ela chama o ponto de entrada interno de teste de
+`shell_checks.c` para validar nomes de fase, resumos compactos, saturacao do
+registrador de falhas, estados de jobs, comparacao de inventarios, tabelas
+ACPI/MADT e emissao das instrucoes das fixtures ZAPP:
+
+```text
+make test-shell-checks-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O relatorio instrumentado fica em
+`build/test-results/shell-checks-host/coverage.json` e deve terminar em
+`PASS`, com `unknown_addresses=[]` e `ambiguous_symbols=[]`. A fixture usa o
+header interno `shell_checks.h`, compilado somente com `ZEPHYROS_HOST_TEST`, e
+nao acessa hardware, armazenamento ou processos reais.

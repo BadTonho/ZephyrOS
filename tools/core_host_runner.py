@@ -137,6 +137,8 @@ SHELL_NETWORK_CHECKS_RESULT_DIR = ROOT / "build" / "test-results" / "shell-netwo
 SHELL_NETWORK_CHECKS_BINARY = ROOT / "build" / "tests" / "test_shell_network_checks_host.exe"
 SHELL_DIAGNOSTICS_RESULT_DIR = ROOT / "build" / "test-results" / "shell-diagnostics-host"
 SHELL_DIAGNOSTICS_BINARY = ROOT / "build" / "tests" / "test_shell_diagnostics_host.exe"
+SHELL_CHECKS_RESULT_DIR = ROOT / "build" / "test-results" / "shell-checks-host"
+SHELL_CHECKS_BINARY = ROOT / "build" / "tests" / "test_shell_checks_host.exe"
 SPINLOCK_RESULT_DIR = ROOT / "build" / "test-results" / "spinlock-host"
 SPINLOCK_BINARY = ROOT / "build" / "tests" / "test_spinlock_host.exe"
 DEFAULT_TIMEOUT = 120.0
@@ -156,6 +158,11 @@ NETWORK_SOURCE_FILES = (
 SHELL_NETWORK_CHECKS_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_shell_network_checks_host.c",
     ROOT / "src" / "shell" / "shell_commands_network.c",
+    ROOT / "src" / "core" / "string.c",
+)
+SHELL_CHECKS_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_shell_checks_host.c",
+    ROOT / "src" / "shell" / "shell_checks.c",
     ROOT / "src" / "core" / "string.c",
 )
 NETWORK_MANAGER_SOURCE_FILES = (
@@ -1004,6 +1011,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
                 SHELL_NETWORK_CHECKS_BINARY,
                 SHELL_NETWORK_CHECKS_SOURCE_FILES,
                 "shell-network-checks-host")
+    if case_id == "host:shell:checks":
+        return (SHELL_CHECKS_RESULT_DIR, SHELL_CHECKS_BINARY,
+                SHELL_CHECKS_SOURCE_FILES, "shell-checks-host")
     if case_id == "host:shell:diagnostics":
         return (SHELL_DIAGNOSTICS_RESULT_DIR, SHELL_DIAGNOSTICS_BINARY,
                 (ROOT / "tests" / "unit" / "test_shell_diagnostics_host.c",
@@ -1196,6 +1206,9 @@ def compiler_command(compiler: str, binary: Path,
     if any(source.name == "shell_commands_network.c"
            for source in selected_sources):
         compatibility_flags.append("-Wno-address")
+    if any(source.name == "shell_checks.c" for source in selected_sources):
+        compatibility_flags.extend(["-Wno-pointer-to-int-cast",
+                                    "-Wno-type-limits"])
     if any(source.name == "syscall.c" for source in selected_sources):
         compatibility_flags.extend(["-Wno-int-to-pointer-cast", "-Dasm=__asm__"])
     if any(source.name == "process.c" for source in selected_sources):
@@ -1344,6 +1357,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:core:spinlock",
                                  "host:shell:dispatch", "host:shell:commands-storage",
                                  "host:shell:network-checks",
+                                 "host:shell:checks",
                                  "host:shell:diagnostics",
                                  "host:shell:introspection",
                                  "host:drivers:font", "host:drivers:rtc-status",
