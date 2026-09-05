@@ -1954,6 +1954,12 @@ refresh integrado, a recuperacao de managers nao inicializados, inventarios
 parciais, degradacoes opcionais, falhas de PCI e argumentos invalidos sem
 hardware ou armazenamento reais.
 
+A mesma fixture tambem executa `acpi` e `power` com snapshots estaticos dos
+estados publicados. Ela valida tabelas ACPI, MADT, informacoes de energia,
+capacidades, servico, fase, quiescencia, estados indisponiveis e falhas de
+consulta, sem habilitar modos reais, desligar, reiniciar ou tocar em energia
+de hardware.
+
 A mesma fixture tambem executa `cpu usage`, `pagefault`, `vmamap` e
 `schedcheck`. Ela usa estatisticas de scheduler, processos e VMAs falsos para
 validar percentuais, estatisticas de page fault, mapas de codigo/stack,

@@ -3670,7 +3670,7 @@
           "hardware": "video, VFS e mouse falsos"
         },
         "preconditions": "compilador C nativo e nm disponiveis",
-        "action": "executar pwd, cd, mouse, log, timer, clock, irqstat, wait, wqinfo, workq, tls, vfs, mount, devcheck, devices, device-info, device-scan, usb, slabinfo, slabtest, cpu usage, pagefault, vmamap, schedcheck e kmetrics em caminhos validos, invalidos, indisponiveis e de limite",
+        "action": "executar pwd, cd, mouse, log, timer, clock, irqstat, wait, wqinfo, workq, tls, vfs, mount, devcheck, devices, device-info, device-scan, usb, acpi, power, slabinfo, slabtest, cpu usage, pagefault, vmamap, schedcheck e kmetrics em caminhos validos, invalidos, indisponiveis e de limite",
         "expected": "dispatchers preservam saida, estado, configuracao e codigos canonicos",
         "errors": "compilador ausente, warning, saida inesperada, falha de assercao ou timeout",
         "effects": "somente buffers estaticos de saida e doubles locais de VFS, mouse, log, timer, RTC, clock, IRQ, IDT, wait, workqueue, TLS, devfs, device manager, USB, HID, MSC e SLAB; sem armazenamento real",
@@ -3678,7 +3678,7 @@
         "status": "AUTOMATED",
         "surface_ids": []
       },
-      "evidence": "make test-shell-diagnostics-host PASS com pwd, cd, mouse, log, timer, clock, irqstat, wait, wqinfo, workq, tls, vfs, mount, devcheck, devices, device-info, device-scan, usb, slabinfo, slabtest, cpu usage, pagefault, vmamap, schedcheck e kmetrics; a fixture chama diretamente os dispatchers e caminhos validos, negativos, indisponiveis e de limite"
+      "evidence": "make test-shell-diagnostics-host PASS com pwd, cd, mouse, log, timer, clock, irqstat, wait, wqinfo, workq, tls, vfs, mount, devcheck, devices, device-info, device-scan, usb, acpi, power, slabinfo, slabtest, cpu usage, pagefault, vmamap, schedcheck e kmetrics; a fixture chama diretamente os dispatchers e caminhos validos, negativos, indisponiveis e de limite"
     },
     {
       "id": "shell-commands-vfs-host-dynamic",

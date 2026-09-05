@@ -5798,3 +5798,15 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   três superfícies reais de `src/shell/shell_commands_diagnostics.c`; o
   catálogo registra 7.293 superfícies, 6.244 `COVERED`, 1.049 `PENDING` e
   154 casos. `power` e `acpi` continuam separados para o próximo incremento.
+
+- Incremento Shell/diagnostics power e ACPI — concluído em 2026-09-04
+  (America/Sao_Paulo). A fixture host-only `host:shell:diagnostics` passou a
+  chamar os dispatchers reais de `power` e `acpi` com snapshots estáticos.
+  Foram exercitados estados disponíveis, degradados e indisponíveis,
+  capacidades, serviço, fase, quiescência, tabelas ACPI, MADT, falhas de
+  consulta, listagem, argumentos inválidos e ausência de operações reais de
+  desligamento ou reinício. Passaram `make test-shell-diagnostics-host` com
+  `HOST_CC`, `make q3check`, `make clean`, `make`, os 117 alvos host-only,
+  sincronização, renderização, `make catalog-test` e `git diff --check`.
+  A evidência dinâmica será sincronizada para as superfícies efetivamente
+  chamadas; as pendências restantes continuam explícitas.

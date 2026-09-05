@@ -2565,3 +2565,18 @@ pendente.
 - [x] O catálogo registra 7.293 superfícies, 6.244 `COVERED`, 1.049
       `PENDING` e 154 casos. As pendências restantes continuam explícitas e o
       gate estrito integral permanece pendente.
+
+### Incremento Shell/diagnostics power e ACPI — 2026-09-04
+
+- [x] A fixture host-only `host:shell:diagnostics` foi ampliada para chamar os
+      dispatchers reais de `power` e `acpi` com snapshots estáticos.
+- [x] Foram exercitados estados disponíveis, degradados e indisponíveis,
+      capacidades, serviço, fase, quiescência, tabelas ACPI, MADT, falhas de
+      consulta, listagem e argumentos inválidos, sem desligamento, reinício ou
+      acesso a energia real.
+- [x] Passaram o alvo host-only, `make q3check`, `make clean`, `make`, os 117
+      alvos host-only, sincronização, renderização, `make catalog-test` e
+      `git diff --check`. As superfícies cobertas são somente as identificadas
+      pela evidência dinâmica da fixture; as demais permanecem pendentes.
+- [x] O gate estrito integral permanece pendente até que todas as superfícies
+      elegíveis tenham executor e evidência real.

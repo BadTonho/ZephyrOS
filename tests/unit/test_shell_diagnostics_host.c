@@ -13,6 +13,7 @@
 #include "core/recovery.h"
 #include "core/device_manager.h"
 #include "core/network_manager.h"
+#include "core/power.h"
 #include "core/usb_manager.h"
 #include "core/wifi_manager.h"
 #include "core/tls.h"
@@ -33,6 +34,7 @@
 #include "process/process.h"
 #include "drivers/usb_hid.h"
 #include "drivers/usb_msc.h"
+#include "drivers/acpi.h"
 #include "drivers/pci.h"
 #include "fs/file_index.h"
 
@@ -227,6 +229,18 @@ static int fixture_scan_network_result;
 static int fixture_scan_wifi_refresh_result;
 static int fixture_scan_wifi_init_result;
 static uint32_t fixture_yield_calls;
+static power_status_t fixture_power_status;
+static int fixture_power_result;
+static acpi_status_t fixture_acpi_status;
+static acpi_power_info_t fixture_acpi_power;
+static acpi_table_info_t fixture_acpi_tables[2];
+static acpi_madt_info_t fixture_acpi_madt;
+static uint32_t fixture_acpi_table_count;
+static int fixture_acpi_status_result;
+static int fixture_acpi_power_result;
+static int fixture_acpi_table_count_result;
+static int fixture_acpi_table_result;
+static int fixture_acpi_madt_result;
 static kmem_cache_info_t fixture_slab_info[2];
 static uint32_t fixture_slab_count;
 static int fixture_slab_info_result;
@@ -438,6 +452,119 @@ static void fixture_reset(void) {
     fixture_scan_wifi_refresh_result = OK;
     fixture_scan_wifi_init_result = OK;
     fixture_yield_calls = 0U;
+    fixture_power_result = OK;
+    fixture_acpi_status_result = OK;
+    fixture_acpi_power_result = OK;
+    fixture_acpi_table_count_result = OK;
+    fixture_acpi_table_result = OK;
+    fixture_acpi_madt_result = OK;
+    fixture_acpi_table_count = 2U;
+    kmemset(&fixture_power_status, 0, sizeof(fixture_power_status));
+    fixture_power_status.acpi_available = 1U;
+    fixture_power_status.acpi_power_tables_available = 1U;
+    fixture_power_status.acpi_pm1_control_available = 1U;
+    fixture_power_status.acpi_mode_known = 1U;
+    fixture_power_status.acpi_mode_enabled = 1U;
+    fixture_power_status.acpi_s5_declared = 1U;
+    fixture_power_status.acpi_mode_enable_available = 1U;
+    fixture_power_status.acpi_s5_transition_ready = 1U;
+    fixture_power_status.cpu_idle = POWER_CAPABILITY_AVAILABLE;
+    fixture_power_status.hardware_poweroff = POWER_CAPABILITY_SIMULATED;
+    fixture_power_status.reboot = POWER_CAPABILITY_AVAILABLE;
+    fixture_power_status.service_state = POWER_SERVICE_READY;
+    fixture_power_status.transaction_phase = POWER_TRANSACTION_IDLE;
+    fixture_power_status.last_error = OK;
+    fixture_power_status.reboot_acpi_reset_available = 1U;
+    fixture_power_status.reboot_ps2_available = 1U;
+    fixture_power_status.reboot_triple_fault_available = 1U;
+    fixture_power_status.transaction_target = POWER_TRANSACTION_TARGET_NONE;
+    fixture_power_status.notifiers_registered = 3U;
+    fixture_power_status.notifiers_completed = 3U;
+    fixture_power_status.sigterm_sent = 2U;
+    fixture_power_status.sigkill_sent = 0U;
+    fixture_power_status.processes_reaped = 2U;
+    fixture_power_status.volumes_unmounted = 1U;
+    fixture_power_status.optional_failures = 0U;
+    fixture_power_status.quiescence_state = POWER_QUIESCENCE_READY;
+    fixture_power_status.commit_started = 0U;
+    fixture_power_status.transaction_degraded = 0U;
+    for (uint32_t state = 0U; state < POWER_STATE_COUNT; state++) {
+        fixture_power_status.states[state] = POWER_CAPABILITY_AVAILABLE;
+    }
+    fixture_power_status.states[POWER_STATE_S3] = POWER_CAPABILITY_SIMULATED;
+    fixture_power_status.states[POWER_STATE_S4] = POWER_CAPABILITY_UNAVAILABLE;
+    fixture_power_status.states[POWER_STATE_S5] = POWER_CAPABILITY_SIMULATED;
+    kmemset(&fixture_acpi_status, 0, sizeof(fixture_acpi_status));
+    fixture_acpi_status.initialized = 1U;
+    fixture_acpi_status.available = 1U;
+    fixture_acpi_status.revision = 2U;
+    fixture_acpi_status.root_kind = ACPI_ROOT_XSDT;
+    copy_text(fixture_acpi_status.oem_id, sizeof(fixture_acpi_status.oem_id),
+              "ZEPHYR");
+    fixture_acpi_status.rsdp_address = 0x000E0000U;
+    fixture_acpi_status.root_address = 0x00100000U;
+    fixture_acpi_status.root_entry_count = 4U;
+    fixture_acpi_status.table_count = 2U;
+    fixture_acpi_status.scan_ticks = 7U;
+    fixture_acpi_status.fadt_present = 1U;
+    fixture_acpi_status.dsdt_present = 1U;
+    fixture_acpi_status.facs_present = 1U;
+    fixture_acpi_status.fadt_address = 0x00101000U;
+    fixture_acpi_status.dsdt_address = 0x00102000U;
+    fixture_acpi_status.facs_address = 0x00103000U;
+    fixture_acpi_status.rsdp_length = 36U;
+    fixture_acpi_status.rsdp_checksum_valid = 1U;
+    fixture_acpi_status.madt_present = 1U;
+    fixture_acpi_status.madt_address = 0x00104000U;
+    kmemset(&fixture_acpi_power, 0, sizeof(fixture_acpi_power));
+    fixture_acpi_power.initialized = 1U;
+    fixture_acpi_power.fadt_power_fields_present = 1U;
+    fixture_acpi_power.pm1a_present = 1U;
+    fixture_acpi_power.pm1a_readable = 1U;
+    fixture_acpi_power.pm1_control_length = 2U;
+    fixture_acpi_power.pm1a_control.address_space_id =
+        ACPI_ADDRESS_SPACE_SYSTEM_IO;
+    fixture_acpi_power.pm1a_control.register_bit_width = 16U;
+    fixture_acpi_power.pm1a_control.access_size = 2U;
+    fixture_acpi_power.pm1a_control.address = 0x404U;
+    fixture_acpi_power.smi_command_port = 0xB2U;
+    fixture_acpi_power.acpi_enable_value = 0xA0U;
+    fixture_acpi_power.acpi_disable_value = 0xA1U;
+    fixture_acpi_power.mode = ACPI_MODE_ENABLED;
+    fixture_acpi_power.pm1a_value = 0x2000U;
+    fixture_acpi_power.s5_state = ACPI_S5_DECLARED;
+    fixture_acpi_power.s5_type_a = 5U;
+    fixture_acpi_power.s5_type_b = 5U;
+    fixture_acpi_power.mode_enable_available = 1U;
+    fixture_acpi_power.s5_transition_ready = 1U;
+    fixture_acpi_power.s5_candidates = 1U;
+    fixture_acpi_power.reset_register_present = 1U;
+    fixture_acpi_power.reset_register_valid = 1U;
+    fixture_acpi_power.reset_register.address = 0xCF9U;
+    fixture_acpi_power.reset_value = 6U;
+    kmemset(fixture_acpi_tables, 0, sizeof(fixture_acpi_tables));
+    copy_text(fixture_acpi_tables[0].signature,
+              sizeof(fixture_acpi_tables[0].signature), "FADT");
+    fixture_acpi_tables[0].physical_address = 0x00101000U;
+    fixture_acpi_tables[0].length = 116U;
+    fixture_acpi_tables[0].revision = 6U;
+    fixture_acpi_tables[0].checksum_valid = 1U;
+    copy_text(fixture_acpi_tables[1].signature,
+              sizeof(fixture_acpi_tables[1].signature), "MADT");
+    fixture_acpi_tables[1].physical_address = 0x00104000U;
+    fixture_acpi_tables[1].length = 64U;
+    fixture_acpi_tables[1].revision = 5U;
+    fixture_acpi_tables[1].checksum_valid = 1U;
+    kmemset(&fixture_acpi_madt, 0, sizeof(fixture_acpi_madt));
+    fixture_acpi_madt.initialized = 1U;
+    fixture_acpi_madt.present = 1U;
+    fixture_acpi_madt.revision = 5U;
+    fixture_acpi_madt.physical_address = 0x00104000U;
+    fixture_acpi_madt.length = 64U;
+    fixture_acpi_madt.entry_count = 3U;
+    fixture_acpi_madt.local_apic_count = 1U;
+    fixture_acpi_madt.enabled_processor_count = 1U;
+    fixture_acpi_madt.io_apic_count = 1U;
     fixture_slab_count = 1U;
     fixture_slab_info_result = OK;
     fixture_slab_self_test_result = OK;
@@ -1606,6 +1733,94 @@ void process_yield(void) {
     fixture_yield_calls++;
 }
 
+int power_get_status(power_status_t* out_status) {
+    if (!out_status) return ERR_NULL;
+    if (fixture_power_result != OK) return fixture_power_result;
+    *out_status = fixture_power_status;
+    return OK;
+}
+
+const char* power_capability_name(power_capability_t capability) {
+    if (capability == POWER_CAPABILITY_AVAILABLE) return "DISPONIVEL";
+    if (capability == POWER_CAPABILITY_SIMULATED) return "SIMULADO";
+    return "INDISPONIVEL";
+}
+
+const char* power_service_state_name(power_service_state_t state) {
+    if (state == POWER_SERVICE_DISCOVERING) return "DESCOBRINDO";
+    if (state == POWER_SERVICE_READY) return "PRONTO";
+    if (state == POWER_SERVICE_DEGRADED) return "DEGRADADO";
+    if (state == POWER_SERVICE_UNAVAILABLE) return "INDISPONIVEL";
+    return "DESCONHECIDO";
+}
+
+const char* power_transaction_phase_name(power_transaction_phase_t phase) {
+    if (phase == POWER_TRANSACTION_ADMISSION) return "ADMISSION";
+    if (phase == POWER_TRANSACTION_NOTIFICATION) return "NOTIFICATION";
+    if (phase == POWER_TRANSACTION_SYNC_FLUSH) return "SYNC_FLUSH";
+    if (phase == POWER_TRANSACTION_QUIESCENCE) return "QUIESCENCE";
+    if (phase == POWER_TRANSACTION_HARDWARE_COMMIT) return "HARDWARE_COMMIT";
+    if (phase == POWER_TRANSACTION_TERMINAL) return "TERMINAL";
+    return "IDLE";
+}
+
+const char* power_transaction_target_name(power_transaction_target_t target) {
+    if (target == POWER_TRANSACTION_TARGET_SHUTDOWN) return "SHUTDOWN";
+    if (target == POWER_TRANSACTION_TARGET_REBOOT) return "REBOOT";
+    return "NONE";
+}
+
+const char* power_quiescence_state_name(power_quiescence_state_t state) {
+    if (state == POWER_QUIESCENCE_READY) return "READY";
+    if (state == POWER_QUIESCENCE_DEGRADED) return "DEGRADED";
+    if (state == POWER_QUIESCENCE_COMPLETE) return "COMPLETE";
+    return "UNKNOWN";
+}
+
+int acpi_get_status(acpi_status_t* out_status) {
+    if (!out_status) return ERR_NULL;
+    if (fixture_acpi_status_result != OK) return fixture_acpi_status_result;
+    *out_status = fixture_acpi_status;
+    return OK;
+}
+
+int acpi_get_power_info(acpi_power_info_t* out_info) {
+    if (!out_info) return ERR_NULL;
+    if (fixture_acpi_power_result != OK) return fixture_acpi_power_result;
+    *out_info = fixture_acpi_power;
+    return OK;
+}
+
+int acpi_get_table_count(uint32_t* out_count) {
+    if (!out_count) return ERR_NULL;
+    if (fixture_acpi_table_count_result != OK) {
+        return fixture_acpi_table_count_result;
+    }
+    *out_count = fixture_acpi_table_count;
+    return OK;
+}
+
+int acpi_get_table_at(uint32_t index, acpi_table_info_t* out_table) {
+    if (!out_table) return ERR_NULL;
+    if (fixture_acpi_table_result != OK) return fixture_acpi_table_result;
+    if (index >= fixture_acpi_table_count || index >= 2U) return ERR_INVALID;
+    *out_table = fixture_acpi_tables[index];
+    return OK;
+}
+
+int acpi_get_madt_info(acpi_madt_info_t* out_info) {
+    if (!out_info) return ERR_NULL;
+    if (fixture_acpi_madt_result != OK) return fixture_acpi_madt_result;
+    *out_info = fixture_acpi_madt;
+    return OK;
+}
+
+const char* acpi_root_kind_name(acpi_root_kind_t kind) {
+    if (kind == ACPI_ROOT_RSDT) return "RSDT";
+    if (kind == ACPI_ROOT_XSDT) return "XSDT";
+    return "NONE";
+}
+
 int recovery_mark_ready(recovery_component_id_t component) {
     fixture_recovery_last_component = component;
     fixture_recovery_last_state = RECOVERY_STATE_READY;
@@ -2768,6 +2983,104 @@ static int test_device_scan(void) {
     return failures;
 }
 
+static int test_power(void) {
+    int failures = 0;
+
+    fixture_reset();
+    shell_dispatch_cmd_power("status");
+    failures += expect_contains("Energia:\n  ACPI: DETECTADO");
+    failures += expect_contains("Tabelas de energia ACPI: VALIDADA");
+    failures += expect_contains("Snapshot ACPI: COMPLETO");
+    failures += expect_contains("Modo ACPI: HABILITADO");
+    failures += expect_contains("Servico: PRONTO");
+    failures += expect_contains("Fase: IDLE");
+    failures += expect_contains("Notificadores: 3/3");
+    failures += expect_contains("Quiescencia: READY");
+    fixture_reset();
+    fixture_power_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_power("status");
+    failures += expect_text("Erro: diagnostico de energia indisponivel.\n");
+    fixture_reset();
+    fixture_power_status.acpi_available = 0U;
+    fixture_power_status.acpi_power_tables_available = 0U;
+    fixture_power_status.acpi_mode_known = 0U;
+    fixture_power_status.hardware_poweroff = POWER_CAPABILITY_UNAVAILABLE;
+    fixture_power_status.reboot = POWER_CAPABILITY_UNAVAILABLE;
+    fixture_power_status.service_state = POWER_SERVICE_UNAVAILABLE;
+    fixture_power_status.transaction_phase = POWER_TRANSACTION_TERMINAL;
+    fixture_power_status.transaction_target = POWER_TRANSACTION_TARGET_SHUTDOWN;
+    fixture_power_status.quiescence_state = POWER_QUIESCENCE_DEGRADED;
+    fixture_power_status.commit_started = 1U;
+    fixture_power_status.transaction_degraded = 1U;
+    shell_dispatch_cmd_power("status");
+    failures += expect_contains("ACPI: INDISPONIVEL");
+    failures += expect_contains("Modo ACPI: DESCONHECIDO");
+    failures += expect_contains("Servico: INDISPONIVEL");
+    failures += expect_contains("Fase: TERMINAL");
+    failures += expect_contains("Alvo da transacao: SHUTDOWN");
+    failures += expect_contains("Transacao degradada: SIM");
+    fixture_reset();
+    shell_dispatch_cmd_power("");
+    failures += expect_text("Uso: power status\n");
+    return failures;
+}
+
+static int test_acpi(void) {
+    int failures = 0;
+
+    fixture_reset();
+    shell_dispatch_cmd_acpi("status");
+    failures += expect_contains("ACPI:\n  Estado: PRONTO");
+    failures += expect_contains("OEM: ZEPHYR revisao=2");
+    failures += expect_contains("FADT: VALIDA em 0x00101000");
+    failures += expect_contains("MADT: VALIDA em 0x00104000");
+    failures += expect_contains("FADT energia: PRESENTE");
+    failures += expect_contains("Modo ACPI: HABILITADO");
+    failures += expect_contains("_S5_: DECLARADO tipo_a=5 tipo_b=5");
+    fixture_reset();
+    fixture_acpi_power_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_acpi("status");
+    failures += expect_contains("Energia ACPI: INDISPONIVEL");
+    fixture_reset();
+    fixture_acpi_status.available = 0U;
+    fixture_acpi_status.partial = 1U;
+    shell_dispatch_cmd_acpi("status");
+    failures += expect_contains("ACPI:\n  Estado: INDISPONIVEL");
+    failures += expect_contains("RSDP: nao encontrado ou invalido");
+    fixture_reset();
+    fixture_acpi_status_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_acpi("status");
+    failures += expect_text("Erro: diagnostico ACPI indisponivel.\n");
+
+    fixture_reset();
+    shell_dispatch_cmd_acpi("tables");
+    failures += expect_contains("ACPI tables:\n");
+    failures += expect_contains("[0] FADT addr=0x00101000 length=116 revision=6 checksum=OK");
+    failures += expect_contains("[1] MADT addr=0x00104000 length=64 revision=5 checksum=OK");
+    failures += expect_contains("MADT addr=0x00104000 entries=3 processors=1 local_apic=1 io_apic=1 skipped=0");
+    fixture_reset();
+    fixture_acpi_status.available = 0U;
+    shell_dispatch_cmd_acpi("tables");
+    failures += expect_contains("Estado: INDISPONIVEL");
+    failures += expect_contains("RSDP: nao encontrada");
+    fixture_reset();
+    fixture_acpi_table_count_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_acpi("tables");
+    failures += expect_contains("Falha ao consultar inventario");
+    fixture_reset();
+    fixture_acpi_table_result = ERR_STATE;
+    shell_dispatch_cmd_acpi("tables");
+    failures += expect_contains("Falha ao copiar tabela");
+    fixture_reset();
+    fixture_acpi_madt_result = ERR_UNAVAILABLE;
+    shell_dispatch_cmd_acpi("tables");
+    failures += expect_contains("MADT: consulta indisponivel");
+    fixture_reset();
+    shell_dispatch_cmd_acpi("invalid");
+    failures += expect_text("Uso: acpi status|tables\n");
+    return failures;
+}
+
 static int test_slab(void) {
     int failures = 0;
 
@@ -3011,6 +3324,8 @@ int main(void) {
              test_wqinfo() + test_workq() + test_tls() + test_vfs();
     result += test_devcheck() + test_devices_and_usb();
     result += test_device_scan();
+    result += test_power();
+    result += test_acpi();
     result += test_slab();
     result += test_cpu_usage();
     result += test_pagefault_and_vmamap();
