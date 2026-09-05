@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6467 |
+| `COVERED` | 6481 |
 | `MANUAL` | 0 |
-| `PENDING` | 840 |
+| `PENDING` | 826 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -34,7 +34,7 @@
 
 | Proprietario | Superficies |
 |---|---:|
-| `apps` | 169 |
+| `apps` | 170 |
 | `appstore` | 95 |
 | `boot` | 136 |
 | `core` | 2813 |
@@ -48,7 +48,7 @@
 | `memory` | 194 |
 | `process` | 259 |
 | `settings` | 55 |
-| `shell` | 1087 |
+| `shell` | 1086 |
 | `taskbar` | 47 |
 | `thread` | 34 |
 | `ui` | 142 |
@@ -61,15 +61,15 @@
 
 | ID | Fonte | Símbolo | Proprietário | Status | Casos |
 |---|---|---|---|---|---:|
-| `api:src/include/apps/editor.h:editor_close` | `src/include/apps/editor.h` | `editor_close` | `apps` | `PENDING` | 0 |
-| `api:src/include/apps/editor.h:editor_handle_key` | `src/include/apps/editor.h` | `editor_handle_key` | `apps` | `PENDING` | 0 |
+| `api:src/include/apps/editor.h:editor_close` | `src/include/apps/editor.h` | `editor_close` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/editor.h:editor_handle_key` | `src/include/apps/editor.h` | `editor_handle_key` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/editor.h:editor_init` | `src/include/apps/editor.h` | `editor_init` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/editor.h:editor_is_running` | `src/include/apps/editor.h` | `editor_is_running` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/editor.h:editor_new` | `src/include/apps/editor.h` | `editor_new` | `apps` | `COVERED` | 1 |
-| `api:src/include/apps/editor.h:editor_open` | `src/include/apps/editor.h` | `editor_open` | `apps` | `PENDING` | 0 |
-| `api:src/include/apps/editor.h:editor_run` | `src/include/apps/editor.h` | `editor_run` | `apps` | `PENDING` | 0 |
-| `api:src/include/apps/editor.h:editor_run_file` | `src/include/apps/editor.h` | `editor_run_file` | `apps` | `PENDING` | 0 |
-| `api:src/include/apps/editor_test.h:editor_host_test_contracts` | `src/include/apps/editor_test.h` | `editor_host_test_contracts` | `shell` | `COVERED` | 1 |
+| `api:src/include/apps/editor.h:editor_open` | `src/include/apps/editor.h` | `editor_open` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/editor.h:editor_run` | `src/include/apps/editor.h` | `editor_run` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/editor.h:editor_run_file` | `src/include/apps/editor.h` | `editor_run_file` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/editor_test.h:editor_host_test_contracts` | `src/include/apps/editor_test.h` | `editor_host_test_contracts` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/guitest.h:guitest_close` | `src/include/apps/guitest.h` | `guitest_close` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/guitest.h:guitest_draw` | `src/include/apps/guitest.h` | `guitest_draw` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/guitest.h:guitest_handle_key` | `src/include/apps/guitest.h` | `guitest_handle_key` | `apps` | `COVERED` | 2 |
@@ -6024,13 +6024,13 @@
 | `c:src/shell/editor.c:detect_line_ending` | `src/shell/editor.c` | `detect_line_ending` | `shell` | `COVERED` | 1 |
 | `c:src/shell/editor.c:detect_syntax` | `src/shell/editor.c` | `detect_syntax` | `shell` | `COVERED` | 1 |
 | `c:src/shell/editor.c:editor_backspace` | `src/shell/editor.c` | `editor_backspace` | `shell` | `COVERED` | 1 |
-| `c:src/shell/editor.c:editor_close` | `src/shell/editor.c` | `editor_close` | `shell` | `PENDING` | 0 |
+| `c:src/shell/editor.c:editor_close` | `src/shell/editor.c` | `editor_close` | `shell` | `COVERED` | 1 |
 | `c:src/shell/editor.c:editor_delete` | `src/shell/editor.c` | `editor_delete` | `shell` | `COVERED` | 1 |
 | `c:src/shell/editor.c:editor_do_word_wrap` | `src/shell/editor.c` | `editor_do_word_wrap` | `shell` | `COVERED` | 1 |
-| `c:src/shell/editor.c:editor_draw` | `src/shell/editor.c` | `editor_draw` | `shell` | `PENDING` | 0 |
-| `c:src/shell/editor.c:editor_draw_button` | `src/shell/editor.c` | `editor_draw_button` | `shell` | `PENDING` | 0 |
+| `c:src/shell/editor.c:editor_draw` | `src/shell/editor.c` | `editor_draw` | `shell` | `COVERED` | 1 |
+| `c:src/shell/editor.c:editor_draw_button` | `src/shell/editor.c` | `editor_draw_button` | `shell` | `COVERED` | 1 |
 | `c:src/shell/editor.c:editor_free_lines` | `src/shell/editor.c` | `editor_free_lines` | `shell` | `COVERED` | 1 |
-| `c:src/shell/editor.c:editor_handle_key` | `src/shell/editor.c` | `editor_handle_key` | `shell` | `PENDING` | 0 |
+| `c:src/shell/editor.c:editor_handle_key` | `src/shell/editor.c` | `editor_handle_key` | `shell` | `COVERED` | 1 |
 | `c:src/shell/editor.c:editor_host_test_contracts` | `src/shell/editor.c` | `editor_host_test_contracts` | `shell` | `COVERED` | 1 |
 | `c:src/shell/editor.c:editor_init` | `src/shell/editor.c` | `editor_init` | `shell` | `COVERED` | 1 |
 | `c:src/shell/editor.c:editor_insert_bold` | `src/shell/editor.c` | `editor_insert_bold` | `shell` | `COVERED` | 1 |
@@ -6039,12 +6039,12 @@
 | `c:src/shell/editor.c:editor_is_running` | `src/shell/editor.c` | `editor_is_running` | `shell` | `COVERED` | 1 |
 | `c:src/shell/editor.c:editor_new` | `src/shell/editor.c` | `editor_new` | `shell` | `COVERED` | 1 |
 | `c:src/shell/editor.c:editor_newline` | `src/shell/editor.c` | `editor_newline` | `shell` | `COVERED` | 1 |
-| `c:src/shell/editor.c:editor_open` | `src/shell/editor.c` | `editor_open` | `shell` | `PENDING` | 0 |
-| `c:src/shell/editor.c:editor_run` | `src/shell/editor.c` | `editor_run` | `shell` | `PENDING` | 0 |
-| `c:src/shell/editor.c:editor_run_file` | `src/shell/editor.c` | `editor_run_file` | `shell` | `PENDING` | 0 |
-| `c:src/shell/editor.c:editor_save` | `src/shell/editor.c` | `editor_save` | `shell` | `PENDING` | 0 |
+| `c:src/shell/editor.c:editor_open` | `src/shell/editor.c` | `editor_open` | `shell` | `COVERED` | 1 |
+| `c:src/shell/editor.c:editor_run` | `src/shell/editor.c` | `editor_run` | `shell` | `COVERED` | 1 |
+| `c:src/shell/editor.c:editor_run_file` | `src/shell/editor.c` | `editor_run_file` | `shell` | `COVERED` | 1 |
+| `c:src/shell/editor.c:editor_save` | `src/shell/editor.c` | `editor_save` | `shell` | `COVERED` | 1 |
 | `c:src/shell/editor.c:editor_tab` | `src/shell/editor.c` | `editor_tab` | `shell` | `COVERED` | 1 |
-| `c:src/shell/editor.c:editor_wait_for_ipc` | `src/shell/editor.c` | `editor_wait_for_ipc` | `shell` | `PENDING` | 0 |
+| `c:src/shell/editor.c:editor_wait_for_ipc` | `src/shell/editor.c` | `editor_wait_for_ipc` | `shell` | `COVERED` | 1 |
 | `c:src/shell/editor.c:get_format_color` | `src/shell/editor.c` | `get_format_color` | `shell` | `COVERED` | 1 |
 | `c:src/shell/editor.c:get_syntax_color` | `src/shell/editor.c` | `get_syntax_color` | `shell` | `COVERED` | 1 |
 | `c:src/shell/editor.c:int_to_str` | `src/shell/editor.c` | `int_to_str` | `shell` | `COVERED` | 1 |
@@ -7555,11 +7555,6 @@
 
 ## Superfícies sem caso associado
 
-- `api:src/include/apps/editor.h:editor_close`
-- `api:src/include/apps/editor.h:editor_handle_key`
-- `api:src/include/apps/editor.h:editor_open`
-- `api:src/include/apps/editor.h:editor_run`
-- `api:src/include/apps/editor.h:editor_run_file`
 - `api:src/include/process/process.h:process_context_switch`
 - `api:src/include/process/process.h:process_user_enter`
 - `api:src/include/process/process.h:process_user_termination_enter`
@@ -7896,15 +7891,6 @@
 - `c:src/settings/settings.c:settings_hosted_mouse`
 - `c:src/settings/settings.c:settings_init`
 - `c:src/settings/settings.c:settings_select_mode`
-- `c:src/shell/editor.c:editor_close`
-- `c:src/shell/editor.c:editor_draw`
-- `c:src/shell/editor.c:editor_draw_button`
-- `c:src/shell/editor.c:editor_handle_key`
-- `c:src/shell/editor.c:editor_open`
-- `c:src/shell/editor.c:editor_run`
-- `c:src/shell/editor.c:editor_run_file`
-- `c:src/shell/editor.c:editor_save`
-- `c:src/shell/editor.c:editor_wait_for_ipc`
 - `c:src/shell/guitest_app.c:guitest_close`
 - `c:src/shell/guitest_app.c:guitest_draw`
 - `c:src/shell/guitest_app.c:guitest_draw_border_card`

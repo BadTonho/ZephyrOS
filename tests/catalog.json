@@ -34,9 +34,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:editor"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/editor.h:editor_handle_key",
@@ -52,9 +55,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:editor"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/editor.h:editor_init",
@@ -133,9 +139,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:editor"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/editor.h:editor_run",
@@ -151,9 +160,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:editor"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/editor.h:editor_run_file",
@@ -169,9 +181,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:editor"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/editor_test.h:editor_host_test_contracts",
@@ -179,7 +194,7 @@
       "source": "src/include/apps/editor_test.h",
       "symbol": "editor_host_test_contracts",
       "linkage": "public",
-      "owner": "shell",
+      "owner": "apps",
       "layer": "public-header",
       "preconditions": "compilador host com ZEPHYROS_HOST_TEST",
       "action": "executar contrato interno deterministico do Editor",
@@ -132755,9 +132770,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:editor"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/editor.c:editor_delete",
@@ -132815,9 +132833,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:editor"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/editor.c:editor_draw_button",
@@ -132833,9 +132854,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:editor"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/editor.c:editor_free_lines",
@@ -132872,9 +132896,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:editor"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/editor.c:editor_host_test_contracts",
@@ -133058,9 +133085,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:editor"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/editor.c:editor_run",
@@ -133076,9 +133106,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:editor"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/editor.c:editor_run_file",
@@ -133094,9 +133127,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:editor"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/editor.c:editor_save",
@@ -133112,9 +133148,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:editor"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/editor.c:editor_tab",
@@ -133151,9 +133190,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:editor"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/editor.c:get_format_color",
@@ -168992,18 +169034,27 @@
       "effects": "somente buffers estaticos do Editor no processo host",
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "surface_ids": [
+        "api:src/include/apps/editor.h:editor_close",
+        "api:src/include/apps/editor.h:editor_handle_key",
         "api:src/include/apps/editor.h:editor_init",
         "api:src/include/apps/editor.h:editor_is_running",
         "api:src/include/apps/editor.h:editor_new",
+        "api:src/include/apps/editor.h:editor_open",
+        "api:src/include/apps/editor.h:editor_run",
+        "api:src/include/apps/editor.h:editor_run_file",
         "api:src/include/apps/editor_test.h:editor_host_test_contracts",
         "c:src/shell/editor.c:alloc_line",
         "c:src/shell/editor.c:detect_encoding",
         "c:src/shell/editor.c:detect_line_ending",
         "c:src/shell/editor.c:detect_syntax",
         "c:src/shell/editor.c:editor_backspace",
+        "c:src/shell/editor.c:editor_close",
         "c:src/shell/editor.c:editor_delete",
         "c:src/shell/editor.c:editor_do_word_wrap",
+        "c:src/shell/editor.c:editor_draw",
+        "c:src/shell/editor.c:editor_draw_button",
         "c:src/shell/editor.c:editor_free_lines",
+        "c:src/shell/editor.c:editor_handle_key",
         "c:src/shell/editor.c:editor_host_test_contracts",
         "c:src/shell/editor.c:editor_init",
         "c:src/shell/editor.c:editor_insert_bold",
@@ -169012,7 +169063,12 @@
         "c:src/shell/editor.c:editor_is_running",
         "c:src/shell/editor.c:editor_new",
         "c:src/shell/editor.c:editor_newline",
+        "c:src/shell/editor.c:editor_open",
+        "c:src/shell/editor.c:editor_run",
+        "c:src/shell/editor.c:editor_run_file",
+        "c:src/shell/editor.c:editor_save",
         "c:src/shell/editor.c:editor_tab",
+        "c:src/shell/editor.c:editor_wait_for_ipc",
         "c:src/shell/editor.c:get_format_color",
         "c:src/shell/editor.c:get_syntax_color",
         "c:src/shell/editor.c:int_to_str",

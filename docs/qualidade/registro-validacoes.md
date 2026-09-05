@@ -6022,6 +6022,6 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`, `make q3check`, `make clean`,
   `make` e `make catalog-test`. A evidência resolveu 28 superfícies C e quatro
   contratos de API diretamente chamados, sem endereços desconhecidos ou
-  símbolos ambíguos. O catálogo registra 7.307 superfícies, 6.467 `COVERED`,
-  840 `PENDING`, 59 aposentadas e 159 casos; as pendências restantes continuam
+  símbolos ambíguos. O catálogo registra 7.307 superfícies, 6.481 `COVERED`,
+  826 `PENDING`, 59 aposentadas e 159 casos; as pendências restantes continuam
   explícitas.
