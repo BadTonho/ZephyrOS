@@ -2003,6 +2003,9 @@ test-shell-commands-vfs-host: tools\core_host_runner.py tools\coverage_collector
 test-recovery-runtime-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_recovery_runtime_host.c tests\catalog.json src\boot\recovery_runtime.c src\include\core\log.h src\include\core\string.h
 	python tools/core_host_runner.py --case host:boot:recovery-runtime --cc "$(HOST_CC)"
 
+test-recovery-menu-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_recovery_menu_host.c tests\catalog.json src\boot\recovery_menu.c src\boot\recovery_menu.h
+	python tools/core_host_runner.py --case host:boot:recovery-menu --cc "$(HOST_CC)"
+
 test-panic-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_panic_host.c tests\catalog.json src\kernel\panic.c src\include\core\panic.h src\include\core\test_protocol.h src\include\core\video.h
 	python tools/core_host_runner.py --case host:kernel:panic --cc "$(HOST_CC)"
 
@@ -2152,7 +2155,7 @@ clean:
 .PHONY: test-updater-host
 .PHONY: test-filemanager-host
 .PHONY: test-taskmanager-host
-.PHONY: test-wm-host test-guitest-host
+.PHONY: test-wm-host test-guitest-host test-recovery-menu-host
 
 test-wm-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_wm_host.c tests\catalog.json src\wm\wm.c src\include\ui\wm.h src\include\ui\desktop.h src\include\ui\display.h src\include\ui\gui.h src\include\ui\icons.h src\include\ui\taskbar.h src\include\core\errors.h src\include\core\log.h src\include\core\recovery.h src\include\core\timer.h src\include\core\video.h src\include\drivers\mouse.h src\include\drivers\vesa.h
 	python tools\core_host_runner.py --case host:ui:wm --cc "$(HOST_CC)"

@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **7326**
-- Casos de teste: **167**
+- Superfícies ativas: **7327**
+- Casos de teste: **168**
 - Superfícies aposentadas: **59**
 
 | Tipo | Quantidade |
 |---|---:|
 | `api_function` | 1587 |
 | `asm_entry` | 101 |
-| `c_function` | 5518 |
+| `c_function` | 5519 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7160 |
+| `COVERED` | 7180 |
 | `MANUAL` | 0 |
-| `PENDING` | 166 |
+| `PENDING` | 147 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 167 |
+| `AUTOMATED` | 168 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -36,7 +36,7 @@
 |---|---:|
 | `apps` | 172 |
 | `appstore` | 98 |
-| `boot` | 136 |
+| `boot` | 137 |
 | `core` | 2813 |
 | `desktop` | 40 |
 | `drivers` | 932 |
@@ -1923,25 +1923,26 @@
 | `c:src/boot/recovery_loader.c:recovery_verify_signed_image` | `src/boot/recovery_loader.c` | `recovery_verify_signed_image` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_loader.c:recovery_write_sector` | `src/boot/recovery_loader.c` | `recovery_write_sector` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_loader.c:recovery_zero` | `src/boot/recovery_loader.c` | `recovery_zero` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_menu.c:recovery_console_clear` | `src/boot/recovery_menu.c` | `recovery_console_clear` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_menu.c:recovery_console_draw_glyph` | `src/boot/recovery_menu.c` | `recovery_console_draw_glyph` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_menu.c:recovery_console_glyph` | `src/boot/recovery_menu.c` | `recovery_console_glyph` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_menu.c:recovery_console_init` | `src/boot/recovery_menu.c` | `recovery_console_init` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_menu.c:recovery_console_pixel` | `src/boot/recovery_menu.c` | `recovery_console_pixel` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_menu.c:recovery_console_print` | `src/boot/recovery_menu.c` | `recovery_console_print` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_menu.c:recovery_console_print_u32` | `src/boot/recovery_menu.c` | `recovery_console_print_u32` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_menu.c:recovery_console_put` | `src/boot/recovery_menu.c` | `recovery_console_put` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_menu.c:recovery_console_u16` | `src/boot/recovery_menu.c` | `recovery_console_u16` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_menu.c:recovery_console_u32` | `src/boot/recovery_menu.c` | `recovery_console_u32` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_menu.c:recovery_console_vesa_ready` | `src/boot/recovery_menu.c` | `recovery_console_vesa_ready` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_menu.c:recovery_menu_action_name` | `src/boot/recovery_menu.c` | `recovery_menu_action_name` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_menu.c:recovery_menu_actions` | `src/boot/recovery_menu.c` | `recovery_menu_actions` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_menu.c:recovery_menu_confirm_retry` | `src/boot/recovery_menu.c` | `recovery_menu_confirm_retry` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_menu.c:recovery_menu_print_version` | `src/boot/recovery_menu.c` | `recovery_menu_print_version` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_menu.c:recovery_menu_render` | `src/boot/recovery_menu.c` | `recovery_menu_render` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_menu.c:recovery_menu_render_state` | `src/boot/recovery_menu.c` | `recovery_menu_render_state` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_menu.c:recovery_menu_run` | `src/boot/recovery_menu.c` | `recovery_menu_run` | `boot` | `PENDING` | 0 |
-| `c:src/boot/recovery_menu.c:recovery_menu_wait_f8` | `src/boot/recovery_menu.c` | `recovery_menu_wait_f8` | `boot` | `PENDING` | 0 |
+| `c:src/boot/recovery_menu.c:recovery_console_clear` | `src/boot/recovery_menu.c` | `recovery_console_clear` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_menu.c:recovery_console_draw_glyph` | `src/boot/recovery_menu.c` | `recovery_console_draw_glyph` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_menu.c:recovery_console_glyph` | `src/boot/recovery_menu.c` | `recovery_console_glyph` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_menu.c:recovery_console_init` | `src/boot/recovery_menu.c` | `recovery_console_init` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_menu.c:recovery_console_pixel` | `src/boot/recovery_menu.c` | `recovery_console_pixel` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_menu.c:recovery_console_print` | `src/boot/recovery_menu.c` | `recovery_console_print` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_menu.c:recovery_console_print_u32` | `src/boot/recovery_menu.c` | `recovery_console_print_u32` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_menu.c:recovery_console_put` | `src/boot/recovery_menu.c` | `recovery_console_put` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_menu.c:recovery_console_u16` | `src/boot/recovery_menu.c` | `recovery_console_u16` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_menu.c:recovery_console_u32` | `src/boot/recovery_menu.c` | `recovery_console_u32` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_menu.c:recovery_console_vesa_ready` | `src/boot/recovery_menu.c` | `recovery_console_vesa_ready` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_menu.c:recovery_menu_action_name` | `src/boot/recovery_menu.c` | `recovery_menu_action_name` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_menu.c:recovery_menu_actions` | `src/boot/recovery_menu.c` | `recovery_menu_actions` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_menu.c:recovery_menu_confirm_retry` | `src/boot/recovery_menu.c` | `recovery_menu_confirm_retry` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_menu.c:recovery_menu_host_test_contracts` | `src/boot/recovery_menu.c` | `recovery_menu_host_test_contracts` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_menu.c:recovery_menu_print_version` | `src/boot/recovery_menu.c` | `recovery_menu_print_version` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_menu.c:recovery_menu_render` | `src/boot/recovery_menu.c` | `recovery_menu_render` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_menu.c:recovery_menu_render_state` | `src/boot/recovery_menu.c` | `recovery_menu_render_state` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_menu.c:recovery_menu_run` | `src/boot/recovery_menu.c` | `recovery_menu_run` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_menu.c:recovery_menu_wait_f8` | `src/boot/recovery_menu.c` | `recovery_menu_wait_f8` | `boot` | `COVERED` | 1 |
 | `c:src/boot/recovery_runtime.c:kmemcpy` | `src/boot/recovery_runtime.c` | `kmemcpy` | `boot` | `COVERED` | 1 |
 | `c:src/boot/recovery_runtime.c:kmemset` | `src/boot/recovery_runtime.c` | `kmemset` | `boot` | `COVERED` | 1 |
 | `c:src/boot/recovery_runtime.c:kstrcmp` | `src/boot/recovery_runtime.c` | `kstrcmp` | `boot` | `COVERED` | 1 |
@@ -7412,6 +7413,7 @@
 
 | ID | Executor | Perfil | Caso guest | Status | Timeout | Heartbeat | Isolamento | Proprietario | Camada | Pre-condicoes | Acao | Resultado esperado | Erros | Efeitos | Limpeza |
 |---|---|---|---|---|---:|---:|---|---|---|---|---|---|---|---|---|
+| `host:boot:recovery-menu` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar console, glyphs, VESA, menu, navegacao, timeout, confirmacao e limites | console e menu preservam estados, escolhas, fallback e limites sem hardware real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos VGA/VESA e fila de teclas no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:boot:recovery-runtime` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar preenchimento, copia, comprimento, comparacao e ponto de entrada de log sem executar o loader de recuperacao | utilitarios preservam bytes, limites e ordenacao lexicografica e o ponto de log aceita todos os niveis sem estado residual | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos no processo host; nenhuma imagem ou hardware de boot e acessada | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:app-api` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fachada de arquivos, memoria, IPC e VMA com stubs controlados | APIs publicas preservam erros, limites, estados e dados retornados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado da fachada e backends estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:app-builtin` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar os construtores de aplicativos internos com loader falso | imagens ZAPP preservam cabecalho, limites, entrada, dados, pre-condicoes e retornos canonicos | compilador ausente, warning, imagem invalida, falha de assercao ou timeout | somente imagem estatica e estado do loader falso no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7705,25 +7707,6 @@
 - `c:src/boot/recovery_loader.c:recovery_verify_signed_image`
 - `c:src/boot/recovery_loader.c:recovery_write_sector`
 - `c:src/boot/recovery_loader.c:recovery_zero`
-- `c:src/boot/recovery_menu.c:recovery_console_clear`
-- `c:src/boot/recovery_menu.c:recovery_console_draw_glyph`
-- `c:src/boot/recovery_menu.c:recovery_console_glyph`
-- `c:src/boot/recovery_menu.c:recovery_console_init`
-- `c:src/boot/recovery_menu.c:recovery_console_pixel`
-- `c:src/boot/recovery_menu.c:recovery_console_print`
-- `c:src/boot/recovery_menu.c:recovery_console_print_u32`
-- `c:src/boot/recovery_menu.c:recovery_console_put`
-- `c:src/boot/recovery_menu.c:recovery_console_u16`
-- `c:src/boot/recovery_menu.c:recovery_console_u32`
-- `c:src/boot/recovery_menu.c:recovery_console_vesa_ready`
-- `c:src/boot/recovery_menu.c:recovery_menu_action_name`
-- `c:src/boot/recovery_menu.c:recovery_menu_actions`
-- `c:src/boot/recovery_menu.c:recovery_menu_confirm_retry`
-- `c:src/boot/recovery_menu.c:recovery_menu_print_version`
-- `c:src/boot/recovery_menu.c:recovery_menu_render`
-- `c:src/boot/recovery_menu.c:recovery_menu_render_state`
-- `c:src/boot/recovery_menu.c:recovery_menu_run`
-- `c:src/boot/recovery_menu.c:recovery_menu_wait_f8`
 - `c:src/kernel/kernel.c:desktop_process_main`
 - `c:src/kernel/kernel.c:global_mouse_handler`
 - `c:src/kernel/kernel.c:kernel_cancel_foreground_app`

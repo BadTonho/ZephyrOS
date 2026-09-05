@@ -831,6 +831,12 @@ RECOVERY_RUNTIME_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_recovery_runtime_host.c",
     ROOT / "src" / "boot" / "recovery_runtime.c",
 )
+RECOVERY_MENU_RESULT_DIR = ROOT / "build" / "test-results" / "recovery-menu-host"
+RECOVERY_MENU_BINARY = ROOT / "build" / "tests" / "test_recovery_menu_host.exe"
+RECOVERY_MENU_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_recovery_menu_host.c",
+    ROOT / "src" / "boot" / "recovery_menu.c",
+)
 PANIC_RESULT_DIR = ROOT / "build" / "test-results" / "panic-host"
 PANIC_BINARY = ROOT / "build" / "tests" / "test_panic_host.exe"
 PANIC_SOURCE_FILES = (
@@ -1224,6 +1230,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
     if case_id == "host:boot:recovery-runtime":
         return (RECOVERY_RUNTIME_RESULT_DIR, RECOVERY_RUNTIME_BINARY,
                 RECOVERY_RUNTIME_SOURCE_FILES, "recovery-runtime-host")
+    if case_id == "host:boot:recovery-menu":
+        return (RECOVERY_MENU_RESULT_DIR, RECOVERY_MENU_BINARY,
+                RECOVERY_MENU_SOURCE_FILES, "recovery-menu-host")
     if case_id == "host:kernel:panic":
         return PANIC_RESULT_DIR, PANIC_BINARY, PANIC_SOURCE_FILES, "panic-host"
     if case_id == "host:drivers:pci":
@@ -1330,6 +1339,8 @@ def compiler_command(compiler: str, binary: Path,
     if any(source.name == "panic.c" for source in selected_sources):
         compatibility_flags.append("-Dpanic_halt=host_panic_halt")
     include_directories = []
+    if any(source.name == "recovery_menu.c" for source in selected_sources):
+        include_directories.extend(["-I", str(ROOT / "src" / "boot")])
     if any(source.name == "settings.c" for source in selected_sources):
         include_directories.extend(["-I", str(ROOT / "src" / "settings")])
     return [
@@ -1513,6 +1524,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:core:usb-transport", "host:gui:widgets",
                                  "host:shell:commands-vfs",
                                  "host:boot:recovery-runtime",
+                                 "host:boot:recovery-menu",
                                  "host:kernel:panic", "host:drivers:pci",
                                  "host:drivers:ata",
                                  "host:drivers:idt",

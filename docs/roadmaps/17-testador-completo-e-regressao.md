@@ -27,12 +27,29 @@ Configurações, do Desktop, dos comandos de aplicativos, da evidência RTC e
 das fixtures de entrada/hosted, da evidência de panic, da regeneração dos
 relatórios RTC/Shell, da fixture host-only do Updater, da fixture host-only do
 File Manager, da fixture host-only do Task Manager, da validação de resultados
-do Shell Checks e da fixture host-only do GUI Test, registra 7.326 superfícies,
-7.160 `COVERED` e 166 `PENDING`, em 167 casos `AUTOMATED`.
+do Shell Checks, da fixture host-only do GUI Test e da fixture host-only do
+menu de recuperação, registra 7.327 superfícies, 7.180 `COVERED` e 147
+`PENDING`, em 168 casos `AUTOMATED`.
 O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
 Isso não significa declarar hardware físico validado sem equipamento.
+
+### Incremento Recovery Menu: console e seleção host-only — 2026-09-05
+
+- [x] A fixture `host:boot:recovery-menu` passou a exercitar o console VGA,
+      glyphs, framebuffer VESA, impressão, navegação por F8, seleção de ação,
+      timeout, confirmação de retry, fallback e limites sem hardware real.
+- [x] O build host usa buffers estáticos para VGA e VESA somente sob
+      `ZEPHYROS_HOST_TEST`; o build freestanding normal mantém os endereços e
+      o comportamento de boot existentes.
+- [x] `make test-recovery-menu-host
+      HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` passou com
+      `-Wall -Wextra -Werror`; a cobertura dinâmica observou as 20 funções do
+      translation unit, sem endereços desconhecidos ou símbolos ambíguos. O
+      catálogo foi sincronizado, validado, renderizado e passou em
+      `make catalog-test`; agora registra 7.327 superfícies, 7.180 `COVERED`,
+      147 `PENDING` e 168 casos.
 
 ### Incremento GUI Test: cenas Classic/Modern host-only — 2026-09-05
 

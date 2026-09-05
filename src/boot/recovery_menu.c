@@ -4,7 +4,6 @@
 #define RECOVERY_CONSOLE_ROWS 25U
 #define RECOVERY_CONSOLE_CELL_WIDTH 12U
 #define RECOVERY_CONSOLE_CELL_HEIGHT 16U
-#define RECOVERY_CONSOLE_VGA ((volatile uint16_t*)0xB8000U)
 #define RECOVERY_CONSOLE_VGA_ATTRIBUTE 0x0F00U
 #define RECOVERY_CONSOLE_MIN_WIDTH 960U
 #define RECOVERY_CONSOLE_MIN_HEIGHT 400U
@@ -25,6 +24,15 @@
 #define RECOVERY_KEY_SCAN_ENTER 0x1CU
 #define RECOVERY_KEY_SCAN_ESCAPE 0x01U
 #define RECOVERY_MENU_MAX_ACTIONS 4U
+
+#ifdef ZEPHYROS_HOST_TEST
+static volatile uint16_t recovery_console_host_vga[
+    RECOVERY_CONSOLE_COLUMNS * RECOVERY_CONSOLE_ROWS];
+static uint8_t recovery_console_host_framebuffer[0x00180000U];
+#define RECOVERY_CONSOLE_VGA recovery_console_host_vga
+#else
+#define RECOVERY_CONSOLE_VGA ((volatile uint16_t*)0xB8000U)
+#endif
 
 static const uint8_t recovery_letters[26][5] = {
     {0x1EU,0x05U,0x05U,0x1EU,0x00U},{0x1FU,0x15U,0x15U,0x0AU,0x00U},
@@ -119,7 +127,13 @@ static int recovery_console_vesa_ready(void) {
 
 static void recovery_console_pixel(uint32_t framebuffer, uint16_t pitch,
                                    uint8_t bpp, uint32_t x, uint32_t y) {
+#ifdef ZEPHYROS_HOST_TEST
+    uint8_t* pixel = recovery_console_host_framebuffer +
+                     y * pitch + x * (bpp / 8U);
+    (void)framebuffer;
+#else
     uint8_t* pixel = (uint8_t*)(framebuffer + y * pitch + x * (bpp / 8U));
+#endif
     pixel[0] = 0xFFU;
     pixel[1] = 0xFFU;
     pixel[2] = 0xFFU;
@@ -190,7 +204,12 @@ void recovery_console_clear(void) {
             recovery_console_vesa + RECOVERY_VESA_PITCH_OFFSET);
         uint16_t height = recovery_console_u16(
             recovery_console_vesa + RECOVERY_VESA_HEIGHT_OFFSET);
+#ifdef ZEPHYROS_HOST_TEST
+        uint8_t* output = recovery_console_host_framebuffer;
+        (void)framebuffer;
+#else
         uint8_t* output = (uint8_t*)framebuffer;
+#endif
         uint32_t size = (uint32_t)pitch * height;
         for (uint32_t index = 0U; index < size; index++) output[index] = 0U;
     }
@@ -350,3 +369,80 @@ int recovery_menu_confirm_retry(const recovery_menu_view_t* view) {
         if (scan == RECOVERY_KEY_SCAN_ESCAPE) return 0;
     }
 }
+
+#ifdef ZEPHYROS_HOST_TEST
+int recovery_menu_host_test_contracts(void) {
+    uint8_t vesa[12] = {0};
+    recovery_menu_view_t view = {0};
+    recovery_menu_action_t actions[RECOVERY_MENU_MAX_ACTIONS];
+    int failures = 0;
+
+    vesa[0] = 0x00U;
+    vesa[1] = 0x00U;
+    vesa[2] = 0x00U;
+    vesa[3] = 0x01U;
+    vesa[4] = 0x00U;
+    vesa[5] = 0x0FU;
+    vesa[6] = 0xC0U;
+    vesa[7] = 0x03U;
+    vesa[8] = 0x90U;
+    vesa[9] = 0x01U;
+    vesa[10] = 32U;
+    vesa[11] = 1U;
+    if (recovery_console_u16(vesa + 4U) != 3840U) failures++;
+    if (recovery_console_u32(vesa) != 0x01000000U) failures++;
+    if (!recovery_console_glyph('A') || !recovery_console_glyph('0') ||
+        !recovery_console_glyph(':') || !recovery_console_glyph('=') ||
+        !recovery_console_glyph('-') || !recovery_console_glyph('>') ||
+        !recovery_console_glyph('/') || !recovery_console_glyph('.') ||
+        !recovery_console_glyph('_') || recovery_console_glyph('?')) failures++;
+    recovery_console_init(vesa);
+    if (!recovery_console_vesa_ready()) failures++;
+    recovery_console_draw_glyph(0U, 0U, recovery_console_glyph('A'));
+    recovery_console_put('A');
+    recovery_console_put('\n');
+    recovery_console_put('?');
+    recovery_console_print("BOOT");
+    recovery_console_print_u32(0U);
+    recovery_console_print_u32(12345U);
+    recovery_menu_print_version(1U, 2U, 3U);
+    recovery_console_cursor = RECOVERY_CONSOLE_COLUMNS *
+                              RECOVERY_CONSOLE_ROWS;
+    recovery_console_put('X');
+    recovery_console_vesa = 0;
+    if (recovery_console_vesa_ready()) failures++;
+    recovery_console_init(vesa);
+
+    view.diagnostic = "DIAG";
+    view.active = "ACTIVE";
+    view.pending = "PENDING";
+    view.previous = "PREVIOUS";
+    view.attempt = "ATTEMPT";
+    view.boot_state = "READY";
+    view.reason = "RETRY";
+    view.slot_a_state = "VALID";
+    view.slot_b_state = "EMPTY";
+    view.sequence = 7U;
+    view.attempt_sequence = 9U;
+    view.slot_a_major = 1U;
+    view.slot_a_minor = 2U;
+    view.slot_a_patch = 3U;
+    view.slot_b_major = 4U;
+    view.slot_b_minor = 5U;
+    view.slot_b_patch = 6U;
+    view.slot_a_version_available = 1U;
+    view.slot_b_version_available = 1U;
+    view.failure_menu = 1U;
+    view.allow_continue = 1U;
+    view.allow_previous = 1U;
+    view.allow_retry = 1U;
+    if (recovery_menu_actions(&view, actions) != 4U) failures++;
+    if (recovery_menu_action_name(RECOVERY_MENU_ACTION_CONTINUE) == 0 ||
+        recovery_menu_action_name(RECOVERY_MENU_ACTION_PREVIOUS) == 0 ||
+        recovery_menu_action_name(RECOVERY_MENU_ACTION_RETRY) == 0 ||
+        recovery_menu_action_name(RECOVERY_MENU_ACTION_LEGACY) == 0) failures++;
+    recovery_menu_render_state(&view);
+    recovery_menu_render(&view, actions, 4U, 0U);
+    return failures;
+}
+#endif

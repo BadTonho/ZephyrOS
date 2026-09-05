@@ -4275,6 +4275,57 @@
       "evidence": "make test-recovery-runtime-host PASS com primitivas de memoria, strings e log do runtime freestanding no relatorio instrumentado"
     },
     {
+      "id": "recovery-menu-host-dynamic",
+      "domain": "boot-recovery-menu",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:boot:recovery-menu"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/recovery-menu-host/coverage.json",
+      "coverage_sources": [
+        "src/boot/recovery_menu.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:boot:recovery-menu",
+        "scenario": "Contrato host-only do menu e console de recovery",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "VGA e framebuffer VESA estaticos"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "exercitar console, glyphs, VESA, menu, navegacao, timeout, confirmacao e limites",
+        "expected": "console e menu preservam estados, escolhas, fallback e limites sem hardware real",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente buffers estaticos VGA/VESA e fila de teclas no processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "boot",
+          "recovery",
+          "menu",
+          "console",
+          "limits",
+          "coverage"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "make test-recovery-menu-host PASS com todas as funcoes reais de src/boot/recovery_menu.c observadas, incluindo console, glyphs, VESA, menu, navegacao, timeout e confirmacao"
+    },
+    {
       "id": "panic-host-dynamic",
       "domain": "kernel-panic",
       "owner": "quality",

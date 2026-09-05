@@ -43436,9 +43436,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:boot:recovery-menu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/boot/recovery_menu.c:recovery_console_draw_glyph",
@@ -43454,9 +43457,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:boot:recovery-menu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/boot/recovery_menu.c:recovery_console_glyph",
@@ -43472,9 +43478,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:boot:recovery-menu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/boot/recovery_menu.c:recovery_console_init",
@@ -43490,9 +43499,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:boot:recovery-menu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/boot/recovery_menu.c:recovery_console_pixel",
@@ -43508,9 +43520,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:boot:recovery-menu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/boot/recovery_menu.c:recovery_console_print",
@@ -43526,9 +43541,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:boot:recovery-menu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/boot/recovery_menu.c:recovery_console_print_u32",
@@ -43544,9 +43562,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:boot:recovery-menu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/boot/recovery_menu.c:recovery_console_put",
@@ -43562,9 +43583,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:boot:recovery-menu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/boot/recovery_menu.c:recovery_console_u16",
@@ -43580,9 +43604,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:boot:recovery-menu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/boot/recovery_menu.c:recovery_console_u32",
@@ -43598,9 +43625,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:boot:recovery-menu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/boot/recovery_menu.c:recovery_console_vesa_ready",
@@ -43616,9 +43646,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:boot:recovery-menu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/boot/recovery_menu.c:recovery_menu_action_name",
@@ -43634,9 +43667,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:boot:recovery-menu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/boot/recovery_menu.c:recovery_menu_actions",
@@ -43652,9 +43688,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:boot:recovery-menu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/boot/recovery_menu.c:recovery_menu_confirm_retry",
@@ -43670,9 +43709,33 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:boot:recovery-menu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/boot/recovery_menu.c:recovery_menu_host_test_contracts",
+      "kind": "c_function",
+      "source": "src/boot/recovery_menu.c",
+      "symbol": "recovery_menu_host_test_contracts",
+      "linkage": "external",
+      "owner": "boot",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:boot:recovery-menu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/boot/recovery_menu.c:recovery_menu_print_version",
@@ -43688,9 +43751,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:boot:recovery-menu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/boot/recovery_menu.c:recovery_menu_render",
@@ -43706,9 +43772,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:boot:recovery-menu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/boot/recovery_menu.c:recovery_menu_render_state",
@@ -43724,9 +43793,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:boot:recovery-menu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/boot/recovery_menu.c:recovery_menu_run",
@@ -43742,9 +43814,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:boot:recovery-menu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/boot/recovery_menu.c:recovery_menu_wait_f8",
@@ -43760,9 +43835,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:boot:recovery-menu"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/boot/recovery_runtime.c:kmemcpy",
@@ -162807,6 +162885,61 @@
     }
   ],
   "cases": [
+    {
+      "id": "host:boot:recovery-menu",
+      "scenario": "Contrato host-only do menu e console de recovery",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "hardware": "VGA e framebuffer VESA estaticos"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "exercitar console, glyphs, VESA, menu, navegacao, timeout, confirmacao e limites",
+      "expected": "console e menu preservam estados, escolhas, fallback e limites sem hardware real",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente buffers estaticos VGA/VESA e fila de teclas no processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "surface_ids": [
+        "c:src/boot/recovery_menu.c:recovery_console_clear",
+        "c:src/boot/recovery_menu.c:recovery_console_draw_glyph",
+        "c:src/boot/recovery_menu.c:recovery_console_glyph",
+        "c:src/boot/recovery_menu.c:recovery_console_init",
+        "c:src/boot/recovery_menu.c:recovery_console_pixel",
+        "c:src/boot/recovery_menu.c:recovery_console_print",
+        "c:src/boot/recovery_menu.c:recovery_console_print_u32",
+        "c:src/boot/recovery_menu.c:recovery_console_put",
+        "c:src/boot/recovery_menu.c:recovery_console_u16",
+        "c:src/boot/recovery_menu.c:recovery_console_u32",
+        "c:src/boot/recovery_menu.c:recovery_console_vesa_ready",
+        "c:src/boot/recovery_menu.c:recovery_menu_action_name",
+        "c:src/boot/recovery_menu.c:recovery_menu_actions",
+        "c:src/boot/recovery_menu.c:recovery_menu_confirm_retry",
+        "c:src/boot/recovery_menu.c:recovery_menu_host_test_contracts",
+        "c:src/boot/recovery_menu.c:recovery_menu_print_version",
+        "c:src/boot/recovery_menu.c:recovery_menu_render",
+        "c:src/boot/recovery_menu.c:recovery_menu_render_state",
+        "c:src/boot/recovery_menu.c:recovery_menu_run",
+        "c:src/boot/recovery_menu.c:recovery_menu_wait_f8"
+      ],
+      "tags": [
+        "host",
+        "boot",
+        "recovery",
+        "menu",
+        "console",
+        "limits",
+        "coverage"
+      ],
+      "status": "AUTOMATED"
+    },
     {
       "id": "host:boot:recovery-runtime",
       "scenario": "Contrato host-only dos utilitarios freestanding do runtime de recuperacao",

@@ -645,6 +645,22 @@ relatorio fica em `build/test-results/recovery-runtime-host/`:
 make test-recovery-runtime-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-recovery-menu-host` compila o menu e o console de recuperação
+reais com VGA e framebuffer VESA estáticos. A fixture cobre glyphs, impressão,
+limites de cursor, disponibilidade VESA, espera de F8, navegação, timeout,
+confirmação de retry e fallbacks do menu sem acessar endereços de hardware. O
+relatório fica em `build/test-results/recovery-menu-host/`:
+
+```text
+make test-recovery-menu-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O relatório instrumentado deve terminar com `status=PASS`,
+`unknown_addresses=[]` e `ambiguous_symbols=[]`, observando as 20 funções do
+translation unit de `src/boot/recovery_menu.c`. O processo usa os buffers
+estáticos somente com `ZEPHYROS_HOST_TEST`; o build freestanding continua
+usando o console e o framebuffer publicados pelo boot.
+
 O caso `test-panic-host` exercita as rotas de `panic` e `panic_memory` com
 captura do protocolo, da tela, das metricas e do halt por fixture host-only.
 Mensagens ausentes e explicitas, valores de memoria zero e no limite e o

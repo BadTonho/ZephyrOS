@@ -6463,3 +6463,18 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `PASS`, sem endereços desconhecidos ou símbolos ambíguos. O catálogo atual
   registra 7.160 `COVERED`, 166 `PENDING` e 167 casos; as demais pendências
   continuam explícitas.
+
+- Incremento Recovery Menu: console e seleção host-only — concluído em
+  2026-09-05 (America/Sao_Paulo). A fixture `host:boot:recovery-menu`,
+  compilada com `ZEPHYROS_HOST_TEST`, passou a exercitar diretamente o console
+  VGA, glyphs, framebuffer VESA, impressão, espera de F8, navegação, timeout,
+  confirmação de retry, fallbacks e limites do menu. Os buffers VGA/VESA e a
+  fila de teclas são estáticos e confinados ao processo host; o build
+  freestanding não usa esse caminho. Passaram `make q3check`, `make clean`,
+  `make`, `make test-recovery-menu-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`, sincronização/renderização,
+  `make catalog-test` e `git diff --check`. A cobertura dinâmica terminou
+  `PASS`, observando 20 funções do translation unit, com
+  `unknown_addresses=[]` e `ambiguous_symbols=[]`. O catálogo atual registra
+  7.327 superfícies, 7.180 `COVERED`, 147 `PENDING` e 168 casos; as demais
+  pendências continuam explícitas.
