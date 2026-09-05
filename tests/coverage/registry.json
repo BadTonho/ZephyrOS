@@ -4012,7 +4012,16 @@
       "coverage_sources": [
         "src/kernel/panic.c"
       ],
-      "include_public_apis": true,
+      "surface_ids": [
+        "c:src/kernel/panic.c:panic",
+        "c:src/kernel/panic.c:panic_draw_header",
+        "c:src/kernel/panic.c:panic_memory",
+        "c:src/kernel/panic.c:panic_print_metric",
+        "c:src/kernel/panic.c:panic_print_number",
+        "api:src/include/core/panic.h:panic",
+        "api:src/include/core/panic.h:panic_memory"
+      ],
+      "include_public_apis": false,
       "case_definition": {
         "id": "host:kernel:panic",
         "scenario": "Contrato host-only das rotas de panic e diagnostico de memoria",
@@ -4040,10 +4049,11 @@
         "surface_ids": [
           "c:src/kernel/panic.c:panic",
           "c:src/kernel/panic.c:panic_draw_header",
-          "c:src/kernel/panic.c:panic_halt",
           "c:src/kernel/panic.c:panic_memory",
           "c:src/kernel/panic.c:panic_print_metric",
-          "c:src/kernel/panic.c:panic_print_number"
+          "c:src/kernel/panic.c:panic_print_number",
+          "api:src/include/core/panic.h:panic",
+          "api:src/include/core/panic.h:panic_memory"
         ],
         "tags": [
           "host",

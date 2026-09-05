@@ -148,7 +148,7 @@ void video_flush_updates(void) {
     video_flush_calls++;
 }
 
-void panic_halt(void) {
+void host_panic_halt(void) {
     if (panic_jump_active) longjmp(panic_jump, 1);
 }
 

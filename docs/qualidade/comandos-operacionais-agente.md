@@ -649,6 +649,8 @@ O caso `test-panic-host` exercita as rotas de `panic` e `panic_memory` com
 captura do protocolo, da tela, das metricas e do halt por fixture host-only.
 Mensagens ausentes e explicitas, valores de memoria zero e no limite e o
 encaminhamento dos motivos canonicos sao verificados sem executar halt real.
+O adaptador usa o simbolo privado `host_panic_halt`; `panic_halt()` do kernel
+permanece fora da cobertura host-only ate ser exercitado por uma rota real.
 O relatorio fica em `build/test-results/panic-host/`:
 
 ```text
