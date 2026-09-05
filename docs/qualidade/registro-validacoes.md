@@ -6284,7 +6284,7 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   diretório, com doubles estáticos de vídeo, GUI, VESA, ícones, taskbar,
   memória e leitura de arquivos. `make test-filemanager-host
   HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` passou com
-  `-Wall -Wextra -Werror`. A cobertura dinâmica observou 81 funções reais de
+  `-Wall -Wextra -Werror`. A cobertura dinâmica observou 88 funções reais de
   `src/filemanager/filemanager.c`, com `status=PASS`,
   `unknown_addresses=[]` e `ambiguous_symbols=[]`. A sincronização final do
   catálogo, `make catalog-test`, o teste dos runners host-only e `git diff

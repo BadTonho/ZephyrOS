@@ -157,6 +157,7 @@ static void fm_record_history(void);
 static void fm_search_begin(void);
 static void fm_search_close(void);
 static void fm_search_refresh(void);
+static int fm_search_handle_key(uint8_t scancode);
 static int fm_search_activate_selected(void);
 
 static const wm_hosted_app_t fm_hosted_app = {
@@ -2524,6 +2525,8 @@ int fm_host_test_contracts(void) {
                                                      int data_mounted);
     extern void filemanager_host_reset_fs_fixture(void);
     extern void filemanager_host_set_index_fixture(int ready, int result_code);
+    extern void filemanager_host_set_index_status(uint32_t event_generation,
+                                                  file_index_state_t state);
     extern void filemanager_host_set_rename_result(int result);
     extern void filemanager_host_set_delete_result(int result);
     extern void filemanager_host_set_desktop_mode(desktop_mode_t mode);
@@ -2925,6 +2928,124 @@ int fm_host_test_contracts(void) {
     fm_help_mode = 1;
     fm_draw();
     fm_help_mode = 0;
+
+    fm_hosted = 1;
+    fm_hosted_x = 10;
+    fm_hosted_y = 20;
+    fm_hosted_width = 700;
+    fm_hosted_height = 500;
+    state.running = 1;
+    state.mode = FM_MODE_SIMPLE;
+    state.storage_virtual = 0;
+    state.storage_boot = 1;
+    state.storage_read_only = 0;
+    state.history_count = 0;
+    state.history_pos = 0;
+    state.current_path[0] = '\0';
+    fm_record_history();
+    fm_navigate_to("/docs");
+    if (!str_equal(state.current_path, "/docs") ||
+        state.history_count != 2 || state.selected != 0 ||
+        state.scroll_offset != 0) {
+        failures++;
+    }
+    if (fm_navigate_address_value("/downloads") != OK ||
+        !str_equal(state.current_path, "/downloads")) {
+        failures++;
+    }
+    if (fm_navigate_address_value(0) != ERR_NULL) failures++;
+
+    state.mode = FM_MODE_CLASSIC;
+    fm_select_virtual_root();
+    state.history_count = 0;
+    state.history_pos = 0;
+    fm_record_history();
+    if (fm_navigate_address_value("DATA:\\docs") != OK ||
+        !str_equal(state.storage_volume_id, "DATA") ||
+        !str_equal(state.current_path, "/docs") ||
+        !state.storage_read_only) {
+        failures++;
+    }
+    if (fm_navigate_address_value("MISSING:\\docs") != ERR_NOT_FOUND ||
+        fm_navigate_address_value("TOO-LONG-VOLUME:\\docs") != ERR_INVALID) {
+        failures++;
+    }
+    str_copy(state.current_path, "/a/b/");
+    fm_go_up();
+    if (!str_equal(state.current_path, "/a")) failures++;
+    str_copy(state.current_path, "/a");
+    fm_go_up();
+    if (!str_equal(state.current_path, "/")) failures++;
+    str_copy(state.current_path, "/");
+    fm_go_up();
+    if (!str_equal(state.current_path, "")) failures++;
+    fm_go_up();
+    if (!state.storage_virtual) failures++;
+
+    state.storage_virtual = 0;
+    state.storage_boot = 0;
+    state.storage_read_only = 1;
+    str_copy(state.storage_volume_id, "DATA");
+    state.storage_generation = 7U;
+    state.history_count = 0;
+    state.history_pos = 0;
+    str_copy(state.current_path, "first");
+    fm_record_history();
+    fm_navigate_to("second");
+    fm_go_back();
+    if (!str_equal(state.current_path, "first") || state.history_pos != 0) {
+        failures++;
+    }
+    fm_go_forward();
+    if (!str_equal(state.current_path, "second") || state.history_pos != 1) {
+        failures++;
+    }
+
+    state.mode = FM_MODE_CLASSIC;
+    state.running = 1;
+    fm_search_active = 1;
+    fm_search_input = 1;
+    fm_search_pos = 1U;
+    str_copy(fm_search_query, "n");
+    if (fm_search_handle_key(FM_SEARCH_SCANCODE_BACKSPACE) != 1 ||
+        fm_search_pos != 0U || fm_search_query[0] != '\0') {
+        failures++;
+    }
+    if (fm_search_handle_key(0x31U) != 1 || fm_search_pos != 1U ||
+        fm_search_query[0] != 'n') {
+        failures++;
+    }
+    if (fm_search_handle_key(FM_SEARCH_SCANCODE_ENTER) != 1 ||
+        fm_search_input) {
+        failures++;
+    }
+    fm_search_status.returned_matches = 1U;
+    fm_search_selected = 0;
+    fm_search_scroll = 0;
+    fm_search_handle_key(FM_SEARCH_SCANCODE_UP);
+    fm_search_handle_key(FM_SEARCH_SCANCODE_DOWN);
+    fm_search_handle_key(FM_SEARCH_SCANCODE_PAGE_UP);
+    fm_search_handle_key(FM_SEARCH_SCANCODE_PAGE_DOWN);
+    fm_search_handle_key(FM_SEARCH_SCANCODE_HOME);
+    fm_search_handle_key(FM_SEARCH_SCANCODE_END);
+    if (fm_search_handle_key(FM_SEARCH_SCANCODE_ENTER) != 1) failures++;
+    fm_search_active = 1;
+    if (fm_search_handle_key(FM_SEARCH_SCANCODE_ESCAPE) != 1 ||
+        fm_search_active) {
+        failures++;
+    }
+
+    state.running = 1;
+    state.mode = FM_MODE_CLASSIC;
+    fm_search_active = 1;
+    fm_search_event_generation = 1U;
+    fm_search_index_state = FILE_INDEX_STATE_READY;
+    filemanager_host_set_index_status(2U, FILE_INDEX_STATE_READY);
+    fm_update();
+    filemanager_host_set_index_status(10U, FILE_INDEX_STATE_READY);
+    fm_update();
+    fm_search_close();
+    fm_hosted = 0;
 
     fm_hosted = 1;
     state.mode = FM_MODE_CLASSIC;

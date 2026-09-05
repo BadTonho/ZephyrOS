@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6928 |
+| `COVERED` | 6935 |
 | `MANUAL` | 0 |
-| `PENDING` | 398 |
+| `PENDING` | 391 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -4839,9 +4839,9 @@
 | `c:src/filemanager/filemanager.c:fm_ensure_boot_directory` | `src/filemanager/filemanager.c` | `fm_ensure_boot_directory` | `filemanager` | `COVERED` | 2 |
 | `c:src/filemanager/filemanager.c:fm_fat_display_name` | `src/filemanager/filemanager.c` | `fm_fat_display_name` | `filemanager` | `COVERED` | 2 |
 | `c:src/filemanager/filemanager.c:fm_get_mode` | `src/filemanager/filemanager.c` | `fm_get_mode` | `filemanager` | `COVERED` | 1 |
-| `c:src/filemanager/filemanager.c:fm_go_back` | `src/filemanager/filemanager.c` | `fm_go_back` | `filemanager` | `PENDING` | 0 |
-| `c:src/filemanager/filemanager.c:fm_go_forward` | `src/filemanager/filemanager.c` | `fm_go_forward` | `filemanager` | `PENDING` | 0 |
-| `c:src/filemanager/filemanager.c:fm_go_up` | `src/filemanager/filemanager.c` | `fm_go_up` | `filemanager` | `PENDING` | 0 |
+| `c:src/filemanager/filemanager.c:fm_go_back` | `src/filemanager/filemanager.c` | `fm_go_back` | `filemanager` | `COVERED` | 1 |
+| `c:src/filemanager/filemanager.c:fm_go_forward` | `src/filemanager/filemanager.c` | `fm_go_forward` | `filemanager` | `COVERED` | 1 |
+| `c:src/filemanager/filemanager.c:fm_go_up` | `src/filemanager/filemanager.c` | `fm_go_up` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_handle_key` | `src/filemanager/filemanager.c` | `fm_handle_key` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_host_test_contracts` | `src/filemanager/filemanager.c` | `fm_host_test_contracts` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_hosted_close` | `src/filemanager/filemanager.c` | `fm_hosted_close` | `filemanager` | `COVERED` | 1 |
@@ -4851,8 +4851,8 @@
 | `c:src/filemanager/filemanager.c:fm_is_running` | `src/filemanager/filemanager.c` | `fm_is_running` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_join_path` | `src/filemanager/filemanager.c` | `fm_join_path` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_mouse_select_item` | `src/filemanager/filemanager.c` | `fm_mouse_select_item` | `filemanager` | `COVERED` | 1 |
-| `c:src/filemanager/filemanager.c:fm_navigate_address_value` | `src/filemanager/filemanager.c` | `fm_navigate_address_value` | `filemanager` | `PENDING` | 0 |
-| `c:src/filemanager/filemanager.c:fm_navigate_to` | `src/filemanager/filemanager.c` | `fm_navigate_to` | `filemanager` | `PENDING` | 0 |
+| `c:src/filemanager/filemanager.c:fm_navigate_address_value` | `src/filemanager/filemanager.c` | `fm_navigate_address_value` | `filemanager` | `COVERED` | 1 |
+| `c:src/filemanager/filemanager.c:fm_navigate_to` | `src/filemanager/filemanager.c` | `fm_navigate_to` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_open` | `src/filemanager/filemanager.c` | `fm_open` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_record_history` | `src/filemanager/filemanager.c` | `fm_record_history` | `filemanager` | `COVERED` | 2 |
 | `c:src/filemanager/filemanager.c:fm_redraw_file_view` | `src/filemanager/filemanager.c` | `fm_redraw_file_view` | `filemanager` | `COVERED` | 1 |
@@ -4868,7 +4868,7 @@
 | `c:src/filemanager/filemanager.c:fm_search_build_location` | `src/filemanager/filemanager.c` | `fm_search_build_location` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_search_button_pressed` | `src/filemanager/filemanager.c` | `fm_search_button_pressed` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_search_close` | `src/filemanager/filemanager.c` | `fm_search_close` | `filemanager` | `COVERED` | 2 |
-| `c:src/filemanager/filemanager.c:fm_search_handle_key` | `src/filemanager/filemanager.c` | `fm_search_handle_key` | `filemanager` | `PENDING` | 0 |
+| `c:src/filemanager/filemanager.c:fm_search_handle_key` | `src/filemanager/filemanager.c` | `fm_search_handle_key` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_search_move_page` | `src/filemanager/filemanager.c` | `fm_search_move_page` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_search_refresh` | `src/filemanager/filemanager.c` | `fm_search_refresh` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_search_scroll_selection` | `src/filemanager/filemanager.c` | `fm_search_scroll_selection` | `filemanager` | `COVERED` | 1 |
@@ -4879,7 +4879,7 @@
 | `c:src/filemanager/filemanager.c:fm_select_virtual_root` | `src/filemanager/filemanager.c` | `fm_select_virtual_root` | `filemanager` | `COVERED` | 2 |
 | `c:src/filemanager/filemanager.c:fm_side_items_for_height` | `src/filemanager/filemanager.c` | `fm_side_items_for_height` | `filemanager` | `COVERED` | 2 |
 | `c:src/filemanager/filemanager.c:fm_store_history_source` | `src/filemanager/filemanager.c` | `fm_store_history_source` | `filemanager` | `COVERED` | 2 |
-| `c:src/filemanager/filemanager.c:fm_update` | `src/filemanager/filemanager.c` | `fm_update` | `filemanager` | `PENDING` | 0 |
+| `c:src/filemanager/filemanager.c:fm_update` | `src/filemanager/filemanager.c` | `fm_update` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_validate_storage_source` | `src/filemanager/filemanager.c` | `fm_validate_storage_source` | `filemanager` | `COVERED` | 2 |
 | `c:src/filemanager/filemanager.c:fm_visible_rows` | `src/filemanager/filemanager.c` | `fm_visible_rows` | `filemanager` | `COVERED` | 2 |
 | `c:src/filemanager/filemanager.c:fm_visible_side_items` | `src/filemanager/filemanager.c` | `fm_visible_side_items` | `filemanager` | `COVERED` | 1 |
@@ -7535,7 +7535,7 @@
 | `host:tst5:blackbox` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo disponivel | compilar e executar o harness black-box com snapshots de terminal falsos | casos TST5 validos encontram o marcador apos nova geracao e caso invalido retorna ERR_NOT_FOUND | compilador ausente, warning, marcador ausente, caso invalido ou timeout | somente buffers estaticos e callbacks falsos do observador | processo host encerrado e relatorio de cobertura preservado |
 | `host:ui:appstore` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar formatacao, selecao, planos, estados, rollback, confianca e geometria da interface com doubles estaticos | helpers preservam limites, selecao, estados de catalogo, planos e coordenadas sem iniciar workers ou tocar em hardware | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers e estruturas estaticas da App Store no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:ui:desktop` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, desenho TUI/GUI, modos, selecao, teclado, cliques, arraste, limites e fallback | Desktop preserva estado, layout, selecao, navegacao, hit-testing e limpeza sem hardware real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do Desktop e doubles de video, VESA, taskbar, icons, GUI e mouse no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
-| `host:ui:filemanager` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar contratos de fontes, caminhos, nomes, layout Simple/Classic, selecao, historico, pesquisa, mutacoes, dialogs e desenho do Explorer com doubles estaticos | helpers preservam limites, normalizacao, navegacao, selecao, paginação e estados de indice sem efeitos externos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers e estado estaticos do processo host; nenhum VFS, disco, rede ou hardware real | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:ui:filemanager` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar contratos de fontes, caminhos, nomes, navegacao, historico, layout Simple/Classic, pesquisa, mutacoes, dialogs e desenho do Explorer com doubles estaticos | helpers preservam limites, normalizacao, navegacao, selecao, paginação e estados de indice sem efeitos externos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers e estado estaticos do processo host; nenhum VFS, disco, rede ou hardware real | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:ui:icons` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar defaults, mutacoes, fallback, cache BMP, limites VESA e falhas controladas | registro vetorial permanece utilizavel sem filesystem e BMPs validos sao aceitos somente no formato esperado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente registro, cache e dispositivos BMP/VESA falsos no processo host | processo host encerrado, cache liberado e manifesto, logs e cobertura preservados |
 | `host:ui:settings-icons` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, modos TUI/GUI, preferencias, dialogos, mouse, storage e editor de icones com entradas estaticas | estado, valores, selecao, navegacao, dialogos e encerramento preservam o contrato observavel | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado de configuracoes, buffers estaticos e doubles de video/GUI no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:ui:taskbar` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar estados TUI e GUI, layouts, botoes, menus, configuracao, cliques, relogio e limites | taskbar preserva configuracao, geometria, navegacao, selecao de janelas e fallback sem hardware grafico real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente configuracao, botoes, menus e chamadas de desenho dentro da fixture host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7727,13 +7727,6 @@
 - `c:src/boot/recovery_menu.c:recovery_menu_render_state`
 - `c:src/boot/recovery_menu.c:recovery_menu_run`
 - `c:src/boot/recovery_menu.c:recovery_menu_wait_f8`
-- `c:src/filemanager/filemanager.c:fm_go_back`
-- `c:src/filemanager/filemanager.c:fm_go_forward`
-- `c:src/filemanager/filemanager.c:fm_go_up`
-- `c:src/filemanager/filemanager.c:fm_navigate_address_value`
-- `c:src/filemanager/filemanager.c:fm_navigate_to`
-- `c:src/filemanager/filemanager.c:fm_search_handle_key`
-- `c:src/filemanager/filemanager.c:fm_update`
 - `c:src/kernel/kernel.c:desktop_process_main`
 - `c:src/kernel/kernel.c:global_mouse_handler`
 - `c:src/kernel/kernel.c:kernel_cancel_foreground_app`

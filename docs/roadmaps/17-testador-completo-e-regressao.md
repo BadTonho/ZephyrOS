@@ -166,7 +166,7 @@ Isso não significa declarar hardware físico validado sem equipamento.
       acessa disco, VFS, rede ou hardware real.
 - [x] `make test-filemanager-host
       HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` passou; o relatorio
-      `build/test-results/filemanager-host/coverage.json` observou 81 funcoes
+      `build/test-results/filemanager-host/coverage.json` observou 88 funcoes
       reais de `src/filemanager/filemanager.c`, com
       `unknown_addresses=[]` e `ambiguous_symbols=[]`. A sincronizacao cobriu
       15 superficies adicionais, totalizando 7.326 superficies, 6.903
@@ -181,7 +181,7 @@ Isso não significa declarar hardware físico validado sem equipamento.
       VESA, icones, taskbar, memoria e leitura de arquivos.
 - [x] `make test-filemanager-host
       HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` passou com
-      `-Wall -Wextra -Werror`; a cobertura dinamica observou 81 funcoes reais
+      `-Wall -Wextra -Werror`; a cobertura dinamica observou 88 funcoes reais
       de `src/filemanager/filemanager.c`, com `status=PASS`,
       `unknown_addresses=[]` e `ambiguous_symbols=[]`.
 - [x] A sincronizacao/renderizacao do catalogo, `make catalog-test`, o teste

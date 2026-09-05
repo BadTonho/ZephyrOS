@@ -107050,9 +107050,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_go_forward",
@@ -107068,9 +107071,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_go_up",
@@ -107086,9 +107092,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_handle_key",
@@ -107294,9 +107303,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_navigate_to",
@@ -107312,9 +107324,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_open",
@@ -107648,9 +107663,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_search_move_page",
@@ -107881,9 +107899,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:filemanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/filemanager/filemanager.c:fm_validate_storage_source",
@@ -173788,7 +173809,7 @@
         "hardware": "nenhum"
       },
       "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "exercitar contratos de fontes, caminhos, nomes, layout Simple/Classic, selecao, historico, pesquisa, mutacoes, dialogs e desenho do Explorer com doubles estaticos",
+      "action": "exercitar contratos de fontes, caminhos, nomes, navegacao, historico, layout Simple/Classic, pesquisa, mutacoes, dialogs e desenho do Explorer com doubles estaticos",
       "expected": "helpers preservam limites, normalizacao, navegacao, selecao, paginação e estados de indice sem efeitos externos",
       "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
       "effects": "somente buffers e estado estaticos do processo host; nenhum VFS, disco, rede ou hardware real",
@@ -173839,12 +173860,17 @@
         "c:src/filemanager/filemanager.c:fm_ensure_boot_directory",
         "c:src/filemanager/filemanager.c:fm_fat_display_name",
         "c:src/filemanager/filemanager.c:fm_get_mode",
+        "c:src/filemanager/filemanager.c:fm_go_back",
+        "c:src/filemanager/filemanager.c:fm_go_forward",
+        "c:src/filemanager/filemanager.c:fm_go_up",
         "c:src/filemanager/filemanager.c:fm_host_test_contracts",
         "c:src/filemanager/filemanager.c:fm_hosted_mouse",
         "c:src/filemanager/filemanager.c:fm_init",
         "c:src/filemanager/filemanager.c:fm_is_running",
         "c:src/filemanager/filemanager.c:fm_join_path",
         "c:src/filemanager/filemanager.c:fm_mouse_select_item",
+        "c:src/filemanager/filemanager.c:fm_navigate_address_value",
+        "c:src/filemanager/filemanager.c:fm_navigate_to",
         "c:src/filemanager/filemanager.c:fm_record_history",
         "c:src/filemanager/filemanager.c:fm_redraw_file_view",
         "c:src/filemanager/filemanager.c:fm_refresh_files",
@@ -173858,6 +173884,7 @@
         "c:src/filemanager/filemanager.c:fm_search_build_location",
         "c:src/filemanager/filemanager.c:fm_search_button_pressed",
         "c:src/filemanager/filemanager.c:fm_search_close",
+        "c:src/filemanager/filemanager.c:fm_search_handle_key",
         "c:src/filemanager/filemanager.c:fm_search_move_page",
         "c:src/filemanager/filemanager.c:fm_search_refresh",
         "c:src/filemanager/filemanager.c:fm_search_scroll_selection",
@@ -173868,6 +173895,7 @@
         "c:src/filemanager/filemanager.c:fm_select_virtual_root",
         "c:src/filemanager/filemanager.c:fm_side_items_for_height",
         "c:src/filemanager/filemanager.c:fm_store_history_source",
+        "c:src/filemanager/filemanager.c:fm_update",
         "c:src/filemanager/filemanager.c:fm_validate_storage_source",
         "c:src/filemanager/filemanager.c:fm_visible_rows",
         "c:src/filemanager/filemanager.c:fm_visible_side_items",
