@@ -2943,6 +2943,16 @@ int taskmgr_host_test_contracts(void) {
 
 #define TASKMGR_EXPECT(condition) do { if (!(condition)) failures++; } while (0)
 
+    taskmgr_init();
+    TASKMGR_EXPECT(!taskmgr_is_open());
+    TASKMGR_EXPECT(!taskmgr_is_gui_open());
+    TASKMGR_EXPECT(!taskmgr_is_gui_minimized());
+    taskmgr_gui_draw_bar(1, 1, 16, 150U, GUI_MODERN_COLOR_ACCENT);
+    TASKMGR_EXPECT(taskmgr_gui_refresh_memory_view() == ERR_NOT_FOUND);
+    TASKMGR_EXPECT(taskmgr_gui_parse_status(NULL, 0U, &view) == ERR_NULL);
+    TASKMGR_EXPECT(taskmgr_process_tick_usage(NULL) == 0U);
+    TASKMGR_EXPECT(taskmgr_find_thread_by_row(0) == NULL);
+
     taskmgr_gui_append_text(buffer, sizeof(buffer), &length, "proc");
     TASKMGR_EXPECT(kstrcmp(buffer, "proc") == 0 && length == 4U);
     TASKMGR_EXPECT(taskmgr_gui_append_text(0, sizeof(buffer), &length, "x") ==

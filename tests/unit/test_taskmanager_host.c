@@ -5,10 +5,12 @@
 #include "apps/shell_introspection.h"
 #include "core/errors.h"
 #include "core/log.h"
+#include "core/recovery.h"
 #include "core/string.h"
 #include "drivers/vesa.h"
 #include "fs/vfs.h"
 #include "process/process.h"
+#include "process/thread.h"
 #include "ui/display.h"
 #include "ui/gui.h"
 #include "ui/taskbar.h"
@@ -100,6 +102,24 @@ int vesa_has_backbuffer(void) {
     return 0;
 }
 
+void vesa_fill_rect(uint32_t x, uint32_t y, uint32_t width,
+                    uint32_t height, vesa_color_t color) {
+    (void)x;
+    (void)y;
+    (void)width;
+    (void)height;
+    (void)color;
+}
+
+int recovery_is_enabled(recovery_component_id_t component) {
+    (void)component;
+    return 0;
+}
+
+void taskbar_remove_app(tb_app_type_t app) {
+    (void)app;
+}
+
 int taskbar_get_work_area(tb_rect_t* area) {
     (void)area;
     return OK;
@@ -159,6 +179,11 @@ void vesa_draw_line(int x0, int y0, int x1, int y1, vesa_color_t color) {
 
 uint32_t thread_get_count(void) {
     return 0U;
+}
+
+thread_t* thread_get_by_id(uint32_t id) {
+    (void)id;
+    return NULL;
 }
 
 void video_put_char_at(char character, uint8_t color, int x, int y) {

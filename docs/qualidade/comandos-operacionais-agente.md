@@ -2228,8 +2228,11 @@ make test-taskmanager-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 
 O relatorio instrumentado fica em
 `build/test-results/taskmanager-host/coverage.json` e deve terminar com
-`status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`. A execucao
-tem timeout do runner e preserva manifesto, resultado, logs e cobertura.
+`status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`. A fixture
+tambem valida inicializacao, estado fechado, GUI indisponivel, parsing de
+status nulo, memoria procfs ausente, barra grafica e busca de thread vazia,
+observando 52 funcoes reais. A execucao tem timeout do runner e preserva
+manifesto, resultado, logs e cobertura.
 
 ## Shell: relatórios de rede host-only
 
