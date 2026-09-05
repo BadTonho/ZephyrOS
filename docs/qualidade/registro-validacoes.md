@@ -6034,5 +6034,17 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`; a compilação usou `-Wall
   -Wextra -Werror` e a cobertura observou 56 funções de `settings.c`, sem
   endereços desconhecidos ou símbolos ambíguos. O catálogo registra 7.309
-  superfícies, 6.516 `COVERED`, 793 `PENDING`, 59 aposentadas e 160 casos; as
+  superfícies, 6.525 `COVERED`, 784 `PENDING`, 59 aposentadas e 161 casos; as
+  pendências restantes continuam explícitas.
+
+- Incremento Shell/UI — contratos do Desktop concluído em 2026-09-05
+  (America/Sao_Paulo). Foi criado o caso host-only `host:ui:desktop` com
+  doubles estáticos de VESA, vídeo, display, taskbar, ícones, GUI, mouse e
+  timer. A fixture confirmou os modos Simple e Classic, inicialização,
+  desenho, layouts, seleção, teclado, cliques, arraste, hit-testing, limites,
+  fallback e limpeza de estado. Passou `make test-desktop-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` com `-Wall -Wextra -Werror`.
+  A cobertura dinâmica observou as 42 funções de `src/desktop/desktop.c`, sem
+  endereços desconhecidos ou símbolos ambíguos. O catálogo registra 7.309
+  superfícies, 6.525 `COVERED`, 784 `PENDING`, 59 aposentadas e 161 casos; as
   pendências restantes continuam explícitas.

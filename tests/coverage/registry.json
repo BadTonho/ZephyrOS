@@ -6497,6 +6497,58 @@
       "evidence": "make test-settings-icons-host PASS com 56 funcoes de settings.c observadas, incluindo inicializacao, modos, preferencias, dialogos, mouse, storage e editor TUI/GUI"
     },
     {
+      "id": "desktop-host-dynamic",
+      "domain": "ui-desktop",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:ui:desktop"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/desktop-host/coverage.json",
+      "coverage_sources": [
+        "src/desktop/desktop.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:ui:desktop",
+        "scenario": "Contratos deterministas do Desktop em modos Simple e Classic",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "display": "VESA, taskbar, icons, GUI e mouse falsos"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "exercitar inicializacao, desenho TUI/GUI, modos, selecao, teclado, cliques, arraste, limites e fallback",
+        "expected": "Desktop preserva estado, layout, selecao, navegacao, hit-testing e limpeza sem hardware real",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente estado estatico do Desktop e doubles de video, VESA, taskbar, icons, GUI e mouse no processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "ui",
+          "desktop",
+          "tui",
+          "gui",
+          "mouse",
+          "limits",
+          "coverage"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "make test-desktop-host PASS com modos Simple e Classic, layouts, selecao, teclado, cliques, arraste, fallback e cobertura instrumentada"
+    },
+    {
       "id": "assembly-qemu-tst7-dynamic",
       "domain": "drivers-interrupt-assembly",
       "owner": "quality",

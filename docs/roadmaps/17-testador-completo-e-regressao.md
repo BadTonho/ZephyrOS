@@ -19,11 +19,11 @@ equipamento e evidência correspondente.
 
 A infraestrutura TST1–TST7 está concluída para a matriz automatizada existente,
 mas o programa de cobertura integral ainda não está concluído. O catálogo
-mantém 160 casos `AUTOMATED`; após os incrementos de Shell, RTC,
+mantém 161 casos `AUTOMATED`; após os incrementos de Shell, RTC,
 processos/threads, FAT32, update U3/U4, os contratos remotos ZSYS e o
 repositório remoto de aplicativos, dos helpers de pacotes do Shell, da
 interface App Store, dos relatórios de rede do Shell e do módulo de
-Configurações, registra 7.309 superfícies, 6.516 `COVERED` e 793
+Configurações e do Desktop, registra 7.309 superfícies, 6.525 `COVERED` e 784
 `PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
@@ -160,8 +160,22 @@ Isso não significa declarar hardware físico validado sem equipamento.
       passou com warnings tratados como erro e cobertura dinâmica sem símbolos
       ambíguos. A evidência observou as 56 funções de
       `src/settings/settings.c`; o catálogo registra 7.309 superfícies,
-      6.516 `COVERED`, 793 `PENDING`, 59 aposentadas e 160 casos. As demais
+      6.525 `COVERED`, 784 `PENDING`, 59 aposentadas e 161 casos. As demais
       pendências de software continuam explícitas para próximos subblocos.
+
+### Incremento Shell/UI — contratos do Desktop — 2026-09-05
+
+- [x] Foi criado o caso host-only `host:ui:desktop`, com doubles estáticos de
+      VESA, vídeo, display, taskbar, ícones, GUI, mouse e timer.
+- [x] A fixture exercitou os modos Simple e Classic, inicialização, desenho,
+      layouts, seleção, teclado, cliques, arraste, hit-testing, limites de
+      ícones, fallback e limpeza de estado.
+- [x] `make test-desktop-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
+      passou com `-Wall -Wextra -Werror` e cobertura dinâmica das 42 funções
+      de `src/desktop/desktop.c`, sem endereços desconhecidos ou símbolos
+      ambíguos. O catálogo registra 7.309 superfícies, 6.525 `COVERED`, 784
+      `PENDING`, 59 aposentadas e 161 casos; as pendências restantes continuam
+      explícitas.
 
 ### Incremento Shell/UI App Store — 2026-09-05
 

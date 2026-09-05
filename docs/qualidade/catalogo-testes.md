@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7309**
-- Casos de teste: **160**
+- Casos de teste: **161**
 - Superfícies aposentadas: **59**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6517 |
+| `COVERED` | 6542 |
 | `MANUAL` | 0 |
-| `PENDING` | 792 |
+| `PENDING` | 767 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 160 |
+| `AUTOMATED` | 161 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -1506,20 +1506,20 @@
 | `api:src/include/ui/appstore.h:appstore_is_open` | `src/include/ui/appstore.h` | `appstore_is_open` | `ui` | `COVERED` | 4 |
 | `api:src/include/ui/appstore.h:appstore_open` | `src/include/ui/appstore.h` | `appstore_open` | `ui` | `COVERED` | 4 |
 | `api:src/include/ui/appstore_test.h:appstore_host_test_contracts` | `src/include/ui/appstore_test.h` | `appstore_host_test_contracts` | `ui` | `COVERED` | 4 |
-| `api:src/include/ui/desktop.h:desktop_add_icon` | `src/include/ui/desktop.h` | `desktop_add_icon` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/desktop.h:desktop_draw` | `src/include/ui/desktop.h` | `desktop_draw` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/desktop.h:desktop_draw_icons` | `src/include/ui/desktop.h` | `desktop_draw_icons` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/desktop.h:desktop_draw_workspace` | `src/include/ui/desktop.h` | `desktop_draw_workspace` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/desktop.h:desktop_get_mode` | `src/include/ui/desktop.h` | `desktop_get_mode` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/desktop.h:desktop_get_selected_app` | `src/include/ui/desktop.h` | `desktop_get_selected_app` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/desktop.h:desktop_handle_click` | `src/include/ui/desktop.h` | `desktop_handle_click` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/desktop.h:desktop_handle_key` | `src/include/ui/desktop.h` | `desktop_handle_key` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/desktop.h:desktop_handle_mouse` | `src/include/ui/desktop.h` | `desktop_handle_mouse` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/desktop.h:desktop_init` | `src/include/ui/desktop.h` | `desktop_init` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/desktop.h:desktop_is_active` | `src/include/ui/desktop.h` | `desktop_is_active` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/desktop.h:desktop_set_active` | `src/include/ui/desktop.h` | `desktop_set_active` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/desktop.h:desktop_set_mode` | `src/include/ui/desktop.h` | `desktop_set_mode` | `ui` | `COVERED` | 2 |
-| `api:src/include/ui/desktop.h:desktop_update_selection` | `src/include/ui/desktop.h` | `desktop_update_selection` | `ui` | `COVERED` | 2 |
+| `api:src/include/ui/desktop.h:desktop_add_icon` | `src/include/ui/desktop.h` | `desktop_add_icon` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/desktop.h:desktop_draw` | `src/include/ui/desktop.h` | `desktop_draw` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/desktop.h:desktop_draw_icons` | `src/include/ui/desktop.h` | `desktop_draw_icons` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/desktop.h:desktop_draw_workspace` | `src/include/ui/desktop.h` | `desktop_draw_workspace` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/desktop.h:desktop_get_mode` | `src/include/ui/desktop.h` | `desktop_get_mode` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/desktop.h:desktop_get_selected_app` | `src/include/ui/desktop.h` | `desktop_get_selected_app` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/desktop.h:desktop_handle_click` | `src/include/ui/desktop.h` | `desktop_handle_click` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/desktop.h:desktop_handle_key` | `src/include/ui/desktop.h` | `desktop_handle_key` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/desktop.h:desktop_handle_mouse` | `src/include/ui/desktop.h` | `desktop_handle_mouse` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/desktop.h:desktop_init` | `src/include/ui/desktop.h` | `desktop_init` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/desktop.h:desktop_is_active` | `src/include/ui/desktop.h` | `desktop_is_active` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/desktop.h:desktop_set_active` | `src/include/ui/desktop.h` | `desktop_set_active` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/desktop.h:desktop_set_mode` | `src/include/ui/desktop.h` | `desktop_set_mode` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/desktop.h:desktop_update_selection` | `src/include/ui/desktop.h` | `desktop_update_selection` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/display.h:display_apply_scale` | `src/include/ui/display.h` | `display_apply_scale` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/display.h:display_get_metrics` | `src/include/ui/display.h` | `display_get_metrics` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/display.h:display_init` | `src/include/ui/display.h` | `display_init` | `ui` | `COVERED` | 3 |
@@ -4036,46 +4036,46 @@
 | `c:src/core/workqueue.c:workqueue_validate_state` | `src/core/workqueue.c` | `workqueue_validate_state` | `core` | `COVERED` | 4 |
 | `c:src/core/workqueue.c:workqueue_wait_condition` | `src/core/workqueue.c` | `workqueue_wait_condition` | `core` | `COVERED` | 2 |
 | `c:src/core/workqueue.c:workqueue_worker_main` | `src/core/workqueue.c` | `workqueue_worker_main` | `core` | `COVERED` | 1 |
-| `c:src/desktop/desktop.c:desktop_add_icon` | `src/desktop/desktop.c` | `desktop_add_icon` | `desktop` | `PENDING` | 0 |
-| `c:src/desktop/desktop.c:desktop_apply_drag_preview` | `src/desktop/desktop.c` | `desktop_apply_drag_preview` | `desktop` | `COVERED` | 2 |
-| `c:src/desktop/desktop.c:desktop_assign_classic_slots` | `src/desktop/desktop.c` | `desktop_assign_classic_slots` | `desktop` | `COVERED` | 2 |
-| `c:src/desktop/desktop.c:desktop_build_classic_slots` | `src/desktop/desktop.c` | `desktop_build_classic_slots` | `desktop` | `COVERED` | 2 |
-| `c:src/desktop/desktop.c:desktop_classic_background` | `src/desktop/desktop.c` | `desktop_classic_background` | `desktop` | `COVERED` | 2 |
-| `c:src/desktop/desktop.c:desktop_classic_get_columns` | `src/desktop/desktop.c` | `desktop_classic_get_columns` | `desktop` | `COVERED` | 2 |
-| `c:src/desktop/desktop.c:desktop_drag_threshold_reached` | `src/desktop/desktop.c` | `desktop_drag_threshold_reached` | `desktop` | `PENDING` | 0 |
-| `c:src/desktop/desktop.c:desktop_draw` | `src/desktop/desktop.c` | `desktop_draw` | `desktop` | `PENDING` | 0 |
-| `c:src/desktop/desktop.c:desktop_draw_classic` | `src/desktop/desktop.c` | `desktop_draw_classic` | `desktop` | `PENDING` | 0 |
-| `c:src/desktop/desktop.c:desktop_draw_classic_bitmap` | `src/desktop/desktop.c` | `desktop_draw_classic_bitmap` | `desktop` | `COVERED` | 2 |
-| `c:src/desktop/desktop.c:desktop_draw_classic_workspace` | `src/desktop/desktop.c` | `desktop_draw_classic_workspace` | `desktop` | `COVERED` | 2 |
-| `c:src/desktop/desktop.c:desktop_draw_icons` | `src/desktop/desktop.c` | `desktop_draw_icons` | `desktop` | `PENDING` | 0 |
-| `c:src/desktop/desktop.c:desktop_draw_icons_classic` | `src/desktop/desktop.c` | `desktop_draw_icons_classic` | `desktop` | `COVERED` | 2 |
-| `c:src/desktop/desktop.c:desktop_draw_icons_simple` | `src/desktop/desktop.c` | `desktop_draw_icons_simple` | `desktop` | `PENDING` | 0 |
-| `c:src/desktop/desktop.c:desktop_draw_simple` | `src/desktop/desktop.c` | `desktop_draw_simple` | `desktop` | `PENDING` | 0 |
-| `c:src/desktop/desktop.c:desktop_draw_workspace` | `src/desktop/desktop.c` | `desktop_draw_workspace` | `desktop` | `COVERED` | 2 |
-| `c:src/desktop/desktop.c:desktop_find_classic_icon` | `src/desktop/desktop.c` | `desktop_find_classic_icon` | `desktop` | `PENDING` | 0 |
-| `c:src/desktop/desktop.c:desktop_find_drop_slot` | `src/desktop/desktop.c` | `desktop_find_drop_slot` | `desktop` | `PENDING` | 0 |
-| `c:src/desktop/desktop.c:desktop_find_free_slot` | `src/desktop/desktop.c` | `desktop_find_free_slot` | `desktop` | `PENDING` | 0 |
-| `c:src/desktop/desktop.c:desktop_find_nearest_slot` | `src/desktop/desktop.c` | `desktop_find_nearest_slot` | `desktop` | `PENDING` | 0 |
-| `c:src/desktop/desktop.c:desktop_find_slot_by_grid` | `src/desktop/desktop.c` | `desktop_find_slot_by_grid` | `desktop` | `COVERED` | 2 |
-| `c:src/desktop/desktop.c:desktop_get_icon_entry` | `src/desktop/desktop.c` | `desktop_get_icon_entry` | `desktop` | `PENDING` | 0 |
-| `c:src/desktop/desktop.c:desktop_get_mode` | `src/desktop/desktop.c` | `desktop_get_mode` | `desktop` | `COVERED` | 2 |
-| `c:src/desktop/desktop.c:desktop_get_selected_app` | `src/desktop/desktop.c` | `desktop_get_selected_app` | `desktop` | `PENDING` | 0 |
-| `c:src/desktop/desktop.c:desktop_handle_click` | `src/desktop/desktop.c` | `desktop_handle_click` | `desktop` | `PENDING` | 0 |
-| `c:src/desktop/desktop.c:desktop_handle_key` | `src/desktop/desktop.c` | `desktop_handle_key` | `desktop` | `COVERED` | 2 |
-| `c:src/desktop/desktop.c:desktop_handle_mouse` | `src/desktop/desktop.c` | `desktop_handle_mouse` | `desktop` | `PENDING` | 0 |
-| `c:src/desktop/desktop.c:desktop_init` | `src/desktop/desktop.c` | `desktop_init` | `desktop` | `PENDING` | 0 |
-| `c:src/desktop/desktop.c:desktop_is_active` | `src/desktop/desktop.c` | `desktop_is_active` | `desktop` | `COVERED` | 2 |
-| `c:src/desktop/desktop.c:desktop_layout_classic` | `src/desktop/desktop.c` | `desktop_layout_classic` | `desktop` | `COVERED` | 2 |
-| `c:src/desktop/desktop.c:desktop_rects_intersect` | `src/desktop/desktop.c` | `desktop_rects_intersect` | `desktop` | `PENDING` | 0 |
-| `c:src/desktop/desktop.c:desktop_reset_drag` | `src/desktop/desktop.c` | `desktop_reset_drag` | `desktop` | `PENDING` | 0 |
-| `c:src/desktop/desktop.c:desktop_set_active` | `src/desktop/desktop.c` | `desktop_set_active` | `desktop` | `PENDING` | 0 |
-| `c:src/desktop/desktop.c:desktop_set_mode` | `src/desktop/desktop.c` | `desktop_set_mode` | `desktop` | `PENDING` | 0 |
-| `c:src/desktop/desktop.c:desktop_slot_is_occupied` | `src/desktop/desktop.c` | `desktop_slot_is_occupied` | `desktop` | `PENDING` | 0 |
-| `c:src/desktop/desktop.c:desktop_text_length` | `src/desktop/desktop.c` | `desktop_text_length` | `desktop` | `PENDING` | 0 |
-| `c:src/desktop/desktop.c:desktop_update_drag_preview` | `src/desktop/desktop.c` | `desktop_update_drag_preview` | `desktop` | `PENDING` | 0 |
-| `c:src/desktop/desktop.c:desktop_update_selection` | `src/desktop/desktop.c` | `desktop_update_selection` | `desktop` | `PENDING` | 0 |
-| `c:src/desktop/desktop.c:draw_single_icon_classic` | `src/desktop/desktop.c` | `draw_single_icon_classic` | `desktop` | `COVERED` | 2 |
-| `c:src/desktop/desktop.c:draw_single_icon_simple` | `src/desktop/desktop.c` | `draw_single_icon_simple` | `desktop` | `PENDING` | 0 |
+| `c:src/desktop/desktop.c:desktop_add_icon` | `src/desktop/desktop.c` | `desktop_add_icon` | `desktop` | `COVERED` | 1 |
+| `c:src/desktop/desktop.c:desktop_apply_drag_preview` | `src/desktop/desktop.c` | `desktop_apply_drag_preview` | `desktop` | `COVERED` | 3 |
+| `c:src/desktop/desktop.c:desktop_assign_classic_slots` | `src/desktop/desktop.c` | `desktop_assign_classic_slots` | `desktop` | `COVERED` | 3 |
+| `c:src/desktop/desktop.c:desktop_build_classic_slots` | `src/desktop/desktop.c` | `desktop_build_classic_slots` | `desktop` | `COVERED` | 3 |
+| `c:src/desktop/desktop.c:desktop_classic_background` | `src/desktop/desktop.c` | `desktop_classic_background` | `desktop` | `COVERED` | 3 |
+| `c:src/desktop/desktop.c:desktop_classic_get_columns` | `src/desktop/desktop.c` | `desktop_classic_get_columns` | `desktop` | `COVERED` | 3 |
+| `c:src/desktop/desktop.c:desktop_drag_threshold_reached` | `src/desktop/desktop.c` | `desktop_drag_threshold_reached` | `desktop` | `COVERED` | 1 |
+| `c:src/desktop/desktop.c:desktop_draw` | `src/desktop/desktop.c` | `desktop_draw` | `desktop` | `COVERED` | 1 |
+| `c:src/desktop/desktop.c:desktop_draw_classic` | `src/desktop/desktop.c` | `desktop_draw_classic` | `desktop` | `COVERED` | 1 |
+| `c:src/desktop/desktop.c:desktop_draw_classic_bitmap` | `src/desktop/desktop.c` | `desktop_draw_classic_bitmap` | `desktop` | `COVERED` | 3 |
+| `c:src/desktop/desktop.c:desktop_draw_classic_workspace` | `src/desktop/desktop.c` | `desktop_draw_classic_workspace` | `desktop` | `COVERED` | 3 |
+| `c:src/desktop/desktop.c:desktop_draw_icons` | `src/desktop/desktop.c` | `desktop_draw_icons` | `desktop` | `COVERED` | 1 |
+| `c:src/desktop/desktop.c:desktop_draw_icons_classic` | `src/desktop/desktop.c` | `desktop_draw_icons_classic` | `desktop` | `COVERED` | 3 |
+| `c:src/desktop/desktop.c:desktop_draw_icons_simple` | `src/desktop/desktop.c` | `desktop_draw_icons_simple` | `desktop` | `COVERED` | 1 |
+| `c:src/desktop/desktop.c:desktop_draw_simple` | `src/desktop/desktop.c` | `desktop_draw_simple` | `desktop` | `COVERED` | 1 |
+| `c:src/desktop/desktop.c:desktop_draw_workspace` | `src/desktop/desktop.c` | `desktop_draw_workspace` | `desktop` | `COVERED` | 3 |
+| `c:src/desktop/desktop.c:desktop_find_classic_icon` | `src/desktop/desktop.c` | `desktop_find_classic_icon` | `desktop` | `COVERED` | 1 |
+| `c:src/desktop/desktop.c:desktop_find_drop_slot` | `src/desktop/desktop.c` | `desktop_find_drop_slot` | `desktop` | `COVERED` | 1 |
+| `c:src/desktop/desktop.c:desktop_find_free_slot` | `src/desktop/desktop.c` | `desktop_find_free_slot` | `desktop` | `COVERED` | 1 |
+| `c:src/desktop/desktop.c:desktop_find_nearest_slot` | `src/desktop/desktop.c` | `desktop_find_nearest_slot` | `desktop` | `COVERED` | 1 |
+| `c:src/desktop/desktop.c:desktop_find_slot_by_grid` | `src/desktop/desktop.c` | `desktop_find_slot_by_grid` | `desktop` | `COVERED` | 3 |
+| `c:src/desktop/desktop.c:desktop_get_icon_entry` | `src/desktop/desktop.c` | `desktop_get_icon_entry` | `desktop` | `COVERED` | 1 |
+| `c:src/desktop/desktop.c:desktop_get_mode` | `src/desktop/desktop.c` | `desktop_get_mode` | `desktop` | `COVERED` | 3 |
+| `c:src/desktop/desktop.c:desktop_get_selected_app` | `src/desktop/desktop.c` | `desktop_get_selected_app` | `desktop` | `COVERED` | 1 |
+| `c:src/desktop/desktop.c:desktop_handle_click` | `src/desktop/desktop.c` | `desktop_handle_click` | `desktop` | `COVERED` | 1 |
+| `c:src/desktop/desktop.c:desktop_handle_key` | `src/desktop/desktop.c` | `desktop_handle_key` | `desktop` | `COVERED` | 3 |
+| `c:src/desktop/desktop.c:desktop_handle_mouse` | `src/desktop/desktop.c` | `desktop_handle_mouse` | `desktop` | `COVERED` | 1 |
+| `c:src/desktop/desktop.c:desktop_init` | `src/desktop/desktop.c` | `desktop_init` | `desktop` | `COVERED` | 1 |
+| `c:src/desktop/desktop.c:desktop_is_active` | `src/desktop/desktop.c` | `desktop_is_active` | `desktop` | `COVERED` | 3 |
+| `c:src/desktop/desktop.c:desktop_layout_classic` | `src/desktop/desktop.c` | `desktop_layout_classic` | `desktop` | `COVERED` | 3 |
+| `c:src/desktop/desktop.c:desktop_rects_intersect` | `src/desktop/desktop.c` | `desktop_rects_intersect` | `desktop` | `COVERED` | 1 |
+| `c:src/desktop/desktop.c:desktop_reset_drag` | `src/desktop/desktop.c` | `desktop_reset_drag` | `desktop` | `COVERED` | 1 |
+| `c:src/desktop/desktop.c:desktop_set_active` | `src/desktop/desktop.c` | `desktop_set_active` | `desktop` | `COVERED` | 1 |
+| `c:src/desktop/desktop.c:desktop_set_mode` | `src/desktop/desktop.c` | `desktop_set_mode` | `desktop` | `COVERED` | 1 |
+| `c:src/desktop/desktop.c:desktop_slot_is_occupied` | `src/desktop/desktop.c` | `desktop_slot_is_occupied` | `desktop` | `COVERED` | 1 |
+| `c:src/desktop/desktop.c:desktop_text_length` | `src/desktop/desktop.c` | `desktop_text_length` | `desktop` | `COVERED` | 1 |
+| `c:src/desktop/desktop.c:desktop_update_drag_preview` | `src/desktop/desktop.c` | `desktop_update_drag_preview` | `desktop` | `COVERED` | 1 |
+| `c:src/desktop/desktop.c:desktop_update_selection` | `src/desktop/desktop.c` | `desktop_update_selection` | `desktop` | `COVERED` | 1 |
+| `c:src/desktop/desktop.c:draw_single_icon_classic` | `src/desktop/desktop.c` | `draw_single_icon_classic` | `desktop` | `COVERED` | 3 |
+| `c:src/desktop/desktop.c:draw_single_icon_simple` | `src/desktop/desktop.c` | `draw_single_icon_simple` | `desktop` | `COVERED` | 1 |
 | `c:src/drivers/ac97.c:ac97_delay` | `src/drivers/ac97.c` | `ac97_delay` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/ac97.c:ac97_get_device` | `src/drivers/ac97.c` | `ac97_get_device` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/ac97.c:ac97_get_sample_rate` | `src/drivers/ac97.c` | `ac97_get_sample_rate` | `drivers` | `COVERED` | 1 |
@@ -7555,6 +7555,7 @@
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
 | `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
+| `host:ui:desktop` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, desenho TUI/GUI, modos, selecao, teclado, cliques, arraste, limites e fallback | Desktop preserva estado, layout, selecao, navegacao, hit-testing e limpeza sem hardware real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do Desktop e doubles de video, VESA, taskbar, icons, GUI e mouse no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 
 ## Superfícies sem caso associado
 
@@ -7756,31 +7757,6 @@
 - `c:src/boot/recovery_menu.c:recovery_menu_render_state`
 - `c:src/boot/recovery_menu.c:recovery_menu_run`
 - `c:src/boot/recovery_menu.c:recovery_menu_wait_f8`
-- `c:src/desktop/desktop.c:desktop_add_icon`
-- `c:src/desktop/desktop.c:desktop_drag_threshold_reached`
-- `c:src/desktop/desktop.c:desktop_draw`
-- `c:src/desktop/desktop.c:desktop_draw_classic`
-- `c:src/desktop/desktop.c:desktop_draw_icons`
-- `c:src/desktop/desktop.c:desktop_draw_icons_simple`
-- `c:src/desktop/desktop.c:desktop_draw_simple`
-- `c:src/desktop/desktop.c:desktop_find_classic_icon`
-- `c:src/desktop/desktop.c:desktop_find_drop_slot`
-- `c:src/desktop/desktop.c:desktop_find_free_slot`
-- `c:src/desktop/desktop.c:desktop_find_nearest_slot`
-- `c:src/desktop/desktop.c:desktop_get_icon_entry`
-- `c:src/desktop/desktop.c:desktop_get_selected_app`
-- `c:src/desktop/desktop.c:desktop_handle_click`
-- `c:src/desktop/desktop.c:desktop_handle_mouse`
-- `c:src/desktop/desktop.c:desktop_init`
-- `c:src/desktop/desktop.c:desktop_rects_intersect`
-- `c:src/desktop/desktop.c:desktop_reset_drag`
-- `c:src/desktop/desktop.c:desktop_set_active`
-- `c:src/desktop/desktop.c:desktop_set_mode`
-- `c:src/desktop/desktop.c:desktop_slot_is_occupied`
-- `c:src/desktop/desktop.c:desktop_text_length`
-- `c:src/desktop/desktop.c:desktop_update_drag_preview`
-- `c:src/desktop/desktop.c:desktop_update_selection`
-- `c:src/desktop/desktop.c:draw_single_icon_simple`
 - `c:src/filemanager/filemanager.c:fm_block_read_only_mutation`
 - `c:src/filemanager/filemanager.c:fm_classic_draw_help`
 - `c:src/filemanager/filemanager.c:fm_classic_draw_input_dialog`
