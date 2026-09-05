@@ -6193,3 +6193,20 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `make catalog-test`. O catálogo registra 7.321 superfícies, 6.871
   `COVERED`, 450 `PENDING`, 59 aposentadas e 165 casos; as pendências dos
   demais subsistemas continuam explícitas.
+
+- Incremento UI/Updater host-only — concluído em 2026-09-05
+  (America/Sao_Paulo). A fixture `host:ui:updater`, compilada com
+  `ZEPHYROS_HOST_TEST`, passou a exercitar diretamente 24 funções reais de
+  `src/updater/updater.c` e quatro funções de `src/core/string.c`, cobrindo
+  nomes e truncamento, ordenação, formatação, histórico, cancelamento por
+  teclado, cache, precondições de slots e edição de tags. O contrato usa
+  buffers e doubles estáticos, sem serviços externos, disco, rede ou hardware,
+  e sem espera indefinida.
+  Passaram `make test-updater-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`, `make q3check`, `make clean`
+  seguido de `make`, a reexecução dos 128 casos host-only, a sincronização e
+  renderização do catálogo, `make catalog-test` e `git diff --check`.
+  `build/test-results/updater-host/coverage.json` terminou `PASS`, com
+  `unknown_addresses=[]` e `ambiguous_symbols=[]`. O catálogo registra 7.326
+  superfícies, 6.876 `COVERED`, 450 `PENDING`, 59 aposentadas e 165 casos;
+  as pendências dos demais subsistemas continuam explícitas.

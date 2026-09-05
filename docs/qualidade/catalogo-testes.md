@@ -4,13 +4,13 @@
 
 ## Resumo
 
-- Superfícies ativas: **7321**
+- Superfícies ativas: **7326**
 - Casos de teste: **165**
 - Superfícies aposentadas: **59**
 
 | Tipo | Quantidade |
 |---|---:|
-| `api_function` | 1582 |
+| `api_function` | 1587 |
 | `asm_entry` | 101 |
 | `c_function` | 5518 |
 | `shell_command` | 95 |
@@ -19,7 +19,7 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6871 |
+| `COVERED` | 6876 |
 | `MANUAL` | 0 |
 | `PENDING` | 450 |
 
@@ -51,7 +51,7 @@
 | `shell` | 1089 |
 | `taskbar` | 47 |
 | `thread` | 34 |
-| `ui` | 144 |
+| `ui` | 149 |
 | `updater` | 87 |
 | `wm` | 81 |
 
@@ -1606,6 +1606,11 @@
 | `api:src/include/ui/updater.h:updater_init` | `src/include/ui/updater.h` | `updater_init` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/updater.h:updater_is_open` | `src/include/ui/updater.h` | `updater_is_open` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/updater.h:updater_open` | `src/include/ui/updater.h` | `updater_open` | `ui` | `COVERED` | 3 |
+| `api:src/include/ui/updater_test.h:updater_host_fixture_clear_message` | `src/include/ui/updater_test.h` | `updater_host_fixture_clear_message` | `ui` | `PENDING` | 0 |
+| `api:src/include/ui/updater_test.h:updater_host_fixture_set_cached_path` | `src/include/ui/updater_test.h` | `updater_host_fixture_set_cached_path` | `ui` | `PENDING` | 0 |
+| `api:src/include/ui/updater_test.h:updater_host_fixture_set_keyboard_ascii` | `src/include/ui/updater_test.h` | `updater_host_fixture_set_keyboard_ascii` | `ui` | `PENDING` | 0 |
+| `api:src/include/ui/updater_test.h:updater_host_fixture_set_message` | `src/include/ui/updater_test.h` | `updater_host_fixture_set_message` | `ui` | `PENDING` | 0 |
+| `api:src/include/ui/updater_test.h:updater_host_fixture_set_slots` | `src/include/ui/updater_test.h` | `updater_host_fixture_set_slots` | `ui` | `PENDING` | 0 |
 | `api:src/include/ui/updater_test.h:updater_host_test_contracts` | `src/include/ui/updater_test.h` | `updater_host_test_contracts` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/wm.h:wm_close_focused` | `src/include/ui/wm.h` | `wm_close_focused` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/wm.h:wm_close_hosted_app` | `src/include/ui/wm.h` | `wm_close_hosted_app` | `ui` | `COVERED` | 2 |
@@ -7104,7 +7109,7 @@
 | `c:src/thread/thread.c:thread_wait_yield_transition` | `src/thread/thread.c` | `thread_wait_yield_transition` | `thread` | `COVERED` | 1 |
 | `c:src/thread/thread.c:thread_wake_channel` | `src/thread/thread.c` | `thread_wake_channel` | `thread` | `COVERED` | 1 |
 | `c:src/thread/thread.c:thread_yield` | `src/thread/thread.c` | `thread_yield` | `thread` | `COVERED` | 5 |
-| `c:src/updater/updater.c:updater_cancel_check` | `src/updater/updater.c` | `updater_cancel_check` | `updater` | `PENDING` | 0 |
+| `c:src/updater/updater.c:updater_cancel_check` | `src/updater/updater.c` | `updater_cancel_check` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_change_selection` | `src/updater/updater.c` | `updater_change_selection` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_close` | `src/updater/updater.c` | `updater_close` | `updater` | `PENDING` | 0 |
 | `c:src/updater/updater.c:updater_confirm_action` | `src/updater/updater.c` | `updater_confirm_action` | `updater` | `PENDING` | 0 |
@@ -7126,7 +7131,7 @@
 | `c:src/updater/updater.c:updater_handle_confirmation_click` | `src/updater/updater.c` | `updater_handle_confirmation_click` | `updater` | `PENDING` | 0 |
 | `c:src/updater/updater.c:updater_handle_key` | `src/updater/updater.c` | `updater_handle_key` | `updater` | `PENDING` | 0 |
 | `c:src/updater/updater.c:updater_handle_mouse` | `src/updater/updater.c` | `updater_handle_mouse` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_history_detail_text` | `src/updater/updater.c` | `updater_history_detail_text` | `updater` | `PENDING` | 0 |
+| `c:src/updater/updater.c:updater_history_detail_text` | `src/updater/updater.c` | `updater_history_detail_text` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_host_test_contracts` | `src/updater/updater.c` | `updater_host_test_contracts` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_hosted_close` | `src/updater/updater.c` | `updater_hosted_close` | `updater` | `PENDING` | 0 |
 | `c:src/updater/updater.c:updater_hosted_draw` | `src/updater/updater.c` | `updater_hosted_draw` | `updater` | `PENDING` | 0 |
@@ -7173,8 +7178,8 @@
 | `c:src/updater/updater.c:updater_simple_print_version` | `src/updater/updater.c` | `updater_simple_print_version` | `updater` | `PENDING` | 0 |
 | `c:src/updater/updater.c:updater_sort_packages` | `src/updater/updater.c` | `updater_sort_packages` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_system_action` | `src/updater/updater.c` | `updater_system_action` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_system_cached_path` | `src/updater/updater.c` | `updater_system_cached_path` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_system_offer_final_reboot` | `src/updater/updater.c` | `updater_system_offer_final_reboot` | `updater` | `PENDING` | 0 |
+| `c:src/updater/updater.c:updater_system_cached_path` | `src/updater/updater.c` | `updater_system_cached_path` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_system_offer_final_reboot` | `src/updater/updater.c` | `updater_system_offer_final_reboot` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_system_run_apply` | `src/updater/updater.c` | `updater_system_run_apply` | `updater` | `PENDING` | 0 |
 | `c:src/updater/updater.c:updater_system_run_cancel` | `src/updater/updater.c` | `updater_system_run_cancel` | `updater` | `PENDING` | 0 |
 | `c:src/updater/updater.c:updater_system_run_check` | `src/updater/updater.c` | `updater_system_run_check` | `updater` | `PENDING` | 0 |
@@ -7183,7 +7188,7 @@
 | `c:src/updater/updater.c:updater_system_slot_name` | `src/updater/updater.c` | `updater_system_slot_name` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_system_tag_begin` | `src/updater/updater.c` | `updater_system_tag_begin` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_system_tag_finish` | `src/updater/updater.c` | `updater_system_tag_finish` | `updater` | `COVERED` | 1 |
-| `c:src/updater/updater.c:updater_system_tag_key` | `src/updater/updater.c` | `updater_system_tag_key` | `updater` | `PENDING` | 0 |
+| `c:src/updater/updater.c:updater_system_tag_key` | `src/updater/updater.c` | `updater_system_tag_key` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_system_tag_valid` | `src/updater/updater.c` | `updater_system_tag_valid` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_text_append` | `src/updater/updater.c` | `updater_text_append` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_text_append_u32` | `src/updater/updater.c` | `updater_text_append_u32` | `updater` | `COVERED` | 1 |
@@ -7534,7 +7539,7 @@
 | `host:ui:icons` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar defaults, mutacoes, fallback, cache BMP, limites VESA e falhas controladas | registro vetorial permanece utilizavel sem filesystem e BMPs validos sao aceitos somente no formato esperado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente registro, cache e dispositivos BMP/VESA falsos no processo host | processo host encerrado, cache liberado e manifesto, logs e cobertura preservados |
 | `host:ui:settings-icons` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, modos TUI/GUI, preferencias, dialogos, mouse, storage e editor de icones com entradas estaticas | estado, valores, selecao, navegacao, dialogos e encerramento preservam o contrato observavel | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado de configuracoes, buffers estaticos e doubles de video/GUI no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:ui:taskbar` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar estados TUI e GUI, layouts, botoes, menus, configuracao, cliques, relogio e limites | taskbar preserva configuracao, geometria, navegacao, selecao de janelas e fallback sem hardware grafico real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente configuracao, botoes, menus e chamadas de desenho dentro da fixture host | processo host encerrado e manifesto, logs e cobertura preservados |
-| `host:ui:updater` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar nomes ZUP, ordenacao, formatacao, selecao, tags ZSYS, hit-test e estados remotos | helpers preservam limites, maiusculas, estados e textos canonicos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estruturas estaticas do processo host; nenhum disco, rede, worker ou hardware real | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:ui:updater` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar nomes ZUP, ordenacao, formatacao, historico, cancelamento, selecao, tags ZSYS e preflight de slots | helpers preservam limites, maiusculas, estados, textos canonicos e codigos de erro | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estruturas estaticas do processo host; nenhum disco, rede, worker ou hardware real | processo host encerrado e manifesto, logs e cobertura preservados |
 | `qemu:tst2:boot-ready` | `qemu` | `smoke` | `qemu:tst2:boot-ready` | `AUTOMATED` | 30 | 5 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e o executavel qemu-system-i386 esta disponivel | iniciar o guest em snapshot, enviar HELLO e executar o caso de boot apos READY | o guest publica READY, HEARTBEAT e PASS para o caso solicitado | PANIC, TIMEOUT, ausencia de heartbeat, erro de protocolo ou encerramento inesperado do QEMU | cria um processo QEMU e artefatos temporarios da execucao | encerrar o QEMU via QMP e preservar o relatorio, serial e logs da execucao |
 | `qemu:tst4:execution` | `qemu` | `smoke` | `qemu:tst4:execution` | `AUTOMATED` | 60 | 10 | `snapshot` | `quality` | `qemu` | processos, threads, IPC, wait e workqueue estao READY | executar um unico autoteste interno apos READY | todos os resultados estruturados passam e nenhum estado residual permanece | falha de resultado, invariante, fila, contador, timeout, protocolo ou QEMU | cria somente objetos temporarios dos self-tests existentes | cada self-test desfaz seus objetos e o harness valida as filas finais |
 | `qemu:tst4:memory-slab` | `qemu` | `smoke` | `qemu:tst4:memory-slab` | `AUTOMATED` | 30 | 5 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e paging, PMM, heap e SLAB estao READY | iniciar o guest em snapshot e enviar um unico RUN apos READY | o guest publica READY, HEARTBEAT, BEGIN e PASS, preservando o estado de memoria | falha de pre-condicao, invariante, contador, pagina, protocolo, heartbeat ou QEMU | cria um processo QEMU e recursos temporarios de memoria do autoteste | encerrar o QEMU via QMP e preservar manifesto, serial, logs e resultado |
@@ -7580,6 +7585,11 @@
 - `api:src/include/process/process.h:process_user_enter`
 - `api:src/include/process/process.h:process_user_termination_enter`
 - `api:src/include/process/thread.h:thread_context_switch`
+- `api:src/include/ui/updater_test.h:updater_host_fixture_clear_message`
+- `api:src/include/ui/updater_test.h:updater_host_fixture_set_cached_path`
+- `api:src/include/ui/updater_test.h:updater_host_fixture_set_keyboard_ascii`
+- `api:src/include/ui/updater_test.h:updater_host_fixture_set_message`
+- `api:src/include/ui/updater_test.h:updater_host_fixture_set_slots`
 - `asm:src/boot/boot.asm:detect_geometry`
 - `asm:src/boot/boot.asm:disk_error`
 - `asm:src/boot/boot.asm:load_sectors`
@@ -7912,7 +7922,6 @@
 - `c:src/shell/taskmanager.c:taskmgr_run`
 - `c:src/shell/taskmanager.c:taskmgr_update_cpu_metrics`
 - `c:src/shell/taskmanager.c:taskmgr_update_memory_stats`
-- `c:src/updater/updater.c:updater_cancel_check`
 - `c:src/updater/updater.c:updater_close`
 - `c:src/updater/updater.c:updater_confirm_action`
 - `c:src/updater/updater.c:updater_draw`
@@ -7931,7 +7940,6 @@
 - `c:src/updater/updater.c:updater_handle_confirmation_click`
 - `c:src/updater/updater.c:updater_handle_key`
 - `c:src/updater/updater.c:updater_handle_mouse`
-- `c:src/updater/updater.c:updater_history_detail_text`
 - `c:src/updater/updater.c:updater_hosted_close`
 - `c:src/updater/updater.c:updater_hosted_draw`
 - `c:src/updater/updater.c:updater_hosted_key`
@@ -7970,14 +7978,11 @@
 - `c:src/updater/updater.c:updater_simple_draw_tabs`
 - `c:src/updater/updater.c:updater_simple_print_version`
 - `c:src/updater/updater.c:updater_system_action`
-- `c:src/updater/updater.c:updater_system_cached_path`
-- `c:src/updater/updater.c:updater_system_offer_final_reboot`
 - `c:src/updater/updater.c:updater_system_run_apply`
 - `c:src/updater/updater.c:updater_system_run_cancel`
 - `c:src/updater/updater.c:updater_system_run_check`
 - `c:src/updater/updater.c:updater_system_run_fetch`
 - `c:src/updater/updater.c:updater_system_run_verify`
-- `c:src/updater/updater.c:updater_system_tag_key`
 - `c:src/updater/updater.c:updater_verify_selected`
 - `c:src/wm/wm.c:draw_buttons_left`
 - `c:src/wm/wm.c:draw_buttons_right`

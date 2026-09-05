@@ -37276,6 +37276,96 @@
       "coverage_mode": "integration"
     },
     {
+      "id": "api:src/include/ui/updater_test.h:updater_host_fixture_clear_message",
+      "kind": "api_function",
+      "source": "src/include/ui/updater_test.h",
+      "symbol": "updater_host_fixture_clear_message",
+      "linkage": "public",
+      "owner": "ui",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "api:src/include/ui/updater_test.h:updater_host_fixture_set_cached_path",
+      "kind": "api_function",
+      "source": "src/include/ui/updater_test.h",
+      "symbol": "updater_host_fixture_set_cached_path",
+      "linkage": "public",
+      "owner": "ui",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "api:src/include/ui/updater_test.h:updater_host_fixture_set_keyboard_ascii",
+      "kind": "api_function",
+      "source": "src/include/ui/updater_test.h",
+      "symbol": "updater_host_fixture_set_keyboard_ascii",
+      "linkage": "public",
+      "owner": "ui",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "api:src/include/ui/updater_test.h:updater_host_fixture_set_message",
+      "kind": "api_function",
+      "source": "src/include/ui/updater_test.h",
+      "symbol": "updater_host_fixture_set_message",
+      "linkage": "public",
+      "owner": "ui",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "api:src/include/ui/updater_test.h:updater_host_fixture_set_slots",
+      "kind": "api_function",
+      "source": "src/include/ui/updater_test.h",
+      "symbol": "updater_host_fixture_set_slots",
+      "linkage": "public",
+      "owner": "ui",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
       "id": "api:src/include/ui/updater_test.h:updater_host_test_contracts",
       "kind": "api_function",
       "source": "src/include/ui/updater_test.h",
@@ -155878,9 +155968,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:updater"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/updater/updater.c:updater_change_selection",
@@ -156283,9 +156376,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:updater"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/updater/updater.c:updater_host_test_contracts",
@@ -157155,9 +157251,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:updater"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/updater/updater.c:updater_system_offer_final_reboot",
@@ -157173,9 +157272,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:updater"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/updater/updater.c:updater_system_run_apply",
@@ -157344,9 +157446,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:updater"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/updater/updater.c:updater_system_tag_valid",
@@ -173816,15 +173921,17 @@
         "hardware": "nenhum"
       },
       "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "validar nomes ZUP, ordenacao, formatacao, selecao, tags ZSYS, hit-test e estados remotos",
-      "expected": "helpers preservam limites, maiusculas, estados e textos canonicos",
+      "action": "validar nomes ZUP, ordenacao, formatacao, historico, cancelamento, selecao, tags ZSYS e preflight de slots",
+      "expected": "helpers preservam limites, maiusculas, estados, textos canonicos e codigos de erro",
       "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
       "effects": "somente estruturas estaticas do processo host; nenhum disco, rede, worker ou hardware real",
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "surface_ids": [
+        "c:src/updater/updater.c:updater_cancel_check",
         "c:src/updater/updater.c:updater_change_selection",
         "c:src/updater/updater.c:updater_copy_name",
         "c:src/updater/updater.c:updater_gui_tab_width",
+        "c:src/updater/updater.c:updater_history_detail_text",
         "c:src/updater/updater.c:updater_host_test_contracts",
         "c:src/updater/updater.c:updater_is_zup_name",
         "c:src/updater/updater.c:updater_keep_selection_visible",
@@ -173832,9 +173939,12 @@
         "c:src/updater/updater.c:updater_remote_active_job_name",
         "c:src/updater/updater.c:updater_selected_package",
         "c:src/updater/updater.c:updater_sort_packages",
+        "c:src/updater/updater.c:updater_system_cached_path",
+        "c:src/updater/updater.c:updater_system_offer_final_reboot",
         "c:src/updater/updater.c:updater_system_slot_name",
         "c:src/updater/updater.c:updater_system_tag_begin",
         "c:src/updater/updater.c:updater_system_tag_finish",
+        "c:src/updater/updater.c:updater_system_tag_key",
         "c:src/updater/updater.c:updater_system_tag_valid",
         "c:src/updater/updater.c:updater_text_append",
         "c:src/updater/updater.c:updater_text_append_u32",
