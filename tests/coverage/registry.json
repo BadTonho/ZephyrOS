@@ -3839,6 +3839,56 @@
       "evidence": "make test-filemanager-host PASS com 25 funcoes reais de filemanager.c observadas, sem enderecos desconhecidos ou simbolos ambiguos"
     },
     {
+      "id": "taskmanager-host-dynamic",
+      "domain": "shell-taskmanager",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/taskmanager-host/coverage.json",
+      "coverage_sources": [
+        "src/shell/taskmanager.c"
+      ],
+      "include_public_apis": false,
+      "case_definition": {
+        "id": "host:shell:taskmanager",
+        "scenario": "Contratos deterministas do Task Manager sem processo ou hardware reais",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "nenhum"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "exercitar parsing de procfs, formatacao, limites de caminho, estados, metricas, selecao, layout e desenho com doubles estaticos",
+        "expected": "helpers preservam limites, estados, selecao, metricas e primitivas de apresentacao sem efeitos externos",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente buffers e estado estaticos do processo host; nenhum processo, VFS, disco, rede ou hardware real",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "shell",
+          "taskmanager",
+          "procfs",
+          "limits",
+          "coverage"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "make test-taskmanager-host PASS com 43 funcoes reais de taskmanager.c observadas, sem enderecos desconhecidos ou simbolos ambiguos"
+    },
+    {
       "id": "shell-checks-host-dynamic",
       "domain": "shell-checks",
       "owner": "quality",

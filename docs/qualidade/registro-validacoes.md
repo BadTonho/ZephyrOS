@@ -6177,3 +6177,19 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   endereços desconhecidos ou símbolos ambíguos. O catálogo registra 7.317
   superfícies, 6.839 `COVERED`, 478 `PENDING`, 59 aposentadas e 163 casos;
   as pendências restantes continuam explícitas.
+
+- Incremento Shell/Task Manager host-only — concluído em 2026-09-05
+  (America/Sao_Paulo). Foi criada a fixture `host:shell:taskmanager` com
+  doubles estáticos para introspecção, VFS, timer, thread e desenho VESA. O
+  caso exercita parsing de snapshots de procfs, formatação, limites de caminho,
+  estados, métricas, seleção, layout, histórico e primitivas de apresentação,
+  sem processos, disco, rede ou hardware reais. Passou
+  `make test-taskmanager-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` com
+  `-Wall -Wextra -Werror`; a cobertura dinâmica terminou `PASS`, observando 43
+  funções de `src/shell/taskmanager.c` e duas de
+  `src/core/string.c`, sem endereços desconhecidos ou símbolos ambíguos.
+  Também passaram `make q3check`, `make clean` seguido de `make`, a
+  regeneração dos 123 relatórios host-only, a sincronização/renderização e
+  `make catalog-test`. O catálogo registra 7.321 superfícies, 6.871
+  `COVERED`, 450 `PENDING`, 59 aposentadas e 165 casos; as pendências dos
+  demais subsistemas continuam explícitas.

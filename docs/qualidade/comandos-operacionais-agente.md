@@ -2190,6 +2190,22 @@ O relatorio instrumentado fica em
 funcoes reais exercitadas de `src/filemanager/filemanager.c`. A execucao tem
 timeout do runner e deixa manifesto, resultado, logs e cobertura preservados.
 
+## Task Manager: contratos host-only
+
+O alvo `test-taskmanager-host` compila o Task Manager e a introspeccao real
+com a fixture interna ativada por `ZEPHYROS_HOST_TEST`. O caso cobre parsing de
+snapshots de procfs, formatacao, limites, estados, metricas, selecao, layout e
+desenho com doubles estaticos, sem processos, VFS, disco, rede ou hardware:
+
+```text
+make test-taskmanager-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O relatorio instrumentado fica em
+`build/test-results/taskmanager-host/coverage.json` e deve terminar com
+`status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`. A execucao
+tem timeout do runner e preserva manifesto, resultado, logs e cobertura.
+
 ## Shell: relatórios de rede host-only
 
 O alvo `test-shell-network-checks-host` também exercita os relatórios somente

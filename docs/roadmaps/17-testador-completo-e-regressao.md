@@ -25,8 +25,9 @@ repositório remoto de aplicativos, dos helpers de pacotes do Shell, da
 interface App Store, dos relatórios de rede do Shell, do módulo de
 Configurações, do Desktop, dos comandos de aplicativos, da evidência RTC e
 das fixtures de entrada/hosted, da evidência de panic, da regeneração dos
-relatórios RTC/Shell, da fixture host-only do Updater e da fixture host-only
-do File Manager, registra 7.319 superfícies, 6.849 `COVERED` e 470 `PENDING`.
+relatórios RTC/Shell, da fixture host-only do Updater, da fixture host-only do
+File Manager e da fixture host-only do Task Manager, registra 7.321
+superfícies, 6.871 `COVERED` e 450 `PENDING`.
 O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
@@ -47,8 +48,24 @@ Isso não significa declarar hardware físico validado sem equipamento.
       `status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`, observando
       25 funções reais de `src/filemanager/filemanager.c`.
 - [x] O catálogo foi sincronizado e renderizado; a validação normal passou e
-      agora registra 7.319 superfícies, 6.849 `COVERED`, 470 `PENDING`, 59
-      aposentadas e 164 casos. As pendências restantes continuam explícitas.
+      agora registra 7.321 superfícies, 6.871 `COVERED`, 450 `PENDING`, 59
+      aposentadas e 165 casos. As pendências restantes continuam explícitas.
+
+### Incremento Shell/Task Manager host-only — 2026-09-05
+
+- [x] Foi criada a fixture `host:shell:taskmanager`, ativada somente por
+      `ZEPHYROS_HOST_TEST`, para exercitar contratos determinísticos do Task
+      Manager sem processos, VFS, disco, rede ou hardware reais.
+- [x] O caso validou parsing de snapshots de procfs, formatação, limites de
+      caminho, estados, métricas, seleção, layout, histórico e primitivas de
+      desenho com doubles estáticos. Passou
+      `make test-taskmanager-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
+      com `-Wall -Wextra -Werror`.
+- [x] O relatório dinâmico terminou com `status=PASS`,
+      `unknown_addresses=[]` e `ambiguous_symbols=[]`, observando 43 funções
+      reais de `src/shell/taskmanager.c`. A sincronização, renderização e
+      `make catalog-test` passaram; as demais superfícies pendentes continuam
+      explícitas.
 
 ### Evidência UI/Updater host-only — 2026-09-05
 

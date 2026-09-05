@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **7319**
-- Casos de teste: **164**
+- Superfícies ativas: **7321**
+- Casos de teste: **165**
 - Superfícies aposentadas: **59**
 
 | Tipo | Quantidade |
 |---|---:|
-| `api_function` | 1581 |
+| `api_function` | 1582 |
 | `asm_entry` | 101 |
-| `c_function` | 5517 |
+| `c_function` | 5518 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6850 |
+| `COVERED` | 6871 |
 | `MANUAL` | 0 |
-| `PENDING` | 469 |
+| `PENDING` | 450 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 164 |
+| `AUTOMATED` | 165 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -34,7 +34,7 @@
 
 | Proprietario | Superficies |
 |---|---:|
-| `apps` | 171 |
+| `apps` | 172 |
 | `appstore` | 98 |
 | `boot` | 136 |
 | `core` | 2813 |
@@ -48,7 +48,7 @@
 | `memory` | 194 |
 | `process` | 259 |
 | `settings` | 57 |
-| `shell` | 1088 |
+| `shell` | 1089 |
 | `taskbar` | 47 |
 | `thread` | 34 |
 | `ui` | 144 |
@@ -86,15 +86,15 @@
 | `api:src/include/apps/mediaplayer.h:mp_resume` | `src/include/apps/mediaplayer.h` | `mp_resume` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/mediaplayer.h:mp_stop` | `src/include/apps/mediaplayer.h` | `mp_stop` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/mediaplayer.h:mp_update` | `src/include/apps/mediaplayer.h` | `mp_update` | `apps` | `COVERED` | 1 |
-| `api:src/include/apps/shell.h:shell_handle_app_request` | `src/include/apps/shell.h` | `shell_handle_app_request` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell.h:shell_handle_key` | `src/include/apps/shell.h` | `shell_handle_key` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell.h:shell_handle_app_request` | `src/include/apps/shell.h` | `shell_handle_app_request` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell.h:shell_handle_key` | `src/include/apps/shell.h` | `shell_handle_key` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell.h:shell_handle_mouse` | `src/include/apps/shell.h` | `shell_handle_mouse` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell.h:shell_init` | `src/include/apps/shell.h` | `shell_init` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell.h:shell_print_prompt` | `src/include/apps/shell.h` | `shell_print_prompt` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell.h:shell_process_command` | `src/include/apps/shell.h` | `shell_process_command` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell.h:shell_report_app_loader_result` | `src/include/apps/shell.h` | `shell_report_app_loader_result` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell.h:shell_report_user_test_result` | `src/include/apps/shell.h` | `shell_report_user_test_result` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell.h:shell_update_hosted_terminal` | `src/include/apps/shell.h` | `shell_update_hosted_terminal` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell.h:shell_print_prompt` | `src/include/apps/shell.h` | `shell_print_prompt` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell.h:shell_process_command` | `src/include/apps/shell.h` | `shell_process_command` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell.h:shell_report_app_loader_result` | `src/include/apps/shell.h` | `shell_report_app_loader_result` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell.h:shell_report_user_test_result` | `src/include/apps/shell.h` | `shell_report_user_test_result` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell.h:shell_update_hosted_terminal` | `src/include/apps/shell.h` | `shell_update_hosted_terminal` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell_checks.h:shell_checks_host_test_contracts` | `src/include/apps/shell_checks.h` | `shell_checks_host_test_contracts` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_command_utils.h:shell_command_args_equal` | `src/include/apps/shell_command_utils.h` | `shell_command_args_equal` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_command_utils.h:shell_command_match_subcommand` | `src/include/apps/shell_command_utils.h` | `shell_command_match_subcommand` | `apps` | `COVERED` | 7 |
@@ -211,13 +211,13 @@
 | `api:src/include/apps/shell_runtime.h:shell_network_validate_for_checks` | `src/include/apps/shell_runtime.h` | `shell_network_validate_for_checks` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_runtime.h:shell_packages_host_test_contracts` | `src/include/apps/shell_runtime.h` | `shell_packages_host_test_contracts` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_finish_command` | `src/include/apps/shell_runtime.h` | `shell_runtime_finish_command` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key` | `src/include/apps/shell_runtime.h` | `shell_runtime_handle_terminal_key` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key` | `src/include/apps/shell_runtime.h` | `shell_runtime_handle_terminal_key` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible` | `src/include/apps/shell_runtime.h` | `shell_runtime_is_hosted_visible` | `apps` | `COVERED` | 4 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager` | `src/include/apps/shell_runtime.h` | `shell_runtime_prepare_filemanager` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_reset_input` | `src/include/apps/shell_runtime.h` | `shell_runtime_reset_input` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal` | `src/include/apps/shell_runtime.h` | `shell_runtime_resume_terminal` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager` | `src/include/apps/shell_runtime.h` | `shell_runtime_prepare_filemanager` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_reset_input` | `src/include/apps/shell_runtime.h` | `shell_runtime_reset_input` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal` | `src/include/apps/shell_runtime.h` | `shell_runtime_resume_terminal` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal` | `src/include/apps/shell_runtime.h` | `shell_runtime_suspend_terminal` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal_for_scene` | `src/include/apps/shell_runtime.h` | `shell_runtime_suspend_terminal_for_scene` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal_for_scene` | `src/include/apps/shell_runtime.h` | `shell_runtime_suspend_terminal_for_scene` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/taskmanager.h:taskmgr_close` | `src/include/apps/taskmanager.h` | `taskmgr_close` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/taskmanager.h:taskmgr_gui_handle_key` | `src/include/apps/taskmanager.h` | `taskmgr_gui_handle_key` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/taskmanager.h:taskmgr_gui_handle_mouse` | `src/include/apps/taskmanager.h` | `taskmgr_gui_handle_mouse` | `apps` | `COVERED` | 2 |
@@ -232,6 +232,7 @@
 | `api:src/include/apps/taskmanager.h:taskmgr_open_gui` | `src/include/apps/taskmanager.h` | `taskmgr_open_gui` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/taskmanager.h:taskmgr_refresh` | `src/include/apps/taskmanager.h` | `taskmgr_refresh` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/taskmanager.h:taskmgr_run` | `src/include/apps/taskmanager.h` | `taskmgr_run` | `apps` | `COVERED` | 2 |
+| `api:src/include/apps/taskmanager_test.h:taskmgr_host_test_contracts` | `src/include/apps/taskmanager_test.h` | `taskmgr_host_test_contracts` | `apps` | `COVERED` | 2 |
 | `api:src/include/core/app_api.h:app_api_chdir` | `src/include/core/app_api.h` | `app_api_chdir` | `core` | `COVERED` | 2 |
 | `api:src/include/core/app_api.h:app_api_console_write` | `src/include/core/app_api.h` | `app_api_console_write` | `core` | `COVERED` | 2 |
 | `api:src/include/core/app_api.h:app_api_file_close` | `src/include/core/app_api.h` | `app_api_file_close` | `core` | `COVERED` | 2 |
@@ -994,16 +995,16 @@
 | `api:src/include/drivers/mouse.h:mouse_set_callback` | `src/include/drivers/mouse.h` | `mouse_set_callback` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/mouse.h:mouse_set_primary_button` | `src/include/drivers/mouse.h` | `mouse_set_primary_button` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/mouse.h:mouse_set_speed` | `src/include/drivers/mouse.h` | `mouse_set_speed` | `drivers` | `COVERED` | 4 |
-| `api:src/include/drivers/pci.h:pci_enable_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_bus_mastering` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_io_and_bus_mastering` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_memory_and_bus_mastering` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_get_device` | `src/include/drivers/pci.h` | `pci_get_device` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_get_device_at` | `src/include/drivers/pci.h` | `pci_get_device_at` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_get_device_by_id` | `src/include/drivers/pci.h` | `pci_get_device_by_id` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_get_device_count` | `src/include/drivers/pci.h` | `pci_get_device_count` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_init` | `src/include/drivers/pci.h` | `pci_init` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_read` | `src/include/drivers/pci.h` | `pci_read` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_write` | `src/include/drivers/pci.h` | `pci_write` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/pci.h:pci_enable_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_bus_mastering` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_io_and_bus_mastering` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_memory_and_bus_mastering` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_get_device` | `src/include/drivers/pci.h` | `pci_get_device` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_get_device_at` | `src/include/drivers/pci.h` | `pci_get_device_at` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_get_device_by_id` | `src/include/drivers/pci.h` | `pci_get_device_by_id` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_get_device_count` | `src/include/drivers/pci.h` | `pci_get_device_count` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_init` | `src/include/drivers/pci.h` | `pci_init` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_read` | `src/include/drivers/pci.h` | `pci_read` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_write` | `src/include/drivers/pci.h` | `pci_write` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/rng.h:rng_get_bytes` | `src/include/drivers/rng.h` | `rng_get_bytes` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/rng.h:rng_get_status` | `src/include/drivers/rng.h` | `rng_get_status` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/rng.h:rng_init` | `src/include/drivers/rng.h` | `rng_init` | `drivers` | `COVERED` | 3 |
@@ -6102,10 +6103,10 @@
 | `c:src/shell/mediaplayer.c:str_copy` | `src/shell/mediaplayer.c` | `str_copy` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:process_input` | `src/shell/shell.c` | `process_input` | `shell` | `COVERED` | 5 |
 | `c:src/shell/shell.c:shell_handle_app_request` | `src/shell/shell.c` | `shell_handle_app_request` | `shell` | `COVERED` | 7 |
-| `c:src/shell/shell.c:shell_handle_key` | `src/shell/shell.c` | `shell_handle_key` | `shell` | `COVERED` | 7 |
+| `c:src/shell/shell.c:shell_handle_key` | `src/shell/shell.c` | `shell_handle_key` | `shell` | `COVERED` | 8 |
 | `c:src/shell/shell.c:shell_handle_mouse` | `src/shell/shell.c` | `shell_handle_mouse` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:shell_init` | `src/shell/shell.c` | `shell_init` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell.c:shell_print_prompt` | `src/shell/shell.c` | `shell_print_prompt` | `shell` | `COVERED` | 7 |
+| `c:src/shell/shell.c:shell_print_prompt` | `src/shell/shell.c` | `shell_print_prompt` | `shell` | `COVERED` | 8 |
 | `c:src/shell/shell.c:shell_process_command` | `src/shell/shell.c` | `shell_process_command` | `shell` | `COVERED` | 5 |
 | `c:src/shell/shell.c:shell_redraw_after_overlay_close` | `src/shell/shell.c` | `shell_redraw_after_overlay_close` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:shell_report_app_loader_result` | `src/shell/shell.c` | `shell_report_app_loader_result` | `shell` | `COVERED` | 7 |
@@ -6113,11 +6114,11 @@
 | `c:src/shell/shell.c:shell_runtime_finish_command` | `src/shell/shell.c` | `shell_runtime_finish_command` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:shell_runtime_handle_terminal_key` | `src/shell/shell.c` | `shell_runtime_handle_terminal_key` | `shell` | `COVERED` | 7 |
 | `c:src/shell/shell.c:shell_runtime_prepare_filemanager` | `src/shell/shell.c` | `shell_runtime_prepare_filemanager` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell.c:shell_runtime_reset_input` | `src/shell/shell.c` | `shell_runtime_reset_input` | `shell` | `COVERED` | 5 |
+| `c:src/shell/shell.c:shell_runtime_reset_input` | `src/shell/shell.c` | `shell_runtime_reset_input` | `shell` | `COVERED` | 6 |
 | `c:src/shell/shell.c:shell_runtime_resume_terminal` | `src/shell/shell.c` | `shell_runtime_resume_terminal` | `shell` | `COVERED` | 5 |
 | `c:src/shell/shell.c:shell_runtime_suspend_terminal` | `src/shell/shell.c` | `shell_runtime_suspend_terminal` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:shell_runtime_suspend_terminal_for_scene` | `src/shell/shell.c` | `shell_runtime_suspend_terminal_for_scene` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell.c:shell_should_show_prompt` | `src/shell/shell.c` | `shell_should_show_prompt` | `shell` | `COVERED` | 5 |
+| `c:src/shell/shell.c:shell_should_show_prompt` | `src/shell/shell.c` | `shell_should_show_prompt` | `shell` | `COVERED` | 6 |
 | `c:src/shell/shell.c:shell_update_hosted_terminal` | `src/shell/shell.c` | `shell_update_hosted_terminal` | `shell` | `COVERED` | 7 |
 | `c:src/shell/shell_checks.c:cmd_appcheck` | `src/shell/shell_checks.c` | `cmd_appcheck` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:cmd_appcheck_devices` | `src/shell/shell_checks.c` | `cmd_appcheck_devices` | `shell` | `PENDING` | 0 |
@@ -6935,71 +6936,72 @@
 | `c:src/shell/shell_pipeline.c:shell_pipeline_test_producer` | `src/shell/shell_pipeline.c` | `shell_pipeline_test_producer` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_pipeline.c:shell_pipeline_try_execute` | `src/shell/shell_pipeline.c` | `shell_pipeline_try_execute` | `shell` | `COVERED` | 6 |
 | `c:src/shell/shell_pipeline.c:shell_pipeline_write` | `src/shell/shell_pipeline.c` | `shell_pipeline_write` | `shell` | `COVERED` | 3 |
-| `c:src/shell/taskmanager.c:draw_bar` | `src/shell/taskmanager.c` | `draw_bar` | `shell` | `PENDING` | 0 |
-| `c:src/shell/taskmanager.c:draw_box` | `src/shell/taskmanager.c` | `draw_box` | `shell` | `PENDING` | 0 |
+| `c:src/shell/taskmanager.c:draw_bar` | `src/shell/taskmanager.c` | `draw_bar` | `shell` | `COVERED` | 1 |
+| `c:src/shell/taskmanager.c:draw_box` | `src/shell/taskmanager.c` | `draw_box` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:draw_header` | `src/shell/taskmanager.c` | `draw_header` | `shell` | `PENDING` | 0 |
-| `c:src/shell/taskmanager.c:draw_hline` | `src/shell/taskmanager.c` | `draw_hline` | `shell` | `PENDING` | 0 |
+| `c:src/shell/taskmanager.c:draw_hline` | `src/shell/taskmanager.c` | `draw_hline` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:draw_memory` | `src/shell/taskmanager.c` | `draw_memory` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:draw_processes` | `src/shell/taskmanager.c` | `draw_processes` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:draw_threads` | `src/shell/taskmanager.c` | `draw_threads` | `shell` | `PENDING` | 0 |
-| `c:src/shell/taskmanager.c:num_digits` | `src/shell/taskmanager.c` | `num_digits` | `shell` | `COVERED` | 1 |
-| `c:src/shell/taskmanager.c:print_at` | `src/shell/taskmanager.c` | `print_at` | `shell` | `PENDING` | 0 |
-| `c:src/shell/taskmanager.c:print_num_at` | `src/shell/taskmanager.c` | `print_num_at` | `shell` | `PENDING` | 0 |
-| `c:src/shell/taskmanager.c:taskmgr_clamp_window` | `src/shell/taskmanager.c` | `taskmgr_clamp_window` | `shell` | `PENDING` | 0 |
+| `c:src/shell/taskmanager.c:num_digits` | `src/shell/taskmanager.c` | `num_digits` | `shell` | `COVERED` | 2 |
+| `c:src/shell/taskmanager.c:print_at` | `src/shell/taskmanager.c` | `print_at` | `shell` | `COVERED` | 1 |
+| `c:src/shell/taskmanager.c:print_num_at` | `src/shell/taskmanager.c` | `print_num_at` | `shell` | `COVERED` | 1 |
+| `c:src/shell/taskmanager.c:taskmgr_clamp_window` | `src/shell/taskmanager.c` | `taskmgr_clamp_window` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_close` | `src/shell/taskmanager.c` | `taskmgr_close` | `shell` | `PENDING` | 0 |
-| `c:src/shell/taskmanager.c:taskmgr_count_process_states` | `src/shell/taskmanager.c` | `taskmgr_count_process_states` | `shell` | `PENDING` | 0 |
+| `c:src/shell/taskmanager.c:taskmgr_count_process_states` | `src/shell/taskmanager.c` | `taskmgr_count_process_states` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_find_thread_by_row` | `src/shell/taskmanager.c` | `taskmgr_find_thread_by_row` | `shell` | `PENDING` | 0 |
-| `c:src/shell/taskmanager.c:taskmgr_get_work_area` | `src/shell/taskmanager.c` | `taskmgr_get_work_area` | `shell` | `PENDING` | 0 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_aggregate_load` | `src/shell/taskmanager.c` | `taskmgr_gui_aggregate_load` | `shell` | `COVERED` | 1 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_append_number` | `src/shell/taskmanager.c` | `taskmgr_gui_append_number` | `shell` | `COVERED` | 1 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_append_text` | `src/shell/taskmanager.c` | `taskmgr_gui_append_text` | `shell` | `COVERED` | 1 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_build_proc_path` | `src/shell/taskmanager.c` | `taskmgr_gui_build_proc_path` | `shell` | `COVERED` | 1 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_collect_process_views_once` | `src/shell/taskmanager.c` | `taskmgr_gui_collect_process_views_once` | `shell` | `COVERED` | 1 |
+| `c:src/shell/taskmanager.c:taskmgr_get_work_area` | `src/shell/taskmanager.c` | `taskmgr_get_work_area` | `shell` | `COVERED` | 1 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_aggregate_load` | `src/shell/taskmanager.c` | `taskmgr_gui_aggregate_load` | `shell` | `COVERED` | 2 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_append_number` | `src/shell/taskmanager.c` | `taskmgr_gui_append_number` | `shell` | `COVERED` | 2 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_append_text` | `src/shell/taskmanager.c` | `taskmgr_gui_append_text` | `shell` | `COVERED` | 2 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_build_proc_path` | `src/shell/taskmanager.c` | `taskmgr_gui_build_proc_path` | `shell` | `COVERED` | 2 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_collect_process_views_once` | `src/shell/taskmanager.c` | `taskmgr_gui_collect_process_views_once` | `shell` | `COVERED` | 2 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_color` | `src/shell/taskmanager.c` | `taskmgr_gui_color` | `shell` | `COVERED` | 1 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_copy_text` | `src/shell/taskmanager.c` | `taskmgr_gui_copy_text` | `shell` | `COVERED` | 1 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_decimal_name` | `src/shell/taskmanager.c` | `taskmgr_gui_decimal_name` | `shell` | `COVERED` | 1 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_copy_text` | `src/shell/taskmanager.c` | `taskmgr_gui_copy_text` | `shell` | `COVERED` | 2 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_decimal_name` | `src/shell/taskmanager.c` | `taskmgr_gui_decimal_name` | `shell` | `COVERED` | 2 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_delete_selected` | `src/shell/taskmanager.c` | `taskmgr_gui_delete_selected` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_draw` | `src/shell/taskmanager.c` | `taskmgr_gui_draw` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_draw_bar` | `src/shell/taskmanager.c` | `taskmgr_gui_draw_bar` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_draw_drag_region` | `src/shell/taskmanager.c` | `taskmgr_gui_draw_drag_region` | `shell` | `PENDING` | 0 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_draw_hex` | `src/shell/taskmanager.c` | `taskmgr_gui_draw_hex` | `shell` | `PENDING` | 0 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_draw_history_graph` | `src/shell/taskmanager.c` | `taskmgr_gui_draw_history_graph` | `shell` | `PENDING` | 0 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_draw_hex` | `src/shell/taskmanager.c` | `taskmgr_gui_draw_hex` | `shell` | `COVERED` | 1 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_draw_history_graph` | `src/shell/taskmanager.c` | `taskmgr_gui_draw_history_graph` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_draw_memory` | `src/shell/taskmanager.c` | `taskmgr_gui_draw_memory` | `shell` | `PENDING` | 0 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_draw_num` | `src/shell/taskmanager.c` | `taskmgr_gui_draw_num` | `shell` | `COVERED` | 1 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_draw_process_details` | `src/shell/taskmanager.c` | `taskmgr_gui_draw_process_details` | `shell` | `COVERED` | 1 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_draw_num` | `src/shell/taskmanager.c` | `taskmgr_gui_draw_num` | `shell` | `COVERED` | 2 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_draw_process_details` | `src/shell/taskmanager.c` | `taskmgr_gui_draw_process_details` | `shell` | `COVERED` | 2 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_draw_processes` | `src/shell/taskmanager.c` | `taskmgr_gui_draw_processes` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_draw_properties` | `src/shell/taskmanager.c` | `taskmgr_gui_draw_properties` | `shell` | `PENDING` | 0 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_draw_surface` | `src/shell/taskmanager.c` | `taskmgr_gui_draw_surface` | `shell` | `COVERED` | 1 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_draw_tabs` | `src/shell/taskmanager.c` | `taskmgr_gui_draw_tabs` | `shell` | `COVERED` | 1 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_draw_surface` | `src/shell/taskmanager.c` | `taskmgr_gui_draw_surface` | `shell` | `COVERED` | 2 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_draw_tabs` | `src/shell/taskmanager.c` | `taskmgr_gui_draw_tabs` | `shell` | `COVERED` | 2 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_draw_threads` | `src/shell/taskmanager.c` | `taskmgr_gui_draw_threads` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_draw_window` | `src/shell/taskmanager.c` | `taskmgr_gui_draw_window` | `shell` | `COVERED` | 1 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_find_process_view` | `src/shell/taskmanager.c` | `taskmgr_gui_find_process_view` | `shell` | `COVERED` | 1 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_find_process_view_by_pid` | `src/shell/taskmanager.c` | `taskmgr_gui_find_process_view_by_pid` | `shell` | `PENDING` | 0 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_find_process_view` | `src/shell/taskmanager.c` | `taskmgr_gui_find_process_view` | `shell` | `COVERED` | 2 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_find_process_view_by_pid` | `src/shell/taskmanager.c` | `taskmgr_gui_find_process_view_by_pid` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_handle_key` | `src/shell/taskmanager.c` | `taskmgr_gui_handle_key` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_handle_mouse` | `src/shell/taskmanager.c` | `taskmgr_gui_handle_mouse` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_handle_taskbar_action` | `src/shell/taskmanager.c` | `taskmgr_gui_handle_taskbar_action` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_handle_wheel` | `src/shell/taskmanager.c` | `taskmgr_gui_handle_wheel` | `shell` | `PENDING` | 0 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_has_side_details` | `src/shell/taskmanager.c` | `taskmgr_gui_has_side_details` | `shell` | `COVERED` | 1 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_hit` | `src/shell/taskmanager.c` | `taskmgr_gui_hit` | `shell` | `PENDING` | 0 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_has_side_details` | `src/shell/taskmanager.c` | `taskmgr_gui_has_side_details` | `shell` | `COVERED` | 2 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_hit` | `src/shell/taskmanager.c` | `taskmgr_gui_hit` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_minimize` | `src/shell/taskmanager.c` | `taskmgr_gui_minimize` | `shell` | `PENDING` | 0 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_parse_state` | `src/shell/taskmanager.c` | `taskmgr_gui_parse_state` | `shell` | `COVERED` | 1 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_parse_state` | `src/shell/taskmanager.c` | `taskmgr_gui_parse_state` | `shell` | `COVERED` | 2 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_parse_status` | `src/shell/taskmanager.c` | `taskmgr_gui_parse_status` | `shell` | `COVERED` | 1 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_process_list_height` | `src/shell/taskmanager.c` | `taskmgr_gui_process_list_height` | `shell` | `COVERED` | 1 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_process_list_y` | `src/shell/taskmanager.c` | `taskmgr_gui_process_list_y` | `shell` | `COVERED` | 1 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_process_visible_rows` | `src/shell/taskmanager.c` | `taskmgr_gui_process_visible_rows` | `shell` | `COVERED` | 1 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_process_list_height` | `src/shell/taskmanager.c` | `taskmgr_gui_process_list_height` | `shell` | `COVERED` | 2 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_process_list_y` | `src/shell/taskmanager.c` | `taskmgr_gui_process_list_y` | `shell` | `COVERED` | 2 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_process_visible_rows` | `src/shell/taskmanager.c` | `taskmgr_gui_process_visible_rows` | `shell` | `COVERED` | 2 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_read_status_value` | `src/shell/taskmanager.c` | `taskmgr_gui_read_status_value` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_refresh_memory_view` | `src/shell/taskmanager.c` | `taskmgr_gui_refresh_memory_view` | `shell` | `COVERED` | 1 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_refresh_process_views` | `src/shell/taskmanager.c` | `taskmgr_gui_refresh_process_views` | `shell` | `COVERED` | 1 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_reset_history` | `src/shell/taskmanager.c` | `taskmgr_gui_reset_history` | `shell` | `COVERED` | 1 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_refresh_process_views` | `src/shell/taskmanager.c` | `taskmgr_gui_refresh_process_views` | `shell` | `COVERED` | 2 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_reset_history` | `src/shell/taskmanager.c` | `taskmgr_gui_reset_history` | `shell` | `COVERED` | 2 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_restart_selected` | `src/shell/taskmanager.c` | `taskmgr_gui_restart_selected` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_restore` | `src/shell/taskmanager.c` | `taskmgr_gui_restore` | `shell` | `PENDING` | 0 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_sample_history` | `src/shell/taskmanager.c` | `taskmgr_gui_sample_history` | `shell` | `COVERED` | 1 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_scroll_selected` | `src/shell/taskmanager.c` | `taskmgr_gui_scroll_selected` | `shell` | `PENDING` | 0 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_state_color` | `src/shell/taskmanager.c` | `taskmgr_gui_state_color` | `shell` | `COVERED` | 1 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_sample_history` | `src/shell/taskmanager.c` | `taskmgr_gui_sample_history` | `shell` | `COVERED` | 2 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_scroll_selected` | `src/shell/taskmanager.c` | `taskmgr_gui_scroll_selected` | `shell` | `COVERED` | 1 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_state_color` | `src/shell/taskmanager.c` | `taskmgr_gui_state_color` | `shell` | `COVERED` | 2 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_update` | `src/shell/taskmanager.c` | `taskmgr_gui_update` | `shell` | `COVERED` | 2 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_visible_rows` | `src/shell/taskmanager.c` | `taskmgr_gui_visible_rows` | `shell` | `PENDING` | 0 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_visible_rows` | `src/shell/taskmanager.c` | `taskmgr_gui_visible_rows` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_handle_key` | `src/shell/taskmanager.c` | `taskmgr_handle_key` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_handle_taskbar_action` | `src/shell/taskmanager.c` | `taskmgr_handle_taskbar_action` | `shell` | `PENDING` | 0 |
+| `c:src/shell/taskmanager.c:taskmgr_host_test_contracts` | `src/shell/taskmanager.c` | `taskmgr_host_test_contracts` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_hosted_close` | `src/shell/taskmanager.c` | `taskmgr_hosted_close` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_hosted_draw` | `src/shell/taskmanager.c` | `taskmgr_hosted_draw` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_hosted_mouse` | `src/shell/taskmanager.c` | `taskmgr_hosted_mouse` | `shell` | `PENDING` | 0 |
@@ -7009,16 +7011,16 @@
 | `c:src/shell/taskmanager.c:taskmgr_is_open` | `src/shell/taskmanager.c` | `taskmgr_is_open` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_open` | `src/shell/taskmanager.c` | `taskmgr_open` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_open_gui` | `src/shell/taskmanager.c` | `taskmgr_open_gui` | `shell` | `COVERED` | 1 |
-| `c:src/shell/taskmanager.c:taskmgr_pages_used` | `src/shell/taskmanager.c` | `taskmgr_pages_used` | `shell` | `PENDING` | 0 |
-| `c:src/shell/taskmanager.c:taskmgr_percent` | `src/shell/taskmanager.c` | `taskmgr_percent` | `shell` | `COVERED` | 1 |
-| `c:src/shell/taskmanager.c:taskmgr_print_hex_at` | `src/shell/taskmanager.c` | `taskmgr_print_hex_at` | `shell` | `PENDING` | 0 |
-| `c:src/shell/taskmanager.c:taskmgr_process_state_name` | `src/shell/taskmanager.c` | `taskmgr_process_state_name` | `shell` | `PENDING` | 0 |
+| `c:src/shell/taskmanager.c:taskmgr_pages_used` | `src/shell/taskmanager.c` | `taskmgr_pages_used` | `shell` | `COVERED` | 1 |
+| `c:src/shell/taskmanager.c:taskmgr_percent` | `src/shell/taskmanager.c` | `taskmgr_percent` | `shell` | `COVERED` | 2 |
+| `c:src/shell/taskmanager.c:taskmgr_print_hex_at` | `src/shell/taskmanager.c` | `taskmgr_print_hex_at` | `shell` | `COVERED` | 1 |
+| `c:src/shell/taskmanager.c:taskmgr_process_state_name` | `src/shell/taskmanager.c` | `taskmgr_process_state_name` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_process_tick_usage` | `src/shell/taskmanager.c` | `taskmgr_process_tick_usage` | `shell` | `PENDING` | 0 |
-| `c:src/shell/taskmanager.c:taskmgr_process_type` | `src/shell/taskmanager.c` | `taskmgr_process_type` | `shell` | `PENDING` | 0 |
+| `c:src/shell/taskmanager.c:taskmgr_process_type` | `src/shell/taskmanager.c` | `taskmgr_process_type` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_redraw_after_menu_close` | `src/shell/taskmanager.c` | `taskmgr_redraw_after_menu_close` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_refresh` | `src/shell/taskmanager.c` | `taskmgr_refresh` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_run` | `src/shell/taskmanager.c` | `taskmgr_run` | `shell` | `PENDING` | 0 |
-| `c:src/shell/taskmanager.c:taskmgr_thread_state_name` | `src/shell/taskmanager.c` | `taskmgr_thread_state_name` | `shell` | `PENDING` | 0 |
+| `c:src/shell/taskmanager.c:taskmgr_thread_state_name` | `src/shell/taskmanager.c` | `taskmgr_thread_state_name` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_update_cpu_metrics` | `src/shell/taskmanager.c` | `taskmgr_update_cpu_metrics` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_update_memory_stats` | `src/shell/taskmanager.c` | `taskmgr_update_memory_stats` | `shell` | `PENDING` | 0 |
 | `c:src/taskbar/taskbar.c:get_col` | `src/taskbar/taskbar.c` | `get_col` | `taskbar` | `COVERED` | 1 |
@@ -7506,6 +7508,7 @@
 | `host:shell:mediaplayer` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar audio, imagem e reproducao combinada com arquivos estaticos e dependencias de hardware simuladas | o Media Player preserva estados, metadados, erros canonicos, limites e ownership sem hardware ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos, allocator de teste, recovery fake e contadores de audio e video do processo host | dados de audio e imagem liberados, estado parado e manifesto, logs e cobertura preservados |
 | `host:shell:network-checks` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar a validacao de rede do Shell com interface PCI estatica, dependencias de protocolo coerentes e cenarios de entrada invalida e indisponivel | a validacao aceita o estado coerente, rejeita interface inconsistente e propaga ERR_UNAVAILABLE sem residuos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estruturas estaticas da fixture host; nenhum driver, hardware, armazenamento ou rede real | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:pipeline` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar parsing, limites, pipes, redirecionamento, workers, leitura, escrita, autoteste e limpeza sob falhas controladas | pipelines validos concluem, entradas invalidas retornam codigo canonico e recursos sao restaurados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente pipes, threads, buffers, redirecionamento, video e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:shell:taskmanager` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar parsing de procfs, formatacao, limites de caminho, estados, metricas, selecao, layout e desenho com doubles estaticos | helpers preservam limites, estados, selecao, metricas e primitivas de apresentacao sem efeitos externos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers e estado estaticos do processo host; nenhum processo, VFS, disco, rede ou hardware real | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:wifi` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar status, inventario PCI/USB, scan, conexao, argumentos invalidos, erros e estados indisponiveis | o Shell formata estados, locais, resultados e erros sem aceitar senha ou abrir conexao externa | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos de saida e fixtures do gerenciador Wi-Fi no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:storage:block` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar block_self_test e block_cache_self_test com providers estaticos | filas BIO, limites, cancelamento, failpoints, cache, writeback e sync passam e o inventario retorna ao estado inicial | compilador ausente, warning, cobertura incompleta, failpoint residual, falha de assercao ou timeout | somente estruturas globais do processo host e buffers estaticos de provider | autotestes removem dispositivos temporarios, limpam cache e deixam fila sem pendencias |
 | `host:storage:bmp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar parser BMP real com imagens estaticas, framebuffer e VESA simulados | headers, paletas, pixels, orientacao, transparencia, redimensionamento, escala, ownership e erros preservam o contrato sem hardware real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente imagens BMP, framebuffer e allocator estaticos do processo host | imagens liberadas, alocacoes devolvidas e manifesto, logs e cobertura preservados |
@@ -7878,38 +7881,24 @@
 - `c:src/shell/shell_checks.c:shell_regcheck_validate_usb_entry`
 - `c:src/shell/shell_checks.c:shell_remove_image`
 - `c:src/shell/shell_checks.c:shell_verify_image`
-- `c:src/shell/taskmanager.c:draw_bar`
-- `c:src/shell/taskmanager.c:draw_box`
 - `c:src/shell/taskmanager.c:draw_header`
-- `c:src/shell/taskmanager.c:draw_hline`
 - `c:src/shell/taskmanager.c:draw_memory`
 - `c:src/shell/taskmanager.c:draw_processes`
 - `c:src/shell/taskmanager.c:draw_threads`
-- `c:src/shell/taskmanager.c:print_at`
-- `c:src/shell/taskmanager.c:print_num_at`
-- `c:src/shell/taskmanager.c:taskmgr_clamp_window`
 - `c:src/shell/taskmanager.c:taskmgr_close`
-- `c:src/shell/taskmanager.c:taskmgr_count_process_states`
 - `c:src/shell/taskmanager.c:taskmgr_find_thread_by_row`
-- `c:src/shell/taskmanager.c:taskmgr_get_work_area`
 - `c:src/shell/taskmanager.c:taskmgr_gui_delete_selected`
 - `c:src/shell/taskmanager.c:taskmgr_gui_draw_bar`
 - `c:src/shell/taskmanager.c:taskmgr_gui_draw_drag_region`
-- `c:src/shell/taskmanager.c:taskmgr_gui_draw_hex`
-- `c:src/shell/taskmanager.c:taskmgr_gui_draw_history_graph`
 - `c:src/shell/taskmanager.c:taskmgr_gui_draw_memory`
 - `c:src/shell/taskmanager.c:taskmgr_gui_draw_properties`
 - `c:src/shell/taskmanager.c:taskmgr_gui_draw_threads`
-- `c:src/shell/taskmanager.c:taskmgr_gui_find_process_view_by_pid`
 - `c:src/shell/taskmanager.c:taskmgr_gui_handle_mouse`
 - `c:src/shell/taskmanager.c:taskmgr_gui_handle_taskbar_action`
 - `c:src/shell/taskmanager.c:taskmgr_gui_handle_wheel`
-- `c:src/shell/taskmanager.c:taskmgr_gui_hit`
 - `c:src/shell/taskmanager.c:taskmgr_gui_minimize`
 - `c:src/shell/taskmanager.c:taskmgr_gui_restart_selected`
 - `c:src/shell/taskmanager.c:taskmgr_gui_restore`
-- `c:src/shell/taskmanager.c:taskmgr_gui_scroll_selected`
-- `c:src/shell/taskmanager.c:taskmgr_gui_visible_rows`
 - `c:src/shell/taskmanager.c:taskmgr_handle_key`
 - `c:src/shell/taskmanager.c:taskmgr_handle_taskbar_action`
 - `c:src/shell/taskmanager.c:taskmgr_hosted_mouse`
@@ -7917,15 +7906,10 @@
 - `c:src/shell/taskmanager.c:taskmgr_is_gui_minimized`
 - `c:src/shell/taskmanager.c:taskmgr_is_open`
 - `c:src/shell/taskmanager.c:taskmgr_open`
-- `c:src/shell/taskmanager.c:taskmgr_pages_used`
-- `c:src/shell/taskmanager.c:taskmgr_print_hex_at`
-- `c:src/shell/taskmanager.c:taskmgr_process_state_name`
 - `c:src/shell/taskmanager.c:taskmgr_process_tick_usage`
-- `c:src/shell/taskmanager.c:taskmgr_process_type`
 - `c:src/shell/taskmanager.c:taskmgr_redraw_after_menu_close`
 - `c:src/shell/taskmanager.c:taskmgr_refresh`
 - `c:src/shell/taskmanager.c:taskmgr_run`
-- `c:src/shell/taskmanager.c:taskmgr_thread_state_name`
 - `c:src/shell/taskmanager.c:taskmgr_update_cpu_metrics`
 - `c:src/shell/taskmanager.c:taskmgr_update_memory_stats`
 - `c:src/updater/updater.c:updater_cancel_check`
