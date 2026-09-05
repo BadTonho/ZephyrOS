@@ -140,14 +140,15 @@ Isso não significa declarar hardware físico validado sem equipamento.
       Store: cópia e truncamento de texto, formatação de inteiros, dependências,
       bloqueios, seleção e restauração, planos de downgrade, estados, rollback,
       confiança e geometria dos botões, usando doubles estáticos.
-- [x] A evidência dinâmica terminou `PASS`, com 32 superfícies reais de
+- [x] A evidência dinâmica terminou `PASS`, com 41 superfícies reais de
       `src/appstore/appstore.c` e `src/core/string.c`, sem endereços
       desconhecidos ou símbolos ambíguos.
-- [x] Passaram `make test-appstore-host` com `HOST_CC`, sincronização e
-      renderização do catálogo e `make catalog-test`. O catálogo registra
-      7.307 superfícies, 6.403 `COVERED`, 904 `PENDING` e 158 casos; as
-      pendências restantes continuam explícitas após a sincronização dos
-      relatórios mais recentes.
+- [x] Passou `make test-appstore-host` com `HOST_CC`; a evidência foi
+      incorporada preservando os vínculos anteriores e cobrindo três funções
+      adicionais: capacidades e disponibilidade de rollback. Renderização e
+      `make catalog-test` também passaram. O catálogo registra 7.305
+      superfícies ativas, 6.435 `COVERED`, 870 `PENDING`, 59 aposentadas e 158
+      casos; as pendências restantes continuam explícitas.
 
 ### Incremento Shell/network reports — 2026-09-05
 
