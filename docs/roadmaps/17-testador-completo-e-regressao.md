@@ -29,25 +29,25 @@ relatórios RTC/Shell, da fixture host-only do Updater, da fixture host-only do
 File Manager, da fixture host-only do Task Manager e da validação de
 resultados do Shell Checks, da expansão do ciclo de vida do Task Manager e dos
 caminhos negativos de finalização do Shell Checks, registra 7.326 superfícies,
-6.964 `COVERED` e 362 `PENDING`.
+6.987 `COVERED` e 339 `PENDING`.
 O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
 Isso não significa declarar hardware físico validado sem equipamento.
 
-### Incremento Task Manager: ciclo de vida e limites de GUI — 2026-09-05
+### Incremento Task Manager: cobertura host-only completa — 2026-09-05
 
 - [x] A fixture `host:shell:taskmanager` foi ampliada para validar
-      inicialização, estado fechado, GUI indisponível, parsing nulo de status,
-      memória procfs ausente, barra gráfica e busca de thread vazia com
-      doubles estáticos.
+      inicialização, ciclo de vida TUI, ciclo de vida GUI/hosted, parsing de
+      status, métricas, seleção, layout, desenho, entradas de mouse e estados
+      indisponíveis com doubles estáticos.
 - [x] `make test-taskmanager-host
       HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` passou novamente com
-      `-Wall -Wextra -Werror`. O relatório dinâmico observou 52 funções reais
+      `-Wall -Wextra -Werror`. O relatório dinâmico observou 87 funções reais
       de `src/shell/taskmanager.c`, sem endereços desconhecidos ou símbolos
       ambíguos.
 - [x] A sincronização/renderização do catálogo e `make catalog-test` passaram;
-      o catálogo registra 7.326 superfícies, 6.936 `COVERED`, 390 `PENDING`,
+      o catálogo registra 7.326 superfícies, 6.987 `COVERED`, 339 `PENDING`,
       59 aposentadas e 165 casos. As pendências restantes continuam
       explícitas.
 

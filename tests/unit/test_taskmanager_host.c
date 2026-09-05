@@ -5,11 +5,15 @@
 #include "apps/shell_introspection.h"
 #include "core/errors.h"
 #include "core/log.h"
+#include "core/memory.h"
+#include "core/power.h"
 #include "core/recovery.h"
 #include "core/string.h"
+#include "drivers/ata.h"
 #include "drivers/vesa.h"
 #include "fs/vfs.h"
 #include "process/process.h"
+#include "process/signal.h"
 #include "process/thread.h"
 #include "ui/display.h"
 #include "ui/gui.h"
@@ -114,8 +118,207 @@ void vesa_fill_rect(uint32_t x, uint32_t y, uint32_t width,
 }
 
 int recovery_is_enabled(recovery_component_id_t component) {
-    (void)component;
+    return component == RECOVERY_COMPONENT_TASKMANAGER;
+}
+
+uint32_t memory_get_total(void) {
+    return 64U * 1024U * 1024U;
+}
+
+uint32_t memory_get_free(void) {
+    return 48U * 1024U * 1024U;
+}
+
+uint32_t memory_get_used(void) {
+    return 16U * 1024U * 1024U;
+}
+
+uint32_t memory_get_total_pages(void) {
+    return 16384U;
+}
+
+uint32_t memory_get_free_pages(void) {
+    return 12288U;
+}
+
+int memory_get_detailed_stats(memory_detailed_stats_t* stats) {
+    if (!stats) return ERR_NULL;
+    stats->total_pages = 16384U;
+    stats->zone_pages[MEMORY_ZONE_KERNEL] = 128U;
+    stats->zone_pages[MEMORY_ZONE_HEAP] = 512U;
+    stats->zone_pages[MEMORY_ZONE_SLAB] = 256U;
+    stats->zone_pages[MEMORY_ZONE_PROCESS] = 128U;
+    stats->zone_pages[MEMORY_ZONE_BUFFER] = 64U;
+    stats->zone_pages[MEMORY_ZONE_FREE] = 12288U;
+    stats->free_runs = 4U;
+    stats->largest_free_run = 8192U;
+    stats->isolated_free_pages = 2U;
+    stats->fragmentation_percent = 1U;
+    stats->initialized = 1U;
+    stats->valid = 1U;
+    return OK;
+}
+
+static ata_device_t fixture_ata_device;
+
+ata_device_t* ata_get_device(void) {
+    return &fixture_ata_device;
+}
+
+uint32_t ata_get_read_ops(void) {
+    return 3U;
+}
+
+uint32_t ata_get_write_ops(void) {
+    return 1U;
+}
+
+void video_clear(void) {
+}
+
+void taskbar_draw(void) {
+}
+
+void taskbar_add_app(tb_app_type_t type, const char* name) {
+    (void)type;
+    (void)name;
+}
+
+int gui_measure_scaled_text(const char* text, uint32_t* width,
+                            uint32_t* height) {
+    if (!text || !width || !height) return ERR_NULL;
+    *width = 8U;
+    *height = 16U;
+    return OK;
+}
+
+void vesa_frame_begin(void) {
+}
+
+void vesa_frame_begin_region(uint32_t x, uint32_t y, uint32_t width,
+                             uint32_t height) {
+    (void)x;
+    (void)y;
+    (void)width;
+    (void)height;
+}
+
+void vesa_frame_end(void) {
+}
+
+void vesa_clear(vesa_color_t color) {
+    (void)color;
+}
+
+void mouse_invalidate_cursor(void) {
+}
+
+void shell_print_prompt(void) {
+}
+
+void fm_run(void) {
+}
+
+int power_reboot(void) {
+    return ERR_UNAVAILABLE;
+}
+
+int power_shutdown_request(void) {
+    return ERR_UNAVAILABLE;
+}
+
+void video_print(const char* str, uint8_t color) {
+    (void)str;
+    (void)color;
+}
+
+void shell_command_print_num(uint32_t value) {
+    (void)value;
+}
+
+void settings_open(void) {
+}
+
+void shell_handle_app_request(uint32_t request) {
+    (void)request;
+}
+
+int taskbar_handle_config_key(uint8_t scancode) {
+    (void)scancode;
     return 0;
+}
+
+int taskbar_handle_key(uint8_t scancode) {
+    (void)scancode;
+    return 0;
+}
+
+void process_destroy(process_t* proc) {
+    (void)proc;
+}
+
+process_t* process_get_by_pid(uint32_t pid) {
+    (void)pid;
+    return NULL;
+}
+
+int process_is_user(const process_t* proc) {
+    (void)proc;
+    return 0;
+}
+
+int process_signal_send(uint32_t pid, uint32_t signal_number) {
+    (void)pid;
+    (void)signal_number;
+    return OK;
+}
+
+void gui_draw_scaled_window_frame(uint32_t x, uint32_t y, uint32_t width,
+                                  uint32_t height, const char* title,
+                                  int active) {
+    (void)x;
+    (void)y;
+    (void)width;
+    (void)height;
+    (void)title;
+    (void)active;
+}
+
+void wm_request_hosted_redraw(wm_app_type_t app_type) {
+    (void)app_type;
+}
+
+int wm_register_hosted_app(const wm_hosted_app_t* app) {
+    (void)app;
+    return OK;
+}
+
+desktop_mode_t desktop_get_mode(void) {
+    return DESKTOP_MODE_CLASSIC;
+}
+
+void wm_set_active(int active) {
+    (void)active;
+}
+
+static uint8_t fixture_ipc_exit_sent;
+
+int ipc_receive(ipc_msg_t* message) {
+    if (!message || fixture_ipc_exit_sent) return 0;
+    message->type = IPC_MSG_KEYBOARD;
+    message->data1 = 0x01U;
+    message->data2 = 0U;
+    fixture_ipc_exit_sent = 1U;
+    return 1;
+}
+
+int ipc_wait(uint32_t timeout_ticks, wait_reason_t* out_reason) {
+    (void)timeout_ticks;
+    if (out_reason) *out_reason = WAIT_REASON_NONE;
+    return OK;
+}
+
+void process_yield(void) {
 }
 
 void taskbar_remove_app(tb_app_type_t app) {

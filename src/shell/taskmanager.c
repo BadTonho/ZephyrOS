@@ -2931,7 +2931,9 @@ int taskmgr_host_test_contracts(void) {
     int failures = 0;
     char buffer[128];
     char small[8];
+    const uint8_t status[] = "pid 7\n";
     uint32_t length = 0U;
+    uint32_t status_value = 0U;
     process_state_t process_state = PROCESS_STATE_UNUSED;
     taskmgr_process_view_t view;
     tb_rect_t work_area;
@@ -2951,8 +2953,46 @@ int taskmgr_host_test_contracts(void) {
     TASKMGR_EXPECT(!taskmgr_is_open());
     taskmgr_gui_minimize();
     TASKMGR_EXPECT(!taskmgr_is_gui_minimized());
+    taskmgr_open();
+    taskmgr_refresh();
+    taskmgr_handle_key(0x01);
+    taskmgr_run();
+    TASKMGR_EXPECT(!taskmgr_is_open());
+    taskmgr_handle_taskbar_action(0);
+    taskmgr_redraw_after_menu_close();
+    taskmgr_update_cpu_metrics();
+    draw_header();
+    draw_processes();
+    draw_memory();
+    draw_threads();
+    taskmgr_gui_update();
+    taskmgr_gui_restore();
+    taskmgr_gui_handle_key(0x01);
+    taskmgr_gui_handle_taskbar_action(0);
+    taskmgr_gui_restart_selected();
+    taskmgr_gui_delete_selected();
+    taskmgr_gui_draw_drag_region();
+    taskmgr_gui_draw_processes();
+    taskmgr_gui_draw_memory();
+    taskmgr_gui_draw_threads();
+    taskmgr_gui_draw_properties();
+    taskmgr_gui_draw_window();
+    taskmgr_gui_draw();
+    taskmgr_gui_handle_wheel(NULL);
+    TASKMGR_EXPECT(taskmgr_gui_handle_mouse(NULL) == 0);
+    {
+        mouse_event_t event;
+        kmemset(&event, 0, sizeof(event));
+        TASKMGR_EXPECT(taskmgr_hosted_mouse(&event, 40, 36, 760, 520) == 0);
+    }
+    taskmgr_hosted_draw(40, 36, 760, 520);
+    taskmgr_hosted_close();
+    TASKMGR_EXPECT(taskmgr_open_gui() == ERR_UNAVAILABLE);
     taskmgr_gui_draw_bar(1, 1, 16, 150U, GUI_MODERN_COLOR_ACCENT);
     TASKMGR_EXPECT(taskmgr_gui_refresh_memory_view() == ERR_NOT_FOUND);
+    TASKMGR_EXPECT(taskmgr_gui_read_status_value(status, sizeof(status) - 1U,
+                                                 "pid", &status_value) == OK &&
+                   status_value == 7U);
     TASKMGR_EXPECT(taskmgr_gui_parse_status(NULL, 0U, &view) == ERR_NULL);
     TASKMGR_EXPECT(taskmgr_process_tick_usage(NULL) == 0U);
     TASKMGR_EXPECT(taskmgr_find_thread_by_row(0) == NULL);

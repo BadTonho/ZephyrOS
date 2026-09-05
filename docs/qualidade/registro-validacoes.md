@@ -7,6 +7,21 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## 2026-09-05 - Cobertura host-only completa do Task Manager
+
+- Caso: `host:shell:taskmanager` / `make test-taskmanager-host`.
+- Fixture: doubles estáticos para memória, ATA, VESA, GUI, IPC, processo e
+  recovery; nenhum processo, VFS, disco, rede ou hardware real.
+- Cobertura: ciclo de vida TUI, ciclo GUI/hosted, parsing de status, métricas,
+  seleção, layout, desenho, entrada de mouse, encerramento via ESC e estados
+  indisponíveis.
+- Resultado: `PASS` com `-Wall -Wextra -Werror`; o relatório dinâmico observou
+  87 funções reais de `src/shell/taskmanager.c`, sem endereços desconhecidos
+  ou símbolos ambíguos. Também passaram `make q3check`, `make clean` seguido
+  de `make`, sincronização/renderização e `make catalog-test`.
+- Catálogo: 7.326 superfícies, 6.987 `COVERED`, 339 `PENDING`, 59 aposentadas
+  e 165 casos; as pendências restantes continuam explícitas.
+
 ## 2026-09-04 - Runtime de atualizacao host-only
 
 - Caso: `host:core:update-runtime` / `make test-update-runtime-host`.

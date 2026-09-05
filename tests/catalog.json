@@ -152696,9 +152696,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:draw_hline",
@@ -152735,9 +152738,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:draw_processes",
@@ -152753,9 +152759,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:draw_threads",
@@ -152771,9 +152780,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:num_digits",
@@ -153070,10 +153082,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_copy_text",
@@ -153133,9 +153146,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_draw",
@@ -153153,10 +153169,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_draw_bar",
@@ -153193,9 +153210,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_draw_hex",
@@ -153253,9 +153273,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_draw_num",
@@ -153317,10 +153340,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_draw_properties",
@@ -153336,9 +153360,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_draw_surface",
@@ -153398,9 +153425,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_draw_window",
@@ -153418,10 +153448,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_find_process_view",
@@ -153482,10 +153513,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_handle_mouse",
@@ -153501,9 +153533,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_handle_taskbar_action",
@@ -153519,9 +153554,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_handle_wheel",
@@ -153537,9 +153575,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_has_side_details",
@@ -153731,10 +153772,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_refresh_memory_view",
@@ -153816,9 +153858,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_restore",
@@ -153834,9 +153879,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_sample_history",
@@ -153919,11 +153967,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_gui_visible_rows",
@@ -153960,9 +154009,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_handle_taskbar_action",
@@ -153978,9 +154030,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_host_test_contracts",
@@ -154019,10 +154074,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_hosted_draw",
@@ -154040,10 +154096,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_hosted_mouse",
@@ -154059,9 +154116,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_init",
@@ -154163,9 +154223,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_open_gui",
@@ -154183,10 +154246,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:taskmanager",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_pages_used",
@@ -154329,9 +154393,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_refresh",
@@ -154347,9 +154414,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_run",
@@ -154365,9 +154435,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_thread_state_name",
@@ -154404,9 +154477,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/taskmanager.c:taskmgr_update_memory_stats",
@@ -154422,9 +154498,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:taskmanager"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/taskbar/taskbar.c:get_col",
@@ -171745,7 +171824,11 @@
       "surface_ids": [
         "c:src/shell/taskmanager.c:draw_bar",
         "c:src/shell/taskmanager.c:draw_box",
+        "c:src/shell/taskmanager.c:draw_header",
         "c:src/shell/taskmanager.c:draw_hline",
+        "c:src/shell/taskmanager.c:draw_memory",
+        "c:src/shell/taskmanager.c:draw_processes",
+        "c:src/shell/taskmanager.c:draw_threads",
         "c:src/shell/taskmanager.c:num_digits",
         "c:src/shell/taskmanager.c:print_at",
         "c:src/shell/taskmanager.c:print_num_at",
@@ -171759,17 +171842,30 @@
         "c:src/shell/taskmanager.c:taskmgr_gui_append_text",
         "c:src/shell/taskmanager.c:taskmgr_gui_build_proc_path",
         "c:src/shell/taskmanager.c:taskmgr_gui_collect_process_views_once",
+        "c:src/shell/taskmanager.c:taskmgr_gui_color",
         "c:src/shell/taskmanager.c:taskmgr_gui_copy_text",
         "c:src/shell/taskmanager.c:taskmgr_gui_decimal_name",
+        "c:src/shell/taskmanager.c:taskmgr_gui_delete_selected",
+        "c:src/shell/taskmanager.c:taskmgr_gui_draw",
         "c:src/shell/taskmanager.c:taskmgr_gui_draw_bar",
+        "c:src/shell/taskmanager.c:taskmgr_gui_draw_drag_region",
         "c:src/shell/taskmanager.c:taskmgr_gui_draw_hex",
         "c:src/shell/taskmanager.c:taskmgr_gui_draw_history_graph",
+        "c:src/shell/taskmanager.c:taskmgr_gui_draw_memory",
         "c:src/shell/taskmanager.c:taskmgr_gui_draw_num",
         "c:src/shell/taskmanager.c:taskmgr_gui_draw_process_details",
+        "c:src/shell/taskmanager.c:taskmgr_gui_draw_processes",
+        "c:src/shell/taskmanager.c:taskmgr_gui_draw_properties",
         "c:src/shell/taskmanager.c:taskmgr_gui_draw_surface",
         "c:src/shell/taskmanager.c:taskmgr_gui_draw_tabs",
+        "c:src/shell/taskmanager.c:taskmgr_gui_draw_threads",
+        "c:src/shell/taskmanager.c:taskmgr_gui_draw_window",
         "c:src/shell/taskmanager.c:taskmgr_gui_find_process_view",
         "c:src/shell/taskmanager.c:taskmgr_gui_find_process_view_by_pid",
+        "c:src/shell/taskmanager.c:taskmgr_gui_handle_key",
+        "c:src/shell/taskmanager.c:taskmgr_gui_handle_mouse",
+        "c:src/shell/taskmanager.c:taskmgr_gui_handle_taskbar_action",
+        "c:src/shell/taskmanager.c:taskmgr_gui_handle_wheel",
         "c:src/shell/taskmanager.c:taskmgr_gui_has_side_details",
         "c:src/shell/taskmanager.c:taskmgr_gui_hit",
         "c:src/shell/taskmanager.c:taskmgr_gui_minimize",
@@ -171778,25 +171874,41 @@
         "c:src/shell/taskmanager.c:taskmgr_gui_process_list_height",
         "c:src/shell/taskmanager.c:taskmgr_gui_process_list_y",
         "c:src/shell/taskmanager.c:taskmgr_gui_process_visible_rows",
+        "c:src/shell/taskmanager.c:taskmgr_gui_read_status_value",
         "c:src/shell/taskmanager.c:taskmgr_gui_refresh_memory_view",
         "c:src/shell/taskmanager.c:taskmgr_gui_refresh_process_views",
         "c:src/shell/taskmanager.c:taskmgr_gui_reset_history",
+        "c:src/shell/taskmanager.c:taskmgr_gui_restart_selected",
+        "c:src/shell/taskmanager.c:taskmgr_gui_restore",
         "c:src/shell/taskmanager.c:taskmgr_gui_sample_history",
         "c:src/shell/taskmanager.c:taskmgr_gui_scroll_selected",
         "c:src/shell/taskmanager.c:taskmgr_gui_state_color",
+        "c:src/shell/taskmanager.c:taskmgr_gui_update",
         "c:src/shell/taskmanager.c:taskmgr_gui_visible_rows",
+        "c:src/shell/taskmanager.c:taskmgr_handle_key",
+        "c:src/shell/taskmanager.c:taskmgr_handle_taskbar_action",
         "c:src/shell/taskmanager.c:taskmgr_host_test_contracts",
+        "c:src/shell/taskmanager.c:taskmgr_hosted_close",
+        "c:src/shell/taskmanager.c:taskmgr_hosted_draw",
+        "c:src/shell/taskmanager.c:taskmgr_hosted_mouse",
         "c:src/shell/taskmanager.c:taskmgr_init",
         "c:src/shell/taskmanager.c:taskmgr_is_gui_minimized",
         "c:src/shell/taskmanager.c:taskmgr_is_gui_open",
         "c:src/shell/taskmanager.c:taskmgr_is_open",
+        "c:src/shell/taskmanager.c:taskmgr_open",
+        "c:src/shell/taskmanager.c:taskmgr_open_gui",
         "c:src/shell/taskmanager.c:taskmgr_pages_used",
         "c:src/shell/taskmanager.c:taskmgr_percent",
         "c:src/shell/taskmanager.c:taskmgr_print_hex_at",
         "c:src/shell/taskmanager.c:taskmgr_process_state_name",
         "c:src/shell/taskmanager.c:taskmgr_process_tick_usage",
         "c:src/shell/taskmanager.c:taskmgr_process_type",
-        "c:src/shell/taskmanager.c:taskmgr_thread_state_name"
+        "c:src/shell/taskmanager.c:taskmgr_redraw_after_menu_close",
+        "c:src/shell/taskmanager.c:taskmgr_refresh",
+        "c:src/shell/taskmanager.c:taskmgr_run",
+        "c:src/shell/taskmanager.c:taskmgr_thread_state_name",
+        "c:src/shell/taskmanager.c:taskmgr_update_cpu_metrics",
+        "c:src/shell/taskmanager.c:taskmgr_update_memory_stats"
       ],
       "tags": [
         "host",

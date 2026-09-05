@@ -2236,7 +2236,7 @@ O relatorio instrumentado fica em
 tambem valida inicializacao, estado fechado, GUI indisponivel, parsing de
 status nulo, memoria procfs ausente, barra grafica, busca de thread vazia,
 fechamento e o no-op seguro de minimizacao quando a GUI esta indisponivel,
-observando 54 funcoes reais. A execucao tem timeout do runner e preserva
+observando 87 funcoes reais. A execucao tem timeout do runner e preserva
 manifesto, resultado, logs e cobertura.
 
 ## Shell: relatórios de rede host-only

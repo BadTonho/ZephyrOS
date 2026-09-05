@@ -3950,7 +3950,7 @@
         ],
         "status": "AUTOMATED"
       },
-      "evidence": "make test-taskmanager-host PASS com 52 funcoes reais de taskmanager.c observadas, incluindo ciclo de inicializacao, GUI indisponivel, parsing invalido, memoria procfs ausente, barra grafica e busca de thread vazia, sem enderecos desconhecidos ou simbolos ambiguos"
+      "evidence": "make test-taskmanager-host PASS com 87 funcoes reais de src/shell/taskmanager.c observadas, incluindo ciclo de inicializacao e encerramento via ESC, caminho GUI/hosted, parsing de status, metricas, selecao, layout, desenho e estados indisponiveis, sem enderecos desconhecidos ou simbolos ambiguos"
     },
     {
       "id": "shell-checks-host-dynamic",
