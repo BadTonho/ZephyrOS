@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6930 |
+| `COVERED` | 6936 |
 | `MANUAL` | 0 |
-| `PENDING` | 396 |
+| `PENDING` | 390 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -6954,7 +6954,7 @@
 | `c:src/shell/taskmanager.c:taskmgr_clamp_window` | `src/shell/taskmanager.c` | `taskmgr_clamp_window` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_close` | `src/shell/taskmanager.c` | `taskmgr_close` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_count_process_states` | `src/shell/taskmanager.c` | `taskmgr_count_process_states` | `shell` | `COVERED` | 1 |
-| `c:src/shell/taskmanager.c:taskmgr_find_thread_by_row` | `src/shell/taskmanager.c` | `taskmgr_find_thread_by_row` | `shell` | `PENDING` | 0 |
+| `c:src/shell/taskmanager.c:taskmgr_find_thread_by_row` | `src/shell/taskmanager.c` | `taskmgr_find_thread_by_row` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_get_work_area` | `src/shell/taskmanager.c` | `taskmgr_get_work_area` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_aggregate_load` | `src/shell/taskmanager.c` | `taskmgr_gui_aggregate_load` | `shell` | `COVERED` | 2 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_append_number` | `src/shell/taskmanager.c` | `taskmgr_gui_append_number` | `shell` | `COVERED` | 2 |
@@ -6966,7 +6966,7 @@
 | `c:src/shell/taskmanager.c:taskmgr_gui_decimal_name` | `src/shell/taskmanager.c` | `taskmgr_gui_decimal_name` | `shell` | `COVERED` | 2 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_delete_selected` | `src/shell/taskmanager.c` | `taskmgr_gui_delete_selected` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_draw` | `src/shell/taskmanager.c` | `taskmgr_gui_draw` | `shell` | `COVERED` | 1 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_draw_bar` | `src/shell/taskmanager.c` | `taskmgr_gui_draw_bar` | `shell` | `PENDING` | 0 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_draw_bar` | `src/shell/taskmanager.c` | `taskmgr_gui_draw_bar` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_draw_drag_region` | `src/shell/taskmanager.c` | `taskmgr_gui_draw_drag_region` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_draw_hex` | `src/shell/taskmanager.c` | `taskmgr_gui_draw_hex` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_draw_history_graph` | `src/shell/taskmanager.c` | `taskmgr_gui_draw_history_graph` | `shell` | `COVERED` | 1 |
@@ -6989,12 +6989,12 @@
 | `c:src/shell/taskmanager.c:taskmgr_gui_hit` | `src/shell/taskmanager.c` | `taskmgr_gui_hit` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_minimize` | `src/shell/taskmanager.c` | `taskmgr_gui_minimize` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_parse_state` | `src/shell/taskmanager.c` | `taskmgr_gui_parse_state` | `shell` | `COVERED` | 2 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_parse_status` | `src/shell/taskmanager.c` | `taskmgr_gui_parse_status` | `shell` | `COVERED` | 1 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_parse_status` | `src/shell/taskmanager.c` | `taskmgr_gui_parse_status` | `shell` | `COVERED` | 2 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_process_list_height` | `src/shell/taskmanager.c` | `taskmgr_gui_process_list_height` | `shell` | `COVERED` | 2 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_process_list_y` | `src/shell/taskmanager.c` | `taskmgr_gui_process_list_y` | `shell` | `COVERED` | 2 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_process_visible_rows` | `src/shell/taskmanager.c` | `taskmgr_gui_process_visible_rows` | `shell` | `COVERED` | 2 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_read_status_value` | `src/shell/taskmanager.c` | `taskmgr_gui_read_status_value` | `shell` | `COVERED` | 1 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_refresh_memory_view` | `src/shell/taskmanager.c` | `taskmgr_gui_refresh_memory_view` | `shell` | `COVERED` | 1 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_refresh_memory_view` | `src/shell/taskmanager.c` | `taskmgr_gui_refresh_memory_view` | `shell` | `COVERED` | 2 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_refresh_process_views` | `src/shell/taskmanager.c` | `taskmgr_gui_refresh_process_views` | `shell` | `COVERED` | 2 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_reset_history` | `src/shell/taskmanager.c` | `taskmgr_gui_reset_history` | `shell` | `COVERED` | 2 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_restart_selected` | `src/shell/taskmanager.c` | `taskmgr_gui_restart_selected` | `shell` | `PENDING` | 0 |
@@ -7010,17 +7010,17 @@
 | `c:src/shell/taskmanager.c:taskmgr_hosted_close` | `src/shell/taskmanager.c` | `taskmgr_hosted_close` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_hosted_draw` | `src/shell/taskmanager.c` | `taskmgr_hosted_draw` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_hosted_mouse` | `src/shell/taskmanager.c` | `taskmgr_hosted_mouse` | `shell` | `PENDING` | 0 |
-| `c:src/shell/taskmanager.c:taskmgr_init` | `src/shell/taskmanager.c` | `taskmgr_init` | `shell` | `PENDING` | 0 |
-| `c:src/shell/taskmanager.c:taskmgr_is_gui_minimized` | `src/shell/taskmanager.c` | `taskmgr_is_gui_minimized` | `shell` | `PENDING` | 0 |
-| `c:src/shell/taskmanager.c:taskmgr_is_gui_open` | `src/shell/taskmanager.c` | `taskmgr_is_gui_open` | `shell` | `COVERED` | 2 |
-| `c:src/shell/taskmanager.c:taskmgr_is_open` | `src/shell/taskmanager.c` | `taskmgr_is_open` | `shell` | `PENDING` | 0 |
+| `c:src/shell/taskmanager.c:taskmgr_init` | `src/shell/taskmanager.c` | `taskmgr_init` | `shell` | `COVERED` | 1 |
+| `c:src/shell/taskmanager.c:taskmgr_is_gui_minimized` | `src/shell/taskmanager.c` | `taskmgr_is_gui_minimized` | `shell` | `COVERED` | 1 |
+| `c:src/shell/taskmanager.c:taskmgr_is_gui_open` | `src/shell/taskmanager.c` | `taskmgr_is_gui_open` | `shell` | `COVERED` | 3 |
+| `c:src/shell/taskmanager.c:taskmgr_is_open` | `src/shell/taskmanager.c` | `taskmgr_is_open` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_open` | `src/shell/taskmanager.c` | `taskmgr_open` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_open_gui` | `src/shell/taskmanager.c` | `taskmgr_open_gui` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_pages_used` | `src/shell/taskmanager.c` | `taskmgr_pages_used` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_percent` | `src/shell/taskmanager.c` | `taskmgr_percent` | `shell` | `COVERED` | 2 |
 | `c:src/shell/taskmanager.c:taskmgr_print_hex_at` | `src/shell/taskmanager.c` | `taskmgr_print_hex_at` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_process_state_name` | `src/shell/taskmanager.c` | `taskmgr_process_state_name` | `shell` | `COVERED` | 1 |
-| `c:src/shell/taskmanager.c:taskmgr_process_tick_usage` | `src/shell/taskmanager.c` | `taskmgr_process_tick_usage` | `shell` | `PENDING` | 0 |
+| `c:src/shell/taskmanager.c:taskmgr_process_tick_usage` | `src/shell/taskmanager.c` | `taskmgr_process_tick_usage` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_process_type` | `src/shell/taskmanager.c` | `taskmgr_process_type` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_redraw_after_menu_close` | `src/shell/taskmanager.c` | `taskmgr_redraw_after_menu_close` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_refresh` | `src/shell/taskmanager.c` | `taskmgr_refresh` | `shell` | `PENDING` | 0 |
@@ -7842,9 +7842,7 @@
 - `c:src/shell/taskmanager.c:draw_processes`
 - `c:src/shell/taskmanager.c:draw_threads`
 - `c:src/shell/taskmanager.c:taskmgr_close`
-- `c:src/shell/taskmanager.c:taskmgr_find_thread_by_row`
 - `c:src/shell/taskmanager.c:taskmgr_gui_delete_selected`
-- `c:src/shell/taskmanager.c:taskmgr_gui_draw_bar`
 - `c:src/shell/taskmanager.c:taskmgr_gui_draw_drag_region`
 - `c:src/shell/taskmanager.c:taskmgr_gui_draw_memory`
 - `c:src/shell/taskmanager.c:taskmgr_gui_draw_properties`
@@ -7858,11 +7856,7 @@
 - `c:src/shell/taskmanager.c:taskmgr_handle_key`
 - `c:src/shell/taskmanager.c:taskmgr_handle_taskbar_action`
 - `c:src/shell/taskmanager.c:taskmgr_hosted_mouse`
-- `c:src/shell/taskmanager.c:taskmgr_init`
-- `c:src/shell/taskmanager.c:taskmgr_is_gui_minimized`
-- `c:src/shell/taskmanager.c:taskmgr_is_open`
 - `c:src/shell/taskmanager.c:taskmgr_open`
-- `c:src/shell/taskmanager.c:taskmgr_process_tick_usage`
 - `c:src/shell/taskmanager.c:taskmgr_redraw_after_menu_close`
 - `c:src/shell/taskmanager.c:taskmgr_refresh`
 - `c:src/shell/taskmanager.c:taskmgr_run`

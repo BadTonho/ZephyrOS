@@ -6307,3 +6307,17 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `make catalog-test` e `git diff --check`. O catálogo registra 7.326
   superfícies, 6.930 `COVERED`, 396 `PENDING`, 59 aposentadas e 165 casos;
   as demais pendências continuam explícitas.
+
+- Incremento Task Manager: ciclo de vida e limites de GUI — concluído em
+  2026-09-05 (America/Sao_Paulo). A fixture `host:shell:taskmanager`, com
+  `ZEPHYROS_HOST_TEST`, passou a validar inicialização, estado fechado, GUI
+  indisponível, parsing nulo de status, memória procfs ausente, barra gráfica
+  e busca de thread vazia, sem processos, VFS, disco, rede ou hardware reais.
+  Passou `make test-taskmanager-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` com
+  `-Wall -Wextra -Werror`; a cobertura dinâmica terminou `PASS`, observando
+  52 funções reais de `src/shell/taskmanager.c`, com
+  `unknown_addresses=[]` e `ambiguous_symbols=[]`. Também passaram a
+  sincronização/renderização do catálogo, `make catalog-test` e
+  `git diff --check`; o catálogo registra 7.326 superfícies, 6.936
+  `COVERED`, 390 `PENDING`, 59 aposentadas e 165 casos.
