@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6955 |
+| `COVERED` | 6957 |
 | `MANUAL` | 0 |
-| `PENDING` | 371 |
+| `PENDING` | 369 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -141,14 +141,14 @@
 | `api:src/include/apps/shell_diagnostics_helpers.h:shell_memcheck_valid_memory_metrics` | `src/include/apps/shell_diagnostics_helpers.h` | `shell_memcheck_valid_memory_metrics` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/shell_diagnostics_helpers.h:shell_process_state_name` | `src/include/apps/shell_diagnostics_helpers.h` | `shell_process_state_name` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/shell_dispatch.h:shell_dispatch_execute` | `src/include/apps/shell_dispatch.h` | `shell_dispatch_execute` | `apps` | `COVERED` | 6 |
-| `api:src/include/apps/shell_input.h:shell_input_cancel_extended` | `src/include/apps/shell_input.h` | `shell_input_cancel_extended` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell_input.h:shell_input_get_buffer` | `src/include/apps/shell_input.h` | `shell_input_get_buffer` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell_input.h:shell_input_handle_key` | `src/include/apps/shell_input.h` | `shell_input_handle_key` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_input.h:shell_input_cancel_extended` | `src/include/apps/shell_input.h` | `shell_input_cancel_extended` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_input.h:shell_input_get_buffer` | `src/include/apps/shell_input.h` | `shell_input_get_buffer` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_input.h:shell_input_handle_key` | `src/include/apps/shell_input.h` | `shell_input_handle_key` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_input.h:shell_input_init` | `src/include/apps/shell_input.h` | `shell_input_init` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell_input.h:shell_input_print_prompt` | `src/include/apps/shell_input.h` | `shell_input_print_prompt` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell_input.h:shell_input_reset` | `src/include/apps/shell_input.h` | `shell_input_reset` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell_input.h:shell_input_reset_modifiers` | `src/include/apps/shell_input.h` | `shell_input_reset_modifiers` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell_input.h:shell_input_resume_terminal` | `src/include/apps/shell_input.h` | `shell_input_resume_terminal` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_input.h:shell_input_print_prompt` | `src/include/apps/shell_input.h` | `shell_input_print_prompt` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_input.h:shell_input_reset` | `src/include/apps/shell_input.h` | `shell_input_reset` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_input.h:shell_input_reset_modifiers` | `src/include/apps/shell_input.h` | `shell_input_reset_modifiers` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_input.h:shell_input_resume_terminal` | `src/include/apps/shell_input.h` | `shell_input_resume_terminal` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_introspection.h:shell_introspection_find_value` | `src/include/apps/shell_introspection.h` | `shell_introspection_find_value` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_introspection.h:shell_introspection_parse_hex_u32` | `src/include/apps/shell_introspection.h` | `shell_introspection_parse_hex_u32` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_introspection.h:shell_introspection_parse_u32` | `src/include/apps/shell_introspection.h` | `shell_introspection_parse_u32` | `apps` | `COVERED` | 2 |
@@ -212,7 +212,7 @@
 | `api:src/include/apps/shell_runtime.h:shell_packages_host_test_contracts` | `src/include/apps/shell_runtime.h` | `shell_packages_host_test_contracts` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_finish_command` | `src/include/apps/shell_runtime.h` | `shell_runtime_finish_command` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key` | `src/include/apps/shell_runtime.h` | `shell_runtime_handle_terminal_key` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible` | `src/include/apps/shell_runtime.h` | `shell_runtime_is_hosted_visible` | `apps` | `COVERED` | 4 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible` | `src/include/apps/shell_runtime.h` | `shell_runtime_is_hosted_visible` | `apps` | `COVERED` | 3 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager` | `src/include/apps/shell_runtime.h` | `shell_runtime_prepare_filemanager` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_reset_input` | `src/include/apps/shell_runtime.h` | `shell_runtime_reset_input` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal` | `src/include/apps/shell_runtime.h` | `shell_runtime_resume_terminal` | `apps` | `COVERED` | 7 |
@@ -6952,7 +6952,7 @@
 | `c:src/shell/taskmanager.c:print_at` | `src/shell/taskmanager.c` | `print_at` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:print_num_at` | `src/shell/taskmanager.c` | `print_num_at` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_clamp_window` | `src/shell/taskmanager.c` | `taskmgr_clamp_window` | `shell` | `COVERED` | 1 |
-| `c:src/shell/taskmanager.c:taskmgr_close` | `src/shell/taskmanager.c` | `taskmgr_close` | `shell` | `PENDING` | 0 |
+| `c:src/shell/taskmanager.c:taskmgr_close` | `src/shell/taskmanager.c` | `taskmgr_close` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_count_process_states` | `src/shell/taskmanager.c` | `taskmgr_count_process_states` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_find_thread_by_row` | `src/shell/taskmanager.c` | `taskmgr_find_thread_by_row` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_get_work_area` | `src/shell/taskmanager.c` | `taskmgr_get_work_area` | `shell` | `COVERED` | 1 |
@@ -6987,7 +6987,7 @@
 | `c:src/shell/taskmanager.c:taskmgr_gui_handle_wheel` | `src/shell/taskmanager.c` | `taskmgr_gui_handle_wheel` | `shell` | `PENDING` | 0 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_has_side_details` | `src/shell/taskmanager.c` | `taskmgr_gui_has_side_details` | `shell` | `COVERED` | 2 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_hit` | `src/shell/taskmanager.c` | `taskmgr_gui_hit` | `shell` | `COVERED` | 1 |
-| `c:src/shell/taskmanager.c:taskmgr_gui_minimize` | `src/shell/taskmanager.c` | `taskmgr_gui_minimize` | `shell` | `PENDING` | 0 |
+| `c:src/shell/taskmanager.c:taskmgr_gui_minimize` | `src/shell/taskmanager.c` | `taskmgr_gui_minimize` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_parse_state` | `src/shell/taskmanager.c` | `taskmgr_gui_parse_state` | `shell` | `COVERED` | 2 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_parse_status` | `src/shell/taskmanager.c` | `taskmgr_gui_parse_status` | `shell` | `COVERED` | 2 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_process_list_height` | `src/shell/taskmanager.c` | `taskmgr_gui_process_list_height` | `shell` | `COVERED` | 2 |
@@ -7822,7 +7822,6 @@
 - `c:src/shell/taskmanager.c:draw_memory`
 - `c:src/shell/taskmanager.c:draw_processes`
 - `c:src/shell/taskmanager.c:draw_threads`
-- `c:src/shell/taskmanager.c:taskmgr_close`
 - `c:src/shell/taskmanager.c:taskmgr_gui_delete_selected`
 - `c:src/shell/taskmanager.c:taskmgr_gui_draw_drag_region`
 - `c:src/shell/taskmanager.c:taskmgr_gui_draw_memory`
@@ -7831,7 +7830,6 @@
 - `c:src/shell/taskmanager.c:taskmgr_gui_handle_mouse`
 - `c:src/shell/taskmanager.c:taskmgr_gui_handle_taskbar_action`
 - `c:src/shell/taskmanager.c:taskmgr_gui_handle_wheel`
-- `c:src/shell/taskmanager.c:taskmgr_gui_minimize`
 - `c:src/shell/taskmanager.c:taskmgr_gui_restart_selected`
 - `c:src/shell/taskmanager.c:taskmgr_gui_restore`
 - `c:src/shell/taskmanager.c:taskmgr_handle_key`
