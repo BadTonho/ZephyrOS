@@ -6321,3 +6321,16 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   sincronização/renderização do catálogo, `make catalog-test` e
   `git diff --check`; o catálogo registra 7.326 superfícies, 6.936
   `COVERED`, 390 `PENDING`, 59 aposentadas e 165 casos.
+
+- Evidência RTC: vínculo completo do caso host-only — concluído em
+  2026-09-05 (America/Sao_Paulo). O caso existente
+  `host:drivers:rtc-status` foi executado com CMOS simulado e terminou `PASS`.
+  O relatório instrumentado `build/test-results/rtc-status-host/coverage.json`
+  observou as cinco APIs públicas e os 17 símbolos reais de
+  `src/drivers/rtc.c`, sem endereços desconhecidos ou símbolos ambíguos.
+  As nove superfícies internas que ainda estavam pendentes foram adicionadas
+  ao registro somente depois dessa evidência. A sincronização, renderização,
+  validação do catálogo e `git diff --check` passaram; o catálogo ficou com
+  7.326 superfícies, 6.945 `COVERED`, 381 `PENDING`, 59 aposentadas e 165
+  casos. O gate estrito integral continua pendente por causa das demais
+  superfícies sem executor ou relatório preservado.

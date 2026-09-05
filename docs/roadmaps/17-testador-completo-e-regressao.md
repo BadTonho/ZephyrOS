@@ -3178,3 +3178,18 @@ pendente.
 - [x] Passaram a sincronização, renderização e `make catalog-test`. O catálogo
       registra 7.315 superfícies, 6.819 `COVERED`, 496 `PENDING`, 59 aposentadas
       e 162 casos; as pendências restantes continuam explícitas.
+
+### Evidência RTC: vínculo completo do caso host-only — 2026-09-05
+
+- [x] O caso existente `host:drivers:rtc-status` foi executado no build atual
+      com CMOS simulado, cobrindo as cinco APIs públicas e os 17 símbolos reais
+      de `src/drivers/rtc.c`, incluindo I/O abstraído, snapshots estáveis,
+      conversão BCD/binária, calendário, timeout e autoteste.
+- [x] O relatório `build/test-results/rtc-status-host/coverage.json` terminou
+      `PASS`, com `unknown_addresses=[]` e `ambiguous_symbols=[]`. As nove
+      superfícies internas que ainda estavam `PENDING` foram vinculadas somente
+      após aparecerem no relatório dinâmico real.
+- [x] A sincronização e a renderização do catálogo passaram, com 7.326
+      superfícies, 6.945 `COVERED`, 381 `PENDING`, 59 aposentadas e 165 casos.
+      O gate estrito integral continua pendente por causa das demais superfícies
+      sem executor ou relatório preservado.
