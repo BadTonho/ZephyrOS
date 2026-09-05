@@ -27,7 +27,7 @@ Configurações, do Desktop, dos comandos de aplicativos, da evidência RTC e
 das fixtures de entrada/hosted, da evidência de panic, da regeneração dos
 relatórios RTC/Shell, da fixture host-only do Updater, da fixture host-only do
 File Manager, da fixture host-only do Task Manager e da validação de
-resultados do Shell Checks, registra 7.326 superfícies, 6.888 `COVERED` e 438
+resultados do Shell Checks, registra 7.326 superfícies, 6.903 `COVERED` e 423
 `PENDING`.
 O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
@@ -153,6 +153,24 @@ Isso não significa declarar hardware físico validado sem equipamento.
       ambíguos. A sincronização do catálogo marcou 4 superfícies adicionais
       como `COVERED`, totalizando 7.326 superfícies, 6.888 `COVERED`, 438
       `PENDING`, 59 aposentadas e 165 casos.
+
+### Incremento UI/File Manager — fontes, pesquisa e mutacoes — 2026-09-05
+
+- [x] A fixture existente `host:ui:filemanager` passou a exercitar os fluxos
+      reais de inicializacao, selecao de volume, refresh de diretorio,
+      restauracao e validacao de montagem, alem de historico, pesquisa,
+      selecao hospedada, renomeacao e exclusao com resultados de erro.
+- [x] Tambem foram cobertos o modo Classic/Simple, limites de selecao,
+      metricas de fonte, clique de pesquisa e eventos de roda/clique em uma
+      janela hospedada. Os doubles permanecem estaticos; nenhuma operacao
+      acessa disco, VFS, rede ou hardware real.
+- [x] `make test-filemanager-host
+      HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` passou; o relatorio
+      `build/test-results/filemanager-host/coverage.json` observou 47 funcoes
+      reais de `src/filemanager/filemanager.c`, com
+      `unknown_addresses=[]` e `ambiguous_symbols=[]`. A sincronizacao cobriu
+      15 superficies adicionais, totalizando 7.326 superficies, 6.903
+      `COVERED`, 423 `PENDING`, 59 aposentadas e 165 casos.
 
 ### Incremento Shell/pacotes e atualizacoes — 2026-09-05
 

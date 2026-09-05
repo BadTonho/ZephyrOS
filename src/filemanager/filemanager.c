@@ -2519,8 +2519,17 @@ static void fm_search_move_page(int direction) {
 
 #ifdef ZEPHYROS_HOST_TEST
 int fm_host_test_contracts(void) {
+    extern void filemanager_host_set_storage_fixture(int ready,
+                                                     int data_present,
+                                                     int data_mounted);
+    extern void filemanager_host_reset_fs_fixture(void);
+    extern void filemanager_host_set_index_fixture(int ready, int result_code);
+    extern void filemanager_host_set_rename_result(int result);
+    extern void filemanager_host_set_delete_result(int result);
+    extern void filemanager_host_set_desktop_mode(desktop_mode_t mode);
     file_index_status_t index_status;
     file_index_entry_t index_entry;
+    mouse_event_t mouse_event;
     char output[FM_MAX_PATH];
     char long_path[FM_MAX_PATH];
     int failures = 0;
@@ -2549,6 +2558,183 @@ int fm_host_test_contracts(void) {
     if (!str_equal(output, "SHORT.TXT")) failures++;
     fm_fat_display_name(long_path, output);
     if (str_len(output) != FM_NAME_LEN - 1) failures++;
+
+    filemanager_host_set_storage_fixture(1, 1, 1);
+    filemanager_host_reset_fs_fixture();
+    if (fm_boot_directory_exists("DESKTOP")) failures++;
+    fm_init();
+    if (!state.running || !state.storage_boot ||
+        !str_equal(state.storage_volume_id, "C:") ||
+        state.file_count != 7 || !fm_boot_directory_exists("DESKTOP")) {
+        failures++;
+    }
+    if (fm_select_boot_source("/docs") != OK || !state.storage_boot ||
+        !str_equal(state.current_path, "/docs")) {
+        failures++;
+    }
+    if (fm_select_mounted_source("DATA") != OK || state.storage_boot ||
+        !state.storage_read_only || !str_equal(state.storage_volume_id, "DATA") ||
+        state.storage_generation != 7U) {
+        failures++;
+    }
+    if (fm_select_mounted_source(0) != ERR_NULL) failures++;
+    filemanager_host_set_storage_fixture(1, 1, 0);
+    if (fm_select_mounted_source("DATA") != ERR_STATE) failures++;
+    filemanager_host_set_storage_fixture(1, 1, 1);
+
+    state.history_count = 1;
+    state.history_pos = 0;
+    str_copy(state.history[0], "/docs");
+    str_copy(state.history_volume[0], "DATA");
+    state.history_virtual[0] = 0;
+    state.history_boot[0] = 0;
+    fm_restore_history_source(0);
+    if (!str_equal(state.storage_volume_id, "DATA") ||
+        state.storage_generation != 7U || !state.storage_read_only) {
+        failures++;
+    }
+    filemanager_host_set_storage_fixture(1, 1, 0);
+    fm_restore_history_source(0);
+    if (!state.storage_virtual || state.storage_boot ||
+        state.storage_volume_id[0] || state.current_path[0]) {
+        failures++;
+    }
+    filemanager_host_set_storage_fixture(1, 1, 1);
+
+    state.mode = FM_MODE_CLASSIC;
+    state.storage_virtual = 0;
+    state.storage_boot = 0;
+    state.storage_read_only = 1;
+    state.storage_generation = 7U;
+    str_copy(state.storage_volume_id, "DATA");
+    input_mode = 1;
+    rename_mode = 1;
+    filemanager_host_set_storage_fixture(1, 1, 1);
+    fm_validate_storage_source();
+    if (state.storage_virtual || input_mode != 1 || !state.storage_volume_id[0]) {
+        failures++;
+    }
+    filemanager_host_set_storage_fixture(1, 1, 0);
+    fm_validate_storage_source();
+    if (!state.storage_virtual || state.history_count != 1 || input_mode != 0) {
+        failures++;
+    }
+    filemanager_host_set_storage_fixture(1, 1, 1);
+    input_mode = 0;
+    rename_mode = 0;
+
+    fm_hosted = 1;
+    fm_hosted_x = 10;
+    fm_hosted_y = 20;
+    fm_hosted_width = 700;
+    fm_hosted_height = 500;
+    filemanager_host_set_desktop_mode(DESKTOP_MODE_CLASSIC);
+    state.mode = FM_MODE_SIMPLE;
+    fm_select_mode();
+    if (state.mode != FM_MODE_CLASSIC || state.file_count != 2) failures++;
+    filemanager_host_set_desktop_mode(DESKTOP_MODE_SIMPLE);
+    fm_select_mode();
+    if (state.mode != FM_MODE_SIMPLE || !state.storage_boot) failures++;
+
+    state.file_count = 40;
+    state.selected = 0;
+    state.scroll_offset = 0;
+    if (!fm_scroll_file_selection(-20) || state.selected != 20 ||
+        state.scroll_offset != 4 || !fm_scroll_file_selection(20) ||
+        state.selected != 0 || state.scroll_offset != 0 ||
+        fm_scroll_file_selection(0)) {
+        failures++;
+    }
+    if (fm_display_font_height() != 16 || fm_get_mode() != FM_MODE_SIMPLE) {
+        failures++;
+    }
+
+    filemanager_host_set_index_fixture(1, OK);
+    state.mode = FM_MODE_SIMPLE;
+    fm_select_boot_source("");
+    fm_search_begin();
+    str_copy(fm_search_query, "notes");
+    fm_search_refresh();
+    if (fm_search_status.returned_matches != 1U ||
+        fm_search_selected != 0 || fm_search_activate_selected() != OK ||
+        !str_equal(state.storage_volume_id, "DATA") ||
+        !str_equal(state.current_path, "/docs") || fm_search_active) {
+        failures++;
+    }
+    fm_search_status.returned_matches = 0;
+    if (fm_search_activate_selected() != ERR_NOT_FOUND) failures++;
+    filemanager_host_set_storage_fixture(1, 1, 0);
+    fm_search_active = 1;
+    fm_search_status.returned_matches = 1;
+    fm_search_selected = 0;
+    if (fm_search_activate_selected() != ERR_STATE) failures++;
+    filemanager_host_set_storage_fixture(1, 1, 1);
+    filemanager_host_set_index_fixture(1, ERR_INVALID);
+    fm_search_active = 1;
+    str_copy(fm_search_query, "invalid");
+    fm_search_refresh();
+    if (fm_search_status.last_error != ERR_INVALID) failures++;
+    filemanager_host_set_index_fixture(1, OK);
+    fm_search_close();
+
+    kmemset(&mouse_event, 0, sizeof(mouse_event));
+    mouse_event.event = MOUSE_EVENT_WHEEL;
+    mouse_event.wheel = -1;
+    mouse_event.x = 220;
+    mouse_event.y = 160;
+    state.mode = FM_MODE_CLASSIC;
+    state.file_count = 2;
+    state.selected = 0;
+    state.scroll_offset = 0;
+    if (fm_hosted_mouse(&mouse_event, fm_hosted_x, fm_hosted_y,
+                        fm_hosted_width, fm_hosted_height) != 1 ||
+        state.selected != 1) {
+        failures++;
+    }
+    mouse_event.event = MOUSE_EVENT_PRESS;
+    mouse_event.changed = MOUSE_BTN_LEFT;
+    mouse_event.y = 190;
+    if (fm_hosted_mouse(&mouse_event, fm_hosted_x, fm_hosted_y,
+                        fm_hosted_width, fm_hosted_height) != 1 ||
+        state.selected != 1) {
+        failures++;
+    }
+    mouse_event.x = 600;
+    mouse_event.y = 90;
+    if (!fm_search_button_pressed(&mouse_event, fm_hosted_x, fm_hosted_y,
+                                  fm_hosted_width) || !fm_search_active) {
+        failures++;
+    }
+    fm_search_close();
+    fm_hosted = 0;
+
+    state.mode = FM_MODE_SIMPLE;
+    state.file_count = 2;
+    state.selected = 0;
+    state.files[0].is_dir = 0;
+    state.files[1].is_dir = 0;
+    str_copy(state.files[0].name, "ONE.TXT");
+    str_copy(state.files[1].name, "TWO.TXT");
+    str_copy(old_name, "ONE.TXT");
+    str_copy(input_buffer, "RENAMED.TXT");
+    input_pos = 11;
+    filemanager_host_set_rename_result(OK);
+    if (fm_rename_selected_file() != OK) failures++;
+    str_copy(input_buffer, "TWO.TXT");
+    input_pos = 7;
+    if (fm_rename_selected_file() != ERR_STATE) failures++;
+    input_pos = 0;
+    if (fm_rename_selected_file() != ERR_INVALID) failures++;
+    state.selected = 1;
+    input_pos = 11;
+    str_copy(input_buffer, "RENAMED.TXT");
+    filemanager_host_set_delete_result(OK);
+    if (fm_delete_selected_file() != OK || state.selected != 0) failures++;
+    filemanager_host_set_delete_result(ERR_DISK);
+    if (fm_delete_selected_file() != ERR_DISK) failures++;
+    if (fm_is_running() != 1) failures++;
+    fm_close();
+    if (fm_is_running() != 0) failures++;
 
     state.file_count = 2;
     state.selected = 0;
