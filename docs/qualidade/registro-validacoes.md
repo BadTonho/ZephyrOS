@@ -6322,6 +6322,17 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `git diff --check`; o catálogo registra 7.326 superfícies, 6.936
   `COVERED`, 390 `PENDING`, 59 aposentadas e 165 casos.
 
+- Evidência Updater: helpers da fixture vinculados — concluído em 2026-09-05
+  (America/Sao_Paulo). O caso existente `host:ui:updater` foi reexecutado com
+  fixtures estáticas e terminou `PASS`. O relatório instrumentado observou 24
+  funções reais de `src/updater/updater.c`, além de registrar a execução dos
+  cinco helpers declarados em `src/include/ui/updater_test.h`, chamados
+  diretamente pela fixture. Esses helpers foram vinculados como contrato
+  host-only direto, sem serem atribuídos artificialmente ao código de produção.
+  A sincronização, renderização, validação do catálogo e `make catalog-test`
+  passaram; o catálogo ficou com 7.326 superfícies, 6.955 `COVERED`, 371
+  `PENDING`, 59 aposentadas e 165 casos.
+
 - Evidência Shell input/hosted: fechamento dos vínculos host-only — concluído
   em 2026-09-05 (America/Sao_Paulo). Os casos existentes
   `host:shell:input` e `host:shell:hosted` foram reexecutados com fixtures
