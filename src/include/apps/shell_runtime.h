@@ -58,6 +58,10 @@ void shell_diagnostics_print_usb_fixture_report(void);
 void shell_diagnostics_reset(void);
 int shell_network_validate_for_checks(void);
 
+#ifdef ZEPHYROS_HOST_TEST
+int shell_network_checks_host_test_contracts(void);
+#endif
+
 void shell_hosted_reset(void);
 int shell_hosted_open(void);
 void shell_hosted_present_progress(void);

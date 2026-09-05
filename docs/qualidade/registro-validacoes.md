@@ -5874,3 +5874,18 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `src/shell/shell_checks.c`; o catálogo registra 7.295 superfícies, sendo
   6.351 `COVERED` e 944 `PENDING`. As pendências restantes continuam
   explícitas.
+
+- Incremento Shell/network helpers — concluído em 2026-09-04
+  (America/Sao_Paulo). A fixture host-only existente
+  `host:shell:network-checks` passou a chamar diretamente os helpers reais de
+  `shell_commands_network.c` por uma entrada compilada somente sob
+  `ZEPHYROS_HOST_TEST`. Foram exercitados parsers de IPv4, porta, ping e URL,
+  limites e argumentos nulos, estados de interface, destinos Ethernet,
+  comparação de identificadores, gateway/interface, conversão de ticks e
+  fases do job cooperativo. Passaram o alvo específico com `HOST_CC`,
+  `make q3check`, `make clean`, `make`, a matriz host-only completa com
+  117/117 alvos, sincronização/renderização do catálogo, `make catalog-test` e
+  `git diff --check`. A evidência cobriu 30 superfícies reais, sem endereços
+  desconhecidos ou símbolos ambíguos. O catálogo registra 7.297 superfícies,
+  6.368 `COVERED`, 929 `PENDING` e 156 casos; as pendências restantes
+  continuam explícitas.

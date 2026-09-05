@@ -158,6 +158,7 @@ NETWORK_SOURCE_FILES = (
 SHELL_NETWORK_CHECKS_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_shell_network_checks_host.c",
     ROOT / "src" / "shell" / "shell_commands_network.c",
+    ROOT / "src" / "shell" / "shell_command_utils.c",
     ROOT / "src" / "core" / "string.c",
 )
 SHELL_CHECKS_SOURCE_FILES = (

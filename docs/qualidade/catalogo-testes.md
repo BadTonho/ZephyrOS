@@ -4,24 +4,24 @@
 
 ## Resumo
 
-- Superfícies ativas: **7295**
+- Superfícies ativas: **7297**
 - Casos de teste: **156**
 - Superfícies aposentadas: **57**
 
 | Tipo | Quantidade |
 |---|---:|
-| `api_function` | 1576 |
+| `api_function` | 1577 |
 | `asm_entry` | 101 |
-| `c_function` | 5498 |
+| `c_function` | 5499 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6351 |
+| `COVERED` | 6368 |
 | `MANUAL` | 0 |
-| `PENDING` | 944 |
+| `PENDING` | 929 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -34,7 +34,7 @@
 
 | Proprietario | Superficies |
 |---|---:|
-| `apps` | 169 |
+| `apps` | 170 |
 | `appstore` | 88 |
 | `boot` | 136 |
 | `core` | 2813 |
@@ -48,7 +48,7 @@
 | `memory` | 194 |
 | `process` | 259 |
 | `settings` | 55 |
-| `shell` | 1083 |
+| `shell` | 1084 |
 | `taskbar` | 47 |
 | `thread` | 34 |
 | `ui` | 141 |
@@ -207,6 +207,7 @@
 | `api:src/include/apps/shell_runtime.h:shell_hosted_open` | `src/include/apps/shell_runtime.h` | `shell_hosted_open` | `apps` | `COVERED` | 4 |
 | `api:src/include/apps/shell_runtime.h:shell_hosted_present_progress` | `src/include/apps/shell_runtime.h` | `shell_hosted_present_progress` | `apps` | `COVERED` | 4 |
 | `api:src/include/apps/shell_runtime.h:shell_hosted_reset` | `src/include/apps/shell_runtime.h` | `shell_hosted_reset` | `apps` | `COVERED` | 4 |
+| `api:src/include/apps/shell_runtime.h:shell_network_checks_host_test_contracts` | `src/include/apps/shell_runtime.h` | `shell_network_checks_host_test_contracts` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_runtime.h:shell_network_validate_for_checks` | `src/include/apps/shell_runtime.h` | `shell_network_validate_for_checks` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_finish_command` | `src/include/apps/shell_runtime.h` | `shell_runtime_finish_command` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key` | `src/include/apps/shell_runtime.h` | `shell_runtime_handle_terminal_key` | `apps` | `COVERED` | 8 |
@@ -6498,7 +6499,7 @@
 | `c:src/shell/shell_commands_network.c:cmd_net_arp_resolve` | `src/shell/shell_commands_network.c` | `cmd_net_arp_resolve` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_arp_status` | `src/shell/shell_commands_network.c` | `cmd_net_arp_status` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_arp_table` | `src/shell/shell_commands_network.c` | `cmd_net_arp_table` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:cmd_net_build_http_url` | `src/shell/shell_commands_network.c` | `cmd_net_build_http_url` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_network.c:cmd_net_build_http_url` | `src/shell/shell_commands_network.c` | `cmd_net_build_http_url` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:cmd_net_check` | `src/shell/shell_commands_network.c` | `cmd_net_check` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_check_print_case` | `src/shell/shell_commands_network.c` | `cmd_net_check_print_case` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_check_qemu` | `src/shell/shell_commands_network.c` | `cmd_net_check_qemu` | `shell` | `PENDING` | 0 |
@@ -6514,7 +6515,7 @@
 | `c:src/shell/shell_commands_network.c:cmd_net_check_qemu_tcp` | `src/shell/shell_commands_network.c` | `cmd_net_check_qemu_tcp` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_check_qemu_tcp_print` | `src/shell/shell_commands_network.c` | `cmd_net_check_qemu_tcp_print` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_check_qemu_timeout` | `src/shell/shell_commands_network.c` | `cmd_net_check_qemu_timeout` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:cmd_net_destination_name` | `src/shell/shell_commands_network.c` | `cmd_net_destination_name` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_network.c:cmd_net_destination_name` | `src/shell/shell_commands_network.c` | `cmd_net_destination_name` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:cmd_net_devices` | `src/shell/shell_commands_network.c` | `cmd_net_devices` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_dhcp` | `src/shell/shell_commands_network.c` | `cmd_net_dhcp` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_dhcp_acquire` | `src/shell/shell_commands_network.c` | `cmd_net_dhcp_acquire` | `shell` | `PENDING` | 0 |
@@ -6532,14 +6533,14 @@
 | `c:src/shell/shell_commands_network.c:cmd_net_get_link_state` | `src/shell/shell_commands_network.c` | `cmd_net_get_link_state` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_icmp_print_status` | `src/shell/shell_commands_network.c` | `cmd_net_icmp_print_status` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_info` | `src/shell/shell_commands_network.c` | `cmd_net_info` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:cmd_net_invalid_ipv4` | `src/shell/shell_commands_network.c` | `cmd_net_invalid_ipv4` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_network.c:cmd_net_invalid_ipv4` | `src/shell/shell_commands_network.c` | `cmd_net_invalid_ipv4` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:cmd_net_ipv4` | `src/shell/shell_commands_network.c` | `cmd_net_ipv4` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_ipv4_config` | `src/shell/shell_commands_network.c` | `cmd_net_ipv4_config` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_ipv4_print_config` | `src/shell/shell_commands_network.c` | `cmd_net_ipv4_print_config` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_ipv4_print_counters` | `src/shell/shell_commands_network.c` | `cmd_net_ipv4_print_counters` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_ipv4_status` | `src/shell/shell_commands_network.c` | `cmd_net_ipv4_status` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:cmd_net_parse_ipv4` | `src/shell/shell_commands_network.c` | `cmd_net_parse_ipv4` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:cmd_net_parse_port` | `src/shell/shell_commands_network.c` | `cmd_net_parse_port` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_network.c:cmd_net_parse_ipv4` | `src/shell/shell_commands_network.c` | `cmd_net_parse_ipv4` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_network.c:cmd_net_parse_port` | `src/shell/shell_commands_network.c` | `cmd_net_parse_port` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:cmd_net_print_interface` | `src/shell/shell_commands_network.c` | `cmd_net_print_interface` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_print_ipv4` | `src/shell/shell_commands_network.c` | `cmd_net_print_ipv4` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_print_last_ethernet` | `src/shell/shell_commands_network.c` | `cmd_net_print_last_ethernet` | `shell` | `PENDING` | 0 |
@@ -6557,7 +6558,7 @@
 | `c:src/shell/shell_commands_network.c:cmd_net_tcp_connect` | `src/shell/shell_commands_network.c` | `cmd_net_tcp_connect` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_tcp_status` | `src/shell/shell_commands_network.c` | `cmd_net_tcp_status` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_test` | `src/shell/shell_commands_network.c` | `cmd_net_test` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:cmd_net_ticks_to_milliseconds` | `src/shell/shell_commands_network.c` | `cmd_net_ticks_to_milliseconds` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_network.c:cmd_net_ticks_to_milliseconds` | `src/shell/shell_commands_network.c` | `cmd_net_ticks_to_milliseconds` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:cmd_net_udp` | `src/shell/shell_commands_network.c` | `cmd_net_udp` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_udp_status` | `src/shell/shell_commands_network.c` | `cmd_net_udp_status` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_net_wait_arp_state` | `src/shell/shell_commands_network.c` | `cmd_net_wait_arp_state` | `shell` | `PENDING` | 0 |
@@ -6566,16 +6567,16 @@
 | `c:src/shell/shell_commands_network.c:cmd_netstat_interfaces` | `src/shell/shell_commands_network.c` | `cmd_netstat_interfaces` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:cmd_netstat_tcp` | `src/shell/shell_commands_network.c` | `cmd_netstat_tcp` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:cmd_netstat_unix` | `src/shell/shell_commands_network.c` | `cmd_netstat_unix` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_network.c:cmd_network_state_color` | `src/shell/shell_commands_network.c` | `cmd_network_state_color` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_network.c:cmd_network_state_color` | `src/shell/shell_commands_network.c` | `cmd_network_state_color` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:cmd_nslookup` | `src/shell/shell_commands_network.c` | `cmd_nslookup` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_ping` | `src/shell/shell_commands_network.c` | `cmd_ping` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_ping_execute` | `src/shell/shell_commands_network.c` | `cmd_ping_execute` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:cmd_ping_parse_args` | `src/shell/shell_commands_network.c` | `cmd_ping_parse_args` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:cmd_ping_parse_count` | `src/shell/shell_commands_network.c` | `cmd_ping_parse_count` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_network.c:cmd_ping_parse_args` | `src/shell/shell_commands_network.c` | `cmd_ping_parse_args` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_network.c:cmd_ping_parse_count` | `src/shell/shell_commands_network.c` | `cmd_ping_parse_count` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:cmd_ping_print_event` | `src/shell/shell_commands_network.c` | `cmd_ping_print_event` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_ping_print_summary` | `src/shell/shell_commands_network.c` | `cmd_ping_print_summary` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_ping_resolve_target` | `src/shell/shell_commands_network.c` | `cmd_ping_resolve_target` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:cmd_ping_target_is_numeric` | `src/shell/shell_commands_network.c` | `cmd_ping_target_is_numeric` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_network.c:cmd_ping_target_is_numeric` | `src/shell/shell_commands_network.c` | `cmd_ping_target_is_numeric` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:cmd_ping_wait` | `src/shell/shell_commands_network.c` | `cmd_ping_wait` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_route` | `src/shell/shell_commands_network.c` | `cmd_route` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:cmd_route_add` | `src/shell/shell_commands_network.c` | `cmd_route_add` | `shell` | `PENDING` | 0 |
@@ -6586,8 +6587,8 @@
 | `c:src/shell/shell_commands_network.c:cmd_route_print_entry` | `src/shell/shell_commands_network.c` | `cmd_route_print_entry` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_route_print_result` | `src/shell/shell_commands_network.c` | `cmd_route_print_result` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_route_table` | `src/shell/shell_commands_network.c` | `cmd_route_table` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_network.c:cmd_route_validate_gateway` | `src/shell/shell_commands_network.c` | `cmd_route_validate_gateway` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:cmd_route_validate_interface` | `src/shell/shell_commands_network.c` | `cmd_route_validate_interface` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_network.c:cmd_route_validate_gateway` | `src/shell/shell_commands_network.c` | `cmd_route_validate_gateway` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_network.c:cmd_route_validate_interface` | `src/shell/shell_commands_network.c` | `cmd_route_validate_interface` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:cmd_selecttest` | `src/shell/shell_commands_network.c` | `cmd_selecttest` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_skbstat` | `src/shell/shell_commands_network.c` | `cmd_skbstat` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:cmd_sockstat` | `src/shell/shell_commands_network.c` | `cmd_sockstat` | `shell` | `COVERED` | 1 |
@@ -6600,13 +6601,14 @@
 | `c:src/shell/shell_commands_network.c:shell_dispatch_cmd_selecttest` | `src/shell/shell_commands_network.c` | `shell_dispatch_cmd_selecttest` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:shell_dispatch_cmd_skbstat` | `src/shell/shell_commands_network.c` | `shell_dispatch_cmd_skbstat` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:shell_dispatch_cmd_sockstat` | `src/shell/shell_commands_network.c` | `shell_dispatch_cmd_sockstat` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_network.c:shell_network_id_equal` | `src/shell/shell_commands_network.c` | `shell_network_id_equal` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_network.c:shell_network_checks_host_test_contracts` | `src/shell/shell_commands_network.c` | `shell_network_checks_host_test_contracts` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_network.c:shell_network_id_equal` | `src/shell/shell_commands_network.c` | `shell_network_id_equal` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:shell_network_job_block_tick` | `src/shell/shell_commands_network.c` | `shell_network_job_block_tick` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:shell_network_job_cancel` | `src/shell/shell_commands_network.c` | `shell_network_job_cancel` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:shell_network_job_check_emit_stage` | `src/shell/shell_commands_network.c` | `shell_network_job_check_emit_stage` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:shell_network_job_check_report_step` | `src/shell/shell_commands_network.c` | `shell_network_job_check_report_step` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:shell_network_job_check_stage_is_optional` | `src/shell/shell_commands_network.c` | `shell_network_job_check_stage_is_optional` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:shell_network_job_check_stage_name` | `src/shell/shell_commands_network.c` | `shell_network_job_check_stage_name` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_network.c:shell_network_job_check_stage_is_optional` | `src/shell/shell_commands_network.c` | `shell_network_job_check_stage_is_optional` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_network.c:shell_network_job_check_stage_name` | `src/shell/shell_commands_network.c` | `shell_network_job_check_stage_name` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:shell_network_job_drain` | `src/shell/shell_commands_network.c` | `shell_network_job_drain` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:shell_network_job_finish` | `src/shell/shell_commands_network.c` | `shell_network_job_finish` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:shell_network_job_prepare_check` | `src/shell/shell_commands_network.c` | `shell_network_job_prepare_check` | `shell` | `PENDING` | 0 |
@@ -8096,7 +8098,6 @@
 - `c:src/shell/shell_commands_network.c:cmd_net_arp_resolve`
 - `c:src/shell/shell_commands_network.c:cmd_net_arp_status`
 - `c:src/shell/shell_commands_network.c:cmd_net_arp_table`
-- `c:src/shell/shell_commands_network.c:cmd_net_build_http_url`
 - `c:src/shell/shell_commands_network.c:cmd_net_check`
 - `c:src/shell/shell_commands_network.c:cmd_net_check_print_case`
 - `c:src/shell/shell_commands_network.c:cmd_net_check_qemu`
@@ -8112,7 +8113,6 @@
 - `c:src/shell/shell_commands_network.c:cmd_net_check_qemu_tcp`
 - `c:src/shell/shell_commands_network.c:cmd_net_check_qemu_tcp_print`
 - `c:src/shell/shell_commands_network.c:cmd_net_check_qemu_timeout`
-- `c:src/shell/shell_commands_network.c:cmd_net_destination_name`
 - `c:src/shell/shell_commands_network.c:cmd_net_devices`
 - `c:src/shell/shell_commands_network.c:cmd_net_dhcp`
 - `c:src/shell/shell_commands_network.c:cmd_net_dhcp_acquire`
@@ -8130,14 +8130,11 @@
 - `c:src/shell/shell_commands_network.c:cmd_net_get_link_state`
 - `c:src/shell/shell_commands_network.c:cmd_net_icmp_print_status`
 - `c:src/shell/shell_commands_network.c:cmd_net_info`
-- `c:src/shell/shell_commands_network.c:cmd_net_invalid_ipv4`
 - `c:src/shell/shell_commands_network.c:cmd_net_ipv4`
 - `c:src/shell/shell_commands_network.c:cmd_net_ipv4_config`
 - `c:src/shell/shell_commands_network.c:cmd_net_ipv4_print_config`
 - `c:src/shell/shell_commands_network.c:cmd_net_ipv4_print_counters`
 - `c:src/shell/shell_commands_network.c:cmd_net_ipv4_status`
-- `c:src/shell/shell_commands_network.c:cmd_net_parse_ipv4`
-- `c:src/shell/shell_commands_network.c:cmd_net_parse_port`
 - `c:src/shell/shell_commands_network.c:cmd_net_print_interface`
 - `c:src/shell/shell_commands_network.c:cmd_net_print_ipv4`
 - `c:src/shell/shell_commands_network.c:cmd_net_print_last_ethernet`
@@ -8155,21 +8152,16 @@
 - `c:src/shell/shell_commands_network.c:cmd_net_tcp_connect`
 - `c:src/shell/shell_commands_network.c:cmd_net_tcp_status`
 - `c:src/shell/shell_commands_network.c:cmd_net_test`
-- `c:src/shell/shell_commands_network.c:cmd_net_ticks_to_milliseconds`
 - `c:src/shell/shell_commands_network.c:cmd_net_udp`
 - `c:src/shell/shell_commands_network.c:cmd_net_udp_status`
 - `c:src/shell/shell_commands_network.c:cmd_net_wait_arp_state`
 - `c:src/shell/shell_commands_network.c:cmd_net_wait_socket_connected`
-- `c:src/shell/shell_commands_network.c:cmd_network_state_color`
 - `c:src/shell/shell_commands_network.c:cmd_nslookup`
 - `c:src/shell/shell_commands_network.c:cmd_ping`
 - `c:src/shell/shell_commands_network.c:cmd_ping_execute`
-- `c:src/shell/shell_commands_network.c:cmd_ping_parse_args`
-- `c:src/shell/shell_commands_network.c:cmd_ping_parse_count`
 - `c:src/shell/shell_commands_network.c:cmd_ping_print_event`
 - `c:src/shell/shell_commands_network.c:cmd_ping_print_summary`
 - `c:src/shell/shell_commands_network.c:cmd_ping_resolve_target`
-- `c:src/shell/shell_commands_network.c:cmd_ping_target_is_numeric`
 - `c:src/shell/shell_commands_network.c:cmd_ping_wait`
 - `c:src/shell/shell_commands_network.c:cmd_route_add`
 - `c:src/shell/shell_commands_network.c:cmd_route_check`
@@ -8178,8 +8170,6 @@
 - `c:src/shell/shell_commands_network.c:cmd_route_delete`
 - `c:src/shell/shell_commands_network.c:cmd_route_print_entry`
 - `c:src/shell/shell_commands_network.c:cmd_route_print_result`
-- `c:src/shell/shell_commands_network.c:cmd_route_validate_gateway`
-- `c:src/shell/shell_commands_network.c:cmd_route_validate_interface`
 - `c:src/shell/shell_commands_network.c:cmd_selecttest`
 - `c:src/shell/shell_commands_network.c:cmd_skbstat`
 - `c:src/shell/shell_commands_network.c:shell_dispatch_cmd_http`
@@ -8188,13 +8178,10 @@
 - `c:src/shell/shell_commands_network.c:shell_dispatch_cmd_ping`
 - `c:src/shell/shell_commands_network.c:shell_dispatch_cmd_selecttest`
 - `c:src/shell/shell_commands_network.c:shell_dispatch_cmd_skbstat`
-- `c:src/shell/shell_commands_network.c:shell_network_id_equal`
 - `c:src/shell/shell_commands_network.c:shell_network_job_block_tick`
 - `c:src/shell/shell_commands_network.c:shell_network_job_cancel`
 - `c:src/shell/shell_commands_network.c:shell_network_job_check_emit_stage`
 - `c:src/shell/shell_commands_network.c:shell_network_job_check_report_step`
-- `c:src/shell/shell_commands_network.c:shell_network_job_check_stage_is_optional`
-- `c:src/shell/shell_commands_network.c:shell_network_job_check_stage_name`
 - `c:src/shell/shell_commands_network.c:shell_network_job_drain`
 - `c:src/shell/shell_commands_network.c:shell_network_job_finish`
 - `c:src/shell/shell_commands_network.c:shell_network_job_prepare_check`

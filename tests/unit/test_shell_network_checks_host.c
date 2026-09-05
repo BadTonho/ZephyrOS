@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include "apps/shell_runtime.h"
 #include "core/arp.h"
 #include "core/dhcp.h"
 #include "core/dns.h"
@@ -19,6 +20,7 @@
 #include "core/socket.h"
 #include "core/string.h"
 #include "core/tcp.h"
+#include "core/timer.h"
 #include "core/udp.h"
 #include "drivers/idt.h"
 
@@ -46,6 +48,7 @@ static net_socket_status_t fixture_net_socket_status;
 static http_status_t fixture_http_status;
 static recovery_component_t fixture_recovery_network;
 static int fixture_network_status_result;
+static uint32_t fixture_timer_frequency;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -107,7 +110,10 @@ static void fixture_reset(void) {
     fixture_network_status.interface_count = 1U;
     fixture_network_status.recognized_count = 1U;
     fixture_network_status.active_count = 1U;
-    fixture_network_status.ipv4_source = NETWORK_IPV4_SOURCE_NONE;
+    fixture_network_status.ipv4_source = NETWORK_IPV4_SOURCE_STATIC;
+    fixture_network_status.arp_configured = 1U;
+    fixture_network_status.ipv4_configured = 1U;
+    kmemcpy(fixture_network_status.l3_interface_id, "eth0", 5U);
     fixture_network_status.last_error = OK;
 
     kmemset(&fixture_network_interface, 0, sizeof(fixture_network_interface));
@@ -121,6 +127,7 @@ static void fixture_reset(void) {
     fixture_network_interface.function = 0U;
     fixture_network_interface.irq = 11U;
     fixture_network_interface.ethernet_attached = 1U;
+    fixture_network_interface.l3_active = 1U;
     kmemcpy(fixture_network_interface.mac_address,
             (const uint8_t[]){0x52U, 0x54U, 0x00U, 0x12U, 0x34U, 0x56U}, 6U);
 
@@ -131,8 +138,14 @@ static void fixture_reset(void) {
 
     kmemset(&fixture_arp_status, 0, sizeof(fixture_arp_status));
     fixture_arp_status.initialized = 1U;
+    fixture_arp_status.configured = 1U;
     kmemset(&fixture_ipv4_status, 0, sizeof(fixture_ipv4_status));
     fixture_ipv4_status.initialized = 1U;
+    fixture_ipv4_status.configured = 1U;
+    fixture_ipv4_status.local_ip = 0xC0A8010AU;
+    fixture_ipv4_status.subnet_mask = 0xFFFFFF00U;
+    fixture_ipv4_status.gateway = 0xC0A80101U;
+    kmemcpy(fixture_ipv4_status.interface_id, "eth0", 5U);
     fixture_ipv4_status.handler_count = HOST_REQUIRED_IPV4_HANDLERS;
     kmemset(&fixture_icmp_status, 0, sizeof(fixture_icmp_status));
     fixture_icmp_status.initialized = 1U;
@@ -157,6 +170,7 @@ static void fixture_reset(void) {
     fixture_recovery_network.last_error = OK;
     fixture_recovery_network.last_message = "ready";
     fixture_network_status_result = OK;
+    fixture_timer_frequency = 1000U;
 }
 
 void log_print(log_level_t level, const char* module, const char* message) {
@@ -344,6 +358,28 @@ int idt_get_shared_irq_handler_count(uint8_t irq_line,
     return OK;
 }
 
+uint32_t timer_get_frequency(void) {
+    return fixture_timer_frequency;
+}
+
+uint32_t timer_get_ticks(void) {
+    return 0U;
+}
+
+uint8_t ipv4_address_is_unicast(uint32_t ip_address) {
+    uint8_t first_octet = (uint8_t)(ip_address >> 24U);
+
+    if (!ip_address || ip_address == 0xFFFFFFFFU || first_octet == 127U) {
+        return 0U;
+    }
+    return first_octet < 224U || first_octet > 239U;
+}
+
+void video_print(const char* text, uint8_t color) {
+    (void)text;
+    (void)color;
+}
+
 static int expect_result(int expected, int actual, const char* label) {
     if (expected == actual) return 0;
     fprintf(stderr, "network-checks-host: %s esperado=%d obtido=%d\n",
@@ -369,6 +405,11 @@ int main(void) {
         result = expect_result(ERR_UNAVAILABLE,
                                shell_network_validate_for_checks(),
                                "estado indisponivel");
+    }
+    if (!result) {
+        fixture_reset();
+        result = expect_result(OK, shell_network_checks_host_test_contracts(),
+                               "contratos internos");
     }
     coverage_active = 0U;
     coverage_emit(result);
