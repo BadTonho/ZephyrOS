@@ -6399,6 +6399,55 @@
       "evidence": "make test-appstore-host PASS com formatacao, selecao, planos, estados, rollback, confianca e geometria instrumentados"
     },
     {
+      "id": "editor-host-dynamic",
+      "domain": "shell-editor",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:shell:editor"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/editor-host/coverage.json",
+      "coverage_sources": [
+        "src/shell/editor.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:shell:editor",
+        "scenario": "Contratos deterministas do núcleo de edição",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "exercitar parsing de texto, sintaxe, cores, edicao de linhas e word-wrap com buffers estaticos",
+        "expected": "limites, conversoes, classificacao e operacoes de edicao preservam os contratos observaveis",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente buffers estaticos do Editor no processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "shell",
+          "editor",
+          "parsing",
+          "limits",
+          "coverage"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "make test-editor-host PASS com parsing, codificacao, terminadores, sintaxe, cores, edicao de linhas e word-wrap instrumentados"
+    },
+    {
       "id": "assembly-qemu-tst7-dynamic",
       "domain": "drivers-interrupt-assembly",
       "owner": "quality",

@@ -2057,6 +2057,21 @@ truncamento, argumentos nulos e a selecao de acoes de `pkg`, `store` e
 `build/test-results/shell-commands-packages-host/coverage.json` e deve
 terminar com `PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`.
 
+## Shell/UI: núcleo determinístico do Editor host-only
+
+O alvo `test-editor-host` valida a lógica determinística do Editor fora do
+QEMU, usando buffers estáticos e allocator falso. Ele cobre parsing,
+codificação, terminadores de linha, sintaxe, cores, edição, word-wrap e
+cleanup; não abre a interface nem acessa armazenamento real:
+
+```text
+make test-editor-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O relatório instrumentado fica em
+`build/test-results/editor-host/coverage.json` e deve terminar com
+`status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`.
+
 ## Shell/UI: contratos da App Store host-only
 
 O alvo `test-appstore-host` valida os helpers determinísticos da App Store

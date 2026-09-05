@@ -1,4 +1,7 @@
 #include "apps/editor.h"
+#ifdef ZEPHYROS_HOST_TEST
+#include "apps/editor_test.h"
+#endif
 #include "core/video.h"
 #include "process/process.h"
 #include "core/keyboard.h"
@@ -737,7 +740,7 @@ static void editor_backspace(void) {
 }
 
 static void editor_delete(void) {
-    if (editor.cursor_x < str_len(editor.lines[editor.cursor_y])) {
+    if (editor.cursor_x < (uint32_t)str_len(editor.lines[editor.cursor_y])) {
         str_remove(editor.lines[editor.cursor_y], editor.cursor_x);
         editor.total_chars--;
     } else if (editor.cursor_y < editor.line_count - 1) {
@@ -920,7 +923,7 @@ void editor_handle_key(uint8_t scancode) {
         return;
     }
     if (scancode == 0x4D) {
-        if (editor.cursor_x < str_len(editor.lines[editor.cursor_y])) editor.cursor_x++;
+        if (editor.cursor_x < (uint32_t)str_len(editor.lines[editor.cursor_y])) editor.cursor_x++;
         else if (editor.cursor_y < editor.line_count - 1) {
             editor.cursor_y++;
             editor.cursor_x = 0;
@@ -930,7 +933,7 @@ void editor_handle_key(uint8_t scancode) {
     }
 
     if (scancode == 0x49) {
-        for (int i = 0; i < editor.view_height - 2; i++) {
+        for (uint32_t i = 0U; i < editor.view_height - 2U; i++) {
             if (editor.cursor_y > 0) editor.cursor_y--;
         }
         uint32_t len = str_len(editor.lines[editor.cursor_y]);
@@ -939,7 +942,7 @@ void editor_handle_key(uint8_t scancode) {
         return;
     }
     if (scancode == 0x51) {
-        for (int i = 0; i < editor.view_height - 2; i++) {
+        for (uint32_t i = 0U; i < editor.view_height - 2U; i++) {
             if (editor.cursor_y < editor.line_count - 1) editor.cursor_y++;
         }
         uint32_t len = str_len(editor.lines[editor.cursor_y]);
@@ -1027,5 +1030,142 @@ void editor_run_file(const char* filename) {
 uint8_t editor_is_running(void) {
     return editor.running;
 }
+
+#ifdef ZEPHYROS_HOST_TEST
+int editor_host_test_contracts(void) {
+    static const uint8_t ascii[] = {'a', 'b', 'c'};
+    static const uint8_t utf8_bom[] = {0xEF, 0xBB, 0xBF, 'a'};
+    static const uint8_t utf8_text[] = {0xC3, 0xA9, 0xC3, 0xB1};
+    static const uint8_t latin1_text[] = {0xE9};
+    static const uint8_t lf_text[] = {'a', '\n', 'b', '\n'};
+    static const uint8_t crlf_text[] = {'a', '\r', '\n', 'b', '\r', '\n'};
+    static const uint8_t cr_text[] = {'a', '\r', 'b', '\r'};
+    char limited[8];
+    char line[EDITOR_MAX_LINE_LENGTH];
+    char number[16];
+    int failures = 0;
+
+    str_copy(limited, "123456789", sizeof(limited));
+    if (str_compare(limited, "1234567") != 0 || str_len("") != 0) {
+        failures++;
+    }
+    if (str_insert(line, -1, 'x') != ERR_OVERFLOW ||
+        str_insert(line, EDITOR_MAX_LINE_LENGTH - 1, 'x') != ERR_OVERFLOW) {
+        failures++;
+    }
+    line[0] = 'a';
+    line[1] = 'c';
+    line[2] = '\0';
+    if (str_insert(line, 1, 'b') != OK ||
+        str_compare(line, "abc") != 0) {
+        failures++;
+    }
+    str_remove(line, 1);
+    if (str_compare(line, "ac") != 0 || str_compare("a", "b") >= 0 ||
+        str_compare("b", "a") <= 0 || str_compare("a", "a") != 0) {
+        failures++;
+    }
+    for (uint32_t index = 0U; index < EDITOR_MAX_LINE_LENGTH - 1U; index++) {
+        line[index] = 'x';
+    }
+    line[EDITOR_MAX_LINE_LENGTH - 1U] = '\0';
+    if (str_insert(line, 0, 'x') != ERR_OVERFLOW) failures++;
+
+    if (detect_encoding(ascii, sizeof(ascii)) != EDITOR_ENCODING_ASCII ||
+        detect_encoding(utf8_bom, sizeof(utf8_bom)) != EDITOR_ENCODING_UTF8 ||
+        detect_encoding(utf8_text, sizeof(utf8_text)) != EDITOR_ENCODING_UTF8 ||
+        detect_encoding(latin1_text, sizeof(latin1_text)) != EDITOR_ENCODING_LATIN1) {
+        failures++;
+    }
+    if (detect_line_ending(lf_text, sizeof(lf_text)) != EDITOR_LF ||
+        detect_line_ending(crlf_text, sizeof(crlf_text)) != EDITOR_CRLF ||
+        detect_line_ending(cr_text, sizeof(cr_text)) != EDITOR_CR) {
+        failures++;
+    }
+    if (detect_syntax("file.c") != EDITOR_SYNTAX_C ||
+        detect_syntax("file.py") != EDITOR_SYNTAX_PYTHON ||
+        detect_syntax("file.asm") != EDITOR_SYNTAX_ASM ||
+        detect_syntax("file.s") != EDITOR_SYNTAX_ASM ||
+        detect_syntax("file.md") != EDITOR_SYNTAX_MARKDOWN ||
+        detect_syntax("file") != EDITOR_SYNTAX_NONE) {
+        failures++;
+    }
+    if (!is_keyword_c("return") || is_keyword_c("custom") ||
+        !is_keyword_python("yield") || is_keyword_python("custom") ||
+        !is_keyword_asm("mov") || is_keyword_asm("custom")) {
+        failures++;
+    }
+    if (get_format_color("**bold**", 3U) != 0x0FU ||
+        get_format_color("*italic*", 1U) != 0x0BU ||
+        get_syntax_color("return", 0U, EDITOR_SYNTAX_C) != 0x0DU ||
+        get_syntax_color("//", 0U, EDITOR_SYNTAX_C) != 0x08U ||
+        get_syntax_color("\"x\"", 0U, EDITOR_SYNTAX_C) != 0x0AU ||
+        get_syntax_color("#", 0U, EDITOR_SYNTAX_MARKDOWN) != 0x0DU ||
+        get_syntax_color("`", 0U, EDITOR_SYNTAX_MARKDOWN) != 0x0BU ||
+        get_syntax_color("[", 0U, EDITOR_SYNTAX_MARKDOWN) != 0x09U ||
+        get_syntax_color("7", 0U, EDITOR_SYNTAX_MARKDOWN) != 0x0EU ||
+        get_syntax_color("x", 0U, EDITOR_SYNTAX_NONE) != 0x07U) {
+        failures++;
+    }
+    int_to_str(0U, number);
+    if (str_compare(number, "0") != 0) failures++;
+    int_to_str(4294967295U, number);
+    if (str_compare(number, "4294967295") != 0) failures++;
+
+    editor_init();
+    if (editor.line_count != 0U || editor.view_width != SCREEN_COLS ||
+        editor.view_height != SCREEN_ROWS - 1U || editor_is_running() != 0U) {
+        failures++;
+    }
+    editor_new();
+    if (editor.line_count != 1U || !editor.lines[0] ||
+        str_compare(editor.filename, "UNNAMED.TXT") != 0) {
+        failures++;
+    }
+    editor.running = 1U;
+    if (editor_is_running() != 1U) failures++;
+    editor.word_wrap = 0U;
+    editor_insert_char('a');
+    editor_insert_char('b');
+    if (str_compare(editor.lines[0], "ab") != 0 || editor.cursor_x != 2U) {
+        failures++;
+    }
+    editor.cursor_x = 1U;
+    editor_backspace();
+    if (str_compare(editor.lines[0], "b") != 0 || editor.cursor_x != 0U) {
+        failures++;
+    }
+    editor.cursor_x = 0U;
+    editor_newline();
+    if (editor.line_count != 2U || str_compare(editor.lines[1], "b") != 0) {
+        failures++;
+    }
+    editor.cursor_y = 0U;
+    editor.cursor_x = 0U;
+    editor_delete();
+    if (editor.line_count != 1U || str_compare(editor.lines[0], "b") != 0) {
+        failures++;
+    }
+    editor.cursor_x = 0U;
+    editor_tab();
+    if (str_compare(editor.lines[0], "    b") != 0) failures++;
+    editor_insert_bold();
+    editor_insert_italic();
+    if (!editor.modified) failures++;
+
+    editor_new();
+    editor.word_wrap = 1U;
+    editor.wrap_width = 4U;
+    str_copy(editor.lines[0], "abcd efgh", EDITOR_MAX_LINE_LENGTH);
+    editor_do_word_wrap(0U);
+    if (editor.line_count != 2U || str_compare(editor.lines[0], "abcd") != 0 ||
+        str_compare(editor.lines[1], " efgh") != 0) {
+        failures++;
+    }
+    editor_free_lines();
+    if (editor.line_count != 0U) failures++;
+    return failures == 0 ? OK : ERR_STATE;
+}
+#endif
 
 

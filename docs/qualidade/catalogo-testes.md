@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **7305**
-- Casos de teste: **158**
+- Superfícies ativas: **7307**
+- Casos de teste: **159**
 - Superfícies aposentadas: **59**
 
 | Tipo | Quantidade |
 |---|---:|
-| `api_function` | 1577 |
+| `api_function` | 1578 |
 | `asm_entry` | 101 |
-| `c_function` | 5507 |
+| `c_function` | 5508 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6435 |
+| `COVERED` | 6467 |
 | `MANUAL` | 0 |
-| `PENDING` | 870 |
+| `PENDING` | 840 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 158 |
+| `AUTOMATED` | 159 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -48,7 +48,7 @@
 | `memory` | 194 |
 | `process` | 259 |
 | `settings` | 55 |
-| `shell` | 1085 |
+| `shell` | 1087 |
 | `taskbar` | 47 |
 | `thread` | 34 |
 | `ui` | 142 |
@@ -63,12 +63,13 @@
 |---|---|---|---|---|---:|
 | `api:src/include/apps/editor.h:editor_close` | `src/include/apps/editor.h` | `editor_close` | `apps` | `PENDING` | 0 |
 | `api:src/include/apps/editor.h:editor_handle_key` | `src/include/apps/editor.h` | `editor_handle_key` | `apps` | `PENDING` | 0 |
-| `api:src/include/apps/editor.h:editor_init` | `src/include/apps/editor.h` | `editor_init` | `apps` | `PENDING` | 0 |
-| `api:src/include/apps/editor.h:editor_is_running` | `src/include/apps/editor.h` | `editor_is_running` | `apps` | `PENDING` | 0 |
-| `api:src/include/apps/editor.h:editor_new` | `src/include/apps/editor.h` | `editor_new` | `apps` | `PENDING` | 0 |
+| `api:src/include/apps/editor.h:editor_init` | `src/include/apps/editor.h` | `editor_init` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/editor.h:editor_is_running` | `src/include/apps/editor.h` | `editor_is_running` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/editor.h:editor_new` | `src/include/apps/editor.h` | `editor_new` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/editor.h:editor_open` | `src/include/apps/editor.h` | `editor_open` | `apps` | `PENDING` | 0 |
 | `api:src/include/apps/editor.h:editor_run` | `src/include/apps/editor.h` | `editor_run` | `apps` | `PENDING` | 0 |
 | `api:src/include/apps/editor.h:editor_run_file` | `src/include/apps/editor.h` | `editor_run_file` | `apps` | `PENDING` | 0 |
+| `api:src/include/apps/editor_test.h:editor_host_test_contracts` | `src/include/apps/editor_test.h` | `editor_host_test_contracts` | `shell` | `COVERED` | 1 |
 | `api:src/include/apps/guitest.h:guitest_close` | `src/include/apps/guitest.h` | `guitest_close` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/guitest.h:guitest_draw` | `src/include/apps/guitest.h` | `guitest_draw` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/guitest.h:guitest_handle_key` | `src/include/apps/guitest.h` | `guitest_handle_key` | `apps` | `COVERED` | 2 |
@@ -6018,42 +6019,43 @@
 | `c:src/settings/settings.c:settings_update_taskbar_position_options` | `src/settings/settings.c` | `settings_update_taskbar_position_options` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_update_window_order_values` | `src/settings/settings.c` | `settings_update_window_order_values` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_visible_category_count` | `src/settings/settings.c` | `settings_visible_category_count` | `settings` | `COVERED` | 1 |
-| `c:src/shell/editor.c:alloc_line` | `src/shell/editor.c` | `alloc_line` | `shell` | `PENDING` | 0 |
-| `c:src/shell/editor.c:detect_encoding` | `src/shell/editor.c` | `detect_encoding` | `shell` | `PENDING` | 0 |
-| `c:src/shell/editor.c:detect_line_ending` | `src/shell/editor.c` | `detect_line_ending` | `shell` | `PENDING` | 0 |
-| `c:src/shell/editor.c:detect_syntax` | `src/shell/editor.c` | `detect_syntax` | `shell` | `PENDING` | 0 |
-| `c:src/shell/editor.c:editor_backspace` | `src/shell/editor.c` | `editor_backspace` | `shell` | `PENDING` | 0 |
+| `c:src/shell/editor.c:alloc_line` | `src/shell/editor.c` | `alloc_line` | `shell` | `COVERED` | 1 |
+| `c:src/shell/editor.c:detect_encoding` | `src/shell/editor.c` | `detect_encoding` | `shell` | `COVERED` | 1 |
+| `c:src/shell/editor.c:detect_line_ending` | `src/shell/editor.c` | `detect_line_ending` | `shell` | `COVERED` | 1 |
+| `c:src/shell/editor.c:detect_syntax` | `src/shell/editor.c` | `detect_syntax` | `shell` | `COVERED` | 1 |
+| `c:src/shell/editor.c:editor_backspace` | `src/shell/editor.c` | `editor_backspace` | `shell` | `COVERED` | 1 |
 | `c:src/shell/editor.c:editor_close` | `src/shell/editor.c` | `editor_close` | `shell` | `PENDING` | 0 |
-| `c:src/shell/editor.c:editor_delete` | `src/shell/editor.c` | `editor_delete` | `shell` | `PENDING` | 0 |
-| `c:src/shell/editor.c:editor_do_word_wrap` | `src/shell/editor.c` | `editor_do_word_wrap` | `shell` | `PENDING` | 0 |
+| `c:src/shell/editor.c:editor_delete` | `src/shell/editor.c` | `editor_delete` | `shell` | `COVERED` | 1 |
+| `c:src/shell/editor.c:editor_do_word_wrap` | `src/shell/editor.c` | `editor_do_word_wrap` | `shell` | `COVERED` | 1 |
 | `c:src/shell/editor.c:editor_draw` | `src/shell/editor.c` | `editor_draw` | `shell` | `PENDING` | 0 |
 | `c:src/shell/editor.c:editor_draw_button` | `src/shell/editor.c` | `editor_draw_button` | `shell` | `PENDING` | 0 |
-| `c:src/shell/editor.c:editor_free_lines` | `src/shell/editor.c` | `editor_free_lines` | `shell` | `PENDING` | 0 |
+| `c:src/shell/editor.c:editor_free_lines` | `src/shell/editor.c` | `editor_free_lines` | `shell` | `COVERED` | 1 |
 | `c:src/shell/editor.c:editor_handle_key` | `src/shell/editor.c` | `editor_handle_key` | `shell` | `PENDING` | 0 |
-| `c:src/shell/editor.c:editor_init` | `src/shell/editor.c` | `editor_init` | `shell` | `PENDING` | 0 |
-| `c:src/shell/editor.c:editor_insert_bold` | `src/shell/editor.c` | `editor_insert_bold` | `shell` | `PENDING` | 0 |
-| `c:src/shell/editor.c:editor_insert_char` | `src/shell/editor.c` | `editor_insert_char` | `shell` | `PENDING` | 0 |
-| `c:src/shell/editor.c:editor_insert_italic` | `src/shell/editor.c` | `editor_insert_italic` | `shell` | `PENDING` | 0 |
-| `c:src/shell/editor.c:editor_is_running` | `src/shell/editor.c` | `editor_is_running` | `shell` | `PENDING` | 0 |
-| `c:src/shell/editor.c:editor_new` | `src/shell/editor.c` | `editor_new` | `shell` | `PENDING` | 0 |
-| `c:src/shell/editor.c:editor_newline` | `src/shell/editor.c` | `editor_newline` | `shell` | `PENDING` | 0 |
+| `c:src/shell/editor.c:editor_host_test_contracts` | `src/shell/editor.c` | `editor_host_test_contracts` | `shell` | `COVERED` | 1 |
+| `c:src/shell/editor.c:editor_init` | `src/shell/editor.c` | `editor_init` | `shell` | `COVERED` | 1 |
+| `c:src/shell/editor.c:editor_insert_bold` | `src/shell/editor.c` | `editor_insert_bold` | `shell` | `COVERED` | 1 |
+| `c:src/shell/editor.c:editor_insert_char` | `src/shell/editor.c` | `editor_insert_char` | `shell` | `COVERED` | 1 |
+| `c:src/shell/editor.c:editor_insert_italic` | `src/shell/editor.c` | `editor_insert_italic` | `shell` | `COVERED` | 1 |
+| `c:src/shell/editor.c:editor_is_running` | `src/shell/editor.c` | `editor_is_running` | `shell` | `COVERED` | 1 |
+| `c:src/shell/editor.c:editor_new` | `src/shell/editor.c` | `editor_new` | `shell` | `COVERED` | 1 |
+| `c:src/shell/editor.c:editor_newline` | `src/shell/editor.c` | `editor_newline` | `shell` | `COVERED` | 1 |
 | `c:src/shell/editor.c:editor_open` | `src/shell/editor.c` | `editor_open` | `shell` | `PENDING` | 0 |
 | `c:src/shell/editor.c:editor_run` | `src/shell/editor.c` | `editor_run` | `shell` | `PENDING` | 0 |
 | `c:src/shell/editor.c:editor_run_file` | `src/shell/editor.c` | `editor_run_file` | `shell` | `PENDING` | 0 |
 | `c:src/shell/editor.c:editor_save` | `src/shell/editor.c` | `editor_save` | `shell` | `PENDING` | 0 |
-| `c:src/shell/editor.c:editor_tab` | `src/shell/editor.c` | `editor_tab` | `shell` | `PENDING` | 0 |
+| `c:src/shell/editor.c:editor_tab` | `src/shell/editor.c` | `editor_tab` | `shell` | `COVERED` | 1 |
 | `c:src/shell/editor.c:editor_wait_for_ipc` | `src/shell/editor.c` | `editor_wait_for_ipc` | `shell` | `PENDING` | 0 |
-| `c:src/shell/editor.c:get_format_color` | `src/shell/editor.c` | `get_format_color` | `shell` | `PENDING` | 0 |
-| `c:src/shell/editor.c:get_syntax_color` | `src/shell/editor.c` | `get_syntax_color` | `shell` | `PENDING` | 0 |
-| `c:src/shell/editor.c:int_to_str` | `src/shell/editor.c` | `int_to_str` | `shell` | `PENDING` | 0 |
-| `c:src/shell/editor.c:is_keyword_asm` | `src/shell/editor.c` | `is_keyword_asm` | `shell` | `PENDING` | 0 |
-| `c:src/shell/editor.c:is_keyword_c` | `src/shell/editor.c` | `is_keyword_c` | `shell` | `PENDING` | 0 |
-| `c:src/shell/editor.c:is_keyword_python` | `src/shell/editor.c` | `is_keyword_python` | `shell` | `PENDING` | 0 |
-| `c:src/shell/editor.c:str_compare` | `src/shell/editor.c` | `str_compare` | `shell` | `PENDING` | 0 |
-| `c:src/shell/editor.c:str_copy` | `src/shell/editor.c` | `str_copy` | `shell` | `PENDING` | 0 |
-| `c:src/shell/editor.c:str_insert` | `src/shell/editor.c` | `str_insert` | `shell` | `PENDING` | 0 |
-| `c:src/shell/editor.c:str_len` | `src/shell/editor.c` | `str_len` | `shell` | `PENDING` | 0 |
-| `c:src/shell/editor.c:str_remove` | `src/shell/editor.c` | `str_remove` | `shell` | `PENDING` | 0 |
+| `c:src/shell/editor.c:get_format_color` | `src/shell/editor.c` | `get_format_color` | `shell` | `COVERED` | 1 |
+| `c:src/shell/editor.c:get_syntax_color` | `src/shell/editor.c` | `get_syntax_color` | `shell` | `COVERED` | 1 |
+| `c:src/shell/editor.c:int_to_str` | `src/shell/editor.c` | `int_to_str` | `shell` | `COVERED` | 1 |
+| `c:src/shell/editor.c:is_keyword_asm` | `src/shell/editor.c` | `is_keyword_asm` | `shell` | `COVERED` | 1 |
+| `c:src/shell/editor.c:is_keyword_c` | `src/shell/editor.c` | `is_keyword_c` | `shell` | `COVERED` | 1 |
+| `c:src/shell/editor.c:is_keyword_python` | `src/shell/editor.c` | `is_keyword_python` | `shell` | `COVERED` | 1 |
+| `c:src/shell/editor.c:str_compare` | `src/shell/editor.c` | `str_compare` | `shell` | `COVERED` | 1 |
+| `c:src/shell/editor.c:str_copy` | `src/shell/editor.c` | `str_copy` | `shell` | `COVERED` | 1 |
+| `c:src/shell/editor.c:str_insert` | `src/shell/editor.c` | `str_insert` | `shell` | `COVERED` | 1 |
+| `c:src/shell/editor.c:str_len` | `src/shell/editor.c` | `str_len` | `shell` | `COVERED` | 1 |
+| `c:src/shell/editor.c:str_remove` | `src/shell/editor.c` | `str_remove` | `shell` | `COVERED` | 1 |
 | `c:src/shell/guitest_app.c:guitest_close` | `src/shell/guitest_app.c` | `guitest_close` | `shell` | `PENDING` | 0 |
 | `c:src/shell/guitest_app.c:guitest_draw` | `src/shell/guitest_app.c` | `guitest_draw` | `shell` | `PENDING` | 0 |
 | `c:src/shell/guitest_app.c:guitest_draw_border_card` | `src/shell/guitest_app.c` | `guitest_draw_border_card` | `shell` | `PENDING` | 0 |
@@ -7483,6 +7485,7 @@
 | `host:shell:diagnostics` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar pwd, cd, mouse, log, timer, clock, irqstat, wait, wqinfo, workq, tls, vfs, mount, devcheck, devices, device-info, device-scan, usb, acpi, power, kill, sigtest, proccheck, health, health summary, health check, slabinfo, slabtest, cpu usage, pagefault, vmamap, schedcheck e kmetrics em caminhos validos, invalidos, indisponiveis e de limite; validar devices -v e device-info pelo VFS sysfs estatico | dispatchers preservam saida, estado, configuracao e codigos canonicos | compilador ausente, warning, saida inesperada, falha de assercao ou timeout | somente buffers estaticos de saida e doubles locais de VFS, mouse, log, timer, RTC, clock, IRQ, IDT, wait, workqueue, TLS, devfs, device manager, USB, HID, MSC e SLAB; sem armazenamento real | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:diagnostics-helpers` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar parsers de log, sinais, mouse e VMA, nomes de estados, cores, caminhos sysfs/proc e invariantes de memoria com dependencias estaticas falsas | entradas validas retornam resultados canonicos; entradas nulas, invalidas e fora dos limites sao rejeitadas sem hardware, allocator ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos, estado de filesystem e paginação falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:dispatch` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar comandos desconhecidos, entrada normalizada, limite e comando conhecido | dispatcher retorna ERR_NULL para entrada nula e apresenta diagnostico deterministico para comando desconhecido | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e handlers falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:shell:editor` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar parsing de texto, sintaxe, cores, edicao de linhas e word-wrap com buffers estaticos | limites, conversoes, classificacao e operacoes de edicao preservam os contratos observaveis | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos do Editor no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:hosted` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | abrir, reabrir, desenhar, encaminhar tecla e mouse, fechar e rejeitar registro do Shell Classic hospedado | o Shell hospedado publica visibilidade, encaminha callbacks e restaura o estado quando o registro falha | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do adaptador, callbacks do Window Manager e terminal falso no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:input` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | enviar scancodes falsos para comandos, historico, scroll, edicao, cancelamento e limite | entrada, historico e terminal preservam o contrato e nao ultrapassam o buffer | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos do Shell e stubs de terminal no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:introspection` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar parser hexadecimal com limites e entradas invalidas | parse_hex_u32 aceita digitos validos e rejeita prefixo, digito e overflow com codigos canonicos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7554,9 +7557,6 @@
 
 - `api:src/include/apps/editor.h:editor_close`
 - `api:src/include/apps/editor.h:editor_handle_key`
-- `api:src/include/apps/editor.h:editor_init`
-- `api:src/include/apps/editor.h:editor_is_running`
-- `api:src/include/apps/editor.h:editor_new`
 - `api:src/include/apps/editor.h:editor_open`
 - `api:src/include/apps/editor.h:editor_run`
 - `api:src/include/apps/editor.h:editor_run_file`
@@ -7896,42 +7896,15 @@
 - `c:src/settings/settings.c:settings_hosted_mouse`
 - `c:src/settings/settings.c:settings_init`
 - `c:src/settings/settings.c:settings_select_mode`
-- `c:src/shell/editor.c:alloc_line`
-- `c:src/shell/editor.c:detect_encoding`
-- `c:src/shell/editor.c:detect_line_ending`
-- `c:src/shell/editor.c:detect_syntax`
-- `c:src/shell/editor.c:editor_backspace`
 - `c:src/shell/editor.c:editor_close`
-- `c:src/shell/editor.c:editor_delete`
-- `c:src/shell/editor.c:editor_do_word_wrap`
 - `c:src/shell/editor.c:editor_draw`
 - `c:src/shell/editor.c:editor_draw_button`
-- `c:src/shell/editor.c:editor_free_lines`
 - `c:src/shell/editor.c:editor_handle_key`
-- `c:src/shell/editor.c:editor_init`
-- `c:src/shell/editor.c:editor_insert_bold`
-- `c:src/shell/editor.c:editor_insert_char`
-- `c:src/shell/editor.c:editor_insert_italic`
-- `c:src/shell/editor.c:editor_is_running`
-- `c:src/shell/editor.c:editor_new`
-- `c:src/shell/editor.c:editor_newline`
 - `c:src/shell/editor.c:editor_open`
 - `c:src/shell/editor.c:editor_run`
 - `c:src/shell/editor.c:editor_run_file`
 - `c:src/shell/editor.c:editor_save`
-- `c:src/shell/editor.c:editor_tab`
 - `c:src/shell/editor.c:editor_wait_for_ipc`
-- `c:src/shell/editor.c:get_format_color`
-- `c:src/shell/editor.c:get_syntax_color`
-- `c:src/shell/editor.c:int_to_str`
-- `c:src/shell/editor.c:is_keyword_asm`
-- `c:src/shell/editor.c:is_keyword_c`
-- `c:src/shell/editor.c:is_keyword_python`
-- `c:src/shell/editor.c:str_compare`
-- `c:src/shell/editor.c:str_copy`
-- `c:src/shell/editor.c:str_insert`
-- `c:src/shell/editor.c:str_len`
-- `c:src/shell/editor.c:str_remove`
 - `c:src/shell/guitest_app.c:guitest_close`
 - `c:src/shell/guitest_app.c:guitest_draw`
 - `c:src/shell/guitest_app.c:guitest_draw_border_card`

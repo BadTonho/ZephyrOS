@@ -322,6 +322,12 @@ APPSTORE_SOURCE_FILES = (
     ROOT / "src" / "appstore" / "appstore.c",
     ROOT / "src" / "core" / "string.c",
 )
+EDITOR_RESULT_DIR = ROOT / "build" / "test-results" / "editor-host"
+EDITOR_BINARY = ROOT / "build" / "tests" / "test_editor_host.exe"
+EDITOR_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_editor_host.c",
+    ROOT / "src" / "shell" / "editor.c",
+)
 SYSCALL_RESULT_DIR = ROOT / "build" / "test-results" / "syscall-host"
 SYSCALL_BINARY = ROOT / "build" / "tests" / "test_syscall_host.exe"
 SYSCALL_SOURCE_FILES = (
@@ -933,6 +939,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return TASKBAR_RESULT_DIR, TASKBAR_BINARY, TASKBAR_SOURCE_FILES, "taskbar-host"
     if case_id == "host:ui:appstore":
         return APPSTORE_RESULT_DIR, APPSTORE_BINARY, APPSTORE_SOURCE_FILES, "appstore-host"
+    if case_id == "host:shell:editor":
+        return EDITOR_RESULT_DIR, EDITOR_BINARY, EDITOR_SOURCE_FILES, "editor-host"
     if case_id == "host:core:syscall":
         return SYSCALL_RESULT_DIR, SYSCALL_BINARY, SYSCALL_SOURCE_FILES, "syscall-host"
     if case_id == "host:process:runtime":
@@ -1382,6 +1390,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:shell:dispatch", "host:shell:commands-storage",
                                  "host:shell:network-checks",
                                  "host:shell:commands-packages",
+                                 "host:shell:editor",
                                  "host:shell:checks",
                                  "host:shell:diagnostics",
                                  "host:shell:introspection",
