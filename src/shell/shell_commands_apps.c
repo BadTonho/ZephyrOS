@@ -902,5 +902,74 @@ SHELL_APPS_WRAP_ARGS(shell_dispatch_cmd_guitest, cmd_guitest)
 SHELL_APPS_WRAP_NO_ARGS(shell_dispatch_cmd_icons, cmd_icons)
 SHELL_APPS_WRAP_ARGS(shell_dispatch_cmd_edit, cmd_edit)
 
+#ifdef ZEPHYROS_HOST_TEST
+extern void shell_commands_apps_host_set_environment(
+    uint8_t fs_type, desktop_mode_t desktop_mode, int recovery_enabled);
+
+int shell_commands_apps_host_test_contracts(void) {
+    int failures = 0;
+
+    shell_commands_apps_host_set_environment(
+        FS_TYPE_FAT32, DESKTOP_MODE_SIMPLE, 1);
+    shell_dispatch_cmd_app(NULL);
+    shell_dispatch_cmd_app("inputtest bad");
+    shell_dispatch_cmd_app("inputtest tty");
+    shell_dispatch_cmd_app("devtest invalid");
+    shell_dispatch_cmd_app("devtest");
+    shell_dispatch_cmd_app("outputtest bad");
+    shell_dispatch_cmd_app("outputtest fail");
+    shell_dispatch_cmd_app("argtest");
+    shell_dispatch_cmd_app("argtest --alpha");
+    shell_dispatch_cmd_app("pathtest invalid");
+    shell_dispatch_cmd_app("pathtest");
+    shell_dispatch_cmd_app("run");
+    shell_dispatch_cmd_app("run APP.ZAP --alpha");
+    shell_dispatch_cmd_icons("");
+
+    shell_dispatch_cmd_guimode("");
+    shell_dispatch_cmd_guimode("modern");
+    shell_dispatch_cmd_guimode("invalid");
+    shell_dispatch_cmd_guimode("simple");
+    shell_commands_apps_host_set_environment(
+        FS_TYPE_FAT32, DESKTOP_MODE_SIMPLE, 0);
+    shell_dispatch_cmd_guimode("classic");
+    shell_commands_apps_host_set_environment(
+        FS_TYPE_FAT32, DESKTOP_MODE_CLASSIC, 1);
+    shell_dispatch_cmd_guimode("classic");
+
+    shell_dispatch_cmd_guitest("invalid");
+    shell_dispatch_cmd_guitest(NULL);
+    shell_dispatch_cmd_guitest("modern");
+    shell_dispatch_cmd_display(NULL);
+    shell_dispatch_cmd_display("status");
+    shell_dispatch_cmd_display("scale invalid");
+    shell_dispatch_cmd_display("scale normal");
+    shell_dispatch_cmd_edit(NULL);
+    shell_dispatch_cmd_edit("NOTES.TXT");
+
+    shell_dispatch_cmd_desktop("");
+    shell_dispatch_cmd_explorer("");
+    shell_dispatch_cmd_taskmgr("");
+    shell_dispatch_cmd_taskcfg("");
+    shell_dispatch_cmd_settings("");
+    shell_dispatch_cmd_updater("");
+    shell_dispatch_cmd_wm("");
+    shell_dispatch_cmd_play(NULL);
+    shell_dispatch_cmd_play("track.wav");
+    shell_dispatch_cmd_view(NULL);
+    shell_dispatch_cmd_view("picture.bmp");
+    shell_dispatch_cmd_stop("");
+
+    shell_commands_apps_host_set_environment(
+        FS_TYPE_NONE, DESKTOP_MODE_SIMPLE, 0);
+    shell_dispatch_cmd_icons("");
+    shell_dispatch_cmd_play("track.wav");
+    shell_dispatch_cmd_view("picture.bmp");
+    shell_dispatch_cmd_app("run APP.ZAP");
+
+    return failures;
+}
+#endif
+
 #undef SHELL_APPS_WRAP_ARGS
 #undef SHELL_APPS_WRAP_NO_ARGS

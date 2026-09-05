@@ -6104,3 +6104,18 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   símbolos ambíguos. Catálogo e visão renderizada passaram; o catálogo
   registra 7.314 superfícies, 6.794 `COVERED`, 520 `PENDING`, 59 aposentadas
   e 161 casos.
+
+- Incremento Shell/comandos de aplicativos — concluído em 2026-09-05
+  (America/Sao_Paulo). Foi criada a fixture host-only
+  `host:shell:commands-apps` com doubles estáticos para o dispatcher de
+  aplicativos, Desktop, Window Manager, display, editor, ícones, Task Manager,
+  Settings, Updater, Explorer e media player. Foram exercitados comandos
+  válidos, argumentos nulos ou inválidos e estados de filesystem, VESA,
+  backbuffer, recovery e componentes indisponíveis. A compilação usa
+  `-Wall -Wextra -Werror`; o relatório
+  `build/test-results/shell-commands-apps-host/coverage.json` terminou com
+  `PASS`, sem endereços desconhecidos ou símbolos ambíguos, observando 30
+  funções de `src/shell/shell_commands_apps.c` e três funções de string. A
+  sincronização e a renderização do catálogo passaram; o catálogo registra
+  7.315 superfícies, 6.804 `COVERED`, 511 `PENDING`, 59 aposentadas e 162
+  casos. As pendências dos demais subsistemas continuam explícitas.

@@ -1970,6 +1970,9 @@ test-shell-network-checks-host: tools\core_host_runner.py tools\coverage_collect
 test-shell-commands-packages-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_shell_commands_packages_host.c tests\catalog.json src\shell\shell_commands_packages.c src\shell\shell_command_utils.c src\core\string.c src\include\apps\shell.h src\include\apps\shell_dispatch.h src\include\apps\shell_job.h src\include\apps\shell_runtime.h src\include\apps\shell_command_utils.h src\include\core\app_catalog.h src\include\core\app_loader.h src\include\core\app_package.h src\include\core\app_remote.h src\include\core\errors.h src\include\core\keyboard.h src\include\core\log.h src\include\core\memory.h src\include\core\recovery.h src\include\core\string.h src\include\core\update.h src\include\core\update_remote.h src\include\core\update_remote_runtime.h src\include\core\update_remote_system.h src\include\core\update_runtime.h src\include\core\video.h src\include\core\update_system.h src\include\core\update_system_slots.h src\include\fs\fs.h src\include\process\process.h
 	python tools\core_host_runner.py --case host:shell:commands-packages --cc "$(HOST_CC)"
 
+test-shell-commands-apps-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_shell_commands_apps_host.c tests\catalog.json src\shell\shell_commands_apps.c src\core\string.c src\include\apps\editor.h src\include\apps\guitest.h src\include\apps\mediaplayer.h src\include\apps\shell_checks.h src\include\apps\shell_runtime.h src\include\core\app_api.h src\include\core\app_builtin.h src\include\core\app_loader.h src\include\core\errors.h src\include\core\log.h src\include\core\recovery.h src\include\core\string.h src\include\core\video.h src\include\drivers\vesa.h src\include\fs\fs.h src\include\ui\desktop.h src\include\ui\display.h src\include\ui\filemanager.h src\include\ui\icons.h src\include\ui\settings.h src\include\ui\taskbar.h src\include\ui\updater.h src\include\ui\wm.h
+	python tools\core_host_runner.py --case host:shell:commands-apps --cc "$(HOST_CC)"
+
 test-shell-checks-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_shell_checks_host.c tests\catalog.json src\shell\shell_checks.c src\include\apps\shell_checks.h src\include\apps\shell_runtime.h src\include\apps\shell_job.h src\include\apps\shell_command_utils.h src\include\core\errors.h src\include\core\log.h src\include\core\string.h src\include\core\video.h src\include\core\app_loader.h src\include\core\app_api.h src\include\core\recovery.h src\include\core\device_manager.h src\include\core\usb_manager.h src\include\drivers\acpi.h src\include\fs\block.h src\include\fs\storage.h
 	python tools\core_host_runner.py --case host:shell:checks --cc "$(HOST_CC)"
 
@@ -2135,5 +2138,5 @@ clean:
 .PHONY: test-shell-commands-core-host
 .PHONY: test-shell-diagnostics-helpers-host
 .PHONY: test-spinlock-host
-.PHONY: test-shell-commands-storage-host test-shell-network-checks-host test-shell-commands-packages-host test-shell-checks-host
+.PHONY: test-shell-commands-storage-host test-shell-network-checks-host test-shell-commands-packages-host test-shell-commands-apps-host test-shell-checks-host
 .PHONY: test-shell-diagnostics-host

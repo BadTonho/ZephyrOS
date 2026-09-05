@@ -6606,6 +6606,57 @@
         "status": "AUTOMATED"
       },
       "evidence": "make test-assembly-qemu ASSEMBLY_RUN_ID=tst7-assembly-4 PASS; ZCOV confirmou 49 entradas Assembly e helpers da fixture, com restauracao da IDT"
+    },
+    {
+      "id": "shell-commands-apps-host-dynamic",
+      "domain": "shell-app-commands",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:shell:commands-apps"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/shell-commands-apps-host/coverage.json",
+      "coverage_sources": [
+        "src/shell/shell_commands_apps.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:shell:commands-apps",
+        "scenario": "Contratos dos comandos de aplicativos e interface do Shell",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "none"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "executar comandos de aplicativos, modos de interface, display, editor, icones, cenas, player e caminhos indisponiveis com doubles estaticos",
+        "expected": "handlers validos e invalidos preservam limites, codigos canonicos, transicoes e limpeza sem hardware ou armazenamento real",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente buffers estaticos e estado local da fixture no processo host",
+        "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "shell",
+          "apps",
+          "ui",
+          "negative",
+          "coverage"
+        ],
+        "status": "AUTOMATED"
+      },
+  "evidence": "make test-shell-commands-apps-host PASS com cobertura dinamica real das 30 superficies C de aplicativos, display, editor, icones, cenas e player, incluindo argumentos invalidos e estados indisponiveis"
     }
   ]
 }

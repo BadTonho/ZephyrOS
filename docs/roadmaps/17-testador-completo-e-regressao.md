@@ -19,12 +19,12 @@ equipamento e evidência correspondente.
 
 A infraestrutura TST1–TST7 está concluída para a matriz automatizada existente,
 mas o programa de cobertura integral ainda não está concluído. O catálogo
-mantém 161 casos `AUTOMATED`; após os incrementos de Shell, RTC,
+mantém 162 casos `AUTOMATED`; após os incrementos de Shell, RTC,
 processos/threads, FAT32, update U3/U4, os contratos remotos ZSYS e o
 repositório remoto de aplicativos, dos helpers de pacotes do Shell, da
-interface App Store, dos relatórios de rede do Shell e do módulo de
-Configurações e do Desktop, registra 7.314 superfícies, 6.794 `COVERED` e 520
-`PENDING`. O próximo objetivo deste
+interface App Store, dos relatórios de rede do Shell, do módulo de
+Configurações, do Desktop e dos comandos de aplicativos, registra 7.315
+superfícies, 6.804 `COVERED` e 511 `PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
 Isso não significa declarar hardware físico validado sem equipamento.
@@ -2904,7 +2904,31 @@ pendente.
       host-only completa com 117/117 alvos, `make q3check`, `make clean`
       seguido de `make`, sincronização/renderização do catálogo, `make
       catalog-test` e `git diff --check`.
+
 - [x] A evidência dinâmica cobriu 30 superfícies reais, sem endereços
       desconhecidos ou símbolos ambíguos. O catálogo registra 7.297
       superfícies, 6.368 `COVERED`, 929 `PENDING` e 156 casos; as pendências
       restantes continuam explícitas.
+
+### Incremento Shell/comandos de aplicativos — 2026-09-05
+
+- [x] Foi criada a fixture host-only `host:shell:commands-apps`, com ponto de
+      entrada interno compilado somente sob `ZEPHYROS_HOST_TEST`; o caminho
+      normal do Shell, a ABI pública e o protocolo permanecem inalterados.
+- [x] A fixture exercitou os comandos `app`, `guimode`, `guitest`, `display`,
+      `edit`, `icons`, Desktop, Explorer, Task Manager, configurações, Updater,
+      Window Manager, Player e os wrappers públicos, incluindo argumentos
+      nulos/inválidos e filesystem, VESA, backbuffer e recovery indisponíveis.
+      Doubles estáticos impediram hardware, rede, allocator ou armazenamento
+      reais e validaram que cada grupo de dependência foi acionado.
+- [x] Passaram `make test-shell-commands-apps-host` com
+      `HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`, `make q3check`, `make clean`,
+      `make`, `make catalog-test`, renderização da visão e `git diff --check`.
+      A cobertura dinâmica observou 30 funções de
+      `src/shell/shell_commands_apps.c` e três funções de string, sem
+      endereços desconhecidos ou símbolos ambíguos.
+- [x] A sincronização adicionou o caso automatizado e os vínculos bidirecionais
+      das superfícies observadas. O catálogo registra 7.315 superfícies, sendo
+      6.804 `COVERED`, 511 `PENDING`, 59 aposentadas e 162 casos; as pendências
+      de outros lotes continuam explícitas e o gate estrito integral permanece
+      pendente.
