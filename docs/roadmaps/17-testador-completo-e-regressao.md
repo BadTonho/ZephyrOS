@@ -19,11 +19,11 @@ equipamento e evidência correspondente.
 
 A infraestrutura TST1–TST7 está concluída para a matriz automatizada existente,
 mas o programa de cobertura integral ainda não está concluído. O catálogo
-mantém 156 casos `AUTOMATED`; após os incrementos de Shell, RTC,
+mantém 158 casos `AUTOMATED`; após os incrementos de Shell, RTC,
 processos/threads, FAT32, update U3/U4, os contratos remotos ZSYS e o
 repositório remoto de aplicativos, dos helpers de pacotes do Shell, da
 interface App Store e dos relatórios de rede do Shell, registra 7.307
-superfícies, 6.414 `COVERED` e 893
+superfícies, 6.423 `COVERED` e 884
 `PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
@@ -41,8 +41,24 @@ Isso não significa declarar hardware físico validado sem equipamento.
 - [x] `make test-shell-checks-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
       passou com cobertura dinâmica real. A sincronização cobriu 11
       superfícies novas de `src/shell/shell_checks.c`; o catálogo registra
-      7.307 superfícies, 6.414 `COVERED`, 893 `PENDING` e 158 casos. As
+      7.307 superfícies, 6.423 `COVERED`, 884 `PENDING` e 158 casos. As
       pendências restantes continuam explícitas.
+
+### Incremento Drivers/RTC — 2026-09-05
+
+- [x] O caso host-only existente `host:drivers:rtc-status` foi reexecutado
+      com CMOS simulado e cobertura dinâmica real.
+- [x] A fixture confirmou leituras BCD e binárias, conversão 12/24 horas,
+      calendário, leituras estáveis, timeout de atualização, inicialização,
+      estado publicado e autoteste, sem I/O privilegiado.
+- [x] A evidência resolveu as nove superfícies internas restantes de
+      `src/drivers/rtc.c`: I/O CMOS, snapshot bruto, igualdade, leitura
+      estável, leitura UTC e espera limitada. Não houve endereços
+      desconhecidos ou símbolos ambíguos.
+- [x] Passaram `make test-rtc-status-host` com `HOST_CC`, sincronização,
+      renderização e `make catalog-test`. O catálogo registra 7.307
+      superfícies, 6.423 `COVERED`, 884 `PENDING` e 158 casos; as pendências
+      restantes continuam explícitas.
 
 ### Incremento Shell/UI App Store — 2026-09-05
 

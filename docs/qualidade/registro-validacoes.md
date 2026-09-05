@@ -5941,3 +5941,13 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   ou símbolos ambíguos. A sincronização registra 7.307 superfícies, 6.414
   `COVERED`, 893 `PENDING` e 158 casos; as pendências restantes continuam
   explícitas.
+
+- Incremento Drivers/RTC — concluído em 2026-09-05 (America/Sao_Paulo). O caso
+  existente `host:drivers:rtc-status` foi executado com CMOS simulado e
+  cobertura dinâmica real. A fixture confirmou BCD/binário, 12/24 horas,
+  calendário, leituras estáveis, timeout de atualização, inicialização,
+  estado publicado e autoteste, sem I/O privilegiado. O relatório resolveu as
+  nove superfícies internas restantes de `src/drivers/rtc.c`, sem endereços
+  desconhecidos ou símbolos ambíguos. Passaram `make test-rtc-status-host` com
+  `HOST_CC`, sincronização/renderização e `make catalog-test`; o catálogo
+  registra 7.307 superfícies, 6.423 `COVERED`, 884 `PENDING` e 158 casos.
