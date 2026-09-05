@@ -143,6 +143,7 @@ novo; o handshake e inerte no boot normal ate a validacao de `HELLO`.
 | `src/include/ui/desktop.h` | `docs/12-desktop/desktop.md` |
 | `src/include/ui/display.h` | `docs/12-desktop/desktop.md` |
 | `src/include/ui/filemanager.h` | `docs/12-desktop/desktop.md` |
+| `src/include/ui/filemanager_test.h` | `docs/12-desktop/desktop.md` |
 | `src/include/ui/gui.h` | `docs/12-desktop/desktop.md` |
 | `src/include/ui/icons.h` | `docs/12-desktop/desktop.md` |
 | `src/include/ui/settings.h` | `docs/12-desktop/desktop.md` |

@@ -25,11 +25,30 @@ repositório remoto de aplicativos, dos helpers de pacotes do Shell, da
 interface App Store, dos relatórios de rede do Shell, do módulo de
 Configurações, do Desktop, dos comandos de aplicativos, da evidência RTC e
 das fixtures de entrada/hosted, da evidência de panic, da regeneração dos
-relatórios RTC/Shell e da fixture host-only do Updater, registra 7.317
-superfícies, 6.839 `COVERED` e 478 `PENDING`. O próximo objetivo deste
+relatórios RTC/Shell, da fixture host-only do Updater e da fixture host-only
+do File Manager, registra 7.319 superfícies, 6.849 `COVERED` e 470 `PENDING`.
+O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
 Isso não significa declarar hardware físico validado sem equipamento.
+
+### Incremento UI/File Manager host-only — 2026-09-05
+
+- [x] Foi criada a fixture `host:ui:filemanager`, ativada somente por
+      `ZEPHYROS_HOST_TEST`, para exercitar contratos determinísticos do Explorer
+      sem iniciar VFS, disco, rede ou hardware reais.
+- [x] O caso validou diretamente caminhos e normalização, nomes FAT,
+      truncamento, conflitos de renome, layout Classic, linhas visíveis,
+      seleção por mouse, histórico, raiz virtual, pesquisa, paginação e
+      estados do índice.
+- [x] `make test-filemanager-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
+      passou com `-Wall -Wextra -Werror`. O relatório
+      `build/test-results/filemanager-host/coverage.json` terminou com
+      `status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`, observando
+      25 funções reais de `src/filemanager/filemanager.c`.
+- [x] O catálogo foi sincronizado e renderizado; a validação normal passou e
+      agora registra 7.319 superfícies, 6.849 `COVERED`, 470 `PENDING`, 59
+      aposentadas e 164 casos. As pendências restantes continuam explícitas.
 
 ### Evidência UI/Updater host-only — 2026-09-05
 
