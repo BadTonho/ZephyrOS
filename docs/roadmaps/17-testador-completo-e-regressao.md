@@ -23,7 +23,7 @@ mantém 158 casos `AUTOMATED`; após os incrementos de Shell, RTC,
 processos/threads, FAT32, update U3/U4, os contratos remotos ZSYS e o
 repositório remoto de aplicativos, dos helpers de pacotes do Shell, da
 interface App Store e dos relatórios de rede do Shell, registra 7.307
-superfícies, 6.432 `COVERED` e 875
+superfícies, 6.432 `COVERED` e 874
 `PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
@@ -102,6 +102,20 @@ Isso não significa declarar hardware físico validado sem equipamento.
       sincronização, renderização e `make catalog-test` passaram. A evidência
       cobriu as três superfícies públicas de `src/include/core/panic.h`; o
       catálogo registra 7.307 superfícies, 6.432 `COVERED`, 875 `PENDING` e
+      158 casos.
+
+### Incremento Shell/Media Player — 2026-09-05
+
+- [x] A declaração pública `mp_main` foi removida de
+      `src/include/apps/mediaplayer.h` após confirmar que não havia definição
+      nem chamadores no código ativo.
+- [x] A documentação de aplicativos foi alinhada ao contrato real do Media
+      Player; as operações implementadas continuam cobertas por
+      `host:shell:mediaplayer`.
+- [x] `make q3check`, `make clean`, `make`, `make test-mediaplayer-host` e
+      `make catalog-test` passaram. A superfície obsoleta foi registrada como
+      `RETIRED` com evidência e substituto; o catálogo registra 7.306
+      superfícies ativas, 6.432 `COVERED`, 874 `PENDING`, 58 aposentadas e
       158 casos.
 
 ### Incremento Shell/UI App Store — 2026-09-05
