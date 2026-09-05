@@ -2199,6 +2199,24 @@ Recovery, timer e callbacks de aplicativos sem hardware, armazenamento ou
 rede reais. A execução tem timeout do runner e preserva manifesto, resultado,
 logs e cobertura.
 
+## GUI Test: cenas Classic e Modern host-only
+
+O alvo `test-guitest-host` compila o aplicativo GUI Test real com doubles
+estáticos de VESA, display, taskbar, desktop, GUI, recovery, vídeo, mouse e
+speaker. A fixture percorre abertura, desenho, layout, botão Modern,
+hit-testing, teclado, mouse, fechamento e estados indisponíveis, sem acessar
+hardware, armazenamento ou rede reais:
+
+```text
+make test-guitest-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O relatório instrumentado fica em
+`build/test-results/guitest-host/coverage.json` e deve terminar com
+`status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`, observando as
+23 funções reais de `src/shell/guitest_app.c`. A execução tem timeout do
+runner e preserva manifesto, resultado, logs e cobertura.
+
 ## Shell Checks: validadores de resultados host-only
 
 O alvo `test-shell-checks-host` compila `shell_checks.c` com

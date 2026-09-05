@@ -6450,3 +6450,16 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   endereços desconhecidos ou símbolos ambíguos. O catálogo atual registra
   7.138 `COVERED`, 188 `PENDING` e 166 casos; as demais pendências continuam
   explícitas.
+
+- Incremento GUI Test: cenas Classic/Modern host-only — concluído em
+  2026-09-05 (America/Sao_Paulo). A fixture `host:ui:guitest`, compilada com
+  `ZEPHYROS_HOST_TEST`, passou a exercitar as 23 funções reais de
+  `src/shell/guitest_app.c`, incluindo abertura, desenho, layout, botão
+  Modern, hit-testing, teclado, mouse, fechamento e estados indisponíveis.
+  Foram usados doubles estáticos de VESA, display, taskbar, desktop, GUI,
+  recovery, vídeo, mouse e speaker; nenhum hardware, disco, rede ou processo
+  real foi acessado. Passou `make test-guitest-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`; a cobertura dinâmica terminou
+  `PASS`, sem endereços desconhecidos ou símbolos ambíguos. O catálogo atual
+  registra 7.160 `COVERED`, 166 `PENDING` e 167 casos; as demais pendências
+  continuam explícitas.

@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7326**
-- Casos de teste: **166**
+- Casos de teste: **167**
 - Superfícies aposentadas: **59**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7138 |
+| `COVERED` | 7160 |
 | `MANUAL` | 0 |
-| `PENDING` | 188 |
+| `PENDING` | 166 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 166 |
+| `AUTOMATED` | 167 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -70,13 +70,13 @@
 | `api:src/include/apps/editor.h:editor_run` | `src/include/apps/editor.h` | `editor_run` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/editor.h:editor_run_file` | `src/include/apps/editor.h` | `editor_run_file` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/editor_test.h:editor_host_test_contracts` | `src/include/apps/editor_test.h` | `editor_host_test_contracts` | `apps` | `COVERED` | 1 |
-| `api:src/include/apps/guitest.h:guitest_close` | `src/include/apps/guitest.h` | `guitest_close` | `apps` | `COVERED` | 2 |
-| `api:src/include/apps/guitest.h:guitest_draw` | `src/include/apps/guitest.h` | `guitest_draw` | `apps` | `COVERED` | 2 |
-| `api:src/include/apps/guitest.h:guitest_handle_key` | `src/include/apps/guitest.h` | `guitest_handle_key` | `apps` | `COVERED` | 2 |
-| `api:src/include/apps/guitest.h:guitest_handle_mouse` | `src/include/apps/guitest.h` | `guitest_handle_mouse` | `apps` | `COVERED` | 2 |
-| `api:src/include/apps/guitest.h:guitest_is_active` | `src/include/apps/guitest.h` | `guitest_is_active` | `apps` | `COVERED` | 2 |
-| `api:src/include/apps/guitest.h:guitest_open` | `src/include/apps/guitest.h` | `guitest_open` | `apps` | `COVERED` | 2 |
-| `api:src/include/apps/guitest.h:guitest_open_modern` | `src/include/apps/guitest.h` | `guitest_open_modern` | `apps` | `COVERED` | 2 |
+| `api:src/include/apps/guitest.h:guitest_close` | `src/include/apps/guitest.h` | `guitest_close` | `apps` | `COVERED` | 3 |
+| `api:src/include/apps/guitest.h:guitest_draw` | `src/include/apps/guitest.h` | `guitest_draw` | `apps` | `COVERED` | 3 |
+| `api:src/include/apps/guitest.h:guitest_handle_key` | `src/include/apps/guitest.h` | `guitest_handle_key` | `apps` | `COVERED` | 3 |
+| `api:src/include/apps/guitest.h:guitest_handle_mouse` | `src/include/apps/guitest.h` | `guitest_handle_mouse` | `apps` | `COVERED` | 3 |
+| `api:src/include/apps/guitest.h:guitest_is_active` | `src/include/apps/guitest.h` | `guitest_is_active` | `apps` | `COVERED` | 3 |
+| `api:src/include/apps/guitest.h:guitest_open` | `src/include/apps/guitest.h` | `guitest_open` | `apps` | `COVERED` | 3 |
+| `api:src/include/apps/guitest.h:guitest_open_modern` | `src/include/apps/guitest.h` | `guitest_open_modern` | `apps` | `COVERED` | 3 |
 | `api:src/include/apps/mediaplayer.h:mp_get_status` | `src/include/apps/mediaplayer.h` | `mp_get_status` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/mediaplayer.h:mp_init` | `src/include/apps/mediaplayer.h` | `mp_init` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/mediaplayer.h:mp_pause` | `src/include/apps/mediaplayer.h` | `mp_pause` | `apps` | `COVERED` | 1 |
@@ -6071,29 +6071,29 @@
 | `c:src/shell/editor.c:str_insert` | `src/shell/editor.c` | `str_insert` | `shell` | `COVERED` | 1 |
 | `c:src/shell/editor.c:str_len` | `src/shell/editor.c` | `str_len` | `shell` | `COVERED` | 1 |
 | `c:src/shell/editor.c:str_remove` | `src/shell/editor.c` | `str_remove` | `shell` | `COVERED` | 1 |
-| `c:src/shell/guitest_app.c:guitest_close` | `src/shell/guitest_app.c` | `guitest_close` | `shell` | `PENDING` | 0 |
-| `c:src/shell/guitest_app.c:guitest_draw` | `src/shell/guitest_app.c` | `guitest_draw` | `shell` | `PENDING` | 0 |
-| `c:src/shell/guitest_app.c:guitest_draw_border_card` | `src/shell/guitest_app.c` | `guitest_draw_border_card` | `shell` | `PENDING` | 0 |
-| `c:src/shell/guitest_app.c:guitest_draw_classic_scene` | `src/shell/guitest_app.c` | `guitest_draw_classic_scene` | `shell` | `PENDING` | 0 |
-| `c:src/shell/guitest_app.c:guitest_draw_gradient_card` | `src/shell/guitest_app.c` | `guitest_draw_gradient_card` | `shell` | `PENDING` | 0 |
-| `c:src/shell/guitest_app.c:guitest_draw_modern_card` | `src/shell/guitest_app.c` | `guitest_draw_modern_card` | `shell` | `PENDING` | 0 |
-| `c:src/shell/guitest_app.c:guitest_draw_modern_samples` | `src/shell/guitest_app.c` | `guitest_draw_modern_samples` | `shell` | `PENDING` | 0 |
-| `c:src/shell/guitest_app.c:guitest_draw_modern_scene` | `src/shell/guitest_app.c` | `guitest_draw_modern_scene` | `shell` | `PENDING` | 0 |
-| `c:src/shell/guitest_app.c:guitest_draw_palette_card` | `src/shell/guitest_app.c` | `guitest_draw_palette_card` | `shell` | `PENDING` | 0 |
-| `c:src/shell/guitest_app.c:guitest_draw_palette_swatches` | `src/shell/guitest_app.c` | `guitest_draw_palette_swatches` | `shell` | `PENDING` | 0 |
-| `c:src/shell/guitest_app.c:guitest_draw_rounded_card` | `src/shell/guitest_app.c` | `guitest_draw_rounded_card` | `shell` | `PENDING` | 0 |
-| `c:src/shell/guitest_app.c:guitest_handle_key` | `src/shell/guitest_app.c` | `guitest_handle_key` | `shell` | `PENDING` | 0 |
-| `c:src/shell/guitest_app.c:guitest_handle_modern_button_mouse` | `src/shell/guitest_app.c` | `guitest_handle_modern_button_mouse` | `shell` | `PENDING` | 0 |
-| `c:src/shell/guitest_app.c:guitest_handle_mouse` | `src/shell/guitest_app.c` | `guitest_handle_mouse` | `shell` | `PENDING` | 0 |
-| `c:src/shell/guitest_app.c:guitest_is_active` | `src/shell/guitest_app.c` | `guitest_is_active` | `shell` | `COVERED` | 2 |
-| `c:src/shell/guitest_app.c:guitest_is_inside` | `src/shell/guitest_app.c` | `guitest_is_inside` | `shell` | `PENDING` | 0 |
-| `c:src/shell/guitest_app.c:guitest_modern_button_state_name` | `src/shell/guitest_app.c` | `guitest_modern_button_state_name` | `shell` | `PENDING` | 0 |
-| `c:src/shell/guitest_app.c:guitest_open` | `src/shell/guitest_app.c` | `guitest_open` | `shell` | `PENDING` | 0 |
-| `c:src/shell/guitest_app.c:guitest_open_modern` | `src/shell/guitest_app.c` | `guitest_open_modern` | `shell` | `PENDING` | 0 |
-| `c:src/shell/guitest_app.c:guitest_open_scene` | `src/shell/guitest_app.c` | `guitest_open_scene` | `shell` | `PENDING` | 0 |
-| `c:src/shell/guitest_app.c:guitest_prepare_classic_layout` | `src/shell/guitest_app.c` | `guitest_prepare_classic_layout` | `shell` | `PENDING` | 0 |
-| `c:src/shell/guitest_app.c:guitest_set_modern_button_state` | `src/shell/guitest_app.c` | `guitest_set_modern_button_state` | `shell` | `PENDING` | 0 |
-| `c:src/shell/guitest_app.c:guitest_update_modern_layout` | `src/shell/guitest_app.c` | `guitest_update_modern_layout` | `shell` | `PENDING` | 0 |
+| `c:src/shell/guitest_app.c:guitest_close` | `src/shell/guitest_app.c` | `guitest_close` | `shell` | `COVERED` | 1 |
+| `c:src/shell/guitest_app.c:guitest_draw` | `src/shell/guitest_app.c` | `guitest_draw` | `shell` | `COVERED` | 1 |
+| `c:src/shell/guitest_app.c:guitest_draw_border_card` | `src/shell/guitest_app.c` | `guitest_draw_border_card` | `shell` | `COVERED` | 1 |
+| `c:src/shell/guitest_app.c:guitest_draw_classic_scene` | `src/shell/guitest_app.c` | `guitest_draw_classic_scene` | `shell` | `COVERED` | 1 |
+| `c:src/shell/guitest_app.c:guitest_draw_gradient_card` | `src/shell/guitest_app.c` | `guitest_draw_gradient_card` | `shell` | `COVERED` | 1 |
+| `c:src/shell/guitest_app.c:guitest_draw_modern_card` | `src/shell/guitest_app.c` | `guitest_draw_modern_card` | `shell` | `COVERED` | 1 |
+| `c:src/shell/guitest_app.c:guitest_draw_modern_samples` | `src/shell/guitest_app.c` | `guitest_draw_modern_samples` | `shell` | `COVERED` | 1 |
+| `c:src/shell/guitest_app.c:guitest_draw_modern_scene` | `src/shell/guitest_app.c` | `guitest_draw_modern_scene` | `shell` | `COVERED` | 1 |
+| `c:src/shell/guitest_app.c:guitest_draw_palette_card` | `src/shell/guitest_app.c` | `guitest_draw_palette_card` | `shell` | `COVERED` | 1 |
+| `c:src/shell/guitest_app.c:guitest_draw_palette_swatches` | `src/shell/guitest_app.c` | `guitest_draw_palette_swatches` | `shell` | `COVERED` | 1 |
+| `c:src/shell/guitest_app.c:guitest_draw_rounded_card` | `src/shell/guitest_app.c` | `guitest_draw_rounded_card` | `shell` | `COVERED` | 1 |
+| `c:src/shell/guitest_app.c:guitest_handle_key` | `src/shell/guitest_app.c` | `guitest_handle_key` | `shell` | `COVERED` | 1 |
+| `c:src/shell/guitest_app.c:guitest_handle_modern_button_mouse` | `src/shell/guitest_app.c` | `guitest_handle_modern_button_mouse` | `shell` | `COVERED` | 1 |
+| `c:src/shell/guitest_app.c:guitest_handle_mouse` | `src/shell/guitest_app.c` | `guitest_handle_mouse` | `shell` | `COVERED` | 1 |
+| `c:src/shell/guitest_app.c:guitest_is_active` | `src/shell/guitest_app.c` | `guitest_is_active` | `shell` | `COVERED` | 3 |
+| `c:src/shell/guitest_app.c:guitest_is_inside` | `src/shell/guitest_app.c` | `guitest_is_inside` | `shell` | `COVERED` | 1 |
+| `c:src/shell/guitest_app.c:guitest_modern_button_state_name` | `src/shell/guitest_app.c` | `guitest_modern_button_state_name` | `shell` | `COVERED` | 1 |
+| `c:src/shell/guitest_app.c:guitest_open` | `src/shell/guitest_app.c` | `guitest_open` | `shell` | `COVERED` | 1 |
+| `c:src/shell/guitest_app.c:guitest_open_modern` | `src/shell/guitest_app.c` | `guitest_open_modern` | `shell` | `COVERED` | 1 |
+| `c:src/shell/guitest_app.c:guitest_open_scene` | `src/shell/guitest_app.c` | `guitest_open_scene` | `shell` | `COVERED` | 1 |
+| `c:src/shell/guitest_app.c:guitest_prepare_classic_layout` | `src/shell/guitest_app.c` | `guitest_prepare_classic_layout` | `shell` | `COVERED` | 1 |
+| `c:src/shell/guitest_app.c:guitest_set_modern_button_state` | `src/shell/guitest_app.c` | `guitest_set_modern_button_state` | `shell` | `COVERED` | 1 |
+| `c:src/shell/guitest_app.c:guitest_update_modern_layout` | `src/shell/guitest_app.c` | `guitest_update_modern_layout` | `shell` | `COVERED` | 1 |
 | `c:src/shell/mediaplayer.c:load_file` | `src/shell/mediaplayer.c` | `load_file` | `shell` | `COVERED` | 1 |
 | `c:src/shell/mediaplayer.c:mp_cleanup` | `src/shell/mediaplayer.c` | `mp_cleanup` | `shell` | `COVERED` | 1 |
 | `c:src/shell/mediaplayer.c:mp_get_status` | `src/shell/mediaplayer.c` | `mp_get_status` | `shell` | `COVERED` | 1 |
@@ -7536,6 +7536,7 @@
 | `host:ui:appstore` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar formatacao, selecao, planos, estados, rollback, confianca e geometria da interface com doubles estaticos | helpers preservam limites, selecao, estados de catalogo, planos e coordenadas sem iniciar workers ou tocar em hardware | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers e estruturas estaticas da App Store no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:ui:desktop` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, desenho TUI/GUI, modos, selecao, teclado, cliques, arraste, limites e fallback | Desktop preserva estado, layout, selecao, navegacao, hit-testing e limpeza sem hardware real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do Desktop e doubles de video, VESA, taskbar, icons, GUI e mouse no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:ui:filemanager` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar contratos de fontes, caminhos, nomes, navegacao, historico, layout Simple/Classic, pesquisa, mutacoes, dialogs e desenho do Explorer com doubles estaticos | helpers preservam limites, normalizacao, navegacao, selecao, paginação e estados de indice sem efeitos externos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers e estado estaticos do processo host; nenhum VFS, disco, rede ou hardware real | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:ui:guitest` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar abertura, desenho, layout, mouse, teclado, fechamento, limites e estados indisponiveis das cenas Classic e Modern | o aplicativo preserva estado, hit-testing, desenho, cancelamento e fallback sem hardware real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico e chamadas de desenho dos doubles no processo host | fechar a cena, encerrar o processo host e preservar manifesto, logs e cobertura |
 | `host:ui:icons` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar defaults, mutacoes, fallback, cache BMP, limites VESA e falhas controladas | registro vetorial permanece utilizavel sem filesystem e BMPs validos sao aceitos somente no formato esperado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente registro, cache e dispositivos BMP/VESA falsos no processo host | processo host encerrado, cache liberado e manifesto, logs e cobertura preservados |
 | `host:ui:settings-icons` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, modos TUI/GUI, preferencias, dialogos, mouse, storage e editor de icones com entradas estaticas | estado, valores, selecao, navegacao, dialogos e encerramento preservam o contrato observavel | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado de configuracoes, buffers estaticos e doubles de video/GUI no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:ui:taskbar` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar estados TUI e GUI, layouts, botoes, menus, configuracao, cliques, relogio e limites | taskbar preserva configuracao, geometria, navegacao, selecao de janelas e fallback sem hardware grafico real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente configuracao, botoes, menus e chamadas de desenho dentro da fixture host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7747,28 +7748,6 @@
 - `c:src/kernel/kernel.c:system_process_main`
 - `c:src/kernel/kernel.c:test_protocol_process_main`
 - `c:src/kernel/panic.c:panic_halt`
-- `c:src/shell/guitest_app.c:guitest_close`
-- `c:src/shell/guitest_app.c:guitest_draw`
-- `c:src/shell/guitest_app.c:guitest_draw_border_card`
-- `c:src/shell/guitest_app.c:guitest_draw_classic_scene`
-- `c:src/shell/guitest_app.c:guitest_draw_gradient_card`
-- `c:src/shell/guitest_app.c:guitest_draw_modern_card`
-- `c:src/shell/guitest_app.c:guitest_draw_modern_samples`
-- `c:src/shell/guitest_app.c:guitest_draw_modern_scene`
-- `c:src/shell/guitest_app.c:guitest_draw_palette_card`
-- `c:src/shell/guitest_app.c:guitest_draw_palette_swatches`
-- `c:src/shell/guitest_app.c:guitest_draw_rounded_card`
-- `c:src/shell/guitest_app.c:guitest_handle_key`
-- `c:src/shell/guitest_app.c:guitest_handle_modern_button_mouse`
-- `c:src/shell/guitest_app.c:guitest_handle_mouse`
-- `c:src/shell/guitest_app.c:guitest_is_inside`
-- `c:src/shell/guitest_app.c:guitest_modern_button_state_name`
-- `c:src/shell/guitest_app.c:guitest_open`
-- `c:src/shell/guitest_app.c:guitest_open_modern`
-- `c:src/shell/guitest_app.c:guitest_open_scene`
-- `c:src/shell/guitest_app.c:guitest_prepare_classic_layout`
-- `c:src/shell/guitest_app.c:guitest_set_modern_button_state`
-- `c:src/shell/guitest_app.c:guitest_update_modern_layout`
 
 ## Aposentadas
 

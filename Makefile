@@ -2152,7 +2152,10 @@ clean:
 .PHONY: test-updater-host
 .PHONY: test-filemanager-host
 .PHONY: test-taskmanager-host
-.PHONY: test-wm-host
+.PHONY: test-wm-host test-guitest-host
 
 test-wm-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_wm_host.c tests\catalog.json src\wm\wm.c src\include\ui\wm.h src\include\ui\desktop.h src\include\ui\display.h src\include\ui\gui.h src\include\ui\icons.h src\include\ui\taskbar.h src\include\core\errors.h src\include\core\log.h src\include\core\recovery.h src\include\core\timer.h src\include\core\video.h src\include\drivers\mouse.h src\include\drivers\vesa.h
 	python tools\core_host_runner.py --case host:ui:wm --cc "$(HOST_CC)"
+
+test-guitest-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_guitest_host.c tests\catalog.json src\shell\guitest_app.c src\include\apps\guitest.h src\include\apps\shell.h src\include\core\errors.h src\include\core\log.h src\include\core\recovery.h src\include\core\video.h src\include\drivers\mouse.h src\include\drivers\speaker.h src\include\drivers\vesa.h src\include\ui\desktop.h src\include\ui\display.h src\include\ui\gui.h src\include\ui\taskbar.h
+	python tools\core_host_runner.py --case host:ui:guitest --cc "$(HOST_CC)"

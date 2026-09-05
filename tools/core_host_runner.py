@@ -350,6 +350,12 @@ WM_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_wm_host.c",
     ROOT / "src" / "wm" / "wm.c",
 )
+GUITEST_RESULT_DIR = ROOT / "build" / "test-results" / "guitest-host"
+GUITEST_BINARY = ROOT / "build" / "tests" / "test_guitest_host.exe"
+GUITEST_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_guitest_host.c",
+    ROOT / "src" / "shell" / "guitest_app.c",
+)
 APPSTORE_RESULT_DIR = ROOT / "build" / "test-results" / "appstore-host"
 APPSTORE_BINARY = ROOT / "build" / "tests" / "test_appstore_host.exe"
 APPSTORE_SOURCE_FILES = (
@@ -986,6 +992,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return TASKBAR_RESULT_DIR, TASKBAR_BINARY, TASKBAR_SOURCE_FILES, "taskbar-host"
     if case_id == "host:ui:wm":
         return WM_RESULT_DIR, WM_BINARY, WM_SOURCE_FILES, "wm-host"
+    if case_id == "host:ui:guitest":
+        return (GUITEST_RESULT_DIR, GUITEST_BINARY,
+                GUITEST_SOURCE_FILES, "guitest-host")
     if case_id == "host:ui:appstore":
         return APPSTORE_RESULT_DIR, APPSTORE_BINARY, APPSTORE_SOURCE_FILES, "appstore-host"
     if case_id == "host:shell:editor":
@@ -1436,7 +1445,8 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:core:device-manager", "host:core:app-api",
                                  "host:core:app-files", "host:core:app-builtin",
                                  "host:core:app-loader", "host:ui:taskbar",
-                                 "host:ui:wm", "host:ui:appstore", "host:ui:updater",
+                                 "host:ui:wm", "host:ui:guitest",
+                                 "host:ui:appstore", "host:ui:updater",
                                  "host:ui:filemanager",
                                  "host:shell:taskmanager",
                                  "host:core:syscall",

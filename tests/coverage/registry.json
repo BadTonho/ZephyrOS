@@ -7003,6 +7003,58 @@
         "status": "AUTOMATED"
       },
       "evidence": "make test-wm-host PASS com 81 superficies C do WM observadas em janelas TUI, ciclo GUI hospedado, foco, atalhos, desenho, drag, resize, mouse, reflow, limites e limpeza"
+    },
+    {
+      "id": "guitest-host-dynamic",
+      "domain": "shell-guitest",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:ui:guitest"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/guitest-host/coverage.json",
+      "coverage_sources": [
+        "src/shell/guitest_app.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:ui:guitest",
+        "scenario": "Contrato host-only do aplicativo GUI Test em cenas Classic e Modern",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "VESA, display, taskbar, desktop, GUI, recovery, mouse e speaker falsos"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "exercitar abertura, desenho, layout, mouse, teclado, fechamento, limites e estados indisponiveis das cenas Classic e Modern",
+        "expected": "o aplicativo preserva estado, hit-testing, desenho, cancelamento e fallback sem hardware real",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente estado estatico e chamadas de desenho dos doubles no processo host",
+        "cleanup": "fechar a cena, encerrar o processo host e preservar manifesto, logs e cobertura",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "ui",
+          "guitest",
+          "classic",
+          "modern",
+          "mouse",
+          "limits",
+          "coverage"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "make test-guitest-host PASS com 23 funcoes reais de src/shell/guitest_app.c observadas em cenas Classic e Modern, entradas de mouse e teclado, limites de layout e indisponibilidade de VESA"
     }
   ]
 }

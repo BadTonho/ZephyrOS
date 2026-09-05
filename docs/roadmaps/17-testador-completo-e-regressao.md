@@ -26,14 +26,28 @@ interface App Store, dos relatórios de rede do Shell, do módulo de
 Configurações, do Desktop, dos comandos de aplicativos, da evidência RTC e
 das fixtures de entrada/hosted, da evidência de panic, da regeneração dos
 relatórios RTC/Shell, da fixture host-only do Updater, da fixture host-only do
-File Manager, da fixture host-only do Task Manager e da validação de
-resultados do Shell Checks, da expansão do ciclo de vida do Task Manager e dos
-caminhos negativos de finalização do Shell Checks, registra 7.326 superfícies,
-7.138 `COVERED` e 188 `PENDING`, em 166 casos `AUTOMATED`.
+File Manager, da fixture host-only do Task Manager, da validação de resultados
+do Shell Checks e da fixture host-only do GUI Test, registra 7.326 superfícies,
+7.160 `COVERED` e 166 `PENDING`, em 167 casos `AUTOMATED`.
 O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
 Isso não significa declarar hardware físico validado sem equipamento.
+
+### Incremento GUI Test: cenas Classic/Modern host-only — 2026-09-05
+
+- [x] A fixture `host:ui:guitest` passou a exercitar abertura, desenho,
+      layout, hit-testing, teclado, mouse, botão Modern, fechamento e
+      estados indisponíveis das cenas Classic e Modern.
+- [x] Foram usados doubles estáticos de VESA, display, taskbar, desktop, GUI,
+      recovery, vídeo, mouse e speaker. Nenhum hardware, armazenamento ou
+      rede real é acessado.
+- [x] `make test-guitest-host
+      HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` passou com
+      `-Wall -Wextra -Werror`; a cobertura dinâmica observou as 23 funções
+      reais de `src/shell/guitest_app.c`, sem endereços desconhecidos ou
+      símbolos ambíguos. O catálogo foi sincronizado e passou na validação;
+      agora registra 7.160 `COVERED`, 166 `PENDING` e 167 casos.
 
 ### Incremento Shell Checks: cobertura host-only integral — 2026-09-05
 
@@ -49,7 +63,7 @@ Isso não significa declarar hardware físico validado sem equipamento.
       observou todas as 115 funções de `src/shell/shell_checks.c`, sem
       endereços desconhecidos ou símbolos ambíguos. O catálogo foi
       sincronizado e passou na validação, renderização, `make catalog-test` e
-      `git diff --check`; agora registra 7.138 `COVERED` e 188 `PENDING`.
+      `git diff --check`; agora registra 7.160 `COVERED` e 166 `PENDING`.
 
 ### Incremento Window Manager: TUI, GUI hospedada e interação host-only — 2026-09-05
 
