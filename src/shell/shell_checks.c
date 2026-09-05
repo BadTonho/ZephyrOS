@@ -4629,6 +4629,126 @@ int shell_checks_host_test_contracts(void) {
     shell_q2check_handle_user_test_result(0U, 0U);
     shell_q2check_reset();
     if (shell_regcheck_validate_health() != ERR_STATE) failures++;
+
+    shell_blkcheck.phase = SHELL_BLKCHECK_PHASE_BASELINE;
+    shell_blkcheck.result = OK;
+    shell_blkcheck_save_inventory();
+    shell_blkcheck_inventory_unchanged();
+    shell_blkcheck_hash_file(NULL, "", shell_blkcheck_verify,
+                             sizeof(shell_blkcheck_verify),
+                             shell_blkcheck.expected_hash, &offset);
+    shell_blkcheck_prepare_fixture("missing", STORAGE_FS_FAT32, 0U);
+    shell_blkcheck_validate_fixture();
+    shell_blkcheck_fat12();
+    shell_blkcheck.fat32_step = 0U;
+    shell_blkcheck_fat32_step();
+    shell_blkcheck_cleanup();
+    kmemset(&job_context, 0, sizeof(job_context));
+    shell_blkcheck_job_step(NULL);
+    job_context.cancel_requested = 1U;
+    shell_blkcheck_job_step(&job_context);
+
+    shell_checks_start_job(NULL);
+    shell_checks_start_job("comando-invalido");
+    shell_regcheck_reset();
+    shell_checks_start_job("regcheck");
+    shell_regcheck.state = SHELL_REGCHECK_PREPARE_BASE;
+    shell_checks_start_job("regcheck");
+    shell_checks_job_step(NULL);
+    job_context.cancel_requested = 1U;
+    shell_checks_job_step(&job_context);
+    shell_regcheck_reset();
+    shell_dispatch_cmd_q2check("");
+    shell_q2check_reset();
+    shell_dispatch_cmd_regcheck("invalido");
+    shell_dispatch_cmd_blkcheck("invalido");
+    shell_dispatch_cmd_usertest("fault");
+    shell_appcheck_summary_reset(0U);
+    shell_checks_host_set_environment(FS_TYPE_NONE, 0);
+    cmd_appcheck_files();
+    cmd_appcheck_pipes();
+    cmd_appcheck_paths();
+    cmd_appcheck_devices();
+    cmd_appcheck_ipc();
+    cmd_appcheck_launch();
+    cmd_appcheck_loader();
+    cmd_appcheck();
+    shell_dispatch_cmd_appcheck("invalido");
+    shell_checks_run_app_inputtest(0U);
+    shell_checks_run_app_inputtest(1U);
+
+    shell_checks_host_set_process_snapshot(31U, 31U, 0U, 0U);
+    shell_appcheck_start_migration(SHELL_BUILTIN_APP_UPTIME);
+    {
+        app_loader_result_t result;
+
+        kmemset(&result, 0, sizeof(result));
+        result.pid = 31U;
+        result.focus_acquired = 1U;
+        shell_appcheck_finish_migration(&result);
+        result.pid = 32U;
+        shell_checks_host_set_process_snapshot(32U, 32U, 0U, 0U);
+        shell_appcheck_finish_migration(&result);
+    }
+    shell_appcheck_start_migration(SHELL_BUILTIN_APP_NONE);
+    shell_blkcheck_job_drain(NULL);
+    shell_checks_report_user_test_result();
+
+    {
+        app_loader_result_t result;
+
+        kmemset(&result, 0, sizeof(result));
+        result.generation = 2U;
+        shell_checks_host_set_job_fixture(0, OK, 1U);
+        shell_checks_handle_loader_result(&result);
+    }
+    shell_regcheck_reset();
+    shell_regcheck_finish();
+    shell_regcheck_finish_after_ring3();
+    shell_regcheck_run_full_checks();
+    shell_regcheck_validate_services();
+    shell_regcheck_validate_scheduler();
+    shell_regcheck_validate_devices();
+    shell_regcheck_validate_usb_entry(NULL);
+    shell_regcheck_validate_usb();
+    shell_regcheck_validate_acpi();
+    shell_regcheck_validate_power();
+    shell_regcheck_validate_packages();
+    shell_regcheck.state = SHELL_REGCHECK_WAIT_DEMO;
+    shell_regcheck.expected_pid = 31U;
+    shell_checks_host_set_process_snapshot(31U, 31U, 0U, 0U);
+    shell_checks_host_set_vma_snapshot(0U, 0U, 0U, 0U, OK);
+    {
+        app_loader_result_t result;
+
+        kmemset(&result, 0, sizeof(result));
+        result.pid = 31U;
+        result.exit_code = APP_EXIT_SUCCESS;
+        result.focus_acquired = 1U;
+        shell_regcheck_handle_loader_result(&result);
+        shell_regcheck.state = SHELL_REGCHECK_WAIT_CANCEL;
+        result.cancelled = 1U;
+        result.exit_code = APP_EXIT_CANCELLED;
+        shell_regcheck_handle_loader_result(&result);
+    }
+    shell_regcheck.full_mode = 1U;
+    shell_regcheck.state = SHELL_REGCHECK_PREPARE_FULL;
+    kmemset(&job_context, 0, sizeof(job_context));
+    shell_regcheck_prepare_step(&job_context);
+    shell_regcheck.state = SHELL_REGCHECK_PREPARE_BASE;
+    shell_regcheck_prepare_step(&job_context);
+    shell_regcheck.state = SHELL_REGCHECK_PREPARE_MEMORY;
+    shell_regcheck_prepare_step(&job_context);
+    shell_regcheck.state = SHELL_REGCHECK_PREPARE_PACKAGES;
+    shell_regcheck_prepare_step(&job_context);
+    shell_regcheck.state = SHELL_REGCHECK_PREPARE_THREADS;
+    shell_regcheck_prepare_step(&job_context);
+    shell_regcheck.state = SHELL_REGCHECK_PREPARE_LOADER;
+    shell_checks_host_set_run_image_fixture(ERR_UNAVAILABLE, 0U);
+    shell_regcheck_prepare_step(&job_context);
+    shell_regcheck.state = SHELL_REGCHECK_IDLE;
+    shell_regcheck_prepare_step(&job_context);
+
     if (shell_blkcheck_job_cancel(NULL) != OK) failures++;
     shell_blkcheck_job_finish(NULL, SHELL_JOB_STATE_CANCELLED, ERR_CANCELLED);
     return failures;

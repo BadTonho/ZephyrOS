@@ -2202,10 +2202,12 @@ logs e cobertura.
 ## Shell Checks: validadores de resultados host-only
 
 O alvo `test-shell-checks-host` compila `shell_checks.c` com
-`ZEPHYROS_HOST_TEST` e snapshots estáticos de processo, paging e page faults.
-A fixture valida resultados de migração de aplicativos, VMA lazy e page fault,
-incluindo rejeições de foco, PID, estado e contadores, sem iniciar processo,
-usar hardware, disco ou rede:
+`ZEPHYROS_HOST_TEST` e doubles estáticos de processo, paging, page faults,
+serviços, dispositivos, USB, ACPI, energia, storage e loader. A fixture valida
+os caminhos internos de `appcheck`, `q2check`, `regcheck` e `blkcheck`, além de
+resultados de migração de aplicativos, VMA lazy e page fault, incluindo
+rejeições de foco, PID, estado, contadores, dependências indisponíveis,
+cancelamento e dispatchers, sem iniciar processo, usar hardware, disco ou rede:
 
 ```text
 make test-shell-checks-host HOST_CC=C:\\msys64\\ucrt64\\bin\gcc.exe
@@ -2213,13 +2215,9 @@ make test-shell-checks-host HOST_CC=C:\\msys64\\ucrt64\\bin\gcc.exe
 
 O relatório instrumentado fica em
 `build/test-results/shell-checks-host/coverage.json` e deve terminar com
-`status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`, observando 71
-funções reais de `src/shell/shell_checks.c`. A fixture também exercita estados
-de job, cancelamento cooperativo, rejeições de comandos, finalização de Q2Check,
-cancelamento de BLKCheck e validação de health, além dos snapshots de ACPI,
-energia e recovery. A
-execução tem timeout do runner e preserva manifesto, resultado, logs e
-cobertura.
+`status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`, observando as
+115 funções reais de `src/shell/shell_checks.c`. A execução tem timeout do
+runner e preserva manifesto, resultado, logs e cobertura.
 
 ## File Manager: contratos host-only
 

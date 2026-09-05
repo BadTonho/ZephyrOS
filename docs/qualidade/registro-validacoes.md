@@ -6434,3 +6434,19 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `ambiguous_symbols=[]`. O catálogo atual registra 7.326 superfícies,
   7.095 `COVERED`, 231 `PENDING` e 166 casos; as demais pendências continuam
   explícitas.
+
+- Incremento Shell Checks: cobertura host-only integral — concluído em
+  2026-09-05 (America/Sao_Paulo). A fixture existente `host:shell:checks`,
+  compilada com `ZEPHYROS_HOST_TEST`, passou a exercitar todos os caminhos
+  internos de `appcheck`, `q2check`, `regcheck` e `blkcheck`, incluindo
+  dispatchers, jobs, loader, migração de aplicativos, fixtures de entrada,
+  validações de serviços, scheduler, dispositivos, USB, ACPI, energia,
+  pacotes, imagens ZAPP e limpeza. Foram usados doubles estáticos e erros
+  canônicos controlados; nenhum processo, disco, rede ou hardware real foi
+  acessado. Passaram `make test-shell-checks-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`, sincronização/renderização,
+  `make catalog-test` e `git diff --check`; a cobertura dinâmica terminou
+  `PASS`, observando as 115 funções reais de `src/shell/shell_checks.c`, sem
+  endereços desconhecidos ou símbolos ambíguos. O catálogo atual registra
+  7.138 `COVERED`, 188 `PENDING` e 166 casos; as demais pendências continuam
+  explícitas.

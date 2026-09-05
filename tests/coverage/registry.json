@@ -4047,7 +4047,7 @@
           "hardware": "estado ACPI, USB e dispositivos estatico"
         },
         "preconditions": "compilador C nativo e nm disponiveis",
-        "action": "executar contratos internos de fases, resumos, limites de falhas, estados de job e cancelamento cooperativo, Q2Check de faults e limpeza, RegCheck de processos, cleanup, resultados do loader e imagens, comparacao de inventarios, validacao de snapshots ACPI/MADT e energia, validacao de resultados de migracao, VMA lazy e page fault, verificacao de imagens ZAPP e limpeza limitada",
+        "action": "executar os caminhos internos de appcheck, q2check, regcheck e blkcheck, incluindo dispatchers, jobs, loader, migracao de aplicativos, fixtures de entrada, validacoes de servicos, scheduler, dispositivos, USB, ACPI, energia, pacotes, imagens ZAPP e limpeza",
         "expected": "helpers preservam nomes, estados, codigos canonicos, limites, bytes, snapshots de paging e limpeza esperados",
         "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
         "effects": "somente estruturas estaticas da fixture host; nenhum hardware, armazenamento ou processo real",
@@ -4063,7 +4063,7 @@
         ],
         "status": "AUTOMATED"
       },
-      "evidence": "make test-shell-checks-host PASS com 64 funcoes reais observadas, incluindo estados de job, cancelamento cooperativo, validacao de snapshots ACPI/energia/recovery, fases, resumos, saturacao de falhas, Q2Check de faults e limpeza, validadores RegCheck de processos/cleanup/loader/imagens, comparacoes de inventario, validadores de migracao/VMA/page fault, verificacao de imagens e limpeza limitada; cobertura instrumentada sem hardware real"
+      "evidence": "make test-shell-checks-host PASS com todas as 115 funcoes reais de src/shell/shell_checks.c observadas, incluindo appcheck, q2check, regcheck e blkcheck, dispatchers, jobs, loader, migracao de aplicativos, fixtures de entrada, validacoes de servicos, scheduler, dispositivos, USB, ACPI, energia, pacotes, imagens ZAPP e limpeza; cobertura instrumentada sem enderecos desconhecidos ou simbolos ambiguos e sem hardware real"
     },
     {
       "id": "shell-commands-diagnostics-host-dynamic",
