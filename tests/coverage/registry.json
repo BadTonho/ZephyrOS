@@ -6445,7 +6445,7 @@
         ],
         "status": "AUTOMATED"
       },
-      "evidence": "make test-editor-host PASS com parsing, codificacao, terminadores, sintaxe, cores, edicao de linhas e word-wrap instrumentados"
+      "evidence": "make test-editor-host PASS com parsing, codificacao, terminadores, sintaxe, cores, edicao de linhas, word-wrap, ciclo de vida, IPC e salvamento instrumentados"
     },
     {
       "id": "assembly-qemu-tst7-dynamic",

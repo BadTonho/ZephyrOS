@@ -23,7 +23,7 @@ mantém 159 casos `AUTOMATED`; após os incrementos de Shell, RTC,
 processos/threads, FAT32, update U3/U4, os contratos remotos ZSYS e o
 repositório remoto de aplicativos, dos helpers de pacotes do Shell, da
 interface App Store e dos relatórios de rede do Shell, registra 7.307
-superfícies, 6.467 `COVERED` e 840
+superfícies, 6.481 `COVERED` e 826
 `PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
@@ -141,9 +141,9 @@ Isso não significa declarar hardware físico validado sem equipamento.
       linhas, word-wrap, formatação e cleanup do Editor.
 - [x] `make test-editor-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`,
       `make q3check`, `make clean`, `make` e `make catalog-test` passaram. A
-      evidência resolveu 28 superfícies C e quatro contratos de API diretamente
+      evidência resolveu 37 superfícies C e nove contratos de API diretamente
       chamados; não houve endereço desconhecido nem símbolo ambíguo. O catálogo
-      registra 7.307 superfícies, 6.467 `COVERED`, 840 `PENDING`, 59 aposentadas
+      registra 7.307 superfícies, 6.481 `COVERED`, 826 `PENDING`, 59 aposentadas
       e 159 casos. As pendências de UI/runtime continuam explícitas.
 
 ### Incremento Shell/UI App Store — 2026-09-05
