@@ -24,8 +24,9 @@ processos/threads, FAT32, update U3/U4, os contratos remotos ZSYS e o
 repositório remoto de aplicativos, dos helpers de pacotes do Shell, da
 interface App Store, dos relatórios de rede do Shell, do módulo de
 Configurações, do Desktop, dos comandos de aplicativos, da evidência RTC e
-das fixtures de entrada/hosted e da evidência de panic, registra 7.315
-superfícies, 6.805 `COVERED` e 510 `PENDING`. O próximo objetivo deste
+das fixtures de entrada/hosted, da evidência de panic e da regeneração dos
+relatórios RTC/Shell, registra 7.315 superfícies, 6.819 `COVERED` e 496
+`PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
 Isso não significa declarar hardware físico validado sem equipamento.
@@ -2973,3 +2974,15 @@ pendente.
       renderização, `make catalog-test` e `git diff --check`. O catálogo registra
       7.315 superfícies, 6.805 `COVERED`, 510 `PENDING`, 59 aposentadas e 162
       casos.
+
+### Evidência RTC e Shell regenerada — 2026-09-05
+
+- [x] Os casos existentes `host:drivers:rtc-status`, `host:shell:input`,
+      `host:shell:hosted` e `host:shell:checks` foram executados novamente no
+      mesmo estado de build, com fixtures estáticas e sem hardware real.
+- [x] Todos os quatro relatórios dinâmicos terminaram `PASS`; foram observadas
+      17 funções de RTC, 16 de Shell input, oito de Shell hosted e 42 de
+      `shell_checks.c`, sem endereços desconhecidos ou símbolos ambíguos.
+- [x] Passaram a sincronização, renderização e `make catalog-test`. O catálogo
+      registra 7.315 superfícies, 6.819 `COVERED`, 496 `PENDING`, 59 aposentadas
+      e 162 casos; as pendências restantes continuam explícitas.
