@@ -40547,9 +40547,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_host_geometry_contracts",
@@ -40565,9 +40568,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_host_prepare_entries",
@@ -40583,9 +40589,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_host_selection_contracts",
@@ -40601,9 +40610,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_host_state_contracts",
@@ -40619,9 +40631,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_host_test_contracts",
@@ -40637,9 +40652,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_host_text_contracts",
@@ -40655,9 +40673,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_hosted_close",
@@ -142677,9 +142698,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:cmd_net_dhcp",
@@ -142731,9 +142755,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:cmd_net_dhcp_release",
@@ -142929,9 +142956,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:cmd_net_icmp_print_status",
@@ -142947,9 +142977,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:cmd_net_info",
@@ -143040,9 +143073,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:cmd_net_ipv4_print_counters",
@@ -143058,9 +143094,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:cmd_net_ipv4_status",
@@ -143136,9 +143175,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:cmd_net_print_ipv4",
@@ -143154,9 +143196,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:cmd_net_print_last_ethernet",
@@ -143172,9 +143217,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:cmd_net_print_mac",
@@ -143190,9 +143238,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:cmd_net_qemu_tcp_prepare_dhcp",
@@ -143352,9 +143403,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:cmd_net_tcp",
@@ -143940,9 +143994,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:cmd_route_print_result",
@@ -143958,9 +144015,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:cmd_route_table",
@@ -168921,14 +168981,27 @@
         "api:src/include/apps/shell_runtime.h:shell_network_validate_for_checks",
         "c:src/shell/shell_commands_network.c:cmd_net_build_http_url",
         "c:src/shell/shell_commands_network.c:cmd_net_destination_name",
+        "c:src/shell/shell_commands_network.c:cmd_net_devices",
+        "c:src/shell/shell_commands_network.c:cmd_net_dhcp_print_lease",
+        "c:src/shell/shell_commands_network.c:cmd_net_get_link_state",
+        "c:src/shell/shell_commands_network.c:cmd_net_icmp_print_status",
         "c:src/shell/shell_commands_network.c:cmd_net_invalid_ipv4",
+        "c:src/shell/shell_commands_network.c:cmd_net_ipv4_print_config",
+        "c:src/shell/shell_commands_network.c:cmd_net_ipv4_print_counters",
         "c:src/shell/shell_commands_network.c:cmd_net_parse_ipv4",
         "c:src/shell/shell_commands_network.c:cmd_net_parse_port",
+        "c:src/shell/shell_commands_network.c:cmd_net_print_interface",
+        "c:src/shell/shell_commands_network.c:cmd_net_print_ipv4",
+        "c:src/shell/shell_commands_network.c:cmd_net_print_last_ethernet",
+        "c:src/shell/shell_commands_network.c:cmd_net_print_mac",
+        "c:src/shell/shell_commands_network.c:cmd_net_status",
         "c:src/shell/shell_commands_network.c:cmd_net_ticks_to_milliseconds",
         "c:src/shell/shell_commands_network.c:cmd_network_state_color",
         "c:src/shell/shell_commands_network.c:cmd_ping_parse_args",
         "c:src/shell/shell_commands_network.c:cmd_ping_parse_count",
         "c:src/shell/shell_commands_network.c:cmd_ping_target_is_numeric",
+        "c:src/shell/shell_commands_network.c:cmd_route_print_entry",
+        "c:src/shell/shell_commands_network.c:cmd_route_print_result",
         "c:src/shell/shell_commands_network.c:cmd_route_validate_gateway",
         "c:src/shell/shell_commands_network.c:cmd_route_validate_interface",
         "c:src/shell/shell_commands_network.c:shell_network_checks_host_test_contracts",
@@ -170820,6 +170893,90 @@
         "c:src/core/kernel_tests_blackbox.c:blackbox_wait_for_marker",
         "c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox"
       ]
+    },
+    {
+      "id": "host:ui:appstore",
+      "scenario": "Contratos deterministas da interface App Store",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "exercitar formatacao, selecao, planos, estados, rollback, confianca e geometria da interface com doubles estaticos",
+      "expected": "helpers preservam limites, selecao, estados de catalogo, planos e coordenadas sem iniciar workers ou tocar em hardware",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente buffers e estruturas estaticas da App Store no processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "surface_ids": [
+        "api:src/include/core/string.h:kmemcpy",
+        "api:src/include/core/string.h:kmemset",
+        "api:src/include/core/string.h:kstrcmp",
+        "api:src/include/core/string.h:kstrlen",
+        "api:src/include/ui/appstore.h:appstore_close",
+        "api:src/include/ui/appstore.h:appstore_draw",
+        "api:src/include/ui/appstore.h:appstore_get_mode",
+        "api:src/include/ui/appstore.h:appstore_handle_key",
+        "api:src/include/ui/appstore.h:appstore_handle_mouse",
+        "api:src/include/ui/appstore.h:appstore_init",
+        "api:src/include/ui/appstore.h:appstore_is_open",
+        "api:src/include/ui/appstore.h:appstore_open",
+        "api:src/include/ui/appstore_test.h:appstore_host_test_contracts",
+        "c:src/appstore/appstore.c:appstore_action_button_position",
+        "c:src/appstore/appstore.c:appstore_action_buttons_per_row",
+        "c:src/appstore/appstore.c:appstore_append_text",
+        "c:src/appstore/appstore.c:appstore_blockers_text",
+        "c:src/appstore/appstore.c:appstore_change_selection",
+        "c:src/appstore/appstore.c:appstore_clear_context",
+        "c:src/appstore/appstore.c:appstore_copy_text",
+        "c:src/appstore/appstore.c:appstore_dependencies_text",
+        "c:src/appstore/appstore.c:appstore_entry_color",
+        "c:src/appstore/appstore.c:appstore_entry_info",
+        "c:src/appstore/appstore.c:appstore_entry_label",
+        "c:src/appstore/appstore.c:appstore_entry_trust",
+        "c:src/appstore/appstore.c:appstore_gui_entry_color",
+        "c:src/appstore/appstore.c:appstore_host_expect",
+        "c:src/appstore/appstore.c:appstore_host_geometry_contracts",
+        "c:src/appstore/appstore.c:appstore_host_prepare_entries",
+        "c:src/appstore/appstore.c:appstore_host_selection_contracts",
+        "c:src/appstore/appstore.c:appstore_host_state_contracts",
+        "c:src/appstore/appstore.c:appstore_host_test_contracts",
+        "c:src/appstore/appstore.c:appstore_host_text_contracts",
+        "c:src/appstore/appstore.c:appstore_keep_selection_visible",
+        "c:src/appstore/appstore.c:appstore_plan_is_downgrade",
+        "c:src/appstore/appstore.c:appstore_point_in",
+        "c:src/appstore/appstore.c:appstore_remote_button_position",
+        "c:src/appstore/appstore.c:appstore_remote_buttons_per_row",
+        "c:src/appstore/appstore.c:appstore_restore_selection",
+        "c:src/appstore/appstore.c:appstore_select_first_visible",
+        "c:src/appstore/appstore.c:appstore_selected_entry",
+        "c:src/appstore/appstore.c:appstore_selected_key",
+        "c:src/appstore/appstore.c:appstore_selected_remote_entry",
+        "c:src/appstore/appstore.c:appstore_set_result",
+        "c:src/appstore/appstore.c:appstore_u32_text",
+        "c:src/appstore/appstore.c:appstore_visible_count",
+        "c:src/appstore/appstore.c:appstore_visible_index",
+        "c:src/core/string.c:kmemcpy",
+        "c:src/core/string.c:kmemset",
+        "c:src/core/string.c:kstrcmp",
+        "c:src/core/string.c:kstrlen"
+      ],
+      "tags": [
+        "host",
+        "ui",
+        "appstore",
+        "packages",
+        "negative",
+        "coverage"
+      ],
+      "status": "AUTOMATED"
     },
     {
       "id": "host:ui:icons",
@@ -180762,83 +180919,6 @@
         "interrupts",
         "coverage",
         "snapshot"
-      ],
-      "status": "AUTOMATED"
-    },
-    {
-      "id": "host:ui:appstore",
-      "scenario": "Contratos deterministas da interface App Store",
-      "owner": "quality",
-      "layer": "host",
-      "executor": "host",
-      "profile": "host-only",
-      "timeout_seconds": 120,
-      "heartbeat_timeout_seconds": 1,
-      "isolation": "fixture",
-      "parameters": {
-        "compiler": "HOST_CC",
-        "instrumentation": "-finstrument-functions",
-        "warnings": "error"
-      },
-      "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "exercitar formatacao, selecao, planos, estados, rollback, confianca e geometria da interface com doubles estaticos",
-      "expected": "helpers preservam limites, selecao, estados de catalogo, planos e coordenadas sem iniciar workers ou tocar em hardware",
-      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
-      "effects": "somente buffers e estruturas estaticas da App Store no processo host",
-      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
-      "surface_ids": [
-        "api:src/include/core/string.h:kmemcpy",
-        "api:src/include/core/string.h:kmemset",
-        "api:src/include/core/string.h:kstrcmp",
-        "api:src/include/core/string.h:kstrlen",
-        "api:src/include/ui/appstore.h:appstore_close",
-        "api:src/include/ui/appstore.h:appstore_draw",
-        "api:src/include/ui/appstore.h:appstore_get_mode",
-        "api:src/include/ui/appstore.h:appstore_handle_key",
-        "api:src/include/ui/appstore.h:appstore_handle_mouse",
-        "api:src/include/ui/appstore.h:appstore_init",
-        "api:src/include/ui/appstore.h:appstore_is_open",
-        "api:src/include/ui/appstore.h:appstore_open",
-        "api:src/include/ui/appstore_test.h:appstore_host_test_contracts",
-        "c:src/appstore/appstore.c:appstore_action_button_position",
-        "c:src/appstore/appstore.c:appstore_action_buttons_per_row",
-        "c:src/appstore/appstore.c:appstore_append_text",
-        "c:src/appstore/appstore.c:appstore_blockers_text",
-        "c:src/appstore/appstore.c:appstore_change_selection",
-        "c:src/appstore/appstore.c:appstore_clear_context",
-        "c:src/appstore/appstore.c:appstore_copy_text",
-        "c:src/appstore/appstore.c:appstore_dependencies_text",
-        "c:src/appstore/appstore.c:appstore_entry_color",
-        "c:src/appstore/appstore.c:appstore_entry_info",
-        "c:src/appstore/appstore.c:appstore_entry_label",
-        "c:src/appstore/appstore.c:appstore_entry_trust",
-        "c:src/appstore/appstore.c:appstore_gui_entry_color",
-        "c:src/appstore/appstore.c:appstore_keep_selection_visible",
-        "c:src/appstore/appstore.c:appstore_plan_is_downgrade",
-        "c:src/appstore/appstore.c:appstore_point_in",
-        "c:src/appstore/appstore.c:appstore_remote_button_position",
-        "c:src/appstore/appstore.c:appstore_remote_buttons_per_row",
-        "c:src/appstore/appstore.c:appstore_restore_selection",
-        "c:src/appstore/appstore.c:appstore_select_first_visible",
-        "c:src/appstore/appstore.c:appstore_selected_entry",
-        "c:src/appstore/appstore.c:appstore_selected_key",
-        "c:src/appstore/appstore.c:appstore_selected_remote_entry",
-        "c:src/appstore/appstore.c:appstore_set_result",
-        "c:src/appstore/appstore.c:appstore_u32_text",
-        "c:src/appstore/appstore.c:appstore_visible_count",
-        "c:src/appstore/appstore.c:appstore_visible_index",
-        "c:src/core/string.c:kmemcpy",
-        "c:src/core/string.c:kmemset",
-        "c:src/core/string.c:kstrcmp",
-        "c:src/core/string.c:kstrlen"
-      ],
-      "tags": [
-        "host",
-        "ui",
-        "appstore",
-        "packages",
-        "negative",
-        "coverage"
       ],
       "status": "AUTOMATED"
     }

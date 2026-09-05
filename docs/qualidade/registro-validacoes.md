@@ -5916,3 +5916,15 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   dinâmica resolveu 32 superfícies reais, sem endereços desconhecidos ou
   símbolos ambíguos. O catálogo registra 7.307 superfícies, 6.383 `COVERED`,
   924 `PENDING` e 158 casos; as pendências restantes continuam explícitas.
+
+- Incremento Shell/network reports — concluído em 2026-09-05
+  (America/Sao_Paulo). A fixture host-only existente
+  `host:shell:network-checks` passou a chamar os relatórios somente leitura
+  reais de estado de link, interface, MAC, IPv4, Ethernet, rotas, DHCP, ICMP,
+  status agregado e dispositivos, usando doubles estáticos. Foram cobertos
+  caminhos nulos, estado vazio e dados válidos sem rede, hardware ou
+  armazenamento reais. Passou `make test-shell-network-checks-host` com
+  `HOST_CC`, e o relatório dinâmico terminou com `PASS`, sem endereços
+  desconhecidos ou símbolos ambíguos. A sincronização do catálogo cobriu 20
+  superfícies novas e registra 7.307 superfícies, 6.403 `COVERED`, 904
+  `PENDING` e 158 casos; as pendências restantes continuam explícitas.

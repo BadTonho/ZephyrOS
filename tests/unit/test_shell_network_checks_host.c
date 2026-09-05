@@ -49,6 +49,9 @@ static http_status_t fixture_http_status;
 static recovery_component_t fixture_recovery_network;
 static int fixture_network_status_result;
 static uint32_t fixture_timer_frequency;
+static net_buffer_stats_t fixture_net_buffer_stats;
+static sk_buff_stats_t fixture_skb_stats;
+static socket_status_t fixture_socket_status;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -169,6 +172,17 @@ static void fixture_reset(void) {
     fixture_recovery_network.state = RECOVERY_STATE_READY;
     fixture_recovery_network.last_error = OK;
     fixture_recovery_network.last_message = "ready";
+    kmemset(&fixture_net_buffer_stats, 0, sizeof(fixture_net_buffer_stats));
+    fixture_net_buffer_stats.initialized = 1U;
+    fixture_net_buffer_stats.active_buffers = 2U;
+    fixture_net_buffer_stats.peak_buffers = 3U;
+    kmemset(&fixture_skb_stats, 0, sizeof(fixture_skb_stats));
+    fixture_skb_stats.initialized = 1U;
+    fixture_skb_stats.active_buffers = 1U;
+    fixture_skb_stats.peak_buffers = 2U;
+    kmemset(&fixture_socket_status, 0, sizeof(fixture_socket_status));
+    fixture_socket_status.initialized = 1U;
+    fixture_socket_status.active_count = 1U;
     fixture_network_status_result = OK;
     fixture_timer_frequency = 1000U;
 }
@@ -183,6 +197,25 @@ int network_manager_get_status(network_manager_status_t* out_status) {
     if (!out_status) return ERR_NULL;
     *out_status = fixture_network_status;
     return fixture_network_status_result;
+}
+
+const char* network_manager_model_name(network_adapter_model_t model) {
+    return model == NETWORK_ADAPTER_E1000 ? "E1000" : "DESCONHECIDO";
+}
+
+const char* network_manager_interface_state_name(
+    network_interface_state_t state) {
+    return state == NETWORK_INTERFACE_ACTIVE ? "ATIVA" : "INDISPONIVEL";
+}
+
+const char* network_manager_link_state_name(network_link_state_t state) {
+    return state == NETWORK_LINK_UP ? "UP" :
+           state == NETWORK_LINK_DOWN ? "DOWN" : "UNKNOWN";
+}
+
+const char* network_manager_ipv4_source_name(network_ipv4_source_t source) {
+    return source == NETWORK_IPV4_SOURCE_STATIC ? "STATIC" :
+           source == NETWORK_IPV4_SOURCE_DHCP ? "DHCP" : "NONE";
 }
 
 int network_manager_get_count(uint32_t* out_count) {
@@ -222,6 +255,25 @@ int ethernet_get_status(ethernet_status_t* out_status) {
     return OK;
 }
 
+int ethernet_get_interface_status(const char* id,
+                                 ethernet_interface_status_t* out_status) {
+    (void)id;
+    if (!out_status) return ERR_NULL;
+    kmemset(out_status, 0, sizeof(*out_status));
+    out_status->attached = 1U;
+    out_status->rx_frames = 1U;
+    out_status->last_frame_length = 64U;
+    out_status->last_ethertype = 0x0800U;
+    out_status->last_destination_type = ETHERNET_DESTINATION_LOCAL_UNICAST;
+    kmemcpy(out_status->last_source,
+            (const uint8_t[]){0x52U, 0x54U, 0x00U, 0x12U, 0x34U, 0x56U},
+            ETHERNET_MAC_ADDRESS_SIZE);
+    kmemcpy(out_status->last_destination,
+            (const uint8_t[]){0x52U, 0x54U, 0x00U, 0x65U, 0x43U, 0x21U},
+            ETHERNET_MAC_ADDRESS_SIZE);
+    return OK;
+}
+
 int ethernet_validate_state(void) {
     return OK;
 }
@@ -230,7 +282,19 @@ int skb_self_test(void) {
     return OK;
 }
 
+int skb_get_stats(sk_buff_stats_t* out_stats) {
+    if (!out_stats) return ERR_NULL;
+    *out_stats = fixture_skb_stats;
+    return OK;
+}
+
 int net_buffer_self_test(void) {
+    return OK;
+}
+
+int net_buffer_get_stats(net_buffer_stats_t* out_stats) {
+    if (!out_stats) return ERR_NULL;
+    *out_stats = fixture_net_buffer_stats;
     return OK;
 }
 
@@ -239,6 +303,12 @@ int socket_self_test(socket_self_test_result_t* out_result) {
     kmemset(out_result, 0, sizeof(*out_result));
     out_result->invariants = 1U;
     out_result->passed = 1U;
+    return OK;
+}
+
+int socket_get_status(socket_status_t* out_status) {
+    if (!out_status) return ERR_NULL;
+    *out_status = fixture_socket_status;
     return OK;
 }
 
@@ -349,6 +419,11 @@ const recovery_component_t* recovery_get(recovery_component_id_t component) {
            &fixture_recovery_network : 0;
 }
 
+const char* recovery_state_name(recovery_state_t state) {
+    return state == RECOVERY_STATE_READY ? "READY" :
+           state == RECOVERY_STATE_DEGRADED ? "DEGRADED" : "UNAVAILABLE";
+}
+
 int idt_get_shared_irq_handler_count(uint8_t irq_line,
                                      uint8_t* out_count) {
     if (!out_count || irq_line != fixture_network_interface.irq) {
@@ -373,6 +448,11 @@ uint8_t ipv4_address_is_unicast(uint32_t ip_address) {
         return 0U;
     }
     return first_octet < 224U || first_octet > 239U;
+}
+
+const char* icmp_ping_state_name(icmp_ping_state_t state) {
+    return state == ICMP_PING_COMPLETE ? "COMPLETE" :
+           state == ICMP_PING_FAILED ? "FAILED" : "WAITING";
 }
 
 void video_print(const char* text, uint8_t color) {

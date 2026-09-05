@@ -5447,6 +5447,8 @@ int shell_network_checks_host_test_contracts(void) {
     network_interface_info_t left;
     network_interface_info_t right;
     ipv4_status_t ipv4;
+    icmp_status_t icmp;
+    dhcp_status_t dhcp;
     char target[32];
     char url[32];
     uint32_t address = 0U;
@@ -5578,6 +5580,67 @@ int shell_network_checks_host_test_contracts(void) {
         LOG_ERROR("SHELL", "Conversao de ticks de rede falhou");
         return ERR_STATE;
     }
+    if (cmd_net_get_link_state(0U) != NETWORK_LINK_UNKNOWN ||
+        cmd_net_get_link_state(1U) != NETWORK_LINK_UP) {
+        LOG_ERROR("SHELL", "Estado de link de rede incoerente");
+        return ERR_STATE;
+    }
+    left.state = NETWORK_INTERFACE_ACTIVE;
+    left.link = NETWORK_LINK_UP;
+    left.model = NETWORK_ADAPTER_E1000;
+    left.transport = NETWORK_TRANSPORT_PCI;
+    left.l3_active = 1U;
+    kmemcpy(left.mac_address,
+            (const uint8_t[]){0x52U, 0x54U, 0x00U, 0x12U, 0x34U, 0x56U},
+            NETWORK_MAC_ADDRESS_SIZE);
+    if (cmd_net_print_interface(&left) != OK ||
+        cmd_net_print_interface(0) != ERR_NULL) {
+        LOG_ERROR("SHELL", "Formatacao de interface de rede falhou");
+        return ERR_STATE;
+    }
+    cmd_net_print_mac(0);
+    cmd_net_print_mac(left.mac_address);
+    cmd_net_print_ipv4(0xC0A80107U);
+    cmd_net_print_last_ethernet(0);
+    {
+        ethernet_interface_status_t ethernet;
+
+        kmemset(&ethernet, 0, sizeof(ethernet));
+        cmd_net_print_last_ethernet(&ethernet);
+        ethernet.rx_frames = 1U;
+        ethernet.last_frame_length = 64U;
+        ethernet.last_ethertype = 0x0800U;
+        ethernet.last_destination_type = ETHERNET_DESTINATION_LOCAL_UNICAST;
+        kmemcpy(ethernet.last_source,
+                left.mac_address,
+                ETHERNET_MAC_ADDRESS_SIZE);
+        kmemcpy(ethernet.last_destination,
+                left.mac_address,
+                ETHERNET_MAC_ADDRESS_SIZE);
+        cmd_net_print_last_ethernet(&ethernet);
+    }
+    {
+        route_entry_t route;
+
+        kmemset(&route, 0, sizeof(route));
+        route.used = 1U;
+        route.prefix_length = 24U;
+        route.network = 0xC0A80100U;
+        route.gateway = 0xC0A80101U;
+        kmemcpy(route.interface_id, "eth0", 5U);
+        cmd_route_print_entry(0);
+        cmd_route_print_entry(&route);
+        cmd_route_print_result("rota", OK);
+        cmd_route_print_result("rota", ERR_INVALID);
+    }
+    kmemset(&icmp, 0, sizeof(icmp));
+    kmemset(&dhcp, 0, sizeof(dhcp));
+    cmd_net_ipv4_print_config(&ipv4);
+    cmd_net_ipv4_print_counters(&ipv4);
+    cmd_net_icmp_print_status(&icmp);
+    cmd_net_dhcp_print_lease(&dhcp);
+    cmd_net_status();
+    cmd_net_devices();
     if (!shell_network_job_check_stage_is_optional(
             SHELL_NETWORK_CHECK_STAGE_INTERFACE) ||
         !shell_network_job_check_stage_is_optional(

@@ -2064,3 +2064,19 @@ restauração, planos de downgrade, estados, rollback, confiança e geometria da
 interface. O relatório instrumentado fica em
 `build/test-results/appstore-host/coverage.json` e deve terminar com
 `status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`.
+
+## Shell: relatórios de rede host-only
+
+O alvo `test-shell-network-checks-host` também exercita os relatórios somente
+leitura do Shell com interfaces, Ethernet, rotas, IPv4, DHCP, ICMP e inventário
+de dispositivos fornecidos por doubles estáticos:
+
+```text
+make test-shell-network-checks-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O relatório instrumentado fica em
+`build/test-results/shell-network-checks-host/coverage.json` e deve terminar
+com `status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`. A fixture
+inclui caminhos nulos, estado vazio e estado válido, sem acessar rede,
+hardware ou armazenamento reais.
