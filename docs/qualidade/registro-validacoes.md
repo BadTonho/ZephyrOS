@@ -5951,3 +5951,15 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   desconhecidos ou símbolos ambíguos. Passaram `make test-rtc-status-host` com
   `HOST_CC`, sincronização/renderização e `make catalog-test`; o catálogo
   registra 7.307 superfícies, 6.423 `COVERED`, 884 `PENDING` e 158 casos.
+
+- Incremento Shell/input e hosted — concluído em 2026-09-05 (America/Sao_Paulo).
+  As fixtures existentes `host:shell:input` e `host:shell:hosted` foram
+  reexecutadas com instrumentação dinâmica e doubles estáticos. Foram
+  confirmados inicialização, buffer, histórico, edição, cancelamento, limites,
+  abertura/fechamento do terminal hospedado, teclado, mouse, desenho,
+  apresentação e indisponibilidade do modo não suportado. A evidência resolveu
+  as cinco superfícies internas restantes de `src/shell/shell_input.c` e
+  `src/shell/shell_hosted.c`, sem endereços desconhecidos ou símbolos
+  ambíguos. Passaram os dois alvos com `HOST_CC`, sincronização/renderização e
+  `make catalog-test`; o catálogo registra 7.307 superfícies, 6.428
+  `COVERED`, 879 `PENDING` e 158 casos.
