@@ -2107,8 +2107,8 @@ O relatório instrumentado fica em
 
 ## Shell/UI: contratos da App Store host-only
 
-O alvo `test-appstore-host` valida os contratos determinísticos da interface
-da App Store sem iniciar workers, acessar armazenamento, rede ou hardware:
+O alvo `test-appstore-host` valida os contratos determinísticos da App Store
+com backends estáticos, sem acessar armazenamento, rede ou hardware reais:
 
 ```text
 make test-appstore-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
@@ -2116,12 +2116,14 @@ make test-appstore-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 
 A fixture cobre formatação e truncamento, dependências e bloqueios, seleção e
 restauração, planos de downgrade, estados, rollback, confiança, geometria,
-desenho Simple/Classic, navegação remota, confirmação, teclado, mouse e
-callbacks hospedados. O relatório instrumentado fica em
+desenho Simple/Classic, navegação remota, confirmação, teclado, mouse,
+callbacks hospedados, inicialização, refreshes, preflight, operações locais e
+workers remotos. O relatório instrumentado fica em
 `build/test-results/appstore-host/coverage.json` e deve terminar com
-`status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`. A cobertura
-dos workers, da inicialização que cria o worker e dos refreshes reais depende
-de uma fixture posterior com backends de catálogo, pacote e repositório remoto.
+`status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`. O worker é
+executado em passo único no host para impedir loop infinito; a inicialização,
+os refreshes e as operações usam doubles determinísticos e deixam o estado
+limpo ao final.
 
 ## Shell: relatórios de rede host-only
 

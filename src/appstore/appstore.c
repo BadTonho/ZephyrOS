@@ -137,6 +137,9 @@ static char appstore_result_text[APPSTORE_TEXT_SIZE];
 static char appstore_confirm_key[APP_CATALOG_ALIAS_SIZE];
 static uint32_t appstore_confirm_generation;
 static process_t* appstore_worker_process;
+#ifdef ZEPHYROS_HOST_TEST
+static uint8_t appstore_host_worker_once;
+#endif
 
 static void appstore_hosted_draw(int x, int y, int width, int height);
 static void appstore_hosted_key(uint8_t scancode);
@@ -956,6 +959,12 @@ static void appstore_worker_finish(void) {
 
 static void appstore_worker_main(void) {
     while (1) {
+#ifdef ZEPHYROS_HOST_TEST
+        uint8_t single_step = appstore_host_worker_once;
+
+        appstore_host_worker_once = 0U;
+        if (single_step && appstore_queued_type == APPSTORE_JOB_NONE) return;
+#endif
         if (appstore_queued_type == APPSTORE_JOB_NONE) {
             wait_reason_t wait_reason = WAIT_REASON_NONE;
 
@@ -1016,6 +1025,9 @@ static void appstore_worker_main(void) {
         }
         appstore_worker_finish();
         process_yield();
+#ifdef ZEPHYROS_HOST_TEST
+        if (single_step) return;
+#endif
     }
 }
 
@@ -2261,12 +2273,72 @@ static int appstore_host_ui_contracts(void) {
     return ERR_STATE;
 }
 
+static int appstore_host_worker_contracts(void) {
+    appstore_active = 0;
+    appstore_hosted = 0;
+    if (appstore_host_expect(appstore_init() == OK) != OK) {
+        LOG_ERROR("APPSTORE", "Fixture host falhou ao inicializar worker");
+        return ERR_STATE;
+    }
+    appstore_active = 1;
+    appstore_tab = APPSTORE_TAB_CATALOG;
+    appstore_selected = 0;
+    appstore_generation = 7U;
+    appstore_refresh_snapshot();
+    appstore_refresh_remote_snapshot();
+    appstore_worker_verify("core");
+    if (appstore_host_expect(appstore_last_result == OK) != OK) return ERR_STATE;
+    if (appstore_host_expect(appstore_worker_build_plan("core", 0) == OK &&
+                             appstore_worker_build_plan("core", 1) == OK) != OK) {
+        return ERR_STATE;
+    }
+    appstore_worker_preflight_install("core");
+    appstore_worker_preflight_update("core");
+    appstore_worker_preflight_remove("CORE");
+    appstore_worker_preflight_rollback("CORE");
+    if (appstore_host_expect(appstore_last_result == OK) != OK) return ERR_STATE;
+    appstore_worker_install("core");
+    appstore_worker_update("core");
+    appstore_worker_remove("CORE");
+    appstore_worker_rollback("CORE");
+    if (appstore_host_expect(appstore_last_result == OK) != OK) return ERR_STATE;
+    appstore_hosted = 1;
+    appstore_worker_run("CORE");
+    appstore_hosted = 0;
+    appstore_worker_remote_enable();
+    appstore_worker_remote_enable();
+    appstore_worker_remote_check();
+    appstore_worker_remote_fetch("REMOTE", 0);
+    appstore_worker_remote_fetch("REMOTE", 1);
+    appstore_worker_remote_apply("REMOTE", 0, 0);
+    appstore_worker_remote_apply("REMOTE", 1, 1);
+    if (appstore_host_expect(appstore_last_result == OK) != OK) return ERR_STATE;
+    appstore_job.type = APPSTORE_JOB_VERIFY;
+    appstore_job.generation = appstore_generation;
+    appstore_copy_text(appstore_job.key, sizeof(appstore_job.key), "core");
+    appstore_queued_type = APPSTORE_JOB_VERIFY;
+    appstore_busy = 1;
+    appstore_host_worker_once = 1U;
+    appstore_worker_main();
+    if (appstore_host_expect(appstore_busy == 0 &&
+                             appstore_running_job.type == APPSTORE_JOB_NONE) != OK) {
+        return ERR_STATE;
+    }
+    appstore_host_reset_job();
+    appstore_active = 0;
+    appstore_hosted = 0;
+    appstore_initialized = 0;
+    appstore_worker_process = 0;
+    return OK;
+}
+
 int appstore_host_test_contracts(void) {
     int result = appstore_host_text_contracts();
 
     if (result == OK) result = appstore_host_selection_contracts();
     if (result == OK) result = appstore_host_state_contracts();
     if (result == OK) result = appstore_host_geometry_contracts();
+    if (result == OK) result = appstore_host_worker_contracts();
     if (result == OK) result = appstore_host_ui_contracts();
     return result;
 }

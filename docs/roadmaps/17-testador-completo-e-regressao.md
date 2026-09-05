@@ -23,7 +23,7 @@ mantém 161 casos `AUTOMATED`; após os incrementos de Shell, RTC,
 processos/threads, FAT32, update U3/U4, os contratos remotos ZSYS e o
 repositório remoto de aplicativos, dos helpers de pacotes do Shell, da
 interface App Store, dos relatórios de rede do Shell e do módulo de
-Configurações e do Desktop, registra 7.311 superfícies, 6.564 `COVERED` e 747
+Configurações e do Desktop, registra 7.312 superfícies, 6.602 `COVERED` e 710
 `PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
@@ -186,16 +186,16 @@ Isso não significa declarar hardware físico validado sem equipamento.
       Store: cópia e truncamento de texto, formatação de inteiros, dependências,
       bloqueios, seleção e restauração, planos de downgrade, estados, rollback,
       confiança e geometria dos botões, usando doubles estáticos.
-- [x] A evidência dinâmica terminou `PASS`, com 77 superfícies reais de
-      `src/appstore/appstore.c` e `src/core/string.c`, incluindo desenho
-      Simple/Classic, navegação remota, confirmação, teclado, mouse e
-      callbacks hospedados.
+- [x] A evidência dinâmica terminou `PASS`, com as 98 superfícies de
+      `src/appstore/appstore.c` exercitadas, além dos contratos auxiliares de
+      `src/core/string.c`, incluindo desenho Simple/Classic, navegação remota,
+      confirmação, teclado, mouse e callbacks hospedados.
 - [x] Passou `make test-appstore-host` com `HOST_CC`, `-Wall -Wextra -Werror`,
       sem endereços desconhecidos ou símbolos ambíguos. A sincronização,
       renderização e `make catalog-test` também passaram. O catálogo registra
-      7.311 superfícies, 6.564 `COVERED`, 747 `PENDING`, 59 aposentadas e 161
-      casos; os workers e a inicialização real da App Store continuam
-      explicitamente pendentes para uma etapa posterior.
+      7.312 superfícies, 6.602 `COVERED`, 710 `PENDING`, 59 aposentadas e 161
+      casos; o worker foi executado em passo único com backends falsos, sem
+      espera indefinida e com restauração do estado global.
 
 ### Incremento Shell/network reports — 2026-09-05
 
