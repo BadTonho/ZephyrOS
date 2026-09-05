@@ -23,8 +23,9 @@ mantém 162 casos `AUTOMATED`; após os incrementos de Shell, RTC,
 processos/threads, FAT32, update U3/U4, os contratos remotos ZSYS e o
 repositório remoto de aplicativos, dos helpers de pacotes do Shell, da
 interface App Store, dos relatórios de rede do Shell, do módulo de
-Configurações, do Desktop, dos comandos de aplicativos e da evidência RTC,
-registra 7.315 superfícies, 6.813 `COVERED` e 502 `PENDING`. O próximo objetivo deste
+Configurações, do Desktop, dos comandos de aplicativos, da evidência RTC e
+das fixtures de entrada/hosted, registra 7.315 superfícies, 6.818 `COVERED` e
+497 `PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
 Isso não significa declarar hardware físico validado sem equipamento.
@@ -2944,4 +2945,16 @@ pendente.
 - [x] A sincronização, renderização, `make catalog-test` e o teste host-only
       específico passaram. O catálogo atual registra 7.315 superfícies, sendo
       6.813 `COVERED` e 502 `PENDING`; as pendências restantes continuam
+      explícitas.
+
+### Evidência Shell/input e hosted regenerada — 2026-09-05
+
+- [x] Os casos existentes `host:shell:input` e `host:shell:hosted` foram
+      reexecutados após o build limpo, com fixtures estáticas e sem hardware.
+- [x] Os relatórios dinâmicos terminaram `PASS`, sem endereços desconhecidos ou
+      símbolos ambíguos, observando as duas superfícies internas de
+      `src/shell/shell_input.c` e as três de `src/shell/shell_hosted.c`.
+- [x] A sincronização, renderização, `make catalog-test` e os dois alvos
+      host-only passaram. O catálogo atual registra 7.315 superfícies, sendo
+      6.818 `COVERED` e 497 `PENDING`; as pendências restantes continuam
       explícitas.
