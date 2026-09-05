@@ -4397,8 +4397,10 @@
         "c:src/kernel/panic.c:panic_memory",
         "c:src/kernel/panic.c:panic_print_metric",
         "c:src/kernel/panic.c:panic_print_number",
+        "c:src/kernel/panic.c:panic_halt",
         "api:src/include/core/panic.h:panic",
-        "api:src/include/core/panic.h:panic_memory"
+        "api:src/include/core/panic.h:panic_memory",
+        "api:src/include/core/panic.h:panic_halt"
       ],
       "include_public_apis": false,
       "case_definition": {
@@ -4431,8 +4433,10 @@
           "c:src/kernel/panic.c:panic_memory",
           "c:src/kernel/panic.c:panic_print_metric",
           "c:src/kernel/panic.c:panic_print_number",
+          "c:src/kernel/panic.c:panic_halt",
           "api:src/include/core/panic.h:panic",
-          "api:src/include/core/panic.h:panic_memory"
+          "api:src/include/core/panic.h:panic_memory",
+          "api:src/include/core/panic.h:panic_halt"
         ],
         "tags": [
           "host",

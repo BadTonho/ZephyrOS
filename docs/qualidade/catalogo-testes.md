@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7248 |
+| `COVERED` | 7250 |
 | `MANUAL` | 0 |
-| `PENDING` | 81 |
+| `PENDING` | 79 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -568,7 +568,7 @@
 | `api:src/include/core/network_manager.h:network_manager_send_diagnostic` | `src/include/core/network_manager.h` | `network_manager_send_diagnostic` | `core` | `COVERED` | 3 |
 | `api:src/include/core/network_manager.h:network_manager_set_quiescing` | `src/include/core/network_manager.h` | `network_manager_set_quiescing` | `core` | `COVERED` | 3 |
 | `api:src/include/core/panic.h:panic` | `src/include/core/panic.h` | `panic` | `core` | `COVERED` | 1 |
-| `api:src/include/core/panic.h:panic_halt` | `src/include/core/panic.h` | `panic_halt` | `core` | `PENDING` | 0 |
+| `api:src/include/core/panic.h:panic_halt` | `src/include/core/panic.h` | `panic_halt` | `core` | `COVERED` | 1 |
 | `api:src/include/core/panic.h:panic_memory` | `src/include/core/panic.h` | `panic_memory` | `core` | `COVERED` | 1 |
 | `api:src/include/core/power.h:power_capability_name` | `src/include/core/power.h` | `power_capability_name` | `core` | `COVERED` | 4 |
 | `api:src/include/core/power.h:power_get_status` | `src/include/core/power.h` | `power_get_status` | `core` | `COVERED` | 4 |
@@ -5676,7 +5676,7 @@
 | `c:src/kernel/kernel.c:test_protocol_process_main` | `src/kernel/kernel.c` | `test_protocol_process_main` | `kernel` | `PENDING` | 0 |
 | `c:src/kernel/panic.c:panic` | `src/kernel/panic.c` | `panic` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/panic.c:panic_draw_header` | `src/kernel/panic.c` | `panic_draw_header` | `kernel` | `COVERED` | 1 |
-| `c:src/kernel/panic.c:panic_halt` | `src/kernel/panic.c` | `panic_halt` | `kernel` | `PENDING` | 0 |
+| `c:src/kernel/panic.c:panic_halt` | `src/kernel/panic.c` | `panic_halt` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/panic.c:panic_memory` | `src/kernel/panic.c` | `panic_memory` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/panic.c:panic_print_metric` | `src/kernel/panic.c` | `panic_print_metric` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/panic.c:panic_print_number` | `src/kernel/panic.c` | `panic_print_number` | `kernel` | `COVERED` | 1 |
@@ -7587,7 +7587,6 @@
 
 ## Superfícies sem caso associado
 
-- `api:src/include/core/panic.h:panic_halt`
 - `api:src/include/process/process.h:process_context_switch`
 - `api:src/include/process/process.h:process_user_enter`
 - `api:src/include/process/process.h:process_user_termination_enter`
@@ -7667,7 +7666,6 @@
 - `c:src/kernel/kernel.c:shell_process_main`
 - `c:src/kernel/kernel.c:system_process_main`
 - `c:src/kernel/kernel.c:test_protocol_process_main`
-- `c:src/kernel/panic.c:panic_halt`
 
 ## Aposentadas
 

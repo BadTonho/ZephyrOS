@@ -7,6 +7,19 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## 2026-09-05 - Rota `panic_halt` com evidência host-only
+
+- Caso: `host:kernel:panic` / `make test-panic-host`.
+- Alteração: a fixture de host passou a compilar a implementação real de
+  `panic_halt()` e encaminhá-la para `host_panic_halt()` somente sob
+  `ZEPHYROS_HOST_TEST`; o build freestanding mantém `cli` e `hlt`.
+- Resultado: `PASS` com `-Wall -Wextra -Werror`; o relatório dinâmico resolveu
+  `panic_halt` e as funções de panic sem endereços desconhecidos ou símbolos
+  ambíguos. Também passaram `make q3check`, `make clean` seguido de `make`,
+  sincronização/renderização do catálogo e `make catalog-test`.
+- Catálogo: 7.329 superfícies, 7.250 `COVERED`, 79 `PENDING` e 169 casos;
+  as pendências restantes continuam explícitas.
+
 ## 2026-09-05 - Cobertura host-only completa do Task Manager
 
 - Caso: `host:shell:taskmanager` / `make test-taskmanager-host`.

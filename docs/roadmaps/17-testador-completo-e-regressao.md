@@ -29,8 +29,21 @@ relatórios RTC/Shell, da fixture host-only do Updater, da fixture host-only do
 File Manager, da fixture host-only do Task Manager, da validação de resultados
 do Shell Checks, da fixture host-only do GUI Test, da fixture host-only do
 menu de recuperação e da fixture host-only do loader de recuperação, registra
-7.329 superfícies, 7.248 `COVERED` e 81 `PENDING`, em 169 casos
+7.329 superfícies, 7.250 `COVERED` e 79 `PENDING`, em 169 casos
 `AUTOMATED`.
+
+### Incremento Panic Halt: rota host-only instrumentada — 2026-09-05
+
+- [x] `panic_halt()` passou a manter uma implementação host-only real, que
+      encaminha o halt para a fixture `host_panic_halt()` somente no processo
+      de teste; o build freestanding continua usando `cli` e `hlt`.
+- [x] `make test-panic-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
+      passou com warnings como erros. A cobertura dinâmica resolveu
+      `panic_halt` sem endereços desconhecidos ou símbolos ambíguos, e o
+      catálogo vinculou a função C e a API pública ao caso `host:kernel:panic`.
+- [x] `make q3check`, `make clean` seguido de `make`, a sincronização do
+      catálogo e `make catalog-test` passaram. O catálogo agora registra
+      7.329 superfícies, 7.250 `COVERED` e 79 `PENDING`.
 O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.

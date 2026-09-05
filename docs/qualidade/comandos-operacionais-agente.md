@@ -661,12 +661,13 @@ translation unit de `src/boot/recovery_menu.c`. O processo usa os buffers
 estáticos somente com `ZEPHYROS_HOST_TEST`; o build freestanding continua
 usando o console e o framebuffer publicados pelo boot.
 
-O caso `test-panic-host` exercita as rotas de `panic` e `panic_memory` com
-captura do protocolo, da tela, das metricas e do halt por fixture host-only.
-Mensagens ausentes e explicitas, valores de memoria zero e no limite e o
-encaminhamento dos motivos canonicos sao verificados sem executar halt real.
-O adaptador usa o simbolo privado `host_panic_halt`; `panic_halt()` do kernel
-permanece fora da cobertura host-only ate ser exercitado por uma rota real.
+O caso `test-panic-host` exercita as rotas de `panic`, `panic_memory` e
+`panic_halt` com captura do protocolo, da tela, das metricas e do halt por
+fixture host-only. Mensagens ausentes e explicitas, valores de memoria zero e
+no limite e o encaminhamento dos motivos canonicos sao verificados sem
+executar halt real. Sob `ZEPHYROS_HOST_TEST`, `panic_halt()` encaminha para o
+simbolo privado `host_panic_halt`; o build freestanding permanece com o halt
+real de `cli`/`hlt`.
 O relatorio fica em `build/test-results/panic-host/`:
 
 ```text

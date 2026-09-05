@@ -2,6 +2,10 @@
 #include "core/test_protocol.h"
 #include "core/video.h"
 
+#ifdef ZEPHYROS_HOST_TEST
+extern void host_panic_halt(void);
+#endif
+
 static void panic_draw_header(void) {
     video_clear();
     video_set_color(VGA_COLOR_WHITE, VGA_COLOR_RED);
@@ -72,11 +76,13 @@ void panic_memory(const char* message, uint32_t mmap_entries,
     panic_halt();
 }
 
-#ifndef ZEPHYROS_HOST_TEST
 void panic_halt(void) {
+#ifdef ZEPHYROS_HOST_TEST
+    host_panic_halt();
+#else
     asm volatile("cli");
     for (;;) {
         asm volatile("hlt");
     }
-}
 #endif
+}
