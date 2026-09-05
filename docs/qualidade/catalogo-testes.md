@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6987 |
+| `COVERED` | 7049 |
 | `MANUAL` | 0 |
-| `PENDING` | 339 |
+| `PENDING` | 277 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -7111,80 +7111,80 @@
 | `c:src/thread/thread.c:thread_yield` | `src/thread/thread.c` | `thread_yield` | `thread` | `COVERED` | 5 |
 | `c:src/updater/updater.c:updater_cancel_check` | `src/updater/updater.c` | `updater_cancel_check` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_change_selection` | `src/updater/updater.c` | `updater_change_selection` | `updater` | `COVERED` | 1 |
-| `c:src/updater/updater.c:updater_close` | `src/updater/updater.c` | `updater_close` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_confirm_action` | `src/updater/updater.c` | `updater_confirm_action` | `updater` | `PENDING` | 0 |
+| `c:src/updater/updater.c:updater_close` | `src/updater/updater.c` | `updater_close` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_confirm_action` | `src/updater/updater.c` | `updater_confirm_action` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_copy_name` | `src/updater/updater.c` | `updater_copy_name` | `updater` | `COVERED` | 1 |
-| `c:src/updater/updater.c:updater_draw` | `src/updater/updater.c` | `updater_draw` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_draw_classic` | `src/updater/updater.c` | `updater_draw_classic` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_draw_simple` | `src/updater/updater.c` | `updater_draw_simple` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_get_mode` | `src/updater/updater.c` | `updater_get_mode` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_gui_draw_confirmation` | `src/updater/updater.c` | `updater_gui_draw_confirmation` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_gui_draw_history` | `src/updater/updater.c` | `updater_gui_draw_history` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_gui_draw_packages` | `src/updater/updater.c` | `updater_gui_draw_packages` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_gui_draw_remote` | `src/updater/updater.c` | `updater_gui_draw_remote` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_gui_draw_runtime` | `src/updater/updater.c` | `updater_gui_draw_runtime` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_gui_draw_status` | `src/updater/updater.c` | `updater_gui_draw_status` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_gui_draw_system` | `src/updater/updater.c` | `updater_gui_draw_system` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_gui_draw_tabs` | `src/updater/updater.c` | `updater_gui_draw_tabs` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_gui_line` | `src/updater/updater.c` | `updater_gui_line` | `updater` | `PENDING` | 0 |
+| `c:src/updater/updater.c:updater_draw` | `src/updater/updater.c` | `updater_draw` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_draw_classic` | `src/updater/updater.c` | `updater_draw_classic` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_draw_simple` | `src/updater/updater.c` | `updater_draw_simple` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_get_mode` | `src/updater/updater.c` | `updater_get_mode` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_gui_draw_confirmation` | `src/updater/updater.c` | `updater_gui_draw_confirmation` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_gui_draw_history` | `src/updater/updater.c` | `updater_gui_draw_history` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_gui_draw_packages` | `src/updater/updater.c` | `updater_gui_draw_packages` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_gui_draw_remote` | `src/updater/updater.c` | `updater_gui_draw_remote` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_gui_draw_runtime` | `src/updater/updater.c` | `updater_gui_draw_runtime` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_gui_draw_status` | `src/updater/updater.c` | `updater_gui_draw_status` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_gui_draw_system` | `src/updater/updater.c` | `updater_gui_draw_system` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_gui_draw_tabs` | `src/updater/updater.c` | `updater_gui_draw_tabs` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_gui_line` | `src/updater/updater.c` | `updater_gui_line` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_gui_tab_width` | `src/updater/updater.c` | `updater_gui_tab_width` | `updater` | `COVERED` | 1 |
-| `c:src/updater/updater.c:updater_handle_confirmation_click` | `src/updater/updater.c` | `updater_handle_confirmation_click` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_handle_key` | `src/updater/updater.c` | `updater_handle_key` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_handle_mouse` | `src/updater/updater.c` | `updater_handle_mouse` | `updater` | `PENDING` | 0 |
+| `c:src/updater/updater.c:updater_handle_confirmation_click` | `src/updater/updater.c` | `updater_handle_confirmation_click` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_handle_key` | `src/updater/updater.c` | `updater_handle_key` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_handle_mouse` | `src/updater/updater.c` | `updater_handle_mouse` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_history_detail_text` | `src/updater/updater.c` | `updater_history_detail_text` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_host_test_contracts` | `src/updater/updater.c` | `updater_host_test_contracts` | `updater` | `COVERED` | 1 |
-| `c:src/updater/updater.c:updater_hosted_close` | `src/updater/updater.c` | `updater_hosted_close` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_hosted_draw` | `src/updater/updater.c` | `updater_hosted_draw` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_hosted_key` | `src/updater/updater.c` | `updater_hosted_key` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_hosted_mouse` | `src/updater/updater.c` | `updater_hosted_mouse` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_init` | `src/updater/updater.c` | `updater_init` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_is_open` | `src/updater/updater.c` | `updater_is_open` | `updater` | `COVERED` | 3 |
+| `c:src/updater/updater.c:updater_hosted_close` | `src/updater/updater.c` | `updater_hosted_close` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_hosted_draw` | `src/updater/updater.c` | `updater_hosted_draw` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_hosted_key` | `src/updater/updater.c` | `updater_hosted_key` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_hosted_mouse` | `src/updater/updater.c` | `updater_hosted_mouse` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_init` | `src/updater/updater.c` | `updater_init` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_is_open` | `src/updater/updater.c` | `updater_is_open` | `updater` | `COVERED` | 4 |
 | `c:src/updater/updater.c:updater_is_zup_name` | `src/updater/updater.c` | `updater_is_zup_name` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_keep_selection_visible` | `src/updater/updater.c` | `updater_keep_selection_visible` | `updater` | `COVERED` | 1 |
-| `c:src/updater/updater.c:updater_open` | `src/updater/updater.c` | `updater_open` | `updater` | `PENDING` | 0 |
+| `c:src/updater/updater.c:updater_open` | `src/updater/updater.c` | `updater_open` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_point_in` | `src/updater/updater.c` | `updater_point_in` | `updater` | `COVERED` | 1 |
-| `c:src/updater/updater.c:updater_preflight_apply` | `src/updater/updater.c` | `updater_preflight_apply` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_preflight_rollback` | `src/updater/updater.c` | `updater_preflight_rollback` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_refresh_all` | `src/updater/updater.c` | `updater_refresh_all` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_refresh_component` | `src/updater/updater.c` | `updater_refresh_component` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_refresh_packages` | `src/updater/updater.c` | `updater_refresh_packages` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_refresh_status` | `src/updater/updater.c` | `updater_refresh_status` | `updater` | `PENDING` | 0 |
+| `c:src/updater/updater.c:updater_preflight_apply` | `src/updater/updater.c` | `updater_preflight_apply` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_preflight_rollback` | `src/updater/updater.c` | `updater_preflight_rollback` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_refresh_all` | `src/updater/updater.c` | `updater_refresh_all` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_refresh_component` | `src/updater/updater.c` | `updater_refresh_component` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_refresh_packages` | `src/updater/updater.c` | `updater_refresh_packages` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_refresh_status` | `src/updater/updater.c` | `updater_refresh_status` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_remote_active_job_name` | `src/updater/updater.c` | `updater_remote_active_job_name` | `updater` | `COVERED` | 1 |
-| `c:src/updater/updater.c:updater_remote_clear_preflight` | `src/updater/updater.c` | `updater_remote_clear_preflight` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_remote_confirm_clear` | `src/updater/updater.c` | `updater_remote_confirm_clear` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_remote_confirm_fetch` | `src/updater/updater.c` | `updater_remote_confirm_fetch` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_remote_finish_cache_refresh` | `src/updater/updater.c` | `updater_remote_finish_cache_refresh` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_remote_job_cancel_check` | `src/updater/updater.c` | `updater_remote_job_cancel_check` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_remote_run_check` | `src/updater/updater.c` | `updater_remote_run_check` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_remote_start_job` | `src/updater/updater.c` | `updater_remote_start_job` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_remote_toggle` | `src/updater/updater.c` | `updater_remote_toggle` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_remote_worker_main` | `src/updater/updater.c` | `updater_remote_worker_main` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_runtime_clear_preflight` | `src/updater/updater.c` | `updater_runtime_clear_preflight` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_runtime_confirm_action` | `src/updater/updater.c` | `updater_runtime_confirm_action` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_runtime_confirm_clear` | `src/updater/updater.c` | `updater_runtime_confirm_clear` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_runtime_confirm_fetch` | `src/updater/updater.c` | `updater_runtime_confirm_fetch` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_runtime_preflight_apply` | `src/updater/updater.c` | `updater_runtime_preflight_apply` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_runtime_preflight_rollback` | `src/updater/updater.c` | `updater_runtime_preflight_rollback` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_runtime_run_check` | `src/updater/updater.c` | `updater_runtime_run_check` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_runtime_start_job` | `src/updater/updater.c` | `updater_runtime_start_job` | `updater` | `PENDING` | 0 |
+| `c:src/updater/updater.c:updater_remote_clear_preflight` | `src/updater/updater.c` | `updater_remote_clear_preflight` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_remote_confirm_clear` | `src/updater/updater.c` | `updater_remote_confirm_clear` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_remote_confirm_fetch` | `src/updater/updater.c` | `updater_remote_confirm_fetch` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_remote_finish_cache_refresh` | `src/updater/updater.c` | `updater_remote_finish_cache_refresh` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_remote_job_cancel_check` | `src/updater/updater.c` | `updater_remote_job_cancel_check` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_remote_run_check` | `src/updater/updater.c` | `updater_remote_run_check` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_remote_start_job` | `src/updater/updater.c` | `updater_remote_start_job` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_remote_toggle` | `src/updater/updater.c` | `updater_remote_toggle` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_remote_worker_main` | `src/updater/updater.c` | `updater_remote_worker_main` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_runtime_clear_preflight` | `src/updater/updater.c` | `updater_runtime_clear_preflight` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_runtime_confirm_action` | `src/updater/updater.c` | `updater_runtime_confirm_action` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_runtime_confirm_clear` | `src/updater/updater.c` | `updater_runtime_confirm_clear` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_runtime_confirm_fetch` | `src/updater/updater.c` | `updater_runtime_confirm_fetch` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_runtime_preflight_apply` | `src/updater/updater.c` | `updater_runtime_preflight_apply` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_runtime_preflight_rollback` | `src/updater/updater.c` | `updater_runtime_preflight_rollback` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_runtime_run_check` | `src/updater/updater.c` | `updater_runtime_run_check` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_runtime_start_job` | `src/updater/updater.c` | `updater_runtime_start_job` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_selected_package` | `src/updater/updater.c` | `updater_selected_package` | `updater` | `COVERED` | 1 |
-| `c:src/updater/updater.c:updater_simple_draw_confirmation` | `src/updater/updater.c` | `updater_simple_draw_confirmation` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_simple_draw_history` | `src/updater/updater.c` | `updater_simple_draw_history` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_simple_draw_packages` | `src/updater/updater.c` | `updater_simple_draw_packages` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_simple_draw_remote` | `src/updater/updater.c` | `updater_simple_draw_remote` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_simple_draw_result` | `src/updater/updater.c` | `updater_simple_draw_result` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_simple_draw_status` | `src/updater/updater.c` | `updater_simple_draw_status` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_simple_draw_tabs` | `src/updater/updater.c` | `updater_simple_draw_tabs` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_simple_print_version` | `src/updater/updater.c` | `updater_simple_print_version` | `updater` | `PENDING` | 0 |
+| `c:src/updater/updater.c:updater_simple_draw_confirmation` | `src/updater/updater.c` | `updater_simple_draw_confirmation` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_simple_draw_history` | `src/updater/updater.c` | `updater_simple_draw_history` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_simple_draw_packages` | `src/updater/updater.c` | `updater_simple_draw_packages` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_simple_draw_remote` | `src/updater/updater.c` | `updater_simple_draw_remote` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_simple_draw_result` | `src/updater/updater.c` | `updater_simple_draw_result` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_simple_draw_status` | `src/updater/updater.c` | `updater_simple_draw_status` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_simple_draw_tabs` | `src/updater/updater.c` | `updater_simple_draw_tabs` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_simple_print_version` | `src/updater/updater.c` | `updater_simple_print_version` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_sort_packages` | `src/updater/updater.c` | `updater_sort_packages` | `updater` | `COVERED` | 1 |
-| `c:src/updater/updater.c:updater_system_action` | `src/updater/updater.c` | `updater_system_action` | `updater` | `PENDING` | 0 |
+| `c:src/updater/updater.c:updater_system_action` | `src/updater/updater.c` | `updater_system_action` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_system_cached_path` | `src/updater/updater.c` | `updater_system_cached_path` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_system_offer_final_reboot` | `src/updater/updater.c` | `updater_system_offer_final_reboot` | `updater` | `COVERED` | 1 |
-| `c:src/updater/updater.c:updater_system_run_apply` | `src/updater/updater.c` | `updater_system_run_apply` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_system_run_cancel` | `src/updater/updater.c` | `updater_system_run_cancel` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_system_run_check` | `src/updater/updater.c` | `updater_system_run_check` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_system_run_fetch` | `src/updater/updater.c` | `updater_system_run_fetch` | `updater` | `PENDING` | 0 |
-| `c:src/updater/updater.c:updater_system_run_verify` | `src/updater/updater.c` | `updater_system_run_verify` | `updater` | `PENDING` | 0 |
+| `c:src/updater/updater.c:updater_system_run_apply` | `src/updater/updater.c` | `updater_system_run_apply` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_system_run_cancel` | `src/updater/updater.c` | `updater_system_run_cancel` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_system_run_check` | `src/updater/updater.c` | `updater_system_run_check` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_system_run_fetch` | `src/updater/updater.c` | `updater_system_run_fetch` | `updater` | `COVERED` | 1 |
+| `c:src/updater/updater.c:updater_system_run_verify` | `src/updater/updater.c` | `updater_system_run_verify` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_system_slot_name` | `src/updater/updater.c` | `updater_system_slot_name` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_system_tag_begin` | `src/updater/updater.c` | `updater_system_tag_begin` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_system_tag_finish` | `src/updater/updater.c` | `updater_system_tag_finish` | `updater` | `COVERED` | 1 |
@@ -7194,7 +7194,7 @@
 | `c:src/updater/updater.c:updater_text_append_u32` | `src/updater/updater.c` | `updater_text_append_u32` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_text_append_version` | `src/updater/updater.c` | `updater_text_append_version` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_u32_text` | `src/updater/updater.c` | `updater_u32_text` | `updater` | `COVERED` | 1 |
-| `c:src/updater/updater.c:updater_verify_selected` | `src/updater/updater.c` | `updater_verify_selected` | `updater` | `PENDING` | 0 |
+| `c:src/updater/updater.c:updater_verify_selected` | `src/updater/updater.c` | `updater_verify_selected` | `updater` | `COVERED` | 1 |
 | `c:src/updater/updater.c:updater_version_text` | `src/updater/updater.c` | `updater_version_text` | `updater` | `COVERED` | 1 |
 | `c:src/wm/wm.c:draw_buttons_left` | `src/wm/wm.c` | `draw_buttons_left` | `wm` | `PENDING` | 0 |
 | `c:src/wm/wm.c:draw_buttons_right` | `src/wm/wm.c` | `draw_buttons_right` | `wm` | `PENDING` | 0 |
@@ -7811,68 +7811,6 @@
 - `c:src/shell/shell_checks.c:shell_regcheck_validate_services`
 - `c:src/shell/shell_checks.c:shell_regcheck_validate_usb`
 - `c:src/shell/shell_checks.c:shell_regcheck_validate_usb_entry`
-- `c:src/updater/updater.c:updater_close`
-- `c:src/updater/updater.c:updater_confirm_action`
-- `c:src/updater/updater.c:updater_draw`
-- `c:src/updater/updater.c:updater_draw_classic`
-- `c:src/updater/updater.c:updater_draw_simple`
-- `c:src/updater/updater.c:updater_get_mode`
-- `c:src/updater/updater.c:updater_gui_draw_confirmation`
-- `c:src/updater/updater.c:updater_gui_draw_history`
-- `c:src/updater/updater.c:updater_gui_draw_packages`
-- `c:src/updater/updater.c:updater_gui_draw_remote`
-- `c:src/updater/updater.c:updater_gui_draw_runtime`
-- `c:src/updater/updater.c:updater_gui_draw_status`
-- `c:src/updater/updater.c:updater_gui_draw_system`
-- `c:src/updater/updater.c:updater_gui_draw_tabs`
-- `c:src/updater/updater.c:updater_gui_line`
-- `c:src/updater/updater.c:updater_handle_confirmation_click`
-- `c:src/updater/updater.c:updater_handle_key`
-- `c:src/updater/updater.c:updater_handle_mouse`
-- `c:src/updater/updater.c:updater_hosted_close`
-- `c:src/updater/updater.c:updater_hosted_draw`
-- `c:src/updater/updater.c:updater_hosted_key`
-- `c:src/updater/updater.c:updater_hosted_mouse`
-- `c:src/updater/updater.c:updater_init`
-- `c:src/updater/updater.c:updater_open`
-- `c:src/updater/updater.c:updater_preflight_apply`
-- `c:src/updater/updater.c:updater_preflight_rollback`
-- `c:src/updater/updater.c:updater_refresh_all`
-- `c:src/updater/updater.c:updater_refresh_component`
-- `c:src/updater/updater.c:updater_refresh_packages`
-- `c:src/updater/updater.c:updater_refresh_status`
-- `c:src/updater/updater.c:updater_remote_clear_preflight`
-- `c:src/updater/updater.c:updater_remote_confirm_clear`
-- `c:src/updater/updater.c:updater_remote_confirm_fetch`
-- `c:src/updater/updater.c:updater_remote_finish_cache_refresh`
-- `c:src/updater/updater.c:updater_remote_job_cancel_check`
-- `c:src/updater/updater.c:updater_remote_run_check`
-- `c:src/updater/updater.c:updater_remote_start_job`
-- `c:src/updater/updater.c:updater_remote_toggle`
-- `c:src/updater/updater.c:updater_remote_worker_main`
-- `c:src/updater/updater.c:updater_runtime_clear_preflight`
-- `c:src/updater/updater.c:updater_runtime_confirm_action`
-- `c:src/updater/updater.c:updater_runtime_confirm_clear`
-- `c:src/updater/updater.c:updater_runtime_confirm_fetch`
-- `c:src/updater/updater.c:updater_runtime_preflight_apply`
-- `c:src/updater/updater.c:updater_runtime_preflight_rollback`
-- `c:src/updater/updater.c:updater_runtime_run_check`
-- `c:src/updater/updater.c:updater_runtime_start_job`
-- `c:src/updater/updater.c:updater_simple_draw_confirmation`
-- `c:src/updater/updater.c:updater_simple_draw_history`
-- `c:src/updater/updater.c:updater_simple_draw_packages`
-- `c:src/updater/updater.c:updater_simple_draw_remote`
-- `c:src/updater/updater.c:updater_simple_draw_result`
-- `c:src/updater/updater.c:updater_simple_draw_status`
-- `c:src/updater/updater.c:updater_simple_draw_tabs`
-- `c:src/updater/updater.c:updater_simple_print_version`
-- `c:src/updater/updater.c:updater_system_action`
-- `c:src/updater/updater.c:updater_system_run_apply`
-- `c:src/updater/updater.c:updater_system_run_cancel`
-- `c:src/updater/updater.c:updater_system_run_check`
-- `c:src/updater/updater.c:updater_system_run_fetch`
-- `c:src/updater/updater.c:updater_system_run_verify`
-- `c:src/updater/updater.c:updater_verify_selected`
 - `c:src/wm/wm.c:draw_buttons_left`
 - `c:src/wm/wm.c:draw_buttons_right`
 - `c:src/wm/wm.c:str_len`

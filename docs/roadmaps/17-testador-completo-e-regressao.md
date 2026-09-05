@@ -29,11 +29,28 @@ relatórios RTC/Shell, da fixture host-only do Updater, da fixture host-only do
 File Manager, da fixture host-only do Task Manager e da validação de
 resultados do Shell Checks, da expansão do ciclo de vida do Task Manager e dos
 caminhos negativos de finalização do Shell Checks, registra 7.326 superfícies,
-6.987 `COVERED` e 339 `PENDING`.
+7.049 `COVERED` e 277 `PENDING`.
 O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
 Isso não significa declarar hardware físico validado sem equipamento.
+
+### Incremento UI/Updater: ciclo de vida e operações host-only — 2026-09-05
+
+- [x] A fixture `host:ui:updater` passou a exercitar o ciclo de vida Simple e
+      Classic, desenho de abas e estados, callbacks hospedados, teclado, mouse,
+      refreshes, preflight, operações locais e worker remoto em passo único.
+- [x] Foram usados doubles estáticos para filesystem, serviços de update,
+      recovery, processo, WM, desktop, vídeo e GUI. As operações retornam
+      erros canônicos controlados e não acessam disco, rede ou hardware reais.
+- [x] `make test-updater-host
+      HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` passou com
+      `-Wall -Wextra -Werror`; a cobertura dinâmica observou 87 funções reais
+      de `src/updater/updater.c`, sem endereços desconhecidos ou símbolos
+      ambíguos. A sincronização/renderização, `make catalog-test` e
+      `git diff --check` também passaram. O catálogo registra 7.326
+      superfícies, 7.049 `COVERED` e 277 `PENDING`; as demais pendências
+      continuam explícitas.
 
 ### Incremento Task Manager: cobertura host-only completa — 2026-09-05
 

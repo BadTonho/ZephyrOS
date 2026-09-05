@@ -180,6 +180,10 @@ static uint32_t updater_remote_progress_bytes = 0U;
 static update_remote_state_t updater_remote_progress_state =
     UPDATE_REMOTE_STATE_DISABLED;
 static process_t* updater_remote_worker_process;
+#ifdef ZEPHYROS_HOST_TEST
+static uint8_t updater_host_worker_once;
+extern void updater_host_fixture_set_desktop_mode(int mode);
+#endif
 
 static void updater_hosted_draw(int x, int y, int width, int height);
 static void updater_hosted_key(uint8_t scancode);
@@ -973,6 +977,9 @@ static void updater_remote_worker_main(void) {
         updater_refresh_component();
         updater_draw();
         process_yield();
+#ifdef ZEPHYROS_HOST_TEST
+        if (updater_host_worker_once) break;
+#endif
     }
 }
 
@@ -2769,6 +2776,192 @@ int updater_host_test_contracts(void) {
     updater_system_tag_editing = 1U;
     updater_system_tag_key(0x01U);
     if (updater_system_tag_editing != 0U) failures++;
+
+    updater_host_worker_once = 0U;
+    updater_hosted = 0;
+    updater_active = 0;
+    updater_host_fixture_set_desktop_mode(DESKTOP_MODE_SIMPLE);
+    if (updater_init() != OK || !updater_initialized) failures++;
+    updater_active = 1;
+    updater_mode = UPDATER_MODE_SIMPLE;
+    for (int index = 0; index < UPDATER_SIMPLE_TAB_COUNT; index++) {
+        updater_tab = (updater_tab_t)index;
+        updater_draw_simple();
+    }
+    updater_confirm = UPDATER_CONFIRM_REMOTE_CLEAR;
+    updater_draw_simple();
+    updater_confirm = UPDATER_CONFIRM_NONE;
+    updater_tab = UPDATER_TAB_PACKAGES;
+    updater_handle_key(UPDATER_SCANCODE_F5);
+    updater_handle_key(UPDATER_SCANCODE_UP);
+    updater_handle_key(UPDATER_SCANCODE_DOWN);
+    updater_handle_key(UPDATER_SCANCODE_V);
+    updater_handle_key(UPDATER_SCANCODE_A);
+    updater_handle_key(UPDATER_SCANCODE_B);
+    updater_handle_key(UPDATER_SCANCODE_ESC);
+    if (updater_is_open()) failures++;
+
+    updater_host_fixture_set_desktop_mode(DESKTOP_MODE_CLASSIC);
+    if (updater_open() != OK || !updater_active || !updater_hosted) {
+        failures++;
+    }
+    updater_gui_x = 0;
+    updater_gui_y = 0;
+    updater_gui_width = UPDATER_CLASSIC_DEFAULT_WIDTH;
+    updater_gui_height = UPDATER_CLASSIC_DEFAULT_HEIGHT;
+    for (int index = 0; index < UPDATER_TAB_COUNT; index++) {
+        updater_tab = (updater_tab_t)index;
+        updater_hosted_draw(0, 0, UPDATER_CLASSIC_DEFAULT_WIDTH,
+                            UPDATER_CLASSIC_DEFAULT_HEIGHT);
+    }
+    updater_confirm = UPDATER_CONFIRM_REMOTE_CLEAR;
+    updater_hosted_draw(0, 0, UPDATER_CLASSIC_DEFAULT_WIDTH,
+                        UPDATER_CLASSIC_DEFAULT_HEIGHT);
+    updater_confirm = UPDATER_CONFIRM_NONE;
+    updater_hosted_key(UPDATER_SCANCODE_TAB);
+    {
+        mouse_event_t event;
+
+        kmemset(&event, 0, sizeof(event));
+        if (updater_hosted_mouse(&event, 0, 0,
+                                 UPDATER_CLASSIC_DEFAULT_WIDTH,
+                                 UPDATER_CLASSIC_DEFAULT_HEIGHT) != 1) {
+            failures++;
+        }
+        event.event = MOUSE_EVENT_PRESS;
+        event.changed = MOUSE_BTN_LEFT;
+        event.x = 20;
+        event.y = 20;
+        updater_tab = UPDATER_TAB_PACKAGES;
+        (void)updater_hosted_mouse(&event, 0, 0,
+                                   UPDATER_CLASSIC_DEFAULT_WIDTH,
+                                   UPDATER_CLASSIC_DEFAULT_HEIGHT);
+        event.x = 30;
+        event.y = 520;
+        (void)updater_hosted_mouse(&event, 0, 0,
+                                   UPDATER_CLASSIC_DEFAULT_WIDTH,
+                                   UPDATER_CLASSIC_DEFAULT_HEIGHT);
+        updater_confirm = UPDATER_CONFIRM_REMOTE_CLEAR;
+        event.x = 270;
+        event.y = 300;
+        (void)updater_hosted_mouse(&event, 0, 0,
+                                   UPDATER_CLASSIC_DEFAULT_WIDTH,
+                                   UPDATER_CLASSIC_DEFAULT_HEIGHT);
+    }
+    updater_confirm = UPDATER_CONFIRM_NONE;
+    updater_hosted_close();
+    if (updater_is_open()) failures++;
+
+    updater_active = 1;
+    updater_hosted = 1;
+    updater_mode = UPDATER_MODE_CLASSIC;
+    updater_system_tag_dirty = 0U;
+    updater_system_tag_editing = 0U;
+    updater_system_tag_length = 6U;
+    kmemcpy(updater_system_tag, "stable", 7U);
+    (void)updater_remote_start_job(UPDATER_REMOTE_JOB_NONE, 0);
+    (void)updater_remote_start_job(UPDATER_REMOTE_JOB_CHECK, 0);
+    updater_remote_job = UPDATER_REMOTE_JOB_NONE;
+    updater_remote_job_busy = 0U;
+    updater_remote_run_check(1);
+    updater_remote_confirm_fetch();
+    updater_remote_clear_preflight();
+    updater_remote_confirm_clear();
+    updater_remote_finish_cache_refresh();
+    updater_remote_toggle();
+    updater_runtime_run_check(1);
+    updater_runtime_confirm_fetch();
+    updater_runtime_clear_preflight();
+    updater_runtime_confirm_action(0);
+    updater_runtime_confirm_action(1);
+    updater_runtime_start_job(0);
+    updater_remote_job = UPDATER_REMOTE_JOB_NONE;
+    updater_remote_job_busy = 0U;
+    updater_system_run_check(1);
+    updater_system_run_fetch();
+    updater_host_fixture_set_cached_path(OK, "ZSYS.ZSY");
+    updater_system_run_verify();
+    updater_system_run_apply(1);
+    updater_system_run_apply(0);
+    updater_system_run_cancel(1);
+    updater_system_run_cancel(0);
+    updater_system_action(UPDATER_SCANCODE_T);
+    updater_system_action(UPDATER_SCANCODE_C);
+    updater_remote_job = UPDATER_REMOTE_JOB_NONE;
+    updater_remote_job_busy = 0U;
+    updater_system_action(UPDATER_SCANCODE_D);
+    updater_remote_job = UPDATER_REMOTE_JOB_NONE;
+    updater_remote_job_busy = 0U;
+    updater_system_action(UPDATER_SCANCODE_V);
+    updater_remote_job = UPDATER_REMOTE_JOB_NONE;
+    updater_remote_job_busy = 0U;
+    updater_system_action(UPDATER_SCANCODE_A);
+    updater_remote_job = UPDATER_REMOTE_JOB_NONE;
+    updater_remote_job_busy = 0U;
+    updater_system_action(UPDATER_SCANCODE_X);
+    updater_remote_job = UPDATER_REMOTE_JOB_NONE;
+    updater_remote_job_busy = 0U;
+    updater_system_action(UPDATER_SCANCODE_R);
+
+    updater_remote_job = UPDATER_REMOTE_JOB_CHECK;
+    updater_remote_job_confirm = 0U;
+    updater_remote_job_busy = 1U;
+    updater_host_worker_once = 1U;
+    updater_remote_worker_main();
+    updater_host_worker_once = 0U;
+    updater_remote_job = UPDATER_REMOTE_JOB_NONE;
+    updater_remote_job_busy = 0U;
+
+    updater_confirm = UPDATER_CONFIRM_APPLY;
+    updater_confirm_action();
+    updater_confirm = UPDATER_CONFIRM_ROLLBACK;
+    updater_confirm_action();
+    updater_confirm = UPDATER_CONFIRM_REMOTE_FETCH;
+    updater_confirm_action();
+    updater_remote_job = UPDATER_REMOTE_JOB_NONE;
+    updater_remote_job_busy = 0U;
+    updater_confirm = UPDATER_CONFIRM_RUNTIME_FETCH_SELECTIVE;
+    updater_confirm_action();
+    updater_remote_job = UPDATER_REMOTE_JOB_NONE;
+    updater_remote_job_busy = 0U;
+    updater_confirm = UPDATER_CONFIRM_RUNTIME_FETCH_FULL;
+    updater_confirm_action();
+    updater_remote_job = UPDATER_REMOTE_JOB_NONE;
+    updater_remote_job_busy = 0U;
+    updater_confirm = UPDATER_CONFIRM_RUNTIME_APPLY;
+    updater_confirm_action();
+    updater_confirm = UPDATER_CONFIRM_RUNTIME_ROLLBACK;
+    updater_confirm_action();
+    updater_confirm = UPDATER_CONFIRM_RUNTIME_CLEAR;
+    updater_confirm_action();
+    updater_confirm = UPDATER_CONFIRM_SYSTEM_FETCH;
+    updater_confirm_action();
+    updater_remote_job = UPDATER_REMOTE_JOB_NONE;
+    updater_remote_job_busy = 0U;
+    updater_confirm = UPDATER_CONFIRM_SYSTEM_APPLY;
+    updater_confirm_action();
+    updater_remote_job = UPDATER_REMOTE_JOB_NONE;
+    updater_remote_job_busy = 0U;
+    updater_confirm = UPDATER_CONFIRM_SYSTEM_CANCEL;
+    updater_confirm_action();
+    updater_remote_job = UPDATER_REMOTE_JOB_NONE;
+    updater_remote_job_busy = 0U;
+    updater_confirm = UPDATER_CONFIRM_SYSTEM_REBOOT_OFFER;
+    updater_confirm_action();
+    updater_confirm = UPDATER_CONFIRM_SYSTEM_REBOOT_FINAL;
+    updater_confirm_action();
+    if (updater_get_mode() != UPDATER_MODE_CLASSIC) failures++;
+    updater_remote_job_running = UPDATER_REMOTE_JOB_RUNTIME_CHECK;
+    updater_host_fixture_clear_message();
+    if (updater_remote_job_cancel_check(0) != 0) failures++;
+    updater_remote_cancel_requested = 1U;
+    if (updater_remote_job_cancel_check(0) != 1) failures++;
+    updater_remote_cancel_requested = 0U;
+    updater_remote_job_running = UPDATER_REMOTE_JOB_NONE;
+    updater_runtime_preflight_apply();
+    updater_runtime_preflight_rollback();
+    updater_active = 0;
+    updater_hosted = 0;
 
     return failures;
 }
