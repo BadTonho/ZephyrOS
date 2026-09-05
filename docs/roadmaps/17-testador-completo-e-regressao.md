@@ -23,7 +23,7 @@ mantém 158 casos `AUTOMATED`; após os incrementos de Shell, RTC,
 processos/threads, FAT32, update U3/U4, os contratos remotos ZSYS e o
 repositório remoto de aplicativos, dos helpers de pacotes do Shell, da
 interface App Store e dos relatórios de rede do Shell, registra 7.307
-superfícies, 6.428 `COVERED` e 879
+superfícies, 6.429 `COVERED` e 878
 `PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
@@ -76,6 +76,19 @@ Isso não significa declarar hardware físico validado sem equipamento.
       renderização e `make catalog-test`. O catálogo registra 7.307
       superfícies, 6.428 `COVERED`, 879 `PENDING` e 158 casos; as pendências
       restantes continuam explícitas.
+
+### Incremento Shell/diagnostics summary — 2026-09-05
+
+- [x] A fixture host-only existente `host:shell:diagnostics` passou a
+      exercitar o formatador de resumo de um componente em estado
+      `DEGRADED`, incluindo código de erro e contador de falhas.
+- [x] O resultado foi verificado pela saída observável do comando `health
+      summary`, sem acessar hardware, jobs assíncronos ou armazenamento real.
+- [x] `make test-shell-diagnostics-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
+      passou com cobertura dinâmica. A evidência resolveu a última superfície
+      pendente de `src/shell/shell_commands_diagnostics.c`; não houve endereços
+      desconhecidos ou símbolos ambíguos. O catálogo registra 7.307
+      superfícies, 6.429 `COVERED`, 878 `PENDING` e 158 casos.
 
 ### Incremento Shell/UI App Store — 2026-09-05
 
