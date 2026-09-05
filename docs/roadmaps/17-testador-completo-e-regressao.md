@@ -2602,3 +2602,14 @@ pendente.
 - [x] O alvo específico passou e a sincronização da evidência dinâmica elevou
       o catálogo para 7.293 superfícies, com 6.267 `COVERED` e 1.026 `PENDING`;
       o gate de catálogo passou e as pendências restantes continuam explícitas.
+
+### Incremento Shell/diagnostics sysfs — 2026-09-04
+
+- [x] `devices -v` e `device-info` foram exercitados pelo caminho real de
+      atributos sysfs usando a fixture VFS estática, incluindo vendor, device e
+      class e a validação de fechamento dos handles.
+- [x] O alvo específico passou e a sincronização da evidência dinâmica cobriu
+      `cmd_sysfs_print_device` e `cmd_sysfs_read_snapshot`; o catálogo ficou
+      com 7.293 superfícies, sendo 6.269 `COVERED` e 1.024 `PENDING`.
+- [x] As pendências restantes continuam explícitas e não foram associadas por
+      pertencerem apenas ao mesmo arquivo.

@@ -3229,6 +3229,34 @@ static int test_devices_and_usb(void) {
     failures += expect_text("Uso: device-info <id>\n");
 
     fixture_reset();
+    fixture_vfs_sysfs_enabled = 1U;
+    shell_dispatch_cmd_devices("-v");
+    failures += expect_contains("Dispositivos detectados:\n");
+    failures += expect_contains("sysfs=OK");
+    failures += expect_contains("    sysfs:\n");
+    failures += expect_contains("vendor 0x1234\n");
+    failures += expect_contains("device 0x5678\n");
+    failures += expect_contains("class network\n");
+    if (fixture_vfs_open_calls != fixture_vfs_close_calls) {
+        fprintf(stderr, "diagnostics-host: devices deixou arquivo sysfs aberto\n");
+        failures++;
+    }
+
+    fixture_reset();
+    fixture_vfs_sysfs_enabled = 1U;
+    shell_dispatch_cmd_device_info("pci-00:03.0");
+    failures += expect_contains("Dispositivo (sysfs):\n");
+    failures += expect_contains("Caminho: /sys/bus/pci/devices/00:03.0\n");
+    failures += expect_contains("Atributos:\n");
+    failures += expect_contains("vendor 0x1234\n");
+    failures += expect_contains("device 0x5678\n");
+    failures += expect_contains("class network\n");
+    if (fixture_vfs_open_calls != fixture_vfs_close_calls) {
+        fprintf(stderr, "diagnostics-host: device-info deixou arquivo sysfs aberto\n");
+        failures++;
+    }
+
+    fixture_reset();
     shell_dispatch_cmd_usb("status");
     failures += expect_contains("USB:\n  Servico: READY");
     failures += expect_contains("Controladores: 1");
