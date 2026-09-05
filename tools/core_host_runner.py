@@ -998,6 +998,7 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
                  ROOT / "src" / "shell" / "shell_commands_diagnostics.c",
                  ROOT / "src" / "shell" / "shell_diagnostics_helpers.c",
                  ROOT / "src" / "shell" / "shell_command_utils.c",
+                 ROOT / "src" / "shell" / "shell_introspection.c",
                  ROOT / "src" / "core" / "string.c"),
                 "shell-diagnostics-host")
     if case_id == "host:shell:introspection":

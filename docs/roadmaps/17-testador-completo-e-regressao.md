@@ -2591,3 +2591,14 @@ pendente.
 - [x] `make q3check`, build limpo, matriz host-only completa, sincronização do
       catálogo e `make catalog-test` passaram; o catálogo ficou com 7.293
       superfícies, sendo 6.259 `COVERED` e 1.034 `PENDING`.
+
+### Incremento Shell/diagnostics proccheck — 2026-09-04
+
+- [x] A fixture host-only `host:shell:diagnostics` foi ampliada para chamar o
+      dispatcher real de `proccheck` e o `shell_introspection.c` real.
+- [x] Foram exercitados `/proc`, `/sys`, atributos de dispositivos, processos,
+      leitura por cursor, EOF, controles de log, permissões, caminhos ausentes
+      e escrita somente leitura em um VFS estático, sem estado persistente.
+- [x] O alvo específico passou e a sincronização da evidência dinâmica elevou
+      o catálogo para 7.293 superfícies, com 6.267 `COVERED` e 1.026 `PENDING`;
+      o gate de catálogo passou e as pendências restantes continuam explícitas.

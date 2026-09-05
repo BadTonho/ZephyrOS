@@ -5823,3 +5823,14 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `git diff --check` passaram. O catálogo ficou com 7.293 superfícies, sendo
   6.259 `COVERED` e 1.034 `PENDING`, e 154 casos; as pendências restantes não
   foram mascaradas.
+
+- Incremento Shell/diagnostics proccheck — concluído em 2026-09-04
+  (America/Sao_Paulo). A fixture host-only `host:shell:diagnostics` passou a
+  chamar o dispatcher real de `proccheck` junto com o `shell_introspection.c`
+  real. O VFS estático cobriu `/proc`, `/sys`, atributos de dispositivos,
+  processos, leitura por cursor, EOF, controles de log, permissões, caminhos
+  ausentes e tentativas de escrita somente leitura, sem armazenamento ou
+  processos reais. Passaram `make test-shell-diagnostics-host` com `HOST_CC`,
+  sincronização/renderização do catálogo, `make catalog-test` e
+  `git diff --check`; o catálogo ficou com 7.293 superfícies, sendo 6.267
+  `COVERED` e 1.026 `PENDING`. As pendências restantes continuam explícitas.
