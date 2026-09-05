@@ -6464,7 +6464,7 @@
       "include_public_apis": false,
       "case_definition": {
         "id": "host:ui:settings-icons",
-        "scenario": "Contratos deterministas do editor de icones das configuracoes",
+        "scenario": "Contratos deterministas do modulo de configuracoes",
         "owner": "quality",
         "layer": "host",
         "executor": "host",
@@ -6478,10 +6478,10 @@
           "warnings": "error"
         },
         "preconditions": "compilador C nativo e nm disponiveis",
-        "action": "exercitar editor de icones simples e desenho hospedado da GUI com entradas estaticas",
-        "expected": "valores, selecao, navegacao e estados de encerramento preservam o contrato observavel",
+        "action": "exercitar inicializacao, modos TUI/GUI, preferencias, dialogos, mouse, storage e editor de icones com entradas estaticas",
+        "expected": "estado, valores, selecao, navegacao, dialogos e encerramento preservam o contrato observavel",
         "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
-        "effects": "somente buffers estaticos, estado do editor e doubles de video/GUI no processo host",
+        "effects": "somente estado de configuracoes, buffers estaticos e doubles de video/GUI no processo host",
         "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
         "surface_ids": [],
         "tags": [
@@ -6494,7 +6494,7 @@
         ],
         "status": "AUTOMATED"
       },
-      "evidence": "make test-settings-icons-host PASS com selecao, navegacao, limites de valores e desenho TUI/GUI instrumentados"
+      "evidence": "make test-settings-icons-host PASS com 56 funcoes de settings.c observadas, incluindo inicializacao, modos, preferencias, dialogos, mouse, storage e editor TUI/GUI"
     },
     {
       "id": "assembly-qemu-tst7-dynamic",

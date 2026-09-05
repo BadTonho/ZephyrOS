@@ -22,8 +22,8 @@ mas o programa de cobertura integral ainda não está concluído. O catálogo
 mantém 160 casos `AUTOMATED`; após os incrementos de Shell, RTC,
 processos/threads, FAT32, update U3/U4, os contratos remotos ZSYS e o
 repositório remoto de aplicativos, dos helpers de pacotes do Shell, da
-interface App Store, dos relatórios de rede do Shell e do editor de ícones,
-registra 7.308 superfícies, 6.489 `COVERED` e 819
+interface App Store, dos relatórios de rede do Shell e do módulo de
+Configurações, registra 7.309 superfícies, 6.516 `COVERED` e 793
 `PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
@@ -153,12 +153,15 @@ Isso não significa declarar hardware físico validado sem equipamento.
 - [x] O caso validou abertura e rejeição de entradas inválidas, seleção,
       navegação entre itens e campos, limites de caractere/cor, encerramento e
       desenho TUI/GUI do editor de ícones.
+- [x] A mesma fixture passou a exercitar inicialização, modos TUI/Classic,
+      preferências de display/taskbar/janelas/mouse, diálogos, ações de sistema
+      e ícones, mouse, storage disponível/indisponível e cleanup hospedado.
 - [x] `make test-settings-icons-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`
       passou com warnings tratados como erro e cobertura dinâmica sem símbolos
-      ambíguos. A evidência resolveu oito superfícies que estavam pendentes em
-      `src/settings/settings.c`; o catálogo registra 7.308 superfícies,
-      6.489 `COVERED`, 819 `PENDING`, 59 aposentadas e 160 casos. As demais
-      rotas de Configurações continuam explícitas para próximos subblocos.
+      ambíguos. A evidência observou as 56 funções de
+      `src/settings/settings.c`; o catálogo registra 7.309 superfícies,
+      6.516 `COVERED`, 793 `PENDING`, 59 aposentadas e 160 casos. As demais
+      pendências de software continuam explícitas para próximos subblocos.
 
 ### Incremento Shell/UI App Store — 2026-09-05
 

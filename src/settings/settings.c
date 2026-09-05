@@ -1622,4 +1622,127 @@ int settings_host_test_icon_editor(void) {
 
     return failures;
 }
+
+int settings_host_test_contracts(void) {
+    static process_t process_fixture = {0};
+    mouse_event_t event = {0};
+    int failures = 0;
+
+    settings_host_fixture_simple();
+    settings_hosted = 0;
+    settings_active = 0;
+    settings_mode = SETTINGS_MODE_SIMPLE;
+    settings_init();
+    if (settings_is_open() || settings_get_mode() != SETTINGS_MODE_SIMPLE) {
+        failures++;
+    }
+    settings_open();
+    if (!settings_is_open()) failures++;
+    settings_handle_key(0x0FU);
+    settings_handle_key(0x1CU);
+    settings_handle_key(0x4DU);
+    settings_handle_key(0x4BU);
+    settings_handle_key(0x01U);
+    event.event = MOUSE_EVENT_MOVE;
+    event.changed = 0U;
+    if (settings_handle_mouse(0) != 0) failures++;
+    if (settings_handle_mouse(&event) != 1) failures++;
+    settings_close();
+    if (settings_is_open()) failures++;
+
+    settings_dialog = SETTINGS_DIALOG_SYSTEM_INFO;
+    execute_system_action(0);
+    execute_system_action(1);
+    execute_system_action(2);
+    execute_about_action(0);
+    execute_about_action(1);
+
+    settings_host_fixture_classic();
+    settings_hosted = 0;
+    settings_active = 0;
+    settings_mode = SETTINGS_MODE_SIMPLE;
+    settings_open();
+    if (!settings_is_open() || !settings_hosted ||
+        settings_get_mode() != SETTINGS_MODE_CLASSIC) {
+        failures++;
+    }
+    settings_mode = SETTINGS_MODE_CLASSIC;
+    settings_active = 1;
+    settings_gui_x = 4;
+    settings_gui_y = 6;
+    settings_gui_width = SETTINGS_CLASSIC_DEFAULT_WIDTH;
+    settings_gui_height = SETTINGS_CLASSIC_DEFAULT_HEIGHT;
+    settings_update_taskbar_position_options();
+    settings_update_window_order_values();
+    settings_apply_category();
+    selected_category = SETTINGS_CAT_TASKBAR;
+    selected_option = 0;
+    settings_apply_category();
+    selected_category = SETTINGS_CAT_WINDOWS;
+    selected_option = 0;
+    settings_apply_category();
+    selected_category = SETTINGS_CAT_MOUSE;
+    for (selected_option = 0; selected_option < 3; selected_option++) {
+        settings_apply_category();
+    }
+    selected_category = SETTINGS_CAT_DISPLAY;
+    selected_option = 0;
+    settings_apply_category();
+    settings_select_mode();
+    settings_classic_layout();
+
+    settings_draw_classic_main();
+    settings_host_fixture_storage();
+    selected_category = SETTINGS_CAT_STORAGE;
+    settings_draw_classic_main();
+    process_fixture.pid = 7U;
+    process_fixture.state = PROCESS_STATE_RUNNING;
+    process_fixture.name[0] = 'T';
+    process_fixture.name[1] = 'e';
+    process_fixture.name[2] = 's';
+    process_fixture.name[3] = 't';
+    process_fixture.name[4] = '\0';
+    processes[0] = &process_fixture;
+    for (int dialog = SETTINGS_DIALOG_SYSTEM_INFO;
+         dialog <= SETTINGS_DIALOG_CREDITS; dialog++) {
+        settings_dialog = (settings_dialog_t)dialog;
+        settings_draw_classic_dialog();
+    }
+    settings_dialog = SETTINGS_DIALOG_NONE;
+    settings_clear_overlay();
+    settings_classic_draw();
+    settings_hosted_draw(10, 12, SETTINGS_CLASSIC_DEFAULT_WIDTH,
+                         SETTINGS_CLASSIC_DEFAULT_HEIGHT);
+    settings_hosted_key(0x80U);
+    settings_hosted_mouse(&event, 10, 12, SETTINGS_CLASSIC_DEFAULT_WIDTH,
+                          SETTINGS_CLASSIC_DEFAULT_HEIGHT);
+    settings_hosted_close();
+    processes[0] = 0;
+
+    selected_category = SETTINGS_CAT_ICONS;
+    for (selected_option = 0; selected_option < 4; selected_option++) {
+        settings_execute_selected_action();
+        settings_clear_overlay();
+    }
+    selected_category = SETTINGS_CAT_SYSTEM;
+    for (selected_option = 0; selected_option < 3; selected_option++) {
+        settings_execute_selected_action();
+    }
+    selected_category = SETTINGS_CAT_ABOUT;
+    for (selected_option = 0; selected_option < 2; selected_option++) {
+        settings_execute_selected_action();
+        settings_dialog = SETTINGS_DIALOG_NONE;
+    }
+    settings_dialog = SETTINGS_DIALOG_SYSTEM_INFO;
+    settings_gui_handle_dialog_mouse(settings_gui_x + settings_gui_width - 8,
+                                     settings_gui_y + 8);
+    settings_dialog = SETTINGS_DIALOG_NONE;
+    settings_gui_handle_icon_mouse(settings_gui_x + settings_gui_width - 8,
+                                   settings_gui_y + settings_gui_height - 8);
+    settings_handle_mouse(&event);
+
+    settings_hosted = 0;
+    settings_active = 0;
+    return failures;
+}
 #endif

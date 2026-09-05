@@ -6026,13 +6026,13 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   819 `PENDING`, 59 aposentadas e 160 casos; as pendências restantes continuam
   explícitas.
 
-- Incremento Shell/UI — editor de ícones das Configurações concluído em
-  2026-09-05 (America/Sao_Paulo). A fixture `host:ui:settings-icons` usou
-  entradas estáticas e doubles de vídeo/GUI para exercitar abertura válida e
-  inválida, seleção, navegação, limites de caractere/cor, encerramento e
-  desenho TUI/GUI. Passou `make test-settings-icons-host
+- Incremento Shell/UI — contratos de Configurações concluído em 2026-09-05
+  (America/Sao_Paulo). A fixture `host:ui:settings-icons` usou entradas
+  estáticas e doubles de vídeo/GUI para exercitar inicialização, modos
+  TUI/Classic, preferências, diálogos, ações, mouse, storage, editor de ícones
+  e cleanup hospedado. Passou `make test-settings-icons-host
   HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`; a compilação usou `-Wall
-  -Wextra -Werror` e a cobertura terminou sem endereços desconhecidos ou
-  símbolos ambíguos. O catálogo registra 7.308 superfícies, 6.489 `COVERED`,
-  819 `PENDING`, 59 aposentadas e 160 casos; as pendências restantes continuam
-  explícitas.
+  -Wextra -Werror` e a cobertura observou 56 funções de `settings.c`, sem
+  endereços desconhecidos ou símbolos ambíguos. O catálogo registra 7.309
+  superfícies, 6.516 `COVERED`, 793 `PENDING`, 59 aposentadas e 160 casos; as
+  pendências restantes continuam explícitas.
