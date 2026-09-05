@@ -6089,3 +6089,18 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   ambíguos. O catálogo registra 7.314 superfícies, 6.706 `COVERED`, 608
   `PENDING`, 59 aposentadas e 161 casos; as pendências de outros subsistemas
   continuam explícitas.
+
+- Incremento Shell/pacotes e atualizações — concluído em 2026-09-05
+  (America/Sao_Paulo). A fixture `host:shell:commands-packages` foi ampliada
+  para exercitar os comandos de pacotes, App Store e atualização, incluindo
+  formatadores, preflight, histórico, diagnósticos, rollback, failpoints,
+  jobs cooperativos, dispatchers e caminhos inválidos. Doubles estáticos
+  substituíram catálogo, pacotes, repositório remoto, recovery, filesystem,
+  IPC, teclado e serviços de atualização, sem rede, disco, hardware ou
+  allocator reais. Passou `make test-shell-commands-packages-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` com `-Wall -Wextra -Werror`.
+  A cobertura dinâmica observou as 96 funções C de
+  `src/shell/shell_commands_packages.c`, sem endereços desconhecidos ou
+  símbolos ambíguos. Catálogo e visão renderizada passaram; o catálogo
+  registra 7.314 superfícies, 6.794 `COVERED`, 520 `PENDING`, 59 aposentadas
+  e 161 casos.

@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6706 |
+| `COVERED` | 6794 |
 | `MANUAL` | 0 |
-| `PENDING` | 608 |
+| `PENDING` | 520 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -6653,102 +6653,102 @@
 | `c:src/shell/shell_commands_network.c:shell_selecttest_join_worker` | `src/shell/shell_commands_network.c` | `shell_selecttest_join_worker` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:shell_selecttest_no_waiters` | `src/shell/shell_commands_network.c` | `shell_selecttest_no_waiters` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:shell_selecttest_open_socket` | `src/shell/shell_commands_network.c` | `shell_selecttest_open_socket` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_packages.c:cmd_pkg` | `src/shell/shell_commands_packages.c` | `cmd_pkg` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_packages.c:cmd_pkg` | `src/shell/shell_commands_packages.c` | `cmd_pkg` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_packages.c:cmd_pkg_has_trailing_token` | `src/shell/shell_commands_packages.c` | `cmd_pkg_has_trailing_token` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_packages.c:cmd_pkg_info` | `src/shell/shell_commands_packages.c` | `cmd_pkg_info` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_pkg_install` | `src/shell/shell_commands_packages.c` | `cmd_pkg_install` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_packages.c:cmd_pkg_info` | `src/shell/shell_commands_packages.c` | `cmd_pkg_info` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_pkg_install` | `src/shell/shell_commands_packages.c` | `cmd_pkg_install` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_packages.c:cmd_pkg_is_file_name` | `src/shell/shell_commands_packages.c` | `cmd_pkg_is_file_name` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_packages.c:cmd_pkg_list` | `src/shell/shell_commands_packages.c` | `cmd_pkg_list` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_pkg_print_info` | `src/shell/shell_commands_packages.c` | `cmd_pkg_print_info` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_pkg_print_usage` | `src/shell/shell_commands_packages.c` | `cmd_pkg_print_usage` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_pkg_remove` | `src/shell/shell_commands_packages.c` | `cmd_pkg_remove` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_packages.c:cmd_pkg_list` | `src/shell/shell_commands_packages.c` | `cmd_pkg_list` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_pkg_print_info` | `src/shell/shell_commands_packages.c` | `cmd_pkg_print_info` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_pkg_print_usage` | `src/shell/shell_commands_packages.c` | `cmd_pkg_print_usage` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_pkg_remove` | `src/shell/shell_commands_packages.c` | `cmd_pkg_remove` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_packages.c:cmd_pkg_take_token` | `src/shell/shell_commands_packages.c` | `cmd_pkg_take_token` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_commands_packages.c:cmd_pkg_uppercase_id` | `src/shell/shell_commands_packages.c` | `cmd_pkg_uppercase_id` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_packages.c:cmd_pkg_verify` | `src/shell/shell_commands_packages.c` | `cmd_pkg_verify` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_pkgcheck` | `src/shell/shell_commands_packages.c` | `cmd_pkgcheck` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store` | `src/shell/shell_commands_packages.c` | `cmd_store` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store_build_plan` | `src/shell/shell_commands_packages.c` | `cmd_store_build_plan` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store_find_action_entry` | `src/shell/shell_commands_packages.c` | `cmd_store_find_action_entry` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store_history` | `src/shell/shell_commands_packages.c` | `cmd_store_history` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store_info` | `src/shell/shell_commands_packages.c` | `cmd_store_info` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store_install` | `src/shell/shell_commands_packages.c` | `cmd_store_install` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store_list` | `src/shell/shell_commands_packages.c` | `cmd_store_list` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store_print_action_blockers` | `src/shell/shell_commands_packages.c` | `cmd_store_print_action_blockers` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store_print_action_result` | `src/shell/shell_commands_packages.c` | `cmd_store_print_action_result` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store_print_capabilities` | `src/shell/shell_commands_packages.c` | `cmd_store_print_capabilities` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store_print_dependencies` | `src/shell/shell_commands_packages.c` | `cmd_store_print_dependencies` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store_print_failed_transaction` | `src/shell/shell_commands_packages.c` | `cmd_store_print_failed_transaction` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store_print_list_entry` | `src/shell/shell_commands_packages.c` | `cmd_store_print_list_entry` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store_print_plan` | `src/shell/shell_commands_packages.c` | `cmd_store_print_plan` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store_print_usage` | `src/shell/shell_commands_packages.c` | `cmd_store_print_usage` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store_refresh_after_mutation` | `src/shell/shell_commands_packages.c` | `cmd_store_refresh_after_mutation` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store_remote` | `src/shell/shell_commands_packages.c` | `cmd_store_remote` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store_remote_control` | `src/shell/shell_commands_packages.c` | `cmd_store_remote_control` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store_remote_info` | `src/shell/shell_commands_packages.c` | `cmd_store_remote_info` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store_remote_list` | `src/shell/shell_commands_packages.c` | `cmd_store_remote_list` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store_remote_options` | `src/shell/shell_commands_packages.c` | `cmd_store_remote_options` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store_remote_print_entry` | `src/shell/shell_commands_packages.c` | `cmd_store_remote_print_entry` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store_remote_print_result` | `src/shell/shell_commands_packages.c` | `cmd_store_remote_print_result` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store_remote_status` | `src/shell/shell_commands_packages.c` | `cmd_store_remote_status` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store_remove` | `src/shell/shell_commands_packages.c` | `cmd_store_remove` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store_rollback` | `src/shell/shell_commands_packages.c` | `cmd_store_rollback` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store_run` | `src/shell/shell_commands_packages.c` | `cmd_store_run` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store_set_local_failure` | `src/shell/shell_commands_packages.c` | `cmd_store_set_local_failure` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store_status` | `src/shell/shell_commands_packages.c` | `cmd_store_status` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store_test_fail_after` | `src/shell/shell_commands_packages.c` | `cmd_store_test_fail_after` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_store_update` | `src/shell/shell_commands_packages.c` | `cmd_store_update` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update` | `src/shell/shell_commands_packages.c` | `cmd_update` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_apply` | `src/shell/shell_commands_packages.c` | `cmd_update_apply` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_cancel_check` | `src/shell/shell_commands_packages.c` | `cmd_update_cancel_check` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_fetch` | `src/shell/shell_commands_packages.c` | `cmd_update_fetch` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_github` | `src/shell/shell_commands_packages.c` | `cmd_update_github` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_history` | `src/shell/shell_commands_packages.c` | `cmd_update_history` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_print_action` | `src/shell/shell_commands_packages.c` | `cmd_update_print_action` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_print_capability` | `src/shell/shell_commands_packages.c` | `cmd_update_print_capability` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_print_hash` | `src/shell/shell_commands_packages.c` | `cmd_update_print_hash` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_print_history_entry` | `src/shell/shell_commands_packages.c` | `cmd_update_print_history_entry` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_print_release_result` | `src/shell/shell_commands_packages.c` | `cmd_update_print_release_result` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_print_remote_candidate` | `src/shell/shell_commands_packages.c` | `cmd_update_print_remote_candidate` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_print_runtime_result` | `src/shell/shell_commands_packages.c` | `cmd_update_print_runtime_result` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_print_version` | `src/shell/shell_commands_packages.c` | `cmd_update_print_version` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_print_version_inline` | `src/shell/shell_commands_packages.c` | `cmd_update_print_version_inline` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_refresh_component` | `src/shell/shell_commands_packages.c` | `cmd_update_refresh_component` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_remote_control` | `src/shell/shell_commands_packages.c` | `cmd_update_remote_control` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_remote_status` | `src/shell/shell_commands_packages.c` | `cmd_update_remote_status` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_rollback` | `src/shell/shell_commands_packages.c` | `cmd_update_rollback` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_runtime` | `src/shell/shell_commands_packages.c` | `cmd_update_runtime` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_runtime_action` | `src/shell/shell_commands_packages.c` | `cmd_update_runtime_action` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_runtime_check` | `src/shell/shell_commands_packages.c` | `cmd_update_runtime_check` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_runtime_clear` | `src/shell/shell_commands_packages.c` | `cmd_update_runtime_clear` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_runtime_fetch` | `src/shell/shell_commands_packages.c` | `cmd_update_runtime_fetch` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_runtime_status` | `src/shell/shell_commands_packages.c` | `cmd_update_runtime_status` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_runtime_test_fail_after` | `src/shell/shell_commands_packages.c` | `cmd_update_runtime_test_fail_after` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_runtime_verify` | `src/shell/shell_commands_packages.c` | `cmd_update_runtime_verify` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_status` | `src/shell/shell_commands_packages.c` | `cmd_update_status` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_system` | `src/shell/shell_commands_packages.c` | `cmd_update_system` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_system_apply` | `src/shell/shell_commands_packages.c` | `cmd_update_system_apply` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_system_cancel` | `src/shell/shell_commands_packages.c` | `cmd_update_system_cancel` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_system_check` | `src/shell/shell_commands_packages.c` | `cmd_update_system_check` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_system_fetch` | `src/shell/shell_commands_packages.c` | `cmd_update_system_fetch` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_system_print_result` | `src/shell/shell_commands_packages.c` | `cmd_update_system_print_result` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_system_slots` | `src/shell/shell_commands_packages.c` | `cmd_update_system_slots` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_system_slots_print_slot` | `src/shell/shell_commands_packages.c` | `cmd_update_system_slots_print_slot` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_system_stage` | `src/shell/shell_commands_packages.c` | `cmd_update_system_stage` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_system_status` | `src/shell/shell_commands_packages.c` | `cmd_update_system_status` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_system_verify` | `src/shell/shell_commands_packages.c` | `cmd_update_system_verify` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_test_fail_after` | `src/shell/shell_commands_packages.c` | `cmd_update_test_fail_after` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:cmd_update_verify` | `src/shell/shell_commands_packages.c` | `cmd_update_verify` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:shell_dispatch_cmd_pkg` | `src/shell/shell_commands_packages.c` | `shell_dispatch_cmd_pkg` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:shell_dispatch_cmd_pkgcheck` | `src/shell/shell_commands_packages.c` | `shell_dispatch_cmd_pkgcheck` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:shell_dispatch_cmd_store` | `src/shell/shell_commands_packages.c` | `shell_dispatch_cmd_store` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:shell_dispatch_cmd_update` | `src/shell/shell_commands_packages.c` | `shell_dispatch_cmd_update` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_packages.c:shell_packages_host_test_contracts` | `src/shell/shell_commands_packages.c` | `shell_packages_host_test_contracts` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:shell_packages_job_cancel` | `src/shell/shell_commands_packages.c` | `shell_packages_job_cancel` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:shell_packages_job_drain` | `src/shell/shell_commands_packages.c` | `shell_packages_job_drain` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:shell_packages_job_finish` | `src/shell/shell_commands_packages.c` | `shell_packages_job_finish` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_packages.c:shell_packages_job_step` | `src/shell/shell_commands_packages.c` | `shell_packages_job_step` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_packages.c:cmd_pkg_verify` | `src/shell/shell_commands_packages.c` | `cmd_pkg_verify` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_pkgcheck` | `src/shell/shell_commands_packages.c` | `cmd_pkgcheck` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store` | `src/shell/shell_commands_packages.c` | `cmd_store` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store_build_plan` | `src/shell/shell_commands_packages.c` | `cmd_store_build_plan` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store_find_action_entry` | `src/shell/shell_commands_packages.c` | `cmd_store_find_action_entry` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store_history` | `src/shell/shell_commands_packages.c` | `cmd_store_history` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store_info` | `src/shell/shell_commands_packages.c` | `cmd_store_info` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store_install` | `src/shell/shell_commands_packages.c` | `cmd_store_install` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store_list` | `src/shell/shell_commands_packages.c` | `cmd_store_list` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store_print_action_blockers` | `src/shell/shell_commands_packages.c` | `cmd_store_print_action_blockers` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store_print_action_result` | `src/shell/shell_commands_packages.c` | `cmd_store_print_action_result` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store_print_capabilities` | `src/shell/shell_commands_packages.c` | `cmd_store_print_capabilities` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store_print_dependencies` | `src/shell/shell_commands_packages.c` | `cmd_store_print_dependencies` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store_print_failed_transaction` | `src/shell/shell_commands_packages.c` | `cmd_store_print_failed_transaction` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store_print_list_entry` | `src/shell/shell_commands_packages.c` | `cmd_store_print_list_entry` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store_print_plan` | `src/shell/shell_commands_packages.c` | `cmd_store_print_plan` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store_print_usage` | `src/shell/shell_commands_packages.c` | `cmd_store_print_usage` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store_refresh_after_mutation` | `src/shell/shell_commands_packages.c` | `cmd_store_refresh_after_mutation` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store_remote` | `src/shell/shell_commands_packages.c` | `cmd_store_remote` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store_remote_control` | `src/shell/shell_commands_packages.c` | `cmd_store_remote_control` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store_remote_info` | `src/shell/shell_commands_packages.c` | `cmd_store_remote_info` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store_remote_list` | `src/shell/shell_commands_packages.c` | `cmd_store_remote_list` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store_remote_options` | `src/shell/shell_commands_packages.c` | `cmd_store_remote_options` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store_remote_print_entry` | `src/shell/shell_commands_packages.c` | `cmd_store_remote_print_entry` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store_remote_print_result` | `src/shell/shell_commands_packages.c` | `cmd_store_remote_print_result` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store_remote_status` | `src/shell/shell_commands_packages.c` | `cmd_store_remote_status` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store_remove` | `src/shell/shell_commands_packages.c` | `cmd_store_remove` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store_rollback` | `src/shell/shell_commands_packages.c` | `cmd_store_rollback` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store_run` | `src/shell/shell_commands_packages.c` | `cmd_store_run` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store_set_local_failure` | `src/shell/shell_commands_packages.c` | `cmd_store_set_local_failure` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store_status` | `src/shell/shell_commands_packages.c` | `cmd_store_status` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store_test_fail_after` | `src/shell/shell_commands_packages.c` | `cmd_store_test_fail_after` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_store_update` | `src/shell/shell_commands_packages.c` | `cmd_store_update` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update` | `src/shell/shell_commands_packages.c` | `cmd_update` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_apply` | `src/shell/shell_commands_packages.c` | `cmd_update_apply` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_cancel_check` | `src/shell/shell_commands_packages.c` | `cmd_update_cancel_check` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_fetch` | `src/shell/shell_commands_packages.c` | `cmd_update_fetch` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_github` | `src/shell/shell_commands_packages.c` | `cmd_update_github` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_history` | `src/shell/shell_commands_packages.c` | `cmd_update_history` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_print_action` | `src/shell/shell_commands_packages.c` | `cmd_update_print_action` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_print_capability` | `src/shell/shell_commands_packages.c` | `cmd_update_print_capability` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_print_hash` | `src/shell/shell_commands_packages.c` | `cmd_update_print_hash` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_print_history_entry` | `src/shell/shell_commands_packages.c` | `cmd_update_print_history_entry` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_print_release_result` | `src/shell/shell_commands_packages.c` | `cmd_update_print_release_result` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_print_remote_candidate` | `src/shell/shell_commands_packages.c` | `cmd_update_print_remote_candidate` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_print_runtime_result` | `src/shell/shell_commands_packages.c` | `cmd_update_print_runtime_result` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_print_version` | `src/shell/shell_commands_packages.c` | `cmd_update_print_version` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_print_version_inline` | `src/shell/shell_commands_packages.c` | `cmd_update_print_version_inline` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_refresh_component` | `src/shell/shell_commands_packages.c` | `cmd_update_refresh_component` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_remote_control` | `src/shell/shell_commands_packages.c` | `cmd_update_remote_control` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_remote_status` | `src/shell/shell_commands_packages.c` | `cmd_update_remote_status` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_rollback` | `src/shell/shell_commands_packages.c` | `cmd_update_rollback` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_runtime` | `src/shell/shell_commands_packages.c` | `cmd_update_runtime` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_runtime_action` | `src/shell/shell_commands_packages.c` | `cmd_update_runtime_action` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_runtime_check` | `src/shell/shell_commands_packages.c` | `cmd_update_runtime_check` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_runtime_clear` | `src/shell/shell_commands_packages.c` | `cmd_update_runtime_clear` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_runtime_fetch` | `src/shell/shell_commands_packages.c` | `cmd_update_runtime_fetch` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_runtime_status` | `src/shell/shell_commands_packages.c` | `cmd_update_runtime_status` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_runtime_test_fail_after` | `src/shell/shell_commands_packages.c` | `cmd_update_runtime_test_fail_after` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_runtime_verify` | `src/shell/shell_commands_packages.c` | `cmd_update_runtime_verify` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_status` | `src/shell/shell_commands_packages.c` | `cmd_update_status` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_system` | `src/shell/shell_commands_packages.c` | `cmd_update_system` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_system_apply` | `src/shell/shell_commands_packages.c` | `cmd_update_system_apply` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_system_cancel` | `src/shell/shell_commands_packages.c` | `cmd_update_system_cancel` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_system_check` | `src/shell/shell_commands_packages.c` | `cmd_update_system_check` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_system_fetch` | `src/shell/shell_commands_packages.c` | `cmd_update_system_fetch` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_system_print_result` | `src/shell/shell_commands_packages.c` | `cmd_update_system_print_result` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_system_slots` | `src/shell/shell_commands_packages.c` | `cmd_update_system_slots` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_system_slots_print_slot` | `src/shell/shell_commands_packages.c` | `cmd_update_system_slots_print_slot` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_system_stage` | `src/shell/shell_commands_packages.c` | `cmd_update_system_stage` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_system_status` | `src/shell/shell_commands_packages.c` | `cmd_update_system_status` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_system_verify` | `src/shell/shell_commands_packages.c` | `cmd_update_system_verify` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_test_fail_after` | `src/shell/shell_commands_packages.c` | `cmd_update_test_fail_after` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:cmd_update_verify` | `src/shell/shell_commands_packages.c` | `cmd_update_verify` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:shell_dispatch_cmd_pkg` | `src/shell/shell_commands_packages.c` | `shell_dispatch_cmd_pkg` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:shell_dispatch_cmd_pkgcheck` | `src/shell/shell_commands_packages.c` | `shell_dispatch_cmd_pkgcheck` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:shell_dispatch_cmd_store` | `src/shell/shell_commands_packages.c` | `shell_dispatch_cmd_store` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:shell_dispatch_cmd_update` | `src/shell/shell_commands_packages.c` | `shell_dispatch_cmd_update` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_commands_packages.c:shell_packages_host_test_contracts` | `src/shell/shell_commands_packages.c` | `shell_packages_host_test_contracts` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:shell_packages_job_cancel` | `src/shell/shell_commands_packages.c` | `shell_packages_job_cancel` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:shell_packages_job_drain` | `src/shell/shell_commands_packages.c` | `shell_packages_job_drain` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:shell_packages_job_finish` | `src/shell/shell_commands_packages.c` | `shell_packages_job_finish` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:shell_packages_job_step` | `src/shell/shell_commands_packages.c` | `shell_packages_job_step` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_packages.c:shell_packages_should_start` | `src/shell/shell_commands_packages.c` | `shell_packages_should_start` | `shell` | `COVERED` | 2 |
-| `c:src/shell/shell_commands_packages.c:shell_packages_start_job` | `src/shell/shell_commands_packages.c` | `shell_packages_start_job` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_packages.c:shell_packages_start_job` | `src/shell/shell_commands_packages.c` | `shell_packages_start_job` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_commands_storage.c:cmd_blkstat` | `src/shell/shell_commands_storage.c` | `cmd_blkstat` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_storage.c:cmd_blkstat_print_usage` | `src/shell/shell_commands_storage.c` | `cmd_blkstat_print_usage` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_storage.c:cmd_cache` | `src/shell/shell_commands_storage.c` | `cmd_cache` | `shell` | `COVERED` | 1 |
@@ -7485,7 +7485,7 @@
 | `host:shell:checks` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar contratos internos de fases, resumos, limites de falhas, estados de job, comparacao de inventarios, validacao de tabelas ACPI/MADT e emissao de imagens ZAPP | helpers preservam nomes, estados, codigos canonicos, limites, bytes e limpeza esperados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estruturas estaticas da fixture host; nenhum hardware, armazenamento ou processo real | estado interno resetado, processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:command-utils` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar parsing, validacao de argumentos, normalizacao e formatacao | utilitarios aceitam entradas validas, rejeitam limites e formatam valores corretamente | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos de entrada, saida e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:commands-core` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar handlers de ajuda, terminal, VFS, processos, threads, memoria, som, energia, compressao e resultados de loader com dependencias estaticas falsas | comandos validos e invalidos preservam seus retornos, mensagens, callbacks e limpeza sem hardware ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers e contadores estaticos da fixture host | processo host encerrado e manifesto, logs e cobertura preservados |
-| `host:shell:commands-packages` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar diretamente os parsers de token, normalizacao de IDs, extensoes de pacotes, selecao de jobs e entradas invalidas | helpers preservam limites, argumentos nulos, truncamento e acoes aceitas ou rejeitadas sem iniciar jobs | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e estado local da fixture no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:shell:commands-packages` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar diretamente comandos, formatadores, parsers, dispatchers, jobs, caminhos remotos e entradas invalidas de pkg, store e update | helpers preservam limites, argumentos nulos, truncamento, codigos de erro e acoes aceitas ou rejeitadas usando doubles estaticos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e estado local da fixture no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:commands-storage` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar caminhos validos, negativos, limites, diagnostico, busca, sync e callbacks de job | dispatchers, parsers, formatacao e callbacks preservam limites, estados e codigos canonicos | compilador ausente, warning, saida inesperada, falha de assercao ou timeout | somente buffers estaticos de saida e doubles do indice no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:commands-vfs` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar grep com entrada fragmentada, comparacao sem diferenca de maiusculas, limites, erros de pipeline e o autoteste pipetest | linhas correspondentes sao encaminhadas, entradas invalidas e limites exibem diagnostico e pipetest preserva resultado e codigo canonico | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos de entrada, saida e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:core` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inicializar o Shell, encaminhar mouse, suspender terminal, concluir comando e restaurar a cena visual | entradas invalidas e inativas sao rejeitadas, scroll ativo e encaminhado, ciclo de terminal restaura prompt e redraw | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente callbacks estaticos do Shell, terminal, taskbar, desktop e aplicativos falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7903,94 +7903,6 @@
 - `c:src/shell/shell_commands_apps.c:shell_dispatch_cmd_updater`
 - `c:src/shell/shell_commands_apps.c:shell_dispatch_cmd_view`
 - `c:src/shell/shell_commands_apps.c:shell_dispatch_cmd_wm`
-- `c:src/shell/shell_commands_packages.c:cmd_pkg`
-- `c:src/shell/shell_commands_packages.c:cmd_pkg_info`
-- `c:src/shell/shell_commands_packages.c:cmd_pkg_install`
-- `c:src/shell/shell_commands_packages.c:cmd_pkg_list`
-- `c:src/shell/shell_commands_packages.c:cmd_pkg_print_info`
-- `c:src/shell/shell_commands_packages.c:cmd_pkg_print_usage`
-- `c:src/shell/shell_commands_packages.c:cmd_pkg_remove`
-- `c:src/shell/shell_commands_packages.c:cmd_pkg_verify`
-- `c:src/shell/shell_commands_packages.c:cmd_pkgcheck`
-- `c:src/shell/shell_commands_packages.c:cmd_store`
-- `c:src/shell/shell_commands_packages.c:cmd_store_build_plan`
-- `c:src/shell/shell_commands_packages.c:cmd_store_find_action_entry`
-- `c:src/shell/shell_commands_packages.c:cmd_store_history`
-- `c:src/shell/shell_commands_packages.c:cmd_store_info`
-- `c:src/shell/shell_commands_packages.c:cmd_store_install`
-- `c:src/shell/shell_commands_packages.c:cmd_store_list`
-- `c:src/shell/shell_commands_packages.c:cmd_store_print_action_blockers`
-- `c:src/shell/shell_commands_packages.c:cmd_store_print_action_result`
-- `c:src/shell/shell_commands_packages.c:cmd_store_print_capabilities`
-- `c:src/shell/shell_commands_packages.c:cmd_store_print_dependencies`
-- `c:src/shell/shell_commands_packages.c:cmd_store_print_failed_transaction`
-- `c:src/shell/shell_commands_packages.c:cmd_store_print_list_entry`
-- `c:src/shell/shell_commands_packages.c:cmd_store_print_plan`
-- `c:src/shell/shell_commands_packages.c:cmd_store_print_usage`
-- `c:src/shell/shell_commands_packages.c:cmd_store_refresh_after_mutation`
-- `c:src/shell/shell_commands_packages.c:cmd_store_remote`
-- `c:src/shell/shell_commands_packages.c:cmd_store_remote_control`
-- `c:src/shell/shell_commands_packages.c:cmd_store_remote_info`
-- `c:src/shell/shell_commands_packages.c:cmd_store_remote_list`
-- `c:src/shell/shell_commands_packages.c:cmd_store_remote_options`
-- `c:src/shell/shell_commands_packages.c:cmd_store_remote_print_entry`
-- `c:src/shell/shell_commands_packages.c:cmd_store_remote_print_result`
-- `c:src/shell/shell_commands_packages.c:cmd_store_remote_status`
-- `c:src/shell/shell_commands_packages.c:cmd_store_remove`
-- `c:src/shell/shell_commands_packages.c:cmd_store_rollback`
-- `c:src/shell/shell_commands_packages.c:cmd_store_run`
-- `c:src/shell/shell_commands_packages.c:cmd_store_set_local_failure`
-- `c:src/shell/shell_commands_packages.c:cmd_store_status`
-- `c:src/shell/shell_commands_packages.c:cmd_store_test_fail_after`
-- `c:src/shell/shell_commands_packages.c:cmd_store_update`
-- `c:src/shell/shell_commands_packages.c:cmd_update_apply`
-- `c:src/shell/shell_commands_packages.c:cmd_update_cancel_check`
-- `c:src/shell/shell_commands_packages.c:cmd_update_fetch`
-- `c:src/shell/shell_commands_packages.c:cmd_update_github`
-- `c:src/shell/shell_commands_packages.c:cmd_update_history`
-- `c:src/shell/shell_commands_packages.c:cmd_update_print_action`
-- `c:src/shell/shell_commands_packages.c:cmd_update_print_capability`
-- `c:src/shell/shell_commands_packages.c:cmd_update_print_hash`
-- `c:src/shell/shell_commands_packages.c:cmd_update_print_history_entry`
-- `c:src/shell/shell_commands_packages.c:cmd_update_print_release_result`
-- `c:src/shell/shell_commands_packages.c:cmd_update_print_remote_candidate`
-- `c:src/shell/shell_commands_packages.c:cmd_update_print_runtime_result`
-- `c:src/shell/shell_commands_packages.c:cmd_update_print_version`
-- `c:src/shell/shell_commands_packages.c:cmd_update_print_version_inline`
-- `c:src/shell/shell_commands_packages.c:cmd_update_refresh_component`
-- `c:src/shell/shell_commands_packages.c:cmd_update_remote_control`
-- `c:src/shell/shell_commands_packages.c:cmd_update_remote_status`
-- `c:src/shell/shell_commands_packages.c:cmd_update_rollback`
-- `c:src/shell/shell_commands_packages.c:cmd_update_runtime`
-- `c:src/shell/shell_commands_packages.c:cmd_update_runtime_action`
-- `c:src/shell/shell_commands_packages.c:cmd_update_runtime_check`
-- `c:src/shell/shell_commands_packages.c:cmd_update_runtime_clear`
-- `c:src/shell/shell_commands_packages.c:cmd_update_runtime_fetch`
-- `c:src/shell/shell_commands_packages.c:cmd_update_runtime_status`
-- `c:src/shell/shell_commands_packages.c:cmd_update_runtime_test_fail_after`
-- `c:src/shell/shell_commands_packages.c:cmd_update_runtime_verify`
-- `c:src/shell/shell_commands_packages.c:cmd_update_status`
-- `c:src/shell/shell_commands_packages.c:cmd_update_system`
-- `c:src/shell/shell_commands_packages.c:cmd_update_system_apply`
-- `c:src/shell/shell_commands_packages.c:cmd_update_system_cancel`
-- `c:src/shell/shell_commands_packages.c:cmd_update_system_check`
-- `c:src/shell/shell_commands_packages.c:cmd_update_system_fetch`
-- `c:src/shell/shell_commands_packages.c:cmd_update_system_print_result`
-- `c:src/shell/shell_commands_packages.c:cmd_update_system_slots`
-- `c:src/shell/shell_commands_packages.c:cmd_update_system_slots_print_slot`
-- `c:src/shell/shell_commands_packages.c:cmd_update_system_stage`
-- `c:src/shell/shell_commands_packages.c:cmd_update_system_status`
-- `c:src/shell/shell_commands_packages.c:cmd_update_system_verify`
-- `c:src/shell/shell_commands_packages.c:cmd_update_test_fail_after`
-- `c:src/shell/shell_commands_packages.c:cmd_update_verify`
-- `c:src/shell/shell_commands_packages.c:shell_dispatch_cmd_pkg`
-- `c:src/shell/shell_commands_packages.c:shell_dispatch_cmd_pkgcheck`
-- `c:src/shell/shell_commands_packages.c:shell_dispatch_cmd_store`
-- `c:src/shell/shell_commands_packages.c:shell_packages_host_test_contracts`
-- `c:src/shell/shell_commands_packages.c:shell_packages_job_cancel`
-- `c:src/shell/shell_commands_packages.c:shell_packages_job_drain`
-- `c:src/shell/shell_commands_packages.c:shell_packages_job_finish`
-- `c:src/shell/shell_commands_packages.c:shell_packages_job_step`
 - `c:src/shell/taskmanager.c:draw_bar`
 - `c:src/shell/taskmanager.c:draw_box`
 - `c:src/shell/taskmanager.c:draw_header`
