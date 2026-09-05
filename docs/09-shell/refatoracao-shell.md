@@ -205,7 +205,10 @@ O header interno `src/include/apps/shell_runtime.h` e o unico bridge entre
 esses dominios e `shell.c`. Ele nao substitui nem altera `shell.h`: fornece
 somente operacoes de ciclo de vida do terminal, prompt, File Manager,
 bloqueio de entrada, resultados de testes/App Loader e hooks estreitos para
-diagnosticos, rede e reboot/shutdown. Os adaptadores `shell_dispatch_cmd_*`
+diagnosticos, rede e reboot/shutdown. Em builds `ZEPHYROS_HOST_TEST`, ele
+tambem declara `shell_network_host_test_contracts()`, uma entrada interna da
+fixture deterministica que exercita os contratos de rede sem alterar `shell.h`
+nem o build freestanding. Os adaptadores `shell_dispatch_cmd_*`
 continuam com uma unica definicao, fora de `shell.c`, e a ordem de consumo dos
 resultados do App Loader permanece a mesma.
 
