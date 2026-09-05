@@ -1954,6 +1954,24 @@ refresh integrado, a recuperacao de managers nao inicializados, inventarios
 parciais, degradacoes opcionais, falhas de PCI e argumentos invalidos sem
 hardware ou armazenamento reais.
 
+## Shell: comandos de aplicativos e interface host-only
+
+O alvo `test-shell-commands-apps-host` valida o dispatcher de aplicativos do
+Shell com fixtures estáticas e sem hardware, allocator ou armazenamento reais:
+
+```text
+make test-shell-commands-apps-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+A fixture exercita os comandos `app`, `guimode`, `guitest`, `display`, `edit`,
+`icons`, Desktop, Explorer, Task Manager, Settings, Updater, Window Manager,
+Player e seus caminhos de argumentos inválidos ou componentes indisponíveis.
+O relatório instrumentado fica em
+`build/test-results/shell-commands-apps-host/coverage.json` e deve terminar
+com `status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`, observando
+as funções chamadas de `src/shell/shell_commands_apps.c` e os contratos de
+string diretamente usados.
+
 A mesma fixture tambem executa `acpi` e `power` com snapshots estaticos dos
 estados publicados. Ela valida tabelas ACPI, MADT, informacoes de energia,
 capacidades, servico, fase, quiescencia, estados indisponiveis e falhas de
