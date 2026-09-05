@@ -138250,9 +138250,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_check",
@@ -138268,9 +138271,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_app_store",
@@ -138286,9 +138292,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_block_cache",
@@ -138304,9 +138313,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_clock",
@@ -138322,9 +138334,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_irq",
@@ -138340,9 +138355,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_kernel",
@@ -138358,9 +138376,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_net_buffers",
@@ -138376,9 +138397,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_print_component",
@@ -138394,9 +138418,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_print_named_state",
@@ -138412,9 +138439,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_print_query_failure",
@@ -138430,9 +138460,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_recovery",
@@ -138448,9 +138481,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_signals",
@@ -138466,9 +138502,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_sockets",
@@ -138484,9 +138523,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_tls",
@@ -138502,9 +138544,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update",
@@ -138520,9 +138565,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update_capabilities",
@@ -138538,9 +138586,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update_remote",
@@ -138556,9 +138607,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_usb_hid",
@@ -138574,9 +138628,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_vfs",
@@ -138592,9 +138649,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_wait",
@@ -138610,9 +138670,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_wifi",
@@ -138628,9 +138691,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_workqueue",
@@ -138646,9 +138712,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_full",
@@ -138664,9 +138733,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_clock_tls",
@@ -138682,9 +138754,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_component",
@@ -138700,9 +138775,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_inline_state",
@@ -138718,9 +138796,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_kernel",
@@ -138736,9 +138817,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_migrated_builtin",
@@ -138754,9 +138838,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_app_store",
@@ -138772,9 +138859,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_component",
@@ -138808,9 +138898,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_kernel",
@@ -138826,9 +138919,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_update",
@@ -138844,9 +138940,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_update_capabilities",
@@ -138862,9 +138961,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_usb_hid",
@@ -138880,9 +138982,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_user_fault",
@@ -138898,9 +139003,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_summary",
@@ -138916,9 +139024,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_update_remote_state",
@@ -138934,9 +139045,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_irqstat",
@@ -140844,9 +140958,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_print_usb_fixture_report",
@@ -141115,9 +141232,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_irqstat",
@@ -167544,7 +167664,7 @@
         "hardware": "video, VFS e mouse falsos"
       },
       "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "executar pwd, cd, mouse, log, timer, clock, irqstat, wait, wqinfo, workq, tls, vfs, mount, devcheck, devices, device-info, device-scan, usb, acpi, power, kill, sigtest, proccheck, slabinfo, slabtest, cpu usage, pagefault, vmamap, schedcheck e kmetrics em caminhos validos, invalidos, indisponiveis e de limite; validar devices -v e device-info pelo VFS sysfs estatico",
+      "action": "executar pwd, cd, mouse, log, timer, clock, irqstat, wait, wqinfo, workq, tls, vfs, mount, devcheck, devices, device-info, device-scan, usb, acpi, power, kill, sigtest, proccheck, health, health summary, health check, slabinfo, slabtest, cpu usage, pagefault, vmamap, schedcheck e kmetrics em caminhos validos, invalidos, indisponiveis e de limite; validar devices -v e device-info pelo VFS sysfs estatico",
       "expected": "dispatchers preservam saida, estado, configuracao e codigos canonicos",
       "errors": "compilador ausente, warning, saida inesperada, falha de assercao ou timeout",
       "effects": "somente buffers estaticos de saida e doubles locais de VFS, mouse, log, timer, RTC, clock, IRQ, IDT, wait, workqueue, TLS, devfs, device manager, USB, HID, MSC e SLAB; sem armazenamento real",
@@ -167576,6 +167696,44 @@
         "c:src/shell/shell_commands_diagnostics.c:cmd_devices_print_entry",
         "c:src/shell/shell_commands_diagnostics.c:cmd_diagnostics_print_test",
         "c:src/shell/shell_commands_diagnostics.c:cmd_diagnostics_print_u64",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_check",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_app_store",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_block_cache",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_clock",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_irq",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_kernel",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_net_buffers",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_print_component",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_print_named_state",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_print_query_failure",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_recovery",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_signals",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_sockets",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_tls",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update_capabilities",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update_remote",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_usb_hid",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_vfs",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_wait",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_wifi",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_workqueue",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_full",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_clock_tls",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_component",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_inline_state",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_kernel",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_migrated_builtin",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_app_store",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_components",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_kernel",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_update",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_update_capabilities",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_usb_hid",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_print_user_fault",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_summary",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_update_remote_state",
         "c:src/shell/shell_commands_diagnostics.c:cmd_irqstat",
         "c:src/shell/shell_commands_diagnostics.c:cmd_irqstat_check",
         "c:src/shell/shell_commands_diagnostics.c:cmd_irqstat_list",
@@ -167666,6 +167824,7 @@
         "c:src/shell/shell_commands_diagnostics.c:cmd_workq_status",
         "c:src/shell/shell_commands_diagnostics.c:cmd_workq_usage",
         "c:src/shell/shell_commands_diagnostics.c:cmd_wqinfo",
+        "c:src/shell/shell_commands_diagnostics.c:shell_core_migrated_builtin_is_ready",
         "c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_reset",
         "c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_run_device_scan",
         "c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_run_memcheck",
@@ -167677,6 +167836,7 @@
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_device_info",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_device_scan",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_devices",
+        "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_health",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_irqstat",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_kill",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_kmetrics",

@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6269 |
+| `COVERED` | 6309 |
 | `MANUAL` | 0 |
-| `PENDING` | 1024 |
+| `PENDING` | 984 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -6316,45 +6316,45 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_devices_print_entry` | `src/shell/shell_commands_diagnostics.c` | `cmd_devices_print_entry` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_diagnostics_print_test` | `src/shell/shell_commands_diagnostics.c` | `cmd_diagnostics_print_test` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_diagnostics_print_u64` | `src/shell/shell_commands_diagnostics.c` | `cmd_diagnostics_print_u64` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health` | `src/shell/shell_commands_diagnostics.c` | `cmd_health` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_app_store` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_app_store` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_block_cache` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_block_cache` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_clock` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_clock` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_irq` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_irq` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_kernel` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_kernel` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_net_buffers` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_net_buffers` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_print_component` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_print_component` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_print_named_state` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_print_named_state` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_print_query_failure` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_print_query_failure` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_recovery` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_recovery` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_signals` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_signals` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_sockets` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_sockets` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_tls` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_tls` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_update` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update_capabilities` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_update_capabilities` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update_remote` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_update_remote` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_usb_hid` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_usb_hid` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_vfs` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_vfs` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_wait` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_wait` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_wifi` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_wifi` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_workqueue` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_workqueue` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_full` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_full` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_clock_tls` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_clock_tls` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_component` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_component` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_inline_state` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_inline_state` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_kernel` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_kernel` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_migrated_builtin` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_migrated_builtin` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_app_store` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_summary_app_store` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health` | `src/shell/shell_commands_diagnostics.c` | `cmd_health` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_app_store` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_app_store` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_block_cache` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_block_cache` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_clock` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_clock` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_irq` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_irq` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_kernel` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_kernel` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_net_buffers` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_net_buffers` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_print_component` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_print_component` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_print_named_state` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_print_named_state` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_print_query_failure` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_print_query_failure` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_recovery` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_recovery` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_signals` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_signals` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_sockets` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_sockets` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_tls` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_tls` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_update` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update_capabilities` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_update_capabilities` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update_remote` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_update_remote` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_usb_hid` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_usb_hid` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_vfs` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_vfs` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_wait` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_wait` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_wifi` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_wifi` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_workqueue` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_workqueue` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_full` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_full` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_clock_tls` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_clock_tls` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_component` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_component` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_inline_state` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_inline_state` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_kernel` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_kernel` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_migrated_builtin` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_migrated_builtin` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_app_store` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_summary_app_store` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_component` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_summary_component` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_components` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_summary_components` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_kernel` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_summary_kernel` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_update` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_summary_update` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_update_capabilities` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_update_capabilities` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_usb_hid` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_usb_hid` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_user_fault` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_user_fault` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_summary` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_summary` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health_update_remote_state` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_update_remote_state` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_components` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_summary_components` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_kernel` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_summary_kernel` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_update` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_summary_update` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_update_capabilities` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_update_capabilities` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_usb_hid` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_usb_hid` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_user_fault` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_user_fault` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_summary` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_summary` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_update_remote_state` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_update_remote_state` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_irqstat` | `src/shell/shell_commands_diagnostics.c` | `cmd_irqstat` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_irqstat_check` | `src/shell/shell_commands_diagnostics.c` | `cmd_irqstat_check` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_irqstat_list` | `src/shell/shell_commands_diagnostics.c` | `cmd_irqstat_list` | `shell` | `COVERED` | 1 |
@@ -6445,7 +6445,7 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_workq_status` | `src/shell/shell_commands_diagnostics.c` | `cmd_workq_status` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_workq_usage` | `src/shell/shell_commands_diagnostics.c` | `cmd_workq_usage` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_wqinfo` | `src/shell/shell_commands_diagnostics.c` | `cmd_wqinfo` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_diagnostics.c:shell_core_migrated_builtin_is_ready` | `src/shell/shell_commands_diagnostics.c` | `shell_core_migrated_builtin_is_ready` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_diagnostics.c:shell_core_migrated_builtin_is_ready` | `src/shell/shell_commands_diagnostics.c` | `shell_core_migrated_builtin_is_ready` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_print_usb_fixture_report` | `src/shell/shell_commands_diagnostics.c` | `shell_diagnostics_print_usb_fixture_report` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_reset` | `src/shell/shell_commands_diagnostics.c` | `shell_diagnostics_reset` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_diagnostics_run_device_scan` | `src/shell/shell_commands_diagnostics.c` | `shell_diagnostics_run_device_scan` | `shell` | `COVERED` | 1 |
@@ -6458,7 +6458,7 @@
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_device_info` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_device_info` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_device_scan` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_device_scan` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_devices` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_devices` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_health` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_health` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_health` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_health` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_irqstat` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_irqstat` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_kill` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_kill` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_kmetrics` | `src/shell/shell_commands_diagnostics.c` | `shell_dispatch_cmd_kmetrics` | `shell` | `COVERED` | 1 |
@@ -7466,7 +7466,7 @@
 | `host:shell:commands-storage` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar caminhos validos, negativos, limites, diagnostico, busca, sync e callbacks de job | dispatchers, parsers, formatacao e callbacks preservam limites, estados e codigos canonicos | compilador ausente, warning, saida inesperada, falha de assercao ou timeout | somente buffers estaticos de saida e doubles do indice no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:commands-vfs` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar grep com entrada fragmentada, comparacao sem diferenca de maiusculas, limites, erros de pipeline e o autoteste pipetest | linhas correspondentes sao encaminhadas, entradas invalidas e limites exibem diagnostico e pipetest preserva resultado e codigo canonico | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos de entrada, saida e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:core` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inicializar o Shell, encaminhar mouse, suspender terminal, concluir comando e restaurar a cena visual | entradas invalidas e inativas sao rejeitadas, scroll ativo e encaminhado, ciclo de terminal restaura prompt e redraw | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente callbacks estaticos do Shell, terminal, taskbar, desktop e aplicativos falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
-| `host:shell:diagnostics` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar pwd, cd, mouse, log, timer, clock, irqstat, wait, wqinfo, workq, tls, vfs, mount, devcheck, devices, device-info, device-scan, usb, acpi, power, kill, sigtest, proccheck, slabinfo, slabtest, cpu usage, pagefault, vmamap, schedcheck e kmetrics em caminhos validos, invalidos, indisponiveis e de limite; validar devices -v e device-info pelo VFS sysfs estatico | dispatchers preservam saida, estado, configuracao e codigos canonicos | compilador ausente, warning, saida inesperada, falha de assercao ou timeout | somente buffers estaticos de saida e doubles locais de VFS, mouse, log, timer, RTC, clock, IRQ, IDT, wait, workqueue, TLS, devfs, device manager, USB, HID, MSC e SLAB; sem armazenamento real | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:shell:diagnostics` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar pwd, cd, mouse, log, timer, clock, irqstat, wait, wqinfo, workq, tls, vfs, mount, devcheck, devices, device-info, device-scan, usb, acpi, power, kill, sigtest, proccheck, health, health summary, health check, slabinfo, slabtest, cpu usage, pagefault, vmamap, schedcheck e kmetrics em caminhos validos, invalidos, indisponiveis e de limite; validar devices -v e device-info pelo VFS sysfs estatico | dispatchers preservam saida, estado, configuracao e codigos canonicos | compilador ausente, warning, saida inesperada, falha de assercao ou timeout | somente buffers estaticos de saida e doubles locais de VFS, mouse, log, timer, RTC, clock, IRQ, IDT, wait, workqueue, TLS, devfs, device manager, USB, HID, MSC e SLAB; sem armazenamento real | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:diagnostics-helpers` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar parsers de log, sinais, mouse e VMA, nomes de estados, cores, caminhos sysfs/proc e invariantes de memoria com dependencias estaticas falsas | entradas validas retornam resultados canonicos; entradas nulas, invalidas e fora dos limites sao rejeitadas sem hardware, allocator ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos, estado de filesystem e paginação falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:dispatch` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar comandos desconhecidos, entrada normalizada, limite e comando conhecido | dispatcher retorna ERR_NULL para entrada nula e apresenta diagnostico deterministico para comando desconhecido | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e handlers falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:hosted` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | abrir, reabrir, desenhar, encaminhar tecla e mouse, fechar e rejeitar registro do Shell Classic hospedado | o Shell hospedado publica visibilidade, encaminha callbacks e restaura o estado quando o registro falha | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do adaptador, callbacks do Window Manager e terminal falso no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -8108,47 +8108,7 @@
 - `c:src/shell/shell_commands_apps.c:shell_dispatch_cmd_updater`
 - `c:src/shell/shell_commands_apps.c:shell_dispatch_cmd_view`
 - `c:src/shell/shell_commands_apps.c:shell_dispatch_cmd_wm`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_check`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_app_store`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_block_cache`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_clock`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_irq`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_kernel`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_net_buffers`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_print_component`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_print_named_state`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_print_query_failure`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_recovery`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_signals`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_sockets`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_tls`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update_capabilities`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update_remote`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_usb_hid`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_vfs`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_wait`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_wifi`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_workqueue`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_full`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_clock_tls`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_component`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_inline_state`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_kernel`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_migrated_builtin`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_app_store`
 - `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_component`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_components`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_kernel`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_update`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_update_capabilities`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_usb_hid`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_user_fault`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_summary`
-- `c:src/shell/shell_commands_diagnostics.c:cmd_health_update_remote_state`
-- `c:src/shell/shell_commands_diagnostics.c:shell_core_migrated_builtin_is_ready`
-- `c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_health`
 - `c:src/shell/shell_commands_network.c:cmd_dns_wait`
 - `c:src/shell/shell_commands_network.c:cmd_http`
 - `c:src/shell/shell_commands_network.c:cmd_http_execute`

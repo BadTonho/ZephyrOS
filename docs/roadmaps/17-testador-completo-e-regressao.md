@@ -2613,3 +2613,17 @@ pendente.
       com 7.293 superfícies, sendo 6.269 `COVERED` e 1.024 `PENDING`.
 - [x] As pendências restantes continuam explícitas e não foram associadas por
       pertencerem apenas ao mesmo arquivo.
+
+### Incremento Shell/diagnostics health — 2026-09-04
+
+- [x] A fixture host-only `host:shell:diagnostics` foi ampliada para chamar o
+      dispatcher real de `health`, `health summary` e `health check`.
+- [x] Foram exercitados os caminhos de argumentos inválidos, resumo, verificação
+      saudável e VFS indisponível, usando estado estático para componentes,
+      memória, processos, rede, sockets, cache e recuperação.
+- [x] O alvo específico passou após a correção da capacidade da fixture de
+      dispositivos; `make q3check`, build limpo e build completo também passaram.
+- [x] A matriz host-only completa passou em 115/115 alvos, a evidência dinâmica
+      foi sincronizada e o catálogo ficou com 7.293 superfícies: 6.309
+      `COVERED` e 984 `PENDING`. O gate e a visão renderizada passaram; as
+      pendências restantes continuam explícitas.
