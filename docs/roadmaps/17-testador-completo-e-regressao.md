@@ -23,7 +23,7 @@ mantém 158 casos `AUTOMATED`; após os incrementos de Shell, RTC,
 processos/threads, FAT32, update U3/U4, os contratos remotos ZSYS e o
 repositório remoto de aplicativos, dos helpers de pacotes do Shell, da
 interface App Store e dos relatórios de rede do Shell, registra 7.307
-superfícies, 6.432 `COVERED` e 874
+superfícies, 6.432 `COVERED` e 873
 `PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
@@ -117,6 +117,19 @@ Isso não significa declarar hardware físico validado sem equipamento.
       `RETIRED` com evidência e substituto; o catálogo registra 7.306
       superfícies ativas, 6.432 `COVERED`, 874 `PENDING`, 58 aposentadas e
       158 casos.
+
+### Incremento Shell/Editor — 2026-09-05
+
+- [x] A declaração pública `editor_main` foi removida de
+      `src/include/apps/editor.h` após confirmar que não havia definição nem
+      chamadores no código ativo.
+- [x] A documentação de aplicativos foi alinhada ao contrato real do Editor;
+      `editor_run` e `editor_run_file` continuam sendo os pontos de entrada
+      usados pelos handlers do Shell.
+- [x] `make q3check`, `make clean` e `make` passaram. A superfície obsoleta
+      foi registrada como `RETIRED` com evidência e substituto; o catálogo
+      registra 7.305 superfícies ativas, 6.432 `COVERED`, 873 `PENDING`, 59
+      aposentadas e 158 casos.
 
 ### Incremento Shell/UI App Store — 2026-09-05
 

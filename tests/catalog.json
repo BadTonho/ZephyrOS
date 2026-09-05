@@ -93,24 +93,6 @@
       "tags": []
     },
     {
-      "id": "api:src/include/apps/editor.h:editor_main",
-      "kind": "api_function",
-      "source": "src/include/apps/editor.h",
-      "symbol": "editor_main",
-      "linkage": "public",
-      "owner": "apps",
-      "layer": "public-header",
-      "preconditions": "definir no caso de teste associado",
-      "action": "definir no caso de teste associado",
-      "expected": "superficie localizada e contrato observado",
-      "errors": "definir erros canonicos aplicaveis",
-      "effects": "nenhum efeito durante a catalogacao",
-      "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
-    },
-    {
       "id": "api:src/include/apps/editor.h:editor_new",
       "kind": "api_function",
       "source": "src/include/apps/editor.h",
@@ -181092,6 +181074,15 @@
     }
   ],
   "retired": [
+    {
+      "id": "api:src/include/apps/editor.h:editor_main",
+      "kind": "api_function",
+      "source": "src/include/apps/editor.h",
+      "symbol": "editor_main",
+      "retired_reason": "declaracao publica sem implementacao nem chamadores no codigo ativo; removida do contrato publico",
+      "retired_evidence": "rg -n editor_main src tests confirmou somente a declaracao antiga; make q3check, make clean e make passaram apos a remocao",
+      "replacement": "editor_run e editor_run_file usados pelos handlers do Shell"
+    },
     {
       "id": "api:src/include/apps/mediaplayer.h:mp_main",
       "kind": "api_function",

@@ -5991,3 +5991,13 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `make catalog-test` passaram. A superfície foi registrada como `RETIRED`
   com evidência e substituto; o catálogo registra 7.306 superfícies ativas,
   6.432 `COVERED`, 874 `PENDING`, 58 aposentadas e 158 casos.
+
+- Incremento Shell/Editor — concluído em 2026-09-05. A declaração pública
+  `editor_main` foi removida de `src/include/apps/editor.h` porque a busca no
+  código ativo encontrou somente a declaração, sem implementação ou chamadores.
+  A documentação foi atualizada para a API real; `editor_run` e
+  `editor_run_file` continuam sendo os pontos de entrada usados pelo Shell.
+  Passaram `make q3check`, `make clean` e `make`. A superfície foi registrada
+  como `RETIRED` com evidência e substituto; o catálogo registra 7.305
+  superfícies ativas, 6.432 `COVERED`, 873 `PENDING`, 59 aposentadas e 158
+  casos.

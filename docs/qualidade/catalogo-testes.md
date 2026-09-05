@@ -4,13 +4,13 @@
 
 ## Resumo
 
-- Superfícies ativas: **7306**
+- Superfícies ativas: **7305**
 - Casos de teste: **158**
-- Superfícies aposentadas: **58**
+- Superfícies aposentadas: **59**
 
 | Tipo | Quantidade |
 |---|---:|
-| `api_function` | 1578 |
+| `api_function` | 1577 |
 | `asm_entry` | 101 |
 | `c_function` | 5507 |
 | `shell_command` | 95 |
@@ -21,7 +21,7 @@
 | `BLOCKED` | 0 |
 | `COVERED` | 6432 |
 | `MANUAL` | 0 |
-| `PENDING` | 874 |
+| `PENDING` | 873 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -34,7 +34,7 @@
 
 | Proprietario | Superficies |
 |---|---:|
-| `apps` | 170 |
+| `apps` | 169 |
 | `appstore` | 95 |
 | `boot` | 136 |
 | `core` | 2813 |
@@ -65,7 +65,6 @@
 | `api:src/include/apps/editor.h:editor_handle_key` | `src/include/apps/editor.h` | `editor_handle_key` | `apps` | `PENDING` | 0 |
 | `api:src/include/apps/editor.h:editor_init` | `src/include/apps/editor.h` | `editor_init` | `apps` | `PENDING` | 0 |
 | `api:src/include/apps/editor.h:editor_is_running` | `src/include/apps/editor.h` | `editor_is_running` | `apps` | `PENDING` | 0 |
-| `api:src/include/apps/editor.h:editor_main` | `src/include/apps/editor.h` | `editor_main` | `apps` | `PENDING` | 0 |
 | `api:src/include/apps/editor.h:editor_new` | `src/include/apps/editor.h` | `editor_new` | `apps` | `PENDING` | 0 |
 | `api:src/include/apps/editor.h:editor_open` | `src/include/apps/editor.h` | `editor_open` | `apps` | `PENDING` | 0 |
 | `api:src/include/apps/editor.h:editor_run` | `src/include/apps/editor.h` | `editor_run` | `apps` | `PENDING` | 0 |
@@ -7557,7 +7556,6 @@
 - `api:src/include/apps/editor.h:editor_handle_key`
 - `api:src/include/apps/editor.h:editor_init`
 - `api:src/include/apps/editor.h:editor_is_running`
-- `api:src/include/apps/editor.h:editor_main`
 - `api:src/include/apps/editor.h:editor_new`
 - `api:src/include/apps/editor.h:editor_open`
 - `api:src/include/apps/editor.h:editor_run`
@@ -8430,6 +8428,7 @@
 
 ## Aposentadas
 
+- `api:src/include/apps/editor.h:editor_main` — declaracao publica sem implementacao nem chamadores no codigo ativo; removida do contrato publico
 - `api:src/include/apps/mediaplayer.h:mp_main` — declaracao publica sem implementacao nem chamadores no codigo ativo; removida do contrato publico
 - `c:src/core/crypto_ed25519.c:fe_cswap` — helper do subconjunto Monocypher sem referencias no codigo ativo; removido para nao manter superficie executavel sem chamador
 - `c:src/core/test_protocol.c:protocol_append_hex` — surface ausente na fonte atual; confirmar remocao ou renomeacao
