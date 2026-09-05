@@ -6259,3 +6259,20 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `ambiguous_symbols=[]`. A sincronização/renderização do catálogo passou e
   marcou 3 superfícies adicionais como `COVERED`, totalizando 7.326
   superfícies, 6.884 `COVERED`, 442 `PENDING`, 59 aposentadas e 165 casos.
+
+- Incremento Shell Checks: RegCheck de ciclo de vida — concluído em
+  2026-09-05 (America/Sao_Paulo). A fixture existente
+  `host:shell:checks`, compilada com `ZEPHYROS_HOST_TEST`, passou a exercitar
+  diretamente `shell_regcheck_validate_processes`,
+  `shell_regcheck_validate_cleanup`, `shell_regcheck_validate_loader_result`
+  e `shell_regcheck_start_image`, cobrindo processos residuais, cleanup de
+  paging/foco, resultados normais e cancelados do loader, PID divergente,
+  índice inválido e loader indisponível. Nenhuma imagem foi executada e nenhum
+  processo ou recurso real foi criado; não houve espera indefinida. Passou
+  `make test-shell-checks-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`; o relatório
+  `build/test-results/shell-checks-host/coverage.json` terminou `PASS`, com 54
+  funções reais de `src/shell/shell_checks.c`, `unknown_addresses=[]` e
+  `ambiguous_symbols=[]`. A sincronização/renderização do catálogo passou e
+  marcou 4 superfícies adicionais como `COVERED`, totalizando 7.326
+  superfícies, 6.888 `COVERED`, 438 `PENDING`, 59 aposentadas e 165 casos.

@@ -38,6 +38,10 @@ static process_user_fault_summary_t fixture_last_user_fault;
 static int fixture_last_user_fault_result = OK;
 static int fixture_create_user_result = OK;
 static uint32_t fixture_created_user_pid;
+static uint32_t fixture_process_count;
+static int fixture_foreground_active;
+static int fixture_run_image_result = OK;
+static uint32_t fixture_run_image_pid;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -153,6 +157,27 @@ int process_create_user_test(int trigger_fault, uint32_t* pid_out) {
     return OK;
 }
 
+uint32_t process_get_count(void) {
+    return fixture_process_count;
+}
+
+int app_loader_is_foreground_active(void) {
+    return fixture_foreground_active;
+}
+
+int app_loader_run_image(const char* name, const uint8_t* image,
+                         uint32_t size, const app_launch_info_t* launch,
+                         uint32_t* pid_out) {
+    (void)name;
+    (void)image;
+    (void)size;
+    (void)launch;
+    if (fixture_run_image_result != OK) return fixture_run_image_result;
+    if (!pid_out) return ERR_NULL;
+    *pid_out = fixture_run_image_pid;
+    return OK;
+}
+
 int fs_read_file(const char* filename, uint8_t* buffer, uint32_t max_size) {
     (void)filename;
     if (fixture_read_result != 0) return fixture_read_result;
@@ -224,6 +249,19 @@ void shell_checks_host_set_fault_fixture(uint32_t count, uint32_t pid,
 void shell_checks_host_set_user_create_fixture(int result, uint32_t pid) {
     fixture_create_user_result = result;
     fixture_created_user_pid = pid;
+}
+
+void shell_checks_host_set_process_count(uint32_t count) {
+    fixture_process_count = count;
+}
+
+void shell_checks_host_set_foreground_fixture(int active) {
+    fixture_foreground_active = active;
+}
+
+void shell_checks_host_set_run_image_fixture(int result, uint32_t pid) {
+    fixture_run_image_result = result;
+    fixture_run_image_pid = pid;
 }
 
 int main(void) {

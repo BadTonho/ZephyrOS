@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6884 |
+| `COVERED` | 6888 |
 | `MANUAL` | 0 |
-| `PENDING` | 442 |
+| `PENDING` | 438 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -6221,19 +6221,19 @@
 | `c:src/shell/shell_checks.c:shell_regcheck_run_full_checks` | `src/shell/shell_checks.c` | `shell_regcheck_run_full_checks` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_regcheck_same_device` | `src/shell/shell_checks.c` | `shell_regcheck_same_device` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_regcheck_same_usb` | `src/shell/shell_checks.c` | `shell_regcheck_same_usb` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_checks.c:shell_regcheck_start_image` | `src/shell/shell_checks.c` | `shell_regcheck_start_image` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_checks.c:shell_regcheck_start_image` | `src/shell/shell_checks.c` | `shell_regcheck_start_image` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_regcheck_valid_acpi_madt_entry` | `src/shell/shell_checks.c` | `shell_regcheck_valid_acpi_madt_entry` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_regcheck_valid_acpi_table` | `src/shell/shell_checks.c` | `shell_regcheck_valid_acpi_table` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_regcheck_validate_acpi` | `src/shell/shell_checks.c` | `shell_regcheck_validate_acpi` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_regcheck_validate_acpi_power` | `src/shell/shell_checks.c` | `shell_regcheck_validate_acpi_power` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_regcheck_validate_acpi_recovery` | `src/shell/shell_checks.c` | `shell_regcheck_validate_acpi_recovery` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_regcheck_validate_cleanup` | `src/shell/shell_checks.c` | `shell_regcheck_validate_cleanup` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_checks.c:shell_regcheck_validate_cleanup` | `src/shell/shell_checks.c` | `shell_regcheck_validate_cleanup` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_regcheck_validate_devices` | `src/shell/shell_checks.c` | `shell_regcheck_validate_devices` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_regcheck_validate_health` | `src/shell/shell_checks.c` | `shell_regcheck_validate_health` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_regcheck_validate_loader_result` | `src/shell/shell_checks.c` | `shell_regcheck_validate_loader_result` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_checks.c:shell_regcheck_validate_loader_result` | `src/shell/shell_checks.c` | `shell_regcheck_validate_loader_result` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_regcheck_validate_packages` | `src/shell/shell_checks.c` | `shell_regcheck_validate_packages` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_regcheck_validate_power` | `src/shell/shell_checks.c` | `shell_regcheck_validate_power` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_checks.c:shell_regcheck_validate_processes` | `src/shell/shell_checks.c` | `shell_regcheck_validate_processes` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_checks.c:shell_regcheck_validate_processes` | `src/shell/shell_checks.c` | `shell_regcheck_validate_processes` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_regcheck_validate_scheduler` | `src/shell/shell_checks.c` | `shell_regcheck_validate_scheduler` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_regcheck_validate_services` | `src/shell/shell_checks.c` | `shell_regcheck_validate_services` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_checks.c:shell_regcheck_validate_usb` | `src/shell/shell_checks.c` | `shell_regcheck_validate_usb` | `shell` | `PENDING` | 0 |
@@ -7494,7 +7494,7 @@
 | `host:process:threads` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, criacao, selecao, yield, bloqueio, espera, cancelamento, desbloqueio, timeouts, limites e limpeza com threads e stacks estaticas | o scheduler preserva estados, identidade, filas de espera, codigos canonicos e limpeza sem executar troca de contexto Assembly | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas, threads e stacks estaticas da fixture host | processo host encerrado, threads estaticas removidas e manifesto, logs e cobertura preservados |
 | `host:security:tls` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar politica, estados, validade, cadeia, SAN, pinning, rotacao, revogacao e autoteste TLS com relogio e RNG falsos | identidades validas sao aceitas, rejeicoes retornam motivo canonico e capacidades indisponiveis permanecem explicitas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado TLS, politica e dependencias falsas no processo host | estado TLS e dependencias falsas reiniciados e artefatos preservados |
 | `host:security:tls-client` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar tls_client.c com engine BearSSL, socket, relogio e RNG falsos | handshake, envio, recepcao, EOF, estados de erro e limpeza preservam os contratos do adaptador | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do adaptador e fixtures do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
-| `host:shell:checks` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar contratos internos de fases, resumos, limites de falhas, estados de job, Q2Check de faults e limpeza, comparacao de inventarios, validacao de tabelas ACPI/MADT, validacao de resultados de migracao, VMA lazy e page fault, verificacao de imagens ZAPP e limpeza limitada | helpers preservam nomes, estados, codigos canonicos, limites, bytes, snapshots de paging e limpeza esperados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estruturas estaticas da fixture host; nenhum hardware, armazenamento ou processo real | estado interno resetado, processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:shell:checks` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar contratos internos de fases, resumos, limites de falhas, estados de job, Q2Check de faults e limpeza, RegCheck de processos, cleanup, resultados do loader e imagens, comparacao de inventarios, validacao de tabelas ACPI/MADT, validacao de resultados de migracao, VMA lazy e page fault, verificacao de imagens ZAPP e limpeza limitada | helpers preservam nomes, estados, codigos canonicos, limites, bytes, snapshots de paging e limpeza esperados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estruturas estaticas da fixture host; nenhum hardware, armazenamento ou processo real | estado interno resetado, processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:command-utils` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar parsing, validacao de argumentos, normalizacao e formatacao | utilitarios aceitam entradas validas, rejeitam limites e formatam valores corretamente | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos de entrada, saida e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:commands-apps` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar comandos de aplicativos, modos de interface, display, editor, icones, cenas, player e caminhos indisponiveis com doubles estaticos | handlers validos e invalidos preservam limites, codigos canonicos, transicoes e limpeza sem hardware ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e estado local da fixture no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:commands-core` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar handlers de ajuda, terminal, VFS, processos, threads, memoria, som, energia, compressao e resultados de loader com dependencias estaticas falsas | comandos validos e invalidos preservam seus retornos, mensagens, callbacks e limpeza sem hardware ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers e contadores estaticos da fixture host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7868,17 +7868,13 @@
 - `c:src/shell/shell_checks.c:shell_regcheck_prepare_progress`
 - `c:src/shell/shell_checks.c:shell_regcheck_prepare_step`
 - `c:src/shell/shell_checks.c:shell_regcheck_run_full_checks`
-- `c:src/shell/shell_checks.c:shell_regcheck_start_image`
 - `c:src/shell/shell_checks.c:shell_regcheck_validate_acpi`
 - `c:src/shell/shell_checks.c:shell_regcheck_validate_acpi_power`
 - `c:src/shell/shell_checks.c:shell_regcheck_validate_acpi_recovery`
-- `c:src/shell/shell_checks.c:shell_regcheck_validate_cleanup`
 - `c:src/shell/shell_checks.c:shell_regcheck_validate_devices`
 - `c:src/shell/shell_checks.c:shell_regcheck_validate_health`
-- `c:src/shell/shell_checks.c:shell_regcheck_validate_loader_result`
 - `c:src/shell/shell_checks.c:shell_regcheck_validate_packages`
 - `c:src/shell/shell_checks.c:shell_regcheck_validate_power`
-- `c:src/shell/shell_checks.c:shell_regcheck_validate_processes`
 - `c:src/shell/shell_checks.c:shell_regcheck_validate_scheduler`
 - `c:src/shell/shell_checks.c:shell_regcheck_validate_services`
 - `c:src/shell/shell_checks.c:shell_regcheck_validate_usb`

@@ -3969,6 +3969,9 @@ extern void shell_checks_host_set_fault_fixture(uint32_t count, uint32_t pid,
                                                 int result);
 extern void shell_checks_host_set_user_create_fixture(int result,
                                                        uint32_t pid);
+extern void shell_checks_host_set_process_count(uint32_t count);
+extern void shell_checks_host_set_foreground_fixture(int active);
+extern void shell_checks_host_set_run_image_fixture(int result, uint32_t pid);
 
 int shell_checks_host_test_contracts(void) {
     static const char* app_phases[SHELL_APPCHECK_PHASE_COUNT] = {
@@ -4170,6 +4173,67 @@ int shell_checks_host_test_contracts(void) {
     shell_regcheck.loader_result = ERR_STATE;
     if (!shell_regcheck_has_failures()) failures++;
     shell_regcheck_reset();
+
+    shell_regcheck.initial_process_count = 3U;
+    shell_regcheck.initial_user_count = 1U;
+    shell_regcheck.initial_zombie_count = 0U;
+    shell_checks_host_set_process_count(3U);
+    shell_checks_host_set_process_snapshot(20U, 5U, 1U, 0U);
+    if (shell_regcheck_validate_processes() != OK) failures++;
+    shell_checks_host_set_process_count(4U);
+    if (shell_regcheck_validate_processes() != ERR_STATE) failures++;
+
+    shell_regcheck.initial_focus = 5U;
+    shell_regcheck.initial_user_directories = 0U;
+    shell_regcheck.initial_user_pages = 0U;
+    shell_checks_host_set_process_count(3U);
+    shell_checks_host_set_process_snapshot(20U, 5U, 1U, 0U);
+    shell_checks_host_set_vma_snapshot(0U, 0U, 0U, 0U, OK);
+    shell_checks_host_set_foreground_fixture(0);
+    if (shell_regcheck_validate_cleanup() != OK) failures++;
+    shell_checks_host_set_foreground_fixture(1);
+    if (shell_regcheck_validate_cleanup() != ERR_STATE) failures++;
+    shell_checks_host_set_foreground_fixture(0);
+
+    shell_regcheck.expected_pid = 21U;
+    {
+        app_loader_result_t result;
+
+        kmemset(&result, 0, sizeof(result));
+        result.pid = 21U;
+        result.exit_code = APP_EXIT_SUCCESS;
+        result.focus_acquired = 1U;
+        if (shell_regcheck_validate_loader_result(&result, 0) != OK) {
+            failures++;
+        }
+        result.cancelled = 1U;
+        if (shell_regcheck_validate_loader_result(&result, 0) != ERR_STATE) {
+            failures++;
+        }
+        result.cancelled = 1U;
+        result.exit_code = APP_EXIT_CANCELLED;
+        if (shell_regcheck_validate_loader_result(&result, 1) != OK) {
+            failures++;
+        }
+        result.pid = 0U;
+        if (shell_regcheck_validate_loader_result(&result, 1) != ERR_STATE) {
+            failures++;
+        }
+    }
+    shell_checks_host_set_run_image_fixture(ERR_UNAVAILABLE, 0U);
+    if (shell_regcheck_start_image(SHELL_REGCHECK_IDLE) != ERR_INVALID ||
+        shell_regcheck_start_image(SHELL_REGCHECK_WAIT_DEMO) !=
+            ERR_UNAVAILABLE) {
+        failures++;
+    }
+    shell_checks_host_set_run_image_fixture(OK, 22U);
+    if (shell_regcheck_start_image(SHELL_REGCHECK_WAIT_DEMO) != OK ||
+        shell_regcheck.expected_pid != 22U ||
+        shell_regcheck.state != SHELL_REGCHECK_WAIT_DEMO) {
+        failures++;
+    }
+    shell_regcheck_reset();
+    shell_checks_host_set_foreground_fixture(0);
 
     kmemset(&device_left, 0, sizeof(device_left));
     device_left.kind = DEVICE_KIND_PCI;
