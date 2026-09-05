@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6950 |
+| `COVERED` | 6955 |
 | `MANUAL` | 0 |
-| `PENDING` | 376 |
+| `PENDING` | 371 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -1606,11 +1606,11 @@
 | `api:src/include/ui/updater.h:updater_init` | `src/include/ui/updater.h` | `updater_init` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/updater.h:updater_is_open` | `src/include/ui/updater.h` | `updater_is_open` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/updater.h:updater_open` | `src/include/ui/updater.h` | `updater_open` | `ui` | `COVERED` | 3 |
-| `api:src/include/ui/updater_test.h:updater_host_fixture_clear_message` | `src/include/ui/updater_test.h` | `updater_host_fixture_clear_message` | `ui` | `PENDING` | 0 |
-| `api:src/include/ui/updater_test.h:updater_host_fixture_set_cached_path` | `src/include/ui/updater_test.h` | `updater_host_fixture_set_cached_path` | `ui` | `PENDING` | 0 |
-| `api:src/include/ui/updater_test.h:updater_host_fixture_set_keyboard_ascii` | `src/include/ui/updater_test.h` | `updater_host_fixture_set_keyboard_ascii` | `ui` | `PENDING` | 0 |
-| `api:src/include/ui/updater_test.h:updater_host_fixture_set_message` | `src/include/ui/updater_test.h` | `updater_host_fixture_set_message` | `ui` | `PENDING` | 0 |
-| `api:src/include/ui/updater_test.h:updater_host_fixture_set_slots` | `src/include/ui/updater_test.h` | `updater_host_fixture_set_slots` | `ui` | `PENDING` | 0 |
+| `api:src/include/ui/updater_test.h:updater_host_fixture_clear_message` | `src/include/ui/updater_test.h` | `updater_host_fixture_clear_message` | `ui` | `COVERED` | 1 |
+| `api:src/include/ui/updater_test.h:updater_host_fixture_set_cached_path` | `src/include/ui/updater_test.h` | `updater_host_fixture_set_cached_path` | `ui` | `COVERED` | 1 |
+| `api:src/include/ui/updater_test.h:updater_host_fixture_set_keyboard_ascii` | `src/include/ui/updater_test.h` | `updater_host_fixture_set_keyboard_ascii` | `ui` | `COVERED` | 1 |
+| `api:src/include/ui/updater_test.h:updater_host_fixture_set_message` | `src/include/ui/updater_test.h` | `updater_host_fixture_set_message` | `ui` | `COVERED` | 1 |
+| `api:src/include/ui/updater_test.h:updater_host_fixture_set_slots` | `src/include/ui/updater_test.h` | `updater_host_fixture_set_slots` | `ui` | `COVERED` | 1 |
 | `api:src/include/ui/updater_test.h:updater_host_test_contracts` | `src/include/ui/updater_test.h` | `updater_host_test_contracts` | `ui` | `COVERED` | 3 |
 | `api:src/include/ui/wm.h:wm_close_focused` | `src/include/ui/wm.h` | `wm_close_focused` | `ui` | `COVERED` | 2 |
 | `api:src/include/ui/wm.h:wm_close_hosted_app` | `src/include/ui/wm.h` | `wm_close_hosted_app` | `ui` | `COVERED` | 2 |
@@ -7585,11 +7585,6 @@
 - `api:src/include/process/process.h:process_user_enter`
 - `api:src/include/process/process.h:process_user_termination_enter`
 - `api:src/include/process/thread.h:thread_context_switch`
-- `api:src/include/ui/updater_test.h:updater_host_fixture_clear_message`
-- `api:src/include/ui/updater_test.h:updater_host_fixture_set_cached_path`
-- `api:src/include/ui/updater_test.h:updater_host_fixture_set_keyboard_ascii`
-- `api:src/include/ui/updater_test.h:updater_host_fixture_set_message`
-- `api:src/include/ui/updater_test.h:updater_host_fixture_set_slots`
 - `asm:src/boot/boot.asm:detect_geometry`
 - `asm:src/boot/boot.asm:disk_error`
 - `asm:src/boot/boot.asm:load_sectors`

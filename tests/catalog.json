@@ -37267,9 +37267,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:updater"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/updater_test.h:updater_host_fixture_set_cached_path",
@@ -37285,9 +37288,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:updater"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/updater_test.h:updater_host_fixture_set_keyboard_ascii",
@@ -37303,9 +37309,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:updater"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/updater_test.h:updater_host_fixture_set_message",
@@ -37321,9 +37330,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:updater"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/updater_test.h:updater_host_fixture_set_slots",
@@ -37339,9 +37351,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:updater"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/updater_test.h:updater_host_test_contracts",
@@ -174213,6 +174228,11 @@
       "effects": "somente estruturas estaticas do processo host; nenhum disco, rede, worker ou hardware real",
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "surface_ids": [
+        "api:src/include/ui/updater_test.h:updater_host_fixture_clear_message",
+        "api:src/include/ui/updater_test.h:updater_host_fixture_set_cached_path",
+        "api:src/include/ui/updater_test.h:updater_host_fixture_set_keyboard_ascii",
+        "api:src/include/ui/updater_test.h:updater_host_fixture_set_message",
+        "api:src/include/ui/updater_test.h:updater_host_fixture_set_slots",
         "c:src/updater/updater.c:updater_cancel_check",
         "c:src/updater/updater.c:updater_change_selection",
         "c:src/updater/updater.c:updater_copy_name",

@@ -2173,7 +2173,9 @@ O relatório instrumentado fica em
 `build/test-results/updater-host/coverage.json` e deve terminar com
 `status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`, observando 24
 funções reais de `src/updater/updater.c` e quatro funções compartilhadas de
-`src/core/string.c`. A execução tem timeout do runner e deixa manifesto,
+`src/core/string.c`. Os cinco helpers declarados em `ui/updater_test.h` também
+são chamados diretamente pela fixture e permanecem vinculados ao caso como
+contrato de teste. A execução tem timeout do runner e deixa manifesto,
 resultado, logs e cobertura preservados.
 
 ## Shell Checks: validadores de resultados host-only

@@ -3787,6 +3787,37 @@
         "src/updater/updater.c"
       ],
       "include_public_apis": false,
+      "surface_ids": [
+        "api:src/include/ui/updater_test.h:updater_host_fixture_clear_message",
+        "api:src/include/ui/updater_test.h:updater_host_fixture_set_cached_path",
+        "api:src/include/ui/updater_test.h:updater_host_fixture_set_keyboard_ascii",
+        "api:src/include/ui/updater_test.h:updater_host_fixture_set_message",
+        "api:src/include/ui/updater_test.h:updater_host_fixture_set_slots",
+        "c:src/updater/updater.c:updater_cancel_check",
+        "c:src/updater/updater.c:updater_change_selection",
+        "c:src/updater/updater.c:updater_copy_name",
+        "c:src/updater/updater.c:updater_gui_tab_width",
+        "c:src/updater/updater.c:updater_history_detail_text",
+        "c:src/updater/updater.c:updater_host_test_contracts",
+        "c:src/updater/updater.c:updater_is_zup_name",
+        "c:src/updater/updater.c:updater_keep_selection_visible",
+        "c:src/updater/updater.c:updater_point_in",
+        "c:src/updater/updater.c:updater_remote_active_job_name",
+        "c:src/updater/updater.c:updater_selected_package",
+        "c:src/updater/updater.c:updater_sort_packages",
+        "c:src/updater/updater.c:updater_system_cached_path",
+        "c:src/updater/updater.c:updater_system_offer_final_reboot",
+        "c:src/updater/updater.c:updater_system_slot_name",
+        "c:src/updater/updater.c:updater_system_tag_begin",
+        "c:src/updater/updater.c:updater_system_tag_finish",
+        "c:src/updater/updater.c:updater_system_tag_key",
+        "c:src/updater/updater.c:updater_system_tag_valid",
+        "c:src/updater/updater.c:updater_text_append",
+        "c:src/updater/updater.c:updater_text_append_u32",
+        "c:src/updater/updater.c:updater_text_append_version",
+        "c:src/updater/updater.c:updater_u32_text",
+        "c:src/updater/updater.c:updater_version_text"
+      ],
       "case_definition": {
         "id": "host:ui:updater",
         "scenario": "Contratos deterministas do System Updater sem servicos externos",
@@ -3819,7 +3850,7 @@
         ],
         "status": "AUTOMATED"
       },
-      "evidence": "make test-updater-host PASS com 24 funcoes reais de updater: nomes, ordenacao, formatacao, historico, cancelamento, tags ZSYS, cache e slots; cobertura instrumentada sem servicos externos, enderecos desconhecidos ou simbolos ambiguos"
+      "evidence": "make test-updater-host PASS com 24 funcoes reais de updater e cinco helpers da fixture chamados diretamente: nomes, ordenacao, formatacao, historico, cancelamento, tags ZSYS, cache e slots; cobertura instrumentada sem servicos externos, enderecos desconhecidos ou simbolos ambiguos"
     },
     {
       "id": "filemanager-host-dynamic",

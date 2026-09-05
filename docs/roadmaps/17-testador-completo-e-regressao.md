@@ -3179,6 +3179,19 @@ pendente.
       registra 7.315 superfícies, 6.819 `COVERED`, 496 `PENDING`, 59 aposentadas
       e 162 casos; as pendências restantes continuam explícitas.
 
+### Evidência Updater: helpers da fixture vinculados — 2026-09-05
+
+- [x] O caso existente `host:ui:updater` foi reexecutado e terminou `PASS`,
+      com 24 funções reais de `src/updater/updater.c` observadas no relatório
+      instrumentado, além dos cinco helpers de `src/include/ui/updater_test.h`
+      chamados diretamente pela própria fixture.
+- [x] O relatório terminou sem endereços desconhecidos ou símbolos ambíguos.
+      Os cinco helpers foram registrados como contrato host-only direto, sem
+      atribuí-los artificialmente a funções de produção do Updater.
+- [x] A sincronização, renderização e `make catalog-test` passaram. O catálogo
+      atual registra 7.326 superfícies, 6.955 `COVERED`, 371 `PENDING`, 59
+      aposentadas e 165 casos; as demais pendências continuam explícitas.
+
 ### Evidência Shell input/hosted: fechamento dos vínculos host-only — 2026-09-05
 
 - [x] Os casos existentes `host:shell:input` e `host:shell:hosted` foram
