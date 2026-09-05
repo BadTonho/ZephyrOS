@@ -6243,3 +6243,19 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `ambiguous_symbols=[]`. A sincronização/renderização do catálogo passou e
   marcou 2 superfícies adicionais como `COVERED`, totalizando 7.326
   superfícies, 6.881 `COVERED`, 445 `PENDING`, 59 aposentadas e 165 casos.
+
+- Incremento Shell Checks: Q2Check de faults e limpeza — concluído em
+  2026-09-05 (America/Sao_Paulo). A fixture existente
+  `host:shell:checks`, compilada com `ZEPHYROS_HOST_TEST`, passou a exercitar
+  diretamente `shell_q2check_validate_fault`,
+  `shell_q2check_validate_cleanup` e `shell_q2check_start_fault`, cobrindo
+  fault ausente, PID e contagem incorretos, resumo inválido, erro de consulta,
+  limpeza de foco/usuários/zombies, índice inválido, falha de criação e início
+  válido. Não houve processo real, paging, disco, rede ou hardware, nem espera
+  indefinida. Passou `make test-shell-checks-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`; o relatório
+  `build/test-results/shell-checks-host/coverage.json` terminou `PASS`, com 50
+  funções reais de `src/shell/shell_checks.c`, `unknown_addresses=[]` e
+  `ambiguous_symbols=[]`. A sincronização/renderização do catálogo passou e
+  marcou 3 superfícies adicionais como `COVERED`, totalizando 7.326
+  superfícies, 6.884 `COVERED`, 442 `PENDING`, 59 aposentadas e 165 casos.

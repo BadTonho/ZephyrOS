@@ -33,6 +33,11 @@ static int fixture_read_result;
 static uint8_t fixture_read_mutate;
 static uint32_t fixture_delete_successes;
 static uint32_t fixture_delete_calls;
+static uint32_t fixture_user_fault_count;
+static process_user_fault_summary_t fixture_last_user_fault;
+static int fixture_last_user_fault_result = OK;
+static int fixture_create_user_result = OK;
+static uint32_t fixture_created_user_pid;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -127,6 +132,27 @@ int process_vma_get_page_fault_stats(page_fault_stats_t* stats) {
     return OK;
 }
 
+uint32_t process_get_user_fault_count(void) {
+    return fixture_user_fault_count;
+}
+
+int process_get_last_user_fault(process_user_fault_summary_t* summary) {
+    if (fixture_last_user_fault_result != OK) {
+        return fixture_last_user_fault_result;
+    }
+    if (!summary) return ERR_NULL;
+    *summary = fixture_last_user_fault;
+    return OK;
+}
+
+int process_create_user_test(int trigger_fault, uint32_t* pid_out) {
+    (void)trigger_fault;
+    if (fixture_create_user_result != OK) return fixture_create_user_result;
+    if (!pid_out) return ERR_NULL;
+    *pid_out = fixture_created_user_pid;
+    return OK;
+}
+
 int fs_read_file(const char* filename, uint8_t* buffer, uint32_t max_size) {
     (void)filename;
     if (fixture_read_result != 0) return fixture_read_result;
@@ -183,6 +209,21 @@ void shell_checks_host_set_image_fixture(const uint8_t* data, uint32_t size,
 void shell_checks_host_set_delete_fixture(uint32_t successes) {
     fixture_delete_successes = successes;
     fixture_delete_calls = 0U;
+}
+
+void shell_checks_host_set_fault_fixture(uint32_t count, uint32_t pid,
+                                         uint32_t vector, uint32_t error,
+                                         int result) {
+    fixture_user_fault_count = count;
+    fixture_last_user_fault.pid = pid;
+    fixture_last_user_fault.vector = vector;
+    fixture_last_user_fault.error = error;
+    fixture_last_user_fault_result = result;
+}
+
+void shell_checks_host_set_user_create_fixture(int result, uint32_t pid) {
+    fixture_create_user_result = result;
+    fixture_created_user_pid = pid;
 }
 
 int main(void) {
