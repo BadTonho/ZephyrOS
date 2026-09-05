@@ -2792,10 +2792,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:network-checks",
         "qemu:tst5:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_job.h:shell_packages_start_job",
@@ -3437,10 +3438,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:shell:network-checks",
         "qemu:tst5:network"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_finish_command",
@@ -144219,9 +144221,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:shell_regcheck_same_network",
@@ -144237,9 +144242,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:shell_regcheck_validate_arp",
@@ -144255,9 +144263,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:shell_regcheck_validate_ipv4_icmp",
@@ -144273,9 +144284,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:shell_regcheck_validate_network_entry",
@@ -144291,9 +144305,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:shell_regcheck_validate_network_recovery",
@@ -144309,9 +144326,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:shell_regcheck_validate_network_summary",
@@ -144327,9 +144347,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:shell_regcheck_validate_routes",
@@ -144345,9 +144368,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:shell_regcheck_validate_tcp_socket_http",
@@ -144363,9 +144389,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:shell_regcheck_validate_udp_dhcp_dns",
@@ -144381,9 +144410,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:network-checks"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell_commands_network.c:shell_selecttest_cancel_worker",
@@ -168372,6 +168404,52 @@
         "c:src/shell/mediaplayer.c:mp_update",
         "c:src/shell/mediaplayer.c:str_copy"
       ]
+    },
+    {
+      "id": "host:shell:network-checks",
+      "scenario": "Invariantes dos contratos de rede usados pelo Shell",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "hardware": "estado de rede estatico"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "executar a validacao de rede do Shell com interface PCI estatica, dependencias de protocolo coerentes e cenarios de entrada invalida e indisponivel",
+      "expected": "a validacao aceita o estado coerente, rejeita interface inconsistente e propaga ERR_UNAVAILABLE sem residuos",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente estruturas estaticas da fixture host; nenhum driver, hardware, armazenamento ou rede real",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "surface_ids": [
+        "api:src/include/apps/shell_job.h:shell_network_start_job",
+        "api:src/include/apps/shell_runtime.h:shell_network_validate_for_checks",
+        "c:src/shell/shell_commands_network.c:shell_network_validate_for_checks",
+        "c:src/shell/shell_commands_network.c:shell_regcheck_same_network",
+        "c:src/shell/shell_commands_network.c:shell_regcheck_validate_arp",
+        "c:src/shell/shell_commands_network.c:shell_regcheck_validate_ipv4_icmp",
+        "c:src/shell/shell_commands_network.c:shell_regcheck_validate_network_entry",
+        "c:src/shell/shell_commands_network.c:shell_regcheck_validate_network_recovery",
+        "c:src/shell/shell_commands_network.c:shell_regcheck_validate_network_summary",
+        "c:src/shell/shell_commands_network.c:shell_regcheck_validate_routes",
+        "c:src/shell/shell_commands_network.c:shell_regcheck_validate_tcp_socket_http",
+        "c:src/shell/shell_commands_network.c:shell_regcheck_validate_udp_dhcp_dns"
+      ],
+      "tags": [
+        "host",
+        "shell",
+        "network",
+        "invariants",
+        "negative",
+        "coverage"
+      ],
+      "status": "AUTOMATED"
     },
     {
       "id": "host:shell:pipeline",

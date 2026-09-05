@@ -2627,3 +2627,13 @@ pendente.
       foi sincronizada e o catálogo ficou com 7.293 superfícies: 6.309
       `COVERED` e 984 `PENDING`. O gate e a visão renderizada passaram; as
       pendências restantes continuam explícitas.
+
+### Incremento Shell/network-checks — 2026-09-04
+
+- [x] Foi criado o caso host-only `host:shell:network-checks`, chamando a
+      função real de validação de rede do Shell com uma interface PCI estática.
+- [x] Foram exercitados o estado coerente, a rejeição de interface inconsistente
+      e a propagação de `ERR_UNAVAILABLE`, sem hardware, driver ou rede reais.
+- [x] O alvo específico, a sincronização/renderização e `make catalog-test`
+      passaram; o catálogo ficou com 7.293 superfícies, sendo 6.319 `COVERED`
+      e 974 `PENDING`. As pendências restantes continuam explícitas.

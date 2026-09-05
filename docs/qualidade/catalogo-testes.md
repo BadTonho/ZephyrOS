@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7293**
-- Casos de teste: **154**
+- Casos de teste: **155**
 - Superfícies aposentadas: **57**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 6309 |
+| `COVERED` | 6319 |
 | `MANUAL` | 0 |
-| `PENDING` | 984 |
+| `PENDING` | 974 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 154 |
+| `AUTOMATED` | 155 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -178,7 +178,7 @@
 | `api:src/include/apps/shell_job.h:shell_job_set_timeout` | `src/include/apps/shell_job.h` | `shell_job_set_timeout` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_job.h:shell_job_start` | `src/include/apps/shell_job.h` | `shell_job_start` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_job.h:shell_job_state_name` | `src/include/apps/shell_job.h` | `shell_job_state_name` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell_job.h:shell_network_start_job` | `src/include/apps/shell_job.h` | `shell_network_start_job` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_job.h:shell_network_start_job` | `src/include/apps/shell_job.h` | `shell_network_start_job` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_job.h:shell_packages_start_job` | `src/include/apps/shell_job.h` | `shell_packages_start_job` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/shell_job.h:shell_storage_start_job` | `src/include/apps/shell_job.h` | `shell_storage_start_job` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/shell_pipeline.h:shell_pipeline_is_active` | `src/include/apps/shell_pipeline.h` | `shell_pipeline_is_active` | `apps` | `COVERED` | 6 |
@@ -206,7 +206,7 @@
 | `api:src/include/apps/shell_runtime.h:shell_hosted_open` | `src/include/apps/shell_runtime.h` | `shell_hosted_open` | `apps` | `COVERED` | 4 |
 | `api:src/include/apps/shell_runtime.h:shell_hosted_present_progress` | `src/include/apps/shell_runtime.h` | `shell_hosted_present_progress` | `apps` | `COVERED` | 4 |
 | `api:src/include/apps/shell_runtime.h:shell_hosted_reset` | `src/include/apps/shell_runtime.h` | `shell_hosted_reset` | `apps` | `COVERED` | 4 |
-| `api:src/include/apps/shell_runtime.h:shell_network_validate_for_checks` | `src/include/apps/shell_runtime.h` | `shell_network_validate_for_checks` | `apps` | `COVERED` | 1 |
+| `api:src/include/apps/shell_runtime.h:shell_network_validate_for_checks` | `src/include/apps/shell_runtime.h` | `shell_network_validate_for_checks` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_finish_command` | `src/include/apps/shell_runtime.h` | `shell_runtime_finish_command` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key` | `src/include/apps/shell_runtime.h` | `shell_runtime_handle_terminal_key` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible` | `src/include/apps/shell_runtime.h` | `shell_runtime_is_hosted_visible` | `apps` | `COVERED` | 4 |
@@ -6618,16 +6618,16 @@
 | `c:src/shell/shell_commands_network.c:shell_network_start_http_job` | `src/shell/shell_commands_network.c` | `shell_network_start_http_job` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:shell_network_start_job` | `src/shell/shell_commands_network.c` | `shell_network_start_job` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:shell_network_start_ping_job` | `src/shell/shell_commands_network.c` | `shell_network_start_ping_job` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:shell_network_validate_for_checks` | `src/shell/shell_commands_network.c` | `shell_network_validate_for_checks` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:shell_regcheck_same_network` | `src/shell/shell_commands_network.c` | `shell_regcheck_same_network` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:shell_regcheck_validate_arp` | `src/shell/shell_commands_network.c` | `shell_regcheck_validate_arp` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:shell_regcheck_validate_ipv4_icmp` | `src/shell/shell_commands_network.c` | `shell_regcheck_validate_ipv4_icmp` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:shell_regcheck_validate_network_entry` | `src/shell/shell_commands_network.c` | `shell_regcheck_validate_network_entry` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:shell_regcheck_validate_network_recovery` | `src/shell/shell_commands_network.c` | `shell_regcheck_validate_network_recovery` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:shell_regcheck_validate_network_summary` | `src/shell/shell_commands_network.c` | `shell_regcheck_validate_network_summary` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:shell_regcheck_validate_routes` | `src/shell/shell_commands_network.c` | `shell_regcheck_validate_routes` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:shell_regcheck_validate_tcp_socket_http` | `src/shell/shell_commands_network.c` | `shell_regcheck_validate_tcp_socket_http` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell_commands_network.c:shell_regcheck_validate_udp_dhcp_dns` | `src/shell/shell_commands_network.c` | `shell_regcheck_validate_udp_dhcp_dns` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell_commands_network.c:shell_network_validate_for_checks` | `src/shell/shell_commands_network.c` | `shell_network_validate_for_checks` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_network.c:shell_regcheck_same_network` | `src/shell/shell_commands_network.c` | `shell_regcheck_same_network` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_network.c:shell_regcheck_validate_arp` | `src/shell/shell_commands_network.c` | `shell_regcheck_validate_arp` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_network.c:shell_regcheck_validate_ipv4_icmp` | `src/shell/shell_commands_network.c` | `shell_regcheck_validate_ipv4_icmp` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_network.c:shell_regcheck_validate_network_entry` | `src/shell/shell_commands_network.c` | `shell_regcheck_validate_network_entry` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_network.c:shell_regcheck_validate_network_recovery` | `src/shell/shell_commands_network.c` | `shell_regcheck_validate_network_recovery` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_network.c:shell_regcheck_validate_network_summary` | `src/shell/shell_commands_network.c` | `shell_regcheck_validate_network_summary` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_network.c:shell_regcheck_validate_routes` | `src/shell/shell_commands_network.c` | `shell_regcheck_validate_routes` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_network.c:shell_regcheck_validate_tcp_socket_http` | `src/shell/shell_commands_network.c` | `shell_regcheck_validate_tcp_socket_http` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_network.c:shell_regcheck_validate_udp_dhcp_dns` | `src/shell/shell_commands_network.c` | `shell_regcheck_validate_udp_dhcp_dns` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_network.c:shell_selecttest_cancel_worker` | `src/shell/shell_commands_network.c` | `shell_selecttest_cancel_worker` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:shell_selecttest_close_worker` | `src/shell/shell_commands_network.c` | `shell_selecttest_close_worker` | `shell` | `PENDING` | 0 |
 | `c:src/shell/shell_commands_network.c:shell_selecttest_join_worker` | `src/shell/shell_commands_network.c` | `shell_selecttest_join_worker` | `shell` | `PENDING` | 0 |
@@ -7474,6 +7474,7 @@
 | `host:shell:introspection` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar parser hexadecimal com limites e entradas invalidas | parse_hex_u32 aceita digitos validos e rejeita prefixo, digito e overflow com codigos canonicos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:job` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar ciclo de vida, deadlines, wakeups, progresso, cancelamento, drenagem, timeout, erros, eventos IPC e diagnostico job status | jobs completam, falham, cancelam ou expiram com estado, codigo, geracao e limpeza coerentes | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do executor, filas IPC, relogio, teclado, video e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:mediaplayer` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar audio, imagem e reproducao combinada com arquivos estaticos e dependencias de hardware simuladas | o Media Player preserva estados, metadados, erros canonicos, limites e ownership sem hardware ou armazenamento real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos, allocator de teste, recovery fake e contadores de audio e video do processo host | dados de audio e imagem liberados, estado parado e manifesto, logs e cobertura preservados |
+| `host:shell:network-checks` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar a validacao de rede do Shell com interface PCI estatica, dependencias de protocolo coerentes e cenarios de entrada invalida e indisponivel | a validacao aceita o estado coerente, rejeita interface inconsistente e propaga ERR_UNAVAILABLE sem residuos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estruturas estaticas da fixture host; nenhum driver, hardware, armazenamento ou rede real | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:pipeline` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar parsing, limites, pipes, redirecionamento, workers, leitura, escrita, autoteste e limpeza sob falhas controladas | pipelines validos concluem, entradas invalidas retornam codigo canonico e recursos sao restaurados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente pipes, threads, buffers, redirecionamento, video e logs falsos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:wifi` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar status, inventario PCI/USB, scan, conexao, argumentos invalidos, erros e estados indisponiveis | o Shell formata estados, locais, resultados e erros sem aceitar senha ou abrir conexao externa | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos de saida e fixtures do gerenciador Wi-Fi no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:storage:block` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar block_self_test e block_cache_self_test com providers estaticos | filas BIO, limites, cancelamento, failpoints, cache, writeback e sync passam e o inventario retorna ao estado inicial | compilador ausente, warning, cobertura incompleta, failpoint residual, falha de assercao ou timeout | somente estruturas globais do processo host e buffers estaticos de provider | autotestes removem dispositivos temporarios, limpam cache e deixam fila sem pendencias |
@@ -8234,16 +8235,6 @@
 - `c:src/shell/shell_commands_network.c:shell_network_start_http_job`
 - `c:src/shell/shell_commands_network.c:shell_network_start_job`
 - `c:src/shell/shell_commands_network.c:shell_network_start_ping_job`
-- `c:src/shell/shell_commands_network.c:shell_network_validate_for_checks`
-- `c:src/shell/shell_commands_network.c:shell_regcheck_same_network`
-- `c:src/shell/shell_commands_network.c:shell_regcheck_validate_arp`
-- `c:src/shell/shell_commands_network.c:shell_regcheck_validate_ipv4_icmp`
-- `c:src/shell/shell_commands_network.c:shell_regcheck_validate_network_entry`
-- `c:src/shell/shell_commands_network.c:shell_regcheck_validate_network_recovery`
-- `c:src/shell/shell_commands_network.c:shell_regcheck_validate_network_summary`
-- `c:src/shell/shell_commands_network.c:shell_regcheck_validate_routes`
-- `c:src/shell/shell_commands_network.c:shell_regcheck_validate_tcp_socket_http`
-- `c:src/shell/shell_commands_network.c:shell_regcheck_validate_udp_dhcp_dns`
 - `c:src/shell/shell_commands_network.c:shell_selecttest_cancel_worker`
 - `c:src/shell/shell_commands_network.c:shell_selecttest_close_worker`
 - `c:src/shell/shell_commands_network.c:shell_selecttest_join_worker`
