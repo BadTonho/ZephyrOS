@@ -2089,6 +2089,22 @@ O relatório instrumentado fica em
 `status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`, observando as
 56 funções de `src/settings/settings.c`.
 
+## Shell/UI: contratos do Desktop host-only
+
+O alvo `test-desktop-host` valida os modos Simple e Classic do Desktop com
+VESA, vídeo, display, taskbar, ícones, GUI, mouse e timer falsos. A fixture
+cobre inicialização, desenho, layouts, seleção, teclado, cliques, arraste,
+hit-testing, limites, fallback e limpeza, sem hardware real:
+
+```text
+make test-desktop-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O relatório instrumentado fica em
+`build/test-results/desktop-host/coverage.json` e deve terminar com
+`status=PASS`, `unknown_addresses=[]` e `ambiguous_symbols=[]`, observando as
+42 funções de `src/desktop/desktop.c`.
+
 ## Shell/UI: contratos da App Store host-only
 
 O alvo `test-appstore-host` valida os helpers determinísticos da App Store

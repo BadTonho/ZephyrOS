@@ -1845,14 +1845,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery"
+        "qemu:tst5:update-recovery",
+        "host:shell:input"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -1873,14 +1873,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery"
+        "qemu:tst5:update-recovery",
+        "host:shell:input"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -1901,14 +1901,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery"
+        "qemu:tst5:update-recovery",
+        "host:shell:input"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -1957,14 +1957,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery"
+        "qemu:tst5:update-recovery",
+        "host:shell:input"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -1985,14 +1985,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery"
+        "qemu:tst5:update-recovery",
+        "host:shell:input"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -2013,14 +2013,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery"
+        "qemu:tst5:update-recovery",
+        "host:shell:input"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -2041,14 +2041,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery"
+        "qemu:tst5:update-recovery",
+        "host:shell:input"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -3601,10 +3601,10 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:hosted",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:storage"
+        "qemu:tst5:storage",
+        "host:shell:hosted"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -22481,9 +22481,9 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
-        "qemu:tst6:matrix:baseline"
+        "qemu:tst6:matrix:baseline",
+        "host:drivers:rtc-status"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -22504,9 +22504,9 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
-        "qemu:tst6:matrix:baseline"
+        "qemu:tst6:matrix:baseline",
+        "host:drivers:rtc-status"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -22527,9 +22527,9 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
-        "qemu:tst6:matrix:baseline"
+        "qemu:tst6:matrix:baseline",
+        "host:drivers:rtc-status"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -22550,9 +22550,9 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
-        "qemu:tst6:matrix:baseline"
+        "qemu:tst6:matrix:baseline",
+        "host:drivers:rtc-status"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -34998,11 +34998,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:desktop",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/desktop.h:desktop_draw",
@@ -35020,11 +35021,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:desktop",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/desktop.h:desktop_draw_icons",
@@ -35042,11 +35044,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:desktop",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/desktop.h:desktop_draw_workspace",
@@ -35064,11 +35067,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:desktop",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/desktop.h:desktop_get_mode",
@@ -35086,11 +35090,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:desktop",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/desktop.h:desktop_get_selected_app",
@@ -35108,11 +35113,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:desktop",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/desktop.h:desktop_handle_click",
@@ -35130,11 +35136,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:desktop",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/desktop.h:desktop_handle_key",
@@ -35152,11 +35159,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:desktop",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/desktop.h:desktop_handle_mouse",
@@ -35174,11 +35182,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:desktop",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/desktop.h:desktop_init",
@@ -35196,11 +35205,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:desktop",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/desktop.h:desktop_is_active",
@@ -35218,11 +35228,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:desktop",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/desktop.h:desktop_set_active",
@@ -35240,11 +35251,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:desktop",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/desktop.h:desktop_set_mode",
@@ -35262,11 +35274,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:desktop",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/desktop.h:desktop_update_selection",
@@ -35284,11 +35297,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:desktop",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "api:src/include/ui/display.h:display_apply_scale",
@@ -89516,9 +89530,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:desktop"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_apply_drag_preview",
@@ -89536,11 +89553,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:desktop",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_assign_classic_slots",
@@ -89558,11 +89576,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:desktop",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_build_classic_slots",
@@ -89580,11 +89599,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:desktop",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_classic_background",
@@ -89602,11 +89622,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:desktop",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_classic_get_columns",
@@ -89624,11 +89645,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:desktop",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_drag_threshold_reached",
@@ -89644,9 +89666,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:desktop"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_draw",
@@ -89662,9 +89687,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:desktop"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_draw_classic",
@@ -89680,9 +89708,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:desktop"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_draw_classic_bitmap",
@@ -89700,11 +89731,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:desktop",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_draw_classic_workspace",
@@ -89722,11 +89754,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:desktop",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_draw_icons",
@@ -89742,9 +89775,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:desktop"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_draw_icons_classic",
@@ -89762,11 +89798,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:desktop",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_draw_icons_simple",
@@ -89782,9 +89819,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:desktop"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_draw_simple",
@@ -89800,9 +89840,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:desktop"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_draw_workspace",
@@ -89820,11 +89863,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:desktop",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_find_classic_icon",
@@ -89840,9 +89884,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:desktop"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_find_drop_slot",
@@ -89858,9 +89905,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:desktop"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_find_free_slot",
@@ -89876,9 +89926,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:desktop"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_find_nearest_slot",
@@ -89894,9 +89947,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:desktop"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_find_slot_by_grid",
@@ -89914,11 +89970,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:desktop",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_get_icon_entry",
@@ -89934,9 +89991,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:desktop"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_get_mode",
@@ -89954,11 +90014,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:desktop",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_get_selected_app",
@@ -89974,9 +90035,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:desktop"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_handle_click",
@@ -89992,9 +90056,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:desktop"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_handle_key",
@@ -90012,11 +90079,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:desktop",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_handle_mouse",
@@ -90032,9 +90100,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:desktop"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_init",
@@ -90050,9 +90121,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:desktop"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_is_active",
@@ -90070,11 +90144,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:desktop",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_layout_classic",
@@ -90092,11 +90167,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:desktop",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_rects_intersect",
@@ -90112,9 +90188,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:desktop"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_reset_drag",
@@ -90130,9 +90209,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:desktop"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_set_active",
@@ -90148,9 +90230,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:desktop"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_set_mode",
@@ -90166,9 +90251,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:desktop"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_slot_is_occupied",
@@ -90184,9 +90272,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:desktop"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_text_length",
@@ -90202,9 +90293,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:desktop"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_update_drag_preview",
@@ -90220,9 +90314,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:desktop"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:desktop_update_selection",
@@ -90238,9 +90335,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:desktop"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:draw_single_icon_classic",
@@ -90258,11 +90358,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:ui:desktop",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/desktop/desktop.c:draw_single_icon_simple",
@@ -90278,9 +90379,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:desktop"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/drivers/ac97.c:ac97_delay",
@@ -97067,9 +97171,9 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
-        "qemu:tst6:matrix:baseline"
+        "qemu:tst6:matrix:baseline",
+        "host:drivers:rtc-status"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -97090,9 +97194,9 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
-        "qemu:tst6:matrix:baseline"
+        "qemu:tst6:matrix:baseline",
+        "host:drivers:rtc-status"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -97113,9 +97217,9 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
-        "qemu:tst6:matrix:baseline"
+        "qemu:tst6:matrix:baseline",
+        "host:drivers:rtc-status"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -97136,9 +97240,9 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
-        "qemu:tst6:matrix:baseline"
+        "qemu:tst6:matrix:baseline",
+        "host:drivers:rtc-status"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -97222,9 +97326,9 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
-        "qemu:tst6:matrix:baseline"
+        "qemu:tst6:matrix:baseline",
+        "host:drivers:rtc-status"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -97371,9 +97475,9 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
-        "qemu:tst6:matrix:baseline"
+        "qemu:tst6:matrix:baseline",
+        "host:drivers:rtc-status"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -97394,9 +97498,9 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:rtc-status",
         "qemu:tst4:platform",
-        "qemu:tst6:matrix:baseline"
+        "qemu:tst6:matrix:baseline",
+        "host:drivers:rtc-status"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -149197,10 +149301,10 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:hosted",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:storage"
+        "qemu:tst5:storage",
+        "host:shell:hosted"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -149221,10 +149325,10 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:hosted",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:storage"
+        "qemu:tst5:storage",
+        "host:shell:hosted"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -149266,10 +149370,10 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:hosted",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:storage"
+        "qemu:tst5:storage",
+        "host:shell:hosted"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -149290,10 +149394,10 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:hosted",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:storage"
+        "qemu:tst5:storage",
+        "host:shell:hosted"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -149335,10 +149439,10 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:hosted",
         "qemu:tst5:apps",
         "qemu:tst5:shell",
-        "qemu:tst5:storage"
+        "qemu:tst5:storage",
+        "host:shell:hosted"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -149359,14 +149463,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery"
+        "qemu:tst5:update-recovery",
+        "host:shell:input"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -149408,14 +149512,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery"
+        "qemu:tst5:update-recovery",
+        "host:shell:input"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -149457,12 +149561,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery"
+        "qemu:tst5:update-recovery",
+        "host:shell:input"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -149483,14 +149587,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery"
+        "qemu:tst5:update-recovery",
+        "host:shell:input"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -149532,12 +149636,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery"
+        "qemu:tst5:update-recovery",
+        "host:shell:input"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -149579,12 +149683,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery"
+        "qemu:tst5:update-recovery",
+        "host:shell:input"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -149626,14 +149730,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery"
+        "qemu:tst5:update-recovery",
+        "host:shell:input"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -149654,12 +149758,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery"
+        "qemu:tst5:update-recovery",
+        "host:shell:input"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -149680,12 +149784,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery"
+        "qemu:tst5:update-recovery",
+        "host:shell:input"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -149706,14 +149810,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery"
+        "qemu:tst5:update-recovery",
+        "host:shell:input"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -149734,14 +149838,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:input",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
         "qemu:tst5:processes",
         "qemu:tst5:shell",
         "qemu:tst5:storage",
-        "qemu:tst5:update-recovery"
+        "qemu:tst5:update-recovery",
+        "host:shell:input"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -164975,6 +165079,7 @@
       "status": "AUTOMATED",
       "surface_ids": [
         "api:src/include/drivers/rtc.h:rtc_get_status",
+        "c:src/drivers/rtc.c:rtc_get_status",
         "api:src/include/drivers/rtc.h:rtc_init",
         "api:src/include/drivers/rtc.h:rtc_read_utc",
         "api:src/include/drivers/rtc.h:rtc_self_test",
@@ -164983,7 +165088,6 @@
         "c:src/drivers/rtc.c:rtc_days_in_month",
         "c:src/drivers/rtc.c:rtc_decode_snapshot",
         "c:src/drivers/rtc.c:rtc_decode_value",
-        "c:src/drivers/rtc.c:rtc_get_status",
         "c:src/drivers/rtc.c:rtc_inb",
         "c:src/drivers/rtc.c:rtc_init",
         "c:src/drivers/rtc.c:rtc_is_leap_year",
@@ -165755,15 +165859,15 @@
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
       "surface_ids": [
-        "api:src/include/core/panic.h:panic",
-        "api:src/include/core/panic.h:panic_halt",
-        "api:src/include/core/panic.h:panic_memory",
         "c:src/kernel/panic.c:panic",
         "c:src/kernel/panic.c:panic_draw_header",
         "c:src/kernel/panic.c:panic_halt",
         "c:src/kernel/panic.c:panic_memory",
         "c:src/kernel/panic.c:panic_print_metric",
-        "c:src/kernel/panic.c:panic_print_number"
+        "c:src/kernel/panic.c:panic_print_number",
+        "api:src/include/core/panic.h:panic",
+        "api:src/include/core/panic.h:panic_halt",
+        "api:src/include/core/panic.h:panic_memory"
       ],
       "tags": [
         "host",
@@ -169323,10 +169427,13 @@
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
       "surface_ids": [
+        "api:src/include/apps/shell_input.h:shell_input_init",
+        "c:src/shell/shell_input.c:shell_input_handle_terminal_scroll_key",
+        "c:src/shell/shell_input.c:shell_input_history_navigate",
+        "c:src/shell/shell_input.c:shell_input_history_replace_input",
         "api:src/include/apps/shell_input.h:shell_input_cancel_extended",
         "api:src/include/apps/shell_input.h:shell_input_get_buffer",
         "api:src/include/apps/shell_input.h:shell_input_handle_key",
-        "api:src/include/apps/shell_input.h:shell_input_init",
         "api:src/include/apps/shell_input.h:shell_input_print_prompt",
         "api:src/include/apps/shell_input.h:shell_input_reset",
         "api:src/include/apps/shell_input.h:shell_input_reset_modifiers",
@@ -169334,12 +169441,9 @@
         "c:src/shell/shell_input.c:shell_input_cancel_extended",
         "c:src/shell/shell_input.c:shell_input_get_buffer",
         "c:src/shell/shell_input.c:shell_input_handle_key",
-        "c:src/shell/shell_input.c:shell_input_handle_terminal_scroll_key",
         "c:src/shell/shell_input.c:shell_input_history_copy",
         "c:src/shell/shell_input.c:shell_input_history_detach_for_edit",
-        "c:src/shell/shell_input.c:shell_input_history_navigate",
         "c:src/shell/shell_input.c:shell_input_history_record",
-        "c:src/shell/shell_input.c:shell_input_history_replace_input",
         "c:src/shell/shell_input.c:shell_input_history_reset_navigation",
         "c:src/shell/shell_input.c:shell_input_init",
         "c:src/shell/shell_input.c:shell_input_print_prompt",
@@ -181589,6 +181693,96 @@
         "interrupts",
         "coverage",
         "snapshot"
+      ],
+      "status": "AUTOMATED"
+    },
+    {
+      "id": "host:ui:desktop",
+      "scenario": "Contratos deterministas do Desktop em modos Simple e Classic",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "instrumentation": "-finstrument-functions",
+        "warnings": "error",
+        "display": "VESA, taskbar, icons, GUI e mouse falsos"
+      },
+      "preconditions": "compilador C nativo e nm disponiveis",
+      "action": "exercitar inicializacao, desenho TUI/GUI, modos, selecao, teclado, cliques, arraste, limites e fallback",
+      "expected": "Desktop preserva estado, layout, selecao, navegacao, hit-testing e limpeza sem hardware real",
+      "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+      "effects": "somente estado estatico do Desktop e doubles de video, VESA, taskbar, icons, GUI e mouse no processo host",
+      "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
+      "surface_ids": [
+        "api:src/include/ui/desktop.h:desktop_add_icon",
+        "api:src/include/ui/desktop.h:desktop_draw",
+        "api:src/include/ui/desktop.h:desktop_draw_icons",
+        "api:src/include/ui/desktop.h:desktop_draw_workspace",
+        "api:src/include/ui/desktop.h:desktop_get_mode",
+        "api:src/include/ui/desktop.h:desktop_get_selected_app",
+        "api:src/include/ui/desktop.h:desktop_handle_click",
+        "api:src/include/ui/desktop.h:desktop_handle_key",
+        "api:src/include/ui/desktop.h:desktop_handle_mouse",
+        "api:src/include/ui/desktop.h:desktop_init",
+        "api:src/include/ui/desktop.h:desktop_is_active",
+        "api:src/include/ui/desktop.h:desktop_set_active",
+        "api:src/include/ui/desktop.h:desktop_set_mode",
+        "api:src/include/ui/desktop.h:desktop_update_selection",
+        "c:src/desktop/desktop.c:desktop_add_icon",
+        "c:src/desktop/desktop.c:desktop_apply_drag_preview",
+        "c:src/desktop/desktop.c:desktop_assign_classic_slots",
+        "c:src/desktop/desktop.c:desktop_build_classic_slots",
+        "c:src/desktop/desktop.c:desktop_classic_background",
+        "c:src/desktop/desktop.c:desktop_classic_get_columns",
+        "c:src/desktop/desktop.c:desktop_drag_threshold_reached",
+        "c:src/desktop/desktop.c:desktop_draw",
+        "c:src/desktop/desktop.c:desktop_draw_classic",
+        "c:src/desktop/desktop.c:desktop_draw_classic_bitmap",
+        "c:src/desktop/desktop.c:desktop_draw_classic_workspace",
+        "c:src/desktop/desktop.c:desktop_draw_icons",
+        "c:src/desktop/desktop.c:desktop_draw_icons_classic",
+        "c:src/desktop/desktop.c:desktop_draw_icons_simple",
+        "c:src/desktop/desktop.c:desktop_draw_simple",
+        "c:src/desktop/desktop.c:desktop_draw_workspace",
+        "c:src/desktop/desktop.c:desktop_find_classic_icon",
+        "c:src/desktop/desktop.c:desktop_find_drop_slot",
+        "c:src/desktop/desktop.c:desktop_find_free_slot",
+        "c:src/desktop/desktop.c:desktop_find_nearest_slot",
+        "c:src/desktop/desktop.c:desktop_find_slot_by_grid",
+        "c:src/desktop/desktop.c:desktop_get_icon_entry",
+        "c:src/desktop/desktop.c:desktop_get_mode",
+        "c:src/desktop/desktop.c:desktop_get_selected_app",
+        "c:src/desktop/desktop.c:desktop_handle_click",
+        "c:src/desktop/desktop.c:desktop_handle_key",
+        "c:src/desktop/desktop.c:desktop_handle_mouse",
+        "c:src/desktop/desktop.c:desktop_init",
+        "c:src/desktop/desktop.c:desktop_is_active",
+        "c:src/desktop/desktop.c:desktop_layout_classic",
+        "c:src/desktop/desktop.c:desktop_rects_intersect",
+        "c:src/desktop/desktop.c:desktop_reset_drag",
+        "c:src/desktop/desktop.c:desktop_set_active",
+        "c:src/desktop/desktop.c:desktop_set_mode",
+        "c:src/desktop/desktop.c:desktop_slot_is_occupied",
+        "c:src/desktop/desktop.c:desktop_text_length",
+        "c:src/desktop/desktop.c:desktop_update_drag_preview",
+        "c:src/desktop/desktop.c:desktop_update_selection",
+        "c:src/desktop/desktop.c:draw_single_icon_classic",
+        "c:src/desktop/desktop.c:draw_single_icon_simple"
+      ],
+      "tags": [
+        "host",
+        "ui",
+        "desktop",
+        "tui",
+        "gui",
+        "mouse",
+        "limits",
+        "coverage"
       ],
       "status": "AUTOMATED"
     }

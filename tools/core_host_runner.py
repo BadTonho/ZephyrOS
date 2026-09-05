@@ -334,6 +334,12 @@ SETTINGS_ICONS_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_settings_host.c",
     ROOT / "src" / "settings" / "settings.c",
 )
+DESKTOP_RESULT_DIR = ROOT / "build" / "test-results" / "desktop-host"
+DESKTOP_BINARY = ROOT / "build" / "tests" / "test_desktop_host.exe"
+DESKTOP_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_desktop_host.c",
+    ROOT / "src" / "desktop" / "desktop.c",
+)
 SYSCALL_RESULT_DIR = ROOT / "build" / "test-results" / "syscall-host"
 SYSCALL_BINARY = ROOT / "build" / "tests" / "test_syscall_host.exe"
 SYSCALL_SOURCE_FILES = (
@@ -950,6 +956,8 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
     if case_id == "host:ui:settings-icons":
         return (SETTINGS_ICONS_RESULT_DIR, SETTINGS_ICONS_BINARY,
                 SETTINGS_ICONS_SOURCE_FILES, "settings-icons-host")
+    if case_id == "host:ui:desktop":
+        return DESKTOP_RESULT_DIR, DESKTOP_BINARY, DESKTOP_SOURCE_FILES, "desktop-host"
     if case_id == "host:core:syscall":
         return SYSCALL_RESULT_DIR, SYSCALL_BINARY, SYSCALL_SOURCE_FILES, "syscall-host"
     if case_id == "host:process:runtime":
@@ -1405,6 +1413,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:shell:commands-packages",
                                  "host:shell:editor",
                                  "host:ui:settings-icons",
+                                 "host:ui:desktop",
                                  "host:shell:checks",
                                  "host:shell:diagnostics",
                                  "host:shell:introspection",
