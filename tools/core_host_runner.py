@@ -1279,6 +1279,8 @@ def compiler_command(compiler: str, binary: Path,
         compatibility_flags.extend(["-Wno-int-to-pointer-cast",
                                     "-Wno-pointer-to-int-cast",
                                     "-Dasm=__asm__"])
+    if any(source.name == "panic.c" for source in selected_sources):
+        compatibility_flags.append("-Dpanic_halt=host_panic_halt")
     include_directories = []
     if any(source.name == "settings.c" for source in selected_sources):
         include_directories.extend(["-I", str(ROOT / "src" / "settings")])

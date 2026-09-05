@@ -6140,3 +6140,15 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   no catálogo. Passaram o alvo host-only, a sincronização/renderização e
   `make catalog-test`. O catálogo atual registra 7.315 superfícies, 6.813
   `COVERED` e 502 `PENDING`; as demais pendências continuam explícitas.
+
+- Evidência Kernel/panic isolada — concluída em 2026-09-05
+  (America/Sao_Paulo). A fixture `host:kernel:panic` foi executada novamente
+  depois do build limpo, com `host_panic_halt` como adaptador privado do
+  processo host. O relatório `build/test-results/panic-host/coverage.json`
+  terminou `PASS` e observou as cinco funções reais das rotas
+  `panic`/`panic_memory`, sem endereços desconhecidos ou símbolos ambíguos. A
+  API e a implementação de `panic_halt()` real permanecem `PENDING`, pois o
+  loop de parada freestanding não foi executado pela fixture. Passaram
+  `make test-panic-host`, build limpo, sincronização/renderização,
+  `make catalog-test` e `git diff --check`. O catálogo registra 7.315
+  superfícies, 6.805 `COVERED`, 510 `PENDING`, 59 aposentadas e 162 casos.

@@ -24,8 +24,8 @@ processos/threads, FAT32, update U3/U4, os contratos remotos ZSYS e o
 repositório remoto de aplicativos, dos helpers de pacotes do Shell, da
 interface App Store, dos relatórios de rede do Shell, do módulo de
 Configurações, do Desktop, dos comandos de aplicativos, da evidência RTC e
-das fixtures de entrada/hosted, registra 7.315 superfícies, 6.818 `COVERED` e
-497 `PENDING`. O próximo objetivo deste
+das fixtures de entrada/hosted e da evidência de panic, registra 7.315
+superfícies, 6.805 `COVERED` e 510 `PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
 Isso não significa declarar hardware físico validado sem equipamento.
@@ -2958,3 +2958,18 @@ pendente.
       host-only passaram. O catálogo atual registra 7.315 superfícies, sendo
       6.818 `COVERED` e 497 `PENDING`; as pendências restantes continuam
       explícitas.
+
+### Evidência Kernel/panic isolada — 2026-09-05
+
+- [x] A fixture `host:kernel:panic` foi reexecutada depois do build limpo com
+      um símbolo de halt exclusivo do processo host. O `panic_halt()` real do
+      kernel não foi substituído nem marcado como coberto por engano.
+- [x] O relatório dinâmico terminou `PASS`, observando `panic`,
+      `panic_memory`, `panic_draw_header`, `panic_print_metric` e
+      `panic_print_number`, sem endereços desconhecidos ou símbolos ambíguos.
+      A API e a implementação de `panic_halt` permanecem `PENDING` até existir
+      evidência de execução real do caminho de parada.
+- [x] Passaram o build limpo, `make test-panic-host`, sincronização,
+      renderização, `make catalog-test` e `git diff --check`. O catálogo registra
+      7.315 superfícies, 6.805 `COVERED`, 510 `PENDING`, 59 aposentadas e 162
+      casos.
