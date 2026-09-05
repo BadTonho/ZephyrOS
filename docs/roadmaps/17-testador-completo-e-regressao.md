@@ -21,11 +21,29 @@ A infraestrutura TST1–TST7 está concluída para a matriz automatizada existen
 mas o programa de cobertura integral ainda não está concluído. O catálogo
 mantém 156 casos `AUTOMATED`; após os incrementos de Shell, RTC,
 processos/threads, FAT32, update U3/U4, os contratos remotos ZSYS e o
-repositório remoto de aplicativos e dos helpers de pacotes do Shell, registra
-7.299 superfícies, 6.372 `COVERED` e 927 `PENDING`. O próximo objetivo deste
+repositório remoto de aplicativos, dos helpers de pacotes do Shell e da
+interface App Store, registra 7.307 superfícies, 6.383 `COVERED` e 924
+`PENDING`. O próximo objetivo deste
 roadmap é eliminar esse `PENDING` de todas as superfícies de software
 testáveis, vinculando cada uma a um caso executável e a evidência reproduzível.
 Isso não significa declarar hardware físico validado sem equipamento.
+
+### Incremento Shell/UI App Store — 2026-09-05
+
+- [x] Foi criado o caso host-only `host:ui:appstore`, com header interno
+      compilado somente sob `ZEPHYROS_HOST_TEST`; a API pública e o build
+      normal permanecem inalterados.
+- [x] A fixture exercitou diretamente os contratos determinísticos da App
+      Store: cópia e truncamento de texto, formatação de inteiros, dependências,
+      bloqueios, seleção e restauração, planos de downgrade, estados, rollback,
+      confiança e geometria dos botões, usando doubles estáticos.
+- [x] A evidência dinâmica terminou `PASS`, com 32 superfícies reais de
+      `src/appstore/appstore.c` e `src/core/string.c`, sem endereços
+      desconhecidos ou símbolos ambíguos.
+- [x] Passaram `make test-appstore-host` com `HOST_CC`, sincronização e
+      renderização do catálogo e `make catalog-test`. O catálogo registra
+      7.307 superfícies, 6.383 `COVERED`, 924 `PENDING` e 158 casos; as
+      pendências restantes continuam explícitas.
 
 ### Incremento Shell/commands packages — 2026-09-04
 

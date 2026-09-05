@@ -146,6 +146,7 @@ novo; o handshake e inerte no boot normal ate a validacao de `HELLO`.
 | `src/include/ui/icons.h` | `docs/12-desktop/desktop.md` |
 | `src/include/ui/settings.h` | `docs/12-desktop/desktop.md` |
 | `src/include/ui/appstore.h` | `docs/13-aplicativos/app-store.md` |
+| `src/include/ui/appstore_test.h` | `docs/09-shell/refatoracao-shell.md` |
 | `src/include/ui/taskbar.h` | `docs/12-desktop/desktop.md` |
 | `src/include/ui/updater.h` | `docs/14-atualizacoes/system-updater.md` |
 | `src/include/ui/wm.h` | `docs/12-desktop/desktop.md` |

@@ -402,3 +402,22 @@ persistentemente compartilhado pelo Shell.
 O relatorio instrumentado fica em
 `build/test-results/shell-commands-packages-host/coverage.json`; a
 sincronizacao associa somente as superficies realmente chamadas pela fixture.
+
+## Contratos da App Store host-only
+
+`appstore_test.h` define uma entrada interna ativa somente em
+`ZEPHYROS_HOST_TEST`. A fixture `host:ui:appstore` chama os helpers reais da
+App Store para validar texto, truncamento, dependências, bloqueios, seleção,
+restauração, planos de downgrade, estados, rollback, confiança e geometria
+dos botões. Os doubles permanecem estáticos e não iniciam workers nem acessam
+hardware ou armazenamento.
+
+O alvo é:
+
+```text
+make test-appstore-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+O relatório instrumentado fica em
+`build/test-results/appstore-host/coverage.json`; somente as superfícies
+observadas pela execução são sincronizadas no catálogo.

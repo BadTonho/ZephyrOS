@@ -147,6 +147,7 @@ HOST_CASE_TARGETS = {
     "host:core:app-builtin": "test-app-builtin-host",
     "host:core:app-loader": "test-app-loader-host",
     "host:ui:taskbar": "test-taskbar-host",
+    "host:ui:appstore": "test-appstore-host",
     "host:core:syscall": "test-syscall-host",
     "host:process:runtime": "test-process-host",
     "host:process:threads": "test-thread-host",

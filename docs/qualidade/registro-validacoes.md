@@ -5903,3 +5903,16 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   ou símbolos ambíguos; o catálogo registra 7.299 superfícies, 6.372
   `COVERED`, 927 `PENDING` e 157 casos. As pendências restantes continuam
   explícitas.
+
+- Incremento Shell/UI App Store — concluído em 2026-09-05 (America/Sao_Paulo).
+  Foi criado o caso host-only `host:ui:appstore`, com entrada interna ativa
+  somente em `ZEPHYROS_HOST_TEST`. A fixture chamou diretamente os helpers
+  reais de `src/appstore/appstore.c` para validar formatação e truncamento,
+  dependências, bloqueios, seleção e restauração, planos de downgrade,
+  estados, rollback, confiança e geometria da interface, usando doubles
+  estáticos e sem iniciar workers ou acessar hardware/armazenamento. Passaram
+  `make test-appstore-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`, a
+  sincronização/renderização da cobertura e `make catalog-test`. A evidência
+  dinâmica resolveu 32 superfícies reais, sem endereços desconhecidos ou
+  símbolos ambíguos. O catálogo registra 7.307 superfícies, 6.383 `COVERED`,
+  924 `PENDING` e 158 casos; as pendências restantes continuam explícitas.
