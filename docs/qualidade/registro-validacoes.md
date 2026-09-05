@@ -6061,3 +6061,18 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   endereços desconhecidos ou símbolos ambíguos. O catálogo registra 7.309
   superfícies, 6.525 `COVERED`, 784 `PENDING`, 59 aposentadas e 161 casos; as
   pendências restantes continuam explícitas.
+
+- Incremento Shell/UI App Store — backend concluído em 2026-09-05
+  (America/Sao_Paulo). A fixture `host:ui:appstore` passou a executar, com
+  backends estáticos, `appstore_init`, os refreshes do catálogo local e remoto,
+  preflight, instalação, atualização, remoção, rollback, execução e os
+  workers remoto e local. O loop do worker foi limitado a um passo no host;
+  não houve espera indefinida, acesso a hardware, rede ou armazenamento real.
+  `make test-appstore-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe` passou
+  com `-Wall -Wextra -Werror`; a cobertura dinâmica observou as 98 superfícies
+  de `src/appstore/appstore.c`, totalizando 102 IDs no relatório com os
+  contratos auxiliares, sem endereços desconhecidos ou símbolos ambíguos.
+  Passaram também `make catalog-test` e o build limpo já executado para esta
+  versão. O catálogo registra 7.312 superfícies, 6.602 `COVERED`, 710
+  `PENDING`, 59 aposentadas e 161 casos; as pendências restantes continuam
+  explícitas.

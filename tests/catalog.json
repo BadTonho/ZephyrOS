@@ -40827,6 +40827,27 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/appstore/appstore.c:appstore_host_worker_contracts",
+      "kind": "c_function",
+      "source": "src/appstore/appstore.c",
+      "symbol": "appstore_host_worker_contracts",
+      "linkage": "static",
+      "owner": "appstore",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "c:src/appstore/appstore.c:appstore_hosted_close",
       "kind": "c_function",
       "source": "src/appstore/appstore.c",
@@ -40924,9 +40945,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_is_open",
@@ -41071,9 +41095,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_refresh_snapshot",
@@ -41089,9 +41116,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_remote_button_position",
@@ -41632,9 +41662,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_worker_finish",
@@ -41650,9 +41683,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_worker_install",
@@ -41668,9 +41704,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_worker_main",
@@ -41686,9 +41725,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_worker_preflight_install",
@@ -41704,9 +41746,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_worker_preflight_remove",
@@ -41722,9 +41767,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_worker_preflight_rollback",
@@ -41740,9 +41788,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_worker_preflight_update",
@@ -41758,9 +41809,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_worker_remote_apply",
@@ -41776,9 +41830,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_worker_remote_check",
@@ -41794,9 +41851,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_worker_remote_enable",
@@ -41812,9 +41872,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_worker_remote_fetch",
@@ -41830,9 +41893,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_worker_remove",
@@ -41848,9 +41914,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_worker_rollback",
@@ -41866,9 +41935,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_worker_run",
@@ -41884,9 +41956,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_worker_update",
@@ -41902,9 +41977,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_worker_verify",
@@ -41920,9 +41998,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:ui:appstore"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/boot/recovery_loader.c:recovery_boot_kernel",
@@ -165353,7 +165434,7 @@
       },
       "preconditions": "compilador C nativo e nm disponiveis",
       "action": "validar identificacao USB, revisao, descritores, endpoints Bulk, cabecalho de firmware, estados, callbacks Ethernet, scan, associacao e indisponibilidade segura",
-      "expected": "dispositivos incompatÃ­veis e fixtures invalidas retornam erros canonicos; o dispositivo suportado permanece indisponivel sem firmware e transporte confirmados",
+      "expected": "dispositivos incompatÃƒÂ­veis e fixtures invalidas retornam erros canonicos; o dispositivo suportado permanece indisponivel sem firmware e transporte confirmados",
       "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
       "effects": "somente estruturas USB, filesystem, interface Ethernet e estado do driver falso no processo host",
       "cleanup": "estruturas de dispositivo, firmware falso, interface, estado global, manifesto, logs e cobertura permanecem confinados ao processo host",
@@ -167342,8 +167423,8 @@
         "warnings": "error"
       },
       "preconditions": "compilador C nativo e nm disponiveis",
-      "action": "compilar e executar configuraÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o, envio, broadcast, recepÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o, checksum e handlers IPv4",
-      "expected": "datagramas validos sÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o entregues, entradas invÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡lidas sÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o recusadas e o estado ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â© restaurado",
+      "action": "compilar e executar configuraÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o, envio, broadcast, recepÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â§ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o, checksum e handlers IPv4",
+      "expected": "datagramas validos sÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o entregues, entradas invÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â¡lidas sÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â£o recusadas e o estado ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â© restaurado",
       "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
       "effects": "somente estado IPv4, tabela de rotas e buffers falsos de ARP/Ethernet",
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
@@ -169219,7 +169300,7 @@
       "action": "validar parsers de log, sinais, mouse e VMA, nomes de estados, cores, caminhos sysfs/proc e invariantes de memoria com dependencias estaticas falsas",
       "expected": "entradas validas retornam resultados canonicos; entradas nulas, invalidas e fora dos limites sao rejeitadas sem hardware, allocator ou armazenamento real",
       "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
-      "effects": "somente buffers estaticos, estado de filesystem e paginaÃ§Ã£o falsos no processo host",
+      "effects": "somente buffers estaticos, estado de filesystem e paginaÃƒÂ§ÃƒÂ£o falsos no processo host",
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "surface_ids": [
         "api:src/include/apps/shell_diagnostics_helpers.h:cmd_acpi_mode_name",
@@ -169437,7 +169518,7 @@
     },
     {
       "id": "host:shell:editor",
-      "scenario": "Contratos deterministas do nÃºcleo de ediÃ§Ã£o",
+      "scenario": "Contratos deterministas do nÃƒÂºcleo de ediÃƒÂ§ÃƒÂ£o",
       "owner": "quality",
       "layer": "host",
       "executor": "host",
@@ -169934,7 +170015,7 @@
     },
     {
       "id": "host:shell:wifi",
-      "scenario": "Comando Wi-Fi do Shell sobre inventÃ¡rio PCI/USB e rÃ¡dio indisponÃ­vel",
+      "scenario": "Comando Wi-Fi do Shell sobre inventÃƒÂ¡rio PCI/USB e rÃƒÂ¡dio indisponÃƒÂ­vel",
       "owner": "quality",
       "layer": "host",
       "executor": "host",
@@ -171806,16 +171887,20 @@
         "c:src/appstore/appstore.c:appstore_host_test_contracts",
         "c:src/appstore/appstore.c:appstore_host_text_contracts",
         "c:src/appstore/appstore.c:appstore_host_ui_contracts",
+        "c:src/appstore/appstore.c:appstore_host_worker_contracts",
         "c:src/appstore/appstore.c:appstore_hosted_close",
         "c:src/appstore/appstore.c:appstore_hosted_draw",
         "c:src/appstore/appstore.c:appstore_hosted_key",
         "c:src/appstore/appstore.c:appstore_hosted_mouse",
+        "c:src/appstore/appstore.c:appstore_init",
         "c:src/appstore/appstore.c:appstore_is_open",
         "c:src/appstore/appstore.c:appstore_keep_selection_visible",
         "c:src/appstore/appstore.c:appstore_open",
         "c:src/appstore/appstore.c:appstore_plan_is_downgrade",
         "c:src/appstore/appstore.c:appstore_point_in",
         "c:src/appstore/appstore.c:appstore_queue_job",
+        "c:src/appstore/appstore.c:appstore_refresh_remote_snapshot",
+        "c:src/appstore/appstore.c:appstore_refresh_snapshot",
         "c:src/appstore/appstore.c:appstore_remote_button_position",
         "c:src/appstore/appstore.c:appstore_remote_buttons_per_row",
         "c:src/appstore/appstore.c:appstore_remote_rollback_is_available",
@@ -171841,6 +171926,23 @@
         "c:src/appstore/appstore.c:appstore_u32_text",
         "c:src/appstore/appstore.c:appstore_visible_count",
         "c:src/appstore/appstore.c:appstore_visible_index",
+        "c:src/appstore/appstore.c:appstore_worker_build_plan",
+        "c:src/appstore/appstore.c:appstore_worker_finish",
+        "c:src/appstore/appstore.c:appstore_worker_install",
+        "c:src/appstore/appstore.c:appstore_worker_main",
+        "c:src/appstore/appstore.c:appstore_worker_preflight_install",
+        "c:src/appstore/appstore.c:appstore_worker_preflight_remove",
+        "c:src/appstore/appstore.c:appstore_worker_preflight_rollback",
+        "c:src/appstore/appstore.c:appstore_worker_preflight_update",
+        "c:src/appstore/appstore.c:appstore_worker_remote_apply",
+        "c:src/appstore/appstore.c:appstore_worker_remote_check",
+        "c:src/appstore/appstore.c:appstore_worker_remote_enable",
+        "c:src/appstore/appstore.c:appstore_worker_remote_fetch",
+        "c:src/appstore/appstore.c:appstore_worker_remove",
+        "c:src/appstore/appstore.c:appstore_worker_rollback",
+        "c:src/appstore/appstore.c:appstore_worker_run",
+        "c:src/appstore/appstore.c:appstore_worker_update",
+        "c:src/appstore/appstore.c:appstore_worker_verify",
         "c:src/core/string.c:kmemcpy",
         "c:src/core/string.c:kmemset",
         "c:src/core/string.c:kstrcmp",
