@@ -5928,3 +5928,16 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   desconhecidos ou símbolos ambíguos. A sincronização do catálogo cobriu 20
   superfícies novas e registra 7.307 superfícies, 6.403 `COVERED`, 904
   `PENDING` e 158 casos; as pendências restantes continuam explícitas.
+
+- Incremento Shell/checks e fixtures ZAPP — concluído em 2026-09-05
+  (America/Sao_Paulo). A fixture host-only existente `host:shell:checks` foi
+  ampliada para chamar diretamente os formatadores de resultado, a
+  classificação de filesystem/loader indisponível e os builders das imagens
+  ZAPP de demonstração, VMA, page fault, entrada e cancelamento. Foram
+  exercitados estados disponíveis e indisponíveis, cabeçalhos, tamanhos e
+  invariantes estruturais sem iniciar processos, acessar armazenamento ou
+  hardware reais. Passou `make test-shell-checks-host` com `HOST_CC`, e a
+  evidência dinâmica resolveu 11 superfícies novas sem endereços desconhecidos
+  ou símbolos ambíguos. A sincronização registra 7.307 superfícies, 6.414
+  `COVERED`, 893 `PENDING` e 158 casos; as pendências restantes continuam
+  explícitas.

@@ -2035,6 +2035,13 @@ O relatorio instrumentado fica em
 header interno `shell_checks.h`, compilado somente com `ZEPHYROS_HOST_TEST`, e
 nao acessa hardware, armazenamento ou processos reais.
 
+Além dos estados e fases já descritos, a fixture valida os formatadores de
+resultado em modo completo, a classificação de filesystem/loader indisponível
+e as imagens ZAPP internas usadas pelos cenários de demonstração, VMA, page
+fault, entrada e cancelamento. A cobertura dinâmica só associa superfícies
+presentes nessa execução; o restante de `shell_checks.c` continua pendente
+até possuir um executor real.
+
 ## Shell: comandos de pacotes host-only
 
 O alvo `test-shell-commands-packages-host` valida os helpers de
