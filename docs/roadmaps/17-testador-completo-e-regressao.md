@@ -29,8 +29,22 @@ relatórios RTC/Shell, da fixture host-only do Updater, da fixture host-only do
 File Manager, da fixture host-only do Task Manager, da validação de resultados
 do Shell Checks, da fixture host-only do GUI Test, da fixture host-only do
 menu de recuperação e da fixture host-only do loader de recuperação, registra
-7.330 superfícies, 7.283 `COVERED` e 47 `PENDING`, em 170 casos
+7.330 superfícies, 7.309 `COVERED` e 21 `PENDING`, em 170 casos
 `AUTOMATED`.
+
+### Incremento Assembly: boot real observado pelo trace QEMU — 2026-09-05
+
+- [x] Foi criado o alvo `test-assembly-trace-qemu`, que executa uma única
+      iteração do caso `qemu:tst7:assembly` com `-d in_asm`, sem retry, e
+      preserva o trace em `build-coverage/test-results/assembly-trace/<id>/`.
+- [x] A execução `ASSEMBLY_TRACE_RUN_ID=tst7-assembly-trace-2` produziu
+      `READY -> HEARTBEAT -> BEGIN -> PASS`; o coletor resolveu 26 entradas
+      reais de `boot.asm`, `stage2.asm`, `recovery_entry.asm` e `entry.asm`.
+- [x] O registro aceita somente símbolos presentes no trace e associa as
+      superfícies por `(source, symbol)`. Rotas de erro do BIOS e os loaders de
+      atualização `system_boot.asm`/`system_stage2.asm` continuam pendentes,
+      pois não foram exercitados por essa inicialização normal. O relatório
+      final preservou 17 símbolos ausentes em `missing_symbols`.
 
 ### Incremento Assembly: TSS e troca de contexto real — 2026-09-05
 

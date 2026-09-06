@@ -6572,6 +6572,20 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   7.327 superfícies, 7.180 `COVERED`, 147 `PENDING` e 168 casos; as demais
   pendências continuam explícitas.
 
+- 2026-09-05 - Boot Assembly observado por trace in_asm do QEMU
+
+  Caso: `qemu:tst7:assembly` / alvo `test-assembly-trace-qemu` com
+  `ASSEMBLY_TRACE_RUN_ID=tst7-assembly-trace-2`. Resultado `PASS`, com
+  `READY -> HEARTBEAT -> BEGIN -> PASS`, uma iteração, sem retry, e trace
+  preservado em `build-coverage/test-results/assembly-trace/tst7-assembly-trace-2/`.
+  O coletor resolveu 26 entradas realmente executadas de `src/boot/boot.asm`,
+  `src/boot/stage2.asm`, `src/boot/recovery_entry.asm` e `src/kernel/entry.asm`.
+  O mapa usa `(source, symbol)` e não infere cobertura por arquivo ou por
+  endereço compartilhado. Permanecem sem evidência desta inicialização normal
+  as rotas `disk_error`, `a20_*`, erros CHS/LBA, `load_overflow`,
+  `memory_error`, `fatal_error`, `recovery_bios_write_sector`,
+  `recovery_boot_system_entry` e os loaders `system_boot.asm`/`system_stage2.asm`.
+
 - Incremento Recovery Loader: FAT32, slots e handoff host-only — concluído em
   2026-09-05 (America/Sao_Paulo). A fixture `host:boot:recovery-loader`,
   compilada com `ZEPHYROS_HOST_TEST`, passou a exercitar diretamente as

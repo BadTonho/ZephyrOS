@@ -38,6 +38,7 @@ TST7_QUICK_TIMEOUT ?= 1800
 TST7_FULL_TIMEOUT ?= 7200
 COVERAGE_BUILD_DIR ?= build-coverage
 ASSEMBLY_RUN_ID ?= tst7-assembly-1
+ASSEMBLY_TRACE_RUN_ID ?= tst7-assembly-trace-1
 EXECUTION_COVERAGE_RUN_ID ?= tst7-execution-coverage-1
 PAGING_COVERAGE_RUN_ID ?= tst7-paging-coverage-1
 COVERAGE_CFLAGS ?= -g -DZEPHYROS_TEST_COVERAGE -finstrument-functions -I src
@@ -1511,6 +1512,11 @@ test-qemu-selftest: tools\qemu_test_runner.py tests\unit\test_qemu_test_runner.p
 test-assembly-qemu: coverage-map tools\qemu_test_runner.py tests\catalog.json
 	python tools\qemu_test_runner.py stress --case qemu:tst7:assembly --iterations 1 --boot-timeout 60 --case-timeout 120 --heartbeat-timeout 15 --image "$(COVERAGE_BUILD_DIR)\zephyros.img" --results "$(COVERAGE_BUILD_DIR)\test-results\tst7-assembly" --run-id $(ASSEMBLY_RUN_ID) --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none --coverage-symbols "$(COVERAGE_BUILD_DIR)\coverage-symbols.json"
 
+test-assembly-trace-qemu: coverage-map tools\assembly_trace_collector.py tools\qemu_test_runner.py tests\catalog.json
+	python tools\assembly_trace_collector.py symbols --build-dir "$(COVERAGE_BUILD_DIR)" --catalog tests\catalog.json --nasm "$(NASM)" --nm "$(NM)" --compiler "$(GCC)" --output "$(COVERAGE_BUILD_DIR)\assembly-symbols.json"
+	python tools\qemu_test_runner.py stress --case qemu:tst7:assembly --iterations 1 --boot-timeout 60 --case-timeout 120 --heartbeat-timeout 15 --image "$(COVERAGE_BUILD_DIR)\zephyros.img" --results "$(COVERAGE_BUILD_DIR)\test-results\assembly-trace" --run-id $(ASSEMBLY_TRACE_RUN_ID) --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none --coverage-symbols "$(COVERAGE_BUILD_DIR)\coverage-symbols.json" --qemu-arg=-d --qemu-arg=in_asm --qemu-arg=-D --qemu-arg=$(COVERAGE_BUILD_DIR)/test-results/assembly-trace/$(ASSEMBLY_TRACE_RUN_ID)/qemu-in-asm.log
+	python tools\assembly_trace_collector.py collect --trace "$(COVERAGE_BUILD_DIR)\test-results\assembly-trace\$(ASSEMBLY_TRACE_RUN_ID)\qemu-in-asm.log" --symbols "$(COVERAGE_BUILD_DIR)\assembly-symbols.json" --case-id qemu:tst7:assembly --source src/boot/boot.asm --source src/boot/stage2.asm --source src/boot/recovery_entry.asm --source src/kernel/entry.asm --output "$(COVERAGE_BUILD_DIR)\test-results\assembly-trace\$(ASSEMBLY_TRACE_RUN_ID)\assembly-trace.json"
+
 test-execution-coverage-qemu: coverage-map tools\qemu_test_runner.py tests\catalog.json
 	python tools\qemu_test_runner.py stress --case qemu:tst4:execution --iterations 1 --boot-timeout 60 --case-timeout 120 --heartbeat-timeout 60 --image "$(COVERAGE_BUILD_DIR)\zephyros.img" --results "$(COVERAGE_BUILD_DIR)\test-results\cov-tst4-execution" --run-id $(EXECUTION_COVERAGE_RUN_ID) --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none --coverage-symbols "$(COVERAGE_BUILD_DIR)\coverage-symbols.json"
 
@@ -1663,8 +1669,8 @@ test-tst6-qemu-fault-recovery: $(OS_IMG) tools\qemu_test_runner.py tests\catalog
 	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
 	python tools\qemu_test_runner.py stress --case qemu:tst6:fault:recovery --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
 
-test-tst7-host: tools\tst7_regression_runner.py tests\unit\test_tst7_runner.py tests\catalog.json tests\regressions\manifest.json
-	python -m unittest tests.unit.test_tst7_runner
+test-tst7-host: tools\tst7_regression_runner.py tools\assembly_trace_collector.py tests\unit\test_tst7_runner.py tests\unit\test_assembly_trace_collector.py tests\catalog.json tests\regressions\manifest.json
+	python -m unittest tests.unit.test_tst7_runner tests.unit.test_assembly_trace_collector
 
 test-tst7-quick: tools\tst7_regression_runner.py tests\catalog.json tests\regressions\manifest.json
 	python tools\tst7_regression_runner.py quick --make "$(MAKE)" --qemu $(QEMU) --image "$(OS_IMG)" --command-timeout "$(TST7_COMMAND_TIMEOUT)" --suite-timeout "$(TST7_QUICK_TIMEOUT)"
@@ -2146,7 +2152,7 @@ clean:
 
 .PHONY: all coverage-image coverage-map run run-stage2-lba run-stage2-chs run-usb run-usb-msc run-usb-hid run-usb-wifi run-system-fixture run-system-slots-fixture run-system-slots-matrix run-system-update-matrix ep94b-fixtures ep94b-matrix run-ep94b-matrix ep94c-matrix run-ep94c-matrix run-recovery-menu-vga run-storage storage-fixtures storage-fixtures-test storage-fixtures-verify system-fixtures system-slots-fixtures system-slots-matrix debug q3check catalog-test test-qemu test-qemu-selftest test-core-host test-tst2-host test-tst3-host test-tst3-sanitize test-tst4-qemu q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean
 .PHONY: kernel-elf
-.PHONY: test-assembly-qemu
+.PHONY: test-assembly-qemu test-assembly-trace-qemu
 .PHONY: test-tst4-qemu-paging-vma test-tst4-qemu-execution test-tst4-qemu-storage-vfs test-tst4-qemu-network test-tst4-qemu-platform
 .PHONY: test-tst5-host test-tst5-qemu-shell test-tst5-qemu-input test-tst5-qemu-apps test-tst5-qemu-processes test-tst5-qemu-storage test-tst5-qemu-network test-tst5-qemu-update-recovery test-tst5-qemu-reboot test-tst5-qemu-poweroff
 .PHONY: test-tst6-host test-tst6-qemu-matrix-baseline test-tst6-qemu-matrix-minimal test-tst6-qemu-matrix-network test-tst6-qemu-matrix-usb-hid test-tst6-qemu-matrix-usb-storage test-tst6-qemu-matrix-audio test-tst6-qemu-matrix-display test-tst6-qemu-matrix-pci test-tst6-qemu-stress-kernel test-tst6-qemu-stress-storage test-tst6-qemu-stress-network test-tst6-qemu-stress-apps test-tst6-qemu-fault-memory test-tst6-qemu-fault-block test-tst6-qemu-fault-block-cache test-tst6-qemu-fault-package test-tst6-qemu-fault-update test-tst6-qemu-fault-network test-tst6-qemu-fault-process test-tst6-qemu-fault-recovery

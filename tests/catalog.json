@@ -38247,9 +38247,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/boot/boot.asm:disk_error",
@@ -38283,9 +38286,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/boot/boot.asm:print16",
@@ -38319,9 +38325,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/boot/recovery_entry.asm:_start",
@@ -38337,9 +38346,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/boot/recovery_entry.asm:recovery_bios_prepare",
@@ -38355,9 +38367,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/boot/recovery_entry.asm:recovery_bios_read_sector",
@@ -38373,9 +38388,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/boot/recovery_entry.asm:recovery_bios_wait_key",
@@ -38391,9 +38409,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/boot/recovery_entry.asm:recovery_bios_write_sector",
@@ -38427,9 +38448,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/boot/recovery_entry.asm:recovery_boot_system_entry",
@@ -38535,9 +38559,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/boot/stage2.asm:bios_gateway_protected_return",
@@ -38553,9 +38580,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/boot/stage2.asm:bios_gateway_real",
@@ -38571,9 +38601,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/boot/stage2.asm:check_a20",
@@ -38589,9 +38622,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/boot/stage2.asm:chs_disk_error",
@@ -38625,9 +38661,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/boot/stage2.asm:copy_protected_16",
@@ -38643,9 +38682,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/boot/stage2.asm:copy_real",
@@ -38661,9 +38703,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/boot/stage2.asm:copy_sector_high",
@@ -38679,9 +38724,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/boot/stage2.asm:detect_disk_access",
@@ -38697,9 +38745,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/boot/stage2.asm:detect_geometry",
@@ -38733,9 +38784,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/boot/stage2.asm:enable_a20",
@@ -38751,9 +38805,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/boot/stage2.asm:fatal_error",
@@ -38805,9 +38862,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/boot/stage2.asm:load_overflow",
@@ -38877,9 +38937,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/boot/stage2.asm:read_kernel_chs",
@@ -38913,9 +38976,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/boot/stage2.asm:reset_boot_disk",
@@ -38949,9 +39015,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/boot/stage2.asm:stage2_start",
@@ -38967,9 +39036,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/boot/stage2.asm:validate_load_memory",
@@ -38985,9 +39057,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/boot/system_boot.asm:fail",
@@ -40104,9 +40179,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/kernel/switch.asm:process_context_switch",
@@ -185946,6 +186024,31 @@
       ],
       "surface_ids": [
         "api:src/include/process/process.h:process_context_switch",
+        "asm:src/boot/boot.asm:detect_geometry",
+        "asm:src/boot/boot.asm:load_sectors",
+        "asm:src/boot/boot.asm:start",
+        "asm:src/boot/recovery_entry.asm:_start",
+        "asm:src/boot/recovery_entry.asm:recovery_bios_prepare",
+        "asm:src/boot/recovery_entry.asm:recovery_bios_read_sector",
+        "asm:src/boot/recovery_entry.asm:recovery_bios_wait_key",
+        "asm:src/boot/recovery_entry.asm:recovery_boot_kernel_entry",
+        "asm:src/boot/stage2.asm:bios_gateway_16",
+        "asm:src/boot/stage2.asm:bios_gateway_protected_return",
+        "asm:src/boot/stage2.asm:bios_gateway_real",
+        "asm:src/boot/stage2.asm:check_a20",
+        "asm:src/boot/stage2.asm:copy_protected",
+        "asm:src/boot/stage2.asm:copy_protected_16",
+        "asm:src/boot/stage2.asm:copy_real",
+        "asm:src/boot/stage2.asm:copy_sector_high",
+        "asm:src/boot/stage2.asm:detect_disk_access",
+        "asm:src/boot/stage2.asm:detect_memory",
+        "asm:src/boot/stage2.asm:enable_a20",
+        "asm:src/boot/stage2.asm:load_kernel",
+        "asm:src/boot/stage2.asm:protected_mode",
+        "asm:src/boot/stage2.asm:read_kernel_lba",
+        "asm:src/boot/stage2.asm:set_vesa_mode",
+        "asm:src/boot/stage2.asm:stage2_start",
+        "asm:src/boot/stage2.asm:validate_load_memory",
         "asm:src/drivers/irq.asm:irq0",
         "asm:src/drivers/irq.asm:irq1",
         "asm:src/drivers/irq.asm:irq10",
@@ -185995,6 +186098,7 @@
         "asm:src/drivers/isr.asm:isr7",
         "asm:src/drivers/isr.asm:isr8",
         "asm:src/drivers/isr.asm:isr9",
+        "asm:src/kernel/entry.asm:_start",
         "asm:src/kernel/switch.asm:process_context_switch",
         "asm:src/kernel/switch.asm:tss_flush",
         "c:src/core/kernel_tests_assembly.c:kernel_tests_run_assembly",

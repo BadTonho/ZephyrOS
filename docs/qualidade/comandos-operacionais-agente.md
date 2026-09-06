@@ -1620,6 +1620,24 @@ aprovada deve resolver `process_user_enter` e
 instrumentadas somente quando `ZEPHYROS_TEST_COVERAGE` está ativo; o build
 normal não recebe esse caminho.
 
+## Cobertura Assembly do boot por trace QEMU
+
+Para observar Assembly de boot realmente executado, use o alvo separado com o
+trace `in_asm` do QEMU:
+
+```text
+make test-assembly-trace-qemu ASSEMBLY_TRACE_RUN_ID=tst7-assembly-trace-<id>
+```
+
+O alvo reconstrói o mapa dos binários freestanding, executa uma iteração de
+`qemu:tst7:assembly` sem retry e gera `qemu-in-asm.log` e
+`assembly-trace.json` em `build-coverage/test-results/assembly-trace/<id>/`.
+O coletor associa uma superfície somente quando o endereço do símbolo aparece
+no trace e limita a seleção às fontes declaradas; `complete=false` é um
+diagnóstico explícito de caminhos ainda não exercitados, não uma aprovação
+silenciosa. As rotas de erro de boot e os loaders de sistema exigem fixtures
+separadas antes de serem marcados como cobertos.
+
 ## Comandos no Shell
 
 Para orientar comandos do sistema, consultar primeiro `comandos.md` e os

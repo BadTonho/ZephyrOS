@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7283 |
+| `COVERED` | 7309 |
 | `MANUAL` | 0 |
-| `PENDING` | 47 |
+| `PENDING` | 21 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -1653,48 +1653,48 @@
 
 | ID | Fonte | Símbolo | Proprietário | Status | Casos |
 |---|---|---|---|---|---:|
-| `asm:src/boot/boot.asm:detect_geometry` | `src/boot/boot.asm` | `detect_geometry` | `boot` | `PENDING` | 0 |
+| `asm:src/boot/boot.asm:detect_geometry` | `src/boot/boot.asm` | `detect_geometry` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/boot.asm:disk_error` | `src/boot/boot.asm` | `disk_error` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/boot.asm:load_sectors` | `src/boot/boot.asm` | `load_sectors` | `boot` | `PENDING` | 0 |
+| `asm:src/boot/boot.asm:load_sectors` | `src/boot/boot.asm` | `load_sectors` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/boot.asm:print16` | `src/boot/boot.asm` | `print16` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/boot.asm:start` | `src/boot/boot.asm` | `start` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/recovery_entry.asm:_start` | `src/boot/recovery_entry.asm` | `_start` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/recovery_entry.asm:recovery_bios_prepare` | `src/boot/recovery_entry.asm` | `recovery_bios_prepare` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/recovery_entry.asm:recovery_bios_read_sector` | `src/boot/recovery_entry.asm` | `recovery_bios_read_sector` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/recovery_entry.asm:recovery_bios_wait_key` | `src/boot/recovery_entry.asm` | `recovery_bios_wait_key` | `boot` | `PENDING` | 0 |
+| `asm:src/boot/boot.asm:start` | `src/boot/boot.asm` | `start` | `boot` | `COVERED` | 1 |
+| `asm:src/boot/recovery_entry.asm:_start` | `src/boot/recovery_entry.asm` | `_start` | `boot` | `COVERED` | 1 |
+| `asm:src/boot/recovery_entry.asm:recovery_bios_prepare` | `src/boot/recovery_entry.asm` | `recovery_bios_prepare` | `boot` | `COVERED` | 1 |
+| `asm:src/boot/recovery_entry.asm:recovery_bios_read_sector` | `src/boot/recovery_entry.asm` | `recovery_bios_read_sector` | `boot` | `COVERED` | 1 |
+| `asm:src/boot/recovery_entry.asm:recovery_bios_wait_key` | `src/boot/recovery_entry.asm` | `recovery_bios_wait_key` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/recovery_entry.asm:recovery_bios_write_sector` | `src/boot/recovery_entry.asm` | `recovery_bios_write_sector` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/recovery_entry.asm:recovery_boot_kernel_entry` | `src/boot/recovery_entry.asm` | `recovery_boot_kernel_entry` | `boot` | `PENDING` | 0 |
+| `asm:src/boot/recovery_entry.asm:recovery_boot_kernel_entry` | `src/boot/recovery_entry.asm` | `recovery_boot_kernel_entry` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/recovery_entry.asm:recovery_boot_system_entry` | `src/boot/recovery_entry.asm` | `recovery_boot_system_entry` | `boot` | `PENDING` | 0 |
 | `asm:src/boot/stage2.asm:a20_enable_kbc` | `src/boot/stage2.asm` | `a20_enable_kbc` | `boot` | `PENDING` | 0 |
 | `asm:src/boot/stage2.asm:a20_error` | `src/boot/stage2.asm` | `a20_error` | `boot` | `PENDING` | 0 |
 | `asm:src/boot/stage2.asm:a20_wait_input` | `src/boot/stage2.asm` | `a20_wait_input` | `boot` | `PENDING` | 0 |
 | `asm:src/boot/stage2.asm:a20_wait_output` | `src/boot/stage2.asm` | `a20_wait_output` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/stage2.asm:bios_gateway_16` | `src/boot/stage2.asm` | `bios_gateway_16` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/stage2.asm:bios_gateway_protected_return` | `src/boot/stage2.asm` | `bios_gateway_protected_return` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/stage2.asm:bios_gateway_real` | `src/boot/stage2.asm` | `bios_gateway_real` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/stage2.asm:check_a20` | `src/boot/stage2.asm` | `check_a20` | `boot` | `PENDING` | 0 |
+| `asm:src/boot/stage2.asm:bios_gateway_16` | `src/boot/stage2.asm` | `bios_gateway_16` | `boot` | `COVERED` | 1 |
+| `asm:src/boot/stage2.asm:bios_gateway_protected_return` | `src/boot/stage2.asm` | `bios_gateway_protected_return` | `boot` | `COVERED` | 1 |
+| `asm:src/boot/stage2.asm:bios_gateway_real` | `src/boot/stage2.asm` | `bios_gateway_real` | `boot` | `COVERED` | 1 |
+| `asm:src/boot/stage2.asm:check_a20` | `src/boot/stage2.asm` | `check_a20` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/stage2.asm:chs_disk_error` | `src/boot/stage2.asm` | `chs_disk_error` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/stage2.asm:copy_protected` | `src/boot/stage2.asm` | `copy_protected` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/stage2.asm:copy_protected_16` | `src/boot/stage2.asm` | `copy_protected_16` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/stage2.asm:copy_real` | `src/boot/stage2.asm` | `copy_real` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/stage2.asm:copy_sector_high` | `src/boot/stage2.asm` | `copy_sector_high` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/stage2.asm:detect_disk_access` | `src/boot/stage2.asm` | `detect_disk_access` | `boot` | `PENDING` | 0 |
+| `asm:src/boot/stage2.asm:copy_protected` | `src/boot/stage2.asm` | `copy_protected` | `boot` | `COVERED` | 1 |
+| `asm:src/boot/stage2.asm:copy_protected_16` | `src/boot/stage2.asm` | `copy_protected_16` | `boot` | `COVERED` | 1 |
+| `asm:src/boot/stage2.asm:copy_real` | `src/boot/stage2.asm` | `copy_real` | `boot` | `COVERED` | 1 |
+| `asm:src/boot/stage2.asm:copy_sector_high` | `src/boot/stage2.asm` | `copy_sector_high` | `boot` | `COVERED` | 1 |
+| `asm:src/boot/stage2.asm:detect_disk_access` | `src/boot/stage2.asm` | `detect_disk_access` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/stage2.asm:detect_geometry` | `src/boot/stage2.asm` | `detect_geometry` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/stage2.asm:detect_memory` | `src/boot/stage2.asm` | `detect_memory` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/stage2.asm:enable_a20` | `src/boot/stage2.asm` | `enable_a20` | `boot` | `PENDING` | 0 |
+| `asm:src/boot/stage2.asm:detect_memory` | `src/boot/stage2.asm` | `detect_memory` | `boot` | `COVERED` | 1 |
+| `asm:src/boot/stage2.asm:enable_a20` | `src/boot/stage2.asm` | `enable_a20` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/stage2.asm:fatal_error` | `src/boot/stage2.asm` | `fatal_error` | `boot` | `PENDING` | 0 |
 | `asm:src/boot/stage2.asm:lba_disk_error` | `src/boot/stage2.asm` | `lba_disk_error` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/stage2.asm:load_kernel` | `src/boot/stage2.asm` | `load_kernel` | `boot` | `PENDING` | 0 |
+| `asm:src/boot/stage2.asm:load_kernel` | `src/boot/stage2.asm` | `load_kernel` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/stage2.asm:load_overflow` | `src/boot/stage2.asm` | `load_overflow` | `boot` | `PENDING` | 0 |
 | `asm:src/boot/stage2.asm:memory_error` | `src/boot/stage2.asm` | `memory_error` | `boot` | `PENDING` | 0 |
 | `asm:src/boot/stage2.asm:print16` | `src/boot/stage2.asm` | `print16` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/stage2.asm:protected_mode` | `src/boot/stage2.asm` | `protected_mode` | `boot` | `PENDING` | 0 |
+| `asm:src/boot/stage2.asm:protected_mode` | `src/boot/stage2.asm` | `protected_mode` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/stage2.asm:read_kernel_chs` | `src/boot/stage2.asm` | `read_kernel_chs` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/stage2.asm:read_kernel_lba` | `src/boot/stage2.asm` | `read_kernel_lba` | `boot` | `PENDING` | 0 |
+| `asm:src/boot/stage2.asm:read_kernel_lba` | `src/boot/stage2.asm` | `read_kernel_lba` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/stage2.asm:reset_boot_disk` | `src/boot/stage2.asm` | `reset_boot_disk` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/stage2.asm:set_vesa_mode` | `src/boot/stage2.asm` | `set_vesa_mode` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/stage2.asm:stage2_start` | `src/boot/stage2.asm` | `stage2_start` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/stage2.asm:validate_load_memory` | `src/boot/stage2.asm` | `validate_load_memory` | `boot` | `PENDING` | 0 |
+| `asm:src/boot/stage2.asm:set_vesa_mode` | `src/boot/stage2.asm` | `set_vesa_mode` | `boot` | `COVERED` | 1 |
+| `asm:src/boot/stage2.asm:stage2_start` | `src/boot/stage2.asm` | `stage2_start` | `boot` | `COVERED` | 1 |
+| `asm:src/boot/stage2.asm:validate_load_memory` | `src/boot/stage2.asm` | `validate_load_memory` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/system_boot.asm:fail` | `src/boot/system_boot.asm` | `fail` | `boot` | `PENDING` | 0 |
 | `asm:src/boot/system_boot.asm:start` | `src/boot/system_boot.asm` | `start` | `boot` | `PENDING` | 0 |
 | `asm:src/boot/system_stage2.asm:fail` | `src/boot/system_stage2.asm` | `fail` | `boot` | `PENDING` | 0 |
@@ -1748,7 +1748,7 @@
 | `asm:src/drivers/isr.asm:isr7` | `src/drivers/isr.asm` | `isr7` | `drivers` | `COVERED` | 1 |
 | `asm:src/drivers/isr.asm:isr8` | `src/drivers/isr.asm` | `isr8` | `drivers` | `COVERED` | 1 |
 | `asm:src/drivers/isr.asm:isr9` | `src/drivers/isr.asm` | `isr9` | `drivers` | `COVERED` | 1 |
-| `asm:src/kernel/entry.asm:_start` | `src/kernel/entry.asm` | `_start` | `kernel` | `PENDING` | 0 |
+| `asm:src/kernel/entry.asm:_start` | `src/kernel/entry.asm` | `_start` | `kernel` | `COVERED` | 1 |
 | `asm:src/kernel/switch.asm:process_context_switch` | `src/kernel/switch.asm` | `process_context_switch` | `kernel` | `COVERED` | 3 |
 | `asm:src/kernel/switch.asm:process_user_enter` | `src/kernel/switch.asm` | `process_user_enter` | `kernel` | `COVERED` | 1 |
 | `asm:src/kernel/switch.asm:process_user_termination_enter` | `src/kernel/switch.asm` | `process_user_termination_enter` | `kernel` | `COVERED` | 1 |
@@ -7589,53 +7589,27 @@
 
 ## Superfícies sem caso associado
 
-- `asm:src/boot/boot.asm:detect_geometry`
 - `asm:src/boot/boot.asm:disk_error`
-- `asm:src/boot/boot.asm:load_sectors`
 - `asm:src/boot/boot.asm:print16`
-- `asm:src/boot/boot.asm:start`
-- `asm:src/boot/recovery_entry.asm:_start`
-- `asm:src/boot/recovery_entry.asm:recovery_bios_prepare`
-- `asm:src/boot/recovery_entry.asm:recovery_bios_read_sector`
-- `asm:src/boot/recovery_entry.asm:recovery_bios_wait_key`
 - `asm:src/boot/recovery_entry.asm:recovery_bios_write_sector`
-- `asm:src/boot/recovery_entry.asm:recovery_boot_kernel_entry`
 - `asm:src/boot/recovery_entry.asm:recovery_boot_system_entry`
 - `asm:src/boot/stage2.asm:a20_enable_kbc`
 - `asm:src/boot/stage2.asm:a20_error`
 - `asm:src/boot/stage2.asm:a20_wait_input`
 - `asm:src/boot/stage2.asm:a20_wait_output`
-- `asm:src/boot/stage2.asm:bios_gateway_16`
-- `asm:src/boot/stage2.asm:bios_gateway_protected_return`
-- `asm:src/boot/stage2.asm:bios_gateway_real`
-- `asm:src/boot/stage2.asm:check_a20`
 - `asm:src/boot/stage2.asm:chs_disk_error`
-- `asm:src/boot/stage2.asm:copy_protected`
-- `asm:src/boot/stage2.asm:copy_protected_16`
-- `asm:src/boot/stage2.asm:copy_real`
-- `asm:src/boot/stage2.asm:copy_sector_high`
-- `asm:src/boot/stage2.asm:detect_disk_access`
 - `asm:src/boot/stage2.asm:detect_geometry`
-- `asm:src/boot/stage2.asm:detect_memory`
-- `asm:src/boot/stage2.asm:enable_a20`
 - `asm:src/boot/stage2.asm:fatal_error`
 - `asm:src/boot/stage2.asm:lba_disk_error`
-- `asm:src/boot/stage2.asm:load_kernel`
 - `asm:src/boot/stage2.asm:load_overflow`
 - `asm:src/boot/stage2.asm:memory_error`
 - `asm:src/boot/stage2.asm:print16`
-- `asm:src/boot/stage2.asm:protected_mode`
 - `asm:src/boot/stage2.asm:read_kernel_chs`
-- `asm:src/boot/stage2.asm:read_kernel_lba`
 - `asm:src/boot/stage2.asm:reset_boot_disk`
-- `asm:src/boot/stage2.asm:set_vesa_mode`
-- `asm:src/boot/stage2.asm:stage2_start`
-- `asm:src/boot/stage2.asm:validate_load_memory`
 - `asm:src/boot/system_boot.asm:fail`
 - `asm:src/boot/system_boot.asm:start`
 - `asm:src/boot/system_stage2.asm:fail`
 - `asm:src/boot/system_stage2.asm:start`
-- `asm:src/kernel/entry.asm:_start`
 
 ## Aposentadas
 

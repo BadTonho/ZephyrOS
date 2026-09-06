@@ -7174,6 +7174,26 @@
       "evidence": "make test-assembly-qemu ASSEMBLY_RUN_ID=tst7-assembly-8 PASS; ZCOV confirmou kernel_main, tss_flush e process_context_switch em execucao real, com 136, 320 e 960 enderecos resolvidos nos casos Assembly, process-switch e kernel-main, sem enderecos desconhecidos ou simbolos ambiguos"
     },
     {
+      "id": "assembly-boot-trace-qemu",
+      "domain": "boot-assembly",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build-coverage/test-results/assembly-trace/tst7-assembly-trace-2/assembly-trace.json",
+      "coverage_sources": [
+        "src/boot/boot.asm",
+        "src/boot/recovery_entry.asm",
+        "src/boot/stage2.asm",
+        "src/kernel/entry.asm"
+      ],
+      "include_public_apis": false,
+      "evidence": "make test-assembly-trace-qemu ASSEMBLY_TRACE_RUN_ID=tst7-assembly-trace-2 PASS; trace in_asm do QEMU confirmou 26 entradas Assembly em boot, stage2, recovery_entry e kernel/entry no fluxo real, com 17 lacunas de erro e recuperacao explicitadas em missing_symbols"
+    },
+    {
       "id": "shell-commands-apps-host-dynamic",
       "domain": "shell-app-commands",
       "owner": "quality",
