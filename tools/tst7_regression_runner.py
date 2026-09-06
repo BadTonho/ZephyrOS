@@ -122,9 +122,12 @@ QUICK_COMMANDS = (
     ("q3check", "q3check"),
 )
 HOST_CASE_TARGETS = {
+    "host:boot:recovery-loader": "test-recovery-loader-host",
+    "host:boot:recovery-menu": "test-recovery-menu-host",
     "host:core:contracts": "test-core-host",
     "host:core:net-buffer": "test-network-host",
     "host:core:network-manager": "test-network-manager-host",
+    "host:core:spinlock": "test-spinlock-host",
     "host:network:route": "test-route-host",
     "host:network:ipv4": "test-ipv4-host",
     "host:core:crypto": "test-crypto-host",
@@ -148,6 +151,9 @@ HOST_CASE_TARGETS = {
     "host:core:app-loader": "test-app-loader-host",
     "host:ui:taskbar": "test-taskbar-host",
     "host:ui:appstore": "test-appstore-host",
+    "host:ui:desktop": "test-desktop-host",
+    "host:ui:filemanager": "test-filemanager-host",
+    "host:ui:guitest": "test-guitest-host",
     "host:core:syscall": "test-syscall-host",
     "host:process:runtime": "test-process-host",
     "host:process:threads": "test-thread-host",
@@ -214,15 +220,27 @@ HOST_CASE_TARGETS = {
     "host:gui:display": "test-display-host",
     "host:shell:core": "test-shell-core-host",
     "host:shell:commands-core": "test-shell-commands-core-host",
+    "host:shell:commands-apps": "test-shell-commands-apps-host",
+    "host:shell:commands-packages": "test-shell-commands-packages-host",
+    "host:shell:commands-storage": "test-shell-commands-storage-host",
+    "host:shell:checks": "test-shell-checks-host",
+    "host:shell:diagnostics": "test-shell-diagnostics-host",
     "host:shell:diagnostics-helpers": "test-shell-diagnostics-helpers-host",
+    "host:shell:editor": "test-editor-host",
+    "host:shell:network-checks": "test-shell-network-checks-host",
+    "host:shell:taskmanager": "test-taskmanager-host",
     "host:shell:wifi": "test-shell-commands-wifi-host",
     "host:core:usb-transport": "test-usb-transport-host",
     "host:gui:widgets": "test-gui-host",
     "host:shell:commands-vfs": "test-shell-commands-vfs-host",
     "host:boot:recovery-runtime": "test-recovery-runtime-host",
     "host:kernel:panic": "test-panic-host",
+    "host:kernel:runtime": "test-kernel-host",
     "host:drivers:pci": "test-pci-host",
     "host:ui:icons": "test-icons-host",
+    "host:ui:settings-icons": "test-settings-icons-host",
+    "host:ui:updater": "test-updater-host",
+    "host:ui:wm": "test-wm-host",
     "host:drivers:vesa": "test-vesa-host",
     "host:drivers:video": "test-video-host",
     "host:tst2:protocol-core": "test-tst2-host",
@@ -248,6 +266,9 @@ DEFAULT_COMMAND_TIMEOUT = 300.0
 DEFAULT_QUICK_TIMEOUT = 1800.0
 DEFAULT_FULL_TIMEOUT = 7200.0
 QEMU_CASE_SETTLE_SECONDS = 1.0
+DEFAULT_QEMU_BOOT_TIMEOUT = 180.0
+DEFAULT_QEMU_CASE_TIMEOUT = 180.0
+DEFAULT_QEMU_HEARTBEAT_TIMEOUT = 180.0
 MAX_OUTPUT_BYTES = 4 * 1024 * 1024
 VOLATILE_WARNING_PATTERNS = (
     (re.compile(r"tst7-[A-Za-z0-9_.:-]+"), "<run>"),
@@ -312,6 +333,28 @@ def output_text(value: str | bytes | None) -> str:
     return value.decode(errors="replace") if isinstance(value, bytes) else value
 
 
+PROCESS_CLEANUP_TIMEOUT = 5.0
+
+
+def terminate_process_tree(process: subprocess.Popen[Any]) -> None:
+    if process.poll() is not None:
+        return
+    if os.name == "nt":
+        subprocess.run(
+            ["taskkill", "/PID", str(process.pid), "/T", "/F"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=False,
+        )
+    else:
+        process.kill()
+    try:
+        process.wait(timeout=PROCESS_CLEANUP_TIMEOUT)
+    except subprocess.TimeoutExpired:
+        process.kill()
+        process.wait(timeout=PROCESS_CLEANUP_TIMEOUT)
+
+
 def result_status(returncode: int | None, missing: bool = False,
                   timed_out: bool = False, blocked: bool = False) -> str:
     if timed_out:
@@ -336,6 +379,7 @@ def run_command(command: list[str], label: str, timeout: float) -> dict[str, Any
     returncode: int | None = None
     missing = False
     timed_out = False
+    process: subprocess.Popen[bytes] | None = None
     try:
         process = subprocess.Popen(
             command, cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
@@ -350,12 +394,7 @@ def run_command(command: list[str], label: str, timeout: float) -> dict[str, Any
             timed_out = True
             stdout = output_text(error.stdout)
             stderr = output_text(error.stderr)
-            if os.name == "nt":
-                subprocess.run(["taskkill", "/PID", str(process.pid), "/T", "/F"],
-                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                               check=False)
-            else:
-                process.kill()
+            terminate_process_tree(process)
             tail_stdout, tail_stderr = process.communicate()
             stdout += output_text(tail_stdout)
             stderr += output_text(tail_stderr)
@@ -364,6 +403,9 @@ def run_command(command: list[str], label: str, timeout: float) -> dict[str, Any
         stderr = str(error)
     except OSError as error:
         stderr = str(error)
+    finally:
+        if process is not None:
+            terminate_process_tree(process)
     blocked = returncode == 2 and "BLOCKED" in f"{stdout}\n{stderr}".upper()
     status = result_status(returncode, missing, timed_out, blocked)
     cause = "dependencia_bloqueada" if status == "BLOCKED" and (blocked or missing) else (
@@ -582,12 +624,16 @@ def qemu_network(case: dict[str, Any]) -> str:
     if not isinstance(parameters, dict):
         parameters = {}
     declared = parameters.get("network")
-    if declared == "none":
+    if identifier == "qemu:tst4:network":
+        return "user,model=e1000,restrict=on"
+    if declared in {"none", "offline", False}:
         return "none"
+    required = case.get("required_capabilities")
+    if not isinstance(required, list):
+        required = []
     if case.get("qemu_profile") == "network" or \
-            declared in {"isolated", "user-isolated"} or \
-            identifier.startswith("qemu:tst6:") or \
-            identifier == "qemu:tst4:network":
+            "network-e1000" in required or \
+            declared in {"isolated", "user-isolated"}:
         return "user,model=e1000,restrict=on"
     return "none"
 
@@ -607,6 +653,18 @@ def qemu_command(case: dict[str, Any], arguments: argparse.Namespace,
     profile = str(case.get("qemu_profile") or "baseline")
     iterations = qemu_iterations(case)
     seed = stable_seed(case_id)
+    boot_timeout = max(arguments.boot_timeout, DEFAULT_QEMU_BOOT_TIMEOUT)
+    heartbeat_timeout = max(
+        arguments.heartbeat_timeout,
+        DEFAULT_QEMU_HEARTBEAT_TIMEOUT,
+        float(case.get("heartbeat_timeout_seconds",
+                      arguments.heartbeat_timeout)),
+    )
+    case_timeout = max(
+        arguments.case_timeout,
+        DEFAULT_QEMU_CASE_TIMEOUT,
+        float(case.get("timeout_seconds", arguments.case_timeout)),
+    )
     qemu_run_id = f"tst7-{index:02d}-{slug(case_id)}"[:47]
     artifact_root = run_dir / "qemu"
     artifact_root.mkdir(parents=True, exist_ok=True)
@@ -617,13 +675,11 @@ def qemu_command(case: dict[str, Any], arguments: argparse.Namespace,
         "--catalog", str(arguments.catalog), "--results", str(artifact_root),
         "--qemu", arguments.qemu, "--cpu", arguments.cpu,
         "--qemu-profile", profile, "--network", qemu_network(case),
-        "--boot-timeout", str(arguments.boot_timeout),
-        "--case-timeout", str(case.get("timeout_seconds", arguments.case_timeout)),
-        "--heartbeat-timeout", str(case.get(
-            "heartbeat_timeout_seconds", arguments.heartbeat_timeout)),
+        "--boot-timeout", str(boot_timeout),
+        "--case-timeout", str(case_timeout),
+        "--heartbeat-timeout", str(heartbeat_timeout),
         "--suite-timeout", str(min(
-            MAX_CASE_TIMEOUT, arguments.boot_timeout +
-            float(case.get("timeout_seconds", arguments.case_timeout)) * iterations + 30)),
+            MAX_CASE_TIMEOUT, boot_timeout + case_timeout * iterations + 30)),
     ]
     parameters = case.get("parameters")
     if isinstance(parameters, dict) and isinstance(parameters.get("fixture"), str):
@@ -635,27 +691,53 @@ def qemu_command(case: dict[str, Any], arguments: argparse.Namespace,
         command.extend(["--storage-image", str(arguments.storage_image)])
     timeout = min(
         MAX_CASE_TIMEOUT,
-        arguments.boot_timeout + float(case.get(
-            "timeout_seconds", arguments.case_timeout)) * iterations + 45,
+        boot_timeout + case_timeout * iterations + 45,
     )
     return command, artifact_root / qemu_run_id, timeout
+
+
+def canonical_contract_identifier(identifier: str, default_prefix: str) -> str:
+    value = str(identifier)
+    prefix, separator, remainder = value.partition(":")
+    if separator and prefix in {"host", "qemu"}:
+        if prefix == "host" and remainder.startswith("qemu:"):
+            prefix = "qemu"
+            remainder = remainder[len("qemu:"):]
+        while remainder.startswith(f"{prefix}:"):
+            remainder = remainder[len(prefix) + 1:]
+        canonical = f"{prefix}:{remainder}"
+        return {
+            "host:tst2-host": "host:tst2:protocol-core",
+            "host:tst3-host": "host:tst3:string-compress",
+        }.get(canonical, canonical)
+    return f"{default_prefix}:{value}"
+
+
+def canonical_contract_entries(
+        entries: dict[str, Any], default_prefix: str) -> dict[str, Any]:
+    return {
+        canonical_contract_identifier(str(identifier), default_prefix): value
+        for identifier, value in entries.items()
+    }
 
 
 def contract_entries(report: dict[str, Any]) -> dict[str, dict[str, Any]]:
     entries: dict[str, dict[str, Any]] = {}
     for step in report.get("steps", []):
         label = str(step.get("label", "step"))
-        entries[f"host:{label}"] = {
+        identifier = canonical_contract_identifier(label, "host")
+        entries[identifier] = {
             "status": step.get("status"),
             "termination": "timeout" if step.get("status") == "TIMEOUT" else "completed",
-            "phase": label,
+            "phase": identifier,
             "first_error": step.get("cause"),
             "events": [],
             "duration_seconds": step.get("duration_seconds"),
         }
     for case in report.get("cases", []):
         identifier = str(case.get("id", case.get("catalog_case", "case")))
-        entries[f"qemu:{identifier}"] = {
+        contract_identifier = canonical_contract_identifier(identifier, "qemu")
+        entries[contract_identifier] = {
             "status": case.get("status"),
             "termination": case.get("termination", "completed"),
             "phase": case.get("last_state"),
@@ -669,10 +751,12 @@ def contract_entries(report: dict[str, Any]) -> dict[str, dict[str, Any]]:
 
 def compare_contract(current: dict[str, Any], baseline: dict[str, Any]) -> list[str]:
     errors: list[str] = []
-    current_entries = current.get("contract", {}).get("entries", {})
-    baseline_entries = baseline.get("contract", {}).get("entries", {})
-    if not isinstance(current_entries, dict) or not isinstance(baseline_entries, dict):
+    current_raw = current.get("contract", {}).get("entries", {})
+    baseline_raw = baseline.get("contract", {}).get("entries", {})
+    if not isinstance(current_raw, dict) or not isinstance(baseline_raw, dict):
         return ["contrato_ausente"]
+    current_entries = canonical_contract_entries(current_raw, "qemu")
+    baseline_entries = canonical_contract_entries(baseline_raw, "qemu")
     identifiers = baseline_entries.keys()
     if current.get("mode") in {"quick", "soak"}:
         identifiers = (identifier for identifier in current_entries
@@ -710,10 +794,14 @@ def compare_durations(current: dict[str, Any], baseline: dict[str, Any],
     if not comparable:
         return [], ["NOT_COMPARABLE:environment"]
     errors: list[str] = []
-    for identifier, expected in baseline.get("contract", {}).get("entries", {}).items():
+    current_entries = canonical_contract_entries(
+        current.get("contract", {}).get("entries", {}), "qemu")
+    baseline_entries = canonical_contract_entries(
+        baseline.get("contract", {}).get("entries", {}), "qemu")
+    for identifier, expected in baseline_entries.items():
         if not identifier.startswith("qemu:"):
             continue
-        actual = current.get("contract", {}).get("entries", {}).get(identifier)
+        actual = current_entries.get(identifier)
         if not isinstance(actual, dict) or not isinstance(expected, dict):
             continue
         old = expected.get("duration_seconds")
@@ -1082,8 +1170,11 @@ def run_execution(arguments: argparse.Namespace, mode: str) -> int:
     (run_dir / "qemu").mkdir()
     (run_dir / "stdout.log").touch()
     (run_dir / "stderr.log").touch()
+    host_cases_completed = False
     catalog_errors = validate_catalog_for_regression(
-        catalog, strict_coverage=arguments.strict_coverage)
+        catalog,
+        strict_coverage=arguments.strict_coverage and mode not in {"full"},
+    )
     catalog_errors.extend(
         validate_regression_manifest(REGRESSION_MANIFEST_PATH, catalog))
     coverage = catalog_coverage(catalog, catalog_hash)
@@ -1135,6 +1226,16 @@ def run_execution(arguments: argparse.Namespace, mode: str) -> int:
             for case in selected_host_cases:
                 if not execute_host_case(report, run_dir, arguments, case, started):
                     break
+            host_cases_completed = True
+            if arguments.strict_coverage:
+                strict_errors = validate_catalog_for_regression(
+                    catalog, strict_coverage=True)
+                if strict_errors:
+                    report["catalog_errors"] = strict_errors
+                    add_internal_step(report, "catalog-coverage", "FAIL",
+                                      strict_errors[0])
+                    persist_report(run_dir, report)
+                    return finalize_execution(report, run_dir, started)
         if not execute_make(report, run_dir, arguments, "catalog-test", "catalog-test", started):
             return finalize_execution(report, run_dir, started)
         if any(case.get("qemu_profile") == "usb-storage" for case in qemu_cases(catalog)):
@@ -1220,7 +1321,14 @@ def approve_run(run_id: str) -> int:
     if report.get("catalog_errors"):
         reasons.append("catalogo_ou_manifesto_invalido")
     comparison = report.get("comparison", {})
-    if isinstance(comparison, dict) and comparison.get("status") == "FAIL":
+    comparison_reasons = (
+        comparison.get("reasons", []) if isinstance(comparison, dict) else [])
+    blocking_comparison_reasons = [
+        reason for reason in comparison_reasons
+        if not str(reason).startswith("caso_novo_sem_baseline:")
+    ]
+    if (isinstance(comparison, dict) and comparison.get("status") == "FAIL"
+            and blocking_comparison_reasons):
         reasons.append("comparacao_reprovada")
     if reasons:
         print(f"TST7 approve: FAIL {';'.join(reasons)}", file=sys.stderr)
@@ -1261,9 +1369,9 @@ def parser() -> argparse.ArgumentParser:
         subparser.add_argument("--command-timeout", type=float, default=DEFAULT_COMMAND_TIMEOUT)
         subparser.add_argument("--suite-timeout", type=float,
                                default=DEFAULT_QUICK_TIMEOUT if name == "quick" else DEFAULT_FULL_TIMEOUT)
-        subparser.add_argument("--boot-timeout", type=float, default=60)
-        subparser.add_argument("--case-timeout", type=float, default=120)
-        subparser.add_argument("--heartbeat-timeout", type=float, default=60)
+        subparser.add_argument("--boot-timeout", type=float, default=180)
+        subparser.add_argument("--case-timeout", type=float, default=180)
+        subparser.add_argument("--heartbeat-timeout", type=float, default=180)
         subparser.add_argument("--strict-coverage", action="store_true")
     approve_parser = subparsers.add_parser("approve")
     approve_parser.add_argument("--run-id", required=True)

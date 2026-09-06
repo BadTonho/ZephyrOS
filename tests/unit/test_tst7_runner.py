@@ -2,6 +2,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
 from tools import tst7_regression_runner as runner
@@ -36,6 +37,51 @@ def report(status="PASS", duration=10.0, warnings=None, covered=True):
 
 
 class Tst7ComparisonTests(unittest.TestCase):
+    def test_contract_identifiers_are_not_duplicated(self):
+        current = {
+            "steps": [{"label": "host:host:build", "status": "PASS",
+                        "cause": None, "duration_seconds": 1.0}],
+            "cases": [
+                {"id": "host:core:contracts", "status": "PASS"},
+                {"id": "qemu:tst7:test", "status": "PASS"},
+            ],
+        }
+        entries = runner.contract_entries(current)
+        self.assertEqual(
+            set(entries), {"host:build", "host:core:contracts", "qemu:tst7:test"})
+
+    def test_legacy_contract_identifiers_are_normalized(self):
+        self.assertEqual(
+            runner.canonical_contract_identifier(
+                "host:host:build", "qemu"),
+            "host:build")
+        self.assertEqual(
+            runner.canonical_contract_identifier(
+                "host:qemu:qemu:tst7:test", "qemu"),
+            "qemu:tst7:test")
+
+    def test_qemu_case_timeout_respects_full_suite_limit(self):
+        arguments = SimpleNamespace(
+            boot_timeout=120.0,
+            heartbeat_timeout=120.0,
+            case_timeout=120.0,
+            image="build/zephyros.img",
+            catalog="tests/catalog.json",
+            qemu="qemu-system-i386",
+            cpu="max",
+            storage_image="build/storage.img",
+        )
+        case = {
+            "id": "qemu:tst4:storage-vfs",
+            "timeout_seconds": 60,
+            "heartbeat_timeout_seconds": 10,
+        }
+        with tempfile.TemporaryDirectory() as temporary:
+            command, _, timeout = runner.qemu_command(
+                case, arguments, Path(temporary), 1)
+        self.assertEqual(command[command.index("--case-timeout") + 1], "180.0")
+        self.assertEqual(timeout, 405.0)
+
     def test_missing_baseline_is_blocked(self):
         result = runner.compare_runs(report(), None)
         self.assertEqual(result["status"], "BLOCKED")
@@ -150,6 +196,31 @@ class Tst7RunnerContractTests(unittest.TestCase):
             runner.HOST_CASE_TARGETS["host:storage:bmp"],
             "test-bmp-host")
 
+    def test_all_recent_host_cases_have_real_make_targets(self):
+        expected = {
+            "host:boot:recovery-loader": "test-recovery-loader-host",
+            "host:boot:recovery-menu": "test-recovery-menu-host",
+            "host:core:spinlock": "test-spinlock-host",
+            "host:kernel:runtime": "test-kernel-host",
+            "host:shell:checks": "test-shell-checks-host",
+            "host:shell:commands-apps": "test-shell-commands-apps-host",
+            "host:shell:commands-packages": "test-shell-commands-packages-host",
+            "host:shell:commands-storage": "test-shell-commands-storage-host",
+            "host:shell:diagnostics": "test-shell-diagnostics-host",
+            "host:shell:editor": "test-editor-host",
+            "host:shell:network-checks": "test-shell-network-checks-host",
+            "host:shell:taskmanager": "test-taskmanager-host",
+            "host:ui:desktop": "test-desktop-host",
+            "host:ui:filemanager": "test-filemanager-host",
+            "host:ui:guitest": "test-guitest-host",
+            "host:ui:settings-icons": "test-settings-icons-host",
+            "host:ui:updater": "test-updater-host",
+            "host:ui:wm": "test-wm-host",
+        }
+        self.assertEqual(
+            {case_id: runner.HOST_CASE_TARGETS[case_id]
+             for case_id in expected}, expected)
+
     def test_strict_coverage_option_is_parseable(self):
         arguments = runner.parser().parse_args([
             "full", "--strict-coverage"])
@@ -179,11 +250,23 @@ class Tst7RunnerContractTests(unittest.TestCase):
 
     def test_qemu_network_policy_isolated_by_capability(self):
         self.assertEqual(runner.qemu_network({"id": "qemu:tst5:apps"}), "none")
-        self.assertEqual(runner.qemu_network({"id": "qemu:tst4:network"}),
-                         "user,model=e1000,restrict=on")
+        self.assertEqual(runner.qemu_network({
+            "id": "qemu:tst4:network",
+            "parameters": {"network": "offline"},
+        }), "user,model=e1000,restrict=on")
         self.assertEqual(runner.qemu_network({"id": "qemu:tst6:matrix:network",
                                               "qemu_profile": "network"}),
                          "user,model=e1000,restrict=on")
+        self.assertEqual(runner.qemu_network({
+            "id": "qemu:tst6:matrix:baseline",
+            "qemu_profile": "baseline",
+            "required_capabilities": ["network-e1000"],
+        }), "user,model=e1000,restrict=on")
+        self.assertEqual(runner.qemu_network({
+            "id": "qemu:tst6:stress:kernel",
+            "qemu_profile": "baseline",
+            "required_capabilities": [],
+        }), "none")
 
     def test_rng_host_case_is_mapped(self):
         self.assertEqual(runner.HOST_CASE_TARGETS["host:drivers:rng"],
@@ -324,6 +407,32 @@ class Tst7RunnerContractTests(unittest.TestCase):
                     patch.object(runner, "BASELINE_PATH", baseline):
                 self.assertEqual(runner.approve_run("tst7-run"), 1)
             self.assertFalse(baseline.exists())
+
+    def test_explicit_approval_allows_new_cases_after_catalog_expansion(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            run_dir = root / "tst7-run"
+            run_dir.mkdir()
+            value = report()
+            value.update({
+                "run_id": "tst7-run",
+                "execution_status": "PASS",
+                "cases": [{"id": "qemu:tst7:test", "status": "PASS"}],
+                "steps": [{"label": "build", "status": "PASS"}],
+                "catalog_errors": [],
+                "limitations": [],
+                "comparison": {
+                    "status": "FAIL",
+                    "reasons": ["caso_novo_sem_baseline:qemu:tst7:test"],
+                },
+            })
+            (run_dir / "result.json").write_text(
+                json.dumps(value), encoding="utf-8")
+            baseline = root / "baseline.json"
+            with patch.object(runner, "RESULTS_ROOT", root), \
+                    patch.object(runner, "BASELINE_PATH", baseline):
+                self.assertEqual(runner.approve_run("tst7-run"), 0)
+            self.assertTrue(baseline.exists())
 
 
 if __name__ == "__main__":

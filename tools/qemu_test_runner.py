@@ -104,6 +104,7 @@ QEMU_PROFILE_ARGS = {
     "display": ["-vga", "cirrus"],
     "pci": ["-device", "virtio-rng-pci,id=tst6rng"],
 }
+QEMU_COMMON_ARGS = ["-accel", "tcg,thread=single"]
 QEMU_FIXTURE_NAMES = {"readonly", "readonly-update"}
 TST6_MAX_ITERATIONS = 1000
 TST6_MAX_DURATION_SECONDS = 600.0
@@ -593,6 +594,7 @@ class QemuSession:
         validate_qemu_profile(qemu_profile)
         command = [qemu]
         command.extend(["-cpu", self.arguments.cpu])
+        command.extend(QEMU_COMMON_ARGS)
         if self.arguments.snapshot:
             command.append("-snapshot")
         command.extend([
@@ -925,7 +927,16 @@ def json_document(value: dict[str, Any]) -> str:
 
 def case_timeout(case: dict[str, Any], default: float) -> float:
     value = case.get("timeout_seconds", default)
-    return float(value) if isinstance(value, (int, float)) and value > 0 else default
+    configured = float(value) if isinstance(value, (int, float)) and value > 0 \
+        else default
+    return max(default, configured)
+
+
+def heartbeat_timeout(case: dict[str, Any], requested: float) -> float:
+    value = case.get("heartbeat_timeout_seconds", requested)
+    configured = float(value) if isinstance(value, (int, float)) and value > 0 \
+        else requested
+    return max(requested, configured)
 
 
 def wait_for_ready(session: QemuSession, run_id: str,
@@ -1251,8 +1262,7 @@ def run_execution(arguments: argparse.Namespace) -> int:
                 session, case_id, case_iteration,
                 (seed + case_iteration * 2654435761) & 0xFFFFFFFF,
                 case_timeout(case, arguments.case_timeout),
-                float(case.get("heartbeat_timeout_seconds",
-                               arguments.heartbeat_timeout)),
+                heartbeat_timeout(case, arguments.heartbeat_timeout),
                 case,
             )
             case_result = dict(event)

@@ -6623,3 +6623,18 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   o Clang está disponível, mas o runtime ASan/UBSan MinGW UCRT64 requerido
   para link não está instalado. A execução completa do TST7 e a validação de
   hardware físico ainda não foram declaradas concluídas.
+
+- Fechamento da execução completa TST7 — concluído em 2026-09-06
+  (America/Sao_Paulo).
+
+  Passaram `make test-tst7-host` (40 testes) e
+  `make catalog-test-strict` (7.330 superfícies, 170 casos). O
+  `make test-tst7-full` terminou `PASS` no run
+  `tst7-20260906T220156Z-5600`, contra o baseline aprovado
+  `tst7-20260906T191709Z-25428`. Os 170 casos passaram, incluindo 37 casos
+  QEMU, com 712 artefatos indexados em `.tst7-results/`; não houve retry
+  automático nem processo QEMU residual. A estabilidade do executor foi
+  reforçada com TCG single-thread e proteção do autoteste cooperativo de
+  threads contra interrupção do timer. Hardware físico continua `BLOCKED` e
+  TST3 sanitize continua `BLOCKED` pela ausência do runtime ASan/UBSan
+  compatível.

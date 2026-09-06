@@ -13,16 +13,19 @@ existente.
 O catálogo canônico, o sincronizador e a visão Markdown foram criados e
 validados pelo alvo host-only `make catalog-test`. A TST5 e a camada QEMU da
 TST6 foram implementadas e validadas. A TST7 foi implementada, teve o baseline
-aprovado explicitamente e passou por uma execução `full` posterior contra
-esse baseline. Hardware físico permanece `BLOCKED` enquanto não houver
-equipamento e evidência correspondente.
+aprovado explicitamente e passou por uma execução `full` posterior contra esse
+baseline: o run `tst7-20260906T220156Z-5600` terminou `PASS`, com 170 casos
+aprovados, 712 artefatos preservados e nenhum processo QEMU residual. Hardware
+físico permanece `BLOCKED` enquanto não houver equipamento e evidência
+correspondente.
 
 A infraestrutura TST1–TST7 está concluída para a matriz automatizada existente.
 Após a evidência Assembly QEMU registrada abaixo, o catálogo canônico registra
 7.330 superfícies de software, todas `COVERED`, sem `PENDING`, em 170 casos
 `AUTOMATED`, e `make catalog-test-strict` passa. Isso fecha a cobertura
-catalogada de software, mas não substitui a execução integral do TST7 `full`,
-nem a matriz de hardware físico. O sanitizador TST3 permanece `BLOCKED` nesta
+catalogada de software. A execução integral do TST7 `full` já passou contra o
+baseline aprovado; a matriz de hardware físico continua separada e `BLOCKED`. O
+sanitizador TST3 permanece `BLOCKED` nesta
 máquina porque o Clang instalado não possui o runtime ASan/UBSan compatível.
 
 ### Fechamento das superfícies Assembly pendentes — 2026-09-06
@@ -1335,9 +1338,13 @@ para sobreviver a `make clean`. Cada execucao registra manifesto, resultado,
 cobertura, resumo, stdout/stderr e indice SHA-256 dos artefatos. Os artefatos
 dos casos QEMU sao escritos dentro da execucao TST7 antes de qualquer limpeza.
 O baseline versionado em `tests/baselines/tst7-approved.json` foi criado por
-aprovacao explicita do `full` `tst7-20260901T124115Z-19420`. A execucao final
-`tst7-20260901T135144Z-12828` passou contra esse baseline com as suites host,
-build limpo, catalogo, fixtures e os 36 casos QEMU aprovados.
+aprovacao explicita do `full` `tst7-20260906T191709Z-25428`. A execucao final
+`tst7-20260906T220156Z-5600` passou contra esse baseline com as suites host,
+build limpo, catalogo, fixtures e os 37 casos QEMU aprovados. O executor QEMU
+usa `-accel tcg,thread=single` para reduzir a variabilidade entre processos
+sequenciais, e o autoteste cooperativo de threads desabilita interrupcoes do
+timer somente durante sua troca de contexto protegida, restaurando o estado
+original inclusive nos caminhos de erro.
 
 O comparador cobre mudancas de status, timeout, fase, evento, warnings
 normalizados, cobertura aprovada e duracao. A duracao so e comparada quando o
@@ -1359,8 +1366,9 @@ artificial.
   observavel e origem validados contra o catalogo.
 - [x] `make test-tst7-host`, `make test-tst7-quick`, `make test-tst7-full` e
   uma aprovacao real de baseline executados com evidencia.
-- [x] Uma segunda execucao `full` passou contra o baseline aprovado sem
-  regressao.
+- [x] A execucao `full` `tst7-20260906T220156Z-5600` passou contra o baseline
+  aprovado sem regressao, com todos os 170 casos `PASS` e sem processos QEMU
+  residuais.
 
 Com esses criterios atendidos, a TST7 esta concluida para a matriz automatizada.
 Hardware fisico continua `BLOCKED` e nao entra na matriz QEMU.

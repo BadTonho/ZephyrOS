@@ -382,6 +382,7 @@ void thread_yield(void) {
 int thread_run_self_test(void) {
     thread_t* thread_a;
     thread_t* thread_b;
+    uint32_t flags;
     int result = OK;
 
     if (!thread_initialized || current_thread || scheduler_active) {
@@ -393,6 +394,7 @@ int thread_run_self_test(void) {
         return ERR_STATE;
     }
 
+    flags = thread_wait_irq_save();
     thread_test_a_runs = 0;
     thread_test_b_runs = 0;
     thread_test_trace_pos = 0;
@@ -404,6 +406,7 @@ int thread_run_self_test(void) {
         if (thread_a) thread_destroy(thread_a);
         if (thread_b) thread_destroy(thread_b);
         thread_self_test_active = 0;
+        thread_wait_irq_restore(flags);
         LOG_ERROR("THRD", "Auto teste nao criou as threads necessarias");
         return ERR_MEM;
     }
@@ -425,6 +428,7 @@ int thread_run_self_test(void) {
     thread_destroy(thread_a);
     thread_destroy(thread_b);
     thread_self_test_active = 0;
+    thread_wait_irq_restore(flags);
     if (result != OK) {
         LOG_ERROR("THRD", "Auto teste detectou troca de contexto invalida");
         return result;

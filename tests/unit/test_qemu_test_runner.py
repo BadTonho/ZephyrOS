@@ -71,6 +71,27 @@ class CatalogAndStatusTests(unittest.TestCase):
             runner.result_status([], runner.RunnerError("missing", "precondition", True)),
             ("BLOCKED", "precondition", "missing"))
 
+    def test_explicit_heartbeat_limit_can_raise_catalog_limit(self):
+        self.assertEqual(
+            runner.heartbeat_timeout({"heartbeat_timeout_seconds": 10}, 120),
+            120)
+        self.assertEqual(
+            runner.heartbeat_timeout({"heartbeat_timeout_seconds": 120}, 60),
+            120)
+
+    def test_explicit_case_limit_can_raise_catalog_limit(self):
+        self.assertEqual(
+            runner.case_timeout({"timeout_seconds": 60}, 120),
+            120)
+        self.assertEqual(
+            runner.case_timeout({"timeout_seconds": 120}, 60),
+            120)
+
+    def test_qemu_uses_deterministic_single_thread_tcg(self):
+        self.assertEqual(
+            runner.QEMU_COMMON_ARGS,
+            ["-accel", "tcg,thread=single"])
+
 
 class ProgressTests(unittest.TestCase):
     def test_progress_states(self):

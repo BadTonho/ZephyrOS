@@ -1493,10 +1493,18 @@ processo.
 
 ## TST7: regressao continua
 
+Validacao mais recente: `make test-tst7-full` passou no run
+`tst7-20260906T220156Z-5600` contra o baseline aprovado, com 170 casos
+`PASS`, 37 casos QEMU, 712 artefatos preservados e nenhum processo QEMU
+residual. `make test-tst7-host` passou com 40 testes e
+`make catalog-test-strict` confirmou 7.330 superficies e 170 casos. O runner
+QEMU usa `-accel tcg,thread=single`; o autoteste cooperativo de threads protege
+a troca de contexto contra o timer e restaura as interrupcoes.
+
 O runner TST7 e independente do provedor de CI. O modo `quick` executa as
 suítes host-only e os gates de qualidade previstos para alterações comuns. O
 modo `full` faz `make clean`, recompila, executa a suíte rápida, valida o
-catálogo e executa os 36 casos QEMU automatizados, cada um em processo
+catálogo e executa os 37 casos QEMU automatizados, cada um em processo
 separado, com seed determinístico, timeout declarado e uma única tentativa.
 
 ```text
@@ -1532,7 +1540,7 @@ estado.
 
 Depois da aprovação explícita, execute `make test-tst7-full` para validar a
 regressão contra o baseline. A duração das etapas de preparação do host, como
-`build`, não é comparada como duração de caso; os 36 casos QEMU continuam
+`build`, não é comparada como duração de caso; os 37 casos QEMU continuam
 comparáveis individualmente. Nunca substitua o baseline manualmente para
 remover uma falha.
 
