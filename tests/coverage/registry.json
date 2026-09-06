@@ -4393,6 +4393,7 @@
       ],
       "surface_ids": [
         "c:src/kernel/kernel.c:global_mouse_handler",
+        "c:src/kernel/kernel.c:desktop_process_main",
         "c:src/kernel/kernel.c:kernel_dispatch_legacy_async",
         "c:src/kernel/kernel.c:kernel_host_test_run_finite_routes",
         "c:src/kernel/kernel.c:kernel_cancel_foreground_app",
@@ -4412,7 +4413,10 @@
         "c:src/kernel/kernel.c:kernel_timer_work_callback",
         "c:src/kernel/kernel.c:kernel_timer_work_notify",
         "c:src/kernel/kernel.c:kernel_wake_shell_for_process_event",
-        "c:src/kernel/kernel.c:kernel_workqueue_init"
+        "c:src/kernel/kernel.c:kernel_workqueue_init",
+        "c:src/kernel/kernel.c:shell_process_main",
+        "c:src/kernel/kernel.c:system_process_main",
+        "c:src/kernel/kernel.c:test_protocol_process_main"
       ],
       "include_public_apis": false,
       "case_definition": {
@@ -4441,6 +4445,7 @@
         "status": "AUTOMATED",
         "surface_ids": [
           "c:src/kernel/kernel.c:global_mouse_handler",
+          "c:src/kernel/kernel.c:desktop_process_main",
           "c:src/kernel/kernel.c:kernel_dispatch_legacy_async",
           "c:src/kernel/kernel.c:kernel_host_test_run_finite_routes",
           "c:src/kernel/kernel.c:kernel_cancel_foreground_app",
@@ -4460,7 +4465,10 @@
           "c:src/kernel/kernel.c:kernel_timer_work_callback",
           "c:src/kernel/kernel.c:kernel_timer_work_notify",
           "c:src/kernel/kernel.c:kernel_wake_shell_for_process_event",
-          "c:src/kernel/kernel.c:kernel_workqueue_init"
+          "c:src/kernel/kernel.c:kernel_workqueue_init",
+          "c:src/kernel/kernel.c:shell_process_main",
+          "c:src/kernel/kernel.c:system_process_main",
+          "c:src/kernel/kernel.c:test_protocol_process_main"
         ],
         "tags": [
           "host",
@@ -4472,7 +4480,7 @@
           "coverage"
         ]
       },
-      "evidence": "make test-kernel-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe PASS com cobertura dinamica das rotas finitas; entradas de processo infinito e kernel_main permanecem pendentes"
+      "evidence": "make test-kernel-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe PASS com cobertura dinamica das rotas finitas e uma iteracao host-only limitada das entradas de processo; kernel_main permanece pendente para boot QEMU"
     },
     {
       "id": "panic-host-dynamic",

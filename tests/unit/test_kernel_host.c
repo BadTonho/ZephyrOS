@@ -233,6 +233,12 @@ int shell_job_is_active(void) {
     return 0;
 }
 
+int shell_job_get_wait_timeout(uint32_t* timeout_out) {
+    if (!timeout_out) return ERR_NULL;
+    *timeout_out = WAIT_TIMEOUT_INFINITE;
+    return OK;
+}
+
 void taskbar_draw(void) {}
 int taskbar_is_menu_open(void) { return 0; }
 int taskbar_get_bounds(tb_rect_t* bounds) { (void)bounds; return 0; }

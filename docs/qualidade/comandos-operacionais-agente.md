@@ -94,10 +94,11 @@ no build do kernel. Cada alvo preserva `manifest.json`, `result.json`,
 
 O caso `test-kernel-host` exercita as rotas finitas observáveis de
 `src/kernel/kernel.c`: workqueue, callbacks de IRQ/timer/rede, polling USB,
-despacho assíncrono, mouse, solicitações ao Shell, redesenho e DHCP. Ele usa
-dependências estáticas falsas e não inicia `kernel_main` nem os loops de
-processo. O relatório fica em `build/test-results/kernel-host/`; as entradas
-de processo permanentes permanecem pendentes para um executor com limite real.
+despacho assíncrono, mouse, solicitações ao Shell, redesenho, DHCP e uma
+iteração limitada de cada entrada de processo. Ele usa dependências estáticas
+falsas; `kernel_main` não é iniciado. O relatório fica em
+`build/test-results/kernel-host/`; somente a inicialização completa de
+`kernel_main` permanece pendente para um executor QEMU real.
 
 O caso `test-tls-client-host` compila o adaptador `tls_client.c` real com um
 engine BearSSL falso, socket, relogio e RNG deterministas. Ele exercita

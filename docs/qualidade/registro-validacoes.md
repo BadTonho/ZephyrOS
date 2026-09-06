@@ -13,13 +13,14 @@ segredos.
 - Fixture: dependências estáticas para workqueue, IRQ deferred, timer, rede,
   USB, processo, Shell, UI, file index e logs; nenhum hardware ou processo
   infinito foi iniciado.
-- Cobertura: 21 funções reais de `src/kernel/kernel.c`, incluindo despacho
+- Cobertura: 25 símbolos de `src/kernel/kernel.c`, incluindo as 24 rotas do
+  runtime, uma iteração limitada das entradas de processo, despacho
   assíncrono, callbacks, polling, mouse, solicitações ao Shell, redesenho e
   DHCP; o relatório não teve endereços desconhecidos nem símbolos ambíguos.
 - Resultado: `PASS` com `-Wall -Wextra -Werror`; a sincronização do catálogo
-  passou e o catálogo registra 7.330 superfícies, 7.267 `COVERED`, 63
-  `PENDING` e 170 casos. `kernel_main` e as entradas de processo com loops
-  permanentes continuam explicitamente pendentes.
+  passou e o catálogo registra 7.330 superfícies, 7.273 `COVERED`, 57
+  `PENDING` e 170 casos. Somente `kernel_main` permanece explicitamente
+  pendente para cobertura de boot QEMU.
 
 ## 2026-09-05 - Rota `panic_halt` com evidência host-only
 

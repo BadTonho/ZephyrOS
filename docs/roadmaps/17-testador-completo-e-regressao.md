@@ -29,22 +29,24 @@ relatórios RTC/Shell, da fixture host-only do Updater, da fixture host-only do
 File Manager, da fixture host-only do Task Manager, da validação de resultados
 do Shell Checks, da fixture host-only do GUI Test, da fixture host-only do
 menu de recuperação e da fixture host-only do loader de recuperação, registra
-7.330 superfícies, 7.267 `COVERED` e 63 `PENDING`, em 170 casos
+7.330 superfícies, 7.273 `COVERED` e 57 `PENDING`, em 170 casos
 `AUTOMATED`.
 
 ### Incremento Kernel Runtime: rotas finitas host-only — 2026-09-05
 
 - [x] A fixture `host:kernel:runtime` exercita diretamente as rotas finitas
       de despacho assíncrono, workqueue, callbacks, polling USB/rede/timer,
-      mouse, solicitações ao Shell, redesenho e DHCP sem iniciar os loops de
-      processos do kernel.
+      mouse, solicitações ao Shell, redesenho e DHCP. As entradas de processo
+      executam uma única iteração host-only limitada; o build normal mantém
+      os loops cooperativos permanentes.
 - [x] O teste usa dependências estáticas falsas, `-finstrument-functions`,
       `-Wall -Wextra -Werror` e timeout do runner. A cobertura dinâmica resolveu
-      21 funções de `src/kernel/kernel.c`, sem endereços desconhecidos ou
-      símbolos ambíguos.
+      25 símbolos de `src/kernel/kernel.c`, incluindo 24 rotas do kernel e a
+      fachada host-only, sem endereços desconhecidos ou símbolos ambíguos.
 - [x] `make test-kernel-host`, sincronização do catálogo e a validação da
-      cobertura passaram. `kernel_main` e as entradas de processo que possuem
-      loops permanentes continuam `PENDING` até existir um executor finito real.
+      cobertura passaram. Somente `kernel_main` permanece `PENDING`, pois sua
+      inicialização completa exige uma imagem/QEMU e não pode ser reduzida a
+      uma chamada host-only sem perder o fluxo real de boot.
 
 ### Incremento Panic Halt: rota host-only instrumentada — 2026-09-05
 

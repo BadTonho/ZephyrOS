@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7269 |
+| `COVERED` | 7273 |
 | `MANUAL` | 0 |
-| `PENDING` | 61 |
+| `PENDING` | 57 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -5646,7 +5646,7 @@
 | `c:src/icons/icons.c:icons_set_tb` | `src/icons/icons.c` | `icons_set_tb` | `icons` | `COVERED` | 1 |
 | `c:src/icons/icons.c:icons_set_wm` | `src/icons/icons.c` | `icons_set_wm` | `icons` | `COVERED` | 1 |
 | `c:src/icons/icons.c:icons_warn_once` | `src/icons/icons.c` | `icons_warn_once` | `icons` | `COVERED` | 1 |
-| `c:src/kernel/kernel.c:desktop_process_main` | `src/kernel/kernel.c` | `desktop_process_main` | `kernel` | `PENDING` | 0 |
+| `c:src/kernel/kernel.c:desktop_process_main` | `src/kernel/kernel.c` | `desktop_process_main` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:global_mouse_handler` | `src/kernel/kernel.c` | `global_mouse_handler` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_cancel_foreground_app` | `src/kernel/kernel.c` | `kernel_cancel_foreground_app` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_dispatch_async_work` | `src/kernel/kernel.c` | `kernel_dispatch_async_work` | `kernel` | `COVERED` | 1 |
@@ -5672,9 +5672,9 @@
 | `c:src/kernel/kernel.c:kernel_wake_shell_for_event` | `src/kernel/kernel.c` | `kernel_wake_shell_for_event` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_wake_shell_for_process_event` | `src/kernel/kernel.c` | `kernel_wake_shell_for_process_event` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_workqueue_init` | `src/kernel/kernel.c` | `kernel_workqueue_init` | `kernel` | `COVERED` | 1 |
-| `c:src/kernel/kernel.c:shell_process_main` | `src/kernel/kernel.c` | `shell_process_main` | `kernel` | `PENDING` | 0 |
-| `c:src/kernel/kernel.c:system_process_main` | `src/kernel/kernel.c` | `system_process_main` | `kernel` | `PENDING` | 0 |
-| `c:src/kernel/kernel.c:test_protocol_process_main` | `src/kernel/kernel.c` | `test_protocol_process_main` | `kernel` | `PENDING` | 0 |
+| `c:src/kernel/kernel.c:shell_process_main` | `src/kernel/kernel.c` | `shell_process_main` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:system_process_main` | `src/kernel/kernel.c` | `system_process_main` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:test_protocol_process_main` | `src/kernel/kernel.c` | `test_protocol_process_main` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/panic.c:panic` | `src/kernel/panic.c` | `panic` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/panic.c:panic_draw_header` | `src/kernel/panic.c` | `panic_draw_header` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/panic.c:panic_halt` | `src/kernel/panic.c` | `panic_halt` | `kernel` | `COVERED` | 1 |
@@ -7645,11 +7645,7 @@
 - `asm:src/kernel/switch.asm:process_user_termination_enter`
 - `asm:src/kernel/switch.asm:thread_context_switch`
 - `asm:src/kernel/switch.asm:tss_flush`
-- `c:src/kernel/kernel.c:desktop_process_main`
 - `c:src/kernel/kernel.c:kernel_main`
-- `c:src/kernel/kernel.c:shell_process_main`
-- `c:src/kernel/kernel.c:system_process_main`
-- `c:src/kernel/kernel.c:test_protocol_process_main`
 
 ## Aposentadas
 

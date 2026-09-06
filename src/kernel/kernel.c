@@ -611,6 +611,9 @@ static void test_protocol_process_main(void) {
         test_protocol_poll();
         if (test_protocol_is_active()) process_yield();
         else process_block(1U);
+#ifdef ZEPHYROS_HOST_TEST
+        break;
+#endif
     }
 }
 
@@ -635,6 +638,9 @@ void system_process_main(void) {
         wm_update_cpu_stats();
         if (test_protocol_is_active()) process_yield();
         else process_block(1U);
+#ifdef ZEPHYROS_HOST_TEST
+        break;
+#endif
     }
 }
 
@@ -679,6 +685,9 @@ void shell_process_main(void) {
         app_loader_reap_finished();
         taskmgr_gui_update();
         shell_update_hosted_terminal();
+#ifdef ZEPHYROS_HOST_TEST
+        break;
+#endif
     }
 }
 
@@ -686,6 +695,9 @@ void desktop_process_main(void) {
     /* A cena inicial e desenhada pelo kernel apos o boot completo. */
     while (1) {
         process_block(1U);
+#ifdef ZEPHYROS_HOST_TEST
+        break;
+#endif
     }
 }
 
@@ -766,6 +778,10 @@ int kernel_host_test_run_finite_routes(void) {
     global_mouse_handler(&event);
     if (kernel_handle_taskbar_mouse(&event) != 0) return 9;
     if (kernel_start_automatic_dhcp() != ERR_NOT_FOUND) return 10;
+    test_protocol_process_main();
+    system_process_main();
+    shell_process_main();
+    desktop_process_main();
     return 0;
 }
 #endif
