@@ -1605,6 +1605,21 @@ artefatos em `build-coverage/test-results/cov-tst4-execution/<id>/` e deve
 resolver `thread_context_switch` no `coverage.json`, sem enderecos
 desconhecidos ou simbolos ambiguos.
 
+Para cobrir as entradas e a saída reais de processos ring 3, use a imagem
+instrumentada do fixture de paging:
+
+```text
+make test-paging-coverage-qemu PAGING_COVERAGE_RUN_ID=tst7-paging-coverage-<id>
+```
+
+Esse alvo executa uma única iteração de `qemu:tst4:paging-vma` e preserva os
+artefatos em `build-coverage/test-results/cov-tst4-paging/<id>/`. Uma execução
+aprovada deve resolver `process_user_enter` e
+`process_user_termination_enter` no `coverage.json`, com
+`unknown_addresses=[]` e `ambiguous_symbols=[]`. As trampolines são
+instrumentadas somente quando `ZEPHYROS_TEST_COVERAGE` está ativo; o build
+normal não recebe esse caminho.
+
 ## Comandos no Shell
 
 Para orientar comandos do sistema, consultar primeiro `comandos.md` e os

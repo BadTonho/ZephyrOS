@@ -2804,17 +2804,46 @@
         "qemu:tst4:paging-vma"
       ],
       "surface_selector": "coverage_report",
-      "coverage_report": "build-coverage/test-results/cov-tst4-paging/cov-tst4-paging-1/coverage.json",
+      "coverage_report": "build-coverage/test-results/cov-tst4-paging/tst7-paging-coverage-2/coverage.json",
       "coverage_sources": [
         "src/core/app_api.c",
         "src/core/kernel_tests_paging.c",
         "src/core/syscall.c",
+        "src/kernel/switch.asm",
         "src/memory/memory.c",
         "src/memory/paging.c",
         "src/memory/vma.c"
       ],
       "include_public_apis": true,
-      "evidence": "QEMU TST4 paging-vma cov-tst4-paging-1 PASS com fixture ring 3 e coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
+      "evidence": "QEMU TST4 paging-vma tst7-paging-coverage-2 PASS com fixture ring 3, process_user_enter e process_user_termination_enter resolvidos no coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
+    },
+    {
+      "id": "process-user-enter-api-qemu",
+      "domain": "process-assembly-api",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst4:paging-vma"
+      ],
+      "surface_ids": [
+        "api:src/include/process/process.h:process_user_enter"
+      ],
+      "evidence": "O relatorio ZCOV tst7-paging-coverage-2 resolveu process_user_enter ao iniciar o fixture ring 3 real; a API publica e a entrada Assembly pertencem ao fluxo executado"
+    },
+    {
+      "id": "process-user-termination-enter-api-qemu",
+      "domain": "process-assembly-api",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst4:paging-vma"
+      ],
+      "surface_ids": [
+        "api:src/include/process/process.h:process_user_termination_enter"
+      ],
+      "evidence": "O relatorio ZCOV tst7-paging-coverage-2 resolveu process_user_termination_enter ao concluir o fixture ring 3 real; a API publica e a entrada Assembly pertencem ao fluxo executado"
     },
     {
       "id": "platform-qemu-tst4-dynamic",

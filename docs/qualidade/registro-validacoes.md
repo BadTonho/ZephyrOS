@@ -7,6 +7,20 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## 2026-09-05 - Entradas Assembly de processos ring 3 em execução real
+
+- Caso: `qemu:tst4:paging-vma` / `make test-paging-coverage-qemu
+  PAGING_COVERAGE_RUN_ID=tst7-paging-coverage-2`.
+- Resultado: `PASS`, com `READY -> HEARTBEAT -> BEGIN -> PASS`, terminação
+  `completed` e artefatos preservados em
+  `build-coverage/test-results/cov-tst4-paging/tst7-paging-coverage-2/`.
+- Cobertura: o relatório ZCOV resolveu `process_user_enter` e
+  `process_user_termination_enter` durante o fixture ring 3 real, sem
+  endereços desconhecidos, símbolos ambíguos ou erros.
+- Catálogo: as duas APIs foram vinculadas a `qemu:tst4:paging-vma` somente
+  depois da evidência; a sincronização, a renderização e `make catalog-test`
+  passaram nesta etapa.
+
 ## 2026-09-05 - Troca de contexto de threads em execução real
 
 - Caso: `qemu:tst4:execution` / `make test-execution-coverage-qemu

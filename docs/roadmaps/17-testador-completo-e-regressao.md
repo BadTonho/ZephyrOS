@@ -29,7 +29,7 @@ relatórios RTC/Shell, da fixture host-only do Updater, da fixture host-only do
 File Manager, da fixture host-only do Task Manager, da validação de resultados
 do Shell Checks, da fixture host-only do GUI Test, da fixture host-only do
 menu de recuperação e da fixture host-only do loader de recuperação, registra
-7.330 superfícies, 7.279 `COVERED` e 51 `PENDING`, em 170 casos
+7.330 superfícies, 7.283 `COVERED` e 47 `PENDING`, em 170 casos
 `AUTOMATED`.
 
 ### Incremento Assembly: TSS e troca de contexto real — 2026-09-05
@@ -61,6 +61,25 @@ menu de recuperação e da fixture host-only do loader de recuperação, registr
       `thread_run_self_test`, com zero endereços desconhecidos, símbolos
       ambíguos ou erros. A API pública foi vinculada ao mesmo caso somente
       após essa evidência.
+
+### Incremento Assembly: entrada e saída de ring 3 — 2026-09-05
+
+- [x] O alvo `test-paging-coverage-qemu` foi executado uma única vez com
+      `PAGING_COVERAGE_RUN_ID=tst7-paging-coverage-2`. O caso
+      `qemu:tst4:paging-vma` produziu `READY -> HEARTBEAT -> BEGIN -> PASS` e
+      preservou os artefatos em
+      `build-coverage/test-results/cov-tst4-paging/tst7-paging-coverage-2/`.
+- [x] O relatório ZCOV resolveu `process_user_enter` e
+      `process_user_termination_enter` durante a criação, execução e término
+      reais do fixture ring 3, sem endereços desconhecidos, símbolos ambíguos
+      ou erros.
+- [x] As trampolines só registram seus endereços no build de cobertura,
+      salvando e restaurando os registradores antes do `iret` ou da troca de
+      término. O build normal continua sem instrumentação e passou após a
+      alteração.
+- [x] O catálogo foi sincronizado, renderizado e validado; agora registra
+      7.283 `COVERED` e 47 `PENDING`. As duas APIs de entrada ring 3 foram
+      vinculadas ao caso somente após a evidência dinâmica.
 
 ### Incremento Kernel Main: boot QEMU instrumentado — 2026-09-05
 

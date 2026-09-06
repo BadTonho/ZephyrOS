@@ -39,6 +39,7 @@ TST7_FULL_TIMEOUT ?= 7200
 COVERAGE_BUILD_DIR ?= build-coverage
 ASSEMBLY_RUN_ID ?= tst7-assembly-1
 EXECUTION_COVERAGE_RUN_ID ?= tst7-execution-coverage-1
+PAGING_COVERAGE_RUN_ID ?= tst7-paging-coverage-1
 COVERAGE_CFLAGS ?= -g -DZEPHYROS_TEST_COVERAGE -finstrument-functions -I src
 QEMU_BOOT_DISK_ARGS ?= -drive file=$(OS_IMG),format=raw,if=none,id=bootdisk -device ide-hd,drive=bootdisk,bus=ide.0,unit=0,bootindex=1
 QEMU_STAGE2_LBA_DISK_ARGS ?= -drive file=$(OS_IMG),format=raw,if=none,id=stage2lbadisk -device ide-hd,drive=stage2lbadisk,bootindex=1
@@ -1026,7 +1027,7 @@ $(SYSCALL_OBJ): $(SYSCALL_C) src/include/core/syscall.h src/include/core/app_api
 
 $(SWITCH_OBJ): $(SWITCH_ASM)
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
-	$(NASM) -f elf32 $< -o $@
+	$(NASM) -f elf32 $(NASMFLAGS_EXTRA) $< -o $@
 
 $(VIDEO_OBJ): $(VIDEO_C) src/include/core/video.h src/include/drivers/vesa.h src/include/core/errors.h
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
@@ -1512,6 +1513,9 @@ test-assembly-qemu: coverage-map tools\qemu_test_runner.py tests\catalog.json
 
 test-execution-coverage-qemu: coverage-map tools\qemu_test_runner.py tests\catalog.json
 	python tools\qemu_test_runner.py stress --case qemu:tst4:execution --iterations 1 --boot-timeout 60 --case-timeout 120 --heartbeat-timeout 60 --image "$(COVERAGE_BUILD_DIR)\zephyros.img" --results "$(COVERAGE_BUILD_DIR)\test-results\cov-tst4-execution" --run-id $(EXECUTION_COVERAGE_RUN_ID) --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none --coverage-symbols "$(COVERAGE_BUILD_DIR)\coverage-symbols.json"
+
+test-paging-coverage-qemu: coverage-map tools\qemu_test_runner.py tests\catalog.json
+	python tools\qemu_test_runner.py stress --case qemu:tst4:paging-vma --iterations 1 --boot-timeout 60 --case-timeout 120 --heartbeat-timeout 60 --image "$(COVERAGE_BUILD_DIR)\zephyros.img" --results "$(COVERAGE_BUILD_DIR)\test-results\cov-tst4-paging" --run-id $(PAGING_COVERAGE_RUN_ID) --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none --coverage-symbols "$(COVERAGE_BUILD_DIR)\coverage-symbols.json"
 
 test-tst4-qemu: $(OS_IMG) tools\qemu_test_runner.py tests\catalog.json
 	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)

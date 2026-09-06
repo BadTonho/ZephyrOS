@@ -7,6 +7,10 @@
 
 [EXTERN process_finish_user_termination]
 
+%ifdef ZEPHYROS_TEST_COVERAGE
+[EXTERN test_coverage_record_address]
+%endif
+
 tss_flush:
     mov ax, 0x28
     ltr ax
@@ -14,6 +18,13 @@ tss_flush:
 
 process_user_enter:
     ; O contexto ja deixou ESP apontando para um frame completo de IRET.
+%ifdef ZEPHYROS_TEST_COVERAGE
+    pushad
+    push dword process_user_enter
+    call test_coverage_record_address
+    add esp, 4
+    popad
+%endif
     mov ax, 0x23
     mov ds, ax
     mov es, ax
@@ -24,6 +35,13 @@ process_user_enter:
 process_user_termination_enter:
     ; O IRET saiu do frame de ring 3 antes de chegarmos aqui. Recarregar
     ; segmentos de kernel evita que a troca use seletores de usuario.
+%ifdef ZEPHYROS_TEST_COVERAGE
+    pushad
+    push dword process_user_termination_enter
+    call test_coverage_record_address
+    add esp, 4
+    popad
+%endif
     mov ax, 0x10
     mov ds, ax
     mov es, ax

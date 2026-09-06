@@ -33554,9 +33554,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst4:paging-vma"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/process/process.h:process_user_termination_enter",
@@ -33572,9 +33575,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst4:paging-vma"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/process/process.h:process_wait",
@@ -40119,6 +40125,7 @@
       "status": "COVERED",
       "case_ids": [
         "qemu:tst4:execution",
+        "qemu:tst4:paging-vma",
         "qemu:tst7:assembly"
       ],
       "tags": [],
@@ -40138,9 +40145,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst4:paging-vma"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/kernel/switch.asm:process_user_termination_enter",
@@ -40156,9 +40166,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst4:paging-vma"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/kernel/switch.asm:thread_context_switch",
@@ -40198,6 +40211,7 @@
       "status": "COVERED",
       "case_ids": [
         "qemu:tst4:execution",
+        "qemu:tst4:paging-vma",
         "qemu:tst7:assembly"
       ],
       "tags": [],
@@ -44527,7 +44541,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:app-api"
+        "host:core:app-api",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -70889,7 +70904,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:syscall"
+        "host:core:syscall",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -70932,7 +70948,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:syscall"
+        "host:core:syscall",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -126341,7 +126358,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:memory"
+        "host:memory:memory",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -126387,7 +126405,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:memory"
+        "host:memory:memory",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -126605,7 +126624,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:memory"
+        "host:memory:memory",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -126647,7 +126667,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:memory"
+        "host:memory:memory",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -126668,7 +126689,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:memory"
+        "host:memory:memory",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -126714,6 +126736,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:memory:memory",
+        "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
@@ -126738,6 +126761,7 @@
       "case_ids": [
         "host:memory:memory",
         "qemu:tst4:memory-slab",
+        "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
         "qemu:tst6:fault:memory",
         "qemu:tst6:stress:kernel"
@@ -126786,7 +126810,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:memory"
+        "host:memory:memory",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -126832,6 +126857,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:memory:memory",
+        "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
         "qemu:tst6:stress:storage"
       ],
@@ -126898,7 +126924,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:memory"
+        "host:memory:memory",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -126940,7 +126967,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:memory"
+        "host:memory:memory",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -126961,7 +126989,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:memory"
+        "host:memory:memory",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -126982,7 +127011,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:memory"
+        "host:memory:memory",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -127003,7 +127033,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:memory"
+        "host:memory:memory",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -127024,7 +127055,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:memory"
+        "host:memory:memory",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -127045,7 +127077,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:memory"
+        "host:memory:memory",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -127089,7 +127122,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:memory"
+        "host:memory:memory",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -127110,7 +127144,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:memory"
+        "host:memory:memory",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -127131,7 +127166,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:memory"
+        "host:memory:memory",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -127152,7 +127188,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:memory"
+        "host:memory:memory",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -127194,7 +127231,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:memory"
+        "host:memory:memory",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -127550,7 +127588,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:paging"
+        "host:memory:paging",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -127614,7 +127653,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:paging"
+        "host:memory:paging",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -127635,7 +127675,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:paging"
+        "host:memory:paging",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -127677,7 +127718,8 @@
       "cleanup": "tabela liberada pelo fixture host",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:paging"
+        "host:memory:paging",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -127741,7 +127783,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:paging"
+        "host:memory:paging",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -127783,7 +127826,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:paging"
+        "host:memory:paging",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -127911,7 +127955,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:paging"
+        "host:memory:paging",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -127953,7 +127998,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:paging"
+        "host:memory:paging",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -128046,7 +128092,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:paging"
+        "host:memory:paging",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -128067,7 +128114,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:paging"
+        "host:memory:paging",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -128131,7 +128179,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:paging"
+        "host:memory:paging",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -128152,7 +128201,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:paging"
+        "host:memory:paging",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -129041,7 +129091,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:vma"
+        "host:memory:vma",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -129084,7 +129135,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:vma"
+        "host:memory:vma",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -129127,7 +129179,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:memory:vma"
+        "host:memory:vma",
+        "qemu:tst4:paging-vma"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -177017,6 +177070,13 @@
         "api:src/include/memory/vma.h:process_vma_munmap",
         "api:src/include/memory/vma.h:process_vma_register_image",
         "api:src/include/memory/vma.h:process_vma_release",
+        "api:src/include/process/process.h:process_user_enter",
+        "api:src/include/process/process.h:process_user_termination_enter",
+        "asm:src/kernel/switch.asm:process_context_switch",
+        "asm:src/kernel/switch.asm:process_user_enter",
+        "asm:src/kernel/switch.asm:process_user_termination_enter",
+        "asm:src/kernel/switch.asm:tss_flush",
+        "c:src/core/app_api.c:app_api_init",
         "c:src/core/app_api.c:app_api_is_ready",
         "c:src/core/app_api.c:app_api_mmap",
         "c:src/core/app_api.c:app_api_munmap",
@@ -177037,7 +177097,9 @@
         "c:src/core/kernel_tests_paging.c:paging_wait_fixture",
         "c:src/core/syscall.c:syscall_dispatch",
         "c:src/core/syscall.c:syscall_dispatch_user",
+        "c:src/core/syscall.c:syscall_enable_user_mode",
         "c:src/core/syscall.c:syscall_handler",
+        "c:src/core/syscall.c:syscall_init",
         "c:src/core/syscall.c:syscall_is_user_caller",
         "c:src/core/syscall.c:syscall_user_mmap",
         "c:src/core/syscall.c:syscall_user_mode_is_enabled",
@@ -177086,13 +177148,34 @@
         "c:src/drivers/tss.c:tss_set_kernel_stack",
         "c:src/kernel/kernel.c:kernel_dispatch_input_work",
         "c:src/kernel/kernel.c:kernel_index_work_callback",
+        "c:src/memory/memory.c:align_up",
         "c:src/memory/memory.c:heap_align_size",
+        "c:src/memory/memory.c:heap_block_from_pointer",
         "c:src/memory/memory.c:heap_block_is_consistent",
         "c:src/memory/memory.c:heap_block_matches",
         "c:src/memory/memory.c:heap_initialize",
         "c:src/memory/memory.c:heap_merge_next",
         "c:src/memory/memory.c:heap_range_contains",
         "c:src/memory/memory.c:kfree",
+        "c:src/memory/memory.c:kmalloc",
+        "c:src/memory/memory.c:kmalloc_internal",
+        "c:src/memory/memory.c:memory_find_total",
+        "c:src/memory/memory.c:memory_get_free",
+        "c:src/memory/memory.c:memory_get_free_pages",
+        "c:src/memory/memory.c:memory_get_mmap_entries",
+        "c:src/memory/memory.c:memory_get_total",
+        "c:src/memory/memory.c:memory_heap_pointer",
+        "c:src/memory/memory.c:memory_init",
+        "c:src/memory/memory.c:memory_initialize_page_zones",
+        "c:src/memory/memory.c:memory_mark_usable",
+        "c:src/memory/memory.c:memory_physical_pointer",
+        "c:src/memory/memory.c:memory_pointer_address",
+        "c:src/memory/memory.c:memory_range_is_usable",
+        "c:src/memory/memory.c:memory_recount",
+        "c:src/memory/memory.c:memory_reserve_range",
+        "c:src/memory/memory.c:pmm_alloc_page",
+        "c:src/memory/memory.c:pmm_alloc_page_in_zone",
+        "c:src/memory/memory.c:pmm_alloc_pages_in_zone",
         "c:src/memory/memory.c:pmm_claim_pages",
         "c:src/memory/memory.c:pmm_free_page",
         "c:src/memory/memory.c:pmm_get_page_tag",
@@ -177104,14 +177187,26 @@
         "c:src/memory/memory.c:pmm_validate_release",
         "c:src/memory/memory.c:pmm_zone_is_allocatable",
         "c:src/memory/memory.c:pmm_zone_to_tag",
+        "c:src/memory/paging.c:paging_bootstrap_get_table",
         "c:src/memory/paging.c:paging_copy_to_user",
+        "c:src/memory/paging.c:paging_create_directory",
+        "c:src/memory/paging.c:paging_create_user_directory",
+        "c:src/memory/paging.c:paging_free_table_entry",
         "c:src/memory/paging.c:paging_free_user_directory",
+        "c:src/memory/paging.c:paging_get_current_directory",
+        "c:src/memory/paging.c:paging_get_page_in_directory",
         "c:src/memory/paging.c:paging_get_user_page_count",
         "c:src/memory/paging.c:paging_get_user_stats",
+        "c:src/memory/paging.c:paging_host_table_from_entry",
+        "c:src/memory/paging.c:paging_init",
         "c:src/memory/paging.c:paging_invalidate",
         "c:src/memory/paging.c:paging_is_ready",
         "c:src/memory/paging.c:paging_is_registered_user_directory",
+        "c:src/memory/paging.c:paging_map_framebuffer",
+        "c:src/memory/paging.c:paging_map_identity_range_fast",
         "c:src/memory/paging.c:paging_map_page_in_directory",
+        "c:src/memory/paging.c:paging_physical_pointer",
+        "c:src/memory/paging.c:paging_pointer_address",
         "c:src/memory/paging.c:paging_register_user_directory",
         "c:src/memory/paging.c:paging_switch_directory",
         "c:src/memory/paging.c:paging_table_is_empty",
@@ -177120,8 +177215,11 @@
         "c:src/memory/paging.c:paging_user_directory_index",
         "c:src/memory/paging.c:paging_validate_user_range",
         "c:src/memory/vma.c:process_vma_access_allowed",
+        "c:src/memory/vma.c:process_vma_create",
         "c:src/memory/vma.c:process_vma_ensure_page",
+        "c:src/memory/vma.c:process_vma_find_containing",
         "c:src/memory/vma.c:process_vma_find_gap",
+        "c:src/memory/vma.c:process_vma_find_page",
         "c:src/memory/vma.c:process_vma_get_page_fault_stats",
         "c:src/memory/vma.c:process_vma_handle_page_fault",
         "c:src/memory/vma.c:process_vma_insert_sorted",
