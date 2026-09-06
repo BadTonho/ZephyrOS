@@ -38,8 +38,16 @@ validação correspondente atualizada. A regra não exige alterar o testador em
 refatorações que comprovadamente não mudem comportamento, mas exige executar
 os testes existentes nesses casos.
 
+Toda função nova ou modificada DEVE possuir um teste automatizado que execute
+seu contrato diretamente ou a exercite por um fluxo de integração real. A
+associação por arquivo, módulo ou nome não conta como cobertura. O teste deve
+validar o caminho de sucesso e, quando a função puder falhar, seus limites,
+entradas inválidas e códigos de erro relevantes.
+
 - [ ] Adicionar ou atualizar o teste determinístico, host-only, QEMU ou
       black-box adequado antes de considerar a funcionalidade concluída.
+- [ ] Confirmar que cada função nova ou modificada é chamada por um teste
+      automatizado direto ou por integração documentada, sem vínculo artificial.
 - [ ] Atualizar o catálogo, o manifesto, os comandos operacionais e o roadmap
       quando a superfície observável, o contrato ou a cobertura forem afetados.
 - [ ] Quando ainda não houver executor ou fixture viável, registrar a
