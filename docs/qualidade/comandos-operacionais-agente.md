@@ -1564,8 +1564,9 @@ execucao.
 ## Cobertura Assembly de interrupcoes
 
 O caso QEMU `qemu:tst7:assembly` usa uma imagem de cobertura separada para
-disparar `isr0`--`isr31`, `isr128` e `irq0`--`irq15`. Os stubs Assembly so
-recebem instrumentacao quando `ZEPHYROS_TEST_COVERAGE` e definido no build de
+disparar `isr0`--`isr31`, `isr128` e `irq0`--`irq15`. A mesma imagem registra
+`kernel_main` quando o boot real entra no kernel. Os stubs Assembly so recebem
+instrumentacao quando `ZEPHYROS_TEST_COVERAGE` e definido no build de
 cobertura; o build normal permanece sem o hook.
 
 ```text
@@ -1577,8 +1578,10 @@ O alvo executa uma unica iteracao, sem retry, com timeout por caso, e grava
 `result.json` e `coverage.json` em
 `build-coverage/test-results/tst7-assembly/<id>/`. Uma execucao aprovada deve
 produzir `READY -> HEARTBEAT -> BEGIN -> PASS`, confirmar as 49 entradas
-Assembly e restaurar handlers, IRQs, ocorrencias e contadores da IDT. Use um
-`ASSEMBLY_RUN_ID` novo em cada repeticao para preservar os artefatos anteriores.
+Assembly e restaurar handlers, IRQs, ocorrencias e contadores da IDT. O
+relatorio aprovado deve ter `unknown_addresses=[]` e `ambiguous_symbols=[]`;
+use um `ASSEMBLY_RUN_ID` novo em cada repeticao para preservar os artefatos
+anteriores.
 
 ## Comandos no Shell
 

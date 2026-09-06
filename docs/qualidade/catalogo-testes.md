@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7273 |
+| `COVERED` | 7274 |
 | `MANUAL` | 0 |
-| `PENDING` | 57 |
+| `PENDING` | 56 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -4297,30 +4297,30 @@
 | `c:src/drivers/font.c:font_get_width` | `src/drivers/font.c` | `font_get_width` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/font.c:font_init` | `src/drivers/font.c` | `font_init` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/idt.c:idt_data_address` | `src/drivers/idt.c` | `idt_data_address` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/idt.c:idt_enable_user_syscall` | `src/drivers/idt.c` | `idt_enable_user_syscall` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/idt.c:idt_enable_user_syscall` | `src/drivers/idt.c` | `idt_enable_user_syscall` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/idt.c:idt_get_irq_status` | `src/drivers/idt.c` | `idt_get_irq_status` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/idt.c:idt_get_shared_irq_handler_count` | `src/drivers/idt.c` | `idt_get_shared_irq_handler_count` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/idt.c:idt_handler_address` | `src/drivers/idt.c` | `idt_handler_address` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/idt.c:idt_init` | `src/drivers/idt.c` | `idt_init` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/idt.c:idt_is_user_syscall_enabled` | `src/drivers/idt.c` | `idt_is_user_syscall_enabled` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/idt.c:idt_init` | `src/drivers/idt.c` | `idt_init` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/idt.c:idt_is_user_syscall_enabled` | `src/drivers/idt.c` | `idt_is_user_syscall_enabled` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/idt.c:idt_panic_exception` | `src/drivers/idt.c` | `idt_panic_exception` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/idt.c:idt_print_hex32` | `src/drivers/idt.c` | `idt_print_hex32` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/idt.c:idt_print_uint32` | `src/drivers/idt.c` | `idt_print_uint32` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/idt.c:idt_register_handler` | `src/drivers/idt.c` | `idt_register_handler` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/idt.c:idt_register_handler` | `src/drivers/idt.c` | `idt_register_handler` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/idt.c:idt_register_shared_irq_handler` | `src/drivers/idt.c` | `idt_register_shared_irq_handler` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/idt.c:idt_set_gate` | `src/drivers/idt.c` | `idt_set_gate` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/idt.c:idt_set_gate` | `src/drivers/idt.c` | `idt_set_gate` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/idt.c:idt_test_probe_begin` | `src/drivers/idt.c` | `idt_test_probe_begin` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/idt.c:idt_test_probe_end` | `src/drivers/idt.c` | `idt_test_probe_end` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/idt.c:idt_test_probe_get_count` | `src/drivers/idt.c` | `idt_test_probe_get_count` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/idt.c:idt_test_probe_handler` | `src/drivers/idt.c` | `idt_test_probe_handler` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/idt.c:idt_unmask_irq` | `src/drivers/idt.c` | `idt_unmask_irq` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/idt.c:idt_unmask_irq` | `src/drivers/idt.c` | `idt_unmask_irq` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/idt.c:idt_user_exception_handler` | `src/drivers/idt.c` | `idt_user_exception_handler` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/idt.c:idt_validate_irq_state` | `src/drivers/idt.c` | `idt_validate_irq_state` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/idt.c:inb` | `src/drivers/idt.c` | `inb` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/idt.c:inb` | `src/drivers/idt.c` | `inb` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/idt.c:irq_handler` | `src/drivers/idt.c` | `irq_handler` | `drivers` | `COVERED` | 5 |
 | `c:src/drivers/idt.c:isr_handler` | `src/drivers/idt.c` | `isr_handler` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/idt.c:outb` | `src/drivers/idt.c` | `outb` | `drivers` | `COVERED` | 5 |
-| `c:src/drivers/idt.c:pic_remap` | `src/drivers/idt.c` | `pic_remap` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/idt.c:pic_remap` | `src/drivers/idt.c` | `pic_remap` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/keyboard.c:inb` | `src/drivers/keyboard.c` | `inb` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/keyboard.c:keyboard_bottom_half` | `src/drivers/keyboard.c` | `keyboard_bottom_half` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/keyboard.c:keyboard_controller_reset` | `src/drivers/keyboard.c` | `keyboard_controller_reset` | `drivers` | `COVERED` | 1 |
@@ -5659,19 +5659,19 @@
 | `c:src/kernel/kernel.c:kernel_index_work_callback` | `src/kernel/kernel.c` | `kernel_index_work_callback` | `kernel` | `COVERED` | 3 |
 | `c:src/kernel/kernel.c:kernel_irq_work_callback` | `src/kernel/kernel.c` | `kernel_irq_work_callback` | `kernel` | `COVERED` | 3 |
 | `c:src/kernel/kernel.c:kernel_irq_work_notify` | `src/kernel/kernel.c` | `kernel_irq_work_notify` | `kernel` | `COVERED` | 3 |
-| `c:src/kernel/kernel.c:kernel_main` | `src/kernel/kernel.c` | `kernel_main` | `kernel` | `PENDING` | 0 |
+| `c:src/kernel/kernel.c:kernel_main` | `src/kernel/kernel.c` | `kernel_main` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_network_work_callback` | `src/kernel/kernel.c` | `kernel_network_work_callback` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_poll_usb` | `src/kernel/kernel.c` | `kernel_poll_usb` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_redraw_after_menu_close` | `src/kernel/kernel.c` | `kernel_redraw_after_menu_close` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_request_shell_app` | `src/kernel/kernel.c` | `kernel_request_shell_app` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_retry_shell_request` | `src/kernel/kernel.c` | `kernel_retry_shell_request` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_send_shell_request` | `src/kernel/kernel.c` | `kernel_send_shell_request` | `kernel` | `COVERED` | 1 |
-| `c:src/kernel/kernel.c:kernel_start_automatic_dhcp` | `src/kernel/kernel.c` | `kernel_start_automatic_dhcp` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_start_automatic_dhcp` | `src/kernel/kernel.c` | `kernel_start_automatic_dhcp` | `kernel` | `COVERED` | 2 |
 | `c:src/kernel/kernel.c:kernel_timer_work_callback` | `src/kernel/kernel.c` | `kernel_timer_work_callback` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_timer_work_notify` | `src/kernel/kernel.c` | `kernel_timer_work_notify` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_wake_shell_for_event` | `src/kernel/kernel.c` | `kernel_wake_shell_for_event` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_wake_shell_for_process_event` | `src/kernel/kernel.c` | `kernel_wake_shell_for_process_event` | `kernel` | `COVERED` | 1 |
-| `c:src/kernel/kernel.c:kernel_workqueue_init` | `src/kernel/kernel.c` | `kernel_workqueue_init` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_workqueue_init` | `src/kernel/kernel.c` | `kernel_workqueue_init` | `kernel` | `COVERED` | 2 |
 | `c:src/kernel/kernel.c:shell_process_main` | `src/kernel/kernel.c` | `shell_process_main` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:system_process_main` | `src/kernel/kernel.c` | `system_process_main` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:test_protocol_process_main` | `src/kernel/kernel.c` | `test_protocol_process_main` | `kernel` | `COVERED` | 1 |
@@ -7645,7 +7645,6 @@
 - `asm:src/kernel/switch.asm:process_user_termination_enter`
 - `asm:src/kernel/switch.asm:thread_context_switch`
 - `asm:src/kernel/switch.asm:tss_flush`
-- `c:src/kernel/kernel.c:kernel_main`
 
 ## Aposentadas
 

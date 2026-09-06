@@ -7064,8 +7064,9 @@
         "qemu:tst7:assembly"
       ],
       "surface_selector": "coverage_report",
-      "coverage_report": "build-coverage/test-results/tst7-assembly/tst7-assembly-4/coverage.json",
+      "coverage_report": "build-coverage/test-results/tst7-assembly/tst7-assembly-7/coverage.json",
       "coverage_sources": [
+        "src/kernel/kernel.c",
         "src/core/kernel_tests_assembly.c",
         "src/core/test_coverage.c",
         "src/drivers/idt.c",
@@ -7111,7 +7112,7 @@
         ],
         "status": "AUTOMATED"
       },
-      "evidence": "make test-assembly-qemu ASSEMBLY_RUN_ID=tst7-assembly-4 PASS; ZCOV confirmou 49 entradas Assembly e helpers da fixture, com restauracao da IDT"
+      "evidence": "make test-assembly-qemu ASSEMBLY_RUN_ID=tst7-assembly-7 PASS; ZCOV confirmou kernel_main no boot real e 136 entradas Assembly, sem enderecos desconhecidos ou simbolos ambiguos"
     },
     {
       "id": "shell-commands-apps-host-dynamic",

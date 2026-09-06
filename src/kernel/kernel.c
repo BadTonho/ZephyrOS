@@ -13,6 +13,9 @@
 #include "core/workqueue.h"
 #include "core/power.h"
 #include "core/test_protocol.h"
+#if defined(ZEPHYROS_TEST_COVERAGE)
+#include "core/test_coverage.h"
+#endif
 #include "core/recovery.h"
 #include "core/app_api.h"
 #include "core/app_catalog.h"
@@ -787,6 +790,10 @@ int kernel_host_test_run_finite_routes(void) {
 #endif
 
 void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
+#if defined(ZEPHYROS_TEST_COVERAGE)
+    test_coverage_begin_case("qemu:tst7:kernel-main", 21U);
+    test_coverage_record_address((uint32_t)(unsigned long)&kernel_main);
+#endif
     vesa_init(vesa_info_addr);
     font_init();
     video_init();
@@ -1491,6 +1498,9 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     video_end_update();
 
     test_protocol_set_boot_ready();
+#if defined(ZEPHYROS_TEST_COVERAGE)
+    test_coverage_end_case(OK);
+#endif
 
     if (!kernel_service_fallback && process_start_scheduler() != OK) {
         kernel_service_fallback = 1;

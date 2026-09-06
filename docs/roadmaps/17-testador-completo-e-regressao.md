@@ -29,8 +29,28 @@ relatórios RTC/Shell, da fixture host-only do Updater, da fixture host-only do
 File Manager, da fixture host-only do Task Manager, da validação de resultados
 do Shell Checks, da fixture host-only do GUI Test, da fixture host-only do
 menu de recuperação e da fixture host-only do loader de recuperação, registra
-7.330 superfícies, 7.273 `COVERED` e 57 `PENDING`, em 170 casos
+7.330 superfícies, 7.274 `COVERED` e 56 `PENDING`, em 170 casos
 `AUTOMATED`.
+
+### Incremento Kernel Main: boot QEMU instrumentado — 2026-09-05
+
+- [x] O build de cobertura separado passou a expor o header interno do coletor
+      e `kernel_main` registra um caso ZCOV somente quando a imagem de teste é
+      instrumentada. O build normal permanece sem instrumentação e sem mudança
+      no protocolo ZTEST.
+- [x] `make q3check`, `make clean` seguido de `make` e
+      `make test-assembly-qemu ASSEMBLY_RUN_ID=tst7-assembly-7` passaram. A
+      execução QEMU produziu `READY -> HEARTBEAT -> BEGIN -> PASS` e preservou
+      os artefatos em `build-coverage/test-results/tst7-assembly/tst7-assembly-7/`.
+- [x] O relatório ZCOV terminou `PASS` com os casos
+      `qemu:tst7:kernel-main` e `qemu:tst7:assembly`, sem endereços desconhecidos
+      ou símbolos ambíguos. `kernel_main` foi resolvido no endereço executado do
+      boot real; a fixture Assembly resolveu 136 endereços, incluindo 49
+      entradas Assembly.
+- [x] O catálogo foi sincronizado, renderizado e validado; agora registra
+      7.274 `COVERED` e 56 `PENDING`. Permanecem pendentes apenas superfícies
+      sem evidência executável correspondente, principalmente boot Assembly,
+      troca de contexto e entradas de processo ainda não exercitadas.
 
 ### Incremento Kernel Runtime: rotas finitas host-only — 2026-09-05
 
@@ -44,9 +64,9 @@ menu de recuperação e da fixture host-only do loader de recuperação, registr
       25 símbolos de `src/kernel/kernel.c`, incluindo 24 rotas do kernel e a
       fachada host-only, sem endereços desconhecidos ou símbolos ambíguos.
 - [x] `make test-kernel-host`, sincronização do catálogo e a validação da
-      cobertura passaram. Somente `kernel_main` permanece `PENDING`, pois sua
-      inicialização completa exige uma imagem/QEMU e não pode ser reduzida a
-      uma chamada host-only sem perder o fluxo real de boot.
+      cobertura passaram. A inicialização completa de `kernel_main` foi fechada
+      posteriormente pela evidência QEMU instrumentada registrada acima; as
+      superfícies Assembly de boot e troca de contexto continuam separadas.
 
 ### Incremento Panic Halt: rota host-only instrumentada — 2026-09-05
 

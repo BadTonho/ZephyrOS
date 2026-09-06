@@ -95545,7 +95545,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:idt"
+        "host:drivers:idt",
+        "qemu:tst7:assembly"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -95629,7 +95630,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:idt"
+        "host:drivers:idt",
+        "qemu:tst7:assembly"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -95651,7 +95653,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:drivers:idt",
-        "qemu:tst4:paging-vma"
+        "qemu:tst4:paging-vma",
+        "qemu:tst7:assembly"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -95735,7 +95738,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:idt"
+        "host:drivers:idt",
+        "qemu:tst7:assembly"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -95777,7 +95781,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:idt"
+        "host:drivers:idt",
+        "qemu:tst7:assembly"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -95882,7 +95887,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:idt"
+        "host:drivers:idt",
+        "qemu:tst7:assembly"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -95947,7 +95953,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:idt"
+        "host:drivers:idt",
+        "qemu:tst7:assembly"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -96041,7 +96048,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:idt"
+        "host:drivers:idt",
+        "qemu:tst7:assembly"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -125615,9 +125623,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/kernel/kernel.c:kernel_network_work_callback",
@@ -125761,7 +125772,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:kernel:runtime"
+        "host:kernel:runtime",
+        "qemu:tst7:assembly"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -125866,7 +125878,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:kernel:runtime"
+        "host:kernel:runtime",
+        "qemu:tst7:assembly"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -185723,13 +185736,24 @@
         "c:src/core/kernel_tests_assembly.c:kernel_tests_trigger_vector",
         "c:src/core/kernel_tests_assembly.c:kernel_tests_validate_vectors",
         "c:src/core/test_coverage.c:test_coverage_record_address",
+        "c:src/drivers/idt.c:idt_enable_user_syscall",
+        "c:src/drivers/idt.c:idt_init",
+        "c:src/drivers/idt.c:idt_is_user_syscall_enabled",
+        "c:src/drivers/idt.c:idt_register_handler",
+        "c:src/drivers/idt.c:idt_set_gate",
         "c:src/drivers/idt.c:idt_test_probe_begin",
         "c:src/drivers/idt.c:idt_test_probe_end",
         "c:src/drivers/idt.c:idt_test_probe_get_count",
         "c:src/drivers/idt.c:idt_test_probe_handler",
+        "c:src/drivers/idt.c:idt_unmask_irq",
+        "c:src/drivers/idt.c:inb",
         "c:src/drivers/idt.c:irq_handler",
         "c:src/drivers/idt.c:isr_handler",
-        "c:src/drivers/idt.c:outb"
+        "c:src/drivers/idt.c:outb",
+        "c:src/drivers/idt.c:pic_remap",
+        "c:src/kernel/kernel.c:kernel_main",
+        "c:src/kernel/kernel.c:kernel_start_automatic_dhcp",
+        "c:src/kernel/kernel.c:kernel_workqueue_init"
       ],
       "tags": [
         "qemu",

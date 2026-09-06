@@ -7,6 +7,26 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## 2026-09-05 - Boot real de `kernel_main` com cobertura QEMU
+
+- Caso: `qemu:tst7:assembly` / `make test-assembly-qemu
+  ASSEMBLY_RUN_ID=tst7-assembly-7`.
+- Build: `make q3check`, `make clean` seguido de `make` e imagem separada com
+  `-DZEPHYROS_TEST_COVERAGE -finstrument-functions -I src`; o build normal
+  continua sem instrumentação.
+- Resultado: `PASS`, com `READY -> HEARTBEAT -> BEGIN -> PASS`, terminação
+  `completed` e causa `suite_concluida`. Os artefatos foram preservados em
+  `build-coverage/test-results/tst7-assembly/tst7-assembly-7/`.
+- Cobertura: o relatório ZCOV terminou `PASS` nos casos
+  `qemu:tst7:kernel-main` e `qemu:tst7:assembly`, com zero endereços
+  desconhecidos e zero símbolos ambíguos. `kernel_main` foi resolvido no boot
+  real; a fixture Assembly resolveu 136 endereços, incluindo 49 entradas
+  Assembly.
+- Catálogo: sincronização, renderização e `make catalog-test` passaram. A
+  superfície `c:src/kernel/kernel.c:kernel_main` foi vinculada ao caso QEMU
+  com `coverage_mode=integration`; o catálogo passou a registrar 7.330
+  superfícies, 7.274 `COVERED`, 56 `PENDING` e 170 casos.
+
 ## 2026-09-05 - Rotas finitas do runtime do kernel
 
 - Caso: `host:kernel:runtime` / `make test-kernel-host`.

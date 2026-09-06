@@ -38,7 +38,7 @@ TST7_QUICK_TIMEOUT ?= 1800
 TST7_FULL_TIMEOUT ?= 7200
 COVERAGE_BUILD_DIR ?= build-coverage
 ASSEMBLY_RUN_ID ?= tst7-assembly-1
-COVERAGE_CFLAGS ?= -g -DZEPHYROS_TEST_COVERAGE -finstrument-functions
+COVERAGE_CFLAGS ?= -g -DZEPHYROS_TEST_COVERAGE -finstrument-functions -I src
 QEMU_BOOT_DISK_ARGS ?= -drive file=$(OS_IMG),format=raw,if=none,id=bootdisk -device ide-hd,drive=bootdisk,bus=ide.0,unit=0,bootindex=1
 QEMU_STAGE2_LBA_DISK_ARGS ?= -drive file=$(OS_IMG),format=raw,if=none,id=stage2lbadisk -device ide-hd,drive=stage2lbadisk,bootindex=1
 QEMU_STAGE2_CHS_DISK_ARGS ?= -drive file=$(STAGE2_CHS_IMG),format=raw,if=floppy,index=0 -drive file=$(OS_IMG),format=raw,if=none,id=stage2chssystem -device ide-hd,drive=stage2chssystem,cyls=80,heads=2,secs=18 -boot order=a
@@ -729,7 +729,7 @@ $(ENTRY_OBJ): $(ENTRY_SRC)
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(NASM) -f elf32 $< -o $@
 
-$(KERNEL_OBJ): $(KERNEL_C) src/include/apps/shell_job.h src/include/core/keyboard.h src/include/core/power.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/workqueue.h src/include/core/ethernet.h src/include/core/clock.h src/include/core/tls.h src/include/core/update_system.h src/include/core/update_system_slots.h src/include/core/update_remote_system.h src/include/core/test_protocol.h src/include/drivers/serial.h src/include/drivers/rtc.h src/include/process/process.h src/include/process/thread.h src/include/memory/slab.h
+$(KERNEL_OBJ): $(KERNEL_C) src/core/test_coverage.h src/include/apps/shell_job.h src/include/core/keyboard.h src/include/core/power.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/workqueue.h src/include/core/ethernet.h src/include/core/clock.h src/include/core/tls.h src/include/core/update_system.h src/include/core/update_system_slots.h src/include/core/update_remote_system.h src/include/core/test_protocol.h src/include/drivers/serial.h src/include/drivers/rtc.h src/include/process/process.h src/include/process/thread.h src/include/memory/slab.h
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
