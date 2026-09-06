@@ -9151,6 +9151,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "qemu:tst4:execution",
         "qemu:tst4:platform",
         "qemu:tst5:processes",
         "qemu:tst6:matrix:baseline"
@@ -9175,6 +9176,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "qemu:tst4:execution",
         "qemu:tst4:platform",
         "qemu:tst5:processes",
         "qemu:tst6:matrix:baseline"
@@ -9199,6 +9201,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "qemu:tst4:execution",
         "qemu:tst4:platform",
         "qemu:tst5:processes",
         "qemu:tst6:matrix:baseline"
@@ -9223,6 +9226,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "qemu:tst4:execution",
         "qemu:tst4:platform",
         "qemu:tst5:processes",
         "qemu:tst6:matrix:baseline"
@@ -9247,6 +9251,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "qemu:tst4:execution",
         "qemu:tst4:platform",
         "qemu:tst5:processes",
         "qemu:tst6:matrix:baseline"
@@ -9271,6 +9276,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "qemu:tst4:execution",
         "qemu:tst4:platform",
         "qemu:tst5:processes",
         "qemu:tst6:matrix:baseline"
@@ -9295,6 +9301,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "qemu:tst4:execution",
         "qemu:tst4:platform",
         "qemu:tst5:processes",
         "qemu:tst6:matrix:baseline"
@@ -9319,6 +9326,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "qemu:tst4:execution",
         "qemu:tst4:platform",
         "qemu:tst5:processes",
         "qemu:tst6:matrix:baseline"
@@ -9343,6 +9351,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "qemu:tst4:execution",
         "qemu:tst4:platform",
         "qemu:tst5:processes",
         "qemu:tst6:matrix:baseline"
@@ -9367,6 +9376,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "qemu:tst4:execution",
         "qemu:tst4:platform",
         "qemu:tst5:processes",
         "qemu:tst6:matrix:baseline"
@@ -32359,9 +32369,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/process/process.h:process_copy_waiters",
@@ -34361,9 +34374,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst4:execution"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/process/thread.h:thread_copy_waiters",
@@ -40100,9 +40116,13 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst4:execution",
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/kernel/switch.asm:process_user_enter",
@@ -40154,9 +40174,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst4:execution"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "asm:src/kernel/switch.asm:tss_flush",
@@ -40172,9 +40195,13 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst4:execution",
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/appstore/appstore.c:appstore_action_button_position",
@@ -60306,6 +60333,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "qemu:tst4:execution",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
@@ -60417,7 +60445,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:scheduling"
+        "host:core:scheduling",
+        "qemu:tst4:execution"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -60463,6 +60492,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "qemu:tst4:execution",
         "qemu:tst4:platform",
         "qemu:tst5:processes",
         "qemu:tst6:matrix:baseline"
@@ -60487,6 +60517,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "qemu:tst4:execution",
         "qemu:tst4:platform",
         "qemu:tst5:processes",
         "qemu:tst6:matrix:baseline"
@@ -60511,6 +60542,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "qemu:tst4:execution",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
@@ -60534,6 +60566,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "qemu:tst4:execution",
         "qemu:tst5:processes"
       ],
       "tags": [],
@@ -60556,6 +60589,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "qemu:tst4:execution",
         "qemu:tst4:platform",
         "qemu:tst5:processes",
         "qemu:tst6:matrix:baseline"
@@ -60603,6 +60637,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "qemu:tst4:execution",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
@@ -60625,7 +60660,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:scheduling"
+        "host:core:scheduling",
+        "qemu:tst4:execution"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -60716,6 +60752,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "qemu:tst4:execution",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
@@ -87329,6 +87366,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
+        "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst4:storage-vfs"
       ],
@@ -87502,6 +87540,7 @@
       "case_ids": [
         "host:core:scheduling",
         "host:network:socket",
+        "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst5:processes"
       ],
@@ -87656,7 +87695,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
-        "host:network:socket"
+        "host:network:socket",
+        "qemu:tst4:execution"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -87950,6 +87990,7 @@
       "case_ids": [
         "host:core:scheduling",
         "host:network:socket",
+        "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst5:processes"
       ],
@@ -89178,6 +89219,7 @@
       "case_ids": [
         "host:core:scheduling",
         "host:core:workqueue",
+        "qemu:tst4:execution",
         "qemu:tst5:processes"
       ],
       "tags": [],
@@ -89201,6 +89243,7 @@
       "case_ids": [
         "host:core:scheduling",
         "host:core:workqueue",
+        "qemu:tst4:execution",
         "qemu:tst5:processes"
       ],
       "tags": [],
@@ -89245,7 +89288,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
-        "host:core:workqueue"
+        "host:core:workqueue",
+        "qemu:tst4:execution"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -89267,7 +89311,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
-        "host:core:workqueue"
+        "host:core:workqueue",
+        "qemu:tst4:execution"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -89432,6 +89477,7 @@
       "case_ids": [
         "host:core:scheduling",
         "host:core:workqueue",
+        "qemu:tst4:execution",
         "qemu:tst5:processes"
       ],
       "tags": [],
@@ -89551,7 +89597,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
-        "host:core:workqueue"
+        "host:core:workqueue",
+        "qemu:tst4:execution"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -89697,7 +89744,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
-        "host:core:workqueue"
+        "host:core:workqueue",
+        "qemu:tst4:execution"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -89719,6 +89767,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:workqueue",
+        "qemu:tst4:execution",
         "qemu:tst5:processes"
       ],
       "tags": [],
@@ -90135,7 +90184,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:scheduling",
-        "host:core:workqueue"
+        "host:core:workqueue",
+        "qemu:tst4:execution"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -90278,6 +90328,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:core:workqueue",
+        "qemu:tst4:execution",
         "qemu:tst5:processes"
       ],
       "tags": [],
@@ -90299,7 +90350,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:core:workqueue"
+        "host:core:workqueue",
+        "qemu:tst4:execution"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -125344,7 +125396,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:kernel:runtime"
+        "host:kernel:runtime",
+        "qemu:tst7:assembly"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -125407,7 +125460,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:kernel:runtime"
+        "host:kernel:runtime",
+        "qemu:tst7:assembly"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -125451,7 +125505,8 @@
       "case_ids": [
         "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
-        "qemu:tst5:input"
+        "qemu:tst5:input",
+        "qemu:tst7:assembly"
       ],
       "tags": [],
       "coverage_mode": "integration"
@@ -125558,7 +125613,8 @@
       "case_ids": [
         "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
-        "qemu:tst5:input"
+        "qemu:tst5:input",
+        "qemu:tst7:assembly"
       ],
       "tags": [],
       "coverage_mode": "integration"
@@ -125667,7 +125723,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:kernel:runtime"
+        "host:kernel:runtime",
+        "qemu:tst7:assembly"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -125730,7 +125787,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:kernel:runtime"
+        "host:kernel:runtime",
+        "qemu:tst7:assembly"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -125836,7 +125894,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "qemu:tst5:apps"
+        "qemu:tst5:apps",
+        "qemu:tst7:assembly"
       ],
       "tags": [],
       "coverage_mode": "integration"
@@ -125857,7 +125916,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:kernel:runtime"
+        "host:kernel:runtime",
+        "qemu:tst7:assembly"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -125900,7 +125960,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:kernel:runtime"
+        "host:kernel:runtime",
+        "qemu:tst7:assembly"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -125921,7 +125982,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:kernel:runtime"
+        "host:kernel:runtime",
+        "qemu:tst7:assembly"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -125942,7 +126004,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:kernel:runtime"
+        "host:kernel:runtime",
+        "qemu:tst7:assembly"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -129681,6 +129744,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:process:runtime",
+        "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst6:stress:storage"
       ],
@@ -129724,6 +129788,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
         "qemu:tst5:processes"
@@ -129747,7 +129812,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:process:runtime"
+        "host:process:runtime",
+        "qemu:tst4:execution"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -129894,7 +129960,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:process:runtime"
+        "host:process:runtime",
+        "qemu:tst4:execution"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -129915,7 +129982,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:process:runtime"
+        "host:process:runtime",
+        "qemu:tst4:execution"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -130043,7 +130111,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:process:runtime"
+        "host:process:runtime",
+        "qemu:tst4:execution"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -130150,7 +130219,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:process:runtime"
+        "host:process:runtime",
+        "qemu:tst4:execution"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -130194,7 +130264,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:process:runtime"
+        "host:process:runtime",
+        "qemu:tst4:execution"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -130242,7 +130313,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:process:runtime"
+        "host:process:runtime",
+        "qemu:tst4:execution"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -130417,7 +130489,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:process:runtime"
+        "host:process:runtime",
+        "qemu:tst4:execution"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -130438,7 +130511,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:process:runtime"
+        "host:process:runtime",
+        "qemu:tst4:execution"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -130459,7 +130533,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:process:runtime"
+        "host:process:runtime",
+        "qemu:tst4:execution"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -130553,6 +130628,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:process:runtime",
+        "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst6:stress:storage"
       ],
@@ -130989,6 +131065,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:process:runtime",
+        "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst6:stress:storage"
       ],
@@ -131360,6 +131437,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
         "qemu:tst5:processes"
@@ -131407,7 +131485,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:process:runtime"
+        "host:process:runtime",
+        "qemu:tst4:execution"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -131684,6 +131763,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:process:runtime",
+        "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
         "qemu:tst5:processes"
@@ -131707,6 +131787,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
         "qemu:tst5:processes"
@@ -131839,6 +131920,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:process:runtime",
+        "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst6:stress:storage"
       ],
@@ -131889,6 +131971,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
         "qemu:tst5:processes"
@@ -131934,6 +132017,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:process:runtime",
+        "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
         "qemu:tst5:processes"
@@ -131957,7 +132041,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:process:runtime"
+        "host:process:runtime",
+        "qemu:tst4:execution"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -131999,7 +132084,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:process:runtime"
+        "host:process:runtime",
+        "qemu:tst4:execution"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -132041,7 +132127,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:process:runtime"
+        "host:process:runtime",
+        "qemu:tst4:execution"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -132159,6 +132246,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst5:apps",
         "qemu:tst5:processes"
@@ -132245,7 +132333,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:process:signals"
+        "host:process:signals",
+        "qemu:tst4:execution"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -132338,6 +132427,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:process:signals",
+        "qemu:tst4:execution",
         "qemu:tst4:paging-vma",
         "qemu:tst6:stress:storage"
       ],
@@ -156325,7 +156415,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:process:threads"
+        "host:process:threads",
+        "qemu:tst4:execution"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -156460,7 +156551,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:process:threads"
+        "host:process:threads",
+        "qemu:tst4:execution"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -156504,7 +156596,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:process:threads"
+        "host:process:threads",
+        "qemu:tst4:execution"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -156593,7 +156686,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:process:threads"
+        "host:process:threads",
+        "qemu:tst4:execution"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -176023,6 +176117,16 @@
       "cleanup": "cada self-test desfaz seus objetos e o harness valida as filas finais",
       "status": "AUTOMATED",
       "surface_ids": [
+        "api:src/include/core/irq_deferred.h:irq_deferred_cancel",
+        "api:src/include/core/irq_deferred.h:irq_deferred_dispatch",
+        "api:src/include/core/irq_deferred.h:irq_deferred_get_irq_status",
+        "api:src/include/core/irq_deferred.h:irq_deferred_get_status",
+        "api:src/include/core/irq_deferred.h:irq_deferred_init",
+        "api:src/include/core/irq_deferred.h:irq_deferred_schedule",
+        "api:src/include/core/irq_deferred.h:irq_deferred_self_test",
+        "api:src/include/core/irq_deferred.h:irq_deferred_set_notifier",
+        "api:src/include/core/irq_deferred.h:irq_deferred_validate_state",
+        "api:src/include/core/irq_deferred.h:irq_deferred_work_init",
         "api:src/include/core/wait.h:init_waitqueue_head",
         "api:src/include/core/wait.h:wait_channel_get_condition",
         "api:src/include/core/wait.h:wait_channel_init",
@@ -176144,6 +176248,7 @@
         "api:src/include/process/thread.h:thread_block",
         "api:src/include/process/thread.h:thread_block_indefinite",
         "api:src/include/process/thread.h:thread_cancel_wait",
+        "api:src/include/process/thread.h:thread_context_switch",
         "api:src/include/process/thread.h:thread_copy_waiters",
         "api:src/include/process/thread.h:thread_create",
         "api:src/include/process/thread.h:thread_destroy",
@@ -176160,6 +176265,19 @@
         "api:src/include/process/thread.h:thread_wait",
         "api:src/include/process/thread.h:thread_wake_channel",
         "api:src/include/process/thread.h:thread_yield",
+        "asm:src/kernel/switch.asm:process_context_switch",
+        "asm:src/kernel/switch.asm:thread_context_switch",
+        "asm:src/kernel/switch.asm:tss_flush",
+        "c:src/core/irq_deferred.c:irq_deferred_copy_owner",
+        "c:src/core/irq_deferred.c:irq_deferred_init",
+        "c:src/core/irq_deferred.c:irq_deferred_irq_restore",
+        "c:src/core/irq_deferred.c:irq_deferred_irq_save",
+        "c:src/core/irq_deferred.c:irq_deferred_owner_valid",
+        "c:src/core/irq_deferred.c:irq_deferred_schedule",
+        "c:src/core/irq_deferred.c:irq_deferred_schedule_on",
+        "c:src/core/irq_deferred.c:irq_deferred_service_init",
+        "c:src/core/irq_deferred.c:irq_deferred_set_notifier",
+        "c:src/core/irq_deferred.c:irq_deferred_work_init",
         "c:src/core/kernel_tests.c:kernel_tests_phase_result",
         "c:src/core/kernel_tests.c:kernel_tests_progress",
         "c:src/core/kernel_tests_execution.c:execution_check_ipc",
@@ -176175,12 +176293,15 @@
         "c:src/core/test_protocol.c:protocol_token_equals",
         "c:src/core/wait.c:init_waitqueue_head",
         "c:src/core/wait.c:wait_channel_get_condition",
+        "c:src/core/wait.c:wait_channel_init",
         "c:src/core/wait.c:wait_channel_reset",
         "c:src/core/wait.c:wait_channel_set_available",
         "c:src/core/wait.c:wait_channel_signal",
         "c:src/core/wait.c:wait_condition_snapshot",
         "c:src/core/wait.c:wait_copy_text",
+        "c:src/core/wait.c:wait_current_task",
         "c:src/core/wait.c:wait_event_timeout",
+        "c:src/core/wait.c:wait_init",
         "c:src/core/wait.c:wait_interrupts_enabled",
         "c:src/core/wait.c:wait_irq_restore",
         "c:src/core/wait.c:wait_irq_save",
@@ -176188,6 +176309,7 @@
         "c:src/core/wait.c:wait_note_reason_locked",
         "c:src/core/wait.c:wait_queue_append_locked",
         "c:src/core/wait.c:wait_queue_block",
+        "c:src/core/wait.c:wait_queue_deadline_reached",
         "c:src/core/wait.c:wait_queue_entry_init",
         "c:src/core/wait.c:wait_queue_make_id",
         "c:src/core/wait.c:wait_queue_register_locked",
@@ -176212,18 +176334,26 @@
         "c:src/core/wait.c:wait_validate_state",
         "c:src/core/wait.c:wake_up",
         "c:src/core/wait.c:wake_up_all",
+        "c:src/core/workqueue.c:schedule_delayed_work",
+        "c:src/core/workqueue.c:schedule_work",
+        "c:src/core/workqueue.c:work_init",
+        "c:src/core/workqueue.c:workqueue_bind_worker",
         "c:src/core/workqueue.c:workqueue_cancel_on",
         "c:src/core/workqueue.c:workqueue_copy_owner",
         "c:src/core/workqueue.c:workqueue_deadline_reached",
         "c:src/core/workqueue.c:workqueue_delayed_insert",
+        "c:src/core/workqueue.c:workqueue_dispatch",
         "c:src/core/workqueue.c:workqueue_dispatch_on",
         "c:src/core/workqueue.c:workqueue_execute_one",
         "c:src/core/workqueue.c:workqueue_finish",
+        "c:src/core/workqueue.c:workqueue_init",
         "c:src/core/workqueue.c:workqueue_internal_result",
         "c:src/core/workqueue.c:workqueue_interrupts_enabled",
         "c:src/core/workqueue.c:workqueue_irq_restore",
         "c:src/core/workqueue.c:workqueue_irq_save",
         "c:src/core/workqueue.c:workqueue_list_remove",
+        "c:src/core/workqueue.c:workqueue_needs_fallback",
+        "c:src/core/workqueue.c:workqueue_next_timeout",
         "c:src/core/workqueue.c:workqueue_notify",
         "c:src/core/workqueue.c:workqueue_owner_valid",
         "c:src/core/workqueue.c:workqueue_pending_count",
@@ -176233,19 +176363,36 @@
         "c:src/core/workqueue.c:workqueue_schedule_on",
         "c:src/core/workqueue.c:workqueue_self_test",
         "c:src/core/workqueue.c:workqueue_service_clear",
+        "c:src/core/workqueue.c:workqueue_take_ready",
         "c:src/core/workqueue.c:workqueue_test_callback",
         "c:src/core/workqueue.c:workqueue_test_prepare",
         "c:src/core/workqueue.c:workqueue_update_peak",
         "c:src/core/workqueue.c:workqueue_validate_on",
         "c:src/core/workqueue.c:workqueue_validate_state",
+        "c:src/core/workqueue.c:workqueue_wait_condition",
+        "c:src/core/workqueue.c:workqueue_worker_main",
+        "c:src/process/process.c:process_allocate_pid",
+        "c:src/process/process.c:process_block",
+        "c:src/process/process.c:process_bootstrap_idle",
+        "c:src/process/process.c:process_create",
+        "c:src/process/process.c:process_create_internal",
+        "c:src/process/process.c:process_create_with_stack_size",
+        "c:src/process/process.c:process_get_by_pid",
         "c:src/process/process.c:process_get_count",
+        "c:src/process/process.c:process_get_current",
         "c:src/process/process.c:process_get_current_pid",
+        "c:src/process/process.c:process_get_event_generation",
         "c:src/process/process.c:process_get_state_count",
         "c:src/process/process.c:process_get_user_count",
+        "c:src/process/process.c:process_idle_main",
+        "c:src/process/process.c:process_init",
+        "c:src/process/process.c:process_initialize_pid_pool",
         "c:src/process/process.c:process_is_user",
+        "c:src/process/process.c:process_next_identity_generation",
         "c:src/process/process.c:process_pointer_valid",
         "c:src/process/process.c:process_slot_index",
         "c:src/process/process.c:process_stack_align_up",
+        "c:src/process/process.c:process_stack_allocate",
         "c:src/process/process.c:process_stack_attach",
         "c:src/process/process.c:process_stack_bounds_valid",
         "c:src/process/process.c:process_stack_copy_name",
@@ -176254,17 +176401,30 @@
         "c:src/process/process.c:process_stack_self_test",
         "c:src/process/process.c:process_stack_size_valid",
         "c:src/process/process.c:process_stack_validate_all",
+        "c:src/process/process.c:process_stack_verify_or_panic",
         "c:src/process/process.c:process_stack_write_guard",
+        "c:src/process/process.c:process_start_scheduler",
+        "c:src/process/process.c:process_wait",
+        "c:src/process/process.c:process_wait_block_transition",
         "c:src/process/process.c:process_wait_clear",
         "c:src/process/process.c:process_wait_deadline_reached",
         "c:src/process/process.c:process_wait_irq_restore",
         "c:src/process/process.c:process_wait_irq_save",
+        "c:src/process/process.c:process_wait_state_init",
         "c:src/process/process.c:process_wait_wake_transition",
+        "c:src/process/process.c:process_wait_yield_transition",
+        "c:src/process/process.c:process_yield",
+        "c:src/process/process.c:scheduler_find_next_ready",
+        "c:src/process/process.c:scheduler_init",
+        "c:src/process/process.c:scheduler_schedule",
         "c:src/process/process.c:scheduler_tick",
         "c:src/process/process.c:scheduler_validate_invariants",
         "c:src/process/process.c:scheduler_validate_pid_table",
         "c:src/process/process.c:scheduler_validate_states",
+        "c:src/process/process.c:scheduler_yield_internal",
+        "c:src/process/signal.c:process_signal_init",
         "c:src/process/signal.c:process_signal_prepare_user_return",
+        "c:src/process/signal.c:process_signal_process_created",
         "c:src/process/signal.c:process_signal_self_test",
         "c:src/process/signal.c:process_signal_validate_state",
         "c:src/process/signal.c:signal_context_empty",
@@ -176273,13 +176433,17 @@
         "c:src/process/signal.c:signal_supported",
         "c:src/process/signal.c:signal_unblockable",
         "c:src/process/signal.c:signal_validate_process",
+        "c:src/thread/thread.c:thread_create",
         "c:src/thread/thread.c:thread_destroy",
         "c:src/thread/thread.c:thread_entry_trampoline",
         "c:src/thread/thread.c:thread_get_count",
+        "c:src/thread/thread.c:thread_get_current",
         "c:src/thread/thread.c:thread_index",
+        "c:src/thread/thread.c:thread_init",
         "c:src/thread/thread.c:thread_is_ready",
         "c:src/thread/thread.c:thread_prepare_stack",
         "c:src/thread/thread.c:thread_run_self_test",
+        "c:src/thread/thread.c:thread_schedule_next",
         "c:src/thread/thread.c:thread_scheduler_tick",
         "c:src/thread/thread.c:thread_switch_to_scheduler",
         "c:src/thread/thread.c:thread_test_record",
@@ -185683,6 +185847,7 @@
         "vga"
       ],
       "surface_ids": [
+        "api:src/include/process/process.h:process_context_switch",
         "asm:src/drivers/irq.asm:irq0",
         "asm:src/drivers/irq.asm:irq1",
         "asm:src/drivers/irq.asm:irq10",
@@ -185732,6 +185897,8 @@
         "asm:src/drivers/isr.asm:isr7",
         "asm:src/drivers/isr.asm:isr8",
         "asm:src/drivers/isr.asm:isr9",
+        "asm:src/kernel/switch.asm:process_context_switch",
+        "asm:src/kernel/switch.asm:tss_flush",
         "c:src/core/kernel_tests_assembly.c:kernel_tests_run_assembly",
         "c:src/core/kernel_tests_assembly.c:kernel_tests_trigger_vector",
         "c:src/core/kernel_tests_assembly.c:kernel_tests_validate_vectors",
@@ -185751,9 +185918,20 @@
         "c:src/drivers/idt.c:isr_handler",
         "c:src/drivers/idt.c:outb",
         "c:src/drivers/idt.c:pic_remap",
+        "c:src/kernel/kernel.c:desktop_process_main",
+        "c:src/kernel/kernel.c:kernel_dispatch_async_work",
+        "c:src/kernel/kernel.c:kernel_dispatch_input_work",
+        "c:src/kernel/kernel.c:kernel_index_work_callback",
         "c:src/kernel/kernel.c:kernel_main",
+        "c:src/kernel/kernel.c:kernel_poll_usb",
+        "c:src/kernel/kernel.c:kernel_retry_shell_request",
         "c:src/kernel/kernel.c:kernel_start_automatic_dhcp",
-        "c:src/kernel/kernel.c:kernel_workqueue_init"
+        "c:src/kernel/kernel.c:kernel_wake_shell_for_event",
+        "c:src/kernel/kernel.c:kernel_wake_shell_for_process_event",
+        "c:src/kernel/kernel.c:kernel_workqueue_init",
+        "c:src/kernel/kernel.c:shell_process_main",
+        "c:src/kernel/kernel.c:system_process_main",
+        "c:src/kernel/kernel.c:test_protocol_process_main"
       ],
       "tags": [
         "qemu",

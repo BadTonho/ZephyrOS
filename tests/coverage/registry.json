@@ -834,6 +834,20 @@
       "evidence": "make test-ethernet-host PASS com interfaces falsas, handlers, polling, frames validos e invalidos, transmissao, quiescencia, sk_buff e limpeza sem hardware real"
     },
     {
+      "id": "thread-context-switch-api-qemu",
+      "domain": "process-thread-assembly-api",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst4:execution"
+      ],
+      "surface_ids": [
+        "api:src/include/process/thread.h:thread_context_switch"
+      ],
+      "evidence": "O relatorio ZCOV tst7-execution-coverage-1 resolveu thread_context_switch durante o self-test real de threads; a API publica e a entrada Assembly pertencem ao mesmo fluxo executado"
+    },
+    {
       "id": "execution-qemu-tst4-dynamic",
       "domain": "process-execution",
       "owner": "quality",
@@ -843,7 +857,7 @@
         "qemu:tst4:execution"
       ],
       "surface_selector": "coverage_report",
-      "coverage_report": "build-coverage/test-results/cov-tst4-execution/cov-tst4-execution-1/coverage.json",
+      "coverage_report": "build-coverage/test-results/cov-tst4-execution/tst7-execution-coverage-1/coverage.json",
       "coverage_sources": [
         "src/core/kernel_tests_execution.c",
         "src/core/irq_deferred.c",
@@ -851,10 +865,11 @@
         "src/core/workqueue.c",
         "src/process/process.c",
         "src/process/signal.c",
-        "src/thread/thread.c"
+        "src/thread/thread.c",
+        "src/kernel/switch.asm"
       ],
       "include_public_apis": true,
-      "evidence": "QEMU TST4 execution cov-tst4-execution-1 PASS com coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
+      "evidence": "make test-execution-coverage-qemu EXECUTION_COVERAGE_RUN_ID=tst7-execution-coverage-1 PASS; ZCOV resolveu thread_context_switch durante thread_run_self_test, sem enderecos desconhecidos ou simbolos ambiguos"
     },
     {
       "id": "fat12-host-dynamic",
@@ -7055,6 +7070,20 @@
       "evidence": "make test-desktop-host PASS com modos Simple e Classic, layouts, selecao, teclado, cliques, arraste, fallback e cobertura instrumentada"
     },
     {
+      "id": "assembly-process-switch-api-qemu",
+      "domain": "process-assembly-api",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "surface_ids": [
+        "api:src/include/process/process.h:process_context_switch"
+      ],
+      "evidence": "O relatorio ZCOV tst7-assembly-8 resolveu process_context_switch no primeiro handoff real para process_idle_main; a API publica e a entrada Assembly pertencem ao mesmo fluxo executado"
+    },
+    {
       "id": "assembly-qemu-tst7-dynamic",
       "domain": "drivers-interrupt-assembly",
       "owner": "quality",
@@ -7064,14 +7093,15 @@
         "qemu:tst7:assembly"
       ],
       "surface_selector": "coverage_report",
-      "coverage_report": "build-coverage/test-results/tst7-assembly/tst7-assembly-7/coverage.json",
+      "coverage_report": "build-coverage/test-results/tst7-assembly/tst7-assembly-8/coverage.json",
       "coverage_sources": [
         "src/kernel/kernel.c",
         "src/core/kernel_tests_assembly.c",
         "src/core/test_coverage.c",
         "src/drivers/idt.c",
         "src/drivers/isr.asm",
-        "src/drivers/irq.asm"
+        "src/drivers/irq.asm",
+        "src/kernel/switch.asm"
       ],
       "include_public_apis": false,
       "case_definition": {
@@ -7112,7 +7142,7 @@
         ],
         "status": "AUTOMATED"
       },
-      "evidence": "make test-assembly-qemu ASSEMBLY_RUN_ID=tst7-assembly-7 PASS; ZCOV confirmou kernel_main no boot real e 136 entradas Assembly, sem enderecos desconhecidos ou simbolos ambiguos"
+      "evidence": "make test-assembly-qemu ASSEMBLY_RUN_ID=tst7-assembly-8 PASS; ZCOV confirmou kernel_main, tss_flush e process_context_switch em execucao real, com 136, 320 e 960 enderecos resolvidos nos casos Assembly, process-switch e kernel-main, sem enderecos desconhecidos ou simbolos ambiguos"
     },
     {
       "id": "shell-commands-apps-host-dynamic",

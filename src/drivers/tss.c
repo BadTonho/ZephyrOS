@@ -2,6 +2,9 @@
 #include "core/log.h"
 #include "core/memory.h"
 #include "core/string.h"
+#if defined(ZEPHYROS_TEST_COVERAGE)
+#include "core/test_coverage.h"
+#endif
 
 static tss_entry_t tss;
 static uint64_t gdt[6];
@@ -75,6 +78,9 @@ void tss_init(void) {
     tss.iomap_base = sizeof(tss_entry_t);
 
     tss_load_gdt(base, limit);
+#if defined(ZEPHYROS_TEST_COVERAGE)
+    test_coverage_record_address((uint32_t)(unsigned long)&tss_flush);
+#endif
     tss_flush();
     tss_ready = 1;
     LOG_INFO("THRD", "TSS inicializada");

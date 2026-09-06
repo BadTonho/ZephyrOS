@@ -38,6 +38,7 @@ TST7_QUICK_TIMEOUT ?= 1800
 TST7_FULL_TIMEOUT ?= 7200
 COVERAGE_BUILD_DIR ?= build-coverage
 ASSEMBLY_RUN_ID ?= tst7-assembly-1
+EXECUTION_COVERAGE_RUN_ID ?= tst7-execution-coverage-1
 COVERAGE_CFLAGS ?= -g -DZEPHYROS_TEST_COVERAGE -finstrument-functions -I src
 QEMU_BOOT_DISK_ARGS ?= -drive file=$(OS_IMG),format=raw,if=none,id=bootdisk -device ide-hd,drive=bootdisk,bus=ide.0,unit=0,bootindex=1
 QEMU_STAGE2_LBA_DISK_ARGS ?= -drive file=$(OS_IMG),format=raw,if=none,id=stage2lbadisk -device ide-hd,drive=stage2lbadisk,bootindex=1
@@ -1075,7 +1076,7 @@ $(RNG_OBJ): $(RNG_C) src/include/drivers/rng.h
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(TSS_OBJ): $(TSS_C)
+$(TSS_OBJ): $(TSS_C) src/core/test_coverage.h
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -1183,7 +1184,7 @@ $(BMP_OBJ): $(BMP_C)
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(PROCESS_OBJ): $(PROCESS_C) src/include/process/process.h src/include/process/thread.h src/include/memory/slab.h src/include/memory/vma.h src/include/memory/paging.h src/include/core/app_api.h src/include/core/timer.h
+$(PROCESS_OBJ): $(PROCESS_C) src/core/test_coverage.h src/include/process/process.h src/include/process/thread.h src/include/memory/slab.h src/include/memory/vma.h src/include/memory/paging.h src/include/core/app_api.h src/include/core/timer.h
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -1195,7 +1196,7 @@ $(IPC_OBJ): $(IPC_C) src/include/process/process.h src/include/core/poll.h src/i
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(THREAD_OBJ): $(THREAD_C) src/include/process/thread.h src/include/process/process.h src/include/memory/slab.h
+$(THREAD_OBJ): $(THREAD_C) src/core/test_coverage.h src/include/process/thread.h src/include/process/process.h src/include/memory/slab.h
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -1508,6 +1509,9 @@ test-qemu-selftest: tools\qemu_test_runner.py tests\unit\test_qemu_test_runner.p
 
 test-assembly-qemu: coverage-map tools\qemu_test_runner.py tests\catalog.json
 	python tools\qemu_test_runner.py stress --case qemu:tst7:assembly --iterations 1 --boot-timeout 60 --case-timeout 120 --heartbeat-timeout 15 --image "$(COVERAGE_BUILD_DIR)\zephyros.img" --results "$(COVERAGE_BUILD_DIR)\test-results\tst7-assembly" --run-id $(ASSEMBLY_RUN_ID) --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none --coverage-symbols "$(COVERAGE_BUILD_DIR)\coverage-symbols.json"
+
+test-execution-coverage-qemu: coverage-map tools\qemu_test_runner.py tests\catalog.json
+	python tools\qemu_test_runner.py stress --case qemu:tst4:execution --iterations 1 --boot-timeout 60 --case-timeout 120 --heartbeat-timeout 60 --image "$(COVERAGE_BUILD_DIR)\zephyros.img" --results "$(COVERAGE_BUILD_DIR)\test-results\cov-tst4-execution" --run-id $(EXECUTION_COVERAGE_RUN_ID) --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none --coverage-symbols "$(COVERAGE_BUILD_DIR)\coverage-symbols.json"
 
 test-tst4-qemu: $(OS_IMG) tools\qemu_test_runner.py tests\catalog.json
 	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)

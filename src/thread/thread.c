@@ -6,6 +6,9 @@
 #include "core/string.h"
 #include "core/timer.h"
 #include "memory/slab.h"
+#if defined(ZEPHYROS_TEST_COVERAGE)
+#include "core/test_coverage.h"
+#endif
 
 #define THREAD_WAIT_EFLAGS_INTERRUPT_ENABLE (1U << 9U)
 
@@ -169,6 +172,10 @@ static void thread_switch_to_scheduler(thread_t* previous) {
     }
 
     current_thread = 0;
+#if defined(ZEPHYROS_TEST_COVERAGE)
+    test_coverage_record_address(
+        (uint32_t)(unsigned long)&thread_context_switch);
+#endif
     thread_context_switch(&previous->esp, scheduler_esp);
 }
 
@@ -345,6 +352,10 @@ void thread_yield(void) {
         scheduler_active = 1;
         current_thread = next;
         last_scheduled_idx = thread_index(next);
+#if defined(ZEPHYROS_TEST_COVERAGE)
+        test_coverage_record_address(
+            (uint32_t)(unsigned long)&thread_context_switch);
+#endif
         thread_context_switch(&scheduler_esp, next->esp);
         scheduler_active = 0;
         current_thread = 0;
@@ -355,6 +366,10 @@ void thread_yield(void) {
         thread_t* previous = current_thread;
         current_thread = next;
         last_scheduled_idx = thread_index(next);
+#if defined(ZEPHYROS_TEST_COVERAGE)
+        test_coverage_record_address(
+            (uint32_t)(unsigned long)&thread_context_switch);
+#endif
         thread_context_switch(&previous->esp, next->esp);
         return;
     }

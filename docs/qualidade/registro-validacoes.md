@@ -7,6 +7,37 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## 2026-09-05 - Troca de contexto de threads em execução real
+
+- Caso: `qemu:tst4:execution` / `make test-execution-coverage-qemu
+  EXECUTION_COVERAGE_RUN_ID=tst7-execution-coverage-1`.
+- Resultado: `PASS`, com `READY -> HEARTBEAT -> BEGIN -> PASS`, terminação
+  `completed` e artefatos preservados em
+  `build-coverage/test-results/cov-tst4-execution/tst7-execution-coverage-1/`.
+- Cobertura: o relatório ZCOV terminou `PASS`, resolveu
+  `thread_context_switch` durante o self-test real de threads e não registrou
+  endereços desconhecidos, símbolos ambíguos ou erros.
+- Catálogo: a entrada Assembly e a API pública foram associadas ao caso
+  `qemu:tst4:execution` somente após a evidência dinâmica; a sincronização,
+  renderização e `make catalog-test` fazem parte desta etapa.
+
+## 2026-09-05 - TSS e troca de contexto Assembly em execução real
+
+- Caso: `qemu:tst7:assembly` / `make test-assembly-qemu
+  ASSEMBLY_RUN_ID=tst7-assembly-8`.
+- Resultado: `PASS`, com `READY -> HEARTBEAT -> BEGIN -> PASS`, terminação
+  `completed` e artefatos preservados em
+  `build-coverage/test-results/tst7-assembly/tst7-assembly-8/`.
+- Cobertura: o relatório ZCOV terminou `PASS` nos casos
+  `qemu:tst7:assembly`, `qemu:tst7:kernel-main` e
+  `qemu:tst7:process-switch`; não houve endereços desconhecidos, símbolos
+  ambíguos ou erros. `tss_flush` foi resolvido no boot real e
+  `process_context_switch` foi resolvido durante a transferência real para
+  `process_idle_main`.
+- Catálogo: a associação a `src/kernel/switch.asm` foi adicionada somente
+  após o relatório confirmar esses símbolos; a sincronização, a renderização
+  e `make catalog-test` devem ser executadas nesta etapa antes do commit.
+
 ## 2026-09-05 - Boot real de `kernel_main` com cobertura QEMU
 
 - Caso: `qemu:tst7:assembly` / `make test-assembly-qemu

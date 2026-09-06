@@ -1565,7 +1565,11 @@ execucao.
 
 O caso QEMU `qemu:tst7:assembly` usa uma imagem de cobertura separada para
 disparar `isr0`--`isr31`, `isr128` e `irq0`--`irq15`. A mesma imagem registra
-`kernel_main` quando o boot real entra no kernel. Os stubs Assembly so recebem
+`kernel_main` quando o boot real entra no kernel e registra `tss_flush` durante
+a inicializacao e `process_context_switch` durante a primeira transferencia
+real para o processo idle. Esses dois pontos Assembly sao observados no
+chamador C imediatamente antes da instrucao `call`, sem inserir instrumentacao
+no corpo sensivel de `switch.asm`. Os stubs Assembly so recebem
 instrumentacao quando `ZEPHYROS_TEST_COVERAGE` e definido no build de
 cobertura; o build normal permanece sem o hook.
 
@@ -1582,6 +1586,24 @@ Assembly e restaurar handlers, IRQs, ocorrencias e contadores da IDT. O
 relatorio aprovado deve ter `unknown_addresses=[]` e `ambiguous_symbols=[]`;
 use um `ASSEMBLY_RUN_ID` novo em cada repeticao para preservar os artefatos
 anteriores.
+
+Uma execucao aprovada tambem pode mostrar os casos internos
+`qemu:tst7:kernel-main` e `qemu:tst7:process-switch` no `coverage.json`.
+Eles comprovam o boot e a transferencia de contexto observados durante a
+mesma inicializacao; nao sao casos adicionais enviados pelo host nem criam
+retry ou loop de execucao.
+
+Para cobrir a troca de contexto de threads, use a imagem instrumentada do
+caso TST4 de execucao:
+
+```text
+make test-execution-coverage-qemu EXECUTION_COVERAGE_RUN_ID=tst7-execution-coverage-<id>
+```
+
+Esse alvo executa uma unica iteracao de `qemu:tst4:execution`, preserva os
+artefatos em `build-coverage/test-results/cov-tst4-execution/<id>/` e deve
+resolver `thread_context_switch` no `coverage.json`, sem enderecos
+desconhecidos ou simbolos ambiguos.
 
 ## Comandos no Shell
 

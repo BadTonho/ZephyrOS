@@ -9,6 +9,9 @@
 #include "core/syscall.h"
 #include "drivers/tss.h"
 #include "process/thread.h"
+#if defined(ZEPHYROS_TEST_COVERAGE)
+#include "core/test_coverage.h"
+#endif
 
 #define PROCESS_DEFAULT_EFLAGS 0x202U
 #define PROCESS_PID_POOL_SIZE (MAX_PROCESSES - 1U)
@@ -492,6 +495,9 @@ static void process_copy_wait_text(char* destination, uint32_t capacity,
 }
 
 static void process_idle_main(void) {
+#if defined(ZEPHYROS_TEST_COVERAGE)
+    test_coverage_end_case(OK);
+#endif
 #if defined(ZEPHYROS_HOST_TEST)
     process_yield();
 #else
@@ -715,6 +721,10 @@ int process_start_scheduler(void) {
             idle->page_directory != paging_get_current_directory()) {
             paging_switch_directory(idle->page_directory);
         }
+#if defined(ZEPHYROS_TEST_COVERAGE)
+        test_coverage_record_address(
+            (uint32_t)(unsigned long)&process_context_switch);
+#endif
         process_context_switch(&scheduler_bootstrap_context,
                                &idle->context);
         process_wait_irq_restore(flags);
@@ -731,6 +741,10 @@ int process_start_scheduler(void) {
         next->page_directory != paging_get_current_directory()) {
         paging_switch_directory(next->page_directory);
     }
+#if defined(ZEPHYROS_TEST_COVERAGE)
+    test_coverage_record_address(
+        (uint32_t)(unsigned long)&process_context_switch);
+#endif
     process_context_switch(&scheduler_bootstrap_context, &next->context);
     process_wait_irq_restore(flags);
     LOG_ERROR("PROC", "Handoff inicial do scheduler retornou");
@@ -981,6 +995,10 @@ static void process_switch_after_termination(void) {
         paging_switch_directory(next->page_directory);
     }
     scheduler_context_switches++;
+#if defined(ZEPHYROS_TEST_COVERAGE)
+    test_coverage_record_address(
+        (uint32_t)(unsigned long)&process_context_switch);
+#endif
     process_context_switch(&previous->context, &next->context);
 }
 
@@ -2277,6 +2295,10 @@ static void scheduler_yield_internal(void) {
         paging_switch_directory(next->page_directory);
     }
     scheduler_context_switches++;
+#if defined(ZEPHYROS_TEST_COVERAGE)
+    test_coverage_record_address(
+        (uint32_t)(unsigned long)&process_context_switch);
+#endif
     process_context_switch(&prev->context, &next->context);
 }
 

@@ -1497,10 +1497,11 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     desktop_draw();
     video_end_update();
 
-    test_protocol_set_boot_ready();
 #if defined(ZEPHYROS_TEST_COVERAGE)
     test_coverage_end_case(OK);
+    test_coverage_begin_case("qemu:tst7:process-switch", 24U);
 #endif
+    test_protocol_set_boot_ready();
 
     if (!kernel_service_fallback && process_start_scheduler() != OK) {
         kernel_service_fallback = 1;

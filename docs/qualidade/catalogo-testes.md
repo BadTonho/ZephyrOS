@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7274 |
+| `COVERED` | 7279 |
 | `MANUAL` | 0 |
-| `PENDING` | 56 |
+| `PENDING` | 51 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -460,16 +460,16 @@
 | `api:src/include/core/ipv4.h:ipv4_send_limited_broadcast` | `src/include/core/ipv4.h` | `ipv4_send_limited_broadcast` | `core` | `COVERED` | 3 |
 | `api:src/include/core/ipv4.h:ipv4_unconfigure` | `src/include/core/ipv4.h` | `ipv4_unconfigure` | `core` | `COVERED` | 3 |
 | `api:src/include/core/ipv4.h:ipv4_validate_state` | `src/include/core/ipv4.h` | `ipv4_validate_state` | `core` | `COVERED` | 4 |
-| `api:src/include/core/irq_deferred.h:irq_deferred_cancel` | `src/include/core/irq_deferred.h` | `irq_deferred_cancel` | `core` | `COVERED` | 4 |
-| `api:src/include/core/irq_deferred.h:irq_deferred_dispatch` | `src/include/core/irq_deferred.h` | `irq_deferred_dispatch` | `core` | `COVERED` | 4 |
-| `api:src/include/core/irq_deferred.h:irq_deferred_get_irq_status` | `src/include/core/irq_deferred.h` | `irq_deferred_get_irq_status` | `core` | `COVERED` | 4 |
-| `api:src/include/core/irq_deferred.h:irq_deferred_get_status` | `src/include/core/irq_deferred.h` | `irq_deferred_get_status` | `core` | `COVERED` | 4 |
-| `api:src/include/core/irq_deferred.h:irq_deferred_init` | `src/include/core/irq_deferred.h` | `irq_deferred_init` | `core` | `COVERED` | 4 |
-| `api:src/include/core/irq_deferred.h:irq_deferred_schedule` | `src/include/core/irq_deferred.h` | `irq_deferred_schedule` | `core` | `COVERED` | 4 |
-| `api:src/include/core/irq_deferred.h:irq_deferred_self_test` | `src/include/core/irq_deferred.h` | `irq_deferred_self_test` | `core` | `COVERED` | 4 |
-| `api:src/include/core/irq_deferred.h:irq_deferred_set_notifier` | `src/include/core/irq_deferred.h` | `irq_deferred_set_notifier` | `core` | `COVERED` | 4 |
-| `api:src/include/core/irq_deferred.h:irq_deferred_validate_state` | `src/include/core/irq_deferred.h` | `irq_deferred_validate_state` | `core` | `COVERED` | 4 |
-| `api:src/include/core/irq_deferred.h:irq_deferred_work_init` | `src/include/core/irq_deferred.h` | `irq_deferred_work_init` | `core` | `COVERED` | 4 |
+| `api:src/include/core/irq_deferred.h:irq_deferred_cancel` | `src/include/core/irq_deferred.h` | `irq_deferred_cancel` | `core` | `COVERED` | 5 |
+| `api:src/include/core/irq_deferred.h:irq_deferred_dispatch` | `src/include/core/irq_deferred.h` | `irq_deferred_dispatch` | `core` | `COVERED` | 5 |
+| `api:src/include/core/irq_deferred.h:irq_deferred_get_irq_status` | `src/include/core/irq_deferred.h` | `irq_deferred_get_irq_status` | `core` | `COVERED` | 5 |
+| `api:src/include/core/irq_deferred.h:irq_deferred_get_status` | `src/include/core/irq_deferred.h` | `irq_deferred_get_status` | `core` | `COVERED` | 5 |
+| `api:src/include/core/irq_deferred.h:irq_deferred_init` | `src/include/core/irq_deferred.h` | `irq_deferred_init` | `core` | `COVERED` | 5 |
+| `api:src/include/core/irq_deferred.h:irq_deferred_schedule` | `src/include/core/irq_deferred.h` | `irq_deferred_schedule` | `core` | `COVERED` | 5 |
+| `api:src/include/core/irq_deferred.h:irq_deferred_self_test` | `src/include/core/irq_deferred.h` | `irq_deferred_self_test` | `core` | `COVERED` | 5 |
+| `api:src/include/core/irq_deferred.h:irq_deferred_set_notifier` | `src/include/core/irq_deferred.h` | `irq_deferred_set_notifier` | `core` | `COVERED` | 5 |
+| `api:src/include/core/irq_deferred.h:irq_deferred_validate_state` | `src/include/core/irq_deferred.h` | `irq_deferred_validate_state` | `core` | `COVERED` | 5 |
+| `api:src/include/core/irq_deferred.h:irq_deferred_work_init` | `src/include/core/irq_deferred.h` | `irq_deferred_work_init` | `core` | `COVERED` | 5 |
 | `api:src/include/core/keyboard.h:keyboard_controller_reset` | `src/include/core/keyboard.h` | `keyboard_controller_reset` | `core` | `COVERED` | 4 |
 | `api:src/include/core/keyboard.h:keyboard_controller_reset_available` | `src/include/core/keyboard.h` | `keyboard_controller_reset_available` | `core` | `COVERED` | 4 |
 | `api:src/include/core/keyboard.h:keyboard_get_metrics` | `src/include/core/keyboard.h` | `keyboard_get_metrics` | `core` | `COVERED` | 4 |
@@ -1409,7 +1409,7 @@
 | `api:src/include/process/process.h:process_cancel_user` | `src/include/process/process.h` | `process_cancel_user` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_cancel_user_test` | `src/include/process/process.h` | `process_cancel_user_test` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_cancel_wait` | `src/include/process/process.h` | `process_cancel_wait` | `process` | `COVERED` | 8 |
-| `api:src/include/process/process.h:process_context_switch` | `src/include/process/process.h` | `process_context_switch` | `process` | `PENDING` | 0 |
+| `api:src/include/process/process.h:process_context_switch` | `src/include/process/process.h` | `process_context_switch` | `process` | `COVERED` | 1 |
 | `api:src/include/process/process.h:process_copy_waiters` | `src/include/process/process.h` | `process_copy_waiters` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_create` | `src/include/process/process.h` | `process_create` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_create_user_image` | `src/include/process/process.h` | `process_create_user_image` | `process` | `COVERED` | 8 |
@@ -1482,7 +1482,7 @@
 | `api:src/include/process/thread.h:thread_block` | `src/include/process/thread.h` | `thread_block` | `process` | `COVERED` | 8 |
 | `api:src/include/process/thread.h:thread_block_indefinite` | `src/include/process/thread.h` | `thread_block_indefinite` | `process` | `COVERED` | 8 |
 | `api:src/include/process/thread.h:thread_cancel_wait` | `src/include/process/thread.h` | `thread_cancel_wait` | `process` | `COVERED` | 8 |
-| `api:src/include/process/thread.h:thread_context_switch` | `src/include/process/thread.h` | `thread_context_switch` | `process` | `PENDING` | 0 |
+| `api:src/include/process/thread.h:thread_context_switch` | `src/include/process/thread.h` | `thread_context_switch` | `process` | `COVERED` | 1 |
 | `api:src/include/process/thread.h:thread_copy_waiters` | `src/include/process/thread.h` | `thread_copy_waiters` | `process` | `COVERED` | 8 |
 | `api:src/include/process/thread.h:thread_create` | `src/include/process/thread.h` | `thread_create` | `process` | `COVERED` | 8 |
 | `api:src/include/process/thread.h:thread_destroy` | `src/include/process/thread.h` | `thread_destroy` | `process` | `COVERED` | 8 |
@@ -1749,11 +1749,11 @@
 | `asm:src/drivers/isr.asm:isr8` | `src/drivers/isr.asm` | `isr8` | `drivers` | `COVERED` | 1 |
 | `asm:src/drivers/isr.asm:isr9` | `src/drivers/isr.asm` | `isr9` | `drivers` | `COVERED` | 1 |
 | `asm:src/kernel/entry.asm:_start` | `src/kernel/entry.asm` | `_start` | `kernel` | `PENDING` | 0 |
-| `asm:src/kernel/switch.asm:process_context_switch` | `src/kernel/switch.asm` | `process_context_switch` | `kernel` | `PENDING` | 0 |
+| `asm:src/kernel/switch.asm:process_context_switch` | `src/kernel/switch.asm` | `process_context_switch` | `kernel` | `COVERED` | 2 |
 | `asm:src/kernel/switch.asm:process_user_enter` | `src/kernel/switch.asm` | `process_user_enter` | `kernel` | `PENDING` | 0 |
 | `asm:src/kernel/switch.asm:process_user_termination_enter` | `src/kernel/switch.asm` | `process_user_termination_enter` | `kernel` | `PENDING` | 0 |
-| `asm:src/kernel/switch.asm:thread_context_switch` | `src/kernel/switch.asm` | `thread_context_switch` | `kernel` | `PENDING` | 0 |
-| `asm:src/kernel/switch.asm:tss_flush` | `src/kernel/switch.asm` | `tss_flush` | `kernel` | `PENDING` | 0 |
+| `asm:src/kernel/switch.asm:thread_context_switch` | `src/kernel/switch.asm` | `thread_context_switch` | `kernel` | `COVERED` | 1 |
+| `asm:src/kernel/switch.asm:tss_flush` | `src/kernel/switch.asm` | `tss_flush` | `kernel` | `COVERED` | 2 |
 
 ### c_function
 
@@ -2698,25 +2698,25 @@
 | `c:src/core/ipv4.c:ipv4_write_u32` | `src/core/ipv4.c` | `ipv4_write_u32` | `core` | `COVERED` | 3 |
 | `c:src/core/irq_deferred.c:irq_deferred_cancel` | `src/core/irq_deferred.c` | `irq_deferred_cancel` | `core` | `COVERED` | 1 |
 | `c:src/core/irq_deferred.c:irq_deferred_cancel_on` | `src/core/irq_deferred.c` | `irq_deferred_cancel_on` | `core` | `COVERED` | 3 |
-| `c:src/core/irq_deferred.c:irq_deferred_copy_owner` | `src/core/irq_deferred.c` | `irq_deferred_copy_owner` | `core` | `COVERED` | 3 |
+| `c:src/core/irq_deferred.c:irq_deferred_copy_owner` | `src/core/irq_deferred.c` | `irq_deferred_copy_owner` | `core` | `COVERED` | 4 |
 | `c:src/core/irq_deferred.c:irq_deferred_dispatch` | `src/core/irq_deferred.c` | `irq_deferred_dispatch` | `core` | `COVERED` | 2 |
 | `c:src/core/irq_deferred.c:irq_deferred_dispatch_on` | `src/core/irq_deferred.c` | `irq_deferred_dispatch_on` | `core` | `COVERED` | 4 |
 | `c:src/core/irq_deferred.c:irq_deferred_get_irq_status` | `src/core/irq_deferred.c` | `irq_deferred_get_irq_status` | `core` | `COVERED` | 1 |
 | `c:src/core/irq_deferred.c:irq_deferred_get_status` | `src/core/irq_deferred.c` | `irq_deferred_get_status` | `core` | `COVERED` | 2 |
-| `c:src/core/irq_deferred.c:irq_deferred_init` | `src/core/irq_deferred.c` | `irq_deferred_init` | `core` | `COVERED` | 1 |
+| `c:src/core/irq_deferred.c:irq_deferred_init` | `src/core/irq_deferred.c` | `irq_deferred_init` | `core` | `COVERED` | 2 |
 | `c:src/core/irq_deferred.c:irq_deferred_interrupts_enabled` | `src/core/irq_deferred.c` | `irq_deferred_interrupts_enabled` | `core` | `COVERED` | 4 |
-| `c:src/core/irq_deferred.c:irq_deferred_irq_restore` | `src/core/irq_deferred.c` | `irq_deferred_irq_restore` | `core` | `COVERED` | 4 |
-| `c:src/core/irq_deferred.c:irq_deferred_irq_save` | `src/core/irq_deferred.c` | `irq_deferred_irq_save` | `core` | `COVERED` | 4 |
-| `c:src/core/irq_deferred.c:irq_deferred_owner_valid` | `src/core/irq_deferred.c` | `irq_deferred_owner_valid` | `core` | `COVERED` | 3 |
-| `c:src/core/irq_deferred.c:irq_deferred_schedule` | `src/core/irq_deferred.c` | `irq_deferred_schedule` | `core` | `COVERED` | 2 |
-| `c:src/core/irq_deferred.c:irq_deferred_schedule_on` | `src/core/irq_deferred.c` | `irq_deferred_schedule_on` | `core` | `COVERED` | 4 |
+| `c:src/core/irq_deferred.c:irq_deferred_irq_restore` | `src/core/irq_deferred.c` | `irq_deferred_irq_restore` | `core` | `COVERED` | 5 |
+| `c:src/core/irq_deferred.c:irq_deferred_irq_save` | `src/core/irq_deferred.c` | `irq_deferred_irq_save` | `core` | `COVERED` | 5 |
+| `c:src/core/irq_deferred.c:irq_deferred_owner_valid` | `src/core/irq_deferred.c` | `irq_deferred_owner_valid` | `core` | `COVERED` | 4 |
+| `c:src/core/irq_deferred.c:irq_deferred_schedule` | `src/core/irq_deferred.c` | `irq_deferred_schedule` | `core` | `COVERED` | 3 |
+| `c:src/core/irq_deferred.c:irq_deferred_schedule_on` | `src/core/irq_deferred.c` | `irq_deferred_schedule_on` | `core` | `COVERED` | 5 |
 | `c:src/core/irq_deferred.c:irq_deferred_self_test` | `src/core/irq_deferred.c` | `irq_deferred_self_test` | `core` | `COVERED` | 3 |
-| `c:src/core/irq_deferred.c:irq_deferred_service_init` | `src/core/irq_deferred.c` | `irq_deferred_service_init` | `core` | `COVERED` | 3 |
-| `c:src/core/irq_deferred.c:irq_deferred_set_notifier` | `src/core/irq_deferred.c` | `irq_deferred_set_notifier` | `core` | `COVERED` | 1 |
+| `c:src/core/irq_deferred.c:irq_deferred_service_init` | `src/core/irq_deferred.c` | `irq_deferred_service_init` | `core` | `COVERED` | 4 |
+| `c:src/core/irq_deferred.c:irq_deferred_set_notifier` | `src/core/irq_deferred.c` | `irq_deferred_set_notifier` | `core` | `COVERED` | 2 |
 | `c:src/core/irq_deferred.c:irq_deferred_test_callback` | `src/core/irq_deferred.c` | `irq_deferred_test_callback` | `core` | `COVERED` | 3 |
 | `c:src/core/irq_deferred.c:irq_deferred_validate_service` | `src/core/irq_deferred.c` | `irq_deferred_validate_service` | `core` | `COVERED` | 3 |
 | `c:src/core/irq_deferred.c:irq_deferred_validate_state` | `src/core/irq_deferred.c` | `irq_deferred_validate_state` | `core` | `COVERED` | 3 |
-| `c:src/core/irq_deferred.c:irq_deferred_work_init` | `src/core/irq_deferred.c` | `irq_deferred_work_init` | `core` | `COVERED` | 3 |
+| `c:src/core/irq_deferred.c:irq_deferred_work_init` | `src/core/irq_deferred.c` | `irq_deferred_work_init` | `core` | `COVERED` | 4 |
 | `c:src/core/kernel_tests.c:kernel_tests_capture_memory` | `src/core/kernel_tests.c` | `kernel_tests_capture_memory` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests.c:kernel_tests_check_snapshot` | `src/core/kernel_tests.c` | `kernel_tests_check_snapshot` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests.c:kernel_tests_phase_result` | `src/core/kernel_tests.c` | `kernel_tests_phase_result` | `core` | `COVERED` | 6 |
@@ -3923,21 +3923,21 @@
 | `c:src/core/usb_transport.c:usb_transport_reset_bulk_toggles` | `src/core/usb_transport.c` | `usb_transport_reset_bulk_toggles` | `core` | `COVERED` | 1 |
 | `c:src/core/wait.c:init_waitqueue_head` | `src/core/wait.c` | `init_waitqueue_head` | `core` | `COVERED` | 6 |
 | `c:src/core/wait.c:wait_channel_get_condition` | `src/core/wait.c` | `wait_channel_get_condition` | `core` | `COVERED` | 4 |
-| `c:src/core/wait.c:wait_channel_init` | `src/core/wait.c` | `wait_channel_init` | `core` | `COVERED` | 3 |
+| `c:src/core/wait.c:wait_channel_init` | `src/core/wait.c` | `wait_channel_init` | `core` | `COVERED` | 4 |
 | `c:src/core/wait.c:wait_channel_is_available` | `src/core/wait.c` | `wait_channel_is_available` | `core` | `COVERED` | 1 |
 | `c:src/core/wait.c:wait_channel_reset` | `src/core/wait.c` | `wait_channel_reset` | `core` | `COVERED` | 6 |
 | `c:src/core/wait.c:wait_channel_set_available` | `src/core/wait.c` | `wait_channel_set_available` | `core` | `COVERED` | 4 |
 | `c:src/core/wait.c:wait_channel_signal` | `src/core/wait.c` | `wait_channel_signal` | `core` | `COVERED` | 6 |
 | `c:src/core/wait.c:wait_condition_snapshot` | `src/core/wait.c` | `wait_condition_snapshot` | `core` | `COVERED` | 6 |
 | `c:src/core/wait.c:wait_copy_text` | `src/core/wait.c` | `wait_copy_text` | `core` | `COVERED` | 6 |
-| `c:src/core/wait.c:wait_current_task` | `src/core/wait.c` | `wait_current_task` | `core` | `COVERED` | 4 |
+| `c:src/core/wait.c:wait_current_task` | `src/core/wait.c` | `wait_current_task` | `core` | `COVERED` | 5 |
 | `c:src/core/wait.c:wait_deadline_remaining` | `src/core/wait.c` | `wait_deadline_remaining` | `core` | `COVERED` | 1 |
 | `c:src/core/wait.c:wait_deadline_remaining_active` | `src/core/wait.c` | `wait_deadline_remaining_active` | `core` | `COVERED` | 1 |
 | `c:src/core/wait.c:wait_event` | `src/core/wait.c` | `wait_event` | `core` | `COVERED` | 1 |
 | `c:src/core/wait.c:wait_event_timeout` | `src/core/wait.c` | `wait_event_timeout` | `core` | `COVERED` | 6 |
 | `c:src/core/wait.c:wait_fill_waiter_info` | `src/core/wait.c` | `wait_fill_waiter_info` | `core` | `COVERED` | 1 |
 | `c:src/core/wait.c:wait_get_stats` | `src/core/wait.c` | `wait_get_stats` | `core` | `COVERED` | 1 |
-| `c:src/core/wait.c:wait_init` | `src/core/wait.c` | `wait_init` | `core` | `COVERED` | 2 |
+| `c:src/core/wait.c:wait_init` | `src/core/wait.c` | `wait_init` | `core` | `COVERED` | 3 |
 | `c:src/core/wait.c:wait_interrupts_enabled` | `src/core/wait.c` | `wait_interrupts_enabled` | `core` | `COVERED` | 6 |
 | `c:src/core/wait.c:wait_irq_restore` | `src/core/wait.c` | `wait_irq_restore` | `core` | `COVERED` | 8 |
 | `c:src/core/wait.c:wait_irq_save` | `src/core/wait.c` | `wait_irq_save` | `core` | `COVERED` | 8 |
@@ -3949,7 +3949,7 @@
 | `c:src/core/wait.c:wait_queue_block` | `src/core/wait.c` | `wait_queue_block` | `core` | `COVERED` | 6 |
 | `c:src/core/wait.c:wait_queue_copy_info` | `src/core/wait.c` | `wait_queue_copy_info` | `core` | `COVERED` | 1 |
 | `c:src/core/wait.c:wait_queue_copy_waiters` | `src/core/wait.c` | `wait_queue_copy_waiters` | `core` | `COVERED` | 1 |
-| `c:src/core/wait.c:wait_queue_deadline_reached` | `src/core/wait.c` | `wait_queue_deadline_reached` | `core` | `COVERED` | 4 |
+| `c:src/core/wait.c:wait_queue_deadline_reached` | `src/core/wait.c` | `wait_queue_deadline_reached` | `core` | `COVERED` | 5 |
 | `c:src/core/wait.c:wait_queue_entry_init` | `src/core/wait.c` | `wait_queue_entry_init` | `core` | `COVERED` | 6 |
 | `c:src/core/wait.c:wait_queue_make_id` | `src/core/wait.c` | `wait_queue_make_id` | `core` | `COVERED` | 6 |
 | `c:src/core/wait.c:wait_queue_register_locked` | `src/core/wait.c` | `wait_queue_register_locked` | `core` | `COVERED` | 6 |
@@ -4002,30 +4002,30 @@
 | `c:src/core/wifi_manager.c:wifi_manager_validate_state` | `src/core/wifi_manager.c` | `wifi_manager_validate_state` | `core` | `COVERED` | 3 |
 | `c:src/core/wifi_manager.c:wifi_validate_pci_metadata` | `src/core/wifi_manager.c` | `wifi_validate_pci_metadata` | `core` | `COVERED` | 3 |
 | `c:src/core/workqueue.c:cancel_work` | `src/core/workqueue.c` | `cancel_work` | `core` | `COVERED` | 2 |
-| `c:src/core/workqueue.c:schedule_delayed_work` | `src/core/workqueue.c` | `schedule_delayed_work` | `core` | `COVERED` | 3 |
-| `c:src/core/workqueue.c:schedule_work` | `src/core/workqueue.c` | `schedule_work` | `core` | `COVERED` | 3 |
+| `c:src/core/workqueue.c:schedule_delayed_work` | `src/core/workqueue.c` | `schedule_delayed_work` | `core` | `COVERED` | 4 |
+| `c:src/core/workqueue.c:schedule_work` | `src/core/workqueue.c` | `schedule_work` | `core` | `COVERED` | 4 |
 | `c:src/core/workqueue.c:work_destroy` | `src/core/workqueue.c` | `work_destroy` | `core` | `COVERED` | 2 |
-| `c:src/core/workqueue.c:work_init` | `src/core/workqueue.c` | `work_init` | `core` | `COVERED` | 2 |
-| `c:src/core/workqueue.c:workqueue_bind_worker` | `src/core/workqueue.c` | `workqueue_bind_worker` | `core` | `COVERED` | 2 |
+| `c:src/core/workqueue.c:work_init` | `src/core/workqueue.c` | `work_init` | `core` | `COVERED` | 3 |
+| `c:src/core/workqueue.c:workqueue_bind_worker` | `src/core/workqueue.c` | `workqueue_bind_worker` | `core` | `COVERED` | 3 |
 | `c:src/core/workqueue.c:workqueue_cancel_on` | `src/core/workqueue.c` | `workqueue_cancel_on` | `core` | `COVERED` | 4 |
 | `c:src/core/workqueue.c:workqueue_context_name` | `src/core/workqueue.c` | `workqueue_context_name` | `core` | `COVERED` | 2 |
 | `c:src/core/workqueue.c:workqueue_copy_info` | `src/core/workqueue.c` | `workqueue_copy_info` | `core` | `COVERED` | 2 |
 | `c:src/core/workqueue.c:workqueue_copy_owner` | `src/core/workqueue.c` | `workqueue_copy_owner` | `core` | `COVERED` | 4 |
 | `c:src/core/workqueue.c:workqueue_deadline_reached` | `src/core/workqueue.c` | `workqueue_deadline_reached` | `core` | `COVERED` | 5 |
 | `c:src/core/workqueue.c:workqueue_delayed_insert` | `src/core/workqueue.c` | `workqueue_delayed_insert` | `core` | `COVERED` | 5 |
-| `c:src/core/workqueue.c:workqueue_dispatch` | `src/core/workqueue.c` | `workqueue_dispatch` | `core` | `COVERED` | 3 |
+| `c:src/core/workqueue.c:workqueue_dispatch` | `src/core/workqueue.c` | `workqueue_dispatch` | `core` | `COVERED` | 4 |
 | `c:src/core/workqueue.c:workqueue_dispatch_on` | `src/core/workqueue.c` | `workqueue_dispatch_on` | `core` | `COVERED` | 5 |
 | `c:src/core/workqueue.c:workqueue_execute_one` | `src/core/workqueue.c` | `workqueue_execute_one` | `core` | `COVERED` | 5 |
 | `c:src/core/workqueue.c:workqueue_finish` | `src/core/workqueue.c` | `workqueue_finish` | `core` | `COVERED` | 5 |
 | `c:src/core/workqueue.c:workqueue_get_stats` | `src/core/workqueue.c` | `workqueue_get_stats` | `core` | `COVERED` | 2 |
-| `c:src/core/workqueue.c:workqueue_init` | `src/core/workqueue.c` | `workqueue_init` | `core` | `COVERED` | 2 |
+| `c:src/core/workqueue.c:workqueue_init` | `src/core/workqueue.c` | `workqueue_init` | `core` | `COVERED` | 3 |
 | `c:src/core/workqueue.c:workqueue_internal_result` | `src/core/workqueue.c` | `workqueue_internal_result` | `core` | `COVERED` | 4 |
 | `c:src/core/workqueue.c:workqueue_interrupts_enabled` | `src/core/workqueue.c` | `workqueue_interrupts_enabled` | `core` | `COVERED` | 5 |
 | `c:src/core/workqueue.c:workqueue_irq_restore` | `src/core/workqueue.c` | `workqueue_irq_restore` | `core` | `COVERED` | 5 |
 | `c:src/core/workqueue.c:workqueue_irq_save` | `src/core/workqueue.c` | `workqueue_irq_save` | `core` | `COVERED` | 5 |
 | `c:src/core/workqueue.c:workqueue_list_remove` | `src/core/workqueue.c` | `workqueue_list_remove` | `core` | `COVERED` | 5 |
-| `c:src/core/workqueue.c:workqueue_needs_fallback` | `src/core/workqueue.c` | `workqueue_needs_fallback` | `core` | `COVERED` | 2 |
-| `c:src/core/workqueue.c:workqueue_next_timeout` | `src/core/workqueue.c` | `workqueue_next_timeout` | `core` | `COVERED` | 2 |
+| `c:src/core/workqueue.c:workqueue_needs_fallback` | `src/core/workqueue.c` | `workqueue_needs_fallback` | `core` | `COVERED` | 3 |
+| `c:src/core/workqueue.c:workqueue_next_timeout` | `src/core/workqueue.c` | `workqueue_next_timeout` | `core` | `COVERED` | 3 |
 | `c:src/core/workqueue.c:workqueue_notify` | `src/core/workqueue.c` | `workqueue_notify` | `core` | `COVERED` | 5 |
 | `c:src/core/workqueue.c:workqueue_owner_valid` | `src/core/workqueue.c` | `workqueue_owner_valid` | `core` | `COVERED` | 4 |
 | `c:src/core/workqueue.c:workqueue_pending_count` | `src/core/workqueue.c` | `workqueue_pending_count` | `core` | `COVERED` | 5 |
@@ -4043,14 +4043,14 @@
 | `c:src/core/workqueue.c:workqueue_service_clear` | `src/core/workqueue.c` | `workqueue_service_clear` | `core` | `COVERED` | 4 |
 | `c:src/core/workqueue.c:workqueue_set_fallback` | `src/core/workqueue.c` | `workqueue_set_fallback` | `core` | `COVERED` | 2 |
 | `c:src/core/workqueue.c:workqueue_state_name` | `src/core/workqueue.c` | `workqueue_state_name` | `core` | `COVERED` | 2 |
-| `c:src/core/workqueue.c:workqueue_take_ready` | `src/core/workqueue.c` | `workqueue_take_ready` | `core` | `COVERED` | 2 |
+| `c:src/core/workqueue.c:workqueue_take_ready` | `src/core/workqueue.c` | `workqueue_take_ready` | `core` | `COVERED` | 3 |
 | `c:src/core/workqueue.c:workqueue_test_callback` | `src/core/workqueue.c` | `workqueue_test_callback` | `core` | `COVERED` | 4 |
 | `c:src/core/workqueue.c:workqueue_test_prepare` | `src/core/workqueue.c` | `workqueue_test_prepare` | `core` | `COVERED` | 4 |
 | `c:src/core/workqueue.c:workqueue_update_peak` | `src/core/workqueue.c` | `workqueue_update_peak` | `core` | `COVERED` | 5 |
 | `c:src/core/workqueue.c:workqueue_validate_on` | `src/core/workqueue.c` | `workqueue_validate_on` | `core` | `COVERED` | 4 |
 | `c:src/core/workqueue.c:workqueue_validate_state` | `src/core/workqueue.c` | `workqueue_validate_state` | `core` | `COVERED` | 4 |
-| `c:src/core/workqueue.c:workqueue_wait_condition` | `src/core/workqueue.c` | `workqueue_wait_condition` | `core` | `COVERED` | 2 |
-| `c:src/core/workqueue.c:workqueue_worker_main` | `src/core/workqueue.c` | `workqueue_worker_main` | `core` | `COVERED` | 1 |
+| `c:src/core/workqueue.c:workqueue_wait_condition` | `src/core/workqueue.c` | `workqueue_wait_condition` | `core` | `COVERED` | 3 |
+| `c:src/core/workqueue.c:workqueue_worker_main` | `src/core/workqueue.c` | `workqueue_worker_main` | `core` | `COVERED` | 2 |
 | `c:src/desktop/desktop.c:desktop_add_icon` | `src/desktop/desktop.c` | `desktop_add_icon` | `desktop` | `COVERED` | 1 |
 | `c:src/desktop/desktop.c:desktop_apply_drag_preview` | `src/desktop/desktop.c` | `desktop_apply_drag_preview` | `desktop` | `COVERED` | 3 |
 | `c:src/desktop/desktop.c:desktop_assign_classic_slots` | `src/desktop/desktop.c` | `desktop_assign_classic_slots` | `desktop` | `COVERED` | 3 |
@@ -5646,35 +5646,35 @@
 | `c:src/icons/icons.c:icons_set_tb` | `src/icons/icons.c` | `icons_set_tb` | `icons` | `COVERED` | 1 |
 | `c:src/icons/icons.c:icons_set_wm` | `src/icons/icons.c` | `icons_set_wm` | `icons` | `COVERED` | 1 |
 | `c:src/icons/icons.c:icons_warn_once` | `src/icons/icons.c` | `icons_warn_once` | `icons` | `COVERED` | 1 |
-| `c:src/kernel/kernel.c:desktop_process_main` | `src/kernel/kernel.c` | `desktop_process_main` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:desktop_process_main` | `src/kernel/kernel.c` | `desktop_process_main` | `kernel` | `COVERED` | 2 |
 | `c:src/kernel/kernel.c:global_mouse_handler` | `src/kernel/kernel.c` | `global_mouse_handler` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_cancel_foreground_app` | `src/kernel/kernel.c` | `kernel_cancel_foreground_app` | `kernel` | `COVERED` | 1 |
-| `c:src/kernel/kernel.c:kernel_dispatch_async_work` | `src/kernel/kernel.c` | `kernel_dispatch_async_work` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_dispatch_async_work` | `src/kernel/kernel.c` | `kernel_dispatch_async_work` | `kernel` | `COVERED` | 2 |
 | `c:src/kernel/kernel.c:kernel_dispatch_deferred_work` | `src/kernel/kernel.c` | `kernel_dispatch_deferred_work` | `kernel` | `COVERED` | 1 |
-| `c:src/kernel/kernel.c:kernel_dispatch_input_work` | `src/kernel/kernel.c` | `kernel_dispatch_input_work` | `kernel` | `COVERED` | 3 |
+| `c:src/kernel/kernel.c:kernel_dispatch_input_work` | `src/kernel/kernel.c` | `kernel_dispatch_input_work` | `kernel` | `COVERED` | 4 |
 | `c:src/kernel/kernel.c:kernel_dispatch_legacy_async` | `src/kernel/kernel.c` | `kernel_dispatch_legacy_async` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_dispatch_timers` | `src/kernel/kernel.c` | `kernel_dispatch_timers` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_handle_taskbar_mouse` | `src/kernel/kernel.c` | `kernel_handle_taskbar_mouse` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_host_test_run_finite_routes` | `src/kernel/kernel.c` | `kernel_host_test_run_finite_routes` | `kernel` | `COVERED` | 1 |
-| `c:src/kernel/kernel.c:kernel_index_work_callback` | `src/kernel/kernel.c` | `kernel_index_work_callback` | `kernel` | `COVERED` | 3 |
+| `c:src/kernel/kernel.c:kernel_index_work_callback` | `src/kernel/kernel.c` | `kernel_index_work_callback` | `kernel` | `COVERED` | 4 |
 | `c:src/kernel/kernel.c:kernel_irq_work_callback` | `src/kernel/kernel.c` | `kernel_irq_work_callback` | `kernel` | `COVERED` | 3 |
 | `c:src/kernel/kernel.c:kernel_irq_work_notify` | `src/kernel/kernel.c` | `kernel_irq_work_notify` | `kernel` | `COVERED` | 3 |
 | `c:src/kernel/kernel.c:kernel_main` | `src/kernel/kernel.c` | `kernel_main` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_network_work_callback` | `src/kernel/kernel.c` | `kernel_network_work_callback` | `kernel` | `COVERED` | 1 |
-| `c:src/kernel/kernel.c:kernel_poll_usb` | `src/kernel/kernel.c` | `kernel_poll_usb` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_poll_usb` | `src/kernel/kernel.c` | `kernel_poll_usb` | `kernel` | `COVERED` | 2 |
 | `c:src/kernel/kernel.c:kernel_redraw_after_menu_close` | `src/kernel/kernel.c` | `kernel_redraw_after_menu_close` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_request_shell_app` | `src/kernel/kernel.c` | `kernel_request_shell_app` | `kernel` | `COVERED` | 1 |
-| `c:src/kernel/kernel.c:kernel_retry_shell_request` | `src/kernel/kernel.c` | `kernel_retry_shell_request` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_retry_shell_request` | `src/kernel/kernel.c` | `kernel_retry_shell_request` | `kernel` | `COVERED` | 2 |
 | `c:src/kernel/kernel.c:kernel_send_shell_request` | `src/kernel/kernel.c` | `kernel_send_shell_request` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_start_automatic_dhcp` | `src/kernel/kernel.c` | `kernel_start_automatic_dhcp` | `kernel` | `COVERED` | 2 |
 | `c:src/kernel/kernel.c:kernel_timer_work_callback` | `src/kernel/kernel.c` | `kernel_timer_work_callback` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_timer_work_notify` | `src/kernel/kernel.c` | `kernel_timer_work_notify` | `kernel` | `COVERED` | 1 |
-| `c:src/kernel/kernel.c:kernel_wake_shell_for_event` | `src/kernel/kernel.c` | `kernel_wake_shell_for_event` | `kernel` | `COVERED` | 1 |
-| `c:src/kernel/kernel.c:kernel_wake_shell_for_process_event` | `src/kernel/kernel.c` | `kernel_wake_shell_for_process_event` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_wake_shell_for_event` | `src/kernel/kernel.c` | `kernel_wake_shell_for_event` | `kernel` | `COVERED` | 2 |
+| `c:src/kernel/kernel.c:kernel_wake_shell_for_process_event` | `src/kernel/kernel.c` | `kernel_wake_shell_for_process_event` | `kernel` | `COVERED` | 2 |
 | `c:src/kernel/kernel.c:kernel_workqueue_init` | `src/kernel/kernel.c` | `kernel_workqueue_init` | `kernel` | `COVERED` | 2 |
-| `c:src/kernel/kernel.c:shell_process_main` | `src/kernel/kernel.c` | `shell_process_main` | `kernel` | `COVERED` | 1 |
-| `c:src/kernel/kernel.c:system_process_main` | `src/kernel/kernel.c` | `system_process_main` | `kernel` | `COVERED` | 1 |
-| `c:src/kernel/kernel.c:test_protocol_process_main` | `src/kernel/kernel.c` | `test_protocol_process_main` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:shell_process_main` | `src/kernel/kernel.c` | `shell_process_main` | `kernel` | `COVERED` | 2 |
+| `c:src/kernel/kernel.c:system_process_main` | `src/kernel/kernel.c` | `system_process_main` | `kernel` | `COVERED` | 2 |
+| `c:src/kernel/kernel.c:test_protocol_process_main` | `src/kernel/kernel.c` | `test_protocol_process_main` | `kernel` | `COVERED` | 2 |
 | `c:src/kernel/panic.c:panic` | `src/kernel/panic.c` | `panic` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/panic.c:panic_draw_header` | `src/kernel/panic.c` | `panic_draw_header` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/panic.c:panic_halt` | `src/kernel/panic.c` | `panic_halt` | `kernel` | `COVERED` | 1 |
@@ -5841,33 +5841,33 @@
 | `c:src/process/ipc.c:process_restore_focus` | `src/process/ipc.c` | `process_restore_focus` | `process` | `COVERED` | 1 |
 | `c:src/process/ipc.c:process_set_focus` | `src/process/ipc.c` | `process_set_focus` | `process` | `COVERED` | 1 |
 | `c:src/process/ipc.c:process_set_focus_fallback` | `src/process/ipc.c` | `process_set_focus_fallback` | `process` | `COVERED` | 1 |
-| `c:src/process/process.c:process_allocate_pid` | `src/process/process.c` | `process_allocate_pid` | `process` | `COVERED` | 3 |
+| `c:src/process/process.c:process_allocate_pid` | `src/process/process.c` | `process_allocate_pid` | `process` | `COVERED` | 4 |
 | `c:src/process/process.c:process_apply_pending_cancel` | `src/process/process.c` | `process_apply_pending_cancel` | `process` | `COVERED` | 1 |
-| `c:src/process/process.c:process_block` | `src/process/process.c` | `process_block` | `process` | `COVERED` | 3 |
-| `c:src/process/process.c:process_bootstrap_idle` | `src/process/process.c` | `process_bootstrap_idle` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_block` | `src/process/process.c` | `process_block` | `process` | `COVERED` | 4 |
+| `c:src/process/process.c:process_bootstrap_idle` | `src/process/process.c` | `process_bootstrap_idle` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:process_cancel_focused_user` | `src/process/process.c` | `process_cancel_focused_user` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_cancel_user` | `src/process/process.c` | `process_cancel_user` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_cancel_user_test` | `src/process/process.c` | `process_cancel_user_test` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_cancel_wait` | `src/process/process.c` | `process_cancel_wait` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_copy_wait_text` | `src/process/process.c` | `process_copy_wait_text` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_copy_waiters` | `src/process/process.c` | `process_copy_waiters` | `process` | `COVERED` | 1 |
-| `c:src/process/process.c:process_create` | `src/process/process.c` | `process_create` | `process` | `COVERED` | 1 |
-| `c:src/process/process.c:process_create_internal` | `src/process/process.c` | `process_create_internal` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_create` | `src/process/process.c` | `process_create` | `process` | `COVERED` | 2 |
+| `c:src/process/process.c:process_create_internal` | `src/process/process.c` | `process_create_internal` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:process_create_user_image` | `src/process/process.c` | `process_create_user_image` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:process_create_user_image_internal` | `src/process/process.c` | `process_create_user_image_internal` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:process_create_user_image_suspended` | `src/process/process.c` | `process_create_user_image_suspended` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_create_user_image_suspended_with_launch` | `src/process/process.c` | `process_create_user_image_suspended_with_launch` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_create_user_test` | `src/process/process.c` | `process_create_user_test` | `process` | `COVERED` | 1 |
-| `c:src/process/process.c:process_create_with_stack_size` | `src/process/process.c` | `process_create_with_stack_size` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_create_with_stack_size` | `src/process/process.c` | `process_create_with_stack_size` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:process_destroy` | `src/process/process.c` | `process_destroy` | `process` | `COVERED` | 3 |
 | `c:src/process/process.c:process_discard_new_process` | `src/process/process.c` | `process_discard_new_process` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_exit_current` | `src/process/process.c` | `process_exit_current` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_finish_user_termination` | `src/process/process.c` | `process_finish_user_termination` | `process` | `COVERED` | 1 |
-| `c:src/process/process.c:process_get_by_pid` | `src/process/process.c` | `process_get_by_pid` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_get_by_pid` | `src/process/process.c` | `process_get_by_pid` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:process_get_count` | `src/process/process.c` | `process_get_count` | `process` | `COVERED` | 3 |
-| `c:src/process/process.c:process_get_current` | `src/process/process.c` | `process_get_current` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_get_current` | `src/process/process.c` | `process_get_current` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:process_get_current_pid` | `src/process/process.c` | `process_get_current_pid` | `process` | `COVERED` | 7 |
-| `c:src/process/process.c:process_get_event_generation` | `src/process/process.c` | `process_get_event_generation` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_get_event_generation` | `src/process/process.c` | `process_get_event_generation` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:process_get_last_user_fault` | `src/process/process.c` | `process_get_last_user_fault` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_get_state_count` | `src/process/process.c` | `process_get_state_count` | `process` | `COVERED` | 4 |
 | `c:src/process/process.c:process_get_user_count` | `src/process/process.c` | `process_get_user_count` | `process` | `COVERED` | 4 |
@@ -5875,13 +5875,13 @@
 | `c:src/process/process.c:process_handle_user_exception` | `src/process/process.c` | `process_handle_user_exception` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:process_host_test_idle_once` | `src/process/process.c` | `process_host_test_idle_once` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_host_test_report_corruption` | `src/process/process.c` | `process_host_test_report_corruption` | `process` | `COVERED` | 1 |
-| `c:src/process/process.c:process_idle_main` | `src/process/process.c` | `process_idle_main` | `process` | `COVERED` | 1 |
-| `c:src/process/process.c:process_init` | `src/process/process.c` | `process_init` | `process` | `COVERED` | 1 |
-| `c:src/process/process.c:process_initialize_pid_pool` | `src/process/process.c` | `process_initialize_pid_pool` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_idle_main` | `src/process/process.c` | `process_idle_main` | `process` | `COVERED` | 2 |
+| `c:src/process/process.c:process_init` | `src/process/process.c` | `process_init` | `process` | `COVERED` | 2 |
+| `c:src/process/process.c:process_initialize_pid_pool` | `src/process/process.c` | `process_initialize_pid_pool` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:process_is_user` | `src/process/process.c` | `process_is_user` | `process` | `COVERED` | 9 |
 | `c:src/process/process.c:process_mark_current_user_zombie` | `src/process/process.c` | `process_mark_current_user_zombie` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_mark_user_zombie` | `src/process/process.c` | `process_mark_user_zombie` | `process` | `COVERED` | 2 |
-| `c:src/process/process.c:process_next_identity_generation` | `src/process/process.c` | `process_next_identity_generation` | `process` | `COVERED` | 3 |
+| `c:src/process/process.c:process_next_identity_generation` | `src/process/process.c` | `process_next_identity_generation` | `process` | `COVERED` | 4 |
 | `c:src/process/process.c:process_pointer_valid` | `src/process/process.c` | `process_pointer_valid` | `process` | `COVERED` | 9 |
 | `c:src/process/process.c:process_power_has_active_users` | `src/process/process.c` | `process_power_has_active_users` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_power_reap_users` | `src/process/process.c` | `process_power_reap_users` | `process` | `COVERED` | 1 |
@@ -5900,7 +5900,7 @@
 | `c:src/process/process.c:process_snapshot_fill_locked` | `src/process/process.c` | `process_snapshot_fill_locked` | `process` | `COVERED` | 4 |
 | `c:src/process/process.c:process_snapshot_list` | `src/process/process.c` | `process_snapshot_list` | `process` | `COVERED` | 3 |
 | `c:src/process/process.c:process_stack_align_up` | `src/process/process.c` | `process_stack_align_up` | `process` | `COVERED` | 4 |
-| `c:src/process/process.c:process_stack_allocate` | `src/process/process.c` | `process_stack_allocate` | `process` | `COVERED` | 3 |
+| `c:src/process/process.c:process_stack_allocate` | `src/process/process.c` | `process_stack_allocate` | `process` | `COVERED` | 4 |
 | `c:src/process/process.c:process_stack_attach` | `src/process/process.c` | `process_stack_attach` | `process` | `COVERED` | 4 |
 | `c:src/process/process.c:process_stack_bounds_valid` | `src/process/process.c` | `process_stack_bounds_valid` | `process` | `COVERED` | 7 |
 | `c:src/process/process.c:process_stack_check_current` | `src/process/process.c` | `process_stack_check_current` | `process` | `COVERED` | 1 |
@@ -5916,9 +5916,9 @@
 | `c:src/process/process.c:process_stack_self_test` | `src/process/process.c` | `process_stack_self_test` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:process_stack_size_valid` | `src/process/process.c` | `process_stack_size_valid` | `process` | `COVERED` | 7 |
 | `c:src/process/process.c:process_stack_validate_all` | `src/process/process.c` | `process_stack_validate_all` | `process` | `COVERED` | 3 |
-| `c:src/process/process.c:process_stack_verify_or_panic` | `src/process/process.c` | `process_stack_verify_or_panic` | `process` | `COVERED` | 3 |
+| `c:src/process/process.c:process_stack_verify_or_panic` | `src/process/process.c` | `process_stack_verify_or_panic` | `process` | `COVERED` | 4 |
 | `c:src/process/process.c:process_stack_write_guard` | `src/process/process.c` | `process_stack_write_guard` | `process` | `COVERED` | 4 |
-| `c:src/process/process.c:process_start_scheduler` | `src/process/process.c` | `process_start_scheduler` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_start_scheduler` | `src/process/process.c` | `process_start_scheduler` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:process_start_user` | `src/process/process.c` | `process_start_user` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_store_user_image` | `src/process/process.c` | `process_store_user_image` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_switch_after_termination` | `src/process/process.c` | `process_switch_after_termination` | `process` | `COVERED` | 1 |
@@ -5931,35 +5931,35 @@
 | `c:src/process/process.c:process_user_patch_u32` | `src/process/process.c` | `process_user_patch_u32` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_user_reap_previous_test` | `src/process/process.c` | `process_user_reap_previous_test` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_user_validate_launch` | `src/process/process.c` | `process_user_validate_launch` | `process` | `COVERED` | 1 |
-| `c:src/process/process.c:process_wait` | `src/process/process.c` | `process_wait` | `process` | `COVERED` | 4 |
-| `c:src/process/process.c:process_wait_block_transition` | `src/process/process.c` | `process_wait_block_transition` | `process` | `COVERED` | 3 |
+| `c:src/process/process.c:process_wait` | `src/process/process.c` | `process_wait` | `process` | `COVERED` | 5 |
+| `c:src/process/process.c:process_wait_block_transition` | `src/process/process.c` | `process_wait_block_transition` | `process` | `COVERED` | 4 |
 | `c:src/process/process.c:process_wait_clear` | `src/process/process.c` | `process_wait_clear` | `process` | `COVERED` | 8 |
 | `c:src/process/process.c:process_wait_deadline_reached` | `src/process/process.c` | `process_wait_deadline_reached` | `process` | `COVERED` | 8 |
 | `c:src/process/process.c:process_wait_irq_restore` | `src/process/process.c` | `process_wait_irq_restore` | `process` | `COVERED` | 6 |
 | `c:src/process/process.c:process_wait_irq_save` | `src/process/process.c` | `process_wait_irq_save` | `process` | `COVERED` | 6 |
-| `c:src/process/process.c:process_wait_state_init` | `src/process/process.c` | `process_wait_state_init` | `process` | `COVERED` | 3 |
+| `c:src/process/process.c:process_wait_state_init` | `src/process/process.c` | `process_wait_state_init` | `process` | `COVERED` | 4 |
 | `c:src/process/process.c:process_wait_wake_transition` | `src/process/process.c` | `process_wait_wake_transition` | `process` | `COVERED` | 8 |
-| `c:src/process/process.c:process_wait_yield_transition` | `src/process/process.c` | `process_wait_yield_transition` | `process` | `COVERED` | 3 |
+| `c:src/process/process.c:process_wait_yield_transition` | `src/process/process.c` | `process_wait_yield_transition` | `process` | `COVERED` | 4 |
 | `c:src/process/process.c:process_wake_channel` | `src/process/process.c` | `process_wake_channel` | `process` | `COVERED` | 1 |
-| `c:src/process/process.c:process_yield` | `src/process/process.c` | `process_yield` | `process` | `COVERED` | 4 |
-| `c:src/process/process.c:scheduler_find_next_ready` | `src/process/process.c` | `scheduler_find_next_ready` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_yield` | `src/process/process.c` | `process_yield` | `process` | `COVERED` | 5 |
+| `c:src/process/process.c:scheduler_find_next_ready` | `src/process/process.c` | `scheduler_find_next_ready` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:scheduler_get_stats` | `src/process/process.c` | `scheduler_get_stats` | `process` | `COVERED` | 1 |
-| `c:src/process/process.c:scheduler_init` | `src/process/process.c` | `scheduler_init` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:scheduler_init` | `src/process/process.c` | `scheduler_init` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:scheduler_preempt_user` | `src/process/process.c` | `scheduler_preempt_user` | `process` | `COVERED` | 1 |
-| `c:src/process/process.c:scheduler_schedule` | `src/process/process.c` | `scheduler_schedule` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:scheduler_schedule` | `src/process/process.c` | `scheduler_schedule` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:scheduler_tick` | `src/process/process.c` | `scheduler_tick` | `process` | `COVERED` | 8 |
 | `c:src/process/process.c:scheduler_validate_invariants` | `src/process/process.c` | `scheduler_validate_invariants` | `process` | `COVERED` | 3 |
 | `c:src/process/process.c:scheduler_validate_pid_table` | `src/process/process.c` | `scheduler_validate_pid_table` | `process` | `COVERED` | 3 |
 | `c:src/process/process.c:scheduler_validate_states` | `src/process/process.c` | `scheduler_validate_states` | `process` | `COVERED` | 3 |
-| `c:src/process/process.c:scheduler_yield_internal` | `src/process/process.c` | `scheduler_yield_internal` | `process` | `COVERED` | 3 |
+| `c:src/process/process.c:scheduler_yield_internal` | `src/process/process.c` | `scheduler_yield_internal` | `process` | `COVERED` | 4 |
 | `c:src/process/signal.c:process_signal_action` | `src/process/signal.c` | `process_signal_action` | `process` | `COVERED` | 1 |
 | `c:src/process/signal.c:process_signal_copy_info` | `src/process/signal.c` | `process_signal_copy_info` | `process` | `COVERED` | 1 |
 | `c:src/process/signal.c:process_signal_get_stats` | `src/process/signal.c` | `process_signal_get_stats` | `process` | `COVERED` | 1 |
-| `c:src/process/signal.c:process_signal_init` | `src/process/signal.c` | `process_signal_init` | `process` | `COVERED` | 1 |
+| `c:src/process/signal.c:process_signal_init` | `src/process/signal.c` | `process_signal_init` | `process` | `COVERED` | 2 |
 | `c:src/process/signal.c:process_signal_mask` | `src/process/signal.c` | `process_signal_mask` | `process` | `COVERED` | 1 |
 | `c:src/process/signal.c:process_signal_name` | `src/process/signal.c` | `process_signal_name` | `process` | `COVERED` | 1 |
 | `c:src/process/signal.c:process_signal_prepare_user_return` | `src/process/signal.c` | `process_signal_prepare_user_return` | `process` | `COVERED` | 9 |
-| `c:src/process/signal.c:process_signal_process_created` | `src/process/signal.c` | `process_signal_process_created` | `process` | `COVERED` | 3 |
+| `c:src/process/signal.c:process_signal_process_created` | `src/process/signal.c` | `process_signal_process_created` | `process` | `COVERED` | 4 |
 | `c:src/process/signal.c:process_signal_process_destroyed` | `src/process/signal.c` | `process_signal_process_destroyed` | `process` | `COVERED` | 3 |
 | `c:src/process/signal.c:process_signal_process_exited` | `src/process/signal.c` | `process_signal_process_exited` | `process` | `COVERED` | 2 |
 | `c:src/process/signal.c:process_signal_raise` | `src/process/signal.c` | `process_signal_raise` | `process` | `COVERED` | 1 |
@@ -7084,19 +7084,19 @@
 | `c:src/thread/thread.c:thread_cancel_wait` | `src/thread/thread.c` | `thread_cancel_wait` | `thread` | `COVERED` | 1 |
 | `c:src/thread/thread.c:thread_copy_wait_text` | `src/thread/thread.c` | `thread_copy_wait_text` | `thread` | `COVERED` | 1 |
 | `c:src/thread/thread.c:thread_copy_waiters` | `src/thread/thread.c` | `thread_copy_waiters` | `thread` | `COVERED` | 1 |
-| `c:src/thread/thread.c:thread_create` | `src/thread/thread.c` | `thread_create` | `thread` | `COVERED` | 1 |
+| `c:src/thread/thread.c:thread_create` | `src/thread/thread.c` | `thread_create` | `thread` | `COVERED` | 2 |
 | `c:src/thread/thread.c:thread_destroy` | `src/thread/thread.c` | `thread_destroy` | `thread` | `COVERED` | 3 |
 | `c:src/thread/thread.c:thread_entry_trampoline` | `src/thread/thread.c` | `thread_entry_trampoline` | `thread` | `COVERED` | 2 |
 | `c:src/thread/thread.c:thread_get_by_id` | `src/thread/thread.c` | `thread_get_by_id` | `thread` | `COVERED` | 1 |
 | `c:src/thread/thread.c:thread_get_count` | `src/thread/thread.c` | `thread_get_count` | `thread` | `COVERED` | 5 |
 | `c:src/thread/thread.c:thread_get_count_by_owner` | `src/thread/thread.c` | `thread_get_count_by_owner` | `thread` | `COVERED` | 3 |
-| `c:src/thread/thread.c:thread_get_current` | `src/thread/thread.c` | `thread_get_current` | `thread` | `COVERED` | 1 |
+| `c:src/thread/thread.c:thread_get_current` | `src/thread/thread.c` | `thread_get_current` | `thread` | `COVERED` | 2 |
 | `c:src/thread/thread.c:thread_index` | `src/thread/thread.c` | `thread_index` | `thread` | `COVERED` | 3 |
-| `c:src/thread/thread.c:thread_init` | `src/thread/thread.c` | `thread_init` | `thread` | `COVERED` | 1 |
+| `c:src/thread/thread.c:thread_init` | `src/thread/thread.c` | `thread_init` | `thread` | `COVERED` | 2 |
 | `c:src/thread/thread.c:thread_is_ready` | `src/thread/thread.c` | `thread_is_ready` | `thread` | `COVERED` | 3 |
 | `c:src/thread/thread.c:thread_prepare_stack` | `src/thread/thread.c` | `thread_prepare_stack` | `thread` | `COVERED` | 3 |
 | `c:src/thread/thread.c:thread_run_self_test` | `src/thread/thread.c` | `thread_run_self_test` | `thread` | `COVERED` | 2 |
-| `c:src/thread/thread.c:thread_schedule_next` | `src/thread/thread.c` | `thread_schedule_next` | `thread` | `COVERED` | 1 |
+| `c:src/thread/thread.c:thread_schedule_next` | `src/thread/thread.c` | `thread_schedule_next` | `thread` | `COVERED` | 2 |
 | `c:src/thread/thread.c:thread_scheduler_tick` | `src/thread/thread.c` | `thread_scheduler_tick` | `thread` | `COVERED` | 8 |
 | `c:src/thread/thread.c:thread_switch_to_scheduler` | `src/thread/thread.c` | `thread_switch_to_scheduler` | `thread` | `COVERED` | 3 |
 | `c:src/thread/thread.c:thread_test_record` | `src/thread/thread.c` | `thread_test_record` | `thread` | `COVERED` | 2 |
@@ -7589,10 +7589,8 @@
 
 ## Superfícies sem caso associado
 
-- `api:src/include/process/process.h:process_context_switch`
 - `api:src/include/process/process.h:process_user_enter`
 - `api:src/include/process/process.h:process_user_termination_enter`
-- `api:src/include/process/thread.h:thread_context_switch`
 - `asm:src/boot/boot.asm:detect_geometry`
 - `asm:src/boot/boot.asm:disk_error`
 - `asm:src/boot/boot.asm:load_sectors`
@@ -7640,11 +7638,8 @@
 - `asm:src/boot/system_stage2.asm:fail`
 - `asm:src/boot/system_stage2.asm:start`
 - `asm:src/kernel/entry.asm:_start`
-- `asm:src/kernel/switch.asm:process_context_switch`
 - `asm:src/kernel/switch.asm:process_user_enter`
 - `asm:src/kernel/switch.asm:process_user_termination_enter`
-- `asm:src/kernel/switch.asm:thread_context_switch`
-- `asm:src/kernel/switch.asm:tss_flush`
 
 ## Aposentadas
 

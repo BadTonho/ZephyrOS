@@ -29,8 +29,38 @@ relatórios RTC/Shell, da fixture host-only do Updater, da fixture host-only do
 File Manager, da fixture host-only do Task Manager, da validação de resultados
 do Shell Checks, da fixture host-only do GUI Test, da fixture host-only do
 menu de recuperação e da fixture host-only do loader de recuperação, registra
-7.330 superfícies, 7.274 `COVERED` e 56 `PENDING`, em 170 casos
+7.330 superfícies, 7.279 `COVERED` e 51 `PENDING`, em 170 casos
 `AUTOMATED`.
+
+### Incremento Assembly: TSS e troca de contexto real — 2026-09-05
+
+- [x] A imagem de cobertura foi reconstruida e executada com
+      `make test-assembly-qemu ASSEMBLY_RUN_ID=tst7-assembly-8`. O caso
+      produziu `READY -> HEARTBEAT -> BEGIN -> PASS`, com os artefatos
+      preservados em `build-coverage/test-results/tst7-assembly/tst7-assembly-8/`.
+- [x] O relatório ZCOV terminou `PASS`, sem endereços desconhecidos ou
+      símbolos ambíguos. Além da fixture de interrupções, registrou
+      `tss_flush` no boot real e `process_context_switch` na primeira
+      transferência real para `process_idle_main`, nos casos internos
+      `qemu:tst7:kernel-main` e `qemu:tst7:process-switch`.
+- [x] O vínculo de cobertura passou a incluir `src/kernel/switch.asm` somente
+      após essa evidência. A observação é feita nos chamadores C e o corpo de
+      `switch.asm` não foi alterado, preservando o caminho sensível do
+      scheduler.
+
+### Incremento Assembly: troca de contexto de threads — 2026-09-05
+
+- [x] Foi adicionado o alvo separado
+      `test-execution-coverage-qemu`, que reconstrói a imagem instrumentada e
+      executa uma única iteração do caso real `qemu:tst4:execution`, sem retry.
+- [x] `make test-execution-coverage-qemu
+      EXECUTION_COVERAGE_RUN_ID=tst7-execution-coverage-1` passou com
+      `READY -> HEARTBEAT -> BEGIN -> PASS`; os artefatos ficaram em
+      `build-coverage/test-results/cov-tst4-execution/tst7-execution-coverage-1/`.
+- [x] O relatório ZCOV resolveu `thread_context_switch` durante o
+      `thread_run_self_test`, com zero endereços desconhecidos, símbolos
+      ambíguos ou erros. A API pública foi vinculada ao mesmo caso somente
+      após essa evidência.
 
 ### Incremento Kernel Main: boot QEMU instrumentado — 2026-09-05
 
