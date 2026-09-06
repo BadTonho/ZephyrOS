@@ -2039,6 +2039,28 @@ refresh integrado, a recuperacao de managers nao inicializados, inventarios
 parciais, degradacoes opcionais, falhas de PCI e argumentos invalidos sem
 hardware ou armazenamento reais.
 
+## Traces Assembly de boot e recuperacao
+
+Os traces QEMU de Assembly devem ser executados individualmente, com um ID de
+execucao explicito e sem retry automatico:
+
+```text
+make test-assembly-boot-trace-qemu ASSEMBLY_BOOT_TRACE_RUN_ID=tst7-assembly-boot-<id>
+make test-assembly-recovery-trace-qemu ASSEMBLY_RECOVERY_TRACE_RUN_ID=tst7-recovery-<id>
+```
+
+Os artefatos ficam, respectivamente, em
+`build-coverage/test-results/assembly-boot-trace/<id>/` e
+`build-coverage/test-results/assembly-recovery-trace/<id>/`. O resultado deve
+conter `PASS` ou uma falha identificada; o coletor nao transforma timeout de
+fixture em sucesso silencioso. Esses alvos usam fixtures de erro e de
+recuperacao, preservam o build normal sem instrumentacao e nao alteram ABI,
+protocolo ZTEST ou o comportamento normal do boot.
+
+Quando os caminhos do QEMU/NASM forem configurados em `Makefile.local`, use
+os caminhos sem aspas externas. O Makefile ja encaminha esses valores aos
+scripts sem duplicar as aspas.
+
 ## Shell: comandos de aplicativos e interface host-only
 
 O alvo `test-shell-commands-apps-host` valida o dispatcher de aplicativos do

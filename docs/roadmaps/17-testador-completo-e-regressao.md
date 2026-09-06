@@ -17,20 +17,33 @@ aprovado explicitamente e passou por uma execução `full` posterior contra
 esse baseline. Hardware físico permanece `BLOCKED` enquanto não houver
 equipamento e evidência correspondente.
 
-A infraestrutura TST1–TST7 está concluída para a matriz automatizada existente,
-mas o programa de cobertura integral ainda não está concluído. O catálogo
-mantém 166 casos `AUTOMATED`; após os incrementos de Shell, RTC,
-processos/threads, FAT32, update U3/U4, os contratos remotos ZSYS e o
-repositório remoto de aplicativos, dos helpers de pacotes do Shell, da
-interface App Store, dos relatórios de rede do Shell, do módulo de
-Configurações, do Desktop, dos comandos de aplicativos, da evidência RTC e
-das fixtures de entrada/hosted, da evidência de panic, da regeneração dos
-relatórios RTC/Shell, da fixture host-only do Updater, da fixture host-only do
-File Manager, da fixture host-only do Task Manager, da validação de resultados
-do Shell Checks, da fixture host-only do GUI Test, da fixture host-only do
-menu de recuperação e da fixture host-only do loader de recuperação, registra
-7.330 superfícies, 7.309 `COVERED` e 21 `PENDING`, em 170 casos
-`AUTOMATED`.
+A infraestrutura TST1–TST7 está concluída para a matriz automatizada existente.
+Após a evidência Assembly QEMU registrada abaixo, o catálogo canônico registra
+7.330 superfícies de software, todas `COVERED`, sem `PENDING`, em 170 casos
+`AUTOMATED`, e `make catalog-test-strict` passa. Isso fecha a cobertura
+catalogada de software, mas não substitui a execução integral do TST7 `full`,
+nem a matriz de hardware físico. O sanitizador TST3 permanece `BLOCKED` nesta
+máquina porque o Clang instalado não possui o runtime ASan/UBSan compatível.
+
+### Fechamento das superfícies Assembly pendentes — 2026-09-06
+
+- [x] `make q3check`, `make clean` seguido de `make`, `make test-qemu-selftest`,
+      `make catalog-test` e `make catalog-test-strict` passaram no estado final.
+- [x] `make test-assembly-boot-trace-qemu
+      ASSEMBLY_BOOT_TRACE_RUN_ID=tst7-assembly-boot-6` passou em QEMU com oito
+      fixtures independentes, cobrindo os caminhos normais e de erro de
+      `boot.asm`, `stage2.asm`, `system_boot.asm` e `system_stage2.asm`.
+- [x] `make test-assembly-recovery-trace-qemu
+      ASSEMBLY_RECOVERY_TRACE_RUN_ID=tst7-recovery-3` passou em QEMU snapshot;
+      o relatório confirmou `recovery_bios_write_sector` e
+      `recovery_boot_system_entry`.
+- [x] Os 131 casos host-only, TST2 e TST3 strict foram reexecutados após o
+      build limpo; os relatórios dinâmicos foram preservados e sincronizados no
+      catálogo.
+- [x] O alvo de Assembly normaliza os caminhos configurados em `Makefile.local`
+      sem duplicar aspas quando NASM/QEMU usam caminhos com espaços. O build
+      normal continua sem instrumentação de cobertura e sem alteração de ABI,
+      protocolo ZTEST ou comportamento normal do boot.
 
 ### Incremento Assembly: boot real observado pelo trace QEMU — 2026-09-05
 

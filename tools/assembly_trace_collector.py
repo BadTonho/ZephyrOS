@@ -170,18 +170,23 @@ def build_symbols(arguments: argparse.Namespace) -> dict[str, Any]:
     kernel_sectors = math.ceil(kernel_bytes / 512)
     recovery_sectors = math.ceil(recovery_path.stat().st_size / 512)
     symbols: list[dict[str, Any]] = []
+    extra_defines = list(getattr(arguments, "define", []) or [])
+    boot_stage2_sectors = getattr(arguments, "boot_stage2_sectors", None)
+    if not isinstance(boot_stage2_sectors, int) or boot_stage2_sectors <= 0:
+        boot_stage2_sectors = stage2_sectors
     with tempfile.TemporaryDirectory(prefix="zephyros-asm-map-") as temporary:
         temporary_path = Path(temporary)
         flat_specs = [
-            ("src/boot/boot.asm", 0x7C00, [f"STAGE2_SECTORS={stage2_sectors}"]),
+            ("src/boot/boot.asm", 0x7C00,
+             [f"STAGE2_SECTORS={boot_stage2_sectors}"] + extra_defines),
             ("src/boot/stage2.asm", 0x5000, [
                 f"KERNEL_SECTORS={kernel_sectors}", f"KERNEL_BYTES={kernel_bytes}",
                 f"RECOVERY_LOADER_SECTORS={recovery_sectors}",
                 "LEGACY_KERNEL_LBA=64", "RECOVERY_LOADER_LBA=6144",
                 "FAT32_START_LBA=8192",
-            ]),
-            ("src/boot/system_boot.asm", 0x7C00, []),
-            ("src/boot/system_stage2.asm", 0x5000, []),
+            ] + extra_defines),
+            ("src/boot/system_boot.asm", 0x7C00, extra_defines),
+            ("src/boot/system_stage2.asm", 0x5000, extra_defines),
         ]
         for source_name, base, defines in flat_specs:
             source = ROOT / source_name
@@ -276,6 +281,8 @@ def parser() -> argparse.ArgumentParser:
     symbols.add_argument("--nasm", default="nasm")
     symbols.add_argument("--nm", default="nm")
     symbols.add_argument("--compiler")
+    symbols.add_argument("--define", action="append", default=[])
+    symbols.add_argument("--boot-stage2-sectors", type=int)
     symbols.add_argument("--output", required=True)
     collect = subparsers.add_parser("collect")
     collect.add_argument("--trace", required=True)

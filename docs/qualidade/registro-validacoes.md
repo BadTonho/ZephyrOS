@@ -6599,3 +6599,27 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   sincronizado, renderizado e validado; registra 7.329 superfícies, 7.248
   `COVERED`, 81 `PENDING` e 169 casos. As pendências restantes continuam
   explícitas.
+
+- Fechamento da cobertura de software e traces Assembly — concluído em
+  2026-09-06 (America/Sao_Paulo).
+
+  Após a reconstrução limpa, passaram `make q3check`, `make clean`, `make`,
+  `make test-qemu-selftest`, os 131 casos host-only, `make test-tst2-host`,
+  `make test-tst3-host`, `make catalog-test` e `make catalog-test-strict`.
+  O catálogo sincronizado terminou com 7.330 superfícies de software, todas
+  `COVERED`, zero `PENDING` e 170 casos automatizados.
+
+  O trace `test-assembly-boot-trace-qemu` com
+  `ASSEMBLY_BOOT_TRACE_RUN_ID=tst7-assembly-boot-6` passou com oito fixtures,
+  incluindo boot normal, erros de boot/stage2 e os loaders
+  `system_boot.asm`/`system_stage2.asm`. O trace
+  `test-assembly-recovery-trace-qemu` com
+  `ASSEMBLY_RECOVERY_TRACE_RUN_ID=tst7-recovery-3` passou e confirmou as
+  entradas `recovery_bios_write_sector` e `recovery_boot_system_entry`.
+  Os relatórios permanecem em `build-coverage/test-results/`.
+
+  Também passaram os testes unitários Python de traces/TST7 e
+  `make q3check-test`. O sanitizador TST3 permanece `BLOCKED` neste ambiente:
+  o Clang está disponível, mas o runtime ASan/UBSan MinGW UCRT64 requerido
+  para link não está instalado. A execução completa do TST7 e a validação de
+  hardware físico ainda não foram declaradas concluídas.

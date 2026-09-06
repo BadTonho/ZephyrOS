@@ -7174,6 +7174,24 @@
       "evidence": "make test-assembly-qemu ASSEMBLY_RUN_ID=tst7-assembly-8 PASS; ZCOV confirmou kernel_main, tss_flush e process_context_switch em execucao real, com 136, 320 e 960 enderecos resolvidos nos casos Assembly, process-switch e kernel-main, sem enderecos desconhecidos ou simbolos ambiguos"
     },
     {
+      "id": "assembly-boot-error-trace-qemu",
+      "domain": "boot-assembly-errors",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build-coverage/test-results/assembly-boot-trace/tst7-assembly-boot-6/assembly-boot-trace.json",
+      "coverage_sources": [
+        "src/boot/boot.asm",
+        "src/boot/stage2.asm"
+      ],
+      "include_public_apis": false,
+      "evidence": "make test-assembly-boot-trace-qemu ASSEMBLY_BOOT_TRACE_RUN_ID=tst7-assembly-boot-6 PASS; seis fixtures QEMU cobrem disk_error, print16, caminhos A20, CHS, LBA, overflow e memory_error com timeout limitado"
+    },
+    {
       "id": "assembly-boot-trace-qemu",
       "domain": "boot-assembly",
       "owner": "quality",
@@ -7191,7 +7209,42 @@
         "src/kernel/entry.asm"
       ],
       "include_public_apis": false,
-      "evidence": "make test-assembly-trace-qemu ASSEMBLY_TRACE_RUN_ID=tst7-assembly-trace-2 PASS; trace in_asm do QEMU confirmou 26 entradas Assembly em boot, stage2, recovery_entry e kernel/entry no fluxo real, com 17 lacunas de erro e recuperacao explicitadas em missing_symbols"
+      "evidence": "make test-assembly-trace-qemu ASSEMBLY_TRACE_RUN_ID=tst7-assembly-trace-2 PASS; trace in_asm do QEMU confirmou as entradas Assembly normais de boot, stage2, recovery_entry e kernel/entry, com lacunas de erro registradas separadamente"
+    },
+    {
+      "id": "assembly-system-boot-trace-qemu",
+      "domain": "system-boot-assembly",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build-coverage/test-results/assembly-boot-trace/tst7-assembly-boot-6/assembly-boot-trace.json",
+      "coverage_sources": [
+        "src/boot/system_boot.asm",
+        "src/boot/system_stage2.asm"
+      ],
+      "include_public_apis": false,
+      "evidence": "make test-assembly-boot-trace-qemu ASSEMBLY_BOOT_TRACE_RUN_ID=tst7-assembly-boot-6 PASS; oito fixtures QEMU cobrem os caminhos normais e de erro de system_boot/system_stage2 com timeout limitado"
+    },
+    {
+      "id": "assembly-recovery-trace-qemu",
+      "domain": "recovery-assembly",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build-coverage/test-results/assembly-recovery-trace/tst7-recovery-3/assembly-recovery-trace.json",
+      "coverage_sources": [
+        "src/boot/recovery_entry.asm"
+      ],
+      "include_public_apis": false,
+      "evidence": "make test-assembly-recovery-trace-qemu ASSEMBLY_RECOVERY_TRACE_RUN_ID=tst7-recovery-3 PASS; fixture QEMU carrega o stage2, executa o gateway BIOS em snapshot e confirma recovery_bios_write_sector e recovery_boot_system_entry"
     },
     {
       "id": "shell-commands-apps-host-dynamic",

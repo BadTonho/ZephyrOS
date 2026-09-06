@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7309 |
+| `COVERED` | 7330 |
 | `MANUAL` | 0 |
-| `PENDING` | 21 |
+| `PENDING` | 0 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -86,15 +86,15 @@
 | `api:src/include/apps/mediaplayer.h:mp_resume` | `src/include/apps/mediaplayer.h` | `mp_resume` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/mediaplayer.h:mp_stop` | `src/include/apps/mediaplayer.h` | `mp_stop` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/mediaplayer.h:mp_update` | `src/include/apps/mediaplayer.h` | `mp_update` | `apps` | `COVERED` | 1 |
-| `api:src/include/apps/shell.h:shell_handle_app_request` | `src/include/apps/shell.h` | `shell_handle_app_request` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell.h:shell_handle_key` | `src/include/apps/shell.h` | `shell_handle_key` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell.h:shell_handle_app_request` | `src/include/apps/shell.h` | `shell_handle_app_request` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell.h:shell_handle_key` | `src/include/apps/shell.h` | `shell_handle_key` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell.h:shell_handle_mouse` | `src/include/apps/shell.h` | `shell_handle_mouse` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell.h:shell_init` | `src/include/apps/shell.h` | `shell_init` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell.h:shell_print_prompt` | `src/include/apps/shell.h` | `shell_print_prompt` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell.h:shell_process_command` | `src/include/apps/shell.h` | `shell_process_command` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell.h:shell_report_app_loader_result` | `src/include/apps/shell.h` | `shell_report_app_loader_result` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell.h:shell_report_user_test_result` | `src/include/apps/shell.h` | `shell_report_user_test_result` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell.h:shell_update_hosted_terminal` | `src/include/apps/shell.h` | `shell_update_hosted_terminal` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell.h:shell_print_prompt` | `src/include/apps/shell.h` | `shell_print_prompt` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell.h:shell_process_command` | `src/include/apps/shell.h` | `shell_process_command` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell.h:shell_report_app_loader_result` | `src/include/apps/shell.h` | `shell_report_app_loader_result` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell.h:shell_report_user_test_result` | `src/include/apps/shell.h` | `shell_report_user_test_result` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell.h:shell_update_hosted_terminal` | `src/include/apps/shell.h` | `shell_update_hosted_terminal` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell_checks.h:shell_checks_host_test_contracts` | `src/include/apps/shell_checks.h` | `shell_checks_host_test_contracts` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_command_utils.h:shell_command_args_equal` | `src/include/apps/shell_command_utils.h` | `shell_command_args_equal` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_command_utils.h:shell_command_match_subcommand` | `src/include/apps/shell_command_utils.h` | `shell_command_match_subcommand` | `apps` | `COVERED` | 7 |
@@ -141,14 +141,14 @@
 | `api:src/include/apps/shell_diagnostics_helpers.h:shell_memcheck_valid_memory_metrics` | `src/include/apps/shell_diagnostics_helpers.h` | `shell_memcheck_valid_memory_metrics` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/shell_diagnostics_helpers.h:shell_process_state_name` | `src/include/apps/shell_diagnostics_helpers.h` | `shell_process_state_name` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/shell_dispatch.h:shell_dispatch_execute` | `src/include/apps/shell_dispatch.h` | `shell_dispatch_execute` | `apps` | `COVERED` | 6 |
-| `api:src/include/apps/shell_input.h:shell_input_cancel_extended` | `src/include/apps/shell_input.h` | `shell_input_cancel_extended` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell_input.h:shell_input_get_buffer` | `src/include/apps/shell_input.h` | `shell_input_get_buffer` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell_input.h:shell_input_handle_key` | `src/include/apps/shell_input.h` | `shell_input_handle_key` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_input.h:shell_input_cancel_extended` | `src/include/apps/shell_input.h` | `shell_input_cancel_extended` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_input.h:shell_input_get_buffer` | `src/include/apps/shell_input.h` | `shell_input_get_buffer` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_input.h:shell_input_handle_key` | `src/include/apps/shell_input.h` | `shell_input_handle_key` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell_input.h:shell_input_init` | `src/include/apps/shell_input.h` | `shell_input_init` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell_input.h:shell_input_print_prompt` | `src/include/apps/shell_input.h` | `shell_input_print_prompt` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell_input.h:shell_input_reset` | `src/include/apps/shell_input.h` | `shell_input_reset` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell_input.h:shell_input_reset_modifiers` | `src/include/apps/shell_input.h` | `shell_input_reset_modifiers` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell_input.h:shell_input_resume_terminal` | `src/include/apps/shell_input.h` | `shell_input_resume_terminal` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_input.h:shell_input_print_prompt` | `src/include/apps/shell_input.h` | `shell_input_print_prompt` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_input.h:shell_input_reset` | `src/include/apps/shell_input.h` | `shell_input_reset` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_input.h:shell_input_reset_modifiers` | `src/include/apps/shell_input.h` | `shell_input_reset_modifiers` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_input.h:shell_input_resume_terminal` | `src/include/apps/shell_input.h` | `shell_input_resume_terminal` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell_introspection.h:shell_introspection_find_value` | `src/include/apps/shell_introspection.h` | `shell_introspection_find_value` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_introspection.h:shell_introspection_parse_hex_u32` | `src/include/apps/shell_introspection.h` | `shell_introspection_parse_hex_u32` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_introspection.h:shell_introspection_parse_u32` | `src/include/apps/shell_introspection.h` | `shell_introspection_parse_u32` | `apps` | `COVERED` | 2 |
@@ -211,13 +211,13 @@
 | `api:src/include/apps/shell_runtime.h:shell_network_validate_for_checks` | `src/include/apps/shell_runtime.h` | `shell_network_validate_for_checks` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_runtime.h:shell_packages_host_test_contracts` | `src/include/apps/shell_runtime.h` | `shell_packages_host_test_contracts` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_finish_command` | `src/include/apps/shell_runtime.h` | `shell_runtime_finish_command` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key` | `src/include/apps/shell_runtime.h` | `shell_runtime_handle_terminal_key` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible` | `src/include/apps/shell_runtime.h` | `shell_runtime_is_hosted_visible` | `apps` | `COVERED` | 3 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager` | `src/include/apps/shell_runtime.h` | `shell_runtime_prepare_filemanager` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_reset_input` | `src/include/apps/shell_runtime.h` | `shell_runtime_reset_input` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal` | `src/include/apps/shell_runtime.h` | `shell_runtime_resume_terminal` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key` | `src/include/apps/shell_runtime.h` | `shell_runtime_handle_terminal_key` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible` | `src/include/apps/shell_runtime.h` | `shell_runtime_is_hosted_visible` | `apps` | `COVERED` | 4 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager` | `src/include/apps/shell_runtime.h` | `shell_runtime_prepare_filemanager` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_reset_input` | `src/include/apps/shell_runtime.h` | `shell_runtime_reset_input` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal` | `src/include/apps/shell_runtime.h` | `shell_runtime_resume_terminal` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal` | `src/include/apps/shell_runtime.h` | `shell_runtime_suspend_terminal` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal_for_scene` | `src/include/apps/shell_runtime.h` | `shell_runtime_suspend_terminal_for_scene` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal_for_scene` | `src/include/apps/shell_runtime.h` | `shell_runtime_suspend_terminal_for_scene` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/taskmanager.h:taskmgr_close` | `src/include/apps/taskmanager.h` | `taskmgr_close` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/taskmanager.h:taskmgr_gui_handle_key` | `src/include/apps/taskmanager.h` | `taskmgr_gui_handle_key` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/taskmanager.h:taskmgr_gui_handle_mouse` | `src/include/apps/taskmanager.h` | `taskmgr_gui_handle_mouse` | `apps` | `COVERED` | 2 |
@@ -995,16 +995,16 @@
 | `api:src/include/drivers/mouse.h:mouse_set_callback` | `src/include/drivers/mouse.h` | `mouse_set_callback` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/mouse.h:mouse_set_primary_button` | `src/include/drivers/mouse.h` | `mouse_set_primary_button` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/mouse.h:mouse_set_speed` | `src/include/drivers/mouse.h` | `mouse_set_speed` | `drivers` | `COVERED` | 4 |
-| `api:src/include/drivers/pci.h:pci_enable_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_bus_mastering` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_io_and_bus_mastering` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_memory_and_bus_mastering` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_get_device` | `src/include/drivers/pci.h` | `pci_get_device` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_get_device_at` | `src/include/drivers/pci.h` | `pci_get_device_at` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_get_device_by_id` | `src/include/drivers/pci.h` | `pci_get_device_by_id` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_get_device_count` | `src/include/drivers/pci.h` | `pci_get_device_count` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_init` | `src/include/drivers/pci.h` | `pci_init` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_read` | `src/include/drivers/pci.h` | `pci_read` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_write` | `src/include/drivers/pci.h` | `pci_write` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/pci.h:pci_enable_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_bus_mastering` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_io_and_bus_mastering` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_memory_and_bus_mastering` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_get_device` | `src/include/drivers/pci.h` | `pci_get_device` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_get_device_at` | `src/include/drivers/pci.h` | `pci_get_device_at` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_get_device_by_id` | `src/include/drivers/pci.h` | `pci_get_device_by_id` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_get_device_count` | `src/include/drivers/pci.h` | `pci_get_device_count` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_init` | `src/include/drivers/pci.h` | `pci_init` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_read` | `src/include/drivers/pci.h` | `pci_read` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_write` | `src/include/drivers/pci.h` | `pci_write` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/rng.h:rng_get_bytes` | `src/include/drivers/rng.h` | `rng_get_bytes` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/rng.h:rng_get_status` | `src/include/drivers/rng.h` | `rng_get_status` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/rng.h:rng_init` | `src/include/drivers/rng.h` | `rng_init` | `drivers` | `COVERED` | 3 |
@@ -1654,51 +1654,51 @@
 | ID | Fonte | Símbolo | Proprietário | Status | Casos |
 |---|---|---|---|---|---:|
 | `asm:src/boot/boot.asm:detect_geometry` | `src/boot/boot.asm` | `detect_geometry` | `boot` | `COVERED` | 1 |
-| `asm:src/boot/boot.asm:disk_error` | `src/boot/boot.asm` | `disk_error` | `boot` | `PENDING` | 0 |
+| `asm:src/boot/boot.asm:disk_error` | `src/boot/boot.asm` | `disk_error` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/boot.asm:load_sectors` | `src/boot/boot.asm` | `load_sectors` | `boot` | `COVERED` | 1 |
-| `asm:src/boot/boot.asm:print16` | `src/boot/boot.asm` | `print16` | `boot` | `PENDING` | 0 |
+| `asm:src/boot/boot.asm:print16` | `src/boot/boot.asm` | `print16` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/boot.asm:start` | `src/boot/boot.asm` | `start` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/recovery_entry.asm:_start` | `src/boot/recovery_entry.asm` | `_start` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/recovery_entry.asm:recovery_bios_prepare` | `src/boot/recovery_entry.asm` | `recovery_bios_prepare` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/recovery_entry.asm:recovery_bios_read_sector` | `src/boot/recovery_entry.asm` | `recovery_bios_read_sector` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/recovery_entry.asm:recovery_bios_wait_key` | `src/boot/recovery_entry.asm` | `recovery_bios_wait_key` | `boot` | `COVERED` | 1 |
-| `asm:src/boot/recovery_entry.asm:recovery_bios_write_sector` | `src/boot/recovery_entry.asm` | `recovery_bios_write_sector` | `boot` | `PENDING` | 0 |
+| `asm:src/boot/recovery_entry.asm:recovery_bios_write_sector` | `src/boot/recovery_entry.asm` | `recovery_bios_write_sector` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/recovery_entry.asm:recovery_boot_kernel_entry` | `src/boot/recovery_entry.asm` | `recovery_boot_kernel_entry` | `boot` | `COVERED` | 1 |
-| `asm:src/boot/recovery_entry.asm:recovery_boot_system_entry` | `src/boot/recovery_entry.asm` | `recovery_boot_system_entry` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/stage2.asm:a20_enable_kbc` | `src/boot/stage2.asm` | `a20_enable_kbc` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/stage2.asm:a20_error` | `src/boot/stage2.asm` | `a20_error` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/stage2.asm:a20_wait_input` | `src/boot/stage2.asm` | `a20_wait_input` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/stage2.asm:a20_wait_output` | `src/boot/stage2.asm` | `a20_wait_output` | `boot` | `PENDING` | 0 |
+| `asm:src/boot/recovery_entry.asm:recovery_boot_system_entry` | `src/boot/recovery_entry.asm` | `recovery_boot_system_entry` | `boot` | `COVERED` | 1 |
+| `asm:src/boot/stage2.asm:a20_enable_kbc` | `src/boot/stage2.asm` | `a20_enable_kbc` | `boot` | `COVERED` | 1 |
+| `asm:src/boot/stage2.asm:a20_error` | `src/boot/stage2.asm` | `a20_error` | `boot` | `COVERED` | 1 |
+| `asm:src/boot/stage2.asm:a20_wait_input` | `src/boot/stage2.asm` | `a20_wait_input` | `boot` | `COVERED` | 1 |
+| `asm:src/boot/stage2.asm:a20_wait_output` | `src/boot/stage2.asm` | `a20_wait_output` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/stage2.asm:bios_gateway_16` | `src/boot/stage2.asm` | `bios_gateway_16` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/stage2.asm:bios_gateway_protected_return` | `src/boot/stage2.asm` | `bios_gateway_protected_return` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/stage2.asm:bios_gateway_real` | `src/boot/stage2.asm` | `bios_gateway_real` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/stage2.asm:check_a20` | `src/boot/stage2.asm` | `check_a20` | `boot` | `COVERED` | 1 |
-| `asm:src/boot/stage2.asm:chs_disk_error` | `src/boot/stage2.asm` | `chs_disk_error` | `boot` | `PENDING` | 0 |
+| `asm:src/boot/stage2.asm:chs_disk_error` | `src/boot/stage2.asm` | `chs_disk_error` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/stage2.asm:copy_protected` | `src/boot/stage2.asm` | `copy_protected` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/stage2.asm:copy_protected_16` | `src/boot/stage2.asm` | `copy_protected_16` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/stage2.asm:copy_real` | `src/boot/stage2.asm` | `copy_real` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/stage2.asm:copy_sector_high` | `src/boot/stage2.asm` | `copy_sector_high` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/stage2.asm:detect_disk_access` | `src/boot/stage2.asm` | `detect_disk_access` | `boot` | `COVERED` | 1 |
-| `asm:src/boot/stage2.asm:detect_geometry` | `src/boot/stage2.asm` | `detect_geometry` | `boot` | `PENDING` | 0 |
+| `asm:src/boot/stage2.asm:detect_geometry` | `src/boot/stage2.asm` | `detect_geometry` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/stage2.asm:detect_memory` | `src/boot/stage2.asm` | `detect_memory` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/stage2.asm:enable_a20` | `src/boot/stage2.asm` | `enable_a20` | `boot` | `COVERED` | 1 |
-| `asm:src/boot/stage2.asm:fatal_error` | `src/boot/stage2.asm` | `fatal_error` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/stage2.asm:lba_disk_error` | `src/boot/stage2.asm` | `lba_disk_error` | `boot` | `PENDING` | 0 |
+| `asm:src/boot/stage2.asm:fatal_error` | `src/boot/stage2.asm` | `fatal_error` | `boot` | `COVERED` | 1 |
+| `asm:src/boot/stage2.asm:lba_disk_error` | `src/boot/stage2.asm` | `lba_disk_error` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/stage2.asm:load_kernel` | `src/boot/stage2.asm` | `load_kernel` | `boot` | `COVERED` | 1 |
-| `asm:src/boot/stage2.asm:load_overflow` | `src/boot/stage2.asm` | `load_overflow` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/stage2.asm:memory_error` | `src/boot/stage2.asm` | `memory_error` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/stage2.asm:print16` | `src/boot/stage2.asm` | `print16` | `boot` | `PENDING` | 0 |
+| `asm:src/boot/stage2.asm:load_overflow` | `src/boot/stage2.asm` | `load_overflow` | `boot` | `COVERED` | 1 |
+| `asm:src/boot/stage2.asm:memory_error` | `src/boot/stage2.asm` | `memory_error` | `boot` | `COVERED` | 1 |
+| `asm:src/boot/stage2.asm:print16` | `src/boot/stage2.asm` | `print16` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/stage2.asm:protected_mode` | `src/boot/stage2.asm` | `protected_mode` | `boot` | `COVERED` | 1 |
-| `asm:src/boot/stage2.asm:read_kernel_chs` | `src/boot/stage2.asm` | `read_kernel_chs` | `boot` | `PENDING` | 0 |
+| `asm:src/boot/stage2.asm:read_kernel_chs` | `src/boot/stage2.asm` | `read_kernel_chs` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/stage2.asm:read_kernel_lba` | `src/boot/stage2.asm` | `read_kernel_lba` | `boot` | `COVERED` | 1 |
-| `asm:src/boot/stage2.asm:reset_boot_disk` | `src/boot/stage2.asm` | `reset_boot_disk` | `boot` | `PENDING` | 0 |
+| `asm:src/boot/stage2.asm:reset_boot_disk` | `src/boot/stage2.asm` | `reset_boot_disk` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/stage2.asm:set_vesa_mode` | `src/boot/stage2.asm` | `set_vesa_mode` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/stage2.asm:stage2_start` | `src/boot/stage2.asm` | `stage2_start` | `boot` | `COVERED` | 1 |
 | `asm:src/boot/stage2.asm:validate_load_memory` | `src/boot/stage2.asm` | `validate_load_memory` | `boot` | `COVERED` | 1 |
-| `asm:src/boot/system_boot.asm:fail` | `src/boot/system_boot.asm` | `fail` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/system_boot.asm:start` | `src/boot/system_boot.asm` | `start` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/system_stage2.asm:fail` | `src/boot/system_stage2.asm` | `fail` | `boot` | `PENDING` | 0 |
-| `asm:src/boot/system_stage2.asm:start` | `src/boot/system_stage2.asm` | `start` | `boot` | `PENDING` | 0 |
+| `asm:src/boot/system_boot.asm:fail` | `src/boot/system_boot.asm` | `fail` | `boot` | `COVERED` | 1 |
+| `asm:src/boot/system_boot.asm:start` | `src/boot/system_boot.asm` | `start` | `boot` | `COVERED` | 1 |
+| `asm:src/boot/system_stage2.asm:fail` | `src/boot/system_stage2.asm` | `fail` | `boot` | `COVERED` | 1 |
+| `asm:src/boot/system_stage2.asm:start` | `src/boot/system_stage2.asm` | `start` | `boot` | `COVERED` | 1 |
 | `asm:src/drivers/irq.asm:irq0` | `src/drivers/irq.asm` | `irq0` | `drivers` | `COVERED` | 1 |
 | `asm:src/drivers/irq.asm:irq1` | `src/drivers/irq.asm` | `irq1` | `drivers` | `COVERED` | 1 |
 | `asm:src/drivers/irq.asm:irq10` | `src/drivers/irq.asm` | `irq10` | `drivers` | `COVERED` | 1 |
@@ -6112,10 +6112,10 @@
 | `c:src/shell/mediaplayer.c:str_copy` | `src/shell/mediaplayer.c` | `str_copy` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:process_input` | `src/shell/shell.c` | `process_input` | `shell` | `COVERED` | 5 |
 | `c:src/shell/shell.c:shell_handle_app_request` | `src/shell/shell.c` | `shell_handle_app_request` | `shell` | `COVERED` | 7 |
-| `c:src/shell/shell.c:shell_handle_key` | `src/shell/shell.c` | `shell_handle_key` | `shell` | `COVERED` | 7 |
+| `c:src/shell/shell.c:shell_handle_key` | `src/shell/shell.c` | `shell_handle_key` | `shell` | `COVERED` | 8 |
 | `c:src/shell/shell.c:shell_handle_mouse` | `src/shell/shell.c` | `shell_handle_mouse` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:shell_init` | `src/shell/shell.c` | `shell_init` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell.c:shell_print_prompt` | `src/shell/shell.c` | `shell_print_prompt` | `shell` | `COVERED` | 7 |
+| `c:src/shell/shell.c:shell_print_prompt` | `src/shell/shell.c` | `shell_print_prompt` | `shell` | `COVERED` | 8 |
 | `c:src/shell/shell.c:shell_process_command` | `src/shell/shell.c` | `shell_process_command` | `shell` | `COVERED` | 5 |
 | `c:src/shell/shell.c:shell_redraw_after_overlay_close` | `src/shell/shell.c` | `shell_redraw_after_overlay_close` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:shell_report_app_loader_result` | `src/shell/shell.c` | `shell_report_app_loader_result` | `shell` | `COVERED` | 7 |
@@ -6123,11 +6123,11 @@
 | `c:src/shell/shell.c:shell_runtime_finish_command` | `src/shell/shell.c` | `shell_runtime_finish_command` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:shell_runtime_handle_terminal_key` | `src/shell/shell.c` | `shell_runtime_handle_terminal_key` | `shell` | `COVERED` | 7 |
 | `c:src/shell/shell.c:shell_runtime_prepare_filemanager` | `src/shell/shell.c` | `shell_runtime_prepare_filemanager` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell.c:shell_runtime_reset_input` | `src/shell/shell.c` | `shell_runtime_reset_input` | `shell` | `COVERED` | 5 |
+| `c:src/shell/shell.c:shell_runtime_reset_input` | `src/shell/shell.c` | `shell_runtime_reset_input` | `shell` | `COVERED` | 6 |
 | `c:src/shell/shell.c:shell_runtime_resume_terminal` | `src/shell/shell.c` | `shell_runtime_resume_terminal` | `shell` | `COVERED` | 5 |
 | `c:src/shell/shell.c:shell_runtime_suspend_terminal` | `src/shell/shell.c` | `shell_runtime_suspend_terminal` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:shell_runtime_suspend_terminal_for_scene` | `src/shell/shell.c` | `shell_runtime_suspend_terminal_for_scene` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell.c:shell_should_show_prompt` | `src/shell/shell.c` | `shell_should_show_prompt` | `shell` | `COVERED` | 5 |
+| `c:src/shell/shell.c:shell_should_show_prompt` | `src/shell/shell.c` | `shell_should_show_prompt` | `shell` | `COVERED` | 6 |
 | `c:src/shell/shell.c:shell_update_hosted_terminal` | `src/shell/shell.c` | `shell_update_hosted_terminal` | `shell` | `COVERED` | 7 |
 | `c:src/shell/shell_checks.c:cmd_appcheck` | `src/shell/shell_checks.c` | `cmd_appcheck` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:cmd_appcheck_devices` | `src/shell/shell_checks.c` | `cmd_appcheck_devices` | `shell` | `COVERED` | 1 |
@@ -7589,27 +7589,7 @@
 
 ## Superfícies sem caso associado
 
-- `asm:src/boot/boot.asm:disk_error`
-- `asm:src/boot/boot.asm:print16`
-- `asm:src/boot/recovery_entry.asm:recovery_bios_write_sector`
-- `asm:src/boot/recovery_entry.asm:recovery_boot_system_entry`
-- `asm:src/boot/stage2.asm:a20_enable_kbc`
-- `asm:src/boot/stage2.asm:a20_error`
-- `asm:src/boot/stage2.asm:a20_wait_input`
-- `asm:src/boot/stage2.asm:a20_wait_output`
-- `asm:src/boot/stage2.asm:chs_disk_error`
-- `asm:src/boot/stage2.asm:detect_geometry`
-- `asm:src/boot/stage2.asm:fatal_error`
-- `asm:src/boot/stage2.asm:lba_disk_error`
-- `asm:src/boot/stage2.asm:load_overflow`
-- `asm:src/boot/stage2.asm:memory_error`
-- `asm:src/boot/stage2.asm:print16`
-- `asm:src/boot/stage2.asm:read_kernel_chs`
-- `asm:src/boot/stage2.asm:reset_boot_disk`
-- `asm:src/boot/system_boot.asm:fail`
-- `asm:src/boot/system_boot.asm:start`
-- `asm:src/boot/system_stage2.asm:fail`
-- `asm:src/boot/system_stage2.asm:start`
+Nenhuma.
 
 ## Aposentadas
 

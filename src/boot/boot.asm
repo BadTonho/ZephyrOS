@@ -97,7 +97,13 @@ load_sectors:
     mov bx, [LOAD_SEG]
     mov es, bx
     mov bx, [LOAD_OFF]
+%ifdef BOOT_TEST_DISK_ERROR
+    mov cx, 0
+%endif
     mov ax, 0x0201
+%ifdef BOOT_TEST_DISK_ERROR
+    mov dl, 0xFF
+%endif
     int 0x13
     jc disk_error
 

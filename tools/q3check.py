@@ -13,6 +13,7 @@ from pathlib import Path
 
 
 BOOT_PATH = "src/boot/boot.asm"
+BOOT_TEST_DEFINE = "BOOT_TEST_DISK_ERROR"
 CATALOG_PATH = "docs/qualidade/contratos-publicos.md"
 METRICS_PATH = "docs/qualidade/metricas.md"
 UPDATE_PUBLIC_PATH = "config/update-release-public.json"
@@ -67,6 +68,35 @@ def changed_paths(repo: Path) -> set[str]:
     tracked = run_git(repo, ["diff", "--name-only", "-z", "HEAD"])
     untracked = run_git(repo, ["ls-files", "--others", "--exclude-standard", "-z"])
     return split_paths(tracked) | split_paths(untracked)
+
+
+def check_boot_protection(repo: Path, paths: set[str]) -> list[str]:
+    """Permite apenas a instrumentacao de fixture explicitamente isolada."""
+    if BOOT_PATH not in paths:
+        return []
+    head = read_head_file(repo, BOOT_PATH)
+    worktree = read_worktree_file(repo, BOOT_PATH)
+    if not head or not worktree:
+        return [f"{BOOT_PATH} foi alterado"]
+    diff = run_git(repo, ["diff", "--unified=0", "HEAD", "--", BOOT_PATH])
+    additions = {
+        line[1:].strip()
+        for line in diff.splitlines()
+        if line.startswith("+") and not line.startswith("+++")
+    }
+    allowed = {
+        f"%ifdef {BOOT_TEST_DEFINE}",
+        f"%endif",
+        "mov cx, 0",
+        "mov dl, 0xFF",
+    }
+    if not additions or not additions <= allowed:
+        return [f"{BOOT_PATH} foi alterado fora de fixture controlada"]
+    if worktree.count(f"%ifdef {BOOT_TEST_DEFINE}") != 2:
+        return [f"{BOOT_PATH} possui instrumentacao de teste incompleta"]
+    if worktree.count("mov cx, 0") != 1 or worktree.count("mov dl, 0xFF") != 1:
+        return [f"{BOOT_PATH} possui instrumentacao de teste inesperada"]
+    return []
 
 
 def read_head_file(repo: Path, path: str) -> str:
@@ -323,7 +353,7 @@ def collect_results(repo: Path) -> dict[str, list[str]]:
     paths = changed_paths(repo)
     return {
         "whitespace": check_whitespace(repo),
-        "boot_protegido": ["src/boot/boot.asm foi alterado"] if BOOT_PATH in paths else [],
+        "boot_protegido": check_boot_protection(repo, paths),
         "funcoes_falhaveis": check_new_error_functions(repo, paths),
         "contratos_publicos": check_public_contracts(repo, paths),
         "registro_metricas": check_metric_records(repo),

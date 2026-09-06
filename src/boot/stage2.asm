@@ -133,6 +133,9 @@ stage2_start:
     rep stosb
 
     call detect_memory
+%ifdef STAGE2_TEST_MEMORY_ERROR
+    jmp memory_error
+%endif
     call detect_disk_access
 
     mov dword [LOAD_DEST], KERNEL_OFFSET
@@ -240,6 +243,11 @@ validate_load_memory:
     ret
 
 detect_disk_access:
+%ifdef STAGE2_TEST_FORCE_CHS
+    mov byte [DISK_MODE], DISK_MODE_CHS
+    call detect_geometry
+    ret
+%endif
     mov byte [DISK_MODE], DISK_MODE_CHS
     mov bx, EDD_SIGNATURE_IN
     mov ah, 0x41
@@ -357,6 +365,10 @@ check_a20:
     ret
 
 a20_wait_input:
+%ifdef STAGE2_TEST_A20_ERROR
+    stc
+    ret
+%endif
     mov cx, KBC_TIMEOUT
 .loop:
     in al, KBC_STATUS_PORT
@@ -370,6 +382,10 @@ a20_wait_input:
     ret
 
 a20_wait_output:
+%ifdef STAGE2_TEST_A20_ERROR
+    stc
+    ret
+%endif
     mov cx, KBC_TIMEOUT
 .loop:
     in al, KBC_STATUS_PORT
@@ -425,6 +441,13 @@ a20_enable_kbc:
     ret
 
 enable_a20:
+%ifdef STAGE2_TEST_A20_ERROR
+    call a20_wait_input
+    call a20_wait_output
+    call a20_enable_kbc
+    stc
+    ret
+%endif
     call check_a20
     test ax, ax
     jnz .success
@@ -461,6 +484,9 @@ enable_a20:
     ret
 
 load_kernel:
+%ifdef STAGE2_TEST_LOAD_OVERFLOW
+    jmp load_overflow
+%endif
     movzx eax, word [remaining]
     shl eax, 9
     add eax, [LOAD_DEST]
@@ -520,6 +546,11 @@ load_kernel:
     ret
 
 read_kernel_lba:
+%ifdef STAGE2_TEST_LBA_ERROR
+    call reset_boot_disk
+    stc
+    ret
+%endif
     mov byte [read_attempts], DISK_READ_ATTEMPTS
 
 .retry:
@@ -552,6 +583,11 @@ read_kernel_lba:
     ret
 
 read_kernel_chs:
+%ifdef STAGE2_TEST_CHS_ERROR
+    call reset_boot_disk
+    stc
+    ret
+%endif
     mov byte [read_attempts], DISK_READ_ATTEMPTS
 
 .retry:
