@@ -15,6 +15,7 @@
     ((KMEM_SLAB_MAX_OBJECTS + 31U) / 32U)
 #define KMEM_SLAB_TEST_OBJECTS 256U
 #define KMEM_SLAB_TEST_PROGRESS_INTERVAL 16U
+#define SLAB_EFLAGS_INTERRUPT_ENABLE (1U << 9U)
 #if defined(ZEPHYROS_HOST_TEST)
 typedef uint64_t slab_address_t;
 #else
@@ -64,6 +65,27 @@ static uint32_t global_allocation_failures;
 static uint32_t global_invalid_frees;
 static uint32_t global_double_frees;
 static uint8_t slab_initialized;
+
+static uint32_t slab_irq_save(void) {
+#if defined(ZEPHYROS_HOST_TEST)
+    return 0U;
+#else
+    uint32_t flags;
+
+    asm volatile("pushf\n\tpop %0\n\tcli" : "=r"(flags) : : "memory");
+    return flags;
+#endif
+}
+
+static void slab_irq_restore(uint32_t flags) {
+#if !defined(ZEPHYROS_HOST_TEST)
+    if (flags & SLAB_EFLAGS_INTERRUPT_ENABLE) {
+        asm volatile("sti" : : : "memory");
+    }
+#else
+    (void)flags;
+#endif
+}
 
 static int slab_test_progress(void) {
     if (!kernel_tests_active_runtime) return OK;
@@ -312,6 +334,7 @@ kmem_cache_t* kmem_cache_create(const char* name, uint32_t object_size,
     uint32_t objects;
     int slot;
     kmem_cache_t* cache;
+    uint32_t flags;
 
     if (!slab_initialized) {
         LOG_ERROR("MEM", "SLAB nao inicializado ao criar cache");
@@ -347,14 +370,20 @@ kmem_cache_t* kmem_cache_create(const char* name, uint32_t object_size,
         LOG_ERROR("MEM", "Cache SLAB nao comporta oito objetos");
         return 0;
     }
+    flags = slab_irq_save();
+    spinlock_acquire(&slab_lock);
     slot = slab_find_cache_slot();
     if (slot < 0 || cache_count >= KMEM_CACHE_MAX) {
+        spinlock_release(&slab_lock);
+        slab_irq_restore(flags);
         LOG_ERROR("MEM", "Limite de caches SLAB atingido");
         return 0;
     }
     for (uint32_t index = 0U; index < KMEM_CACHE_MAX; index++) {
         if (cache_table[index].used &&
             kstrcmp(cache_table[index].name, name) == 0) {
+            spinlock_release(&slab_lock);
+            slab_irq_restore(flags);
             LOG_ERROR("MEM", "Nome de cache SLAB duplicado");
             return 0;
         }
@@ -372,6 +401,8 @@ kmem_cache_t* kmem_cache_create(const char* name, uint32_t object_size,
     cache->empty_head = KMEM_SLAB_LINK_NONE;
     cache->used = 1U;
     cache_count++;
+    spinlock_release(&slab_lock);
+    slab_irq_restore(flags);
     return cache;
 }
 
@@ -380,6 +411,7 @@ void* kmem_cache_alloc(kmem_cache_t* cache) {
     kmem_slab_t* slab;
     uint32_t object_index;
     void* object;
+    uint32_t flags;
 
     if (!slab_initialized || !slab_cache_registered(cache)) {
         LOG_ERROR("MEM", "Cache SLAB invalido na alocacao");
@@ -392,6 +424,7 @@ void* kmem_cache_alloc(kmem_cache_t* cache) {
         global_allocation_failures++;
         return 0;
     }
+    flags = slab_irq_save();
     spinlock_acquire(&slab_lock);
     slab_index = cache->partial_head;
     if (slab_index == KMEM_SLAB_LINK_NONE) slab_index = cache->empty_head;
@@ -401,6 +434,7 @@ void* kmem_cache_alloc(kmem_cache_t* cache) {
             cache->allocation_failures++;
             global_allocation_failures++;
             spinlock_release(&slab_lock);
+            slab_irq_restore(flags);
             LOG_ERROR("MEM", "Falha ao criar slab para cache");
             return 0;
         }
@@ -410,6 +444,7 @@ void* kmem_cache_alloc(kmem_cache_t* cache) {
     object_index = slab->free_head;
     if (object_index >= slab->object_count) {
         spinlock_release(&slab_lock);
+        slab_irq_restore(flags);
         LOG_ERROR("MEM", "Freelist SLAB inconsistente");
         cache->allocation_failures++;
         global_allocation_failures++;
@@ -429,6 +464,7 @@ void* kmem_cache_alloc(kmem_cache_t* cache) {
     }
     object = slab->memory + object_index * cache->object_stride;
     spinlock_release(&slab_lock);
+    slab_irq_restore(flags);
     kmemset(object, 0, cache->object_size);
     return object;
 }
@@ -438,17 +474,20 @@ void kmem_cache_free(kmem_cache_t* cache, void* object) {
     uint32_t object_index;
     kmem_slab_t* slab;
     uint8_t previous_state;
+    uint32_t flags;
 
     if (!slab_initialized || !slab_cache_registered(cache) || !object) {
         LOG_ERROR("MEM", "Objeto invalido na liberacao SLAB");
         global_invalid_frees++;
         return;
     }
+    flags = slab_irq_save();
     spinlock_acquire(&slab_lock);
     if (!slab_object_location(cache, object, &slab_index, &object_index)) {
         cache->invalid_frees++;
         global_invalid_frees++;
         spinlock_release(&slab_lock);
+        slab_irq_restore(flags);
         LOG_ERROR("MEM", "Ponteiro externo ou desalinhado no SLAB");
         return;
     }
@@ -457,6 +496,7 @@ void kmem_cache_free(kmem_cache_t* cache, void* object) {
         cache->double_frees++;
         global_double_frees++;
         spinlock_release(&slab_lock);
+        slab_irq_restore(flags);
         LOG_ERROR("MEM", "Double free detectado no SLAB");
         return;
     }
@@ -477,18 +517,22 @@ void kmem_cache_free(kmem_cache_t* cache, void* object) {
         slab_list_add(cache, slab_index, KMEM_SLAB_STATE_PARTIAL);
     }
     spinlock_release(&slab_lock);
+    slab_irq_restore(flags);
 }
 
 int kmem_cache_destroy(kmem_cache_t* cache) {
     uint32_t index;
+    uint32_t flags;
 
     if (!slab_initialized || !slab_cache_registered(cache)) {
         LOG_ERROR("MEM", "Cache SLAB invalido na destruicao");
         return ERR_INVALID;
     }
+    flags = slab_irq_save();
     spinlock_acquire(&slab_lock);
     if (cache->active_objects != 0U) {
         spinlock_release(&slab_lock);
+        slab_irq_restore(flags);
         LOG_ERROR("MEM", "Destruicao de cache SLAB com objetos ativos");
         return ERR_STATE;
     }
@@ -503,6 +547,7 @@ int kmem_cache_destroy(kmem_cache_t* cache) {
     kmemset(cache, 0, sizeof(kmem_cache_t));
     cache_count--;
     spinlock_release(&slab_lock);
+    slab_irq_restore(flags);
     return OK;
 }
 
@@ -523,6 +568,8 @@ static void slab_copy_info(const kmem_cache_t* cache, kmem_cache_info_t* info) {
 }
 
 int kmem_cache_get_info(const kmem_cache_t* cache, kmem_cache_info_t* info) {
+    uint32_t flags;
+
     if (!info) {
         LOG_ERROR("MEM", "Destino nulo nas informacoes do cache SLAB");
         return ERR_NULL;
@@ -531,14 +578,18 @@ int kmem_cache_get_info(const kmem_cache_t* cache, kmem_cache_info_t* info) {
         LOG_ERROR("MEM", "Cache SLAB invalido nas informacoes");
         return ERR_INVALID;
     }
+    flags = slab_irq_save();
     spinlock_acquire(&slab_lock);
     kmemset(info, 0, sizeof(kmem_cache_info_t));
     slab_copy_info(cache, info);
     spinlock_release(&slab_lock);
+    slab_irq_restore(flags);
     return OK;
 }
 
 int kmem_cache_get_info_at(uint32_t index, kmem_cache_info_t* info) {
+    uint32_t flags;
+
     if (index >= KMEM_CACHE_MAX) {
         LOG_ERROR("MEM", "Indice invalido nas informacoes SLAB");
         return ERR_INVALID;
@@ -548,40 +599,58 @@ int kmem_cache_get_info_at(uint32_t index, kmem_cache_info_t* info) {
         return ERR_NULL;
     }
     kmemset(info, 0, sizeof(kmem_cache_info_t));
-    if (!cache_table[index].used) return OK;
+    flags = slab_irq_save();
+    if (!cache_table[index].used) {
+        slab_irq_restore(flags);
+        return OK;
+    }
     spinlock_acquire(&slab_lock);
     slab_copy_info(&cache_table[index], info);
     spinlock_release(&slab_lock);
+    slab_irq_restore(flags);
     return OK;
 }
 
 uint32_t kmem_cache_get_count(void) {
-    return cache_count;
+    uint32_t flags = slab_irq_save();
+    uint32_t count;
+
+    spinlock_acquire(&slab_lock);
+    count = cache_count;
+    spinlock_release(&slab_lock);
+    slab_irq_restore(flags);
+    return count;
 }
 
 int kmem_cache_owns(const kmem_cache_t* cache, const void* object) {
     int slab_index;
     uint32_t object_index;
     int result;
+    uint32_t flags;
 
     if (!slab_cache_registered(cache) || !object) return 0;
+    flags = slab_irq_save();
     spinlock_acquire(&slab_lock);
     result = slab_object_location(cache, object, &slab_index, &object_index);
     spinlock_release(&slab_lock);
+    slab_irq_restore(flags);
     return result;
 }
 
 int kmem_cache_validate(void) {
     uint32_t index;
+    uint32_t flags;
 
     if (!slab_initialized) {
         LOG_ERROR("MEM", "SLAB nao inicializado na validacao");
         return ERR_UNAVAILABLE;
     }
+    flags = slab_irq_save();
     spinlock_acquire(&slab_lock);
     for (index = 0U; index < KMEM_SLAB_MAX; index++) {
         if (slab_table[index].used && !slab_validate_slab(&slab_table[index])) {
             spinlock_release(&slab_lock);
+            slab_irq_restore(flags);
             LOG_ERROR("MEM", "Metadados de slab invalidos");
             return ERR_STATE;
         }
@@ -607,6 +676,7 @@ int kmem_cache_validate(void) {
                 else if (slab_table[slab_index].state == KMEM_SLAB_STATE_EMPTY) empty++;
                 else {
                     spinlock_release(&slab_lock);
+                    slab_irq_restore(flags);
                     LOG_ERROR("MEM", "Estado de slab invalido");
                     return ERR_STATE;
                 }
@@ -621,16 +691,19 @@ int kmem_cache_validate(void) {
             active != cache->active_objects || capacity != cache->capacity ||
             slabs != cache->slab_count) {
             spinlock_release(&slab_lock);
+            slab_irq_restore(flags);
             LOG_ERROR("MEM", "Contadores de cache SLAB inconsistentes");
             return ERR_STATE;
         }
     }
     spinlock_release(&slab_lock);
+    slab_irq_restore(flags);
     return OK;
 }
 
 void kmem_cache_get_stats(kmem_slab_stats_t* stats) {
     uint32_t index;
+    uint32_t flags;
 
     if (!stats) {
         LOG_ERROR("MEM", "Destino nulo nas estatisticas SLAB");
@@ -639,6 +712,8 @@ void kmem_cache_get_stats(kmem_slab_stats_t* stats) {
     kmemset(stats, 0, sizeof(kmem_slab_stats_t));
     stats->initialized = slab_initialized;
     stats->valid = slab_initialized && kmem_cache_validate() == OK;
+    flags = slab_irq_save();
+    spinlock_acquire(&slab_lock);
     stats->caches = cache_count;
     stats->slabs = slab_count;
     stats->allocation_failures = global_allocation_failures;
@@ -651,6 +726,8 @@ void kmem_cache_get_stats(kmem_slab_stats_t* stats) {
         stats->pages += cache_table[index].slab_count *
                         cache_table[index].slab_pages;
     }
+    spinlock_release(&slab_lock);
+    slab_irq_restore(flags);
 }
 
 int kmem_cache_self_test(void) {

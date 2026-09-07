@@ -280,22 +280,33 @@ static int check_initial_state(void) {
 
 static int check_initialization(void) {
     idt_entry_t entry;
+    uint32_t cli_count_before;
 
     memset(&entry, 0, sizeof(entry));
+    host_flags = 0U;
+    host_cli_count = 0U;
+    host_sti_count = 0U;
     idt_init();
-    if (host_load_count != 1U || host_loaded_idt.limit !=
+    if (host_load_count != 1U || host_cli_count != 1U ||
+        host_sti_count != 0U || host_flags != 0U || host_loaded_idt.limit !=
         sizeof(idt_entry_t) * 256U - 1U) return 20;
     if (host_loaded_idt.base == 0U) return 21;
-    if (host_sti_count != 1U || idt_validate_irq_state() != OK) return 22;
+    if (idt_validate_irq_state() != OK || host_flags != 0U) return 22;
+
+    host_flags = INTERRUPT_ENABLE_FLAG;
+    cli_count_before = host_cli_count;
+    idt_init();
+    if (host_load_count != 2U || host_cli_count != cli_count_before + 1U ||
+        host_sti_count != 1U || host_flags != INTERRUPT_ENABLE_FLAG) return 23;
     entry = idt[0];
     if (entry.selector != 0x08U || entry.flags != 0x8EU || entry.always0 != 0U) {
-        return 23;
+        return 24;
     }
-    if (idt[128].selector != 0x08U || idt[128].flags != 0x8EU) return 24;
+    if (idt[128].selector != 0x08U || idt[128].flags != 0x8EU) return 25;
     idt_set_gate(200U, 0x12345678U, 0x0040U, 0x9AU);
     if (idt[200].base_low != 0x5678U || idt[200].base_high != 0x1234U ||
         idt[200].selector != 0x0040U || idt[200].flags != 0x9AU ||
-        idt[200].always0 != 0U) return 25;
+        idt[200].always0 != 0U) return 26;
     return 0;
 }
 
@@ -400,7 +411,29 @@ static int check_syscall_and_panic(void) {
     }
     panic_jump_active = 0U;
     if (panic_result != 1U) return 74;
-    if (idt_get_irq_status(0U, NULL) != ERR_NULL) return 75;
+    memset(&regs, 0, sizeof(regs));
+    regs.int_no = 256U;
+    panic_jump_active = 1U;
+    panic_result = (uint32_t)setjmp(panic_jump);
+    if (panic_result == 0U) {
+        isr_handler(&regs);
+        panic_jump_active = 0U;
+        return 75;
+    }
+    panic_jump_active = 0U;
+    if (panic_result != 1U) return 76;
+
+    regs.int_no = 0xFFFFFFFFU;
+    panic_jump_active = 1U;
+    panic_result = (uint32_t)setjmp(panic_jump);
+    if (panic_result == 0U) {
+        isr_handler(&regs);
+        panic_jump_active = 0U;
+        return 77;
+    }
+    panic_jump_active = 0U;
+    if (panic_result != 1U) return 78;
+    if (idt_get_irq_status(0U, NULL) != ERR_NULL) return 79;
     return 0;
 }
 

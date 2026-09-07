@@ -790,6 +790,9 @@ int kernel_host_test_run_finite_routes(void) {
 #endif
 
 void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
+#if !defined(ZEPHYROS_HOST_TEST)
+    __asm__ volatile("cli" : : : "memory");
+#endif
 #if defined(ZEPHYROS_TEST_COVERAGE)
     test_coverage_begin_case("qemu:tst7:kernel-main", 21U);
     test_coverage_record_address((uint32_t)(unsigned long)&kernel_main);
@@ -900,6 +903,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
         video_print("[ERRO] Timer PIT indisponivel\n", 0x0C);
         panic("TIMER: falha ao inicializar PIT");
     }
+    __asm__ volatile("sti" : : : "memory");
     video_print("[OK] Timer PIT (50 Hz)\n", 0x07);
 
     video_print("[..] Validando RTC CMOS UTC...\n", 0x08);

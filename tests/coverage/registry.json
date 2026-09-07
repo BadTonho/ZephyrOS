@@ -7150,8 +7150,8 @@
           "vectors": "isr0-isr31,isr128,irq0-irq15"
         },
         "preconditions": "imagem de cobertura QEMU, mapa de simbolos e IDT inicializada",
-        "action": "disparar cada vetor em fixture protegida, observar os stubs e restaurar handlers, IRQs e contadores",
-        "expected": "cada entrada Assembly e executada ao menos uma vez e o estado da IDT permanece restaurado",
+        "action": "disparar cada vetor em fixture protegida, validar retorno com IF desabilitado, observar os stubs e restaurar handlers, IRQs e contadores",
+        "expected": "cada entrada Assembly e executada ao menos uma vez, o retorno preserva o EFLAGS salvo e o estado da IDT permanece restaurado",
         "errors": "imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout",
         "effects": "somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN",
         "cleanup": "restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json",
@@ -7172,6 +7172,23 @@
         "status": "AUTOMATED"
       },
       "evidence": "make test-assembly-qemu ASSEMBLY_RUN_ID=tst7-assembly-8 PASS; ZCOV confirmou kernel_main, tss_flush e process_context_switch em execucao real, com 136, 320 e 960 enderecos resolvidos nos casos Assembly, process-switch e kernel-main, sem enderecos desconhecidos ou simbolos ambiguos"
+    },
+    {
+      "id": "assembly-interrupt-return-qemu",
+      "domain": "drivers-interrupt-assembly",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build-coverage/test-results/tst7-assembly/tst7-assembly-krn1-2/coverage.json",
+      "coverage_sources": [
+        "src/core/kernel_tests_assembly.c"
+      ],
+      "include_public_apis": false,
+      "evidence": "make test-assembly-qemu ASSEMBLY_RUN_ID=tst7-assembly-krn1-2 PASS; ZCOV confirmou kernel_tests_validate_interrupt_return em execucao real, preservando IF desabilitado no retorno da interrupcao"
     },
     {
       "id": "assembly-boot-error-trace-qemu",

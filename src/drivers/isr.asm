@@ -109,5 +109,4 @@ isr_common_stub:
     mov gs, ax
     popa
     add esp, 8
-    sti
     iret

@@ -8,6 +8,7 @@
 #define KERNEL_TEST_EXCEPTION_COUNT 32U
 #define KERNEL_TEST_IRQ_COUNT 16U
 #define KERNEL_TEST_SYSCALL_VECTOR 128U
+#define KERNEL_TEST_EFLAGS_INTERRUPT_ENABLE (1U << 9U)
 
 #define KERNEL_TEST_INT_NOERR(value) \
     __asm__ volatile("int $" #value : : : "cc", "memory")
@@ -100,6 +101,38 @@ static int kernel_tests_validate_vectors(void) {
     return OK;
 }
 
+static int kernel_tests_validate_interrupt_return(void) __attribute__((noinline));
+
+static int kernel_tests_validate_interrupt_return(void) {
+    uint32_t before_flags;
+    uint32_t after_flags;
+    int result;
+
+    __asm__ volatile(
+        "pushfl\n\t"
+        "popl %0\n\t"
+        "cli\n\t"
+        "int $3\n\t"
+        "pushfl\n\t"
+        "popl %1\n\t"
+        : "=r"(before_flags), "=r"(after_flags)
+        :
+        : "cc", "memory");
+
+    result = (after_flags & KERNEL_TEST_EFLAGS_INTERRUPT_ENABLE) ?
+             ERR_STATE : OK;
+    if (before_flags & KERNEL_TEST_EFLAGS_INTERRUPT_ENABLE) {
+        __asm__ volatile("sti" : : : "memory");
+    } else {
+        __asm__ volatile("cli" : : : "memory");
+    }
+    if (result != OK) {
+        LOG_ERROR(KERNEL_TEST_ASSEMBLY_TAG,
+                  "fase=assembly-interrupt-return IF nao preservado");
+    }
+    return result;
+}
+
 int kernel_tests_run_assembly(const kernel_tests_runtime_t* runtime) {
     int result;
     int cleanup_result;
@@ -144,6 +177,7 @@ int kernel_tests_run_assembly(const kernel_tests_runtime_t* runtime) {
         LOG_INFO(KERNEL_TEST_ASSEMBLY_TAG,
                  "fase=assembly-syscall concluida");
     }
+    if (result == OK) result = kernel_tests_validate_interrupt_return();
     if (result == OK) result = kernel_tests_validate_vectors();
     cleanup_result = idt_test_probe_end();
     if (result != OK) {

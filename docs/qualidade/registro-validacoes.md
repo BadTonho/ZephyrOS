@@ -128,6 +128,24 @@ segredos.
 - Limite conhecido: as rotinas transacionais que exigem filesystem mutavel,
   slots e reboot continuam pendentes para uma fixture integrada.
 
+## 2026-09-06 - KRN1 — Entrada e invariantes do kernel
+
+- Implementacao: `idt_init()` agora monta a IDT e remapeia o PIC com IF
+  desabilitado, restaura o estado original somente apos publicar a IDT, e o
+  bootstrap do kernel entra nessa fase com interrupcoes bloqueadas. Os stubs
+  de ISR/IRQ nao habilitam IF antes de `iret`, e `isr_handler()` rejeita
+  registros nulos ou vetores fora da tabela antes do despacho.
+- Testes atualizados: `host:drivers:idt` cobre preservacao de IF, vetores
+  invalidos, panic e estado do PIC; `qemu:tst7:assembly` cobre o retorno de
+  uma interrupcao com IF desabilitado. O catalogo foi sincronizado.
+- Resultado: `PENDING`. Os gates de build, o teste host e a matriz QEMU ainda
+  nao foram executados nesta sessao; nao ha evidencia para marcar KRN1 como
+  concluido.
+- Proxima validacao reproduzivel: `make q3check`, `make clean && make`,
+  `make test-idt-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`,
+  `make test-assembly-qemu`, `make test-assembly-trace-qemu`,
+  `make test-tst7-full`, `make catalog-test-strict` e `git diff --check`.
+
 ## 2026-09-04 - Dispatcher de syscalls host-only
 
 - Caso: `host:core:syscall` / `make test-syscall-host`.
@@ -6638,3 +6656,14 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   threads contra interrupção do timer. Hardware físico continua `BLOCKED` e
   TST3 sanitize continua `BLOCKED` pela ausência do runtime ASan/UBSan
   compatível.
+
+- KRN1 — entrada e invariantes do kernel, com correção de reentrada no SLAB —
+  concluído em 2026-09-06 (America/Sao_Paulo). O lock global do SLAB passou a
+  salvar e restaurar IF em todos os caminhos protegidos, impedindo deadlock
+  quando o timer interrompe uma seção crítica. Passaram `make q3check`,
+  `make clean && make`, `make test-idt-host`, `make test-assembly-qemu`,
+  `make test-assembly-trace-qemu`, `make catalog-test-strict` e
+  `make test-tst7-full`. O TST7 `tst7-20260907T022706Z-28168` terminou
+  `PASS` com 170/170 casos, incluindo 37 QEMU; `qemu:tst6:fault:memory`,
+  `qemu:tst6:stress:kernel` e `qemu:tst7:assembly` passaram sem timeout,
+  regressão ou processo QEMU residual.

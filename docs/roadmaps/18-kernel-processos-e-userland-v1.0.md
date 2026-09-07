@@ -43,14 +43,14 @@ quantum ou migração para Rust nesta etapa.
 
 ### KRN1 — Entrada e invariantes do kernel
 
-- [ ] Confirmar sequência de inicialização, estado de interrupções, GDT/TSS,
+- [x] Confirmar sequência de inicialização, estado de interrupções, GDT/TSS,
   IDT, PIC e PIT.
-- [ ] Garantir que exceções publiquem diagnóstico e não corrompam o estado
+- [x] Garantir que exceções publiquem diagnóstico e não corrompam o estado
   quando a recuperação for possível.
-- [ ] Validar stacks de bootstrap, kernel e processos em todas as transições.
-- [ ] Definir invariantes de contexto, owner e estado para cada entrada do
+- [x] Validar stacks de bootstrap, kernel e processos em todas as transições.
+- [x] Definir invariantes de contexto, owner e estado para cada entrada do
   scheduler.
-- [ ] Testar entradas inesperadas, reentrada e retorno de handlers.
+- [x] Testar entradas inesperadas, reentrada e retorno de handlers.
 
 ### KRN2 — Memória e isolamento
 

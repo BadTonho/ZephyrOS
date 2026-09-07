@@ -10,6 +10,7 @@
 #include "process/signal.h"
 
 #define SYSCALL_VECTOR 0x80
+#define IDT_VECTOR_CAPACITY 256U
 #define IRQ_VECTOR_BASE 32U
 #define PIC_MASTER_DATA_PORT 0x21U
 #define PIC_SLAVE_DATA_PORT 0xA1U
@@ -44,7 +45,7 @@ static volatile uint32_t idt_test_probe_counts[256];
 static uint8_t idt_test_probe_active;
 
 static void idt_test_probe_handler(registers_t* regs) {
-    if (!regs || regs->int_no >= 256U) return;
+    if (!regs || regs->int_no >= IDT_VECTOR_CAPACITY) return;
     if (idt_test_probe_counts[regs->int_no] != 0xFFFFFFFFU) {
         idt_test_probe_counts[regs->int_no]++;
     }
@@ -272,6 +273,14 @@ static void pic_remap(void) {
 }
 
 void idt_init(void) {
+    uint32_t flags;
+
+#ifdef ZEPHYROS_HOST_TEST
+    flags = idt_host_read_flags();
+    idt_host_cli();
+#else
+    __asm__ volatile("pushf\n\tpop %0\n\tcli" : "=r"(flags) : : "memory");
+#endif
     LOG_INFO("IDT", "Inicializando IDT");
     idt_ready = 0;
     user_syscall_enabled = 0;
@@ -358,11 +367,13 @@ void idt_init(void) {
     __asm__ volatile("lidt %0" : : "m"(idt_ptr));
 #endif
     idt_ready = 1;
+    if (flags & EFLAGS_INTERRUPT_ENABLE) {
 #ifdef ZEPHYROS_HOST_TEST
-    idt_host_sti();
+        idt_host_sti();
 #else
-    __asm__ volatile("sti");
+        __asm__ volatile("sti" : : : "memory");
 #endif
+    }
     LOG_INFO("IDT", "IDT inicializada com sucesso");
 }
 
@@ -622,6 +633,12 @@ void isr_handler(registers_t* regs) {
     if (!regs) {
         LOG_ERROR("IDT", "Registro de excecao nulo");
         panic_halt();
+        return;
+    }
+
+    if (regs->int_no >= IDT_VECTOR_CAPACITY) {
+        LOG_ERROR("IDT", "Vetor de excecao fora dos limites da IDT");
+        idt_panic_exception(regs);
         return;
     }
 

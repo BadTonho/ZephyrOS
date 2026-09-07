@@ -61172,6 +61172,27 @@
       "coverage_mode": "integration"
     },
     {
+      "id": "c:src/core/kernel_tests_assembly.c:kernel_tests_validate_interrupt_return",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_assembly.c",
+      "symbol": "kernel_tests_validate_interrupt_return",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst7:assembly"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
       "id": "c:src/core/kernel_tests_assembly.c:kernel_tests_validate_vectors",
       "kind": "c_function",
       "source": "src/core/kernel_tests_assembly.c",
@@ -128986,6 +129007,50 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/memory/slab.c:slab_irq_restore",
+      "kind": "c_function",
+      "source": "src/memory/slab.c",
+      "symbol": "slab_irq_restore",
+      "linkage": "static",
+      "owner": "memory",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:slab-metadata",
+        "host:network:ethernet"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/memory/slab.c:slab_irq_save",
+      "kind": "c_function",
+      "source": "src/memory/slab.c",
+      "symbol": "slab_irq_save",
+      "linkage": "static",
+      "owner": "memory",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:slab-metadata",
+        "host:network:ethernet"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "c:src/memory/slab.c:slab_list_add",
       "kind": "c_function",
       "source": "src/memory/slab.c",
@@ -169536,7 +169601,9 @@
         "c:src/memory/slab.c:slab_copy_text",
         "c:src/memory/slab.c:slab_find_cache_slot",
         "c:src/memory/slab.c:slab_power_of_two",
-        "c:src/memory/slab.c:slab_validate_list"
+        "c:src/memory/slab.c:slab_validate_list",
+        "c:src/memory/slab.c:slab_irq_restore",
+        "c:src/memory/slab.c:slab_irq_save"
       ],
       "tags": [
         "host",
@@ -170221,7 +170288,9 @@
         "c:src/memory/slab.c:slab_object_location",
         "c:src/memory/slab.c:slab_power_of_two",
         "c:src/memory/slab.c:slab_prepare_record",
-        "c:src/memory/slab.c:slab_set_bit"
+        "c:src/memory/slab.c:slab_set_bit",
+        "c:src/memory/slab.c:slab_irq_restore",
+        "c:src/memory/slab.c:slab_irq_save"
       ],
       "tags": [
         "host",
@@ -186143,8 +186212,8 @@
         "vectors": "isr0-isr31,isr128,irq0-irq15"
       },
       "preconditions": "imagem de cobertura QEMU, mapa de simbolos e IDT inicializada",
-      "action": "disparar cada vetor em fixture protegida, observar os stubs e restaurar handlers, IRQs e contadores",
-      "expected": "cada entrada Assembly e executada ao menos uma vez e o estado da IDT permanece restaurado",
+      "action": "disparar cada vetor em fixture protegida, validar retorno com IF desabilitado, observar os stubs e restaurar handlers, IRQs e contadores",
+      "expected": "cada entrada Assembly e executada ao menos uma vez, o retorno preserva o EFLAGS salvo e o estado da IDT permanece restaurado",
       "errors": "imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout",
       "effects": "somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN",
       "cleanup": "restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json",
@@ -186285,7 +186354,8 @@
         "c:src/kernel/kernel.c:kernel_workqueue_init",
         "c:src/kernel/kernel.c:shell_process_main",
         "c:src/kernel/kernel.c:system_process_main",
-        "c:src/kernel/kernel.c:test_protocol_process_main"
+        "c:src/kernel/kernel.c:test_protocol_process_main",
+        "c:src/core/kernel_tests_assembly.c:kernel_tests_validate_interrupt_return"
       ],
       "tags": [
         "qemu",

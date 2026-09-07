@@ -4,7 +4,7 @@
 
 ## Resumo
 
-- Superfícies ativas: **7330**
+- Superfícies ativas: **7333**
 - Casos de teste: **170**
 - Superfícies aposentadas: **59**
 
@@ -12,14 +12,14 @@
 |---|---:|
 | `api_function` | 1587 |
 | `asm_entry` | 101 |
-| `c_function` | 5522 |
+| `c_function` | 5525 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7330 |
+| `COVERED` | 7333 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
 
@@ -37,7 +37,7 @@
 | `apps` | 172 |
 | `appstore` | 98 |
 | `boot` | 139 |
-| `core` | 2813 |
+| `core` | 2814 |
 | `desktop` | 40 |
 | `drivers` | 932 |
 | `filemanager` | 93 |
@@ -45,7 +45,7 @@
 | `gui` | 30 |
 | `icons` | 18 |
 | `kernel` | 41 |
-| `memory` | 194 |
+| `memory` | 196 |
 | `process` | 259 |
 | `settings` | 57 |
 | `shell` | 1089 |
@@ -2727,6 +2727,7 @@
 | `c:src/core/kernel_tests.c:kernel_tests_same_memory_state` | `src/core/kernel_tests.c` | `kernel_tests_same_memory_state` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests_assembly.c:kernel_tests_run_assembly` | `src/core/kernel_tests_assembly.c` | `kernel_tests_run_assembly` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests_assembly.c:kernel_tests_trigger_vector` | `src/core/kernel_tests_assembly.c` | `kernel_tests_trigger_vector` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_assembly.c:kernel_tests_validate_interrupt_return` | `src/core/kernel_tests_assembly.c` | `kernel_tests_validate_interrupt_return` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests_assembly.c:kernel_tests_validate_vectors` | `src/core/kernel_tests_assembly.c` | `kernel_tests_validate_vectors` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_contains` | `src/core/kernel_tests_blackbox.c` | `blackbox_contains` | `core` | `COVERED` | 4 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_equals` | `src/core/kernel_tests_blackbox.c` | `blackbox_equals` | `core` | `COVERED` | 4 |
@@ -5798,6 +5799,8 @@
 | `c:src/memory/slab.c:slab_copy_text` | `src/memory/slab.c` | `slab_copy_text` | `memory` | `COVERED` | 4 |
 | `c:src/memory/slab.c:slab_find_cache_slot` | `src/memory/slab.c` | `slab_find_cache_slot` | `memory` | `COVERED` | 4 |
 | `c:src/memory/slab.c:slab_find_free_record` | `src/memory/slab.c` | `slab_find_free_record` | `memory` | `COVERED` | 4 |
+| `c:src/memory/slab.c:slab_irq_restore` | `src/memory/slab.c` | `slab_irq_restore` | `memory` | `COVERED` | 2 |
+| `c:src/memory/slab.c:slab_irq_save` | `src/memory/slab.c` | `slab_irq_save` | `memory` | `COVERED` | 2 |
 | `c:src/memory/slab.c:slab_list_add` | `src/memory/slab.c` | `slab_list_add` | `memory` | `COVERED` | 4 |
 | `c:src/memory/slab.c:slab_list_remove` | `src/memory/slab.c` | `slab_list_remove` | `memory` | `COVERED` | 4 |
 | `c:src/memory/slab.c:slab_object_location` | `src/memory/slab.c` | `slab_object_location` | `memory` | `COVERED` | 6 |
@@ -7585,7 +7588,7 @@
 | `qemu:tst6:stress:kernel` | `qemu` | `tst6` | `qemu:tst6:stress:kernel` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | paging, heap, SLAB, processos e threads estao READY | repetir ciclos deterministas de memoria e execucao sob teto obrigatorio | invariantes estaveis permanecem iguais e a primeira falha interrompe a suite | overflow, vazamento, deadlock, timeout, protocolo ou QEMU | alocacoes e objetos temporarios de cada ciclo em snapshot | devolver paginas, destruir objetos e registrar seed e iteracao |
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
-| `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
+| `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, validar retorno com IF desabilitado, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez, o retorno preserva o EFLAGS salvo e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
 
 ## Superfícies sem caso associado
 

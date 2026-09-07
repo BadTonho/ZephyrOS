@@ -665,6 +665,15 @@ autoteste privado. Na SYNC3, acrescenta um notificador append-only que agenda
 a drenagem pela `Zephyr kworker`. `src/include/drivers/idt.h` publica
 ocorrencias e quantidade
 de handlers das 16 linhas PIC por snapshot somente-leitura.
+Durante `idt_init()`, a construcao da tabela, o remapeamento do PIC e o
+carregamento do registro IDTR ocorrem com IF desabilitado. O driver restaura o
+estado de IF observado na entrada somente depois de publicar a IDT como pronta;
+o caminho de bootstrap do kernel entra nessa fase com IF desabilitado. Nenhum
+handler de ISR ou IRQ habilita interrupcoes antes de `iret`: o retorno restaura
+o EFLAGS salvo pela CPU, evitando uma janela de reentrada no contexto atual.
+O PIT somente pode ser desbloqueado depois que seu handler estiver registrado
+e configurado; `timer_init()` preserva essa ordem antes de remover a mascara da
+IRQ 0 e programar o divisor.
 O mesmo header publica `idt_unmask_irq()`, que valida o estado da IDT e
 remove a mascara de uma linha PIC atomica, preservando o estado global de
 interrupcoes. O driver que assume uma IRQ deve habilita-la durante sua
