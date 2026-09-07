@@ -102,15 +102,15 @@ quantum ou migração para Rust nesta etapa.
 
 ### KRN3 — Scheduler e Idle
 
-- [ ] Confirmar PID 0 como único Idle, fora do round-robin e com contexto e
+- [x] Confirmar PID 0 como único Idle, fora do round-robin e com contexto e
   stack próprios.
-- [ ] Garantir `sti; hlt` sem janela de corrida e sem polling ativo quando não
+- [x] Garantir `sti; hlt` sem janela de corrida e sem polling ativo quando não
   houver trabalho.
-- [ ] Manter prioridades, quantum e identidade de processos compatíveis com o
+- [x] Manter prioridades, quantum e identidade de processos compatíveis com o
   contrato atual.
-- [ ] Contabilizar ticks, trocas, wakeups, bloqueios e atividade sem logging
+- [x] Contabilizar ticks, trocas, wakeups, bloqueios e atividade sem logging
   por tick.
-- [ ] Garantir que timer, IRQ, teclado, mouse, rede e workqueue acordem os
+- [x] Garantir que timer, IRQ, teclado, mouse, rede e workqueue acordem os
   consumidores corretos.
 
 ### KRN4 — Processos e threads

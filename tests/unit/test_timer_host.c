@@ -17,6 +17,10 @@
 static uintptr_t coverage_addresses[HOST_COVERAGE_CAPACITY];
 static uint32_t coverage_count;
 static uint8_t coverage_active;
+static uint32_t scheduler_tick_calls;
+static uint32_t thread_tick_calls;
+static uint32_t scheduler_preempt_calls;
+static process_t timer_process;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -72,16 +76,19 @@ int idt_unmask_irq(uint8_t line) {
 }
 
 void scheduler_tick(void) {
+    scheduler_tick_calls++;
 }
 
 void thread_scheduler_tick(void) {
+    thread_tick_calls++;
 }
 
 process_t* process_get_current(void) {
-    return 0;
+    return &timer_process;
 }
 
 void scheduler_preempt_user(void) {
+    scheduler_preempt_calls++;
 }
 
 uint8_t serial_is_ready(void) {
@@ -136,6 +143,8 @@ static int check_timer(void) {
     timer_callback_state_t failing_state = {0U, 0U, ERR_STATE};
     uint32_t dispatched = 0U;
     uint32_t count = 0U;
+    registers_t kernel_regs;
+    registers_t user_regs;
 
     if (timer_get_stats(&stats) != ERR_STATE ||
         timer_set_pending_notifier(NULL, NULL) != ERR_STATE ||
@@ -203,6 +212,20 @@ static int check_timer(void) {
         !timer_mode_name(TIMER_MODE_PERIODIC) ||
         timer_state_name((timer_state_t)99) == NULL ||
         timer_mode_name((timer_mode_t)99) == NULL) return 15;
+    kmemset(&timer_process, 0, sizeof(timer_process));
+    timer_process.pid = 1U;
+    timer_process.state = PROCESS_STATE_RUNNING;
+    kmemset(&kernel_regs, 0, sizeof(kernel_regs));
+    kmemset(&user_regs, 0, sizeof(user_regs));
+    kernel_regs.cs = 0x08U;
+    user_regs.cs = 0x1BU;
+    scheduler_tick_calls = 0U;
+    thread_tick_calls = 0U;
+    scheduler_preempt_calls = 0U;
+    timer_handler(&kernel_regs);
+    timer_handler(&user_regs);
+    if (scheduler_tick_calls != 2U || thread_tick_calls != 2U ||
+        scheduler_preempt_calls != 1U) return 16;
     return 0;
 }
 

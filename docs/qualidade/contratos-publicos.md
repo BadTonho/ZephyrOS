@@ -1040,6 +1040,14 @@ O Idle executa `sti; hlt` e depois `process_yield()`. System e Desktop usam
 bloqueio temporizado em vez de polling ativo; o caminho degradado do
 `kernel_main` tambem usa `sti; hlt` quando System nao pode ser criado.
 
+O bootstrap do Idle recusa chamadas duplicadas ou fora de ordem quando TSS,
+paging ou a tabela de processos ainda nao estao prontos. O scheduler inicia
+uma unica vez; processos normais so sao criados depois de existir um PID 0
+valido. PID 0 nao pode ser bloqueado, desbloqueado por evento ou destruido.
+As selecoes e transicoes do scheduler protegem a janela critica contra IRQs,
+e a validacao do scheduler confirma o contexto, a stack propria, o TSS, o
+paging e os seletores do Idle.
+
 `scheduler_stats_t` mantem o layout existente por extensao append-only:
 `idle_ticks` e `active_ticks` sao acrescentados depois de
 `user_quantum_ticks`. O scheduler incrementa exatamente um contador por tick

@@ -15,6 +15,8 @@
 #endif
 
 #define PROCESS_DEFAULT_EFLAGS 0x202U
+#define PROCESS_EFLAGS_RESERVED_BIT (1U << 1U)
+#define PROCESS_COUNTER_MAX 0xFFFFFFFFU
 #define PROCESS_PID_POOL_SIZE (MAX_PROCESSES - 1U)
 #define PROCESS_WAIT_EFLAGS_INTERRUPT_ENABLE (1U << 9U)
 #define PROCESS_STACK_CANARY_LOWER 0x53544B4CU
@@ -45,9 +47,14 @@ static uint32_t scheduler_user_preemptions = 0;
 static uint32_t scheduler_idle_fallbacks = 0;
 static uint32_t scheduler_idle_ticks = 0;
 static uint32_t scheduler_active_ticks = 0;
+static uint32_t scheduler_tick_baseline = 0;
 static process_context_t scheduler_bootstrap_context;
+static uint8_t scheduler_started = 0U;
 
 static process_t* scheduler_find_next_ready(void);
+static process_t* scheduler_select_next(void);
+static int scheduler_idle_context_valid(const process_t* idle,
+                                        uint8_t bootstrap);
 static int last_user_fault_valid = 0;
 static process_user_fault_summary_t last_user_fault;
 static uint32_t user_fault_count = 0;
@@ -509,6 +516,36 @@ static void process_idle_main(void) {
 #endif
 }
 
+static int scheduler_idle_context_valid(const process_t* idle,
+                                        uint8_t bootstrap) {
+    if (!idle || idle->pid != 0U || idle->context.user_mode ||
+        idle->state < PROCESS_STATE_READY ||
+        idle->state > PROCESS_STATE_RUNNING || !idle->page_directory ||
+        !idle->kernel_stack_top || idle->kernel_stack_owned ||
+        idle->kernel_stack_size != KERNEL_STACK_SIZE ||
+        idle->context.esp < idle->kernel_stack ||
+        idle->context.esp > idle->kernel_stack_top ||
+        !idle->context.eip ||
+        !(idle->context.eflags & PROCESS_EFLAGS_RESERVED_BIT) ||
+        idle->context.cs != KERNEL_CODE_SELECTOR ||
+        idle->context.ss != KERNEL_DATA_SELECTOR ||
+        idle->context.ds != KERNEL_DATA_SELECTOR ||
+        idle->context.es != KERNEL_DATA_SELECTOR ||
+        idle->context.fs != KERNEL_DATA_SELECTOR ||
+        idle->context.gs != KERNEL_DATA_SELECTOR ||
+        idle->context.cr3 != (uint32_t)idle->page_directory ||
+        !tss_is_ready() || !process_stack_bounds_valid(idle)) {
+        return 0;
+    }
+    if (bootstrap &&
+        (idle->context.eip != (uint32_t)process_idle_main ||
+         idle->context.esp != idle->kernel_stack_top ||
+         idle->context.eflags != PROCESS_DEFAULT_EFLAGS)) {
+        return 0;
+    }
+    return 1;
+}
+
 #if defined(ZEPHYROS_HOST_TEST)
 void process_host_test_idle_once(void) {
     process_idle_main();
@@ -632,9 +669,24 @@ void process_init(void) {
 /* A funcao permanece separada do bootstrap para o Idle nao consumir PID. */
 void process_bootstrap_idle(void) {
     process_t* proc;
+    page_directory_t* page_directory;
+
+    if (processes[0] || current_process || process_count != 0U) {
+        LOG_ERROR("PROC", "Bootstrap do Idle fora de ordem ou duplicado");
+        return;
+    }
 
     if (!process_available || !process_cache) {
         LOG_ERROR("PROC", "Cache de processos indisponivel para o Idle");
+        return;
+    }
+    if (!tss_is_ready()) {
+        LOG_ERROR("PROC", "TSS indisponivel para o Idle");
+        return;
+    }
+    page_directory = paging_get_current_directory();
+    if (!page_directory) {
+        LOG_ERROR("PROC", "Paging indisponivel para o Idle");
         return;
     }
     proc = (process_t*)kmem_cache_alloc(process_cache);
@@ -688,7 +740,7 @@ void process_bootstrap_idle(void) {
         kmem_cache_free(process_cache, proc);
         return;
     }
-    proc->page_directory = paging_get_current_directory();
+    proc->page_directory = page_directory;
     proc->context.esp = proc->kernel_stack_top;
     proc->context.eip = (uint32_t)process_idle_main;
     proc->context.eflags = PROCESS_DEFAULT_EFLAGS;
@@ -713,7 +765,7 @@ void process_bootstrap_idle(void) {
         kmem_cache_free(process_cache, proc);
         return;
     }
-    
+    scheduler_tick_baseline = timer_get_ticks();
     current_process = proc;
     process_count = 1;
     process_signal_process_created(proc->pid, 0U);
@@ -725,13 +777,18 @@ int process_start_scheduler(void) {
     process_t* idle = processes[0];
     process_t* next;
 
-    if (!idle || idle->pid != 0U || idle->state != PROCESS_STATE_RUNNING ||
-        !idle->kernel_stack_top || !idle->page_directory) {
+    if (scheduler_started) {
+        LOG_WARN("PROC", "Inicio duplicado do scheduler recusado");
+        return ERR_STATE;
+    }
+    if (!idle || idle->state != PROCESS_STATE_RUNNING ||
+        !scheduler_idle_context_valid(idle, 1U)) {
         LOG_ERROR("PROC", "Contexto inicial do Idle invalido");
         return ERR_STATE;
     }
     flags = process_wait_irq_save();
-    next = scheduler_find_next_ready();
+    next = scheduler_select_next();
+    scheduler_started = 1U;
     if (!next) {
         process_stack_verify_or_panic(idle);
         current_process = idle;
@@ -746,6 +803,7 @@ int process_start_scheduler(void) {
 #endif
         process_context_switch(&scheduler_bootstrap_context,
                                &idle->context);
+        scheduler_started = 0U;
         process_wait_irq_restore(flags);
         LOG_ERROR("PROC", "Handoff inicial para o Idle retornou");
         return ERR_STATE;
@@ -765,6 +823,7 @@ int process_start_scheduler(void) {
         (uint32_t)(unsigned long)&process_context_switch);
 #endif
     process_context_switch(&scheduler_bootstrap_context, &next->context);
+    scheduler_started = 0U;
     process_wait_irq_restore(flags);
     LOG_ERROR("PROC", "Handoff inicial do scheduler retornou");
     return ERR_STATE;
@@ -793,6 +852,10 @@ static process_t* process_create_internal(const char* name,
     }
     if (!paging_get_current_directory()) {
         LOG_ERROR("PROC", "Paging indisponivel ao criar processo");
+        return 0;
+    }
+    if (!processes[0] || !current_process || processes[0]->pid != 0U) {
+        LOG_ERROR("PROC", "Criacao de processo antes do bootstrap do Idle");
         return 0;
     }
 
@@ -1000,14 +1063,18 @@ static uint32_t process_user_build_code(uint8_t* code, int trigger_fault) {
 
 static void process_switch_after_termination(void) {
     process_t* previous = current_process;
-    process_t* next = scheduler_schedule();
+    process_t* next;
+    uint32_t flags = process_wait_irq_save();
+
+    next = scheduler_select_next();
 
     process_stack_verify_or_panic(previous);
     if (!next || next == previous) {
         next = processes[0];
     }
-    if (next == previous) {
+    if (!next || next == previous || !process_pointer_valid(next)) {
         LOG_ERROR("PROC", "Nao foi possivel sair de processo encerrado");
+        process_wait_irq_restore(flags);
         return;
     }
     process_stack_verify_or_panic(next);
@@ -1025,6 +1092,7 @@ static void process_switch_after_termination(void) {
         (uint32_t)(unsigned long)&process_context_switch);
 #endif
     process_context_switch(&previous->context, &next->context);
+    process_wait_irq_restore(flags);
 }
 
 static int process_mark_user_zombie(process_t* proc, uint32_t exit_code,
@@ -2284,7 +2352,7 @@ static process_t* scheduler_find_next_ready(void) {
     return 0;
 }
 
-process_t* scheduler_schedule(void) {
+static process_t* scheduler_select_next(void) {
     process_t* next = scheduler_find_next_ready();
     process_t* idle = processes[0];
 
@@ -2303,13 +2371,30 @@ process_t* scheduler_schedule(void) {
     return 0;
 }
 
+process_t* scheduler_schedule(void) {
+    uint32_t flags = process_wait_irq_save();
+    process_t* next = scheduler_select_next();
+
+    process_wait_irq_restore(flags);
+    return next;
+}
+
 static void scheduler_yield_internal(void) {
-    process_t* next = scheduler_schedule();
-
-    if (!next) return;
-    if (next == current_process) return;
-
+    uint32_t flags = process_wait_irq_save();
+    process_t* next = scheduler_select_next();
     process_t* prev = current_process;
+
+    if (!next || next == prev) {
+        process_wait_irq_restore(flags);
+        return;
+    }
+
+    if (!prev || !process_pointer_valid(prev) ||
+        !process_pointer_valid(next)) {
+        LOG_ERROR("PROC", "Troca de contexto com processo invalido");
+        process_wait_irq_restore(flags);
+        return;
+    }
     process_stack_verify_or_panic(prev);
     process_stack_verify_or_panic(next);
     current_process = next;
@@ -2332,6 +2417,7 @@ static void scheduler_yield_internal(void) {
         (uint32_t)(unsigned long)&process_context_switch);
 #endif
     process_context_switch(&prev->context, &next->context);
+    process_wait_irq_restore(flags);
 }
 
 void process_yield(void) {
@@ -2393,6 +2479,10 @@ void process_unblock(process_t* proc) {
     if (proc->state < PROCESS_STATE_UNUSED ||
         proc->state > PROCESS_STATE_ZOMBIE) {
         LOG_ERROR("PROC", "Estado invalido ao desbloquear processo");
+        return;
+    }
+    if (proc->pid == 0U) {
+        LOG_WARN("PROC", "Idle nao pode ser desbloqueado por evento");
         return;
     }
     flags = process_wait_irq_save();
@@ -2521,6 +2611,8 @@ void scheduler_init(void) {
     scheduler_idle_fallbacks = 0;
     scheduler_idle_ticks = 0;
     scheduler_active_ticks = 0;
+    scheduler_tick_baseline = timer_get_ticks();
+    scheduler_started = 0U;
     kmemset(&scheduler_bootstrap_context, 0,
             sizeof(scheduler_bootstrap_context));
     LOG_INFO("PROC", "Scheduler round-robin inicializado");
@@ -2528,8 +2620,12 @@ void scheduler_init(void) {
 
 void scheduler_tick(void) {
     uint32_t now;
+    uint32_t flags = process_wait_irq_save();
 
-    if (!current_process) return;
+    if (!current_process) {
+        process_wait_irq_restore(flags);
+        return;
+    }
     now = timer_get_ticks();
 
     for (int i = 0; i < MAX_PROCESSES; i++) {
@@ -2562,6 +2658,7 @@ void scheduler_tick(void) {
         scheduler_active_ticks++;
     }
     current_process->total_ticks++;
+    process_wait_irq_restore(flags);
 }
 
 void scheduler_get_stats(scheduler_stats_t* stats) {
@@ -2621,6 +2718,12 @@ static uint32_t scheduler_validate_states(void) {
             !proc->context.user_mode && !proc->wait_active) {
             valid = 0;
         }
+        if (proc->pid == 0U &&
+            (proc->state == PROCESS_STATE_BLOCKED ||
+             proc->state == PROCESS_STATE_ZOMBIE ||
+             proc->context.user_mode)) {
+            valid = 0;
+        }
         if (proc->state == PROCESS_STATE_ZOMBIE && proc == current_process) {
             valid = 0;
         }
@@ -2634,6 +2737,7 @@ int scheduler_validate_invariants(scheduler_validation_t* validation) {
     process_t* idle = processes[0];
     process_stack_validation_t stack_validation;
     int stack_result;
+    uint32_t scheduler_ticks;
 
     if (!validation) {
         LOG_ERROR("PROC", "Destino nulo ao validar scheduler");
@@ -2645,9 +2749,7 @@ int scheduler_validate_invariants(scheduler_validation_t* validation) {
     validation->current_valid = process_pointer_valid(current_process) &&
                                 current_process->state == PROCESS_STATE_RUNNING &&
                                 process_get_state_count(PROCESS_STATE_RUNNING) == 1;
-    validation->idle_valid = idle && idle->pid == 0 && !idle->context.user_mode &&
-                             (idle->state == PROCESS_STATE_READY ||
-                              idle->state == PROCESS_STATE_RUNNING);
+    validation->idle_valid = scheduler_idle_context_valid(idle, 0U);
     validation->pid_table_valid = scheduler_validate_pid_table();
     validation->state_table_valid = scheduler_validate_states();
     validation->slab_table_valid = kmem_cache_validate() == OK;
@@ -2657,9 +2759,14 @@ int scheduler_validate_invariants(scheduler_validation_t* validation) {
                                     stack_validation.valid == process_count &&
                                     stack_validation.low_water == 0U &&
                                     stack_validation.corrupted == 0U;
+    scheduler_ticks = timer_get_ticks() - scheduler_tick_baseline;
     validation->idle_accounting_valid = idle &&
-                                        scheduler_idle_ticks ==
-                                        idle->total_ticks;
+                                        scheduler_idle_ticks == idle->total_ticks &&
+                                        scheduler_idle_ticks <=
+                                            PROCESS_COUNTER_MAX -
+                                                scheduler_active_ticks &&
+                                        scheduler_idle_ticks +
+                                            scheduler_active_ticks == scheduler_ticks;
     process_wait_irq_restore(flags);
 
     if (!validation->current_valid) LOG_ERROR("PROC", "Invariante do processo atual violada");

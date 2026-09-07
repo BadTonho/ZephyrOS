@@ -244,7 +244,8 @@ testes de paginas continuam cobertos pelo caso QEMU TST4.
 
 O caso `test-timer-host` usa stubs de IDT, PIC e scheduler para exercitar
 inicializacao, conversao de intervalos, one-shot, periodicos, notifier,
-dispatch, cancelamento, callbacks com erro, snapshots e limpeza. O caso
+dispatch, cancelamento, callbacks com erro, snapshots, limpeza e a decisao
+de preempcao somente para frames de ring 3. O caso
 `test-udp-host` usa um transporte IPv4 falso para exercitar envio, reinjecao,
 checksum, listeners, broadcast, callbacks recusados, limites e limpeza de
 endpoints. Os relatorios ficam em `build/test-results/timer-host/` e
@@ -353,9 +354,10 @@ make test-process-ipc-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 
 O caso `test-process-host` compila `src/process/process.c` real com paging,
 VMA, memoria, SLAB, syscall, sinais, IPC, VFS e scheduler falsos. Ele cobre
-estado inicial, snapshots, limites de criacao, transicoes, cancelamento,
-terminacao, desligamento, wait queues e limpeza da fixture, sem instrucoes
-privilegiadas ou hardware. O relatorio fica em
+estado inicial, bootstrap duplicado ou fora de ordem, selecao round-robin,
+exclusao e fallback do Idle, snapshots, limites de criacao, transicoes,
+cancelamento, terminacao, desligamento, wait queues e limpeza da fixture, sem
+instrucoes privilegiadas ou hardware. O relatorio fica em
 `build/test-results/process-host/`:
 
 ```text

@@ -214,6 +214,18 @@ propria do PID 0; a stack do `kernel_main` nunca e salva como se fosse a stack
 do Idle. Assim, o Idle preserva a continuidade do kernel sem disputar uma
 fatia com trabalho real.
 
+O bootstrap do Idle exige TSS, paging e tabela de processos disponiveis e e
+recusado quando ja existe PID 0, processo atual ou processo registrado. A
+entrada do scheduler tambem e de uso unico; uma falha de handoff nao publica
+um scheduler parcialmente iniciado. Processos normais so podem ser criados
+depois desse bootstrap.
+
+As selecoes, transicoes de estado e contadores do scheduler sao protegidos
+contra interrupcoes durante a janela critica. O Idle nao pode ser bloqueado,
+desbloqueado por evento ou destruido como um processo comum. A validacao de
+invariantes verifica seu contexto de ring 0, stack nao pertencente ao
+allocator, TSS, paging, flags e contabilidade antes de aceitar o estado.
+
 ### Preempção e yield
 
 O PIT executa `scheduler_tick()` a 50 Hz para atualizar bloqueios temporizados

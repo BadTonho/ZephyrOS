@@ -23,12 +23,17 @@ static uint8_t coverage_active;
 static uint32_t fake_ticks = 100U;
 static uint8_t fake_power_signal;
 static uint8_t fake_cache_alloc_enabled;
+static uint8_t fake_tss_ready;
+static uint8_t fake_paging_ready;
+static uint8_t fake_user_mode_enabled;
 static uint32_t fake_focus_pid;
 static uint8_t fake_cache_storage[64U];
 static page_directory_t fake_directory;
 static page_directory_t foreign_directory;
 static process_t fixture;
 static process_t user_fixture;
+static process_t second_fixture;
+static process_t extra_fixture;
 
 void process_host_test_idle_once(void);
 void process_host_test_report_corruption(process_t* proc);
@@ -125,7 +130,8 @@ kmem_cache_t* kmem_cache_create(const char* name, uint32_t object_size,
 
 void* kmem_cache_alloc(kmem_cache_t* cache) {
     (void)cache;
-    return fake_cache_alloc_enabled ? &fixture : NULL;
+    if (!fake_cache_alloc_enabled) return NULL;
+    return processes[0] ? &extra_fixture : &fixture;
 }
 
 void kmem_cache_free(kmem_cache_t* cache, void* object) {
@@ -158,7 +164,7 @@ page_directory_t* paging_get_current_directory(void) {
 }
 
 int paging_is_ready(void) {
-    return 0;
+    return fake_paging_ready;
 }
 
 page_directory_t* paging_create_user_directory(void) {
@@ -222,11 +228,11 @@ int process_vma_handle_page_fault(process_t* process,
 }
 
 int syscall_user_mode_is_enabled(void) {
-    return 0;
+    return fake_user_mode_enabled;
 }
 
 int tss_is_ready(void) {
-    return 0;
+    return fake_tss_ready;
 }
 
 void tss_set_kernel_stack(uint32_t stack_top) {
@@ -391,9 +397,14 @@ static void reset_fixture(void) {
     process_init();
     memset(&fixture, 0, sizeof(fixture));
     memset(&user_fixture, 0, sizeof(user_fixture));
+    memset(&second_fixture, 0, sizeof(second_fixture));
+    memset(&extra_fixture, 0, sizeof(extra_fixture));
     fake_ticks = 100U;
     fake_power_signal = 0U;
     fake_cache_alloc_enabled = 0U;
+    fake_tss_ready = 0U;
+    fake_paging_ready = 0U;
+    fake_user_mode_enabled = 0U;
     fake_focus_pid = 0U;
 }
 
@@ -467,6 +478,13 @@ static int test_creation_guards(void) {
         return 3;
     }
     fake_cache_alloc_enabled = 0U;
+    fake_cache_alloc_enabled = 1U;
+    if (process_create("before-idle", process_entry_fixture) != NULL ||
+        processes[0] != NULL || process_count != 0U) {
+        fake_cache_alloc_enabled = 0U;
+        return 11;
+    }
+    fake_cache_alloc_enabled = 0U;
     if (process_create_user_image("user", code, sizeof(code), NULL, 0U, 0U,
                                   PAGE_SIZE, 0, &pid) != ERR_UNAVAILABLE) {
         return 4;
@@ -488,6 +506,52 @@ static int test_creation_guards(void) {
         return 9;
     }
     if (process_power_set_quiescing(0U) != OK) return 10;
+
+    reset_fixture();
+    fake_cache_alloc_enabled = 1U;
+    fake_paging_ready = 1U;
+    fake_tss_ready = 1U;
+    fake_user_mode_enabled = 1U;
+    if (process_create_user_image("discard", code, sizeof(code), NULL, 0U,
+                                  0U, PAGE_SIZE, 0, &pid) != ERR_MEM ||
+        processes[1] != NULL || process_get_by_pid(1U) != NULL ||
+        process_get_count() != 0U) return 12;
+    return 0;
+}
+
+static int test_scheduler_selection_guards(void) {
+    scheduler_validation_t validation;
+    uint32_t count;
+
+    reset_fixture();
+    install_fixture(0U, &fixture, 0U, PROCESS_STATE_READY, 0U);
+    install_fixture(1U, &user_fixture, PROCESS_FIXTURE_USER_PID,
+                    PROCESS_STATE_READY, 1U);
+    install_fixture(2U, &second_fixture, PROCESS_FIXTURE_USER_PID + 1U,
+                    PROCESS_STATE_READY, 1U);
+    if (scheduler_schedule() != &user_fixture ||
+        scheduler_schedule() != &second_fixture) return 1;
+
+    user_fixture.state = PROCESS_STATE_BLOCKED;
+    second_fixture.state = PROCESS_STATE_BLOCKED;
+    if (scheduler_schedule() != &fixture) return 2;
+    fixture.state = PROCESS_STATE_BLOCKED;
+    if (scheduler_schedule() != NULL) return 3;
+    process_unblock(&fixture);
+    if (fixture.state != PROCESS_STATE_BLOCKED) return 4;
+
+    reset_fixture();
+    install_fixture(0U, &fixture, 0U, PROCESS_STATE_RUNNING, 0U);
+    count = process_count;
+    process_bootstrap_idle();
+    if (processes[0] != &fixture || process_count != count) return 5;
+
+    reset_fixture();
+    install_fixture(0U, &fixture, 0U, PROCESS_STATE_BLOCKED, 0U);
+    if (scheduler_validate_invariants(&validation) == OK ||
+        validation.state_table_valid != 0U) return 6;
+    process_unblock(&fixture);
+    if (fixture.state != PROCESS_STATE_BLOCKED) return 7;
     return 0;
 }
 
@@ -689,6 +753,7 @@ int main(void) {
     coverage_active = 1U;
     if (!result) result = test_initial_state();
     if (!result) result = test_creation_guards();
+    if (!result) result = test_scheduler_selection_guards();
     if (!result) result = test_scheduler_and_snapshots();
     if (!result) result = test_process_transitions();
     if (!result) result = test_power_shutdown();

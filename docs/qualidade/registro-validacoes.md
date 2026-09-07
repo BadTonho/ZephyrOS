@@ -7,6 +7,27 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## 2026-09-07 - KRN3: reforco do scheduler e Idle (validado)
+
+- Implementacao: `src/process/process.c` passou a recusar bootstrap duplicado ou
+  fora de ordem, criacao antes do PID 0, inicio duplicado do scheduler e
+  desbloqueio artificial do Idle. A selecao, as transicoes, o caminho de
+  encerramento e os ticks passaram a proteger as janelas criticas; a validacao
+  do scheduler agora confirma o contexto completo do Idle e estados proibidos.
+- Testes: `tests/unit/test_process_host.c` cobre selecao round-robin,
+  exclusao/fallback do Idle, bootstrap duplicado e guardas de estado; o teste
+  de timer cobre preempcao somente para frames de ring 3.
+- Validacao: `make q3check`, `make clean && make`, os testes host de
+  scheduling/process/thread/timer, QEMU TST4 execution, TST5 processes,
+  Assembly e Assembly trace, TST6 stress-kernel, `make test-tst7-full`,
+  `make catalog-test-strict` e `git diff --check` passaram.
+- Evidencia TST7: `tst7-20260907T182121Z-30644`, com 37 cenarios host/QEMU
+  em `PASS`, incluindo `catalog-test`, `qemu:tst4:*`, `qemu:tst5:*`,
+  `qemu:tst6:*` e `qemu:tst7:assembly`. Os artefatos permanecem em
+  `.tst7-results/tst7-20260907T182121Z-30644/`.
+- Estado: `PASS`. Os warnings do build permanecem restritos a arquivos legados
+  fora desta alteracao e nao houve warning novo em `src/process/process.c`.
+
 ## 2026-09-05 - Entradas Assembly de processos ring 3 em execução real
 
 - Caso: `qemu:tst4:paging-vma` / `make test-paging-coverage-qemu

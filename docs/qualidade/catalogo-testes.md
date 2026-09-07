@@ -4,7 +4,7 @@
 
 ## Resumo
 
-- Superfícies ativas: **7371**
+- Superfícies ativas: **7373**
 - Casos de teste: **171**
 - Superfícies aposentadas: **59**
 
@@ -12,14 +12,14 @@
 |---|---:|
 | `api_function` | 1598 |
 | `asm_entry` | 101 |
-| `c_function` | 5552 |
+| `c_function` | 5554 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7371 |
+| `COVERED` | 7373 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
 
@@ -46,7 +46,7 @@
 | `icons` | 18 |
 | `kernel` | 41 |
 | `memory` | 202 |
-| `process` | 291 |
+| `process` | 293 |
 | `settings` | 57 |
 | `shell` | 1089 |
 | `taskbar` | 47 |
@@ -5861,7 +5861,7 @@
 | `c:src/process/ipc.c:process_restore_focus` | `src/process/ipc.c` | `process_restore_focus` | `process` | `COVERED` | 1 |
 | `c:src/process/ipc.c:process_set_focus` | `src/process/ipc.c` | `process_set_focus` | `process` | `COVERED` | 1 |
 | `c:src/process/ipc.c:process_set_focus_fallback` | `src/process/ipc.c` | `process_set_focus_fallback` | `process` | `COVERED` | 1 |
-| `c:src/process/process.c:process_allocate_pid` | `src/process/process.c` | `process_allocate_pid` | `process` | `COVERED` | 4 |
+| `c:src/process/process.c:process_allocate_pid` | `src/process/process.c` | `process_allocate_pid` | `process` | `COVERED` | 3 |
 | `c:src/process/process.c:process_apply_pending_cancel` | `src/process/process.c` | `process_apply_pending_cancel` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_block` | `src/process/process.c` | `process_block` | `process` | `COVERED` | 4 |
 | `c:src/process/process.c:process_bootstrap_idle` | `src/process/process.c` | `process_bootstrap_idle` | `process` | `COVERED` | 2 |
@@ -5901,7 +5901,7 @@
 | `c:src/process/process.c:process_is_user` | `src/process/process.c` | `process_is_user` | `process` | `COVERED` | 9 |
 | `c:src/process/process.c:process_mark_current_user_zombie` | `src/process/process.c` | `process_mark_current_user_zombie` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_mark_user_zombie` | `src/process/process.c` | `process_mark_user_zombie` | `process` | `COVERED` | 2 |
-| `c:src/process/process.c:process_next_identity_generation` | `src/process/process.c` | `process_next_identity_generation` | `process` | `COVERED` | 4 |
+| `c:src/process/process.c:process_next_identity_generation` | `src/process/process.c` | `process_next_identity_generation` | `process` | `COVERED` | 3 |
 | `c:src/process/process.c:process_pointer_valid` | `src/process/process.c` | `process_pointer_valid` | `process` | `COVERED` | 9 |
 | `c:src/process/process.c:process_power_has_active_users` | `src/process/process.c` | `process_power_has_active_users` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_power_reap_users` | `src/process/process.c` | `process_power_reap_users` | `process` | `COVERED` | 1 |
@@ -5920,7 +5920,7 @@
 | `c:src/process/process.c:process_snapshot_fill_locked` | `src/process/process.c` | `process_snapshot_fill_locked` | `process` | `COVERED` | 4 |
 | `c:src/process/process.c:process_snapshot_list` | `src/process/process.c` | `process_snapshot_list` | `process` | `COVERED` | 3 |
 | `c:src/process/process.c:process_stack_align_up` | `src/process/process.c` | `process_stack_align_up` | `process` | `COVERED` | 4 |
-| `c:src/process/process.c:process_stack_allocate` | `src/process/process.c` | `process_stack_allocate` | `process` | `COVERED` | 4 |
+| `c:src/process/process.c:process_stack_allocate` | `src/process/process.c` | `process_stack_allocate` | `process` | `COVERED` | 3 |
 | `c:src/process/process.c:process_stack_attach` | `src/process/process.c` | `process_stack_attach` | `process` | `COVERED` | 4 |
 | `c:src/process/process.c:process_stack_bounds_valid` | `src/process/process.c` | `process_stack_bounds_valid` | `process` | `COVERED` | 7 |
 | `c:src/process/process.c:process_stack_check_current` | `src/process/process.c` | `process_stack_check_current` | `process` | `COVERED` | 1 |
@@ -5950,23 +5950,25 @@
 | `c:src/process/process.c:process_user_initialize` | `src/process/process.c` | `process_user_initialize` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_user_patch_u32` | `src/process/process.c` | `process_user_patch_u32` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_user_reap_previous_test` | `src/process/process.c` | `process_user_reap_previous_test` | `process` | `COVERED` | 1 |
-| `c:src/process/process.c:process_user_validate_launch` | `src/process/process.c` | `process_user_validate_launch` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_user_validate_launch` | `src/process/process.c` | `process_user_validate_launch` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:process_wait` | `src/process/process.c` | `process_wait` | `process` | `COVERED` | 5 |
 | `c:src/process/process.c:process_wait_block_transition` | `src/process/process.c` | `process_wait_block_transition` | `process` | `COVERED` | 4 |
 | `c:src/process/process.c:process_wait_clear` | `src/process/process.c` | `process_wait_clear` | `process` | `COVERED` | 8 |
 | `c:src/process/process.c:process_wait_deadline_reached` | `src/process/process.c` | `process_wait_deadline_reached` | `process` | `COVERED` | 8 |
 | `c:src/process/process.c:process_wait_irq_restore` | `src/process/process.c` | `process_wait_irq_restore` | `process` | `COVERED` | 6 |
 | `c:src/process/process.c:process_wait_irq_save` | `src/process/process.c` | `process_wait_irq_save` | `process` | `COVERED` | 6 |
-| `c:src/process/process.c:process_wait_state_init` | `src/process/process.c` | `process_wait_state_init` | `process` | `COVERED` | 4 |
+| `c:src/process/process.c:process_wait_state_init` | `src/process/process.c` | `process_wait_state_init` | `process` | `COVERED` | 3 |
 | `c:src/process/process.c:process_wait_wake_transition` | `src/process/process.c` | `process_wait_wake_transition` | `process` | `COVERED` | 8 |
 | `c:src/process/process.c:process_wait_yield_transition` | `src/process/process.c` | `process_wait_yield_transition` | `process` | `COVERED` | 4 |
 | `c:src/process/process.c:process_wake_channel` | `src/process/process.c` | `process_wake_channel` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_yield` | `src/process/process.c` | `process_yield` | `process` | `COVERED` | 5 |
 | `c:src/process/process.c:scheduler_find_next_ready` | `src/process/process.c` | `scheduler_find_next_ready` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:scheduler_get_stats` | `src/process/process.c` | `scheduler_get_stats` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:scheduler_idle_context_valid` | `src/process/process.c` | `scheduler_idle_context_valid` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:scheduler_init` | `src/process/process.c` | `scheduler_init` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:scheduler_preempt_user` | `src/process/process.c` | `scheduler_preempt_user` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:scheduler_schedule` | `src/process/process.c` | `scheduler_schedule` | `process` | `COVERED` | 2 |
+| `c:src/process/process.c:scheduler_select_next` | `src/process/process.c` | `scheduler_select_next` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:scheduler_tick` | `src/process/process.c` | `scheduler_tick` | `process` | `COVERED` | 8 |
 | `c:src/process/process.c:scheduler_validate_invariants` | `src/process/process.c` | `scheduler_validate_invariants` | `process` | `COVERED` | 3 |
 | `c:src/process/process.c:scheduler_validate_pid_table` | `src/process/process.c` | `scheduler_validate_pid_table` | `process` | `COVERED` | 3 |
@@ -7538,7 +7540,7 @@
 | `host:network:udp` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar envio, reinjecao, checksum, listeners, broadcast e erros UDP com IPv4 simulado | datagramas validos sao entregues, entradas corrompidas sao rejeitadas e endpoints sao liberados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos, endpoints UDP e transporte IPv4 falso no processo host | todos os endpoints sao desvinculados e os artefatos sao preservados |
 | `host:process:ipc` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fixture de IPC com processos estaticos | mensagens, filas, espera, foco e limpeza validos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente processos estaticos e filas falsas no processo host | filas, foco e estado da fixture restaurados com artefatos preservados |
 | `host:process:resources` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar limites de paginas, bytes, VMAs, PID mais generation, snapshots por copia, rejeicoes sem alteracao parcial e limpeza do registro | o controlador preserva quotas, picos, diagnostico limitado e isolamento de identidade sem expor ponteiros ou alterar layouts publicos | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabela privada de recursos e estruturas estaticas da fixture host | registro de recursos destacado e manifesto, logs e cobertura preservados |
-| `host:process:runtime` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, snapshots, scheduler, limites de criacao, transicoes, cancelamento, sinais, energia e filas de espera com processos estaticos | o gerenciador preserva codigos canonicos, estados, identidade, snapshots, limpeza e invariantes sem executar instrucoes privilegiadas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas, processos e buffers estaticos da fixture host | processo host encerrado, processos estaticos removidos e manifesto, logs e cobertura preservados |
+| `host:process:runtime` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, bootstrap duplicado e fora de ordem, snapshots, round-robin sem PID 0, fallback para Idle, limites de criacao, transicoes, cancelamento, sinais, energia e filas de espera com processos estaticos | o gerenciador preserva codigos canonicos, estados, identidade, snapshots, limpeza e invariantes sem executar instrucoes privilegiadas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas, processos e buffers estaticos da fixture host | processo host encerrado, processos estaticos removidos e manifesto, logs e cobertura preservados |
 | `host:process:signals` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fixture de sinais com processos estaticos | mascaras, handlers, coalescencia, notificacao e invariantes validas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente processos estaticos e stubs de paging no processo host | estado de sinais restaurado e artefatos preservados |
 | `host:process:threads` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, criacao, selecao, yield, bloqueio, espera, cancelamento, desbloqueio, timeouts, limites e limpeza com threads e stacks estaticas | o scheduler preserva estados, identidade, filas de espera, codigos canonicos e limpeza sem executar troca de contexto Assembly | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas, threads e stacks estaticas da fixture host | processo host encerrado, threads estaticas removidas e manifesto, logs e cobertura preservados |
 | `host:security:tls` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar politica, estados, validade, cadeia, SAN, pinning, rotacao, revogacao e autoteste TLS com relogio e RNG falsos | identidades validas sao aceitas, rejeicoes retornam motivo canonico e capacidades indisponiveis permanecem explicitas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado TLS, politica e dependencias falsas no processo host | estado TLS e dependencias falsas reiniciados e artefatos preservados |
