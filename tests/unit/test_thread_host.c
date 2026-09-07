@@ -322,6 +322,9 @@ static int test_initialization_and_lifecycle(void) {
         thread_get_by_id(second->id) != second ||
         thread_get_by_id(0xFFFFFFFFU) != NULL ||
         thread_schedule_next() != first) return 6;
+    first->state = THREAD_FINISHED;
+    if (thread_schedule_next() != second) return 61;
+    first->state = THREAD_RUNNING;
     first->state = THREAD_BLOCKED;
     if (thread_schedule_next() != second) return 7;
     first->state = THREAD_RUNNING;
@@ -399,6 +402,13 @@ static int test_wait_contract(void) {
         return 8;
     }
     if (thread_cancel_wait((thread_t*)&owner_process) != ERR_NULL) return 9;
+    thread->state = THREAD_BLOCKED;
+    thread->wait_entry.linked = 1U;
+    thread->wait_active = 0U;
+    thread_destroy(thread);
+    if (thread_get_count() != 1U || !thread->wait_entry.linked) return 10;
+    thread->wait_entry.linked = 0U;
+    thread->state = THREAD_RUNNING;
     thread_destroy(thread);
     return 0;
 }

@@ -4,7 +4,7 @@
 
 ## Resumo
 
-- Superfícies ativas: **7373**
+- Superfícies ativas: **7375**
 - Casos de teste: **171**
 - Superfícies aposentadas: **59**
 
@@ -12,14 +12,14 @@
 |---|---:|
 | `api_function` | 1598 |
 | `asm_entry` | 101 |
-| `c_function` | 5554 |
+| `c_function` | 5556 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7373 |
+| `COVERED` | 7375 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
 
@@ -50,7 +50,7 @@
 | `settings` | 57 |
 | `shell` | 1089 |
 | `taskbar` | 47 |
-| `thread` | 34 |
+| `thread` | 36 |
 | `ui` | 149 |
 | `updater` | 87 |
 | `wm` | 81 |
@@ -7122,6 +7122,7 @@
 | `c:src/taskbar/taskbar.c:taskbar_update_clock` | `src/taskbar/taskbar.c` | `taskbar_update_clock` | `taskbar` | `COVERED` | 1 |
 | `c:src/taskbar/taskbar.c:taskbar_uses_gui` | `src/taskbar/taskbar.c` | `taskbar_uses_gui` | `taskbar` | `COVERED` | 3 |
 | `c:src/taskbar/taskbar.c:update_dimensions` | `src/taskbar/taskbar.c` | `update_dimensions` | `taskbar` | `COVERED` | 1 |
+| `c:src/thread/thread.c:thread_allocate_id` | `src/thread/thread.c` | `thread_allocate_id` | `thread` | `COVERED` | 1 |
 | `c:src/thread/thread.c:thread_block` | `src/thread/thread.c` | `thread_block` | `thread` | `COVERED` | 1 |
 | `c:src/thread/thread.c:thread_block_indefinite` | `src/thread/thread.c` | `thread_block_indefinite` | `thread` | `COVERED` | 1 |
 | `c:src/thread/thread.c:thread_cancel_wait` | `src/thread/thread.c` | `thread_cancel_wait` | `thread` | `COVERED` | 1 |
@@ -7129,22 +7130,23 @@
 | `c:src/thread/thread.c:thread_copy_waiters` | `src/thread/thread.c` | `thread_copy_waiters` | `thread` | `COVERED` | 1 |
 | `c:src/thread/thread.c:thread_create` | `src/thread/thread.c` | `thread_create` | `thread` | `COVERED` | 2 |
 | `c:src/thread/thread.c:thread_destroy` | `src/thread/thread.c` | `thread_destroy` | `thread` | `COVERED` | 3 |
-| `c:src/thread/thread.c:thread_entry_trampoline` | `src/thread/thread.c` | `thread_entry_trampoline` | `thread` | `COVERED` | 2 |
+| `c:src/thread/thread.c:thread_entry_trampoline` | `src/thread/thread.c` | `thread_entry_trampoline` | `thread` | `COVERED` | 3 |
 | `c:src/thread/thread.c:thread_get_by_id` | `src/thread/thread.c` | `thread_get_by_id` | `thread` | `COVERED` | 1 |
 | `c:src/thread/thread.c:thread_get_count` | `src/thread/thread.c` | `thread_get_count` | `thread` | `COVERED` | 5 |
 | `c:src/thread/thread.c:thread_get_count_by_owner` | `src/thread/thread.c` | `thread_get_count_by_owner` | `thread` | `COVERED` | 3 |
 | `c:src/thread/thread.c:thread_get_current` | `src/thread/thread.c` | `thread_get_current` | `thread` | `COVERED` | 2 |
+| `c:src/thread/thread.c:thread_id_in_use` | `src/thread/thread.c` | `thread_id_in_use` | `thread` | `COVERED` | 1 |
 | `c:src/thread/thread.c:thread_index` | `src/thread/thread.c` | `thread_index` | `thread` | `COVERED` | 3 |
 | `c:src/thread/thread.c:thread_init` | `src/thread/thread.c` | `thread_init` | `thread` | `COVERED` | 2 |
 | `c:src/thread/thread.c:thread_is_ready` | `src/thread/thread.c` | `thread_is_ready` | `thread` | `COVERED` | 3 |
 | `c:src/thread/thread.c:thread_prepare_stack` | `src/thread/thread.c` | `thread_prepare_stack` | `thread` | `COVERED` | 3 |
-| `c:src/thread/thread.c:thread_run_self_test` | `src/thread/thread.c` | `thread_run_self_test` | `thread` | `COVERED` | 2 |
+| `c:src/thread/thread.c:thread_run_self_test` | `src/thread/thread.c` | `thread_run_self_test` | `thread` | `COVERED` | 3 |
 | `c:src/thread/thread.c:thread_schedule_next` | `src/thread/thread.c` | `thread_schedule_next` | `thread` | `COVERED` | 2 |
 | `c:src/thread/thread.c:thread_scheduler_tick` | `src/thread/thread.c` | `thread_scheduler_tick` | `thread` | `COVERED` | 8 |
 | `c:src/thread/thread.c:thread_switch_to_scheduler` | `src/thread/thread.c` | `thread_switch_to_scheduler` | `thread` | `COVERED` | 3 |
-| `c:src/thread/thread.c:thread_test_record` | `src/thread/thread.c` | `thread_test_record` | `thread` | `COVERED` | 2 |
-| `c:src/thread/thread.c:thread_test_worker_a` | `src/thread/thread.c` | `thread_test_worker_a` | `thread` | `COVERED` | 2 |
-| `c:src/thread/thread.c:thread_test_worker_b` | `src/thread/thread.c` | `thread_test_worker_b` | `thread` | `COVERED` | 2 |
+| `c:src/thread/thread.c:thread_test_record` | `src/thread/thread.c` | `thread_test_record` | `thread` | `COVERED` | 3 |
+| `c:src/thread/thread.c:thread_test_worker_a` | `src/thread/thread.c` | `thread_test_worker_a` | `thread` | `COVERED` | 3 |
+| `c:src/thread/thread.c:thread_test_worker_b` | `src/thread/thread.c` | `thread_test_worker_b` | `thread` | `COVERED` | 3 |
 | `c:src/thread/thread.c:thread_unblock` | `src/thread/thread.c` | `thread_unblock` | `thread` | `COVERED` | 1 |
 | `c:src/thread/thread.c:thread_wait` | `src/thread/thread.c` | `thread_wait` | `thread` | `COVERED` | 1 |
 | `c:src/thread/thread.c:thread_wait_block_transition` | `src/thread/thread.c` | `thread_wait_block_transition` | `thread` | `COVERED` | 1 |

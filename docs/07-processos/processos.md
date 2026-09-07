@@ -111,6 +111,35 @@ somente depois da liberacao. Excesso em `mmap` e rejeitado com
 que exceda quota ou nao consiga obter pagina encerra apenas o processo que
 sofreu o fault.
 
+### Ciclo de vida KRN4
+
+As transicoes de processo sao validadas pelo manager: `UNUSED` entra em
+`READY`, o scheduler alterna entre `READY` e `RUNNING`, espera leva a
+`BLOCKED` e somente o encerramento leva a `ZOMBIE`. Zumbis nao sao candidatos
+ao scheduler. O Idle/PID 0 e criado uma vez, nao participa do round-robin e nao
+pode ser bloqueado ou destruido; o processo atual tambem nao pode ser liberado
+diretamente por uma operacao administrativa.
+
+Criacao suspensa e bloqueio em Wait Queue sao estados diferentes. A retomada
+por `process_start_user()` aceita somente um processo `BLOCKED` que nao esteja
+encadeado em espera nem possua motivo de espera ativo. Cancelamento de um
+processo ring 3 dentro de uma syscall publica o encerramento pendente e deixa
+que o retorno seguro faca a limpeza; nao libera o objeto no meio da syscall.
+
+O reaping coleta somente zumbis ring 3 que nao sejam o processo atual. A
+limpeza de wait queue, descritores, VMAs, imagem, paging, stacks e recursos e
+verificada antes de liberar o slot. Se uma etapa falhar, o estado permanece
+observavel e a falha e retornada/logada. Um processo com threads proprietarias
+ativas nao pode ser destruido; threads `FINISHED` nao participam da selecao e
+threads bloqueadas removem sua entrada da Wait Queue antes de serem liberadas.
+
+Pais inexistentes, auto-parentesco e pais ja inativos resultam em reparenting
+para PID 0 antes da destruicao. `SIGCHLD` e `last_child_pid` sao publicados uma
+vez por saida. Snapshots, callbacks e eventos que carregam geracao validam
+`PID + generation`; APIs legadas baseadas somente em PID permanecem imediatas e
+nao guardam ponteiros para uso posterior. Nenhuma syscall, layout publico ou
+`waitpid` foi criado nesta etapa.
+
 ### Snapshot de introspeccao PROC2
 
 `process_t` acrescenta ao final `event_generation`, uma geracao monotonicamente

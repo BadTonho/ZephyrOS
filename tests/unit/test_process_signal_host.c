@@ -189,6 +189,17 @@ static int check_initialization(void) {
                                    SIGNAL_FIXTURE_USER_PID);
     if (signal_user.parent_pid != 0U ||
         signal_child.parent_pid != SIGNAL_FIXTURE_USER_PID) return 6;
+    signal_user.state = PROCESS_STATE_ZOMBIE;
+    process_signal_process_created(SIGNAL_FIXTURE_CHILD_PID,
+                                   SIGNAL_FIXTURE_USER_PID);
+    if (signal_child.parent_pid != 0U) return 61;
+    signal_user.state = PROCESS_STATE_READY;
+    process_signal_process_created(SIGNAL_FIXTURE_CHILD_PID,
+                                   SIGNAL_FIXTURE_USER_PID);
+    process_signal_process_created(SIGNAL_FIXTURE_USER_PID,
+                                   SIGNAL_FIXTURE_USER_PID);
+    if (signal_user.parent_pid != 0U) return 62;
+    process_signal_process_created(SIGNAL_FIXTURE_USER_PID, 0U);
     if (process_signal_validate_state() != OK) return 7;
     if (!process_signal_name(APP_SIGNAL_INT) ||
         !process_signal_name(APP_SIGNAL_KILL) ||

@@ -129,6 +129,35 @@ static int thread_index(const thread_t* thread) {
     return -1;
 }
 
+static int thread_id_in_use(uint32_t id) {
+    for (uint32_t index = 0U; index < MAX_THREADS; index++) {
+        if (threads[index] && threads[index]->id == id) return 1;
+    }
+    return 0;
+}
+
+static int thread_allocate_id(uint32_t* id_out) {
+    uint32_t candidate;
+
+    if (!id_out) {
+        LOG_ERROR("THRD", "Destino nulo ao alocar identificador de thread");
+        return ERR_NULL;
+    }
+    candidate = next_thread_id ? next_thread_id : 1U;
+    for (uint32_t attempt = 0U; attempt < MAX_THREADS; attempt++) {
+        if (!thread_id_in_use(candidate)) {
+            *id_out = candidate;
+            next_thread_id = candidate + 1U;
+            if (!next_thread_id) next_thread_id = 1U;
+            return OK;
+        }
+        candidate++;
+        if (!candidate) candidate = 1U;
+    }
+    LOG_ERROR("THRD", "Nao ha identificador livre para nova thread");
+    return ERR_OVERFLOW;
+}
+
 static void thread_entry_trampoline(void) {
     thread_t* thread = current_thread;
 
@@ -265,8 +294,6 @@ thread_t* thread_create(const char* name, void (*entry)(void)) {
     }
     thread->name[name_index] = '\0';
 
-    thread->id = next_thread_id++;
-    if (next_thread_id == 0) next_thread_id = 1;
     thread->state = THREAD_RUNNING;
     thread->entry = entry;
     thread->stack = (uint32_t*)kmalloc(THREAD_STACK_SIZE);
@@ -280,6 +307,15 @@ thread_t* thread_create(const char* name, void (*entry)(void)) {
     thread->esp = thread_prepare_stack(thread);
     if (!thread->esp) {
         LOG_ERROR("THRD", "Falha ao preparar contexto da thread");
+        kfree(thread->stack);
+        thread->stack = 0;
+        threads[thread_index(thread)] = 0;
+        kmem_cache_free(thread_cache, thread);
+        return 0;
+    }
+
+    if (thread_allocate_id(&thread->id) != OK) {
+        LOG_ERROR("THRD", "Limite de identificadores de threads atingido");
         kfree(thread->stack);
         thread->stack = 0;
         threads[thread_index(thread)] = 0;
@@ -313,8 +349,21 @@ void thread_destroy(thread_t* thread) {
         LOG_WARN("THRD", "Tentativa de destruir thread ja liberada");
         return;
     }
+    if (thread->state < THREAD_UNUSED || thread->state > THREAD_FINISHED) {
+        LOG_ERROR("THRD", "Estado invalido ao destruir thread");
+        return;
+    }
 
-    if (thread->wait_active) thread_cancel_wait(thread);
+    if (thread->wait_active || thread->wait_entry.linked) {
+        if (thread_cancel_wait(thread) != OK) {
+            LOG_ERROR("THRD", "Falha ao remover thread da fila antes da destruicao");
+            return;
+        }
+    }
+    if (thread->wait_active || thread->wait_entry.linked) {
+        LOG_ERROR("THRD", "Espera permaneceu ligada durante destruicao");
+        return;
+    }
 
     if (thread->stack) {
         kfree(thread->stack);
@@ -624,8 +673,10 @@ uint32_t thread_get_count_by_owner(uint32_t owner_pid) {
 
 void thread_scheduler_tick(void) {
     uint32_t now;
+    uint32_t flags;
 
     if (!thread_initialized) return;
+    flags = thread_wait_irq_save();
     now = timer_get_ticks();
 
     for (int i = 0; i < MAX_THREADS; i++) {
@@ -649,4 +700,5 @@ void thread_scheduler_tick(void) {
             }
         }
     }
+    thread_wait_irq_restore(flags);
 }

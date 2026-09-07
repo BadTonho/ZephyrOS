@@ -1096,12 +1096,17 @@ static void process_switch_after_termination(void) {
 }
 
 static int process_mark_user_zombie(process_t* proc, uint32_t exit_code,
-                                    int faulted) {
+                                    int faulted, uint8_t allow_current) {
     int focus_result;
+    int wait_result;
 
     if (!proc || !process_is_user(proc)) {
         LOG_WARN("PROC", "Encerramento recusado para processo ring 0");
         return ERR_UNAVAILABLE;
+    }
+    if (proc == current_process && !allow_current) {
+        LOG_WARN("PROC", "Encerramento direto do processo atual recusado");
+        return ERR_STATE;
     }
     if (proc->state != PROCESS_STATE_RUNNING &&
         proc->state != PROCESS_STATE_READY &&
@@ -1109,8 +1114,31 @@ static int process_mark_user_zombie(process_t* proc, uint32_t exit_code,
         LOG_WARN("PROC", "Estado invalido ao encerrar processo ring 3");
         return ERR_STATE;
     }
-    if (proc->wait_active) process_cancel_wait(proc);
+    if (proc->wait_active || proc->wait_entry.linked) {
+        wait_result = process_cancel_wait(proc);
+        if (wait_result != OK) {
+            LOG_ERROR_CODE("PROC", wait_result,
+                           "Falha ao remover processo da fila antes do encerramento");
+            return wait_result;
+        }
+    }
+    if (proc->wait_active || proc->wait_entry.linked) {
+        LOG_ERROR("PROC", "Espera permaneceu ligada durante encerramento");
+        return ERR_STATE;
+    }
+    if (process_get_focus() == proc->pid) {
+        focus_result = process_restore_focus();
+        if (focus_result != OK) {
+            LOG_ERROR_CODE("PROC", focus_result,
+                           "Falha ao restaurar foco antes do encerramento");
+            return focus_result;
+        }
+    }
 
+    if (vfs_fd_table_release(&proc->fd_table) != OK) {
+        LOG_ERROR("PROC", "Falha ao liberar descritores no encerramento");
+        return ERR_STATE;
+    }
     proc->exit_code = exit_code;
     proc->faulted = faulted ? 1U : proc->faulted;
     proc->pending_signals = 0U;
@@ -1122,9 +1150,6 @@ static int process_mark_user_zombie(process_t* proc, uint32_t exit_code,
     proc->cancel_pending = 0U;
     kmemset(&proc->signal_saved_context, 0,
             sizeof(proc->signal_saved_context));
-    if (vfs_fd_table_release(&proc->fd_table) != OK) {
-        LOG_ERROR("PROC", "Falha ao liberar descritores no encerramento");
-    }
     proc->state = PROCESS_STATE_ZOMBIE;
     process_event_generation++;
     if (!process_event_generation) process_event_generation = 1U;
@@ -1133,22 +1158,18 @@ static int process_mark_user_zombie(process_t* proc, uint32_t exit_code,
         user_test_result_pid = proc->pid;
         user_test_result_faulted = faulted ? 1U : 0U;
     }
-    if (process_get_focus() == proc->pid) {
-        focus_result = process_restore_focus();
-        if (focus_result != OK) {
-            LOG_WARN("PROC", "Falha ao restaurar foco apos encerrar usuario");
-        }
-    }
     process_signal_process_exited(proc->pid);
     return OK;
 }
 
 static int process_mark_current_user_zombie(uint32_t exit_code,
                                              int faulted) {
-    return process_mark_user_zombie(current_process, exit_code, faulted);
+    return process_mark_user_zombie(current_process, exit_code, faulted, 1U);
 }
 
 int process_reap_finished_user(void) {
+    int first_error = OK;
+
     if (!current_process) {
         LOG_ERROR("PROC", "Reaper de usuario executado sem processo atual");
         return ERR_STATE;
@@ -1163,9 +1184,22 @@ int process_reap_finished_user(void) {
             continue;
         }
 
-        process_destroy(proc);
+        if (proc == current_process) {
+            LOG_ERROR("PROC", "Reaper encontrou processo atual zumbi");
+            if (first_error == OK) first_error = ERR_STATE;
+            continue;
+        }
+        {
+            uint32_t pid = proc->pid;
+
+            process_destroy(proc);
+            if (process_get_by_pid(pid) == proc) {
+                LOG_ERROR("PROC", "Destruicao incompleta durante reaping");
+                if (first_error == OK) first_error = ERR_STATE;
+            }
+        }
     }
-    return OK;
+    return first_error;
 }
 
 int process_power_set_quiescing(uint8_t active) {
@@ -1630,7 +1664,7 @@ int process_cancel_user_test(uint32_t pid, uint32_t exit_code) {
     }
     if (proc->state == PROCESS_STATE_ZOMBIE) return OK;
 
-    result = process_mark_user_zombie(proc, exit_code, 0);
+    result = process_mark_user_zombie(proc, exit_code, 0, 0U);
     if (result != OK) {
         LOG_ERROR("PROC", "Falha ao cancelar UserTest");
         return result;
@@ -1649,6 +1683,7 @@ uint32_t process_get_user_count(void) {
 
 int process_start_user(uint32_t pid) {
     process_t* proc;
+    uint32_t flags;
 
     if (process_power_quiescing) {
         LOG_WARN("PROC", "Inicio ring3 recusado durante quiescencia");
@@ -1659,12 +1694,21 @@ int process_start_user(uint32_t pid) {
         LOG_ERROR("PROC", "PID invalido ao iniciar processo ring 3");
         return ERR_NOT_FOUND;
     }
+    flags = process_wait_irq_save();
     if (proc->state != PROCESS_STATE_BLOCKED) {
+        process_wait_irq_restore(flags);
         LOG_WARN("PROC", "Processo ring 3 nao estava suspenso");
+        return ERR_STATE;
+    }
+    if (proc->wait_active || proc->wait_entry.linked ||
+        proc->wait_reason != WAIT_REASON_NONE) {
+        process_wait_irq_restore(flags);
+        LOG_WARN("PROC", "Processo ring 3 esta bloqueado em espera");
         return ERR_STATE;
     }
 
     proc->state = PROCESS_STATE_READY;
+    process_wait_irq_restore(flags);
     LOG_DEBUG("PROC", "Processo ring 3 liberado para execucao");
     return OK;
 }
@@ -1715,7 +1759,7 @@ int process_cancel_user(uint32_t pid, uint32_t exit_code) {
         LOG_DEBUG("PROC", "Cancelamento pendente aguardando retorno ring3");
         return OK;
     }
-    result = process_mark_user_zombie(proc, exit_code, 0);
+    result = process_mark_user_zombie(proc, exit_code, 0, 0U);
     if (result != OK) return result;
 
     LOG_DEBUG("PROC", "Processo ring 3 cancelado");
@@ -1748,7 +1792,7 @@ int process_terminate_user_signal(uint32_t pid, uint32_t signal_number,
     proc->last_signal = signal_number;
     proc->signal_delivered++;
     result = process_mark_user_zombie(
-        proc, APP_EXIT_FROM_SIGNAL(signal_number), faulted);
+        proc, APP_EXIT_FROM_SIGNAL(signal_number), faulted, 1U);
     if (result != OK) {
         LOG_ERROR_CODE("PROC", result,
                        "Falha ao encerrar processo por sinal");
@@ -1869,6 +1913,7 @@ int process_take_user_test_result(uint32_t* pid, uint32_t* faulted) {
 
 void process_destroy(process_t* proc) {
     uint32_t pid;
+    int wait_result;
 
     if (!process_pointer_valid(proc)) {
         LOG_ERROR("PROC", "Ponteiro invalido ao destruir processo");
@@ -1887,6 +1932,10 @@ void process_destroy(process_t* proc) {
         LOG_WARN("PROC", "Destruicao do processo atual ou Idle bloqueada");
         return;
     }
+    if (thread_get_count_by_owner(proc->pid) != 0U) {
+        LOG_WARN("PROC", "Processo ainda possui threads proprietarias");
+        return;
+    }
     if (proc->page_directory &&
         proc->page_directory == paging_get_current_directory() &&
         proc->context.user_mode) {
@@ -1894,7 +1943,18 @@ void process_destroy(process_t* proc) {
         return;
     }
 
-    if (proc->wait_active) process_cancel_wait(proc);
+    if (proc->wait_active || proc->wait_entry.linked) {
+        wait_result = process_cancel_wait(proc);
+        if (wait_result != OK) {
+            LOG_ERROR_CODE("PROC", wait_result,
+                           "Falha ao remover processo da fila antes da destruicao");
+            return;
+        }
+    }
+    if (proc->wait_active || proc->wait_entry.linked) {
+        LOG_ERROR("PROC", "Espera permaneceu ligada durante destruicao");
+        return;
+    }
     if (proc->ipc_wait_channel.initialized &&
         wait_channel_reset(&proc->ipc_wait_channel) != OK) {
         LOG_ERROR("PROC", "Falha ao destruir canal IPC do processo");
@@ -1907,7 +1967,8 @@ void process_destroy(process_t* proc) {
 
     if (process_get_focus() == proc->pid &&
         process_restore_focus() != OK) {
-        LOG_WARN("PROC", "Processo destruido sem fallback de foco valido");
+        LOG_ERROR("PROC", "Processo focado sem fallback valido");
+        return;
     }
     pid = proc->pid;
     process_signal_process_destroyed(pid);
@@ -2708,12 +2769,18 @@ static uint32_t scheduler_validate_pid_table(void) {
 
 static uint32_t scheduler_validate_states(void) {
     uint32_t valid = 1;
+    uint32_t running_count = 0U;
 
     for (int i = 0; i < MAX_PROCESSES; i++) {
         process_t* proc = processes[i];
 
         if (!proc) continue;
         if (proc->state > PROCESS_STATE_ZOMBIE) valid = 0;
+        if (proc->state == PROCESS_STATE_RUNNING) running_count++;
+        if (proc->wait_entry.linked && !proc->wait_active) valid = 0;
+        if (proc->wait_active && !proc->wait_entry.linked) valid = 0;
+        if (proc->state == PROCESS_STATE_ZOMBIE &&
+            (proc->wait_active || proc->wait_entry.linked)) valid = 0;
         if (proc->state == PROCESS_STATE_BLOCKED && proc->wait_ticks == 0 &&
             !proc->context.user_mode && !proc->wait_active) {
             valid = 0;
@@ -2727,6 +2794,11 @@ static uint32_t scheduler_validate_states(void) {
         if (proc->state == PROCESS_STATE_ZOMBIE && proc == current_process) {
             valid = 0;
         }
+    }
+
+    if (running_count > 1U ||
+        (current_process && current_process->state != PROCESS_STATE_RUNNING)) {
+        valid = 0;
     }
 
     return valid;

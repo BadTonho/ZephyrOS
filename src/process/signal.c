@@ -178,10 +178,15 @@ static int signal_validate_process(const process_t* process) {
                        "Zombie reteve estado de sinal");
         return ERR_STATE;
     }
-    if (process->parent_pid && !process_get_by_pid(process->parent_pid)) {
-        LOG_ERROR_CODE("PROC", (int32_t)process->pid,
-                       "Processo possui pai inexistente");
-        return ERR_STATE;
+    if (process->parent_pid) {
+        process_t* parent = process_get_by_pid(process->parent_pid);
+
+        if (!parent || parent->state == PROCESS_STATE_UNUSED ||
+            parent == process) {
+            LOG_ERROR_CODE("PROC", (int32_t)process->pid,
+                           "Processo possui pai inexistente ou inativo");
+            return ERR_STATE;
+        }
     }
     for (uint32_t signal_number = 1U;
          signal_number < PROCESS_SIGNAL_ACTION_COUNT; signal_number++) {
@@ -237,7 +242,8 @@ void process_signal_process_created(uint32_t pid, uint32_t parent_pid) {
         LOG_ERROR("PROC", "Processo inexistente ao inicializar sinais");
         return;
     }
-    process->parent_pid = parent && parent != process ? parent_pid : 0U;
+    process->parent_pid = parent && parent != process &&
+                          signal_process_active(parent) ? parent_pid : 0U;
     process->pending_signals = 0U;
     process->blocked_signals = 0U;
     process->active_signal = 0U;
@@ -609,7 +615,7 @@ void process_signal_process_exited(uint32_t pid) {
     child->signal_exit_notified = 1U;
     if (!child->parent_pid) return;
     parent = process_get_by_pid(child->parent_pid);
-    if (!parent || parent == child) {
+    if (!parent || parent == child || !signal_process_active(parent)) {
         child->parent_pid = 0U;
         return;
     }

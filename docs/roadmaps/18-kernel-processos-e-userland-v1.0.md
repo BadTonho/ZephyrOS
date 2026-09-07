@@ -115,19 +115,19 @@ quantum ou migração para Rust nesta etapa.
 
 ### KRN4 — Processos e threads
 
-- [ ] Validar criação, execução, bloqueio, suspensão, retomada, término,
+- [x] Validar criação, execução, bloqueio, suspensão, retomada, término,
   zombie, reaping e falha de processo.
-- [ ] Definir semântica de pai/filho, `wait`, status de saída, órfãos e reaper
+- [x] Definir semântica de pai/filho, `wait`, status de saída, órfãos e reaper
   principal.
-- [ ] Revalidar PID + generation em ações administrativas, callbacks e eventos
+- [x] Revalidar PID + generation em ações administrativas, callbacks e eventos
   atrasados.
-- [ ] Garantir que descritores, snapshots e ações abertas não sejam
+- [x] Garantir que descritores, snapshots e ações abertas não sejam
   redirecionados para outro processo após reutilização de PID.
-- [ ] Impedir criação acima do limite e retornar erro sem deixar slot, stack ou
+- [x] Impedir criação acima do limite e retornar erro sem deixar slot, stack ou
   página residual.
-- [ ] Preservar ring 0 para serviços nativos e ring 3 para aplicativos, com
+- [x] Preservar ring 0 para serviços nativos e ring 3 para aplicativos, com
   tratamento explícito de chamadas fora de ordem.
-- [ ] Manter `thread_t` e seu autoteste sem criar um segundo caminho produtivo
+- [x] Manter `thread_t` e seu autoteste sem criar um segundo caminho produtivo
   não documentado.
 
 ### KRN5 — IPC e serviços básicos

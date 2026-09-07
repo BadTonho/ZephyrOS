@@ -530,6 +530,26 @@ exporta ponteiros, enderecos fisicos ou objetos privados. Quota excedida em
 page fault que nao possa materializar a pagina encerra somente o processo
 infrator.
 
+Na KRN4, as transicoes de ciclo de vida aceitam somente estados coerentes:
+zumbis nao sao selecionaveis, o Idle/PID 0 e unico e nao pode ser destruido, e
+nao ha mais de um processo `RUNNING`. `process_start_user()` nao retoma um
+processo que ainda esteja encadeado em Wait Queue; cancelamento de ring 3 em
+syscall fica pendente ate um retorno seguro. `process_destroy()` rejeita o
+processo atual, o Idle e processos com threads proprietarias ativas, e o reap
+verifica a limpeza real antes de liberar o slot. Falhas de limpeza preservam o
+estado observavel e retornam diagnostico.
+
+O relacionamento pai/filho rejeita auto-parentesco, converte pai ausente ou
+inativo para PID 0, faz reparenting antes da destruicao e publica `SIGCHLD` e
+`last_child_pid` uma unica vez. Identidades disponiveis em snapshots, callbacks
+e eventos usam `PID + generation`; APIs legadas baseadas somente em PID sao
+operacoes imediatas e nao retêm ponteiros. Threads exigem scheduler
+inicializado, IDs unicos, nao selecionam `FINISHED`, removem Wait Queue antes
+da destruicao e nao permitem destruir a thread atual ou invalida. O scheduler
+de processos e o scheduler cooperativo de threads continuam separados.
+Essa etapa nao altera ABI, syscalls, layouts publicos, `waitpid`, bootloader ou
+Rust.
+
 Desde a MM4, `src/include/core/memory.h` publica `memory_zone_t` com as zonas
 exclusivas `KERNEL`, `HEAP`, `SLAB`, `PROCESS`, `BUFFER` e `FREE`, além de
 `memory_detailed_stats_t` e `memory_get_detailed_stats()`. As novas funções

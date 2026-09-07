@@ -27,6 +27,7 @@ static uint8_t fake_tss_ready;
 static uint8_t fake_paging_ready;
 static uint8_t fake_user_mode_enabled;
 static uint32_t fake_focus_pid;
+static uint32_t fake_owned_threads;
 static uint8_t fake_cache_storage[64U];
 static page_directory_t fake_directory;
 static page_directory_t foreign_directory;
@@ -240,8 +241,7 @@ void tss_set_kernel_stack(uint32_t stack_top) {
 }
 
 uint32_t thread_get_count_by_owner(uint32_t owner_pid) {
-    (void)owner_pid;
-    return 0U;
+    return owner_pid == PROCESS_FIXTURE_PID ? fake_owned_threads : 0U;
 }
 
 void thread_yield(void) {
@@ -406,6 +406,7 @@ static void reset_fixture(void) {
     fake_paging_ready = 0U;
     fake_user_mode_enabled = 0U;
     fake_focus_pid = 0U;
+    fake_owned_threads = 0U;
 }
 
 static void process_entry_fixture(void) {
@@ -623,6 +624,21 @@ static int test_process_transitions(void) {
         process_start_user(PROCESS_FIXTURE_USER_PID) != OK ||
         user_fixture.state != PROCESS_STATE_READY ||
         process_start_user(PROCESS_FIXTURE_USER_PID) != ERR_STATE) return 2;
+    {
+        wait_channel_t channel;
+
+        if (wait_channel_init(&channel, "process-start") != OK) return 21;
+        user_fixture.state = PROCESS_STATE_BLOCKED;
+        user_fixture.wait_active = 1U;
+        user_fixture.wait_entry.linked = 1U;
+        user_fixture.wait_channel = &channel;
+        user_fixture.wait_reason = WAIT_REASON_NONE;
+        if (process_start_user(PROCESS_FIXTURE_USER_PID) != ERR_STATE ||
+            user_fixture.state != PROCESS_STATE_BLOCKED) return 22;
+        user_fixture.wait_active = 0U;
+        user_fixture.wait_entry.linked = 0U;
+        user_fixture.wait_channel = NULL;
+    }
     process_unblock(&user_fixture);
     if (user_fixture.state != PROCESS_STATE_READY) return 3;
     process_unblock(NULL);
@@ -651,12 +667,21 @@ static int test_process_transitions(void) {
     reset_fixture();
     install_fixture(1U, &fixture, PROCESS_FIXTURE_PID, PROCESS_STATE_READY,
                     0U);
+    fake_owned_threads = 1U;
+    process_destroy(&fixture);
+    if (processes[1] != &fixture || process_count != 1U) return 80;
+    fake_owned_threads = 0U;
+    fixture.wait_active = 1U;
+    fixture.wait_entry.linked = 0U;
+    process_destroy(&fixture);
+    if (processes[1] != &fixture) return 81;
+    fixture.wait_active = 0U;
     process_destroy(&fixture);
     if (processes[1] != NULL) return 8;
     memset(&regs, 0, sizeof(regs));
-    if (process_handle_user_exception(&regs) != ERR_STATE ||
-        process_prepare_user_termination(NULL) != ERR_NULL ||
-        process_apply_pending_cancel(NULL) != ERR_NULL) return 9;
+    if (process_handle_user_exception(&regs) != ERR_STATE) return 91;
+    if (process_prepare_user_termination(NULL) != ERR_NULL) return 92;
+    if (process_apply_pending_cancel(NULL) != ERR_NULL) return 93;
     if (process_stack_validate_all(&stacks) != OK || stacks.checked != 0U) {
         return 10;
     }

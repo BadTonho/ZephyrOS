@@ -6737,3 +6737,21 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `tst7-20260907T151926Z-24476` terminou `PASS` com 171 casos, incluindo 37
   QEMU; o novo caso `host:process:resources` foi incluído no executor e no
   baseline aprovado. Nenhum bootloader foi alterado.
+
+- KRN4 — processos, ciclo de vida e threads — concluído em 2026-09-07
+  (America/Sao_Paulo). As transições de processo passaram a rejeitar estados
+  inválidos, zumbis ficaram fora do scheduler, Idle/PID 0 e o processo atual
+  ficaram protegidos contra destruição, e `process_start_user()` passou a
+  distinguir criação suspensa de processo ainda encadeado em Wait Queue.
+  Reaping, reparenting, SIGCHLD, identidade `PID + generation`, limpeza de
+  threads e IDs cooperativos foram reforçados sem alteração de ABI, syscalls,
+  layouts públicos, bootloader ou Rust.
+
+  Passaram `make q3check`, `make clean`, `make`, os testes host de scheduling,
+  processos, sinais, IPC, threads e timer, os fluxos QEMU de execução,
+  processos, fault de processo e estresse de kernel, além dos testes Assembly
+  e Assembly trace. O gate `make test-tst7-full` terminou `PASS` no run
+  `tst7-20260907T201317Z-4780`, com 171/171 casos, incluindo 37 casos QEMU;
+  `catalog-test` também passou dentro do gate e nao houve limitacoes
+  registradas. A validação final de catálogo e `git diff --check` foi executada
+  após o registro.
