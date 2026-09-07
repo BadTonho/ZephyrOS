@@ -392,6 +392,13 @@ PROCESS_BINARY = ROOT / "build" / "tests" / "test_process_host.exe"
 PROCESS_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_process_host.c",
     ROOT / "src" / "process" / "process.c",
+    ROOT / "src" / "process" / "resource.c",
+)
+PROCESS_RESOURCE_RESULT_DIR = ROOT / "build" / "test-results" / "process-resource-host"
+PROCESS_RESOURCE_BINARY = ROOT / "build" / "tests" / "test_process_resource_host.exe"
+PROCESS_RESOURCE_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_process_resource_host.c",
+    ROOT / "src" / "process" / "resource.c",
 )
 THREAD_RESULT_DIR = ROOT / "build" / "test-results" / "thread-host"
 THREAD_BINARY = ROOT / "build" / "tests" / "test_thread_host.exe"
@@ -554,6 +561,7 @@ SOCKET_RUNTIME_SOURCE_FILES = (
 VMA_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_vma_host.c",
     ROOT / "src" / "memory" / "vma.c",
+    ROOT / "src" / "process" / "resource.c",
     ROOT / "src" / "core" / "log.c",
     ROOT / "src" / "core" / "string.c",
 )
@@ -656,6 +664,7 @@ PROCFS_BINARY = ROOT / "build" / "tests" / "test_procfs_host.exe"
 PROCFS_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_procfs_host.c",
     ROOT / "src" / "fs" / "procfs.c",
+    ROOT / "src" / "process" / "resource.c",
     ROOT / "src" / "core" / "string.c",
 )
 SYSFS_RESULT_DIR = ROOT / "build" / "test-results" / "sysfs-host"
@@ -1029,6 +1038,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return SYSCALL_RESULT_DIR, SYSCALL_BINARY, SYSCALL_SOURCE_FILES, "syscall-host"
     if case_id == "host:process:runtime":
         return PROCESS_RESULT_DIR, PROCESS_BINARY, PROCESS_SOURCE_FILES, "process-host"
+    if case_id == "host:process:resources":
+        return (PROCESS_RESOURCE_RESULT_DIR, PROCESS_RESOURCE_BINARY,
+                PROCESS_RESOURCE_SOURCE_FILES, "process-resource-host")
     if case_id == "host:process:threads":
         return THREAD_RESULT_DIR, THREAD_BINARY, THREAD_SOURCE_FILES, "thread-host"
     if case_id == "host:core:app-catalog":
@@ -1484,6 +1496,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:shell:taskmanager",
                                  "host:core:syscall",
                                  "host:process:runtime",
+                                 "host:process:resources",
                                  "host:process:threads",
                                  "host:core:app-catalog",
                                  "host:core:input",

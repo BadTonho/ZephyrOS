@@ -138,6 +138,7 @@ novo; o handshake e inerte no boot normal ate a validacao de `HELLO`.
 | `src/include/memory/slab.h` | `docs/06-memoria/memoria.md` |
 | `src/include/memory/vma.h` | `docs/06-memoria/memoria.md` |
 | `src/include/process/process.h` | `docs/07-processos/processos.md` |
+| `src/include/process/resource.h` | `docs/07-processos/processos.md` |
 | `src/include/process/signal.h` | `docs/07-processos/processos.md` |
 | `src/include/process/thread.h` | `docs/07-processos/processos.md` |
 | `src/include/types.h` | `docs/02-arquitetura/arquitetura.md` |
@@ -514,6 +515,20 @@ free-list de cada slab e a consistencia dos contadores globais de caches e
 slabs. Ponteiros desalinhados, double free e listas invalidas permanecem
 visiveis pelos erros e estatisticas existentes, sem alterar as assinaturas
 publicas.
+
+Na KRN2.2, `process/resource.h` publica somente limites, contadores e
+diagnosticos por copia para o controlador privado de recursos. A identidade de
+consulta e `PID + generation`; `process_t`, `process_snapshot_t`, syscalls e
+ABI nao recebem campos novos. Processos ring 3 ficam limitados a 128 paginas
+residentes, 1 MiB de VMAs anonimas, 16 VMAs dinamicas, 8 argumentos e 511 bytes
+de argumentos crus, preservando os limites existentes de imagem e stacks. O
+uso e derivado das VMAs e do paging, e `munmap`, reaping e destruicao so deixam
+de contar recursos depois da liberacao real. O `/proc/<pid>/status` exporta
+somente numeros, limites, codigos e o motivo resumido da ultima rejeicao; nao
+exporta ponteiros, enderecos fisicos ou objetos privados. Quota excedida em
+`mmap` retorna `ERR_OVERFLOW`; falha fisica retorna `ERR_MEM` com rollback, e
+page fault que nao possa materializar a pagina encerra somente o processo
+infrator.
 
 Desde a MM4, `src/include/core/memory.h` publica `memory_zone_t` com as zonas
 exclusivas `KERNEL`, `HEAP`, `SLAB`, `PROCESS`, `BUFFER` e `FREE`, além de

@@ -83,6 +83,7 @@ make test-shell-pipeline-host
 make test-socket-runtime-host
 make test-sysfs-host
 make test-process-host
+make test-process-resource-host
 make test-thread-host
 ```
 
@@ -361,6 +362,16 @@ privilegiadas ou hardware. O relatorio fica em
 make test-process-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O caso `test-process-resource-host` compila o controlador privado de quotas por
+`PID + generation` com um processo e paging falsos. Ele cobre limites de VMAs,
+bytes anonimos, paginas residentes e argumentos, rollback, OOM, destroy, reap,
+reutilizacao de PID, generations incorretas e snapshots sem enderecos privados;
+o relatorio fica em `build/test-results/process-resource-host/`:
+
+```text
+make test-process-resource-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
 A fixture tambem valida o bootstrap sem cache, a pre-condicao do inicio do
 scheduler, o descarte apos falha de criacao, a copia/cancelamento de uma espera
 ativa, o diagnostico de canario e os helpers de formatacao da stack. O idle e
@@ -468,9 +479,10 @@ make test-devfs-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
 O caso `test-procfs-host` compila o provider procfs real com VFS, processos,
-snapshots e controles de log simulados. Ele cobre listagem, lookup, leitura,
-mapas, seeks, poll, ioctl, sync, permissoes, limites e limpeza sem kernel ou
-hardware real; o relatorio fica em `build/test-results/procfs-host/`:
+snapshots, quotas e controles de log simulados. Ele cobre listagem, lookup,
+leitura de status e mapas, diagnostico numerico sem enderecos privados, seeks,
+poll, ioctl, sync, permissoes, limites e limpeza sem kernel ou hardware real;
+o relatorio fica em `build/test-results/procfs-host/`:
 
 ```text
 make test-procfs-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe

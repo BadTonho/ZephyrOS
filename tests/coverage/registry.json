@@ -3478,6 +3478,7 @@
         "status": "AUTOMATED",
         "surface_ids": [
           "api:src/include/apps/shell_input.h:shell_input_init",
+          "api:src/include/apps/shell_input.h:shell_input_cancel_extended",
           "c:src/shell/shell_input.c:shell_input_cancel_extended",
           "c:src/shell/shell_input.c:shell_input_get_buffer",
           "c:src/shell/shell_input.c:shell_input_handle_key",
@@ -6671,6 +6672,57 @@
         "status": "AUTOMATED"
       },
       "evidence": "make test-process-host PASS com fixtures estaticas, snapshots, scheduler, bootstrap sem cache, pre-condicao de inicio, descarte apos falha de criacao, espera ativa, cancelamento, sinais, shutdown cooperativo, diagnostico de canario, helpers de log de stack, idle host-only e cobertura instrumentada"
+    },
+    {
+      "id": "process-resource-host-dynamic",
+      "domain": "process-resource",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:process:resources"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/process-resource-host/coverage.json",
+      "coverage_sources": [
+        "src/process/resource.c"
+      ],
+      "include_public_apis": true,
+      "case_definition": {
+        "id": "host:process:resources",
+        "scenario": "Contrato host-only das quotas, identidade e diagnostico privado de recursos por processo",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "none"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "exercitar limites de paginas, bytes, VMAs, PID mais generation, snapshots por copia, rejeicoes sem alteracao parcial e limpeza do registro",
+        "expected": "o controlador preserva quotas, picos, diagnostico limitado e isolamento de identidade sem expor ponteiros ou alterar layouts publicos",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente tabela privada de recursos e estruturas estaticas da fixture host",
+        "cleanup": "registro de recursos destacado e manifesto, logs e cobertura preservados",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "process",
+          "resources",
+          "quotas",
+          "oom",
+          "identity",
+          "coverage"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "make test-process-resource-host PASS com limites de paginas, bytes e VMAs, generation incorreta, falhas sem alteracao parcial, snapshots por copia, picos e limpeza"
     },
     {
       "id": "thread-host-dynamic",

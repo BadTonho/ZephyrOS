@@ -4,6 +4,7 @@
 #include "core/errors.h"
 #include "core/log.h"
 #include "core/string.h"
+#include "process/resource.h"
 
 #define VMA_IMAGE_FLAGS_CODE (VM_READ | VM_EXEC | VM_ANONYMOUS)
 #define VMA_IMAGE_FLAGS_DATA (VM_READ | VM_WRITE | VM_ANONYMOUS)
@@ -283,9 +284,13 @@ static int process_vma_materialize_page(process_t* proc,
     if (!process_vma_access_allowed(area, write, instruction)) {
         return ERR_UNAVAILABLE;
     }
+    result = process_resource_check_page(proc);
+    if (result != OK) return result;
 
     physical = pmm_alloc_page_in_zone(MEMORY_ZONE_PROCESS);
     if (!physical) {
+        process_resource_record_failure(proc, PROCESS_RESOURCE_FAILURE_OOM,
+                                        ERR_MEM, PAGE_SIZE);
         LOG_ERROR("MEM", "Falha ao alocar pagina de usuario sob demanda");
         return ERR_MEM;
     }
@@ -306,6 +311,7 @@ static int process_vma_materialize_page(process_t* proc,
         LOG_ERROR("MEM", "Falha ao mapear pagina de usuario sob demanda");
         return result;
     }
+    process_resource_note_page_success(proc);
     return OK;
 }
 
@@ -473,6 +479,8 @@ int process_vma_mmap(process_t* proc, uint32_t length,
     }
     result = process_vma_find_gap(proc, rounded_length, &address);
     if (result != OK) return result;
+    result = process_resource_check_vma(proc, rounded_length);
+    if (result != OK) return result;
     end_addr = address + rounded_length;
     area = process_vma_create(address, end_addr, protection | flags);
     if (!area) return ERR_MEM;
@@ -481,6 +489,7 @@ int process_vma_mmap(process_t* proc, uint32_t length,
         kfree(area);
         return result;
     }
+    process_resource_note_vma_success(proc);
     *address_out = address;
     LOG_DEBUG("MEM", "VMA anonima criada");
     return OK;
@@ -516,6 +525,8 @@ int process_vma_munmap(process_t* proc, uint32_t address, uint32_t length) {
     }
     right_area = 0;
     if (address > area->start_addr && end_addr < area->end_addr) {
+        result = process_resource_check_vma_split(proc);
+        if (result != OK) return result;
         right_area = process_vma_create(end_addr, area->end_addr,
                                         area->flags);
         if (!right_area) return ERR_MEM;
@@ -542,6 +553,7 @@ int process_vma_munmap(process_t* proc, uint32_t address, uint32_t length) {
         area->next = right_area;
         area->end_addr = address;
         proc->vma_count++;
+        process_resource_note_vma_success(proc);
     }
     LOG_DEBUG("MEM", "VMA anonima desmapeada");
     return OK;

@@ -9,6 +9,7 @@
 #include "memory/paging.h"
 #include "memory/vma.h"
 #include "process/process.h"
+#include "process/resource.h"
 
 #define HOST_COVERAGE_CAPACITY 8192U
 #define HOST_COVERAGE_LINE_SIZE 32U
@@ -136,6 +137,22 @@ void kfree(void* pointer) {
 
 page_directory_t* paging_get_current_directory(void) {
     return &fake_directory;
+}
+
+int paging_get_user_page_count(page_directory_t* directory,
+                               uint32_t* out_count) {
+    uint32_t count = 0U;
+
+    if (!directory || !out_count) return ERR_NULL;
+    if (directory != &fake_directory) return ERR_STATE;
+    for (uint32_t index = 0U; index < VMA_TEST_PAGE_CAPACITY; index++) {
+        if (fake_page_used[index] && fake_pages[index].present &&
+            fake_pages[index].user) {
+            count++;
+        }
+    }
+    *out_count = count;
+    return OK;
 }
 
 page_entry_t* paging_get_page_in_directory(page_directory_t* directory,
@@ -424,10 +441,14 @@ int main(void) {
     reset_fixture();
     kmemset(&process, 0, sizeof(process));
     process.pid = 42U;
+    process.event_generation = 1U;
     process.page_directory = &fake_directory;
     process.context.user_mode = 1U;
+    process.kernel_stack_size = PROCESS_USER_KERNEL_STACK_SIZE;
+    result = process_resource_init();
+    if (result == OK) result = process_resource_attach(&process);
     coverage_active = 1U;
-    result = test_preconditions(&process);
+    if (result == OK) result = test_preconditions(&process);
     if (result == OK) {
         fake_current_process = &process;
         result = test_image_and_faults(&process);
@@ -438,6 +459,7 @@ int main(void) {
                               ERR_NULL, "copy all null");
     }
     process_vma_release(&process);
+    process_resource_detach(&process);
     for (uint32_t index = 0U; index < VMA_TEST_PAGE_CAPACITY; index++) {
         if (fake_page_used[index]) mapped_pages++;
     }

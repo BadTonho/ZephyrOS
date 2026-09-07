@@ -10,8 +10,10 @@
 #include "fs/block_cache.h"
 #include "fs/procfs.h"
 #include "fs/vfs.h"
+#include "memory/paging.h"
 #include "memory/slab.h"
 #include "process/process.h"
+#include "process/resource.h"
 
 #define HOST_COVERAGE_CAPACITY 8192U
 #define HOST_COVERAGE_LINE_SIZE 32U
@@ -36,6 +38,7 @@ static process_t temporary_process;
 static uint8_t temporary_active;
 static uint32_t next_generation = 100U;
 static process_t* current_process;
+static page_directory_t host_page_directory;
 static file_t fake_files[HOST_FD_COUNT];
 static vnode_t fake_vnodes[HOST_FD_COUNT];
 static procfs_file_context_t fake_contexts[HOST_FD_COUNT];
@@ -173,6 +176,13 @@ void log_print_code(log_level_t level, const char* module, int32_t error_code,
     (void)module;
     (void)error_code;
     (void)message;
+}
+
+int paging_get_user_page_count(page_directory_t* directory,
+                               uint32_t* out_count) {
+    if (!directory || !out_count) return ERR_NULL;
+    *out_count = 0U;
+    return OK;
 }
 
 void log_set_level(log_level_t level) {
@@ -481,6 +491,9 @@ static void host_init_processes(void) {
                        index == 0U ? "idle" : "worker");
     }
     base_processes[1].vma_count = 1U;
+    base_processes[1].context.user_mode = 1U;
+    base_processes[1].page_directory = &host_page_directory;
+    base_processes[1].kernel_stack_size = PROCESS_USER_KERNEL_STACK_SIZE;
     current_process = &base_processes[0];
 }
 
@@ -489,7 +502,7 @@ int main(void) {
     vfs_dir_entry_t entries[VFS_MAX_DIR_ENTRIES];
     vfs_lookup_result_t lookup;
     pollfd_t poll_fd;
-    uint8_t buffer[512];
+    uint8_t buffer[1024];
     uint32_t bytes = 0U;
     uint32_t count = 0U;
     uint32_t position = 0U;
@@ -498,6 +511,8 @@ int main(void) {
     int failures = 0;
 
     host_init_processes();
+    EXPECT(process_resource_init() == OK);
+    EXPECT(process_resource_attach(&base_processes[1]) == OK);
     coverage_active = 1U;
 
     EXPECT(procfs_is_ready() == 0);
@@ -545,6 +560,16 @@ int main(void) {
         fd = VFS_FD_INVALID;
     }
 
+    EXPECT(vfs_open("/proc/1/status", VFS_MODE_READ, &fd) == OK);
+    if (fd != VFS_FD_INVALID) {
+        EXPECT(vfs_read(fd, buffer, sizeof(buffer), &bytes) == OK);
+        EXPECT(host_contains(buffer, bytes, "resource_limits_active"));
+        EXPECT(host_contains(buffer, bytes, "resource_resident_limit_pages"));
+        EXPECT(!host_contains(buffer, bytes, "0x"));
+        EXPECT(vfs_close(fd) == OK);
+        fd = VFS_FD_INVALID;
+    }
+
     EXPECT(vfs_lookup("/proc/uptime", &lookup) == OK);
     lookup.mount_kind = VFS_MOUNT_SYSFS;
     EXPECT(procfs_open_file(&lookup, VFS_MODE_READ, &fake_vnodes[0],
@@ -554,6 +579,7 @@ int main(void) {
     EXPECT(procfs_reset_controls() == OK);
     EXPECT(procfs_is_ready() != 0);
     EXPECT(procfs_validate_state() == OK);
+    process_resource_detach(&base_processes[1]);
 
     coverage_active = 0U;
     coverage_emit(failures ? ERR_STATE : OK);

@@ -54,19 +54,19 @@ quantum ou migração para Rust nesta etapa.
 
 ### KRN2 — Memória e isolamento
 
-- [ ] Auditar heap, PMM, paging, VMA e caches para overflow, double free,
+- [x] Auditar heap, PMM, paging, VMA e caches para overflow, double free,
   vazamento, uso após liberação e referências órfãs.
-- [ ] Validar mapeamentos de kernel, userland, VGA, buffers e páginas de
+- [x] Validar mapeamentos de kernel, userland, VGA, buffers e páginas de
   dispositivos.
-- [ ] Confirmar que page fault de userland não corrompa o kernel nem outro
+- [x] Confirmar que page fault de userland não corrompa o kernel nem outro
   processo.
-- [ ] Definir limites de heap, páginas, argumentos, stacks e alocações de cada
+- [x] Definir limites de heap, páginas, argumentos, stacks e alocações de cada
   processo.
-- [ ] Definir política para falta de memória, encerramento por limite e
+- [x] Definir política para falta de memória, encerramento por limite e
   diagnóstico do processo que exceder recursos.
-- [ ] Confirmar que endereços e objetos privados do kernel não sejam publicados
+- [x] Confirmar que endereços e objetos privados do kernel não sejam publicados
   em interfaces de processo ou diagnósticos.
-- [ ] Repetir `memcheck` depois de criação, falha, encerramento e reutilização
+- [x] Repetir `memcheck` depois de criação, falha, encerramento e reutilização
   de PID.
 
 #### KRN2.1 - Auditoria e reforço dos invariantes de memória
@@ -79,9 +79,26 @@ quantum ou migração para Rust nesta etapa.
   host e QEMU.
 - [x] Confirmar execução sem falha funcional nos casos de page fault de memória,
   paging/VMA, estresse de kernel e assembly do TST7.
-- [x] Reexecutar o gate TST7 com o comparador de duração sem regressão;
-  quotas por processo, OOM e encerramento por limite continuam
-  reservados para a próxima etapa de KRN2.
+- [x] Reexecutar o gate TST7 com o comparador de duração sem regressão; quotas
+  por processo, OOM e encerramento por limite foram tratados na KRN2.2 abaixo.
+
+#### KRN2.2 - Quotas, OOM e diagnóstico por processo
+
+- [x] Adicionar controlador privado por `PID + generation`, sem alterar
+  `process_t`, snapshots públicos, syscalls, ABI, scheduler ou bootloader.
+- [x] Aplicar limites de 128 páginas residentes, 1 MiB anônimo, 16 VMAs
+  dinâmicas, 8 argumentos/511 bytes e os limites atuais de stack e imagem.
+- [x] Rejeitar `mmap`, page fault e alocações físicas acima da quota com
+  códigos canônicos e rollback completo; encerrar apenas o processo que sofreu
+  o fault irrecuperável.
+- [x] Atualizar a contabilidade somente após liberação real e validar destroy,
+  reap, reutilização de PID e generation incorreta.
+- [x] Expor somente métricas numéricas seguras no `/proc/<pid>/status`, sem
+  endereços físicos, ponteiros ou objetos privados.
+- [x] Cobrir quotas, falhas, OOM, isolamento e baseline do controlador nos
+  testes host, QEMU, catálogo e TST7.
+- [x] Confirmar `make q3check`, build limpo, matriz host, paging/VMA,
+  fault-memory, stress-kernel, TST7 completo e catálogo estrito.
 
 ### KRN3 — Scheduler e Idle
 

@@ -8,6 +8,7 @@
 #include "core/string.h"
 #include "core/syscall.h"
 #include "drivers/tss.h"
+#include "process/resource.h"
 #include "process/thread.h"
 #if defined(ZEPHYROS_TEST_COVERAGE)
 #include "core/test_coverage.h"
@@ -582,6 +583,7 @@ static void process_discard_new_process(process_t* proc) {
     if (proc->ipc_wait_channel.initialized) {
         wait_channel_reset(&proc->ipc_wait_channel);
     }
+    process_resource_detach(proc);
     if (proc->pid != 0) process_release_pid(proc->pid);
     process_stack_release(proc);
     process_vma_release(proc);
@@ -609,6 +611,9 @@ void process_init(void) {
     process_identity_generation = 0;
     process_power_quiescing = 0U;
     for (int i = 0; i < MAX_PROCESSES; i++) processes[i] = 0;
+    if (process_resource_init() != OK) {
+        LOG_ERROR("PROC", "Falha ao inicializar recursos de processos");
+    }
     process_cache = kmem_cache_create("process", sizeof(process_t), 16U);
     if (!process_cache) {
         LOG_ERROR("PROC", "Falha ao criar cache de processos");
@@ -694,6 +699,20 @@ void process_bootstrap_idle(void) {
     proc->context.fs = KERNEL_DATA_SELECTOR;
     proc->context.gs = KERNEL_DATA_SELECTOR;
     proc->context.cr3 = (uint32_t)proc->page_directory;
+
+    if (process_resource_attach(proc) != OK) {
+        LOG_ERROR("PROC", "Falha ao registrar recursos do Idle");
+        process_stack_release(proc);
+        if (wait_channel_reset(&proc->ipc_wait_channel) != OK) {
+            LOG_ERROR("PROC", "Falha ao liberar espera do Idle");
+        }
+        if (vfs_fd_table_release(&proc->fd_table) != OK) {
+            LOG_ERROR("PROC", "Falha ao liberar descritores do Idle");
+        }
+        processes[0] = 0;
+        kmem_cache_free(process_cache, proc);
+        return;
+    }
     
     current_process = proc;
     process_count = 1;
@@ -893,6 +912,12 @@ static process_t* process_create_internal(const char* name,
     proc->user_test = 0;
 
     (void)process_stack_observe(proc, 0, 0U, 0U);
+
+    if (process_resource_attach(proc) != OK) {
+        LOG_ERROR("PROC", "Falha ao registrar recursos do processo");
+        process_discard_new_process(proc);
+        return 0;
+    }
 
     proc->state = PROCESS_STATE_READY;
     process_count++;
@@ -1390,6 +1415,12 @@ static int process_user_initialize(process_t* proc, page_directory_t* dir,
         process_discard_new_process(proc);
         return result;
     }
+    result = process_resource_attach(proc);
+    if (result != OK) {
+        LOG_ERROR("PROC", "Falha ao registrar recursos ring 3");
+        process_discard_new_process(proc);
+        return result;
+    }
     proc->user_test = diagnostic_test ? 1U : 0U;
     proc->state = start_suspended ? PROCESS_STATE_BLOCKED : PROCESS_STATE_READY;
     (void)process_stack_observe(proc, 0, 0U, 0U);
@@ -1819,6 +1850,7 @@ void process_destroy(process_t* proc) {
     if (proc->page_directory && proc->context.user_mode) {
         paging_free_user_directory(proc->page_directory);
     }
+    process_resource_detach(proc);
     if (process_count > 0) process_count--;
     kmemset(proc, 0, sizeof(process_t));
     {

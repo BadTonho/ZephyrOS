@@ -93,6 +93,24 @@ VMAs sem alocar páginas físicas de usuário; o paging lazy materializa cada
 página no primeiro acesso e o ciclo de destruição libera os buffers e os frames
 residentes sem alterar as assinaturas de criação ou a ABI das aplicações.
 
+### Quotas e diagnostico de recursos KRN2.2
+
+O controlador privado de `src/process/resource.c` acompanha cada processo por
+`PID + generation`, sem acrescentar campos a `process_t` ou publicar ponteiros.
+Para processos ring 3, os limites iniciais sao 128 paginas residentes, 1 MiB
+de espaco anonimo, 16 VMAs dinamicas, 8 argumentos e 511 bytes de argumentos
+crus. Imagem, stack de usuario e stack de kernel permanecem sujeitos aos
+limites ja definidos pelo loader e pelo paging.
+
+As consultas usam `process_resource_snapshot_copy()` e retornam uma copia de
+contadores atuais, picos, limites, falhas e ultimo motivo. `/proc/<pid>/status`
+mostra somente esses valores seguros. VMAs e paginas sao contadas a partir do
+estado real; por isso `munmap`, reaping e destruicao atualizam a contabilidade
+somente depois da liberacao. Excesso em `mmap` e rejeitado com
+`ERR_OVERFLOW`; falha fisica retorna `ERR_MEM` apos rollback. Um page fault
+que exceda quota ou nao consiga obter pagina encerra apenas o processo que
+sofreu o fault.
+
 ### Snapshot de introspeccao PROC2
 
 `process_t` acrescenta ao final `event_generation`, uma geracao monotonicamente

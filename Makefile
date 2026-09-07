@@ -460,6 +460,8 @@ BMP_OBJ = $(BUILD_DIR)/bmp.o
 # Arquivos - Processos
 PROCESS_C = src/process/process.c
 PROCESS_OBJ = $(BUILD_DIR)/process.o
+RESOURCE_C = src/process/resource.c
+RESOURCE_OBJ = $(BUILD_DIR)/resource.o
 SIGNAL_C = src/process/signal.c
 SIGNAL_OBJ = $(BUILD_DIR)/signal.o
 IPC_C = src/process/ipc.c
@@ -660,7 +662,7 @@ OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(TEST_PROTOCOL_CORE_O
        $(VIDEO_OBJ) $(VESA_OBJ) $(FONT_OBJ) $(IDT_OBJ) $(SERIAL_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
        $(MOUSE_OBJ) $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(UHCI_OBJ) $(EHCI_OBJ) $(USB_TRANSPORT_OBJ) $(USB_MSC_OBJ) $(USB_HID_OBJ) $(RTL8811CU_OBJ) $(E1000_OBJ) $(RTL8139_OBJ) $(AC97_OBJ) $(ACPI_OBJ) $(RNG_OBJ) \
        $(MEMORY_OBJ) $(PAGING_OBJ) $(VMA_OBJ) $(COMPRESS_OBJ) \
-       $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(VFS_OBJ) $(VFS_PATH_OBJ) $(DEVFS_OBJ) $(PROCFS_OBJ) $(SYSFS_OBJ) $(BLOCK_OBJ) $(BLOCK_CACHE_OBJ) $(STORAGE_OBJ) $(FILE_INDEX_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(SIGNAL_OBJ) $(IPC_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(SHELL_INTROSPECTION_OBJ) $(MEDIAPLAYER_OBJ) $(EDITOR_OBJ) $(GUITEST_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ) $(SETTINGS_OBJ) $(UPDATER_OBJ) $(APPSTORE_OBJ) $(WM_OBJ) $(ICONS_OBJ) $(GUI_OBJ) $(APP_FILES_OBJ) $(APP_LOADER_OBJ) $(APP_BUILTIN_OBJ) $(APP_PACKAGE_OBJ) $(APP_REMOTE_OBJ) $(DEVICE_MANAGER_OBJ) $(USB_MANAGER_OBJ) $(NETWORK_MANAGER_OBJ) $(WIFI_MANAGER_OBJ) $(POWER_OBJ) $(NET_BUFFER_OBJ) $(SK_BUFF_OBJ) $(SOCKET_OBJ) $(ETHERNET_OBJ) $(ARP_OBJ) $(IPV4_OBJ) $(ICMP_OBJ) $(UDP_OBJ) $(DHCP_OBJ) $(DNS_OBJ) $(TCP_OBJ) $(NET_SOCKET_OBJ) $(HTTP_OBJ) $(APP_CATALOG_OBJ) $(DISPLAY_OBJ) $(SHELL_INPUT_OBJ) $(SHELL_DISPATCH_OBJ) $(SHELL_COMMAND_UTILS_OBJ) $(SHELL_PIPELINE_OBJ) $(SHELL_COMMANDS_VFS_OBJ) $(SHELL_COMMANDS_CORE_OBJ) $(SHELL_COMMANDS_STORAGE_OBJ) $(SHELL_COMMANDS_DIAGNOSTICS_OBJ) $(SHELL_DIAGNOSTICS_HELPERS_OBJ) $(SHELL_COMMANDS_NETWORK_OBJ) $(SHELL_COMMANDS_WIFI_OBJ) $(SHELL_CHECKS_OBJ) $(SHELL_COMMANDS_PACKAGES_OBJ) $(SHELL_COMMANDS_APPS_OBJ) $(SHELL_HOSTED_OBJ) $(SHELL_JOB_OBJ) $(RTC_OBJ) $(CLOCK_OBJ) $(TLS_OBJ) $(TLS_CLIENT_OBJ) $(SLAB_OBJ)
+       $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(VFS_OBJ) $(VFS_PATH_OBJ) $(DEVFS_OBJ) $(PROCFS_OBJ) $(SYSFS_OBJ) $(BLOCK_OBJ) $(BLOCK_CACHE_OBJ) $(STORAGE_OBJ) $(FILE_INDEX_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(RESOURCE_OBJ) $(SIGNAL_OBJ) $(IPC_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(SHELL_INTROSPECTION_OBJ) $(MEDIAPLAYER_OBJ) $(EDITOR_OBJ) $(GUITEST_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ) $(SETTINGS_OBJ) $(UPDATER_OBJ) $(APPSTORE_OBJ) $(WM_OBJ) $(ICONS_OBJ) $(GUI_OBJ) $(APP_FILES_OBJ) $(APP_LOADER_OBJ) $(APP_BUILTIN_OBJ) $(APP_PACKAGE_OBJ) $(APP_REMOTE_OBJ) $(DEVICE_MANAGER_OBJ) $(USB_MANAGER_OBJ) $(NETWORK_MANAGER_OBJ) $(WIFI_MANAGER_OBJ) $(POWER_OBJ) $(NET_BUFFER_OBJ) $(SK_BUFF_OBJ) $(SOCKET_OBJ) $(ETHERNET_OBJ) $(ARP_OBJ) $(IPV4_OBJ) $(ICMP_OBJ) $(UDP_OBJ) $(DHCP_OBJ) $(DNS_OBJ) $(TCP_OBJ) $(NET_SOCKET_OBJ) $(HTTP_OBJ) $(APP_CATALOG_OBJ) $(DISPLAY_OBJ) $(SHELL_INPUT_OBJ) $(SHELL_DISPATCH_OBJ) $(SHELL_COMMAND_UTILS_OBJ) $(SHELL_PIPELINE_OBJ) $(SHELL_COMMANDS_VFS_OBJ) $(SHELL_COMMANDS_CORE_OBJ) $(SHELL_COMMANDS_STORAGE_OBJ) $(SHELL_COMMANDS_DIAGNOSTICS_OBJ) $(SHELL_DIAGNOSTICS_HELPERS_OBJ) $(SHELL_COMMANDS_NETWORK_OBJ) $(SHELL_COMMANDS_WIFI_OBJ) $(SHELL_CHECKS_OBJ) $(SHELL_COMMANDS_PACKAGES_OBJ) $(SHELL_COMMANDS_APPS_OBJ) $(SHELL_HOSTED_OBJ) $(SHELL_JOB_OBJ) $(RTC_OBJ) $(CLOCK_OBJ) $(TLS_OBJ) $(TLS_CLIENT_OBJ) $(SLAB_OBJ)
 
 OBJS += $(ROUTE_OBJ)
 OBJS += $(POWER_NOTIFIER_OBJ)
@@ -1124,7 +1126,7 @@ $(PAGING_OBJ): $(PAGING_C) src/include/memory/paging.h src/include/core/errors.h
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(VMA_OBJ): $(VMA_C) src/include/memory/vma.h src/include/process/process.h
+$(VMA_OBJ): $(VMA_C) src/include/memory/vma.h src/include/process/process.h src/include/process/resource.h
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -1156,7 +1158,7 @@ $(DEVFS_OBJ): $(DEVFS_C) src/include/fs/devfs.h src/include/fs/vfs.h src/include
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(PROCFS_OBJ): $(PROCFS_C) src/include/fs/procfs.h src/include/fs/vfs.h src/include/fs/vfs_internal.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h src/include/core/spinlock.h src/include/core/string.h src/include/core/timer.h src/include/core/version.h src/include/fs/block_cache.h src/include/memory/slab.h src/include/memory/paging.h src/include/memory/vma.h src/include/process/process.h src/include/process/thread.h
+$(PROCFS_OBJ): $(PROCFS_C) src/include/fs/procfs.h src/include/fs/vfs.h src/include/fs/vfs_internal.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h src/include/core/spinlock.h src/include/core/string.h src/include/core/timer.h src/include/core/version.h src/include/fs/block_cache.h src/include/memory/slab.h src/include/memory/paging.h src/include/memory/vma.h src/include/process/process.h src/include/process/thread.h src/include/process/resource.h
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -1188,7 +1190,11 @@ $(BMP_OBJ): $(BMP_C)
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(PROCESS_OBJ): $(PROCESS_C) src/core/test_coverage.h src/include/process/process.h src/include/process/thread.h src/include/memory/slab.h src/include/memory/vma.h src/include/memory/paging.h src/include/core/app_api.h src/include/core/timer.h
+$(PROCESS_OBJ): $(PROCESS_C) src/core/test_coverage.h src/include/process/process.h src/include/process/thread.h src/include/process/resource.h src/include/memory/slab.h src/include/memory/vma.h src/include/memory/paging.h src/include/core/app_api.h src/include/core/timer.h
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(RESOURCE_OBJ): $(RESOURCE_C) src/include/process/resource.h src/include/process/process.h src/include/memory/vma.h src/include/memory/paging.h src/include/core/app_api.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -1782,8 +1788,11 @@ test-desktop-host: tools\core_host_runner.py tools\coverage_collector.py tests\u
 test-syscall-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_syscall_host.c tests\catalog.json src\core\syscall.c src\include\core\syscall.h src\include\core\app_api.h src\include\core\poll.h src\include\memory\paging.h src\include\process\process.h src\include\process\signal.h src\include\drivers\idt.h src\include\drivers\tss.h
 	python tools/core_host_runner.py --case host:core:syscall --cc "$(HOST_CC)"
 
-test-process-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_process_host.c tests\catalog.json src\process\process.c src\include\process\process.h src\include\process\signal.h src\include\memory\paging.h src\include\memory\vma.h src\include\memory\slab.h src\include\core\wait.h src\include\fs\vfs.h
+test-process-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_process_host.c tests\catalog.json src\process\process.c src\process\resource.c src\include\process\process.h src\include\process\resource.h src\include\process\signal.h src\include\memory\paging.h src\include\memory\vma.h src\include\memory\slab.h src\include\core\wait.h src\include\fs\vfs.h
 	python tools/core_host_runner.py --case host:process:runtime --cc "$(HOST_CC)"
+
+test-process-resource-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_process_resource_host.c tests\catalog.json src\process\resource.c src\include\process\resource.h src\include\process\process.h src\include\memory\vma.h src\include\memory\paging.h
+	python tools/core_host_runner.py --case host:process:resources --cc "$(HOST_CC)"
 
 test-thread-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_thread_host.c tests\catalog.json src\thread\thread.c src\include\process\thread.h src\include\process\process.h src\include\core\wait.h src\include\memory\slab.h
 	python tools/core_host_runner.py --case host:process:threads --cc "$(HOST_CC)"
@@ -1866,7 +1875,7 @@ test-net-socket-host: tools\core_host_runner.py tools\coverage_collector.py test
 test-socket-runtime-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_socket_host.c tests\catalog.json src\core\socket.c src\include\core\socket.h src\include\core\net_socket.h src\include\core\sk_buff.h src\include\core\wait.h src\include\fs\vfs.h src\include\fs\vfs_internal.h
 	python tools\core_host_runner.py --case host:network:socket-runtime --cc "$(HOST_CC)"
 
-test-vma-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_vma_host.c tests\catalog.json src\memory\vma.c src\include\memory\vma.h
+test-vma-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_vma_host.c tests\catalog.json src\memory\vma.c src\process\resource.c src\include\memory\vma.h src\include\process\resource.h
 	python tools\core_host_runner.py --case host:memory:vma --cc "$(HOST_CC)"
 
 test-paging-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_paging_host.c tests\catalog.json src\memory\paging.c src\include\memory\paging.h
@@ -1917,7 +1926,7 @@ test-usb-msc-host: tools\core_host_runner.py tools\coverage_collector.py tests\u
 test-devfs-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_devfs_host.c tests\catalog.json src\fs\devfs.c src\include\fs\devfs.h src\include\fs\vfs.h src\include\fs\vfs_internal.h src\include\fs\block.h src\include\fs\block_cache.h src\include\core\app_api.h src\include\drivers\speaker.h src\core\string.c
 	python tools\core_host_runner.py --case host:storage:devfs --cc "$(HOST_CC)"
 
-test-procfs-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_procfs_host.c tests\catalog.json src\fs\procfs.c src\include\fs\procfs.h src\include\fs\vfs.h src\include\core\log.h src\include\core\memory.h src\include\core\timer.h src\include\memory\slab.h src\include\process\process.h src\core\string.c
+test-procfs-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_procfs_host.c tests\catalog.json src\fs\procfs.c src\process\resource.c src\include\fs\procfs.h src\include\fs\vfs.h src\include\core\log.h src\include\core\memory.h src\include\core\timer.h src\include\memory\slab.h src\include\process\process.h src\include\process\resource.h src\core\string.c
 	python tools\core_host_runner.py --case host:storage:procfs --cc "$(HOST_CC)"
 
 test-sysfs-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_sysfs_host.c tests\catalog.json src\fs\sysfs.c src\include\fs\sysfs.h src\include\fs\procfs.h src\include\fs\vfs.h src\include\core\errors.h src\include\core\log.h src\include\core\memory.h src\include\core\poll.h src\include\core\power.h src\include\core\spinlock.h src\include\core\string.h src\include\drivers\pci.h src\include\core\network_manager.h src\include\fs\block.h src\core\string.c
@@ -2168,7 +2177,7 @@ clean:
 .PHONY: test-shell-commands-wifi-host
 .PHONY: test-app-loader-host test-taskbar-host test-appstore-host test-editor-host test-settings-icons-host test-desktop-host test-syscall-host test-thread-host
 .PHONY: test-tst7-continuous-host test-tst7-continuous
-.PHONY: test-network-host test-network-manager-host test-route-host test-ipv4-host test-crypto-host test-scheduling-host test-package-host test-update-host test-update-runtime-host test-update-remote-runtime-host test-update-remote-host test-app-remote-host test-update-system-slots-host test-update-remote-system-host test-update-remote-github-host test-update-remote-release-host test-update-system-host test-state-host test-device-manager-host test-app-api-host test-app-files-host test-app-builtin-host test-app-catalog-host test-input-host test-power-host test-vfs-path-host test-file-index-host test-fs-host test-storage-host test-storage-fat32-host test-block-host test-fat12-host test-fat32-host test-vfs-host test-slab-host test-timer-host test-udp-host test-arp-host test-icmp-host test-dns-host test-dhcp-host test-ethernet-host test-tcp-host test-tls-host test-tls-client-host test-mediaplayer-host test-shell-job-host test-shell-pipeline-host test-http-host test-net-socket-host test-socket-runtime-host test-vma-host test-paging-host test-memory-host test-process-signal-host test-process-ipc-host test-process-host test-thread-host test-workqueue-host test-bearssl-compat-host test-shell-dispatch-host test-shell-introspection-host test-font-host test-rtc-status-host test-wifi-manager-host test-usb-manager-host test-usb-hid-host test-usb-msc-host test-devfs-host test-procfs-host test-sysfs-host test-wav-host test-bmp-host test-rng-host test-serial-host test-tss-host test-speaker-host test-keyboard-host test-protocol-adapter-host test-blackbox-host test-coverage-host test-shell-input-host test-shell-hosted-host test-shell-command-utils-host test-usb-transport-host test-gui-host test-shell-commands-vfs-host test-recovery-runtime-host test-panic-host test-kernel-host test-pci-host test-ata-host test-idt-host test-icons-host test-vesa-host test-video-host test-mouse-host
+.PHONY: test-network-host test-network-manager-host test-route-host test-ipv4-host test-crypto-host test-scheduling-host test-package-host test-update-host test-update-runtime-host test-update-remote-runtime-host test-update-remote-host test-app-remote-host test-update-system-slots-host test-update-remote-system-host test-update-remote-github-host test-update-remote-release-host test-update-system-host test-state-host test-device-manager-host test-app-api-host test-app-files-host test-app-builtin-host test-app-catalog-host test-input-host test-power-host test-vfs-path-host test-file-index-host test-fs-host test-storage-host test-storage-fat32-host test-block-host test-fat12-host test-fat32-host test-vfs-host test-slab-host test-timer-host test-udp-host test-arp-host test-icmp-host test-dns-host test-dhcp-host test-ethernet-host test-tcp-host test-tls-host test-tls-client-host test-mediaplayer-host test-shell-job-host test-shell-pipeline-host test-http-host test-net-socket-host test-socket-runtime-host test-vma-host test-paging-host test-memory-host test-process-signal-host test-process-ipc-host test-process-host test-process-resource-host test-thread-host test-workqueue-host test-bearssl-compat-host test-shell-dispatch-host test-shell-introspection-host test-font-host test-rtc-status-host test-wifi-manager-host test-usb-manager-host test-usb-hid-host test-usb-msc-host test-devfs-host test-procfs-host test-sysfs-host test-wav-host test-bmp-host test-rng-host test-serial-host test-tss-host test-speaker-host test-keyboard-host test-protocol-adapter-host test-blackbox-host test-coverage-host test-shell-input-host test-shell-hosted-host test-shell-command-utils-host test-usb-transport-host test-gui-host test-shell-commands-vfs-host test-recovery-runtime-host test-panic-host test-kernel-host test-pci-host test-ata-host test-idt-host test-icons-host test-vesa-host test-video-host test-mouse-host
 .PHONY: catalog-test-strict
 .PHONY: test-acpi-host
 .PHONY: test-uhci-host

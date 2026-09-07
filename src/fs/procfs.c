@@ -10,6 +10,7 @@
 #include "fs/block_cache.h"
 #include "memory/slab.h"
 #include "process/process.h"
+#include "process/resource.h"
 
 #define PROCFS_GLOBAL_COUNT 5U
 #define PROCFS_SYS_CONTROL_COUNT 2U
@@ -870,6 +871,7 @@ static int procfs_render_snapshot(const proc_entry_t* entry,
 }
 
 static int procfs_render_process_status(const process_snapshot_t* process,
+                                        const process_resource_snapshot_t* resources,
                                         char* buffer, uint32_t capacity,
                                         uint32_t* length) {
     static const char* const states[] = {
@@ -908,13 +910,52 @@ static int procfs_render_process_status(const process_snapshot_t* process,
         buffer, capacity, length, "exit_code", process->exit_code);
     if (result == OK) result = procfs_append_line_decimal(
         buffer, capacity, length, "faulted", process->faulted);
+    if (result == OK && resources) result = procfs_append_line_decimal(
+        buffer, capacity, length, "resource_limits_active",
+        resources->limits_active);
+    if (result == OK && resources) result = procfs_append_line_decimal(
+        buffer, capacity, length, "resource_resident_pages",
+        resources->resident_pages);
+    if (result == OK && resources) result = procfs_append_line_decimal(
+        buffer, capacity, length, "resource_resident_limit_pages",
+        resources->resident_limit_pages);
+    if (result == OK && resources) result = procfs_append_line_decimal(
+        buffer, capacity, length, "resource_anonymous_bytes",
+        resources->anonymous_bytes);
+    if (result == OK && resources) result = procfs_append_line_decimal(
+        buffer, capacity, length, "resource_anonymous_limit_bytes",
+        resources->anonymous_limit_bytes);
+    if (result == OK && resources) result = procfs_append_line_decimal(
+        buffer, capacity, length, "resource_dynamic_vmas",
+        resources->dynamic_vmas);
+    if (result == OK && resources) result = procfs_append_line_decimal(
+        buffer, capacity, length, "resource_dynamic_vma_limit",
+        resources->dynamic_vma_limit);
+    if (result == OK && resources) result = procfs_append_line_decimal(
+        buffer, capacity, length, "resource_argument_bytes",
+        resources->argument_bytes);
+    if (result == OK && resources) result = procfs_append_line_decimal(
+        buffer, capacity, length, "resource_argument_limit_bytes",
+        resources->argument_bytes_limit);
+    if (result == OK && resources) result = procfs_append_line_decimal(
+        buffer, capacity, length, "resource_failures",
+        resources->allocation_failures);
+    if (result == OK && resources) result = procfs_append_line_decimal(
+        buffer, capacity, length, "resource_last_failure",
+        (uint32_t)resources->last_failure);
+    if (result == OK && resources) result = procfs_append_line_decimal(
+        buffer, capacity, length, "resource_last_error",
+        resources->last_error);
     return result;
 }
 
 static int procfs_render_process(const procfs_node_ref_t* node,
                                  procfs_file_context_t* context) {
     process_snapshot_t process;
+    process_resource_snapshot_t resources;
     uint32_t length = 0U;
+    int have_resources = 0;
+    int resource_result;
     int result;
 
     if (!node || !context || !context->snapshot) {
@@ -923,10 +964,21 @@ static int procfs_render_process(const procfs_node_ref_t* node,
     }
     result = process_snapshot_copy(node->pid, &process);
     if (result != OK) return result == ERR_NOT_FOUND ? ERR_AGAIN : result;
+    resource_result = process_resource_snapshot_copy(
+        process.pid, process.generation, &resources);
+    if (resource_result == OK) {
+        have_resources = 1;
+    } else if (resource_result != ERR_NOT_FOUND &&
+               resource_result != ERR_AGAIN) {
+        LOG_WARN_CODE("PROCFS", (int32_t)resource_result,
+                      "Snapshot de recursos indisponivel");
+        return resource_result;
+    }
     context->process_pid = process.pid;
     context->process_generation = process.generation;
     if (node->kind == PROCFS_NODE_PROCESS_STATUS) {
         result = procfs_render_process_status(&process,
+                                              have_resources ? &resources : 0,
                                               (char*)context->snapshot,
                                               PROCFS_MAX_SNAPSHOT_SIZE,
                                               &length);

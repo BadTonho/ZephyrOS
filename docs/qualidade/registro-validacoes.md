@@ -6696,3 +6696,23 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   timeout, regressão de duração ou processo QEMU residual. KRN2.1 está
   concluído; quotas por processo, política de OOM e encerramento por limite
   permanecem planejados para a próxima etapa de KRN2.
+
+- KRN2.2 — quotas, OOM e diagnóstico por processo — concluído em 2026-09-07
+  (America/Sao_Paulo). Foi adicionado o controlador privado por `PID +
+  generation`, com limites de 128 páginas residentes, 1 MiB anônimo, 16 VMAs
+  dinâmicas, 8 argumentos/511 bytes e os limites atuais de stack e imagem. As
+  rejeições preservam VMA, PMM e contadores; faults irrecuperáveis encerram
+  somente o processo infrator; destroy, reap e reutilização de PID removem a
+  contabilidade após a liberação real. O `/proc/<pid>/status` publica somente
+  métricas numéricas, sem ponteiros ou endereços privados.
+
+  Passaram `make q3check`, `make clean`, `make`,
+  `make test-memory-host`, `make test-paging-host`, `make test-slab-host`,
+  `make test-vma-host`, `make test-process-host`,
+  `make test-process-resource-host`, `make test-procfs-host`,
+  `make test-tst4-qemu-paging-vma`, `make test-tst6-qemu-fault-memory`,
+  `make test-tst6-qemu-stress-kernel`, `make catalog-test`,
+  `make catalog-test-strict` e `git diff --check`. O TST7
+  `tst7-20260907T151926Z-24476` terminou `PASS` com 171 casos, incluindo 37
+  QEMU; o novo caso `host:process:resources` foi incluído no executor e no
+  baseline aprovado. Nenhum bootloader foi alterado.
