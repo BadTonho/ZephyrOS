@@ -4,7 +4,7 @@
 
 ## Resumo
 
-- Superfícies ativas: **7333**
+- Superfícies ativas: **7339**
 - Casos de teste: **170**
 - Superfícies aposentadas: **59**
 
@@ -12,14 +12,14 @@
 |---|---:|
 | `api_function` | 1587 |
 | `asm_entry` | 101 |
-| `c_function` | 5525 |
+| `c_function` | 5531 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7333 |
+| `COVERED` | 7339 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
 
@@ -45,7 +45,7 @@
 | `gui` | 30 |
 | `icons` | 18 |
 | `kernel` | 41 |
-| `memory` | 196 |
+| `memory` | 202 |
 | `process` | 259 |
 | `settings` | 57 |
 | `shell` | 1089 |
@@ -5701,6 +5701,7 @@
 | `c:src/memory/memory.c:heap_merge_next` | `src/memory/memory.c` | `heap_merge_next` | `memory` | `COVERED` | 5 |
 | `c:src/memory/memory.c:heap_pointer_was_freed` | `src/memory/memory.c` | `heap_pointer_was_freed` | `memory` | `COVERED` | 1 |
 | `c:src/memory/memory.c:heap_range_contains` | `src/memory/memory.c` | `heap_range_contains` | `memory` | `COVERED` | 6 |
+| `c:src/memory/memory.c:heap_reset` | `src/memory/memory.c` | `heap_reset` | `memory` | `COVERED` | 1 |
 | `c:src/memory/memory.c:kfree` | `src/memory/memory.c` | `kfree` | `memory` | `COVERED` | 5 |
 | `c:src/memory/memory.c:kmalloc` | `src/memory/memory.c` | `kmalloc` | `memory` | `COVERED` | 2 |
 | `c:src/memory/memory.c:kmalloc_aligned` | `src/memory/memory.c` | `kmalloc_aligned` | `memory` | `COVERED` | 1 |
@@ -5745,10 +5746,12 @@
 | `c:src/memory/memory.c:pmm_zone_to_tag` | `src/memory/memory.c` | `pmm_zone_to_tag` | `memory` | `COVERED` | 5 |
 | `c:src/memory/paging.c:paging_abort_init` | `src/memory/paging.c` | `paging_abort_init` | `memory` | `COVERED` | 1 |
 | `c:src/memory/paging.c:paging_bootstrap_get_table` | `src/memory/paging.c` | `paging_bootstrap_get_table` | `memory` | `COVERED` | 2 |
+| `c:src/memory/paging.c:paging_build_table_entry` | `src/memory/paging.c` | `paging_build_table_entry` | `memory` | `COVERED` | 1 |
 | `c:src/memory/paging.c:paging_copy_from_user` | `src/memory/paging.c` | `paging_copy_from_user` | `memory` | `COVERED` | 1 |
 | `c:src/memory/paging.c:paging_copy_to_user` | `src/memory/paging.c` | `paging_copy_to_user` | `memory` | `COVERED` | 2 |
 | `c:src/memory/paging.c:paging_create_directory` | `src/memory/paging.c` | `paging_create_directory` | `memory` | `COVERED` | 2 |
 | `c:src/memory/paging.c:paging_create_user_directory` | `src/memory/paging.c` | `paging_create_user_directory` | `memory` | `COVERED` | 2 |
+| `c:src/memory/paging.c:paging_directory_index` | `src/memory/paging.c` | `paging_directory_index` | `memory` | `COVERED` | 1 |
 | `c:src/memory/paging.c:paging_free_directory` | `src/memory/paging.c` | `paging_free_directory` | `memory` | `COVERED` | 1 |
 | `c:src/memory/paging.c:paging_free_table_entry` | `src/memory/paging.c` | `paging_free_table_entry` | `memory` | `COVERED` | 2 |
 | `c:src/memory/paging.c:paging_free_user_directory` | `src/memory/paging.c` | `paging_free_user_directory` | `memory` | `COVERED` | 2 |
@@ -5765,6 +5768,7 @@
 | `c:src/memory/paging.c:paging_host_table_token` | `src/memory/paging.c` | `paging_host_table_token` | `memory` | `COVERED` | 1 |
 | `c:src/memory/paging.c:paging_init` | `src/memory/paging.c` | `paging_init` | `memory` | `COVERED` | 2 |
 | `c:src/memory/paging.c:paging_invalidate` | `src/memory/paging.c` | `paging_invalidate` | `memory` | `COVERED` | 2 |
+| `c:src/memory/paging.c:paging_is_managed_directory` | `src/memory/paging.c` | `paging_is_managed_directory` | `memory` | `COVERED` | 1 |
 | `c:src/memory/paging.c:paging_is_ready` | `src/memory/paging.c` | `paging_is_ready` | `memory` | `COVERED` | 8 |
 | `c:src/memory/paging.c:paging_is_registered_user_directory` | `src/memory/paging.c` | `paging_is_registered_user_directory` | `memory` | `COVERED` | 2 |
 | `c:src/memory/paging.c:paging_map_framebuffer` | `src/memory/paging.c` | `paging_map_framebuffer` | `memory` | `COVERED` | 2 |
@@ -5773,17 +5777,19 @@
 | `c:src/memory/paging.c:paging_map_page_in_directory` | `src/memory/paging.c` | `paging_map_page_in_directory` | `memory` | `COVERED` | 2 |
 | `c:src/memory/paging.c:paging_physical_pointer` | `src/memory/paging.c` | `paging_physical_pointer` | `memory` | `COVERED` | 2 |
 | `c:src/memory/paging.c:paging_pointer_address` | `src/memory/paging.c` | `paging_pointer_address` | `memory` | `COVERED` | 2 |
+| `c:src/memory/paging.c:paging_register_directory` | `src/memory/paging.c` | `paging_register_directory` | `memory` | `COVERED` | 1 |
 | `c:src/memory/paging.c:paging_register_user_directory` | `src/memory/paging.c` | `paging_register_user_directory` | `memory` | `COVERED` | 2 |
 | `c:src/memory/paging.c:paging_switch_directory` | `src/memory/paging.c` | `paging_switch_directory` | `memory` | `COVERED` | 2 |
 | `c:src/memory/paging.c:paging_table_is_empty` | `src/memory/paging.c` | `paging_table_is_empty` | `memory` | `COVERED` | 2 |
 | `c:src/memory/paging.c:paging_unmap_user_page_in_directory` | `src/memory/paging.c` | `paging_unmap_user_page_in_directory` | `memory` | `COVERED` | 2 |
+| `c:src/memory/paging.c:paging_unregister_directory` | `src/memory/paging.c` | `paging_unregister_directory` | `memory` | `COVERED` | 1 |
 | `c:src/memory/paging.c:paging_unregister_user_directory` | `src/memory/paging.c` | `paging_unregister_user_directory` | `memory` | `COVERED` | 2 |
 | `c:src/memory/paging.c:paging_user_directory_index` | `src/memory/paging.c` | `paging_user_directory_index` | `memory` | `COVERED` | 2 |
 | `c:src/memory/paging.c:paging_validate_user_range` | `src/memory/paging.c` | `paging_validate_user_range` | `memory` | `COVERED` | 2 |
-| `c:src/memory/slab.c:kmem_cache_alloc` | `src/memory/slab.c` | `kmem_cache_alloc` | `memory` | `COVERED` | 1 |
+| `c:src/memory/slab.c:kmem_cache_alloc` | `src/memory/slab.c` | `kmem_cache_alloc` | `memory` | `COVERED` | 2 |
 | `c:src/memory/slab.c:kmem_cache_create` | `src/memory/slab.c` | `kmem_cache_create` | `memory` | `COVERED` | 2 |
 | `c:src/memory/slab.c:kmem_cache_destroy` | `src/memory/slab.c` | `kmem_cache_destroy` | `memory` | `COVERED` | 3 |
-| `c:src/memory/slab.c:kmem_cache_free` | `src/memory/slab.c` | `kmem_cache_free` | `memory` | `COVERED` | 5 |
+| `c:src/memory/slab.c:kmem_cache_free` | `src/memory/slab.c` | `kmem_cache_free` | `memory` | `COVERED` | 6 |
 | `c:src/memory/slab.c:kmem_cache_get_count` | `src/memory/slab.c` | `kmem_cache_get_count` | `memory` | `COVERED` | 1 |
 | `c:src/memory/slab.c:kmem_cache_get_info` | `src/memory/slab.c` | `kmem_cache_get_info` | `memory` | `COVERED` | 4 |
 | `c:src/memory/slab.c:kmem_cache_get_info_at` | `src/memory/slab.c` | `kmem_cache_get_info_at` | `memory` | `COVERED` | 1 |
@@ -5793,23 +5799,23 @@
 | `c:src/memory/slab.c:kmem_cache_self_test` | `src/memory/slab.c` | `kmem_cache_self_test` | `memory` | `COVERED` | 3 |
 | `c:src/memory/slab.c:kmem_cache_validate` | `src/memory/slab.c` | `kmem_cache_validate` | `memory` | `COVERED` | 6 |
 | `c:src/memory/slab.c:slab_align_up` | `src/memory/slab.c` | `slab_align_up` | `memory` | `COVERED` | 4 |
-| `c:src/memory/slab.c:slab_bit_is_set` | `src/memory/slab.c` | `slab_bit_is_set` | `memory` | `COVERED` | 5 |
+| `c:src/memory/slab.c:slab_bit_is_set` | `src/memory/slab.c` | `slab_bit_is_set` | `memory` | `COVERED` | 6 |
 | `c:src/memory/slab.c:slab_cache_registered` | `src/memory/slab.c` | `slab_cache_registered` | `memory` | `COVERED` | 7 |
 | `c:src/memory/slab.c:slab_copy_info` | `src/memory/slab.c` | `slab_copy_info` | `memory` | `COVERED` | 4 |
 | `c:src/memory/slab.c:slab_copy_text` | `src/memory/slab.c` | `slab_copy_text` | `memory` | `COVERED` | 4 |
 | `c:src/memory/slab.c:slab_find_cache_slot` | `src/memory/slab.c` | `slab_find_cache_slot` | `memory` | `COVERED` | 4 |
-| `c:src/memory/slab.c:slab_find_free_record` | `src/memory/slab.c` | `slab_find_free_record` | `memory` | `COVERED` | 4 |
+| `c:src/memory/slab.c:slab_find_free_record` | `src/memory/slab.c` | `slab_find_free_record` | `memory` | `COVERED` | 5 |
 | `c:src/memory/slab.c:slab_irq_restore` | `src/memory/slab.c` | `slab_irq_restore` | `memory` | `COVERED` | 2 |
 | `c:src/memory/slab.c:slab_irq_save` | `src/memory/slab.c` | `slab_irq_save` | `memory` | `COVERED` | 2 |
-| `c:src/memory/slab.c:slab_list_add` | `src/memory/slab.c` | `slab_list_add` | `memory` | `COVERED` | 4 |
-| `c:src/memory/slab.c:slab_list_remove` | `src/memory/slab.c` | `slab_list_remove` | `memory` | `COVERED` | 4 |
-| `c:src/memory/slab.c:slab_object_location` | `src/memory/slab.c` | `slab_object_location` | `memory` | `COVERED` | 6 |
+| `c:src/memory/slab.c:slab_list_add` | `src/memory/slab.c` | `slab_list_add` | `memory` | `COVERED` | 5 |
+| `c:src/memory/slab.c:slab_list_remove` | `src/memory/slab.c` | `slab_list_remove` | `memory` | `COVERED` | 5 |
+| `c:src/memory/slab.c:slab_object_location` | `src/memory/slab.c` | `slab_object_location` | `memory` | `COVERED` | 7 |
 | `c:src/memory/slab.c:slab_power_of_two` | `src/memory/slab.c` | `slab_power_of_two` | `memory` | `COVERED` | 4 |
-| `c:src/memory/slab.c:slab_prepare_record` | `src/memory/slab.c` | `slab_prepare_record` | `memory` | `COVERED` | 4 |
-| `c:src/memory/slab.c:slab_set_bit` | `src/memory/slab.c` | `slab_set_bit` | `memory` | `COVERED` | 5 |
+| `c:src/memory/slab.c:slab_prepare_record` | `src/memory/slab.c` | `slab_prepare_record` | `memory` | `COVERED` | 5 |
+| `c:src/memory/slab.c:slab_set_bit` | `src/memory/slab.c` | `slab_set_bit` | `memory` | `COVERED` | 6 |
 | `c:src/memory/slab.c:slab_test_progress` | `src/memory/slab.c` | `slab_test_progress` | `memory` | `COVERED` | 2 |
 | `c:src/memory/slab.c:slab_validate_list` | `src/memory/slab.c` | `slab_validate_list` | `memory` | `COVERED` | 5 |
-| `c:src/memory/slab.c:slab_validate_slab` | `src/memory/slab.c` | `slab_validate_slab` | `memory` | `COVERED` | 4 |
+| `c:src/memory/slab.c:slab_validate_slab` | `src/memory/slab.c` | `slab_validate_slab` | `memory` | `COVERED` | 5 |
 | `c:src/memory/vma.c:process_vma_access_allowed` | `src/memory/vma.c` | `process_vma_access_allowed` | `memory` | `COVERED` | 2 |
 | `c:src/memory/vma.c:process_vma_copy` | `src/memory/vma.c` | `process_vma_copy` | `memory` | `COVERED` | 1 |
 | `c:src/memory/vma.c:process_vma_create` | `src/memory/vma.c` | `process_vma_create` | `memory` | `COVERED` | 2 |

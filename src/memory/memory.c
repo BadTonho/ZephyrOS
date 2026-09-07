@@ -15,6 +15,7 @@ static uint32_t pmm_invalid_frees = 0;
 static uint32_t heap_allocation_failures = 0;
 static uint32_t heap_invalid_frees = 0;
 static uint32_t heap_double_frees = 0;
+static void heap_reset(void);
 
 #define PMM_ZONE_TAG_BITS 3U
 #define PMM_ZONE_TAG_MASK 0x07U
@@ -77,6 +78,9 @@ static uint8_t memory_host_heap_storage[HEAP_SIZE]
 #endif
 
 static uint32_t align_up(uint32_t value, uint32_t alignment) {
+    if (alignment == 0U || value > 0xFFFFFFFFU - (alignment - 1U)) {
+        return 0U;
+    }
     return (value + alignment - 1) & ~(alignment - 1);
 }
 
@@ -262,7 +266,11 @@ static void memory_mark_usable(uint32_t mmap_count) {
 
 static void memory_reserve_range(uint32_t start, uint32_t end) {
     uint32_t start_page = start / PAGE_SIZE;
-    uint32_t end_page = align_up(end, PAGE_SIZE) / PAGE_SIZE;
+    uint32_t aligned_end = align_up(end, PAGE_SIZE);
+    uint32_t end_page;
+
+    if (aligned_end == 0U || end <= start) return;
+    end_page = aligned_end / PAGE_SIZE;
     if (end_page > mem_info.total_pages) end_page = mem_info.total_pages;
     for (uint32_t p = start_page; p < end_page; p++) {
         mem_info.bitmap[p / 8] |= (1U << (p % 8));
@@ -337,7 +345,8 @@ void memory_init(uint32_t mmap_addr) {
                                     PAGE_SIZE);
     zone_storage_size = align_up(PMM_ZONE_STORAGE_BYTES(mem_info.total_pages),
                                  PAGE_SIZE);
-    if (mem_info.bitmap_size > PMM_ZONE_STORAGE_CAPACITY ||
+    if (mem_info.bitmap_size == 0U || zone_storage_size == 0U ||
+        mem_info.bitmap_size > PMM_ZONE_STORAGE_CAPACITY ||
         zone_storage_size > PMM_ZONE_STORAGE_CAPACITY - mem_info.bitmap_size) {
         LOG_ERROR("MEM", "Espaco insuficiente para os bitmaps do PMM");
         panic_memory("Bitmaps do PMM excedem a memoria baixa", mmap_count,
@@ -371,6 +380,7 @@ void memory_init(uint32_t mmap_addr) {
     heap_allocation_failures = 0;
     heap_invalid_frees = 0;
     heap_double_frees = 0;
+    heap_reset();
     LOG_INFO("MEM", "Mapa de memoria inicializado");
 }
 
@@ -558,6 +568,13 @@ typedef struct heap_aligned_header {
 } heap_aligned_header_t;
 
 static heap_block_t* heap_base = 0;
+
+static void heap_reset(void) {
+    heap_base = 0;
+#if defined(ZEPHYROS_HOST_TEST)
+    kmemset(memory_host_heap_storage, 0, sizeof(memory_host_heap_storage));
+#endif
+}
 
 static int heap_range_contains(uint32_t address, uint32_t size);
 

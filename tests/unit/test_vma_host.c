@@ -331,6 +331,7 @@ static int test_image_and_faults(process_t* process) {
 
 static int test_mmap_limits_and_unmap(process_t* process) {
     uint32_t address = 0U;
+    uint32_t rollback_address = 0U;
     vm_area_info_t entries[VMA_TEST_POOL_CAPACITY];
     uint32_t count = 0U;
     int result;
@@ -361,6 +362,42 @@ static int test_mmap_limits_and_unmap(process_t* process) {
                                       &address), OK, "mmap split") != OK) {
         return ERR_STATE;
     }
+    if (check_result(process_vma_mmap(process, 3U * PAGE_SIZE,
+                                      VM_READ | VM_WRITE, VM_ANONYMOUS,
+                                      &rollback_address), OK,
+                     "mmap rollback") != OK) return ERR_STATE;
+    if (check_result(process_vma_ensure_page(process, rollback_address, 0), OK,
+                     "rollback first page") != OK ||
+        check_result(process_vma_ensure_page(
+                         process, rollback_address + PAGE_SIZE, 0), OK,
+                     "rollback second page") != OK) return ERR_STATE;
+    for (uint32_t index = 0U; index < VMA_TEST_PAGE_CAPACITY; index++) {
+        if (fake_page_used[index] &&
+            fake_page_addresses[index] == rollback_address + PAGE_SIZE) {
+            fake_pages[index].user = 0U;
+        }
+    }
+    if (check_result(process_vma_munmap(process, rollback_address,
+                                        3U * PAGE_SIZE), ERR_STATE,
+                     "munmap rollback on supervisor page") != OK) {
+        return ERR_STATE;
+    }
+    for (uint32_t index = 0U; index < VMA_TEST_PAGE_CAPACITY; index++) {
+        if (fake_page_used[index] &&
+            fake_page_addresses[index] == rollback_address) {
+            if (check(fake_pages[index].present != 0U,
+                      "munmap rollback preserves first page") != OK) {
+                return ERR_STATE;
+            }
+        }
+        if (fake_page_used[index] &&
+            fake_page_addresses[index] == rollback_address + PAGE_SIZE) {
+            fake_pages[index].user = 1U;
+        }
+    }
+    if (check_result(process_vma_munmap(process, rollback_address,
+                                        3U * PAGE_SIZE), OK,
+                     "munmap rollback cleanup") != OK) return ERR_STATE;
     if (check_result(process_vma_munmap(process, address + PAGE_SIZE, PAGE_SIZE),
                      OK, "munmap middle") != OK) return ERR_STATE;
     if (check_result(process_vma_munmap(process, address, PAGE_SIZE), OK,
@@ -406,8 +443,8 @@ int main(void) {
     }
     if (result == OK) result = check(process.vma_list == NULL &&
                                      process.vma_count == 0U &&
-                                     mapped_pages > 0U,
-                                     "metadata release");
+                                     mapped_pages == 0U,
+                                     "metadata and page release");
     kmemset(fake_page_used, 0, sizeof(fake_page_used));
     fake_allocated_pages = 0U;
     if (result == OK) result = check(fake_allocated_pages == 0U,

@@ -105,6 +105,9 @@ static void slab_copy_text(char* destination, uint32_t capacity,
 }
 
 static uint32_t slab_align_up(uint32_t value, uint32_t alignment) {
+    if (alignment == 0U || value > 0xFFFFFFFFU - (alignment - 1U)) {
+        return 0U;
+    }
     return (value + alignment - 1U) & ~(alignment - 1U);
 }
 
@@ -241,7 +244,8 @@ static int slab_object_location(const kmem_cache_t* cache, const void* object,
     slab_address_t end;
     uint32_t offset;
 
-    if (!cache || !object || !slab_index_out || !object_index) return 0;
+    if (!cache || !object || !slab_index_out || !object_index ||
+        cache->object_stride == 0U) return 0;
     address = (slab_address_t)object;
     for (index = 0U; index < KMEM_SLAB_MAX; index++) {
         kmem_slab_t* slab = &slab_table[index];
@@ -263,6 +267,7 @@ static int slab_validate_slab(const kmem_slab_t* slab) {
     uint32_t active = 0U;
     uint32_t free_count = 0U;
     uint16_t current;
+    uint32_t free_seen[KMEM_SLAB_BITMAP_WORDS] = {0U};
 
     if (!slab || !slab->used || !slab->owner || !slab->memory ||
         slab->object_count < KMEM_SLAB_MIN_OBJECTS ||
@@ -277,11 +282,21 @@ static int slab_validate_slab(const kmem_slab_t* slab) {
         if (current >= slab->object_count || slab_bit_is_set(slab, current)) {
             return 0;
         }
+        if (free_seen[current / 32U] & (1U << (current % 32U))) {
+            return 0;
+        }
+        free_seen[current / 32U] |= 1U << (current % 32U);
         free_count++;
         current = slab->free_next[current];
     }
     if (current != KMEM_SLAB_MAX_OBJECTS || active + free_count !=
         slab->object_count || active != slab->active_objects) return 0;
+    for (index = 0U; index < slab->object_count; index++) {
+        if (!slab_bit_is_set(slab, index) &&
+            !(free_seen[index / 32U] & (1U << (index % 32U)))) {
+            return 0;
+        }
+    }
     if ((active == 0U && slab->state != KMEM_SLAB_STATE_EMPTY) ||
         (active > 0U && active < slab->object_count &&
          slab->state != KMEM_SLAB_STATE_PARTIAL) ||
@@ -440,6 +455,14 @@ void* kmem_cache_alloc(kmem_cache_t* cache) {
         }
         slab_index = cache->empty_head;
     }
+    if (slab_index < 0 || (uint32_t)slab_index >= KMEM_SLAB_MAX) {
+        spinlock_release(&slab_lock);
+        slab_irq_restore(flags);
+        LOG_ERROR("MEM", "Lista de slabs inconsistente");
+        cache->allocation_failures++;
+        global_allocation_failures++;
+        return 0;
+    }
     slab = &slab_table[slab_index];
     object_index = slab->free_head;
     if (object_index >= slab->object_count) {
@@ -492,6 +515,15 @@ void kmem_cache_free(kmem_cache_t* cache, void* object) {
         return;
     }
     slab = &slab_table[slab_index];
+    if (slab->active_objects == 0U ||
+        slab->active_objects > slab->object_count) {
+        cache->invalid_frees++;
+        global_invalid_frees++;
+        spinlock_release(&slab_lock);
+        slab_irq_restore(flags);
+        LOG_ERROR("MEM", "Contagem de objetos inconsistente no SLAB");
+        return;
+    }
     if (!slab_bit_is_set(slab, object_index)) {
         cache->double_frees++;
         global_double_frees++;
@@ -600,11 +632,12 @@ int kmem_cache_get_info_at(uint32_t index, kmem_cache_info_t* info) {
     }
     kmemset(info, 0, sizeof(kmem_cache_info_t));
     flags = slab_irq_save();
+    spinlock_acquire(&slab_lock);
     if (!cache_table[index].used) {
+        spinlock_release(&slab_lock);
         slab_irq_restore(flags);
         return OK;
     }
-    spinlock_acquire(&slab_lock);
     slab_copy_info(&cache_table[index], info);
     spinlock_release(&slab_lock);
     slab_irq_restore(flags);
@@ -639,6 +672,8 @@ int kmem_cache_owns(const kmem_cache_t* cache, const void* object) {
 
 int kmem_cache_validate(void) {
     uint32_t index;
+    uint32_t actual_caches = 0U;
+    uint32_t actual_slabs = 0U;
     uint32_t flags;
 
     if (!slab_initialized) {
@@ -664,6 +699,7 @@ int kmem_cache_validate(void) {
         uint32_t partial = 0U;
         uint32_t empty = 0U;
         if (!cache->used) continue;
+        actual_caches++;
         for (uint32_t slab_index = 0U; slab_index < KMEM_SLAB_MAX;
              slab_index++) {
             if (slab_table[slab_index].used &&
@@ -671,6 +707,7 @@ int kmem_cache_validate(void) {
                 active += slab_table[slab_index].active_objects;
                 capacity += slab_table[slab_index].object_count;
                 slabs++;
+                actual_slabs++;
                 if (slab_table[slab_index].state == KMEM_SLAB_STATE_FULL) full++;
                 else if (slab_table[slab_index].state == KMEM_SLAB_STATE_PARTIAL) partial++;
                 else if (slab_table[slab_index].state == KMEM_SLAB_STATE_EMPTY) empty++;
@@ -695,6 +732,12 @@ int kmem_cache_validate(void) {
             LOG_ERROR("MEM", "Contadores de cache SLAB inconsistentes");
             return ERR_STATE;
         }
+    }
+    if (actual_caches != cache_count || actual_slabs != slab_count) {
+        spinlock_release(&slab_lock);
+        slab_irq_restore(flags);
+        LOG_ERROR("MEM", "Contadores globais do SLAB inconsistentes");
+        return ERR_STATE;
     }
     spinlock_release(&slab_lock);
     slab_irq_restore(flags);

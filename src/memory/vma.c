@@ -86,7 +86,19 @@ static int process_vma_insert_sorted(process_t* proc, vm_area_t* area) {
         LOG_ERROR("MEM", "VMA nula na insercao ordenada");
         return ERR_NULL;
     }
+    if (area->start_addr >= area->end_addr ||
+        (area->start_addr % PAGE_SIZE) != 0U ||
+        (area->end_addr % PAGE_SIZE) != 0U ||
+        area->start_addr < USER_SPACE_START ||
+        area->end_addr > USER_SPACE_END) {
+        LOG_ERROR("MEM", "Intervalo invalido na insercao de VMA");
+        return ERR_INVALID;
+    }
     if (!proc->vma_list || area->start_addr < proc->vma_list->start_addr) {
+        if (proc->vma_list && area->end_addr > proc->vma_list->start_addr) {
+            LOG_ERROR("MEM", "VMA sobreposta na insercao");
+            return ERR_STATE;
+        }
         area->next = proc->vma_list;
         proc->vma_list = area;
         proc->vma_count++;
@@ -97,6 +109,11 @@ static int process_vma_insert_sorted(process_t* proc, vm_area_t* area) {
     while (current->next &&
            current->next->start_addr < area->start_addr) {
         current = current->next;
+    }
+    if (current->end_addr > area->start_addr ||
+        (current->next && area->end_addr > current->next->start_addr)) {
+        LOG_ERROR("MEM", "VMA sobreposta na insercao");
+        return ERR_STATE;
     }
     area->next = current->next;
     current->next = area;
@@ -143,11 +160,16 @@ static int process_vma_unmap_pages(process_t* proc, uint32_t start_addr,
          address += PAGE_SIZE) {
         page_entry_t* page = paging_get_page_in_directory(
             proc->page_directory, address, 0);
-        if (!page || !page->present) continue;
-        if (!page->user) {
+        if (page && page->present && !page->user) {
             LOG_ERROR("MEM", "Pagina supervisora encontrada na VMA");
             return ERR_STATE;
         }
+    }
+    for (uint32_t address = start_addr; address < end_addr;
+         address += PAGE_SIZE) {
+        page_entry_t* page = paging_get_page_in_directory(
+            proc->page_directory, address, 0);
+        if (!page || !page->present) continue;
         int result = paging_unmap_user_page_in_directory(
             proc->page_directory, address);
         if (result != OK) {
@@ -562,6 +584,14 @@ void process_vma_release(process_t* proc) {
     area = proc->vma_list;
     while (area) {
         vm_area_t* next = area->next;
+
+        if (proc->page_directory) {
+            int result = process_vma_unmap_pages(proc, area->start_addr,
+                                                  area->end_addr);
+            if (result != OK) {
+                LOG_ERROR("MEM", "Falha ao liberar paginas de VMA");
+            }
+        }
         kfree(area);
         area = next;
     }

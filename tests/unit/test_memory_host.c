@@ -192,6 +192,14 @@ static int test_pmm_operations(void) {
 
     single_page = pmm_alloc_page();
     if (check(single_page != 0, "single page allocated") != OK) return ERR_STATE;
+    memory_get_pmm_stats(&pmm);
+    uint32_t owned_before_invalid_range = pmm.owned_pages;
+    pmm_free_pages(single_page, 0xFFFFFFFFU);
+    memory_get_pmm_stats(&pmm);
+    if (check(pmm.owned_pages == owned_before_invalid_range,
+              "oversized release leaves pmm unchanged") != OK) {
+        return ERR_STATE;
+    }
     pmm_free_page(single_page);
     pages[0] = pmm_alloc_page_in_zone(MEMORY_ZONE_KERNEL);
     pages[1] = pmm_alloc_page_in_zone(MEMORY_ZONE_SLAB);
@@ -223,7 +231,7 @@ static int test_pmm_operations(void) {
     pmm_free_pages((void*)(uintptr_t)PHYSICAL_IDENTITY_START, 0U);
     memory_get_pmm_stats(&pmm);
     if (check(pmm.owned_pages == 0U, "pmm cleanup") != OK) return ERR_STATE;
-    if (check(pmm.invalid_frees >= invalid_before + 4U,
+    if (check(pmm.invalid_frees >= invalid_before + 5U,
               "invalid frees counted") != OK) return ERR_STATE;
     if (memory_get_detailed_stats(&after) != OK) return ERR_STATE;
     if (check(after.zone_pages[MEMORY_ZONE_FREE] ==
@@ -323,6 +331,23 @@ static int test_heap_reuse(void) {
                  "heap reuse cleanup");
 }
 
+static int test_reinitialization(void) {
+    memory_heap_stats_t heap;
+    memory_pmm_stats_t pmm;
+    void* pointer = kmalloc(64U);
+
+    if (check(pointer != 0, "reinitialization allocation") != OK) {
+        return ERR_STATE;
+    }
+    if (check_result(memory_host_init(memory_map, 1U), OK,
+                     "memory reinitialization") != OK) return ERR_STATE;
+    memory_get_heap_stats(&heap);
+    memory_get_pmm_stats(&pmm);
+    return check(!heap.initialized && heap.allocated_blocks == 0U &&
+                 pmm.initialized && pmm.owned_pages == 0U,
+                 "reinitialization restores clean state");
+}
+
 int main(void) {
     int result = OK;
 
@@ -333,6 +358,7 @@ int main(void) {
     if (result == OK) result = test_pmm_operations();
     if (result == OK) result = test_heap_operations();
     if (result == OK) result = test_heap_reuse();
+    if (result == OK) result = test_reinitialization();
     coverage_active = 0U;
     coverage_emit(result);
     return result == OK ? 0 : 1;

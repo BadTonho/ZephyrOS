@@ -1648,6 +1648,20 @@
       "evidence": "make test-memory-host PASS com mapa E820, PMM por zona, heap, alinhamento, limites, erros canonicos, cleanup e estatisticas restauradas sem hardware"
     },
     {
+      "id": "memory-host-krn21-invariants",
+      "domain": "memory-pmm-heap",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:memory:memory"
+      ],
+      "surface_ids": [
+        "c:src/memory/memory.c:heap_reset"
+      ],
+      "evidence": "KRN2.1: test-memory-host cobre reset deterministico do heap apos falha e reinicializacao"
+    },
+    {
       "id": "memory-slab",
       "domain": "memory",
       "owner": "quality",
@@ -2793,6 +2807,24 @@
       ],
       "include_public_apis": true,
       "evidence": "make test-paging-host PASS com fixture estatica de diretorios e tabelas, mapeamentos, VMAs lazy, copias de usuario, limites, cleanup, falha de alocacao e recuperacao sem hardware"
+    },
+    {
+      "id": "paging-host-krn21-invariants",
+      "domain": "memory-paging",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "surface_ids": [
+        "c:src/memory/paging.c:paging_build_table_entry",
+        "c:src/memory/paging.c:paging_directory_index",
+        "c:src/memory/paging.c:paging_is_managed_directory",
+        "c:src/memory/paging.c:paging_register_directory",
+        "c:src/memory/paging.c:paging_unregister_directory"
+      ],
+      "evidence": "KRN2.1: test-paging-host cobre ownership de diretorios, rollback de tabelas e cleanup sem estruturas compartilhadas"
     },
     {
       "id": "paging-qemu-tst4-dynamic",

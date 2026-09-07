@@ -6667,3 +6667,32 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `PASS` com 170/170 casos, incluindo 37 QEMU; `qemu:tst6:fault:memory`,
   `qemu:tst6:stress:kernel` e `qemu:tst7:assembly` passaram sem timeout,
   regressão ou processo QEMU residual.
+
+- KRN2.1 — auditoria e reforço dos invariantes de memória — implementado em
+  2026-09-07 (America/Sao_Paulo). PMM e heap passaram a rejeitar ranges
+  inválidos, overflow e reinicialização com estado residual; paging passou a
+  controlar ownership de diretórios, rollback de tabelas, isolamento de
+  diretórios user e cópias host com validação do range completo; VMA passou a
+  validar alinhamento, limites, sobreposição e rollback de `munmap`; SLAB passou
+  a validar listas, contadores, ownership e double free. Os testes host
+  `memory`, `paging`, `slab-metadata` e `vma` passaram.
+
+  Passaram `make q3check`, `make clean && make`,
+  `make test-tst4-qemu-paging-vma`, `make test-tst6-qemu-fault-memory`,
+  `make test-tst6-qemu-stress-kernel`, `make catalog-test` e
+  `make catalog-test-strict`. A execução TST7
+  `tst7-20260907T120940Z-26796` teve clean, build, catálogo, 170 casos host e
+  37 casos QEMU em `PASS`, incluindo page fault de memória, paging/VMA,
+  estresse de kernel e assembly; o status final do runner ficou `FAIL` somente
+  por regressões circunstanciais de duração em três casos (`memory-slab`,
+  `platform` e `matrix:display`). Execuções isoladas posteriores desses três
+  casos passaram em 21,734 s, 22,234 s e 21,5 s, respectivamente. O gate de
+  duração do TST7 permanece pendente sem alteração do baseline aprovado.
+
+- Fechamento KRN2.1 — gate completo confirmado em 2026-09-07
+  (America/Sao_Paulo). A repetição de `make test-tst7-full` terminou `PASS` no
+  run `tst7-20260907T124340Z-20944`, com clean, build, catálogo, 170/170 casos,
+  37 casos QEMU e comparação de duração aprovada. Não houve falha funcional,
+  timeout, regressão de duração ou processo QEMU residual. KRN2.1 está
+  concluído; quotas por processo, política de OOM e encerramento por limite
+  permanecem planejados para a próxima etapa de KRN2.

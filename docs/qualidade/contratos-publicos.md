@@ -502,6 +502,19 @@ residentes e mantém a limpeza do metadado da VMA. READ, WRITE e EXEC são
 validados contra os flags da VMA; o bit WRITE continua sendo o único bit de
 proteção de página disponível no paging atual.
 
+Na KRN2.1, a lista de VMA rejeita intervalos desalinhados, vazios ou
+sobrepostos. `munmap` faz uma pre-validacao de todas as paginas residentes
+antes de iniciar a remocao, evitando estado parcial quando encontra uma
+pagina supervisora. `process_vma_release()` libera as paginas residentes de
+usuario associadas as VMAs antes de liberar seus metadados; o diretorio do
+processo continua responsavel pelas estruturas de paging restantes.
+
+Na KRN2.1, `kmem_cache_validate()` verifica tambem duplicacao ou omissao na
+free-list de cada slab e a consistencia dos contadores globais de caches e
+slabs. Ponteiros desalinhados, double free e listas invalidas permanecem
+visiveis pelos erros e estatisticas existentes, sem alterar as assinaturas
+publicas.
+
 Desde a MM4, `src/include/core/memory.h` publica `memory_zone_t` com as zonas
 exclusivas `KERNEL`, `HEAP`, `SLAB`, `PROCESS`, `BUFFER` e `FREE`, além de
 `memory_detailed_stats_t` e `memory_get_detailed_stats()`. As novas funções
@@ -513,6 +526,20 @@ está inconsistente. A struct publica total por zona, runs livres, maior run,
 páginas isoladas, percentual de fragmentação e flags `initialized`/`valid`.
 Páginas reservadas não podem ser liberadas, e uma rejeição não altera os
 contadores do PMM.
+
+Desde a KRN2.1, arredondamentos e intervalos do PMM/heap sao rejeitados antes
+de alterar o estado quando excedem o espaco de enderecamento. A inicializacao
+da fixture host tambem reinicia o heap e seus metadados. Liberacoes de paginas
+com contagem fora da RAM, desalinhamento, pagina nao pertencente ou intervalo
+parcialmente invalido preservam a contabilidade anterior e registram a
+rejeicao.
+
+O paging aceita somente diretorios criados por suas proprias APIs. Um
+diretorio de usuario so pode receber mapeamentos com `PAGING_FLAG_USER` na
+janela `[USER_SPACE_START, USER_SPACE_END)`; tabelas supervisoras privadas nao
+sao criadas nesse contexto. As copias host de usuario validam o intervalo
+inteiro do buffer registrado, inclusive quando atravessam paginas, e o
+descarte de diretorios libera somente tabelas e paginas privadas do processo.
 
 `shell_memcheck_result_t` acrescenta `memory_metrics` ao final do layout; o
 campo valida a soma das zonas e a estabilidade do snapshot antes/depois do

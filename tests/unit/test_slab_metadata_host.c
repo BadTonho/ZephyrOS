@@ -16,6 +16,10 @@
 static uintptr_t coverage_addresses[HOST_COVERAGE_CAPACITY];
 static uint32_t coverage_count;
 static uint8_t coverage_active;
+static uint8_t slab_page_storage[4][PAGE_SIZE]
+    __attribute__((aligned(PAGE_SIZE)));
+static uint8_t slab_page_used[4];
+static uint32_t slab_page_releases;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -72,14 +76,26 @@ int paging_is_ready(void) {
 }
 
 void* pmm_alloc_pages_in_zone(uint32_t count, memory_zone_t zone) {
-    (void)count;
     (void)zone;
+    if (count != 1U) return 0;
+    for (uint32_t index = 0U; index < 4U; index++) {
+        if (!slab_page_used[index]) {
+            slab_page_used[index] = 1U;
+            return slab_page_storage[index];
+        }
+    }
     return 0;
 }
 
 void pmm_free_pages(void* address, uint32_t count) {
-    (void)address;
-    (void)count;
+    if (count != 1U) return;
+    for (uint32_t index = 0U; index < 4U; index++) {
+        if (address == slab_page_storage[index] && slab_page_used[index]) {
+            slab_page_used[index] = 0U;
+            slab_page_releases++;
+            return;
+        }
+    }
 }
 
 void memory_get_pmm_stats(memory_pmm_stats_t* stats) {
@@ -169,12 +185,37 @@ static int check_metadata(void) {
     return 0;
 }
 
+static int check_runtime(void) {
+    kmem_cache_t* cache;
+    kmem_slab_stats_t stats;
+    void* first;
+    void* second;
+
+    cache = kmem_cache_create("runtime", 32U, 8U);
+    if (!cache) return 20;
+    first = kmem_cache_alloc(cache);
+    second = kmem_cache_alloc(cache);
+    if (!first || !second || !kmem_cache_owns(cache, first) ||
+        !kmem_cache_owns(cache, second)) return 21;
+    kmem_cache_free(cache, (uint8_t*)first + 1U);
+    kmem_cache_free(cache, first);
+    kmem_cache_free(cache, first);
+    kmem_cache_free(cache, second);
+    kmem_cache_get_stats(&stats);
+    if (stats.invalid_frees == 0U || stats.double_frees == 0U ||
+        kmem_cache_validate() != OK) return 22;
+    if (kmem_cache_destroy(cache) != OK || slab_page_releases != 1U ||
+        slab_page_used[0] != 0U) return 23;
+    return kmem_cache_validate() == OK ? 0 : 24;
+}
+
 int main(void) {
     int result;
 
     coverage_active = 1U;
     log_init();
     result = check_metadata();
+    if (result == 0) result = check_runtime();
     coverage_active = 0U;
     coverage_emit(result);
     return result;

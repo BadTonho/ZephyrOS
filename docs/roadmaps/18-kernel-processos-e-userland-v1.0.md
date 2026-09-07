@@ -69,6 +69,20 @@ quantum ou migração para Rust nesta etapa.
 - [ ] Repetir `memcheck` depois de criação, falha, encerramento e reutilização
   de PID.
 
+#### KRN2.1 - Auditoria e reforço dos invariantes de memória
+
+- [x] Reforçar validações de overflow, alinhamento, limites, foreign free,
+  double free, rollback, ownership e contadores em PMM, heap, paging, VMA e
+  SLAB.
+- [x] Cobrir falhas de mapeamento, cópia de usuário atravessando páginas,
+  VMAs sobrepostas, `munmap` parcial e isolamento de diretórios nos testes
+  host e QEMU.
+- [x] Confirmar execução sem falha funcional nos casos de page fault de memória,
+  paging/VMA, estresse de kernel e assembly do TST7.
+- [x] Reexecutar o gate TST7 com o comparador de duração sem regressão;
+  quotas por processo, OOM e encerramento por limite continuam
+  reservados para a próxima etapa de KRN2.
+
 ### KRN3 — Scheduler e Idle
 
 - [ ] Confirmar PID 0 como único Idle, fora do round-robin e com contexto e

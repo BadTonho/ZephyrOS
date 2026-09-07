@@ -223,6 +223,8 @@ static int test_paging(void) {
     uint32_t before_rejected;
     uint8_t user_buffer[PAGING_TEST_BUFFER_SIZE];
     uint8_t destination[PAGING_TEST_BUFFER_SIZE];
+    uint8_t user_span[PAGE_SIZE * 2U];
+    uint8_t span_destination[PAGE_SIZE * 2U];
     const uint8_t source[] = "paging-copy";
     uint32_t before_allocations;
     uint32_t before_releases;
@@ -287,6 +289,13 @@ static int test_paging(void) {
     if (check_result(paging_map_page_in_directory(temporary_dir, 0U,
                                                   PAGE_SIZE, 0U), OK,
                      "map temporary page") != OK) return ERR_STATE;
+    if (check_result(paging_map_page_in_directory(
+                         temporary_dir, USER_DATA_BASE,
+                         PAGING_TEST_USER_PHYSICAL,
+                         PAGING_FLAG_PRESENT | PAGING_FLAG_USER),
+                     ERR_STATE, "reject user map in generic directory") != OK) {
+        return ERR_STATE;
+    }
     paging_free_directory(temporary_dir);
 
     user_dir = paging_create_user_directory();
@@ -354,6 +363,34 @@ static int test_paging(void) {
     if (check_result(paging_host_register_user_buffer(
                          USER_DATA_BASE, user_buffer, sizeof(user_buffer)),
                      OK, "register user buffer") != OK) return ERR_STATE;
+    kmemset(user_span, 0x5AU, sizeof(user_span));
+    kmemset(span_destination, 0, sizeof(span_destination));
+    if (check_result(paging_map_page_in_directory(
+                         user_dir, USER_STACK_BASE, PAGING_TEST_USER_PHYSICAL,
+                         PAGING_FLAG_PRESENT | PAGING_FLAG_USER), OK,
+                     "map first span page") != OK) return ERR_STATE;
+    if (check_result(paging_map_page_in_directory(
+                         user_dir, USER_STACK_BASE + PAGE_SIZE,
+                         PAGING_TEST_USER_PHYSICAL + PAGE_SIZE,
+                         PAGING_FLAG_PRESENT | PAGING_FLAG_USER), OK,
+                     "map second span page") != OK) return ERR_STATE;
+    if (check_result(paging_host_register_user_buffer(
+                         USER_STACK_BASE, user_span, sizeof(user_span)), OK,
+                     "register cross-page user buffer") != OK) return ERR_STATE;
+    if (check_result(paging_host_register_user_buffer(
+                         USER_STACK_BASE + PAGE_SIZE, user_span,
+                         sizeof(user_span)), ERR_INVALID,
+                     "reject overlapping user buffer") != OK) return ERR_STATE;
+    if (check_result(paging_copy_from_user(span_destination, user_span,
+                                           sizeof(user_span)), OK,
+                     "copy cross-page user buffer") != OK) return ERR_STATE;
+    if (check(memcmp(span_destination, user_span, sizeof(user_span)) == 0,
+              "copy cross-page data") != OK) return ERR_STATE;
+    if (check_result(paging_copy_from_user(span_destination, user_span,
+                                           sizeof(user_span) + 1U),
+                     ERR_UNAVAILABLE, "reject host buffer overrun") != OK) {
+        return ERR_STATE;
+    }
     if (check_result(paging_host_register_user_buffer(
                          USER_SPACE_END, user_buffer, sizeof(user_buffer)),
                      ERR_INVALID, "register invalid user buffer") != OK) {
@@ -388,7 +425,7 @@ static int test_paging(void) {
     }
     paging_switch_directory(kernel_dir);
     paging_get_user_stats(&user_stats);
-    if (check(user_stats.active_pages == 2U, "user stats before release") != OK) {
+    if (check(user_stats.active_pages == 4U, "user stats before release") != OK) {
         return ERR_STATE;
     }
     before_rejected = user_stats.rejected_releases;

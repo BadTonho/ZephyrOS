@@ -126776,6 +126776,27 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/memory/memory.c:heap_reset",
+      "kind": "c_function",
+      "source": "src/memory/memory.c",
+      "symbol": "heap_reset",
+      "linkage": "static",
+      "owner": "memory",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:memory"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "c:src/memory/memory.c:kfree",
       "kind": "c_function",
       "source": "src/memory/memory.c",
@@ -127787,6 +127808,27 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/memory/paging.c:paging_build_table_entry",
+      "kind": "c_function",
+      "source": "src/memory/paging.c",
+      "symbol": "paging_build_table_entry",
+      "linkage": "static",
+      "owner": "memory",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "c:src/memory/paging.c:paging_copy_from_user",
       "kind": "c_function",
       "source": "src/memory/paging.c",
@@ -127869,6 +127911,27 @@
       "case_ids": [
         "host:memory:paging",
         "qemu:tst4:paging-vma"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/memory/paging.c:paging_directory_index",
+      "kind": "c_function",
+      "source": "src/memory/paging.c",
+      "symbol": "paging_directory_index",
+      "linkage": "static",
+      "owner": "memory",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -128219,6 +128282,27 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/memory/paging.c:paging_is_managed_directory",
+      "kind": "c_function",
+      "source": "src/memory/paging.c",
+      "symbol": "paging_is_managed_directory",
+      "linkage": "static",
+      "owner": "memory",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "c:src/memory/paging.c:paging_is_ready",
       "kind": "c_function",
       "source": "src/memory/paging.c",
@@ -128400,6 +128484,27 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/memory/paging.c:paging_register_directory",
+      "kind": "c_function",
+      "source": "src/memory/paging.c",
+      "symbol": "paging_register_directory",
+      "linkage": "static",
+      "owner": "memory",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "c:src/memory/paging.c:paging_register_user_directory",
       "kind": "c_function",
       "source": "src/memory/paging.c",
@@ -128488,6 +128593,27 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/memory/paging.c:paging_unregister_directory",
+      "kind": "c_function",
+      "source": "src/memory/paging.c",
+      "symbol": "paging_unregister_directory",
+      "linkage": "static",
+      "owner": "memory",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:memory:paging"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "c:src/memory/paging.c:paging_unregister_user_directory",
       "kind": "c_function",
       "source": "src/memory/paging.c",
@@ -128569,6 +128695,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:slab-metadata",
         "host:network:ethernet"
       ],
       "tags": [],
@@ -128635,6 +128762,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:slab-metadata",
         "host:network:ethernet",
         "qemu:tst5:apps",
         "qemu:tst6:fault:memory",
@@ -128874,6 +129002,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:slab-metadata",
         "host:network:ethernet",
         "qemu:tst5:apps",
         "qemu:tst6:fault:memory",
@@ -128998,6 +129127,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:slab-metadata",
         "host:network:ethernet",
         "qemu:tst6:fault:memory",
         "qemu:tst6:stress:kernel",
@@ -129066,6 +129196,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:slab-metadata",
         "host:network:ethernet",
         "qemu:tst6:fault:memory",
         "qemu:tst6:stress:kernel",
@@ -129090,6 +129221,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:slab-metadata",
         "host:network:ethernet",
         "qemu:tst6:fault:memory",
         "qemu:tst6:stress:kernel",
@@ -129114,6 +129246,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:slab-metadata",
         "host:network:ethernet",
         "qemu:tst5:apps",
         "qemu:tst6:fault:memory",
@@ -129164,6 +129297,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:slab-metadata",
         "host:network:ethernet",
         "qemu:tst6:fault:memory",
         "qemu:tst6:stress:kernel",
@@ -129188,6 +129322,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:slab-metadata",
         "host:network:ethernet",
         "qemu:tst5:apps",
         "qemu:tst6:fault:memory",
@@ -129260,13 +129395,14 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:memory:slab-metadata",
         "qemu:tst5:apps",
         "qemu:tst6:fault:memory",
         "qemu:tst6:stress:kernel",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/memory/vma.c:process_vma_access_allowed",
@@ -169339,6 +169475,7 @@
         "c:src/memory/memory.c:heap_merge_next",
         "c:src/memory/memory.c:heap_pointer_was_freed",
         "c:src/memory/memory.c:heap_range_contains",
+        "c:src/memory/memory.c:heap_reset",
         "c:src/memory/memory.c:kfree",
         "c:src/memory/memory.c:kmalloc",
         "c:src/memory/memory.c:kmalloc_aligned",
@@ -169469,10 +169606,12 @@
         "c:src/core/string.c:kstrlen",
         "c:src/memory/paging.c:paging_abort_init",
         "c:src/memory/paging.c:paging_bootstrap_get_table",
+        "c:src/memory/paging.c:paging_build_table_entry",
         "c:src/memory/paging.c:paging_copy_from_user",
         "c:src/memory/paging.c:paging_copy_to_user",
         "c:src/memory/paging.c:paging_create_directory",
         "c:src/memory/paging.c:paging_create_user_directory",
+        "c:src/memory/paging.c:paging_directory_index",
         "c:src/memory/paging.c:paging_free_directory",
         "c:src/memory/paging.c:paging_free_table_entry",
         "c:src/memory/paging.c:paging_free_user_directory",
@@ -169489,6 +169628,7 @@
         "c:src/memory/paging.c:paging_host_table_token",
         "c:src/memory/paging.c:paging_init",
         "c:src/memory/paging.c:paging_invalidate",
+        "c:src/memory/paging.c:paging_is_managed_directory",
         "c:src/memory/paging.c:paging_is_ready",
         "c:src/memory/paging.c:paging_is_registered_user_directory",
         "c:src/memory/paging.c:paging_map_framebuffer",
@@ -169497,10 +169637,12 @@
         "c:src/memory/paging.c:paging_map_page_in_directory",
         "c:src/memory/paging.c:paging_physical_pointer",
         "c:src/memory/paging.c:paging_pointer_address",
+        "c:src/memory/paging.c:paging_register_directory",
         "c:src/memory/paging.c:paging_register_user_directory",
         "c:src/memory/paging.c:paging_switch_directory",
         "c:src/memory/paging.c:paging_table_is_empty",
         "c:src/memory/paging.c:paging_unmap_user_page_in_directory",
+        "c:src/memory/paging.c:paging_unregister_directory",
         "c:src/memory/paging.c:paging_unregister_user_directory",
         "c:src/memory/paging.c:paging_user_directory_index",
         "c:src/memory/paging.c:paging_validate_user_range"
@@ -169586,8 +169728,10 @@
         "c:src/core/string.c:kmemset",
         "c:src/core/string.c:kstrcmp",
         "c:src/core/string.c:kstrlen",
+        "c:src/memory/slab.c:kmem_cache_alloc",
         "c:src/memory/slab.c:kmem_cache_create",
         "c:src/memory/slab.c:kmem_cache_destroy",
+        "c:src/memory/slab.c:kmem_cache_free",
         "c:src/memory/slab.c:kmem_cache_get_count",
         "c:src/memory/slab.c:kmem_cache_get_info",
         "c:src/memory/slab.c:kmem_cache_get_info_at",
@@ -169596,14 +169740,22 @@
         "c:src/memory/slab.c:kmem_cache_owns",
         "c:src/memory/slab.c:kmem_cache_validate",
         "c:src/memory/slab.c:slab_align_up",
+        "c:src/memory/slab.c:slab_bit_is_set",
         "c:src/memory/slab.c:slab_cache_registered",
         "c:src/memory/slab.c:slab_copy_info",
         "c:src/memory/slab.c:slab_copy_text",
         "c:src/memory/slab.c:slab_find_cache_slot",
-        "c:src/memory/slab.c:slab_power_of_two",
-        "c:src/memory/slab.c:slab_validate_list",
+        "c:src/memory/slab.c:slab_find_free_record",
         "c:src/memory/slab.c:slab_irq_restore",
-        "c:src/memory/slab.c:slab_irq_save"
+        "c:src/memory/slab.c:slab_irq_save",
+        "c:src/memory/slab.c:slab_list_add",
+        "c:src/memory/slab.c:slab_list_remove",
+        "c:src/memory/slab.c:slab_object_location",
+        "c:src/memory/slab.c:slab_power_of_two",
+        "c:src/memory/slab.c:slab_prepare_record",
+        "c:src/memory/slab.c:slab_set_bit",
+        "c:src/memory/slab.c:slab_validate_list",
+        "c:src/memory/slab.c:slab_validate_slab"
       ],
       "tags": [
         "host",
@@ -170283,14 +170435,14 @@
         "c:src/memory/slab.c:slab_copy_text",
         "c:src/memory/slab.c:slab_find_cache_slot",
         "c:src/memory/slab.c:slab_find_free_record",
+        "c:src/memory/slab.c:slab_irq_restore",
+        "c:src/memory/slab.c:slab_irq_save",
         "c:src/memory/slab.c:slab_list_add",
         "c:src/memory/slab.c:slab_list_remove",
         "c:src/memory/slab.c:slab_object_location",
         "c:src/memory/slab.c:slab_power_of_two",
         "c:src/memory/slab.c:slab_prepare_record",
-        "c:src/memory/slab.c:slab_set_bit",
-        "c:src/memory/slab.c:slab_irq_restore",
-        "c:src/memory/slab.c:slab_irq_save"
+        "c:src/memory/slab.c:slab_set_bit"
       ],
       "tags": [
         "host",
@@ -186324,6 +186476,7 @@
         "asm:src/kernel/switch.asm:tss_flush",
         "c:src/core/kernel_tests_assembly.c:kernel_tests_run_assembly",
         "c:src/core/kernel_tests_assembly.c:kernel_tests_trigger_vector",
+        "c:src/core/kernel_tests_assembly.c:kernel_tests_validate_interrupt_return",
         "c:src/core/kernel_tests_assembly.c:kernel_tests_validate_vectors",
         "c:src/core/test_coverage.c:test_coverage_record_address",
         "c:src/drivers/idt.c:idt_enable_user_syscall",
@@ -186354,8 +186507,7 @@
         "c:src/kernel/kernel.c:kernel_workqueue_init",
         "c:src/kernel/kernel.c:shell_process_main",
         "c:src/kernel/kernel.c:system_process_main",
-        "c:src/kernel/kernel.c:test_protocol_process_main",
-        "c:src/core/kernel_tests_assembly.c:kernel_tests_validate_interrupt_return"
+        "c:src/kernel/kernel.c:test_protocol_process_main"
       ],
       "tags": [
         "qemu",
