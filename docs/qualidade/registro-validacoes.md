@@ -7,6 +7,31 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## 2026-09-08 - KRN6: integração e diagnóstico do kernel (validado)
+
+- Implementação: criado o caso QEMU `qemu:tst5:krn6-diagnostics`, com a
+  sequência de diagnósticos pelo Shell, marcador final e validação black-box
+  acumulada entre snapshots. O host cobre marcador ausente, saída incompleta e
+  saída válida; ABI, syscalls, layouts, scheduler, bootloader e Rust foram
+  preservados.
+- Validação host-only: `test-blackbox-host`, `test-shell-diagnostics-host`,
+  `test-shell-checks-host`, `test-service-supervisor-host`,
+  `test-scheduling-host`, `test-workqueue-host`, `test-memory-host`,
+  `test-process-host` e `test-process-resource-host` passaram.
+- Validação QEMU: `make test-krn6-qemu-diagnostics` passou em
+  `qemu-20260908T204943Z-27716`; os casos TST6 de stress, fault-memory,
+  fault-service-supervisor e matrix-minimal também passaram.
+- TST7: a execução completa de aprovação foi
+  `tst7-20260908T212236Z-12764`, com todos os casos executados em `PASS`;
+  o baseline foi atualizado pelo comando `approve`. A regressão final
+  `tst7-20260908T214749Z-32340` terminou com execução e comparação `PASS`,
+  174 casos aprovados, `catalog-test` e cobertura estrita aprovados.
+- Matriz: boot normal, falha de serviço, OOM, ciclos repetidos e hardware
+  opcional ausente foram cobertos; não houve prompt preso, deadlock, timeout,
+  processo ring 3/zumbi residual ou QEMU residual.
+- Estado: `PASS`. O baseline aprovado está em
+  `tests/baselines/tst7-approved.json`.
+
 ## 2026-09-07 - KRN3: reforco do scheduler e Idle (validado)
 
 - Implementacao: `src/process/process.c` passou a recusar bootstrap duplicado ou

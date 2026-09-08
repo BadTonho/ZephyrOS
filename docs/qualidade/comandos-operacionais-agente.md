@@ -569,8 +569,9 @@ make test-protocol-adapter-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
 O caso `test-blackbox-host` compila o harness black-box TST5 real com
-observador de terminal falso. A fixture cobre os nove marcadores de cenário,
-mudança de geração do terminal, `process_yield()` limitado e seleção inválida
+observador de terminal falso. A fixture cobre os dez marcadores de cenário,
+fixtures de saida valida, incompleta e ausente, mudanca de geracao do terminal,
+`process_yield()` limitado e selecao invalida
 sem acessar QEMU ou hardware; o relatorio fica em
 `build/test-results/blackbox-host/`:
 
@@ -1280,6 +1281,7 @@ make test-tst5-host
 make q3check
 make clean
 make
+make test-krn6-qemu-diagnostics
 make test-tst5-qemu-shell
 make test-tst5-qemu-input
 make test-tst5-qemu-apps
@@ -1290,10 +1292,19 @@ make test-tst5-qemu-update-recovery
 make test-tst5-qemu-reboot
 make test-tst5-qemu-poweroff
 make catalog-test
+make catalog-test-strict
 ```
 
+O caso dedicado da KRN6 e executado por `make test-krn6-qemu-diagnostics`.
+Ele abre o Shell, reseta as metricas e executa `schedcheck`, `memcheck`,
+`health summary`, `health check`, `irqstat check`, `wait check`, `workq check`,
+`regcheck full`, F11 para concluir o ciclo ring 3, `kmetrics` e `procs`,
+encerrando com um marcador. O observer
+exige retorno ao prompt, os blocos de diagnostico, resultados positivos e
+ausencia de processo ring 3 ou zombie residual.
+
 Os alvos de rede e atualizacao usam `--network none`; o caso de atualizacao
-usa a fixture declarada no catalogo. Os nove casos sao:
+usa a fixture declarada no catalogo. Os dez casos sao:
 
 ```text
 qemu:tst5:shell
@@ -1305,6 +1316,7 @@ qemu:tst5:network
 qemu:tst5:update-recovery
 qemu:tst5:reboot
 qemu:tst5:poweroff
+qemu:tst5:krn6-diagnostics
 ```
 
 O resultado esperado e `READY -> HEARTBEAT -> BEGIN -> PASS`. O runner
@@ -1508,17 +1520,20 @@ processo.
 ## TST7: regressao continua
 
 Validacao mais recente: `make test-tst7-full` passou no run
-`tst7-20260906T220156Z-5600` contra o baseline aprovado, com 170 casos
-`PASS`, 37 casos QEMU, 712 artefatos preservados e nenhum processo QEMU
-residual. `make test-tst7-host` passou com 40 testes e
-`make catalog-test-strict` confirmou 7.330 superficies e 170 casos. O runner
+`tst7-20260908T214749Z-32340` contra o baseline aprovado, com 174 casos
+`PASS`, 39 casos QEMU, comparacao `PASS` e nenhum processo QEMU residual.
+`make catalog-test-strict` confirmou 7.444 superficies e 174 casos. O runner
 QEMU usa `-accel tcg,thread=single`; o autoteste cooperativo de threads protege
 a troca de contexto contra o timer e restaura as interrupcoes.
+
+O caso `qemu:tst5:krn6-diagnostics` foi aprovado em
+`qemu-20260908T204943Z-27716` e incluido no baseline pelo run aprovado
+`tst7-20260908T212236Z-12764`.
 
 O runner TST7 e independente do provedor de CI. O modo `quick` executa as
 suítes host-only e os gates de qualidade previstos para alterações comuns. O
 modo `full` faz `make clean`, recompila, executa a suíte rápida, valida o
-catálogo e executa os 37 casos QEMU automatizados, cada um em processo
+catálogo e executa os 39 casos QEMU automatizados, cada um em processo
 separado, com seed determinístico, timeout declarado e uma única tentativa.
 
 ```text
@@ -1554,7 +1569,7 @@ estado.
 
 Depois da aprovação explícita, execute `make test-tst7-full` para validar a
 regressão contra o baseline. A duração das etapas de preparação do host, como
-`build`, não é comparada como duração de caso; os 37 casos QEMU continuam
+`build`, não é comparada como duração de caso; os 39 casos QEMU continuam
 comparáveis individualmente. Nunca substitua o baseline manualmente para
 remover uma falha.
 

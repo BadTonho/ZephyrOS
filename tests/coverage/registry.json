@@ -563,7 +563,7 @@
       "coverage_sources": [
         "src/core/kernel_tests_blackbox.c"
       ],
-      "evidence": "make test-blackbox-host aprovado com observador de terminal estatico, selecao de casos TST5 e geracoes controladas",
+      "evidence": "make test-blackbox-host PASS com observador de terminal estatico, selecao de casos TST5, geracoes controladas e KRN6 valido/incompleto/ausente",
       "case_definition": {
         "id": "host:tst5:blackbox",
         "scenario": "Teste host-only do harness black-box TST5",
@@ -586,7 +586,109 @@
         "effects": "somente buffers estaticos e callbacks falsos do observador",
         "cleanup": "processo host encerrado e relatorio de cobertura preservado",
         "status": "AUTOMATED",
-        "surface_ids": []
+        "surface_ids": [
+          "c:src/core/kernel_tests_blackbox.c:blackbox_reset_krn6_observation"
+        ]
+      }
+    },
+    {
+      "id": "kernel-krn6-diagnostics-qemu",
+      "domain": "kernel-diagnostics",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst5:krn6-diagnostics"
+      ],
+      "surface_ids": [
+        "c:src/core/kernel_tests_blackbox.c:blackbox_is_krn6_case",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_reset_krn6_observation",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_validate_krn6_output"
+      ],
+      "evidence": "PASS: make test-krn6-qemu-diagnostics no run qemu-20260908T204943Z-27716; TST7 completo e comparacao contra baseline PASS em tst7-20260908T214749Z-32340",
+      "case_definition": {
+        "id": "qemu:tst5:krn6-diagnostics",
+        "scenario": "Diagnosticos integrados do kernel pelo Shell",
+        "owner": "quality",
+        "layer": "qemu",
+        "executor": "qemu",
+        "profile": "smoke",
+        "guest_case": "qemu:tst5:krn6-diagnostics",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 15,
+        "isolation": "snapshot",
+        "parameters": {
+          "protocol": "ZTEST/1",
+          "input": "qmp-keyboard",
+          "postcondition": "prompt-recovered",
+          "diagnostics": "schedcheck,memcheck,health,irqstat,wait,workq,regcheck,kmetrics,procs"
+        },
+        "preconditions": "imagem pronta, teclado virtual, Shell e diagnosticos do kernel inicializados",
+        "action": "abrir o Shell e executar a sequencia KRN6 somente por QMP",
+        "expected": "todos os diagnosticos retornam sucesso ou degradacao esperada, o prompt retorna e nao ha processo ring 3 ou zumbi residual",
+        "errors": "entrada perdida, diagnostico negativo, marcador ausente, prompt preso, timeout, protocolo ou QEMU",
+        "effects": "somente snapshots de metricas e diagnosticos; o caso reseta as metricas antes da coleta",
+        "cleanup": "encerrar o QEMU e preservar script, serial, QMP e resultado",
+        "status": "AUTOMATED",
+        "tags": [
+          "qemu",
+          "tst5",
+          "krn6",
+          "diagnostics"
+        ],
+        "interaction": {
+          "mode": "qmp-keyboard",
+          "steps": [
+            {"op": "key", "key": "meta_l"},
+            {"op": "key", "key": "down"},
+            {"op": "key", "key": "enter"},
+            {"op": "wait", "seconds": 1},
+            {"op": "text", "text": "clear"},
+            {"op": "key", "key": "enter"},
+            {"op": "wait", "seconds": 1},
+            {"op": "text", "text": "kmetrics reset"},
+            {"op": "key", "key": "enter"},
+            {"op": "wait", "seconds": 1},
+            {"op": "text", "text": "schedcheck"},
+            {"op": "key", "key": "enter"},
+            {"op": "wait", "seconds": 1},
+            {"op": "text", "text": "memcheck"},
+            {"op": "key", "key": "enter"},
+            {"op": "wait", "seconds": 1},
+            {"op": "text", "text": "health summary"},
+            {"op": "key", "key": "enter"},
+            {"op": "wait", "seconds": 1},
+            {"op": "text", "text": "health check"},
+            {"op": "key", "key": "enter"},
+            {"op": "wait", "seconds": 1},
+            {"op": "text", "text": "irqstat check"},
+            {"op": "key", "key": "enter"},
+            {"op": "wait", "seconds": 1},
+            {"op": "text", "text": "wait check"},
+            {"op": "key", "key": "enter"},
+            {"op": "wait", "seconds": 1},
+            {"op": "text", "text": "workq check"},
+            {"op": "key", "key": "enter"},
+            {"op": "wait", "seconds": 1},
+            {"op": "text", "text": "regcheck full"},
+            {"op": "key", "key": "enter"},
+            {"op": "wait", "seconds": 10},
+            {"op": "key", "key": "f11"},
+            {"op": "wait", "seconds": 10},
+            {"op": "text", "text": "kmetrics"},
+            {"op": "key", "key": "enter"},
+            {"op": "wait", "seconds": 2},
+            {"op": "text", "text": "procs"},
+            {"op": "key", "key": "enter"},
+            {"op": "wait", "seconds": 2},
+            {"op": "text", "text": "echo krn6-diagnostics"},
+            {"op": "key", "key": "enter"}
+          ],
+          "post_action": {
+            "type": "none",
+            "steps": []
+          }
+        }
       }
     },
     {

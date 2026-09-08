@@ -2,7 +2,7 @@
 
 ## Estado
 
-Planejado. Esta é a primeira frente de implementação da base 1.0.0. Ela fecha
+Em validacao. Esta é a primeira frente de implementação da base 1.0.0. Ela fecha
 as garantias mínimas de execução sobre as quais os Roadmaps 19–24 dependerão.
 Não inicia Rust e não substitui os Roadmaps 01–16, que permanecem históricos
 e intocados.
@@ -192,16 +192,45 @@ quantum ou migração para Rust nesta etapa.
 
 ### KRN6 — Integração e diagnóstico
 
-- [ ] Integrar `schedcheck`, `memcheck`, `health`, `regcheck full` e métricas de
+- [x] Integrar `schedcheck`, `memcheck`, `health`, `regcheck full` e métricas de
   kernel sem alterar o estado produtivo dos testes.
-- [ ] Validar pressão de processos, memória, filas, IRQs e interrupções.
-- [ ] Confirmar limpeza após ciclos repetidos de aplicativos e serviços.
-- [ ] Exercitar falha, reinício, degradação e modo de recuperação do supervisor
+- [x] Validar pressão de processos, memória, filas, IRQs e interrupções.
+- [x] Confirmar limpeza após ciclos repetidos de aplicativos e serviços.
+- [x] Exercitar falha, reinício, degradação e modo de recuperação do supervisor
   de serviços.
-- [ ] Registrar falhas na camada que possui contexto e usar os códigos
+- [x] Registrar falhas na camada que possui contexto e usar os códigos
   canônicos de `errors.h`.
-- [ ] Produzir uma matriz de comportamento para boot normal, falha de serviço,
+- [x] Produzir uma matriz de comportamento para boot normal, falha de serviço,
   falta de memória e ausência de hardware.
+
+Implementacao KRN6 preparada em 2026-09-08, sem alteracao de ABI, syscalls,
+layouts, scheduler, bootloader ou Rust. O caso dedicado
+`qemu:tst5:krn6-diagnostics` executa a sequencia de diagnosticos pelo Shell;
+o observer valida o retorno ao prompt, os blocos `SchedCheck`, `MemCheck`,
+`Health`, `RegCheck` e `Metricas K1`, resultados positivos e ausencia de
+processo ring 3 ou zombie residual. O teste host cobre saida valida, saida
+incompleta e marcador ausente. A validacao executavel passou no caso dedicado
+`qemu-20260908T204943Z-27716`; a aprovacao do baseline usou o run completo
+`tst7-20260908T212236Z-12764` com `execution_status=PASS`, e a regressao final
+contra o baseline passou em `tst7-20260908T214749Z-32340`.
+
+Matriz KRN6 validada:
+
+- `host-only`: `test-blackbox-host`, `test-shell-diagnostics-host`,
+  `test-shell-checks-host`, `test-service-supervisor-host`,
+  `test-scheduling-host`, `test-workqueue-host` e os testes existentes de
+  memoria e processos;
+- `boot normal`: `test-krn6-qemu-diagnostics` e `test-tst6-qemu-stress-kernel`;
+- `falha de servico`: `test-tst6-qemu-fault-service-supervisor`;
+- `OOM`: `test-tst6-qemu-fault-memory`;
+- `ciclos repetidos`: `test-tst6-qemu-stress-apps`;
+- `hardware opcional ausente`: `test-tst6-qemu-matrix-minimal` e a matriz
+  de baseline aprovada.
+
+Evidencia final: os seis itens KRN6 foram concluídos; o observer exigiu prompt,
+blocos de diagnóstico, resultados positivos e ausência de processo ring 3 ou
+zumbi residual. O TST7 final registrou 174 casos `PASS`, comparação `PASS`,
+`catalog-test` e cobertura estrita `PASS`, sem processo QEMU residual.
 
 ## Contratos
 

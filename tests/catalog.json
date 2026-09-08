@@ -61767,6 +61767,28 @@
       "coverage_mode": "integration"
     },
     {
+      "id": "c:src/core/kernel_tests_blackbox.c:blackbox_is_krn6_case",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_blackbox.c",
+      "symbol": "blackbox_is_krn6_case",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "o observador black-box deve estar inicializado",
+      "action": "executar ou validar a sequencia de diagnosticos KRN6",
+      "expected": "o contrato do observador retorna sucesso para a evidencia valida",
+      "errors": "entrada invalida, saida incompleta ou diagnostico negativo",
+      "effects": "somente estado estatico de observacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst5:blackbox",
+        "qemu:tst5:krn6-diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_length",
       "kind": "c_function",
       "source": "src/core/kernel_tests_blackbox.c",
@@ -61836,6 +61858,28 @@
       "coverage_mode": "integration"
     },
     {
+      "id": "c:src/core/kernel_tests_blackbox.c:blackbox_reset_krn6_observation",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_blackbox.c",
+      "symbol": "blackbox_reset_krn6_observation",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "o observador black-box deve estar inicializado",
+      "action": "executar ou validar a sequencia de diagnosticos KRN6",
+      "expected": "o contrato do observador retorna sucesso para a evidencia valida",
+      "errors": "entrada invalida, saida incompleta ou diagnostico negativo",
+      "effects": "somente estado estatico de observacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst5:blackbox",
+        "qemu:tst5:krn6-diagnostics"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_snapshot",
       "kind": "c_function",
       "source": "src/core/kernel_tests_blackbox.c",
@@ -61855,6 +61899,28 @@
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
+      "id": "c:src/core/kernel_tests_blackbox.c:blackbox_validate_krn6_output",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_blackbox.c",
+      "symbol": "blackbox_validate_krn6_output",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "o observador black-box deve estar inicializado",
+      "action": "executar ou validar a sequencia de diagnosticos KRN6",
+      "expected": "o contrato do observador retorna sucesso para a evidencia valida",
+      "errors": "entrada invalida, saida incompleta ou diagnostico negativo",
+      "effects": "somente estado estatico de observacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst5:blackbox",
+        "qemu:tst5:krn6-diagnostics"
       ],
       "tags": [],
       "coverage_mode": "integration"
@@ -177889,7 +177955,10 @@
         "c:src/core/kernel_tests_blackbox.c:blackbox_report",
         "c:src/core/kernel_tests_blackbox.c:blackbox_snapshot",
         "c:src/core/kernel_tests_blackbox.c:blackbox_wait_for_marker",
-        "c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox"
+        "c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_is_krn6_case",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_reset_krn6_observation",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_validate_krn6_output"
       ]
     },
     {
@@ -182913,6 +182982,227 @@
           "steps": []
         }
       }
+    },
+    {
+      "id": "qemu:tst5:krn6-diagnostics",
+      "scenario": "Diagnosticos integrados do kernel pelo Shell",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "smoke",
+      "guest_case": "qemu:tst5:krn6-diagnostics",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 15,
+      "isolation": "snapshot",
+      "parameters": {
+        "protocol": "ZTEST/1",
+        "input": "qmp-keyboard",
+        "postcondition": "prompt-recovered",
+        "diagnostics": "schedcheck,memcheck,health,irqstat,wait,workq,regcheck,kmetrics,procs"
+      },
+      "preconditions": "imagem pronta, teclado virtual, Shell e diagnosticos do kernel inicializados",
+      "action": "abrir o Shell e executar a sequencia KRN6 somente por QMP",
+      "expected": "todos os diagnosticos retornam sucesso ou degradacao esperada, o prompt retorna e nao ha processo ring 3 ou zumbi residual",
+      "errors": "entrada perdida, diagnostico negativo, marcador ausente, prompt preso, timeout, protocolo ou QEMU",
+      "effects": "somente snapshots de metricas e diagnosticos; o caso reseta as metricas antes da coleta",
+      "cleanup": "encerrar o QEMU e preservar script, serial, QMP e resultado",
+      "status": "AUTOMATED",
+      "tags": [
+        "qemu",
+        "tst5",
+        "krn6",
+        "diagnostics"
+      ],
+      "interaction": {
+        "mode": "qmp-keyboard",
+        "steps": [
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "clear"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "kmetrics reset"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "schedcheck"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "memcheck"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "health summary"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "health check"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "irqstat check"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "wait check"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "workq check"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "regcheck full"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 10
+          },
+          {
+            "op": "key",
+            "key": "f11"
+          },
+          {
+            "op": "wait",
+            "seconds": 10
+          },
+          {
+            "op": "text",
+            "text": "kmetrics"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "text",
+            "text": "procs"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "text",
+            "text": "echo krn6-diagnostics"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          }
+        ],
+        "post_action": {
+          "type": "none",
+          "steps": []
+        }
+      },
+      "surface_ids": [
+        "c:src/core/kernel_tests_blackbox.c:blackbox_is_krn6_case",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_reset_krn6_observation",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_validate_krn6_output"
+      ]
     },
     {
       "id": "qemu:tst5:network",

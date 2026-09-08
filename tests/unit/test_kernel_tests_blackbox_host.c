@@ -8,8 +8,15 @@
 
 #define HOST_COVERAGE_CAPACITY 96U
 #define HOST_COVERAGE_LINE_SIZE 32U
-#define HOST_TEXT_CAPACITY 256U
-#define HOST_CASE_COUNT 9U
+#define HOST_TEXT_CAPACITY 768U
+#define HOST_CASE_COUNT 10U
+
+typedef enum {
+    HOST_TERMINAL_NORMAL,
+    HOST_TERMINAL_KRN6,
+    HOST_TERMINAL_INCOMPLETE,
+    HOST_TERMINAL_ABSENT
+} host_terminal_mode_t;
 
 static uintptr_t coverage_addresses[HOST_COVERAGE_CAPACITY];
 static uint32_t coverage_count;
@@ -21,6 +28,7 @@ static uint32_t progress_count;
 static uint32_t yield_count;
 static uint32_t report_count;
 static uint32_t fake_ticks;
+static host_terminal_mode_t terminal_mode;
 
 const kernel_tests_runtime_t* kernel_tests_active_runtime;
 
@@ -61,6 +69,7 @@ uint32_t timer_get_ticks(void) {
 
 void process_yield(void) {
     yield_count++;
+    fake_ticks++;
 }
 
 int video_test_copy_terminal(char* output, uint32_t capacity,
@@ -70,8 +79,35 @@ int video_test_copy_terminal(char* output, uint32_t capacity,
     if (!output || !info || capacity == 0U) return ERR_INVALID;
     snapshot_count++;
     if (snapshot_count >= 3U && expected_marker) {
-        snprintf(terminal_text, sizeof(terminal_text),
-                 "prompt %s", expected_marker);
+        if (terminal_mode == HOST_TERMINAL_KRN6) {
+            snprintf(terminal_text, sizeof(terminal_text),
+                     "Resumo do health:\n"
+                     "Health check: OK\n"
+                     "SchedCheck:\n"
+                     "  contabilidade_idle OK\n"
+                     "MemCheck:\n"
+                     "  memoria_detalhada OK\n"
+                     "Autoteste de Bottom-Half (fila privada):\n"
+                     "Resultado: OK\n"
+                     "Autoteste de esperas (canal privado):\n"
+                     "Resultado: OK\n"
+                     "Autoteste da workqueue (fixture privada):\n"
+                     "Resultado: OK\n"
+                     "Metricas K1 (desde reset):\n"
+                     "ZOMBIE=0\n"
+                     "RegCheck: OK\n"
+                     "Processos ativos:\n"
+                     "Total: 4 processos\n"
+                     "prompt %s", expected_marker);
+        } else if (terminal_mode == HOST_TERMINAL_INCOMPLETE) {
+            snprintf(terminal_text, sizeof(terminal_text),
+                     "SchedCheck:\nprompt %s", expected_marker);
+        } else if (terminal_mode == HOST_TERMINAL_ABSENT) {
+            strcpy(terminal_text, "prompt");
+        } else {
+            snprintf(terminal_text, sizeof(terminal_text),
+                     "prompt %s", expected_marker);
+        }
     }
     length = (uint32_t)strlen(terminal_text);
     if (length >= capacity) return ERR_OVERFLOW;
@@ -111,10 +147,12 @@ int kernel_tests_report_phase(const kernel_tests_runtime_t* runtime,
 }
 
 static int run_case(const kernel_tests_runtime_t* runtime,
-                    const char* case_id, const char* marker) {
+                    const char* case_id, const char* marker,
+                    host_terminal_mode_t mode, int expected_result) {
     int result;
 
     expected_marker = marker;
+    terminal_mode = mode;
     snapshot_count = 0U;
     progress_count = 0U;
     yield_count = 0U;
@@ -123,9 +161,17 @@ static int run_case(const kernel_tests_runtime_t* runtime,
     strcpy(terminal_text, "prompt");
     result = kernel_tests_run_tst5_blackbox(runtime, case_id,
                                              (uint32_t)strlen(case_id));
-    if (result != OK || snapshot_count != 3U || progress_count != 1U ||
-        yield_count != 1U || report_count != 4U) return 0;
-    return 1;
+    if (result != expected_result || report_count != 4U) return 0;
+    if (expected_result == OK) {
+        return snapshot_count == 3U && progress_count == 1U &&
+               yield_count == 1U;
+    }
+    if (mode == HOST_TERMINAL_INCOMPLETE) {
+        return snapshot_count == 3U && progress_count == 1U &&
+               yield_count == 1U;
+    }
+    return mode == HOST_TERMINAL_ABSENT && fake_ticks > 2500U &&
+           yield_count >= 2500U;
 }
 
 static int check_valid_cases(void) {
@@ -138,7 +184,8 @@ static int check_valid_cases(void) {
         {"qemu:tst5:network", "tst5-network"},
         {"qemu:tst5:update-recovery", "tst5-update"},
         {"qemu:tst5:reboot", "tst5-reboot"},
-        {"qemu:tst5:poweroff", "tst5-poweroff"}
+        {"qemu:tst5:poweroff", "tst5-poweroff"},
+        {"qemu:tst5:krn6-diagnostics", "krn6-diagnostics"}
     };
     kernel_tests_runtime_t runtime;
 
@@ -146,10 +193,27 @@ static int check_valid_cases(void) {
     runtime.context = 0;
     runtime.report_phase = fake_report;
     for (uint32_t index = 0U; index < HOST_CASE_COUNT; index++) {
-        if (!run_case(&runtime, cases[index][0], cases[index][1])) {
+        host_terminal_mode_t mode = index == HOST_CASE_COUNT - 1U ?
+                                    HOST_TERMINAL_KRN6 : HOST_TERMINAL_NORMAL;
+        if (!run_case(&runtime, cases[index][0], cases[index][1], mode, OK)) {
             return 10 + (int)index;
         }
     }
+    return 0;
+}
+
+static int check_krn6_observer_failures(void) {
+    kernel_tests_runtime_t runtime;
+
+    runtime.progress = fake_progress;
+    runtime.context = 0;
+    runtime.report_phase = fake_report;
+    if (!run_case(&runtime, "qemu:tst5:krn6-diagnostics",
+                  "krn6-diagnostics", HOST_TERMINAL_INCOMPLETE,
+                  ERR_STATE)) return 31;
+    if (!run_case(&runtime, "qemu:tst5:krn6-diagnostics",
+                  "krn6-diagnostics", HOST_TERMINAL_ABSENT,
+                  ERR_TIMEOUT)) return 32;
     return 0;
 }
 
@@ -190,6 +254,7 @@ int main(void) {
 
     coverage_active = 1U;
     result = check_valid_cases();
+    if (!result) result = check_krn6_observer_failures();
     if (!result) result = check_invalid_case();
     if (!result && kernel_tests_progress(0) != ERR_NULL) result = 40;
     if (!result && kernel_tests_report_phase(0, "phase", OK) != ERR_NULL) {

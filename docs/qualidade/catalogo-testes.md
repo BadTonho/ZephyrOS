@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **7441**
-- Casos de teste: **173**
+- Superfícies ativas: **7444**
+- Casos de teste: **174**
 - Superfícies aposentadas: **59**
 
 | Tipo | Quantidade |
 |---|---:|
 | `api_function` | 1611 |
 | `asm_entry` | 101 |
-| `c_function` | 5609 |
+| `c_function` | 5612 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7441 |
+| `COVERED` | 7444 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 173 |
+| `AUTOMATED` | 174 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -37,7 +37,7 @@
 | `apps` | 172 |
 | `appstore` | 98 |
 | `boot` | 139 |
-| `core` | 2859 |
+| `core` | 2862 |
 | `desktop` | 40 |
 | `drivers` | 932 |
 | `filemanager` | 93 |
@@ -2755,10 +2755,13 @@
 | `c:src/core/kernel_tests_assembly.c:kernel_tests_validate_vectors` | `src/core/kernel_tests_assembly.c` | `kernel_tests_validate_vectors` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_contains` | `src/core/kernel_tests_blackbox.c` | `blackbox_contains` | `core` | `COVERED` | 4 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_equals` | `src/core/kernel_tests_blackbox.c` | `blackbox_equals` | `core` | `COVERED` | 4 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_is_krn6_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_krn6_case` | `core` | `COVERED` | 2 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_length` | `src/core/kernel_tests_blackbox.c` | `blackbox_length` | `core` | `COVERED` | 4 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_marker` | `src/core/kernel_tests_blackbox.c` | `blackbox_marker` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_report` | `src/core/kernel_tests_blackbox.c` | `blackbox_report` | `core` | `COVERED` | 4 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_reset_krn6_observation` | `src/core/kernel_tests_blackbox.c` | `blackbox_reset_krn6_observation` | `core` | `COVERED` | 2 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_snapshot` | `src/core/kernel_tests_blackbox.c` | `blackbox_snapshot` | `core` | `COVERED` | 4 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_validate_krn6_output` | `src/core/kernel_tests_blackbox.c` | `blackbox_validate_krn6_output` | `core` | `COVERED` | 2 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_wait_for_marker` | `src/core/kernel_tests_blackbox.c` | `blackbox_wait_for_marker` | `core` | `COVERED` | 4 |
 | `c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox` | `src/core/kernel_tests_blackbox.c` | `kernel_tests_run_tst5_blackbox` | `core` | `COVERED` | 4 |
 | `c:src/core/kernel_tests_execution.c:execution_check_ipc` | `src/core/kernel_tests_execution.c` | `execution_check_ipc` | `core` | `COVERED` | 2 |
@@ -7671,6 +7674,7 @@
 | `qemu:tst4:storage-vfs` | `qemu` | `smoke` | `qemu:tst4:storage-vfs` | `AUTOMATED` | 60 | 10 | `snapshot` | `quality` | `qemu` | VFS, storage, block, cache e file index estao READY | executar um unico autoteste com backends simulados e somente leitura destrutiva | self-tests passam e filas, cache, descritores, mounts e tabelas retornam ao baseline | falha de backend, resultado, invariante, cleanup, timeout, protocolo ou QEMU | usa apenas fixtures e backends simulados do kernel | validar inventario, filas e estados publicados antes de encerrar |
 | `qemu:tst5:apps` | `qemu` | `smoke` | `qemu:tst5:apps` | `AUTOMATED` | 90 | 15 | `snapshot` | `quality` | `qemu` | imagem pronta, teclado virtual e observer interno disponiveis | abrir settings, taskmgr e explorer por comandos externos e retornar ao prompt | o caminho de entrada abre e fecha as cenas e o marcador final retorna ao terminal | cena presa, prompt ausente, observer sem mudanca, timeout, protocolo ou QEMU | somente cenas e estado de UI em snapshot | fechar a cena ativa e encerrar o QEMU preservando evidencias |
 | `qemu:tst5:input` | `qemu` | `smoke` | `qemu:tst5:input` | `AUTOMATED` | 60 | 15 | `snapshot` | `quality` | `qemu` | imagem pronta, fila de teclado e Shell inicializados | enviar texto, backspace, historico e Ctrl-C por QMP | o terminal recebe a entrada e publica o marcador depois da recuperacao do prompt | texto incorreto, cancelamento perdido, prompt preso, timeout, protocolo ou QEMU | altera somente buffer e historico de comandos no snapshot | encerrar o QEMU e preservar o script e os logs |
+| `qemu:tst5:krn6-diagnostics` | `qemu` | `smoke` | `qemu:tst5:krn6-diagnostics` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem pronta, teclado virtual, Shell e diagnosticos do kernel inicializados | abrir o Shell e executar a sequencia KRN6 somente por QMP | todos os diagnosticos retornam sucesso ou degradacao esperada, o prompt retorna e nao ha processo ring 3 ou zumbi residual | entrada perdida, diagnostico negativo, marcador ausente, prompt preso, timeout, protocolo ou QEMU | somente snapshots de metricas e diagnosticos; o caso reseta as metricas antes da coleta | encerrar o QEMU e preservar script, serial, QMP e resultado |
 | `qemu:tst5:network` | `qemu` | `smoke` | `qemu:tst5:network` | `AUTOMATED` | 90 | 20 | `snapshot` | `quality` | `qemu` | imagem pronta e QEMU configurado com rede isolada | consultar status, rotas e sockets sem conexao externa | o Shell responde e a ausencia de interface permanece coerente e observavel | conexao externa, estado incoerente, prompt preso, timeout, protocolo ou QEMU | somente consultas e estado temporario de rede no snapshot | encerrar o QEMU sem tocar na rede do hospedeiro |
 | `qemu:tst5:poweroff` | `qemu` | `smoke` | `qemu:tst5:poweroff` | `AUTOMATED` | 60 | 15 | `snapshot` | `quality` | `qemu` | QEMU isolado e suporte de poweroff do guest disponivel | confirmar caminho do Shell e enviar poweroff somente apos PASS | o caso publica PASS e QMP observa SHUTDOWN ou a saida esperada do QEMU | poweroff antes do PASS, reset inesperado, timeout, protocolo ou QEMU | encerra somente a instancia QEMU em snapshot | fechar sockets e preservar logs mesmo apos a saida do guest |
 | `qemu:tst5:processes` | `qemu` | `smoke` | `qemu:tst5:processes` | `AUTOMATED` | 75 | 15 | `snapshot` | `quality` | `qemu` | processos, threads, scheduler e Shell estao READY | consultar processos e threads por teclado externo | os diagnosticos terminam e o marcador confirma o retorno ao prompt | processo residual, diagnostico preso, timeout, protocolo ou QEMU | somente consultas de estado do guest em snapshot | encerrar o QEMU e preservar historico de entrada |
