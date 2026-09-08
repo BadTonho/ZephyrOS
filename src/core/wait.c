@@ -74,6 +74,9 @@ static uint8_t wait_interrupts_enabled(void) {
 #endif
 }
 
+static int wait_validate_queue_locked(const wait_queue_head_t* queue,
+                                      uint32_t* out_waiters);
+
 static uint32_t wait_name_length(const char* text, uint32_t capacity) {
     uint32_t length = 0U;
 
@@ -161,6 +164,15 @@ static int wait_queue_unlink_locked(wait_queue_entry_t* entry,
         return 0;
     }
     queue = entry->queue;
+    if (!wait_queue_valid(queue) || !queue->waiters ||
+        !wait_service.stats.active_waiters ||
+        (entry->previous ? entry->previous->next != entry :
+                           queue->first != entry) ||
+        (entry->next ? entry->next->previous != entry :
+                       queue->last != entry)) {
+        wait_service.stats.orphan_errors++;
+        return 0;
+    }
     if (entry->previous) entry->previous->next = entry->next;
     else queue->first = entry->next;
     if (entry->next) entry->next->previous = entry->previous;
@@ -260,6 +272,13 @@ static int wait_condition_snapshot(wait_queue_head_t* queue,
 }
 
 void wait_init(void) {
+    if (wait_service.stats.initialized) {
+        if (wait_service.stats.channels_active ||
+            wait_service.stats.active_waiters) {
+            LOG_ERROR("WAIT", "Reinitialization refused while queues are active");
+        }
+        return;
+    }
     LOG_INFO("WAIT", "Inicializando servico de espera");
     kmemset(&wait_service, 0, sizeof(wait_service));
     wait_service.stats.initialized = 1U;
@@ -429,6 +448,12 @@ int wait_queue_block(wait_queue_head_t* queue, wait_queue_entry_t* entry,
         wait_service.stats.invalid_operations++;
         wait_irq_restore(flags);
         LOG_ERROR("WAIT", "Fila nao registrada no bloqueio");
+        return ERR_STATE;
+    }
+    if (!wait_validate_queue_locked(queue, 0)) {
+        wait_service.stats.invalid_operations++;
+        wait_irq_restore(flags);
+        LOG_ERROR("WAIT", "Queue invariants invalid before blocking");
         return ERR_STATE;
     }
     if (!queue->available) {
@@ -801,7 +826,7 @@ static int wait_validate_queue_locked(const wait_queue_head_t* queue,
     if (entry || previous != queue->last || count != queue->waiters ||
         (!count && (queue->first || queue->last)) ||
         (count && (!queue->first || !queue->last))) return 0;
-    *out_waiters += count;
+    if (out_waiters) *out_waiters += count;
     return 1;
 }
 

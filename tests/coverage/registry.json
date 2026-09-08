@@ -1710,7 +1710,7 @@
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-net-socket-host PASS com handles geracionais, conexao, filas RX/TX, eventos, EOF, timeout, cancelamento, limites, reset e limpeza usando TCP, timer e VFS falsos"
+      "evidence": "make test-net-socket-host PASS com handles geracionais, conexao, filas RX/TX, eventos, EOF, timeout, cancelamento, limites, reset e limpeza usando TCP, timer e VFS falsos; KRN5.1 tambem cobriu fechamento, wakeup e descarte de buffers sem estado residual"
     },
     {
       "id": "socket-runtime-host-dynamic",
@@ -1727,7 +1727,7 @@
         "src/core/socket.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-socket-runtime-host PASS com backend TCP, adaptadores VFS, filas UNIX, remocao de cliente pendente antes do accept, espera cancelada, limites de capacidade, autoteste e limpeza; coverage.json instrumentado confirmou as 65 funcoes de src/core/socket.c, sem enderecos desconhecidos ou ambiguos",
+      "evidence": "make test-socket-runtime-host PASS com backend TCP, adaptadores VFS, filas UNIX, remocao de cliente pendente antes do accept, espera cancelada, limites de capacidade, autoteste e limpeza; KRN5.1 tambem validou close/abort, filas RX e rejeicao de estado obsoleto; coverage.json instrumentado confirmou as 65 funcoes de src/core/socket.c, sem enderecos desconhecidos ou ambiguos",
       "case_definition": {
         "id": "host:network:socket-runtime",
         "scenario": "Runtime host-only dos sockets nativos com backends TCP, VFS e espera falsos",
@@ -2950,7 +2950,7 @@
         "src/process/ipc.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-process-ipc-host PASS com mensagens, fila cheia, recebimento, espera, timeout, sinal, foco, fallback e limpeza em fixture estatica"
+      "evidence": "make test-process-ipc-host PASS com mensagens, fila cheia, recebimento, espera, timeout, sinal, foco, fallback e limpeza em fixture estatica; KRN5.1 tambem validou publicacao antes do wakeup e revalidacao de generation"
     },
     {
       "id": "process-signal-host-dynamic",
@@ -3017,7 +3017,7 @@
         "src/core/workqueue.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-scheduling-host PASS com autotestes de wait, workqueue e irq_deferred, limites, cancelamento, coalescencia, rerun e invariantes no relatorio instrumentado"
+      "evidence": "make test-scheduling-host PASS com autotestes de wait, workqueue e irq_deferred, limites, cancelamento, coalescencia, rerun e invariantes no relatorio instrumentado; KRN5.1 tambem validou reinicializacao segura de Wait Queue, FIFO e ownership obsoleto"
     },
     {
       "id": "shell-dispatch-host-dynamic",
@@ -5444,7 +5444,7 @@
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-vfs-host PASS com tabelas de descritores, arquivos, pipes, poll/select, dispositivo, socket, quiescencia e validacao de invariantes em fixture host-only instrumentada"
+      "evidence": "make test-vfs-host PASS com tabelas de descritores, arquivos, pipes, poll/select, dispositivo, socket, quiescencia e validacao de invariantes em fixture host-only instrumentada; KRN5.1 tambem cobriu fechamento de endpoints, EOF/HUP, wakeups e rollback de release"
     },
     {
       "id": "vfs-path-host-dynamic",
@@ -5498,7 +5498,7 @@
         "src/core/workqueue.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-workqueue-host PASS com autoteste interno, prioridades, FIFO, atrasos, coalescencia, rerun, cancelamento, fallback, quiescencia e worker limitado no host"
+      "evidence": "make test-workqueue-host PASS com autoteste interno, prioridades, FIFO, atrasos, coalescencia, rerun, cancelamento, fallback, quiescencia e worker limitado no host; KRN5.1 tambem rejeitou callback com PID+generation obsoletos sem executa-lo"
     },
     {
       "id": "speaker-host-dynamic",

@@ -431,19 +431,41 @@ static int vfs_pipe_allocate(pipe_t** pipe_out) {
     return OK;
 }
 
-static void vfs_pipe_release(pipe_t* pipe) {
-    if (!pipe || !pipe->used) return;
+static int vfs_pipe_release(pipe_t* pipe) {
+    int result;
+
+    if (!pipe || !pipe->used) return ERR_INVALID;
+    if ((pipe->read_channel.initialized &&
+         (pipe->read_channel.waiters || pipe->read_channel.first ||
+          pipe->read_channel.last)) ||
+        (pipe->write_channel.initialized &&
+         (pipe->write_channel.waiters || pipe->write_channel.first ||
+          pipe->write_channel.last))) {
+        LOG_ERROR("FS", "Cannot release pipe with active waiters");
+        return ERR_STATE;
+    }
+    if (pipe->read_channel.initialized) {
+        result = wait_channel_set_available(&pipe->read_channel, 0U);
+        if (result != OK) return result;
+    }
+    if (pipe->write_channel.initialized) {
+        result = wait_channel_set_available(&pipe->write_channel, 0U);
+        if (result != OK) return result;
+    }
     if (pipe->read_channel.initialized &&
         wait_channel_reset(&pipe->read_channel) != OK) {
-        LOG_ERROR("FS", "Falha ao liberar canal de leitura do pipe");
+        LOG_ERROR("FS", "Read channel remained active during pipe release");
+        return ERR_STATE;
     }
     if (pipe->write_channel.initialized &&
         wait_channel_reset(&pipe->write_channel) != OK) {
-        LOG_ERROR("FS", "Falha ao liberar canal de escrita do pipe");
+        LOG_ERROR("FS", "Write channel remained active during pipe release");
+        return ERR_STATE;
     }
     spinlock_acquire(&vfs_lock);
     kmemset(pipe, 0, sizeof(pipe_t));
     spinlock_release(&vfs_lock);
+    return OK;
 }
 
 static pipe_t* vfs_pipe_from_file(file_t* file,
@@ -659,6 +681,11 @@ static int vfs_pipe_close(file_t* file) {
     vfs_file_context_t* context;
     pipe_t* pipe;
     uint8_t release = 0U;
+    uint8_t was_reader;
+    uint8_t was_writer;
+    uint32_t old_readers;
+    uint32_t old_writers;
+    int result = OK;
 
     pipe = vfs_pipe_from_file(file, &context);
     if (!pipe || !context) {
@@ -666,6 +693,10 @@ static int vfs_pipe_close(file_t* file) {
         return ERR_STATE;
     }
     spinlock_acquire(&pipe->lock);
+    was_reader = context->pipe_reader;
+    was_writer = context->pipe_writer;
+    old_readers = pipe->readers;
+    old_writers = pipe->writers;
     if (context->pipe_reader) {
         if (!pipe->readers) {
             spinlock_release(&pipe->lock);
@@ -688,8 +719,17 @@ static int vfs_pipe_close(file_t* file) {
     spinlock_release(&pipe->lock);
     vfs_pipe_wake_readers(pipe);
     vfs_pipe_wake_writers(pipe);
-    if (release) vfs_pipe_release(pipe);
-    return OK;
+    if (release) result = vfs_pipe_release(pipe);
+    if (result != OK) {
+        spinlock_acquire(&pipe->lock);
+        pipe->readers = old_readers;
+        pipe->writers = old_writers;
+        context->pipe_reader = was_reader;
+        context->pipe_writer = was_writer;
+        spinlock_release(&pipe->lock);
+        LOG_ERROR("FS", "Pipe endpoint close left the pipe intact");
+    }
+    return result;
 }
 
 static int vfs_pipe_lseek(file_t* file, int32_t offset, uint32_t whence,
@@ -1184,6 +1224,7 @@ int vfs_fd_table_init(vfs_fd_table_t* table) {
 int vfs_fd_table_release(vfs_fd_table_t* table) {
     uint32_t index;
     file_t* standard[3];
+    int first_error = OK;
 
     if (!table) {
         LOG_ERROR("FS", "Tabela de descritores nula na liberacao");
@@ -1206,6 +1247,7 @@ int vfs_fd_table_release(vfs_fd_table_t* table) {
     spinlock_release(&vfs_lock);
     for (index = VFS_FD_FIRST_FILE; index < VFS_MAX_FDS; index++) {
         file_t* file;
+        int close_result = OK;
 
         spinlock_acquire(&vfs_lock);
         file = table->entries[index];
@@ -1222,10 +1264,21 @@ int vfs_fd_table_release(vfs_fd_table_t* table) {
         spinlock_release(&vfs_lock);
         if (file->vnode && file->vnode->operations &&
             file->vnode->operations->close) {
-            file->vnode->operations->close(file);
+            close_result = file->vnode->operations->close(file);
+        } else {
+            close_result = ERR_STATE;
+        }
+        if (close_result != OK) {
+            spinlock_acquire(&vfs_lock);
+            if (!table->entries[index]) table->entries[index] = file;
+            spinlock_release(&vfs_lock);
+            if (first_error == OK) first_error = close_result;
+            LOG_ERROR("FS", "File close failed while releasing descriptor table");
+            continue;
         }
         vfs_release_file(file);
     }
+    if (first_error != OK) return first_error;
     spinlock_acquire(&vfs_lock);
     for (index = 0U; index < 3U; index++) {
         table->standard_files[index] = 0;
@@ -1829,7 +1882,13 @@ int vfs_close(int32_t fd) {
     spinlock_release(&vfs_lock);
     (void)vfs_poll_notify();
     result = file->vnode->operations->close(file);
-    if (!file->persistent) vfs_release_file(file);
+    if (result != OK) {
+        spinlock_acquire(&vfs_lock);
+        if (!table->entries[fd]) table->entries[fd] = file;
+        spinlock_release(&vfs_lock);
+    } else if (!file->persistent) {
+        vfs_release_file(file);
+    }
     spinlock_acquire(&vfs_lock);
     if (result == OK) vfs_metrics.closes++;
     else vfs_metrics.failures++;
@@ -2273,8 +2332,13 @@ int vfs_validate_state(void) {
             }
         }
         if (pipe->readers != readers || pipe->writers != writers ||
+            pipe->slot != fd ||
             !pipe->read_channel.initialized ||
             !pipe->write_channel.initialized ||
+            !pipe->read_channel.available ||
+            !pipe->write_channel.available ||
+            pipe->read_offset >= VFS_PIPE_BUFFER_SIZE ||
+            pipe->write_offset >= VFS_PIPE_BUFFER_SIZE ||
             pipe->bytes > VFS_PIPE_BUFFER_SIZE) {
             spinlock_release(&vfs_lock);
             return ERR_STATE;

@@ -596,6 +596,18 @@ Desde a SYNC2, `src/include/core/net_socket.h` acrescenta mascaras de eventos,
 alterar `net_socket_receive()`. O contrato canonico permanece em
 `docs/04-kernel/kernel.md`.
 
+Na KRN5.1, a implementacao de `wait.h`, IPC, VFS, sockets e workqueue reforca
+ownership e limpeza sem alterar os headers, assinaturas, syscalls, layouts ou
+o scheduler publicos. Wait Queues preservam FIFO e recusam reinicializacao ou
+destruicao enquanto houver waiters. IPC publica a mensagem antes do wakeup e
+revalida o estado e a geracao apos a espera. Pipes e sockets acordam operacoes
+bloqueadas no fechamento e liberam filas e buffers somente depois da ultima
+referencia valida. A workqueue registra, apenas internamente, `PID +
+generation` para trabalhos criados em contexto de processo e descarta callbacks
+obsoletos antes da execucao. Falhas retornam os codigos canonicos e preservam
+o estado consistente; o supervisor de servicos permanece reservado para a
+KRN5.2.
+
 Desde a NET2, `src/include/core/socket.h` publica a camada generica de
 sockets sobre descritores VFS. `AF_UNIX/SOCK_STREAM` oferece namespace global
 de caminhos, `bind`, `listen`, `accept`, `connect`, filas locais limitadas e

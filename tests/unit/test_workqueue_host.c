@@ -253,6 +253,7 @@ static int check_initialization(void) {
 
 static int check_work_lifecycle(void) {
     work_struct_t work;
+    work_struct_t stale_work;
     work_info_t info[2];
     workqueue_stats_t stats;
     uint32_t marker = 0U;
@@ -293,6 +294,19 @@ static int check_work_lifecycle(void) {
     }
     if (work_destroy(&work) != OK) return 23;
     if (work_destroy(&work) != ERR_STATE) return 24;
+    current_process.event_generation = 1U;
+    current_process.state = PROCESS_STATE_RUNNING;
+    kmemset(&stale_work, 0, sizeof(stale_work));
+    if (work_init(&stale_work, "StaleOwner", WORK_PRIORITY_NORMAL, callback,
+                  &marker) != OK) return 26;
+    if (schedule_work(&stale_work) != OK) return 27;
+    current_process.state = PROCESS_STATE_ZOMBIE;
+    if (workqueue_dispatch(0U, 1U, &executed) != OK || executed != 1U ||
+        callback_calls != 2U || stale_work.last_error != ERR_NOT_FOUND ||
+        stale_work.state != WORK_STATE_IDLE) return 28;
+    current_process.state = PROCESS_STATE_RUNNING;
+    current_process.event_generation = 0U;
+    if (work_destroy(&stale_work) != OK) return 29;
     if (workqueue_validate_state() != OK) return 25;
     return 0;
 }

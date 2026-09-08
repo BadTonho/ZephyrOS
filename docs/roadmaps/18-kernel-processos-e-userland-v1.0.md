@@ -147,6 +147,26 @@ quantum ou migração para Rust nesta etapa.
 - [ ] Validar que uma falha de serviço não deixe o sistema sem Shell ou saída
   textual.
 
+### KRN5.1 — IPC, pipes, sockets, Wait Queue e workqueue
+
+- [x] Validar filas cheias e vazias, consumidor/produtor ausente, timeout,
+  cancelamento, fechamento e wakeup sem alterar parcialmente o estado.
+- [x] Garantir ownership e limpeza de mensagens, buffers, FDs, endpoints,
+  waiters e callbacks quando o proprietário deixa de existir.
+- [x] Rejeitar PID, FD e handle obsoletos e revalidar `PID + generation` antes
+  de entregar mensagens ou executar callbacks.
+- [x] Preservar EOF/HUP/erro de pipes e sockets, liberar filas RX/TX e impedir
+  estado residual após close, abort ou destruição.
+- [x] Manter FIFO e invariantes de Wait Queue, inclusive reinicialização segura,
+  remoção antes da destruição e ausência de double wake ou waiter órfão.
+- [x] Manter coalescência, rerun, prioridades, atraso e fallback da workqueue;
+  callbacks de proprietários obsoletos são descartados antes da execução.
+- [x] Confirmar bloqueio de System, Shell, Desktop e kworker quando não houver
+  trabalho imediato e preservar os schedulers existentes.
+- [x] Validar a matriz host/QEMU, build, catálogo e `git diff --check` sem
+  alterar ABI, syscalls, layouts, bootloader, Rust ou scheduler.
+- [ ] Manter pendente o supervisor de serviços, reservado para a KRN5.2.
+
 ### KRN6 — Integração e diagnóstico
 
 - [ ] Integrar `schedcheck`, `memcheck`, `health`, `regcheck full` e métricas de

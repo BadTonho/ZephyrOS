@@ -6755,3 +6755,26 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `catalog-test` também passou dentro do gate e nao houve limitacoes
   registradas. A validação final de catálogo e `git diff --check` foi executada
   após o registro.
+
+- KRN5.1 — IPC, pipes, sockets, Wait Queue e workqueue — concluído em
+  2026-09-07 (America/Sao_Paulo). Foram reforçados os caminhos de publicação e
+  wakeup do IPC, a inicialização e remoção FIFO de Wait Queues, o fechamento e
+  rollback de pipes VFS, a limpeza de filas e buffers de sockets e a validação
+  de ownership geracional da workqueue. Nenhum header, syscall, ABI, layout,
+  scheduler, bootloader ou código Rust foi alterado; o supervisor de serviços
+  permanece pendente para a KRN5.2.
+
+  As fixtures host cobriram filas cheias/vazias, timeout, cancelamento,
+  fechamento, EOF/HUP, wakeup, reuso de identidade, descarte de callbacks e
+  invariantes antes/depois das falhas. Passaram `make q3check`, `make clean`
+  seguido de `make`, todos os alvos host solicitados de scheduling, processos,
+  IPC, VFS, sockets, workqueue e Shell pipeline, todos os alvos QEMU solicitados
+  de execução, VFS, rede, processos e stress, além de `make catalog-test-strict`
+  e `git diff --check`.
+
+  O `make test-tst7-full` final terminou `PASS` no run
+  `tst7-20260907T225509Z-2352`, com 171/171 casos, incluindo 37 casos QEMU,
+  cobertura estrita sem superfícies pendentes e `catalog-test` aprovado. Uma
+  tentativa intermediária detectou corretamente a renomeação indevida de uma
+  função `static` no baseline; o nome foi restaurado e o catálogo sincronizado
+  antes da validação final. Nenhum bootloader foi alterado.

@@ -4,6 +4,8 @@
 #include "core/log.h"
 #include "core/string.h"
 
+#define IPC_EFLAGS_INTERRUPT_ENABLE (1U << 9U)
+
 static spinlock_t ipc_lock;
 static uint32_t focused_pid = 0;
 static uint32_t focus_fallback_pid = 0;
@@ -13,7 +15,29 @@ static int ipc_ready = 0;
 typedef struct {
     process_t* process;
     uint32_t observed_generation;
+    uint32_t observed_identity_generation;
 } ipc_wait_context_t;
+
+static uint32_t ipc_irq_save(void) {
+#if defined(ZEPHYROS_HOST_TEST)
+    return 0U;
+#else
+    uint32_t flags;
+
+    asm volatile("pushf\n\tpop %0\n\tcli" : "=r"(flags) : : "memory");
+    return flags;
+#endif
+}
+
+static void ipc_irq_restore(uint32_t flags) {
+#if !defined(ZEPHYROS_HOST_TEST)
+    if (flags & IPC_EFLAGS_INTERRUPT_ENABLE) {
+        asm volatile("sti" : : : "memory");
+    }
+#else
+    (void)flags;
+#endif
+}
 
 static int ipc_wait_condition(void* context, uint8_t* out_ready) {
     ipc_wait_context_t* wait_context = (ipc_wait_context_t*)context;
@@ -25,7 +49,11 @@ static int ipc_wait_condition(void* context, uint8_t* out_ready) {
     }
     process = wait_context->process;
     spinlock_acquire(&ipc_lock);
-    *out_ready = process->msg_head != process->msg_tail ||
+    *out_ready = process->state == PROCESS_STATE_UNUSED ||
+                 process->state == PROCESS_STATE_ZOMBIE ||
+                 process->event_generation !=
+                     wait_context->observed_identity_generation ||
+                 process->msg_head != process->msg_tail ||
                  process->ipc_wait_channel.condition !=
                      wait_context->observed_generation ||
                  (process->pending_signals & ~process->blocked_signals) != 0U;
@@ -34,6 +62,7 @@ static int ipc_wait_condition(void* context, uint8_t* out_ready) {
 }
 
 void ipc_init(void) {
+    if (ipc_ready) return;
     spinlock_init(&ipc_lock);
     focused_pid = 0;
     focus_fallback_pid = 0;
@@ -53,6 +82,7 @@ int ipc_send(uint32_t pid, ipc_msg_t* msg) {
     process_t* target;
     uint32_t next_head;
     uint32_t woken = 0U;
+    uint32_t flags;
 
     if (!ipc_ready) {
         LOG_ERROR("IPC", "Envio antes da inicializacao");
@@ -69,22 +99,25 @@ int ipc_send(uint32_t pid, ipc_msg_t* msg) {
         return 0;
     }
 
+    flags = ipc_irq_save();
+    spinlock_acquire(&ipc_lock);
     target = process_get_by_pid(pid);
     if (!target || (target->state != PROCESS_STATE_READY &&
                     target->state != PROCESS_STATE_RUNNING &&
                     target->state != PROCESS_STATE_BLOCKED)) {
         ipc_stats.failed++;
+        spinlock_release(&ipc_lock);
+        ipc_irq_restore(flags);
         LOG_WARN("IPC", "Processo de destino inexistente ou inativo");
         return 0;
     }
-
-    spinlock_acquire(&ipc_lock);
 
     next_head = (target->msg_head + 1) % IPC_MSG_QUEUE_SIZE;
     if (next_head == target->msg_tail) {
         ipc_stats.failed++;
         ipc_stats.queue_full++;
         spinlock_release(&ipc_lock);
+        ipc_irq_restore(flags);
         LOG_WARN("IPC", "Fila de mensagens cheia");
         return 0;
     }
@@ -94,6 +127,7 @@ int ipc_send(uint32_t pid, ipc_msg_t* msg) {
     ipc_stats.sent++;
 
     spinlock_release(&ipc_lock);
+    ipc_irq_restore(flags);
     if (wake_up(&target->ipc_wait_channel, &woken) != OK) {
         LOG_WARN("IPC", "Falha ao acordar consumidor IPC");
     }
@@ -166,10 +200,17 @@ int ipc_wait(uint32_t timeout_ticks, wait_reason_t* out_reason) {
     }
     context.process = current;
     context.observed_generation = current->ipc_wait_generation;
+    context.observed_identity_generation = current->event_generation;
     result = wait_event_timeout(&current->ipc_wait_channel,
                                 ipc_wait_condition, &context,
                                 timeout_ticks, out_reason);
     if (result != OK || *out_reason != WAIT_REASON_EVENT) return result;
+    if (current->state == PROCESS_STATE_UNUSED ||
+        current->state == PROCESS_STATE_ZOMBIE ||
+        current->event_generation != context.observed_identity_generation) {
+        LOG_WARN("IPC", "IPC wait resumed for an obsolete process identity");
+        return ERR_NOT_FOUND;
+    }
     if (current->pending_signals & ~current->blocked_signals) {
         *out_reason = WAIT_REASON_SIGNAL;
         return OK;
@@ -206,7 +247,8 @@ uint32_t ipc_get_pending_count(void) {
     for (uint32_t i = 0; i < MAX_PROCESSES; i++) {
         process_t* process = processes[i];
 
-        if (!process) continue;
+        if (!process || process->state == PROCESS_STATE_UNUSED ||
+            process->state == PROCESS_STATE_ZOMBIE) continue;
         if (process->msg_head >= process->msg_tail) {
             pending += process->msg_head - process->msg_tail;
         } else {

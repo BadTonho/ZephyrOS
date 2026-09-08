@@ -217,6 +217,7 @@ static int check_wait(void) {
     if (!wait_reason_name(WAIT_REASON_TIMEOUT) ||
         !wait_wake_mode_name(WAIT_WAKE_ALL)) return 14;
     if (wait_channel_init(&queue, "host-channel") != OK) return 15;
+    wait_init();
     if (wait_channel_get_condition(&queue, &condition) != OK ||
         wait_queue_copy_info(NULL, 1U, &count) != ERR_NULL ||
         wait_queue_copy_info(&queue_info, 1U, &count) != OK || count != 1U ||

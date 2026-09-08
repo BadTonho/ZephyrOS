@@ -445,6 +445,34 @@ registrada como `DT100-002` e deve ser quitada pela K5 antes da v1.0.0.
 O comando `workq check` inclui um percurso real Shell -> Wait Queue -> kworker
 -> wake, alem da fixture privada das filas.
 
+### KRN5.1 — IPC, pipes, sockets, Wait Queue e workqueue
+
+Os mecanismos de comunicacao mantem as APIs existentes e protegem suas regioes
+criticas antes de publicar estado. Wait Queues permanecem FIFO e intrusivas:
+inicializacao repetida nao apaga waiters ou canais ativos, e uma entrada e
+removida antes que seu processo ou thread seja destruido. O produtor publica a
+mensagem ou altera o estado do canal antes de acordar o consumidor; wakeups
+duplicados, waiters orfaos e canais indisponiveis sao rejeitados sem alterar a
+fila.
+
+IPC revalida estado e `PID + generation` depois da espera. Processos `ZOMBIE`
+ou `UNUSED`, filas cheias e destinos invalidos nao recebem mensagens. Pipes
+acordam leitores e escritores em leitura, escrita e fechamento, preservando
+EOF/HUP e liberando os dois endpoints somente depois da ultima referencia.
+Sockets genericos e sockets de rede rejeitam descritores, handles e slots
+obsoletos; close/abort descartam filas RX/TX e acordam operacoes bloqueadas com
+o resultado correspondente.
+
+Trabalhos da workqueue continuam estaticos, com coalescencia, rerun,
+prioridades e fallback atuais. Quando criados em contexto de processo, o
+proprietario e registrado internamente por `PID + generation`; um callback nao
+e executado se o proprietario tiver sido destruido ou reutilizado. O publicador
+`work_struct_t`, o scheduler e o caminho de bloqueio do kworker nao mudam.
+
+As fixtures host e os fluxos QEMU de IPC, VFS, rede, processos, Shell e
+estresse validam filas cheias e vazias, timeout, cancelamento, fechamento,
+reutilizacao de identidade, EOF/HUP, wakeup e limpeza sem estado residual.
+
 ---
 
 ## Threads

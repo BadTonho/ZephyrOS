@@ -17,6 +17,8 @@
 typedef struct {
     work_struct_t* registry[WORKQUEUE_CAPACITY];
     uint32_t generations[WORKQUEUE_CAPACITY];
+    uint32_t owner_pids[WORKQUEUE_CAPACITY];
+    uint32_t owner_generations[WORKQUEUE_CAPACITY];
     work_struct_t* ready_first[WORK_PRIORITY_COUNT];
     work_struct_t* ready_last[WORK_PRIORITY_COUNT];
     work_struct_t* delayed_first;
@@ -121,6 +123,43 @@ static void workqueue_copy_owner(char* destination, const char* source) {
         index++;
     }
     destination[index] = '\0';
+}
+
+static void workqueue_capture_owner(workqueue_service_t* service,
+                                    uint32_t slot) {
+    process_t* process;
+    uint32_t pid;
+
+    if (!service || slot >= WORKQUEUE_CAPACITY) return;
+    service->owner_pids[slot] = 0U;
+    service->owner_generations[slot] = 0U;
+    if (service != &workqueue_service) return;
+    pid = process_get_current_pid();
+    process = pid ? process_get_by_pid(pid) : 0;
+    if (!process || process->pid == 0U || !process->event_generation ||
+        process->state == PROCESS_STATE_UNUSED ||
+        process->state == PROCESS_STATE_ZOMBIE) {
+        return;
+    }
+    service->owner_pids[slot] = process->pid;
+    service->owner_generations[slot] = process->event_generation;
+}
+
+static int workqueue_owner_is_live(const workqueue_service_t* service,
+                                   uint32_t slot) {
+    process_t* process;
+    uint32_t pid;
+    uint32_t generation;
+
+    if (!service || slot >= WORKQUEUE_CAPACITY) return 0;
+    pid = service->owner_pids[slot];
+    generation = service->owner_generations[slot];
+    if (!pid) return generation == 0U;
+    if (!generation) return 0;
+    process = process_get_by_pid(pid);
+    return process && process->event_generation == generation &&
+           process->state != PROCESS_STATE_UNUSED &&
+           process->state != PROCESS_STATE_ZOMBIE;
 }
 
 static uint32_t workqueue_pending_count(const workqueue_service_t* service) {
@@ -286,6 +325,7 @@ static int workqueue_register_on(workqueue_service_t* service,
     work->last_error = OK;
     workqueue_copy_owner(work->owner, owner);
     service->registry[slot] = work;
+    workqueue_capture_owner(service, slot);
     service->stats.registered++;
     workqueue_irq_restore(flags);
     return OK;
@@ -484,6 +524,20 @@ static int workqueue_execute_one(workqueue_service_t* service,
     work = workqueue_take_ready(service, priority);
     workqueue_irq_restore(flags);
     if (!work) return ERR_NOT_FOUND;
+    if (!workqueue_owner_is_live(service, work->registry_slot)) {
+        flags = workqueue_irq_save();
+        work->last_error = ERR_NOT_FOUND;
+        work->state = WORK_STATE_IDLE;
+        work->cancel_requested = 0U;
+        work->rerun_requested = 0U;
+        work->rerun_delayed = 0U;
+        if (service->stats.running) service->stats.running--;
+        service->stats.rejected++;
+        service->stats.last_error = ERR_NOT_FOUND;
+        workqueue_irq_restore(flags);
+        LOG_WARN("KERNEL", "Dropping work item with stale process owner");
+        return OK;
+    }
     if (!workqueue_interrupts_enabled()) {
         service->stats.context_errors++;
         service->stats.last_error = ERR_STATE;
@@ -608,7 +662,13 @@ static int workqueue_validate_on(const workqueue_service_t* service) {
     for (uint32_t slot = 0U; slot < WORKQUEUE_CAPACITY; slot++) {
         work_struct_t* work = service->registry[slot];
 
-        if (!work) continue;
+        if (!work) {
+            if (service->owner_pids[slot] ||
+                service->owner_generations[slot]) {
+                return workqueue_internal_result(ERR_STATE);
+            }
+            continue;
+        }
         registered++;
         if (!work->initialized || work->registry_slot != slot ||
             !work->callback || !workqueue_owner_valid(work->owner) ||
@@ -617,7 +677,11 @@ static int workqueue_validate_on(const workqueue_service_t* service) {
             (work->id & WORKQUEUE_ID_SLOT_MASK) != slot + 1U ||
             !(work->id >> WORKQUEUE_ID_SLOT_BITS) ||
             service->generations[slot] !=
-                (work->id >> WORKQUEUE_ID_SLOT_BITS)) {
+                (work->id >> WORKQUEUE_ID_SLOT_BITS) ||
+            (service->owner_pids[slot] == 0U &&
+             service->owner_generations[slot] != 0U) ||
+            (service->owner_pids[slot] != 0U &&
+             service->owner_generations[slot] == 0U)) {
             return workqueue_internal_result(ERR_STATE);
         }
         if (work->state == WORK_STATE_READY) ready[work->priority]++;
@@ -752,6 +816,10 @@ int workqueue_init(void) {
                        "Falha ao registrar prova da kworker");
         return result;
     }
+    workqueue_service.owner_pids[
+        workqueue_service.probe_work.registry_slot] = 0U;
+    workqueue_service.owner_generations[
+        workqueue_service.probe_work.registry_slot] = 0U;
     LOG_INFO("KERNEL", "Fila de trabalhos do kernel inicializada");
     return OK;
 }
@@ -833,6 +901,8 @@ int work_destroy(work_struct_t* work) {
         return ERR_STATE;
     }
     workqueue_service.registry[work->registry_slot] = 0;
+    workqueue_service.owner_pids[work->registry_slot] = 0U;
+    workqueue_service.owner_generations[work->registry_slot] = 0U;
     if (workqueue_service.stats.registered) {
         workqueue_service.stats.registered--;
     }

@@ -4,7 +4,7 @@
 
 ## Resumo
 
-- Superfícies ativas: **7375**
+- Superfícies ativas: **7379**
 - Casos de teste: **171**
 - Superfícies aposentadas: **59**
 
@@ -12,14 +12,14 @@
 |---|---:|
 | `api_function` | 1598 |
 | `asm_entry` | 101 |
-| `c_function` | 5556 |
+| `c_function` | 5560 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7375 |
+| `COVERED` | 7379 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
 
@@ -37,7 +37,7 @@
 | `apps` | 172 |
 | `appstore` | 98 |
 | `boot` | 139 |
-| `core` | 2814 |
+| `core` | 2816 |
 | `desktop` | 40 |
 | `drivers` | 932 |
 | `filemanager` | 93 |
@@ -46,7 +46,7 @@
 | `icons` | 18 |
 | `kernel` | 41 |
 | `memory` | 202 |
-| `process` | 293 |
+| `process` | 295 |
 | `settings` | 57 |
 | `shell` | 1089 |
 | `taskbar` | 47 |
@@ -4020,6 +4020,7 @@
 | `c:src/core/workqueue.c:work_init` | `src/core/workqueue.c` | `work_init` | `core` | `COVERED` | 3 |
 | `c:src/core/workqueue.c:workqueue_bind_worker` | `src/core/workqueue.c` | `workqueue_bind_worker` | `core` | `COVERED` | 3 |
 | `c:src/core/workqueue.c:workqueue_cancel_on` | `src/core/workqueue.c` | `workqueue_cancel_on` | `core` | `COVERED` | 4 |
+| `c:src/core/workqueue.c:workqueue_capture_owner` | `src/core/workqueue.c` | `workqueue_capture_owner` | `core` | `COVERED` | 2 |
 | `c:src/core/workqueue.c:workqueue_context_name` | `src/core/workqueue.c` | `workqueue_context_name` | `core` | `COVERED` | 2 |
 | `c:src/core/workqueue.c:workqueue_copy_info` | `src/core/workqueue.c` | `workqueue_copy_info` | `core` | `COVERED` | 2 |
 | `c:src/core/workqueue.c:workqueue_copy_owner` | `src/core/workqueue.c` | `workqueue_copy_owner` | `core` | `COVERED` | 4 |
@@ -4039,6 +4040,7 @@
 | `c:src/core/workqueue.c:workqueue_needs_fallback` | `src/core/workqueue.c` | `workqueue_needs_fallback` | `core` | `COVERED` | 3 |
 | `c:src/core/workqueue.c:workqueue_next_timeout` | `src/core/workqueue.c` | `workqueue_next_timeout` | `core` | `COVERED` | 3 |
 | `c:src/core/workqueue.c:workqueue_notify` | `src/core/workqueue.c` | `workqueue_notify` | `core` | `COVERED` | 5 |
+| `c:src/core/workqueue.c:workqueue_owner_is_live` | `src/core/workqueue.c` | `workqueue_owner_is_live` | `core` | `COVERED` | 2 |
 | `c:src/core/workqueue.c:workqueue_owner_valid` | `src/core/workqueue.c` | `workqueue_owner_valid` | `core` | `COVERED` | 4 |
 | `c:src/core/workqueue.c:workqueue_pending_count` | `src/core/workqueue.c` | `workqueue_pending_count` | `core` | `COVERED` | 5 |
 | `c:src/core/workqueue.c:workqueue_power_quiesce_until` | `src/core/workqueue.c` | `workqueue_power_quiesce_until` | `core` | `COVERED` | 2 |
@@ -5851,6 +5853,8 @@
 | `c:src/process/ipc.c:ipc_get_pending_count` | `src/process/ipc.c` | `ipc_get_pending_count` | `process` | `COVERED` | 2 |
 | `c:src/process/ipc.c:ipc_get_stats` | `src/process/ipc.c` | `ipc_get_stats` | `process` | `COVERED` | 1 |
 | `c:src/process/ipc.c:ipc_init` | `src/process/ipc.c` | `ipc_init` | `process` | `COVERED` | 1 |
+| `c:src/process/ipc.c:ipc_irq_restore` | `src/process/ipc.c` | `ipc_irq_restore` | `process` | `COVERED` | 1 |
+| `c:src/process/ipc.c:ipc_irq_save` | `src/process/ipc.c` | `ipc_irq_save` | `process` | `COVERED` | 1 |
 | `c:src/process/ipc.c:ipc_is_ready` | `src/process/ipc.c` | `ipc_is_ready` | `process` | `COVERED` | 2 |
 | `c:src/process/ipc.c:ipc_receive` | `src/process/ipc.c` | `ipc_receive` | `process` | `COVERED` | 4 |
 | `c:src/process/ipc.c:ipc_send` | `src/process/ipc.c` | `ipc_send` | `process` | `COVERED` | 4 |

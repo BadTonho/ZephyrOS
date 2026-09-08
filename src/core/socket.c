@@ -394,36 +394,60 @@ static int socket_allocate(socket_family_t family, socket_t** out_socket) {
     return OK;
 }
 
-static void socket_destroy(socket_t* socket) {
+static int socket_destroy(socket_t* socket) {
     int32_t slot;
     uint32_t index;
+    socket_queue_t rx;
+    int result;
 
-    if (!socket) return;
+    if (!socket) return ERR_NULL;
+    kmemset(&rx, 0, sizeof(rx));
     spinlock_acquire(&socket_lock);
     if (!socket->used) {
         spinlock_release(&socket_lock);
-        return;
+        return ERR_NOT_FOUND;
     }
     slot = socket_index_locked(socket);
     if (slot < 0) {
         spinlock_release(&socket_lock);
-        return;
+        return ERR_STATE;
     }
     index = (uint32_t)slot;
     socket->fd_attached = 0U;
     socket->fd = VFS_FD_INVALID;
     socket->owner_pid = 0U;
     socket->state = SOCKET_STATE_CLOSED;
-    socket_queue_clear(&socket->rx);
-    wait_channel_set_available(&socket->wait_queue, 0U);
-    if (wait_channel_reset(&socket->wait_queue) != OK && !socket_testing) {
-        LOG_ERROR("SOCKET", "Fila de socket permaneceu ocupada");
+    rx = socket->rx;
+    kmemset(&socket->rx, 0, sizeof(socket->rx));
+    spinlock_release(&socket_lock);
+
+    socket_queue_clear(&rx);
+    result = wait_channel_set_available(&socket->wait_queue, 0U);
+    if (result != OK) {
+        if (!socket_testing) {
+            LOG_ERROR("SOCKET", "Failed to make socket waiters unavailable");
+        }
+        return result;
+    }
+    result = wait_channel_reset(&socket->wait_queue);
+    if (result != OK) {
+        if (!socket_testing) {
+            LOG_ERROR("SOCKET", "Socket wait queue remained active");
+        }
+        return result;
+    }
+
+    spinlock_acquire(&socket_lock);
+    if (!socket->used || &socket_pool[index] != socket) {
+        spinlock_release(&socket_lock);
+        return ERR_STATE;
     }
     socket->used = 0U;
     if (socket_status.active_count) socket_status.active_count--;
     kmemset(&socket_pool[index], 0, sizeof(socket_t));
     socket_pool[index].fd = VFS_FD_INVALID;
     spinlock_release(&socket_lock);
+    return OK;
 }
 
 static uint8_t socket_pending_remove_locked(socket_t* listener,
@@ -810,11 +834,11 @@ static int socket_tcp_recv(socket_t* socket, uint8_t* buffer,
 
 static int socket_tcp_close(socket_t* socket) {
     int result;
+    int destroy_result;
     net_socket_info_t info;
 
     if (!socket || !socket->tcp_handle) {
-        if (socket) socket_destroy(socket);
-        return OK;
+        return socket ? socket_destroy(socket) : ERR_NULL;
     }
     result = net_socket_close(socket->tcp_handle);
     if (result == OK && net_socket_get_handle_info(
@@ -826,7 +850,8 @@ static int socket_tcp_close(socket_t* socket) {
     if (result != OK && result != ERR_INVALID) {
         LOG_ERROR("SOCKET", "Fechamento do backend TCP falhou");
     }
-    socket_destroy(socket);
+    destroy_result = socket_destroy(socket);
+    if (result == OK && destroy_result != OK) result = destroy_result;
     return result == ERR_INVALID ? OK : result;
 }
 
@@ -1130,6 +1155,7 @@ static int socket_unix_close(socket_t* socket) {
     socket_t* unaccepted_peer = 0;
     socket_t* pending[SOCKET_UNIX_BACKLOG_MAX];
     uint8_t pending_count = 0U;
+    int destroy_result;
 
     spinlock_acquire(&socket_lock);
     if (socket->listener_bound) {
@@ -1174,8 +1200,8 @@ static int socket_unix_close(socket_t* socket) {
         }
         socket_destroy(child);
     }
-    socket_destroy(socket);
-    return OK;
+    destroy_result = socket_destroy(socket);
+    return destroy_result;
 }
 
 static int socket_vfs_open(vnode_t* vnode, file_t* file) {

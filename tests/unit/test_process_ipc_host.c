@@ -26,6 +26,7 @@ static process_t* ipc_current;
 static uint32_t wake_calls;
 static uint32_t poll_calls;
 static uint32_t wait_condition_calls;
+static uint8_t mutate_identity_generation;
 
 process_t* processes[MAX_PROCESSES];
 uint32_t process_count;
@@ -149,6 +150,10 @@ int wait_event_timeout(wait_queue_head_t* queue, wait_condition_fn_t condition,
         *out_reason = WAIT_REASON_TIMEOUT;
         return OK;
     }
+    if (mutate_identity_generation && ipc_current) {
+        ipc_current->event_generation++;
+        mutate_identity_generation = 0U;
+    }
     queue->condition++;
     *out_reason = WAIT_REASON_EVENT;
     return OK;
@@ -177,6 +182,7 @@ static void fixture_reset(void) {
     wake_calls = 0U;
     poll_calls = 0U;
     wait_condition_calls = 0U;
+    mutate_identity_generation = 0U;
 }
 
 static ipc_msg_t valid_message(uint32_t value) {
@@ -303,6 +309,15 @@ static int check_wait(void) {
     ipc_target.msg_tail = 0U;
     ipc_current = &ipc_sender;
     if (wait_condition_calls < 3U) return 11;
+    ipc_current = &ipc_target;
+    ipc_target.event_generation = 9U;
+    if (ipc_send(IPC_FIXTURE_TARGET_PID, &message) != 1) return 12;
+    mutate_identity_generation = 1U;
+    if (ipc_wait(10U, &reason) != ERR_NOT_FOUND) return 13;
+    if (reason != WAIT_REASON_EVENT || mutate_identity_generation) return 14;
+    ipc_target.msg_head = 0U;
+    ipc_target.msg_tail = 0U;
+    ipc_current = &ipc_sender;
     return 0;
 }
 

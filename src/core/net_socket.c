@@ -170,26 +170,29 @@ static uint16_t net_socket_allocate_port(void) {
     return 0;
 }
 
-static void net_socket_release(uint32_t index) {
+static int net_socket_release(uint32_t index) {
     int result;
 
-    if (!net_sockets[index].active) return;
+    if (index >= NET_SOCKET_CAPACITY) return ERR_INVALID;
+    if (!net_sockets[index].active) return ERR_NOT_FOUND;
     (void)vfs_poll_notify();
     result = wait_channel_set_available(&net_sockets[index].wait_queue, 0U);
     if (result != OK) {
         net_socket_status.wait_failures++;
-        LOG_ERROR("NET", "Falha ao encerrar fila de espera do socket");
+        LOG_ERROR("NET", "Failed to make native socket waiters unavailable");
+        return result;
     }
     result = wait_channel_reset(&net_sockets[index].wait_queue);
     if (result != OK) {
         net_socket_status.wait_failures++;
-        LOG_ERROR("NET", "Fila de socket permaneceu ocupada no fechamento");
-        return;
+        LOG_ERROR("NET", "Native socket wait queue remained active");
+        return result;
     }
     kmemset(&net_sockets[index], 0, sizeof(net_sockets[index]));
     if (net_socket_status.active_count) {
         net_socket_status.active_count--;
     }
+    return OK;
 }
 
 static int net_socket_start_close(uint32_t index) {
@@ -284,7 +287,10 @@ static int net_socket_tcp_event(tcp_connection_handle_t handle,
         net_socket_wake((uint32_t)index, 1U);
     } else if (event == TCP_EVENT_CLOSED) {
         net_socket_status.closes++;
-        net_socket_release((uint32_t)index);
+        if (net_socket_release((uint32_t)index) != OK) {
+            net_socket_status.last_error = ERR_STATE;
+            return ERR_STATE;
+        }
     }
     return OK;
 }
@@ -561,6 +567,7 @@ int net_socket_wait(net_socket_handle_t handle,
 int net_socket_close(net_socket_handle_t handle) {
     int32_t index;
     net_socket_entry_t* socket;
+    int result;
 
     if (!net_socket_status.initialized) {
         LOG_ERROR("NET", "Fechamento de socket antes da inicializacao");
@@ -574,16 +581,16 @@ int net_socket_close(net_socket_handle_t handle) {
     }
     socket = &net_sockets[index];
     if (socket->state == NET_SOCKET_STATE_OPEN) {
-        net_socket_status.closes++;
-        net_socket_release((uint32_t)index);
-        return OK;
+        result = net_socket_release((uint32_t)index);
+        if (result == OK) net_socket_status.closes++;
+        return result;
     }
     if (socket->state == NET_SOCKET_STATE_CONNECTING ||
         socket->state == NET_SOCKET_STATE_ERROR) {
         if (socket->tcp_handle) tcp_abort(socket->tcp_handle);
-        net_socket_status.closes++;
-        net_socket_release((uint32_t)index);
-        return OK;
+        result = net_socket_release((uint32_t)index);
+        if (result == OK) net_socket_status.closes++;
+        return result;
     }
     socket->close_requested = 1;
     socket->state = NET_SOCKET_STATE_CLOSING;
@@ -595,6 +602,7 @@ int net_socket_close(net_socket_handle_t handle) {
 
 int net_socket_abort(net_socket_handle_t handle) {
     int32_t index;
+    int result;
 
     if (!net_socket_status.initialized) {
         LOG_ERROR("NET", "Aborto de socket antes da inicializacao");
@@ -610,8 +618,8 @@ int net_socket_abort(net_socket_handle_t handle) {
         tcp_abort(net_sockets[index].tcp_handle);
     }
     net_socket_status.aborts++;
-    net_socket_release((uint32_t)index);
-    return OK;
+    result = net_socket_release((uint32_t)index);
+    return result;
 }
 
 static int net_socket_drain(uint32_t index) {
@@ -680,6 +688,7 @@ int net_socket_maintain(void) {
 
 int net_socket_reset(void) {
     int result;
+    int first_error = OK;
 
     if (!net_socket_status.initialized) {
         LOG_ERROR("NET", "Reset de socket antes da inicializacao");
@@ -691,7 +700,15 @@ int net_socket_reset(void) {
         return result;
     }
     for (uint32_t index = 0U; index < NET_SOCKET_CAPACITY; index++) {
-        if (net_sockets[index].active) net_socket_release(index);
+        if (net_sockets[index].active &&
+            net_socket_release(index) != OK && first_error == OK) {
+            first_error = ERR_STATE;
+        }
+    }
+    if (first_error != OK) {
+        net_socket_status.last_error = first_error;
+        LOG_ERROR("NET", "Native socket reset left active entries");
+        return first_error;
     }
     net_socket_status.last_error = OK;
     LOG_INFO("NET", "Sockets nativos reiniciados");

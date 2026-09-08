@@ -89782,6 +89782,28 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/core/workqueue.c:workqueue_capture_owner",
+      "kind": "c_function",
+      "source": "src/core/workqueue.c",
+      "symbol": "workqueue_capture_owner",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:scheduling",
+        "host:core:workqueue"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "c:src/core/workqueue.c:workqueue_context_name",
       "kind": "c_function",
       "source": "src/core/workqueue.c",
@@ -90234,6 +90256,28 @@
         "qemu:tst4:execution",
         "qemu:tst5:processes",
         "qemu:tst6:stress:kernel"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/workqueue.c:workqueue_owner_is_live",
+      "kind": "c_function",
+      "source": "src/core/workqueue.c",
+      "symbol": "workqueue_owner_is_live",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:scheduling",
+        "host:core:workqueue"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -130160,6 +130204,48 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/process/ipc.c:ipc_irq_restore",
+      "kind": "c_function",
+      "source": "src/process/ipc.c",
+      "symbol": "ipc_irq_restore",
+      "linkage": "static",
+      "owner": "process",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:ipc"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/process/ipc.c:ipc_irq_save",
+      "kind": "c_function",
+      "source": "src/process/ipc.c",
+      "symbol": "ipc_irq_save",
+      "linkage": "static",
+      "owner": "process",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:process:ipc"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "c:src/process/ipc.c:ipc_is_ready",
       "kind": "c_function",
       "source": "src/process/ipc.c",
@@ -166726,6 +166812,7 @@
         "c:src/core/workqueue.c:work_init",
         "c:src/core/workqueue.c:workqueue_bind_worker",
         "c:src/core/workqueue.c:workqueue_cancel_on",
+        "c:src/core/workqueue.c:workqueue_capture_owner",
         "c:src/core/workqueue.c:workqueue_context_name",
         "c:src/core/workqueue.c:workqueue_copy_info",
         "c:src/core/workqueue.c:workqueue_copy_owner",
@@ -166744,6 +166831,7 @@
         "c:src/core/workqueue.c:workqueue_list_remove",
         "c:src/core/workqueue.c:workqueue_needs_fallback",
         "c:src/core/workqueue.c:workqueue_notify",
+        "c:src/core/workqueue.c:workqueue_owner_is_live",
         "c:src/core/workqueue.c:workqueue_owner_valid",
         "c:src/core/workqueue.c:workqueue_pending_count",
         "c:src/core/workqueue.c:workqueue_power_quiesce_until",
@@ -168453,6 +168541,7 @@
         "c:src/core/workqueue.c:work_init",
         "c:src/core/workqueue.c:workqueue_bind_worker",
         "c:src/core/workqueue.c:workqueue_cancel_on",
+        "c:src/core/workqueue.c:workqueue_capture_owner",
         "c:src/core/workqueue.c:workqueue_context_name",
         "c:src/core/workqueue.c:workqueue_copy_info",
         "c:src/core/workqueue.c:workqueue_copy_owner",
@@ -168472,6 +168561,7 @@
         "c:src/core/workqueue.c:workqueue_needs_fallback",
         "c:src/core/workqueue.c:workqueue_next_timeout",
         "c:src/core/workqueue.c:workqueue_notify",
+        "c:src/core/workqueue.c:workqueue_owner_is_live",
         "c:src/core/workqueue.c:workqueue_owner_valid",
         "c:src/core/workqueue.c:workqueue_pending_count",
         "c:src/core/workqueue.c:workqueue_power_quiesce_until",
@@ -172165,6 +172255,8 @@
         "c:src/process/ipc.c:ipc_get_pending_count",
         "c:src/process/ipc.c:ipc_get_stats",
         "c:src/process/ipc.c:ipc_init",
+        "c:src/process/ipc.c:ipc_irq_restore",
+        "c:src/process/ipc.c:ipc_irq_save",
         "c:src/process/ipc.c:ipc_is_ready",
         "c:src/process/ipc.c:ipc_receive",
         "c:src/process/ipc.c:ipc_send",
