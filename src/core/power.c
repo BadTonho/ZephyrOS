@@ -5,6 +5,7 @@
 #include "core/log.h"
 #include "core/network_manager.h"
 #include "core/string.h"
+#include "core/service_supervisor.h"
 #include "core/timer.h"
 #include "core/video.h"
 #include "core/workqueue.h"
@@ -51,6 +52,15 @@ static int power_notify_processes(uint32_t deadline_tick) {
         LOG_ERROR_CODE("POWER", result,
                        "Falha ao bloquear criacao de processos");
         return result;
+    }
+    if (service_supervisor_is_initialized()) {
+        result = service_supervisor_set_quiescing(1U);
+        if (result != OK) {
+            (void)process_power_set_quiescing(0U);
+            LOG_ERROR_CODE("POWER", result,
+                           "Failed to quiesce native service supervision");
+            return result;
+        }
     }
     remaining = deadline_tick - timer_get_ticks();
     if (power_deadline_expired(deadline_tick) ||
@@ -236,6 +246,9 @@ static void power_record_failure(int result) {
     }
     power_irq_restore(flags);
     (void)process_power_set_quiescing(0U);
+    if (service_supervisor_is_initialized()) {
+        (void)service_supervisor_set_quiescing(0U);
+    }
     (void)workqueue_power_set_quiescing(0U);
     (void)vfs_power_set_quiescing(0U);
     (void)network_manager_set_quiescing(0U);

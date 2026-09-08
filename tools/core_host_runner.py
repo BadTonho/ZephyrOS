@@ -127,6 +127,8 @@ IPC_RESULT_DIR = ROOT / "build" / "test-results" / "process-ipc-host"
 IPC_BINARY = ROOT / "build" / "tests" / "test_process_ipc_host.exe"
 WORKQUEUE_RESULT_DIR = ROOT / "build" / "test-results" / "workqueue-host"
 WORKQUEUE_BINARY = ROOT / "build" / "tests" / "test_workqueue_host.exe"
+SERVICE_SUPERVISOR_RESULT_DIR = ROOT / "build" / "test-results" / "service-supervisor-host"
+SERVICE_SUPERVISOR_BINARY = ROOT / "build" / "tests" / "test_service_supervisor_host.exe"
 BEARSSL_COMPAT_RESULT_DIR = ROOT / "build" / "test-results" / "bearssl-compat-host"
 BEARSSL_COMPAT_BINARY = ROOT / "build" / "tests" / "test_bearssl_compat_host.exe"
 SHELL_DISPATCH_RESULT_DIR = ROOT / "build" / "test-results" / "shell-dispatch-host"
@@ -185,6 +187,7 @@ SHELL_COMMANDS_APPS_SOURCE_FILES = (
 SHELL_CHECKS_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_shell_checks_host.c",
     ROOT / "src" / "shell" / "shell_checks.c",
+    ROOT / "src" / "core" / "service_supervisor.c",
     ROOT / "src" / "core" / "string.c",
 )
 UPDATER_SOURCE_FILES = (
@@ -393,6 +396,8 @@ PROCESS_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_process_host.c",
     ROOT / "src" / "process" / "process.c",
     ROOT / "src" / "process" / "resource.c",
+    ROOT / "src" / "core" / "service_supervisor.c",
+    ROOT / "src" / "core" / "recovery.c",
 )
 PROCESS_RESOURCE_RESULT_DIR = ROOT / "build" / "test-results" / "process-resource-host"
 PROCESS_RESOURCE_BINARY = ROOT / "build" / "tests" / "test_process_resource_host.exe"
@@ -422,6 +427,7 @@ POWER_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_power_host.c",
     ROOT / "src" / "core" / "power.c",
     ROOT / "src" / "core" / "power_notifier.c",
+    ROOT / "src" / "core" / "service_supervisor.c",
     ROOT / "src" / "core" / "log.c",
     ROOT / "src" / "core" / "string.c",
 )
@@ -593,6 +599,11 @@ WORKQUEUE_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_workqueue_host.c",
     ROOT / "src" / "core" / "workqueue.c",
     ROOT / "src" / "core" / "log.c",
+    ROOT / "src" / "core" / "string.c",
+)
+SERVICE_SUPERVISOR_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_service_supervisor_host.c",
+    ROOT / "src" / "core" / "service_supervisor.c",
     ROOT / "src" / "core" / "string.c",
 )
 BEARSSL_COMPAT_SOURCE_FILES = (
@@ -866,6 +877,7 @@ KERNEL_BINARY = ROOT / "build" / "tests" / "test_kernel_host.exe"
 KERNEL_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_kernel_host.c",
     ROOT / "src" / "kernel" / "kernel.c",
+    ROOT / "src" / "core" / "service_supervisor.c",
 )
 PCI_RESULT_DIR = ROOT / "build" / "test-results" / "pci-host"
 PCI_BINARY = ROOT / "build" / "tests" / "test_pci_host.exe"
@@ -1115,6 +1127,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
         return IPC_RESULT_DIR, IPC_BINARY, IPC_SOURCE_FILES, "process-ipc-host"
     if case_id == "host:core:workqueue":
         return WORKQUEUE_RESULT_DIR, WORKQUEUE_BINARY, WORKQUEUE_SOURCE_FILES, "workqueue-host"
+    if case_id == "host:core:service-supervisor":
+        return (SERVICE_SUPERVISOR_RESULT_DIR, SERVICE_SUPERVISOR_BINARY,
+                SERVICE_SUPERVISOR_SOURCE_FILES, "service-supervisor-host")
     if case_id == "host:core:bearssl-compat":
         return (BEARSSL_COMPAT_RESULT_DIR, BEARSSL_COMPAT_BINARY,
                 BEARSSL_COMPAT_SOURCE_FILES, "bearssl-compat-host")
@@ -1162,6 +1177,7 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
                  ROOT / "src" / "shell" / "shell_diagnostics_helpers.c",
                  ROOT / "src" / "shell" / "shell_command_utils.c",
                  ROOT / "src" / "shell" / "shell_introspection.c",
+                 ROOT / "src" / "core" / "service_supervisor.c",
                  ROOT / "src" / "core" / "string.c"),
                 "shell-diagnostics-host")
     if case_id == "host:shell:introspection":
@@ -1517,7 +1533,8 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:memory:vma",
                                  "host:memory:paging", "host:memory:memory",
                                  "host:process:signals", "host:process:ipc",
-                                 "host:core:workqueue", "host:core:bearssl-compat",
+                                 "host:core:workqueue", "host:core:service-supervisor",
+                                 "host:core:bearssl-compat",
                                  "host:core:spinlock",
                                  "host:shell:dispatch", "host:shell:commands-storage",
                                  "host:shell:network-checks",

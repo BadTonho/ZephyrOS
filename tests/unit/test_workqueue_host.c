@@ -198,8 +198,10 @@ static void fixture_reset(void) {
     kmemset(&worker_process, 0, sizeof(worker_process));
     kmemset(&current_process, 0, sizeof(current_process));
     worker_process.pid = WORKER_PID;
+    worker_process.event_generation = 1U;
     worker_process.state = PROCESS_STATE_RUNNING;
     current_process.pid = CURRENT_PID;
+    current_process.event_generation = 2U;
     current_process.state = PROCESS_STATE_RUNNING;
     processes[0] = &worker_process;
     processes[1] = &current_process;
@@ -322,6 +324,10 @@ static int check_fallback_and_power(void) {
     if (workqueue_bind_worker(999U) != ERR_NOT_FOUND) return 4;
     if (workqueue_bind_worker(WORKER_PID) != OK) return 5;
     if (workqueue_needs_fallback(&required) != OK || required) return 6;
+    worker_process.event_generation++;
+    if (workqueue_needs_fallback(&required) != OK || !required) return 17;
+    worker_process.event_generation--;
+    if (workqueue_needs_fallback(&required) != OK || required) return 18;
     worker_process.state = PROCESS_STATE_ZOMBIE;
     if (workqueue_needs_fallback(&required) != OK || !required) return 7;
     worker_process.state = PROCESS_STATE_RUNNING;
@@ -348,7 +354,7 @@ static int check_worker(void) {
     if (work_init(&work, "Worker", WORK_PRIORITY_HIGH, callback, &marker) !=
         OK) return 1;
     if (schedule_work(&work) != OK) return 2;
-    current_pid = CURRENT_PID;
+    current_pid = WORKER_PID;
     workqueue_worker_main();
     if (callback_calls == 0U || marker == 0U || work.state != WORK_STATE_IDLE) {
         return 3;

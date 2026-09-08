@@ -132,19 +132,19 @@ quantum ou migração para Rust nesta etapa.
 
 ### KRN5 — IPC e serviços básicos
 
-- [ ] Testar IPC, pipes, sockets, wait queues e workqueue com fila cheia,
+- [x] Testar IPC, pipes, sockets, wait queues e workqueue com fila cheia,
   cancelamento, timeout, fechamento e consumidor ausente.
-- [ ] Garantir ownership explícito de mensagens, buffers, FDs e callbacks.
-- [ ] Impedir que um processo encerrado receba dados ou callbacks pendentes.
-- [ ] Definir o supervisor dos serviços nativos, sem confundi-lo com o PID 0
+- [x] Garantir ownership explícito de mensagens, buffers, FDs e callbacks.
+- [x] Impedir que um processo encerrado receba dados ou callbacks pendentes.
+- [x] Definir o supervisor dos serviços nativos, sem confundi-lo com o PID 0
   Idle, com estados `STARTING`, `READY`, `FAILED` e `STOPPED`.
-- [ ] Ordenar inicialização, dependências, encerramento e reativação de
+- [x] Ordenar inicialização, dependências, encerramento e reativação de
   serviços sem deixar o Shell sem caminho de recuperação.
-- [ ] Recolher órfãos e publicar falhas de serviços sem manter ponteiros
+- [x] Recolher órfãos e publicar falhas de serviços sem manter ponteiros
   persistentes para processos encerrados.
-- [ ] Fazer System, Shell, Desktop e kworker bloquearem quando não houver
+- [x] Fazer System, Shell, Desktop e kworker bloquearem quando não houver
   trabalho imediato.
-- [ ] Validar que uma falha de serviço não deixe o sistema sem Shell ou saída
+- [x] Validar que uma falha de serviço não deixe o sistema sem Shell ou saída
   textual.
 
 ### KRN5.1 — IPC, pipes, sockets, Wait Queue e workqueue
@@ -165,7 +165,30 @@ quantum ou migração para Rust nesta etapa.
   trabalho imediato e preservar os schedulers existentes.
 - [x] Validar a matriz host/QEMU, build, catálogo e `git diff --check` sem
   alterar ABI, syscalls, layouts, bootloader, Rust ou scheduler.
-- [ ] Manter pendente o supervisor de serviços, reservado para a KRN5.2.
+- [x] Concluir o supervisor de serviços na KRN5.2, mantendo a KRN5.2 como
+  etapa de supervisão privada e sem novo processo, syscall ou scheduler.
+
+### KRN5.2 — Supervisor privado de serviços nativos
+
+- [x] Criar a tabela privada estática para `kworker`, `System`, `Shell` e
+  `Desktop`, com snapshots por cópia e identidade `PID + generation`.
+- [x] Inicializar os quatro serviços na ordem documentada e validar as
+  dependências antes de criar ou vincular cada processo.
+- [x] Implementar `STARTING`, `READY`, `FAILED` e `STOPPED`, incluindo
+  diagnóstico, fallback e mapeamento para o recovery existente.
+- [x] Limitar o reinício automático a uma tentativa por ativação e suspender
+  reinícios durante quiescência de energia.
+- [x] Revalidar `PID + generation` antes de acordar, destruir, religar ou
+  enviar IPC, rejeitando Idle, processo atual e identidade reutilizada.
+- [x] Preservar o scheduler único, o fallback do kernel e o caminho textual do
+  Shell quando `System` ou outro serviço falhar.
+- [x] Integrar snapshots privados a `health`, `health summary`, `health check`
+  e `regcheck full`, sem novo comando, procfs ou syscall.
+- [x] Cobrir bootstrap, dependências, falhas de criação/binding/foco, retry,
+  fallback, quiescência, resume, cleanup e geração obsoleta em host e QEMU.
+- [x] Confirmar `make q3check`, build, matriz host/QEMU, catálogo, baseline
+  TST7 aprovado e `git diff --check` sem alterar bootloader, Rust, ABI,
+  syscalls, layouts ou schedulers.
 
 ### KRN6 — Integração e diagnóstico
 

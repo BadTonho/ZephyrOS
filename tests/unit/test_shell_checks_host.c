@@ -181,6 +181,10 @@ uint32_t process_get_current_pid(void) {
     return fixture_current_process.pid;
 }
 
+process_t* process_get_by_pid(uint32_t pid) {
+    return pid == fixture_current_process.pid ? &fixture_current_process : 0;
+}
+
 int video_terminal_is_active(void) { return 0; }
 
 int process_take_user_test_result(uint32_t* pid_out, uint32_t* faulted_out) {

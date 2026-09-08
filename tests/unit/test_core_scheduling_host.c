@@ -96,6 +96,10 @@ process_t* process_get_by_pid(uint32_t pid) {
     return pid == fake_worker.pid ? &fake_worker : 0;
 }
 
+process_t* process_get_current(void) {
+    return process_get_by_pid(fake_current_pid);
+}
+
 uint32_t process_get_current_pid(void) {
     return fake_current_pid;
 }
@@ -306,6 +310,7 @@ static int check_workqueue(void) {
     if (workqueue_get_stats(&stats) != OK || stats.running || stats.ready_high ||
         stats.ready_normal || stats.delayed) return 44;
     fake_worker.pid = 123U;
+    fake_worker.event_generation = 1U;
     fake_worker.state = PROCESS_STATE_READY;
     probe_worker_pid = fake_worker.pid;
     if (workqueue_bind_worker(probe_worker_pid) != OK ||

@@ -7,6 +7,7 @@
 #include "core/errors.h"
 #include "core/string.h"
 #include "core/syscall.h"
+#include "core/service_supervisor.h"
 #include "drivers/tss.h"
 #include "process/resource.h"
 #include "process/thread.h"
@@ -2489,6 +2490,9 @@ void process_yield(void) {
         return;
     }
 
+    if (service_supervisor_is_initialized()) {
+        (void)service_supervisor_poll();
+    }
     scheduler_cooperative_yields++;
     thread_yield();
     scheduler_yield_internal();

@@ -39,6 +39,7 @@
 #include "core/input.h"
 #include "core/irq_deferred.h"
 #include "core/workqueue.h"
+#include "core/service_supervisor.h"
 #include "core/log.h"
 #include "drivers/mouse.h"
 #include "ui/gui.h"
@@ -1912,6 +1913,11 @@ static int shell_regcheck_validate_services(void) {
         rtc_validate_state() != OK || clock_validate_state() != OK ||
         tls_validate_state() != OK) {
         LOG_ERROR("SHELL", "RegCheck encontrou servico obrigatorio indisponivel");
+        return ERR_STATE;
+    }
+    if (service_supervisor_is_initialized() &&
+        service_supervisor_validate_state() != OK) {
+        LOG_ERROR("SHELL", "RegCheck found native service supervisor inconsistency");
         return ERR_STATE;
     }
     if (net_socket_get_status(&sockets) != OK ||

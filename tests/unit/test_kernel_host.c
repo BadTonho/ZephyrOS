@@ -187,6 +187,14 @@ process_t* process_get_by_pid(uint32_t pid) {
     return 0;
 }
 
+process_t* process_get_current(void) {
+    return 0;
+}
+
+void process_destroy(process_t* process) {
+    (void)process;
+}
+
 int process_wake_channel(wait_channel_t* channel, wait_wake_mode_t mode,
                          wait_reason_t reason, uint32_t* out_woken) {
     (void)channel;
@@ -227,6 +235,28 @@ int file_index_get_status(file_index_status_t* out_status) {
 int recovery_is_enabled(recovery_component_id_t component) {
     (void)component;
     return 1;
+}
+
+uint32_t recovery_get_count(void) {
+    return RECOVERY_COMPONENT_COUNT;
+}
+
+int recovery_mark_ready(recovery_component_id_t component) {
+    return component < RECOVERY_COMPONENT_COUNT ? OK : ERR_INVALID;
+}
+
+int recovery_mark_degraded(recovery_component_id_t component, int error_code,
+                           const char* message) {
+    (void)error_code;
+    (void)message;
+    return component < RECOVERY_COMPONENT_COUNT ? OK : ERR_INVALID;
+}
+
+int recovery_mark_disabled(recovery_component_id_t component, int error_code,
+                           const char* message) {
+    (void)error_code;
+    (void)message;
+    return component < RECOVERY_COMPONENT_COUNT ? OK : ERR_INVALID;
 }
 
 int shell_job_is_active(void) {

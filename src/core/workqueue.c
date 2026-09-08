@@ -28,14 +28,17 @@ typedef struct {
     work_struct_t probe_work;
     uint32_t probe_generation;
     uint32_t probe_pid;
+    uint32_t probe_worker_generation;
     uint8_t probe_interrupts_enabled;
     uint8_t power_quiescing;
+    uint32_t worker_generation;
     workqueue_stats_t stats;
 } workqueue_service_t;
 
 typedef struct {
     workqueue_service_t* service;
     uint32_t observed_generation;
+    uint32_t worker_generation;
 } workqueue_probe_wait_t;
 
 typedef struct {
@@ -602,6 +605,21 @@ static int workqueue_validate_on(const workqueue_service_t* service) {
         service->stats.running > 1U) {
         return workqueue_internal_result(ERR_STATE);
     }
+    if ((!service->stats.worker_bound &&
+         (service->stats.worker_pid || service->worker_generation)) ||
+        (service->stats.worker_bound &&
+         (!service->stats.worker_pid || !service->worker_generation))) {
+        return workqueue_internal_result(ERR_STATE);
+    }
+    if (service == &workqueue_service && service->stats.worker_bound) {
+        process_t* worker = process_get_by_pid(service->stats.worker_pid);
+
+        if (!worker || worker->event_generation != service->worker_generation ||
+            worker->state == PROCESS_STATE_UNUSED ||
+            worker->state == PROCESS_STATE_ZOMBIE) {
+            return workqueue_internal_result(ERR_STATE);
+        }
+    }
     for (uint32_t priority = 0U;
          priority < WORK_PRIORITY_COUNT; priority++) {
         work_struct_t* previous = 0;
@@ -764,11 +782,15 @@ static int workqueue_probe_condition(void* context, uint8_t* out_ready) {
 
 static int workqueue_probe_callback(void* context) {
     workqueue_service_t* service = (workqueue_service_t*)context;
+    process_t* current_process;
     uint32_t woken = 0U;
     int result;
 
     if (!service) return workqueue_internal_result(ERR_NULL);
+    current_process = process_get_current();
     service->probe_pid = process_get_current_pid();
+    service->probe_worker_generation = current_process ?
+                                       current_process->event_generation : 0U;
     service->probe_interrupts_enabled = workqueue_interrupts_enabled();
     service->probe_generation++;
     if (!service->probe_generation) service->probe_generation = 1U;
@@ -959,6 +981,7 @@ int workqueue_dispatch(uint32_t high_budget, uint32_t normal_budget,
                        uint32_t* out_executed) {
     uint32_t flags;
     uint32_t current_pid;
+    process_t* current_process;
     uint8_t invalid_context = 0U;
     int result;
 
@@ -975,9 +998,13 @@ int workqueue_dispatch(uint32_t high_budget, uint32_t normal_budget,
         return OK;
     }
     current_pid = process_get_current_pid();
+    current_process = process_get_current();
     flags = workqueue_irq_save();
     if (workqueue_service.stats.worker_pid &&
-        current_pid == workqueue_service.stats.worker_pid) {
+        current_pid == workqueue_service.stats.worker_pid &&
+        current_process &&
+        current_process->event_generation ==
+            workqueue_service.worker_generation) {
         workqueue_service.stats.execution_context = WORK_CONTEXT_KWORKER;
         workqueue_service.stats.worker_active = 1U;
         workqueue_service.stats.fallback_active = 0U;
@@ -1003,6 +1030,7 @@ int workqueue_dispatch(uint32_t high_budget, uint32_t normal_budget,
 }
 
 int workqueue_bind_worker(uint32_t pid) {
+    process_t* worker;
     uint32_t flags;
 
     if (!workqueue_service.stats.initialized) {
@@ -1013,12 +1041,20 @@ int workqueue_bind_worker(uint32_t pid) {
         LOG_ERROR("KERNEL", "PID invalido ao vincular kworker");
         return ERR_INVALID;
     }
-    if (!process_get_by_pid(pid)) {
+    worker = process_get_by_pid(pid);
+    if (!worker) {
         LOG_ERROR("KERNEL", "Processo da kworker nao encontrado");
         return ERR_NOT_FOUND;
     }
+    if (worker->pid == 0U || !worker->event_generation ||
+        worker->state == PROCESS_STATE_UNUSED ||
+        worker->state == PROCESS_STATE_ZOMBIE) {
+        LOG_ERROR("KERNEL", "Identidade invalida ao vincular kworker");
+        return ERR_STATE;
+    }
     flags = workqueue_irq_save();
     workqueue_service.stats.worker_pid = pid;
+    workqueue_service.worker_generation = worker->event_generation;
     workqueue_service.stats.worker_bound = 1U;
     workqueue_service.stats.fallback_active = 0U;
     workqueue_irq_restore(flags);
@@ -1055,7 +1091,10 @@ int workqueue_needs_fallback(uint8_t* out_required) {
         return OK;
     }
     worker = process_get_by_pid(workqueue_service.stats.worker_pid);
-    *out_required = !worker || worker->state == PROCESS_STATE_UNUSED ||
+    *out_required = !worker ||
+                    worker->event_generation !=
+                        workqueue_service.worker_generation ||
+                    worker->state == PROCESS_STATE_UNUSED ||
                     worker->state == PROCESS_STATE_ZOMBIE;
     if (*out_required) {
         flags = workqueue_irq_save();
@@ -1209,6 +1248,7 @@ int workqueue_probe_worker(uint32_t timeout_ticks) {
     flags = workqueue_irq_save();
     probe.service = &workqueue_service;
     probe.observed_generation = workqueue_service.probe_generation;
+    probe.worker_generation = workqueue_service.worker_generation;
     workqueue_irq_restore(flags);
     result = schedule_work(&workqueue_service.probe_work);
     if (result != OK) return result;
@@ -1225,6 +1265,7 @@ int workqueue_probe_worker(uint32_t timeout_ticks) {
     }
     if (reason != WAIT_REASON_EVENT ||
         workqueue_service.probe_pid != workqueue_service.stats.worker_pid ||
+        workqueue_service.probe_worker_generation != probe.worker_generation ||
         !workqueue_service.probe_interrupts_enabled) {
         LOG_ERROR("KERNEL", "Prova de contexto da kworker falhou");
         return ERR_STATE;

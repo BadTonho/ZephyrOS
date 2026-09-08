@@ -17,6 +17,7 @@
 #include "core/test_coverage.h"
 #endif
 #include "core/recovery.h"
+#include "core/service_supervisor.h"
 #include "core/app_api.h"
 #include "core/app_catalog.h"
 #include "core/app_loader.h"
@@ -89,6 +90,7 @@ static int kernel_deferred_enabled = 1;
 static int kernel_workqueue_enabled = 0;
 static int kernel_test_protocol_process_enabled = 0;
 static uint32_t kernel_shell_pid = 0;
+static uint32_t kernel_shell_generation = 0;
 static volatile uint32_t kernel_pending_shell_request = 0;
 static uint32_t kernel_last_process_event_generation = 0;
 static work_struct_t kernel_irq_work;
@@ -98,11 +100,20 @@ static work_struct_t kernel_index_work;
 
 static void kernel_wake_shell_for_event(void) {
     process_t* shell_process;
+    uint32_t shell_pid = 0U;
+    uint32_t shell_generation = 0U;
     uint32_t woken = 0U;
 
-    if (!shell_job_is_active() || !kernel_shell_pid) return;
-    shell_process = process_get_by_pid(kernel_shell_pid);
-    if (!shell_process) return;
+    if (!shell_job_is_active() ||
+        service_supervisor_get_identity(SERVICE_SUPERVISOR_SHELL,
+                                        &shell_pid,
+                                        &shell_generation) != OK) return;
+    if (kernel_shell_pid != shell_pid ||
+        kernel_shell_generation != shell_generation) return;
+    shell_process = process_get_by_pid(shell_pid);
+    if (!shell_process || shell_process->event_generation != shell_generation) {
+        return;
+    }
     if (process_wake_channel(&shell_process->ipc_wait_channel,
                              WAIT_WAKE_ONE, WAIT_REASON_EVENT,
                              &woken) != OK) {
@@ -120,17 +131,19 @@ static void kernel_wake_shell_for_process_event(void) {
 
 static int kernel_send_shell_request(uint32_t request) {
     ipc_msg_t msg;
-    uint32_t target_pid = kernel_shell_pid;
+    uint32_t target_pid = 0U;
+    uint32_t target_generation = 0U;
     process_t* target;
 
-    if (!target_pid) target_pid = process_get_focus();
-    if (!target_pid) {
+    if (service_supervisor_get_identity(SERVICE_SUPERVISOR_SHELL,
+                                        &target_pid,
+                                        &target_generation) != OK) {
         LOG_WARN("KERNEL", "Nenhum processo Shell definido para IPC");
         return 0;
     }
 
     target = process_get_by_pid(target_pid);
-    if (!target) {
+    if (!target || target->event_generation != target_generation) {
         LOG_WARN("KERNEL", "PID do Shell nao encontrado");
         return 0;
     }
@@ -622,6 +635,9 @@ static void test_protocol_process_main(void) {
 
 void system_process_main(void) {
     while (1) {
+        if (service_supervisor_is_initialized()) {
+            (void)service_supervisor_poll();
+        }
         if (!kernel_test_protocol_process_enabled) test_protocol_poll();
         if (test_protocol_is_active()) {
             kernel_dispatch_input_work();
@@ -702,6 +718,184 @@ void desktop_process_main(void) {
         break;
 #endif
     }
+}
+
+static process_t* kernel_create_kworker(void) {
+    if (!kernel_workqueue_enabled) return 0;
+    return process_create_with_stack_size(
+        "Zephyr kworker", workqueue_worker_main,
+        KWORKER_PROCESS_STACK_SIZE);
+}
+
+static int kernel_prepare_kworker(process_t* process) {
+    int result;
+
+    if (!process) {
+        LOG_ERROR_CODE("KERNEL", ERR_NULL,
+                       "kworker preparation received null process");
+        return ERR_NULL;
+    }
+    result = workqueue_bind_worker(process->pid);
+    if (result != OK) {
+        LOG_ERROR_CODE("KERNEL", result, "kworker binding failed");
+    }
+    return result;
+}
+
+static int kernel_dependency_kworker(void) {
+    workqueue_stats_t stats;
+    int result;
+
+    if (!kernel_workqueue_enabled) {
+        LOG_ERROR_CODE("KERNEL", ERR_UNAVAILABLE,
+                       "kworker dependency is unavailable");
+        return ERR_UNAVAILABLE;
+    }
+    result = workqueue_get_stats(&stats);
+    if (result != OK) {
+        LOG_ERROR_CODE("KERNEL", result, "kworker dependency check failed");
+    }
+    return result;
+}
+
+static void kernel_fallback_kworker(uint8_t active) {
+    if (!kernel_workqueue_enabled) return;
+    (void)workqueue_set_fallback(active);
+}
+
+static process_t* kernel_create_system(void) {
+    return process_create_with_stack_size(
+        "Zephyr System", system_process_main,
+        SYSTEM_PROCESS_STACK_SIZE);
+}
+
+static int kernel_prepare_system(process_t* process) {
+    return process ? OK : ERR_NULL;
+}
+
+static int kernel_dependency_system(void) {
+    if (!process_get_current() || !ipc_is_ready() ||
+        wait_validate_state() != OK) {
+        LOG_ERROR_CODE("KERNEL", ERR_UNAVAILABLE,
+                       "System service dependency is unavailable");
+        return ERR_UNAVAILABLE;
+    }
+    return OK;
+}
+
+static void kernel_fallback_system(uint8_t active) {
+    kernel_service_fallback = active ? 1 : 0;
+}
+
+static process_t* kernel_create_shell(void) {
+    return process_create_with_stack_size(
+        "Shell", shell_process_main,
+        SHELL_PROCESS_STACK_SIZE);
+}
+
+static int kernel_prepare_shell(process_t* process) {
+    int result;
+
+    if (!process) {
+        LOG_ERROR_CODE("KERNEL", ERR_NULL,
+                       "Shell preparation received null process");
+        return ERR_NULL;
+    }
+    result = process_set_focus_fallback(process->pid);
+    if (result != OK) {
+        LOG_ERROR_CODE("KERNEL", result, "Shell focus fallback setup failed");
+        return result;
+    }
+    result = process_set_focus(process->pid);
+    if (result != OK) {
+        LOG_ERROR_CODE("KERNEL", result, "Shell focus binding failed");
+        return result;
+    }
+    kernel_shell_pid = process->pid;
+    kernel_shell_generation = process->event_generation;
+    return OK;
+}
+
+static int kernel_dependency_shell(void) {
+    if (!process_get_current() || !ipc_is_ready()) {
+        LOG_ERROR_CODE("KERNEL", ERR_UNAVAILABLE,
+                       "Shell service dependency is unavailable");
+        return ERR_UNAVAILABLE;
+    }
+    return OK;
+}
+
+static void kernel_fallback_shell(uint8_t active) {
+    if (active) {
+        kernel_shell_pid = 0U;
+        kernel_shell_generation = 0U;
+    }
+}
+
+static process_t* kernel_create_desktop(void) {
+    return process_create("Desktop", desktop_process_main);
+}
+
+static int kernel_prepare_desktop(process_t* process) {
+    return process ? OK : ERR_NULL;
+}
+
+static int kernel_dependency_desktop(void) {
+    display_metrics_t metrics;
+
+    return display_get_metrics(&metrics) == OK ? OK : ERR_UNAVAILABLE;
+}
+
+static void kernel_fallback_desktop(uint8_t active) {
+    (void)active;
+}
+
+static int kernel_init_service_supervisor(void) {
+    static const service_supervisor_definition_t definitions[] = {
+        {
+            SERVICE_SUPERVISOR_KWORKER, "kworker", RECOVERY_COMPONENT_COUNT,
+            kernel_create_kworker, kernel_prepare_kworker,
+            kernel_dependency_kworker, kernel_fallback_kworker
+        },
+        {
+            SERVICE_SUPERVISOR_SYSTEM, "System",
+            RECOVERY_COMPONENT_SYSTEM_PROCESS, kernel_create_system,
+            kernel_prepare_system, kernel_dependency_system,
+            kernel_fallback_system
+        },
+        {
+            SERVICE_SUPERVISOR_SHELL, "Shell", RECOVERY_COMPONENT_SHELL,
+            kernel_create_shell, kernel_prepare_shell,
+            kernel_dependency_shell, kernel_fallback_shell
+        },
+        {
+            SERVICE_SUPERVISOR_DESKTOP, "Desktop",
+            RECOVERY_COMPONENT_DESKTOP, kernel_create_desktop,
+            kernel_prepare_desktop, kernel_dependency_desktop,
+            kernel_fallback_desktop
+        }
+    };
+    int result;
+
+    kernel_shell_pid = 0U;
+    kernel_shell_generation = 0U;
+    result = service_supervisor_init();
+    if (result != OK) return result;
+    for (uint32_t index = 0U; index < SERVICE_SUPERVISOR_ID_COUNT; index++) {
+        result = service_supervisor_configure(&definitions[index]);
+        if (result != OK) return result;
+    }
+    result = service_supervisor_start();
+    if (result != OK) {
+        service_supervisor_snapshot_t system_snapshot;
+
+        if (service_supervisor_snapshot_copy(
+                SERVICE_SUPERVISOR_SYSTEM, &system_snapshot) != OK ||
+            system_snapshot.state != SERVICE_SUPERVISOR_READY) {
+            return result;
+        }
+    }
+    return OK;
 }
 
 static int kernel_start_automatic_dhcp(void) {
@@ -1353,7 +1547,6 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
         display_result != OK) {
         desktop_set_mode(DESKTOP_MODE_SIMPLE);
     }
-    recovery_mark_ready(RECOVERY_COMPONENT_DESKTOP);
     video_print("[OK] Desktop pronto\n", 0x07);
 
     video_print("[..] Iniciando configuracoes...\n", 0x08);
@@ -1416,26 +1609,11 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     taskbar_draw();
 
-    process_t* kworker_process = 0;
-    if (kernel_workqueue_enabled) {
-        kworker_process = process_create_with_stack_size(
-            "Zephyr kworker", workqueue_worker_main,
-            KWORKER_PROCESS_STACK_SIZE);
-        if (!kworker_process ||
-            workqueue_bind_worker(kworker_process->pid) != OK) {
-            LOG_ERROR("KERNEL", "Processo kworker indisponivel");
-            (void)workqueue_set_fallback(1U);
-        }
-    }
-
-    process_t* system_process = process_create_with_stack_size(
-        "Zephyr System", system_process_main, SYSTEM_PROCESS_STACK_SIZE);
-    if (system_process) {
-        recovery_mark_ready(RECOVERY_COMPONENT_SYSTEM_PROCESS);
-    } else {
+    if (kernel_init_service_supervisor() != OK) {
         kernel_service_fallback = 1;
-        recovery_mark_degraded(RECOVERY_COMPONENT_SYSTEM_PROCESS, ERR_MEM,
-                               "Processo System falhou; servicos no loop do kernel");
+        LOG_ERROR("KERNEL", "Native service supervisor failed");
+        video_print("[!!] Supervisor de servicos indisponivel; fallback ativo\n",
+                    0x0E);
     }
 
     process_t* test_protocol_process = process_create_with_stack_size(
@@ -1445,30 +1623,6 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
         kernel_test_protocol_process_enabled = 1;
     } else {
         LOG_WARN("KERNEL", "Processo do protocolo ZTEST indisponivel");
-    }
-
-    process_t* shell_process = process_create_with_stack_size(
-        "Shell", shell_process_main, SHELL_PROCESS_STACK_SIZE);
-    if (shell_process) {
-        kernel_shell_pid = shell_process->pid;
-        if (process_set_focus_fallback(shell_process->pid) != OK ||
-            process_set_focus(shell_process->pid) != OK) {
-            recovery_mark_degraded(RECOVERY_COMPONENT_SHELL, ERR_STATE,
-                                   "Shell criado sem foco seguro");
-        } else {
-            recovery_mark_ready(RECOVERY_COMPONENT_SHELL);
-        }
-    } else {
-        recovery_mark_disabled(RECOVERY_COMPONENT_SHELL, ERR_MEM,
-                                "Processo Shell indisponivel");
-    }
-
-    process_t* desktop_process = process_create("Desktop", desktop_process_main);
-    if (desktop_process) {
-        recovery_mark_ready(RECOVERY_COMPONENT_DESKTOP);
-    } else {
-        recovery_mark_disabled(RECOVERY_COMPONENT_DESKTOP, ERR_MEM,
-                               "Processo Desktop indisponivel");
     }
 
     if (syscall_enable_user_mode() != OK) {
@@ -1507,12 +1661,15 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 #endif
     test_protocol_set_boot_ready();
 
-    if (!kernel_service_fallback && process_start_scheduler() != OK) {
+    if (process_start_scheduler() != OK) {
         kernel_service_fallback = 1;
-        LOG_ERROR("KERNEL", "Scheduler nao assumiu o contexto inicial");
+        LOG_ERROR("KERNEL", "Scheduler failed to assume the initial context");
     }
 
     while (1) {
+        if (service_supervisor_is_initialized()) {
+            (void)service_supervisor_poll();
+        }
         if (kernel_service_fallback) {
             if (!kernel_test_protocol_process_enabled) test_protocol_poll();
             kernel_dispatch_async_work();

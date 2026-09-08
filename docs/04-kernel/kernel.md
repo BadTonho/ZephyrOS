@@ -107,9 +107,8 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     updater_init();
 
     /* Processos de sistema, Shell, modo usuário e App Store. */
-    process_create("Zephyr System", system_process_main);
-    process_create("Shell", shell_process_main);
-    process_create("Desktop", desktop_process_main);
+    kernel_init_service_supervisor();
+    process_start_scheduler();
     syscall_enable_user_mode();     // eleva int 0x80 para DPL 3
     app_loader_init();
     app_package_init();
@@ -121,6 +120,30 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     desktop_draw();
 }
 ```
+
+### KRN5.2 — Supervisor privado de serviços nativos
+
+O kernel mantém uma tabela estática privada para `kworker`, `System`, `Shell` e
+`Desktop`. A inicialização ocorre nessa ordem e cada registro guarda somente a
+identidade `PID + generation`, o estado, o diagnóstico e o fallback; snapshots
+são copiados e não expõem ponteiros, stacks ou endereços físicos. O supervisor
+não cria processo, syscall, scheduler ou layout público adicional.
+
+Os estados privados são `STARTING`, `READY`, `FAILED` e `STOPPED`. A workqueue
+é dependência do `kworker`, `System` depende de processo, IPC e Wait Queue,
+`Shell` depende de IPC e foco, e `Desktop` depende do display. A falha de
+`System` não impede a tentativa de `process_start_scheduler()`; o caminho de
+fallback do kernel continua disponível. Cada serviço admite uma única
+tentativa automática de reinício por ativação. Identidades são revalidadas
+antes de wakeup, binding, IPC, destruição e reativação, impedindo que PID
+reutilizado seja tratado como o serviço anterior.
+
+Durante a quiescência de energia os reinícios são suspensos e processos ring 0
+não são destruídos à força. O mapeamento para `recovery` é `STARTING` como
+`DEGRADED`, `READY` como `READY`, `FAILED` como `DEGRADED` quando há fallback
+ou `DISABLED` sem fallback, e `STOPPED` como `DISABLED`, salvo fallback
+explícito. `health`, `health summary`, `health check` e `regcheck full` usam os
+snapshots privados para diagnóstico, sem criar um comando ou procfs novo.
 
 ## Log circular e observabilidade
 

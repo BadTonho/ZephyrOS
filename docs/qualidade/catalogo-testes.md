@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **7379**
-- Casos de teste: **171**
+- Superfícies ativas: **7441**
+- Casos de teste: **173**
 - Superfícies aposentadas: **59**
 
 | Tipo | Quantidade |
 |---|---:|
-| `api_function` | 1598 |
+| `api_function` | 1611 |
 | `asm_entry` | 101 |
-| `c_function` | 5560 |
+| `c_function` | 5609 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7379 |
+| `COVERED` | 7441 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 171 |
+| `AUTOMATED` | 173 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -37,18 +37,18 @@
 | `apps` | 172 |
 | `appstore` | 98 |
 | `boot` | 139 |
-| `core` | 2816 |
+| `core` | 2859 |
 | `desktop` | 40 |
 | `drivers` | 932 |
 | `filemanager` | 93 |
 | `fs` | 957 |
 | `gui` | 30 |
 | `icons` | 18 |
-| `kernel` | 41 |
+| `kernel` | 58 |
 | `memory` | 202 |
 | `process` | 295 |
 | `settings` | 57 |
-| `shell` | 1089 |
+| `shell` | 1091 |
 | `taskbar` | 47 |
 | `thread` | 36 |
 | `ui` | 149 |
@@ -610,6 +610,19 @@
 | `api:src/include/core/route.h:route_set_base` | `src/include/core/route.h` | `route_set_base` | `core` | `COVERED` | 4 |
 | `api:src/include/core/route.h:route_set_default` | `src/include/core/route.h` | `route_set_default` | `core` | `COVERED` | 4 |
 | `api:src/include/core/route.h:route_validate_state` | `src/include/core/route.h` | `route_validate_state` | `core` | `COVERED` | 4 |
+| `api:src/include/core/service_supervisor.h:service_supervisor_configure` | `src/include/core/service_supervisor.h` | `service_supervisor_configure` | `core` | `COVERED` | 1 |
+| `api:src/include/core/service_supervisor.h:service_supervisor_get_identity` | `src/include/core/service_supervisor.h` | `service_supervisor_get_identity` | `core` | `COVERED` | 1 |
+| `api:src/include/core/service_supervisor.h:service_supervisor_init` | `src/include/core/service_supervisor.h` | `service_supervisor_init` | `core` | `COVERED` | 1 |
+| `api:src/include/core/service_supervisor.h:service_supervisor_is_initialized` | `src/include/core/service_supervisor.h` | `service_supervisor_is_initialized` | `core` | `COVERED` | 1 |
+| `api:src/include/core/service_supervisor.h:service_supervisor_poll` | `src/include/core/service_supervisor.h` | `service_supervisor_poll` | `core` | `COVERED` | 1 |
+| `api:src/include/core/service_supervisor.h:service_supervisor_set_quiescing` | `src/include/core/service_supervisor.h` | `service_supervisor_set_quiescing` | `core` | `COVERED` | 1 |
+| `api:src/include/core/service_supervisor.h:service_supervisor_snapshot_copy` | `src/include/core/service_supervisor.h` | `service_supervisor_snapshot_copy` | `core` | `COVERED` | 1 |
+| `api:src/include/core/service_supervisor.h:service_supervisor_snapshot_list` | `src/include/core/service_supervisor.h` | `service_supervisor_snapshot_list` | `core` | `COVERED` | 1 |
+| `api:src/include/core/service_supervisor.h:service_supervisor_start` | `src/include/core/service_supervisor.h` | `service_supervisor_start` | `core` | `COVERED` | 1 |
+| `api:src/include/core/service_supervisor.h:service_supervisor_state_name` | `src/include/core/service_supervisor.h` | `service_supervisor_state_name` | `core` | `COVERED` | 1 |
+| `api:src/include/core/service_supervisor.h:service_supervisor_test_fail_next` | `src/include/core/service_supervisor.h` | `service_supervisor_test_fail_next` | `core` | `COVERED` | 1 |
+| `api:src/include/core/service_supervisor.h:service_supervisor_test_reset` | `src/include/core/service_supervisor.h` | `service_supervisor_test_reset` | `core` | `COVERED` | 1 |
+| `api:src/include/core/service_supervisor.h:service_supervisor_validate_state` | `src/include/core/service_supervisor.h` | `service_supervisor_validate_state` | `core` | `COVERED` | 1 |
 | `api:src/include/core/sk_buff.h:alloc_skb` | `src/include/core/sk_buff.h` | `alloc_skb` | `core` | `COVERED` | 2 |
 | `api:src/include/core/sk_buff.h:free_skb` | `src/include/core/sk_buff.h` | `free_skb` | `core` | `COVERED` | 2 |
 | `api:src/include/core/sk_buff.h:skb_complete` | `src/include/core/sk_buff.h` | `skb_complete` | `core` | `COVERED` | 3 |
@@ -643,7 +656,7 @@
 | `api:src/include/core/spinlock.h:spinlock_init` | `src/include/core/spinlock.h` | `spinlock_init` | `core` | `COVERED` | 1 |
 | `api:src/include/core/spinlock.h:spinlock_release` | `src/include/core/spinlock.h` | `spinlock_release` | `core` | `COVERED` | 1 |
 | `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 56 |
-| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 61 |
+| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 62 |
 | `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 52 |
 | `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 54 |
 | `api:src/include/core/syscall.h:syscall_enable_user_mode` | `src/include/core/syscall.h` | `syscall_enable_user_mode` | `core` | `COVERED` | 2 |
@@ -2805,6 +2818,7 @@
 | `c:src/core/kernel_tests_tst6.c:tst6_run_platform` | `src/core/kernel_tests_tst6.c` | `tst6_run_platform` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests_tst6.c:tst6_run_storage` | `src/core/kernel_tests_tst6.c` | `tst6_run_storage` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests_tst6.c:tst6_run_stress` | `src/core/kernel_tests_tst6.c` | `tst6_run_stress` | `core` | `COVERED` | 3 |
+| `c:src/core/kernel_tests_tst6.c:tst6_service_supervisor_failure_contract` | `src/core/kernel_tests_tst6.c` | `tst6_service_supervisor_failure_contract` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests_tst6.c:tst6_suffix` | `src/core/kernel_tests_tst6.c` | `tst6_suffix` | `core` | `COVERED` | 7 |
 | `c:src/core/kernel_tests_tst6.c:tst6_update_failure_contract` | `src/core/kernel_tests_tst6.c` | `tst6_update_failure_contract` | `core` | `COVERED` | 1 |
 | `c:src/core/log.c:log_append_char` | `src/core/log.c` | `log_append_char` | `core` | `COVERED` | 3 |
@@ -3059,6 +3073,35 @@
 | `c:src/core/route.c:route_set_default` | `src/core/route.c` | `route_set_default` | `core` | `COVERED` | 3 |
 | `c:src/core/route.c:route_test_count` | `src/core/route.c` | `route_test_count` | `core` | `COVERED` | 3 |
 | `c:src/core/route.c:route_validate_state` | `src/core/route.c` | `route_validate_state` | `core` | `COVERED` | 3 |
+| `c:src/core/service_supervisor.c:service_supervisor_activate` | `src/core/service_supervisor.c` | `service_supervisor_activate` | `core` | `COVERED` | 1 |
+| `c:src/core/service_supervisor.c:service_supervisor_attempt_once` | `src/core/service_supervisor.c` | `service_supervisor_attempt_once` | `core` | `COVERED` | 1 |
+| `c:src/core/service_supervisor.c:service_supervisor_cleanup_identity` | `src/core/service_supervisor.c` | `service_supervisor_cleanup_identity` | `core` | `COVERED` | 1 |
+| `c:src/core/service_supervisor.c:service_supervisor_clear_identity` | `src/core/service_supervisor.c` | `service_supervisor_clear_identity` | `core` | `COVERED` | 1 |
+| `c:src/core/service_supervisor.c:service_supervisor_clear_stopped_identity` | `src/core/service_supervisor.c` | `service_supervisor_clear_stopped_identity` | `core` | `COVERED` | 1 |
+| `c:src/core/service_supervisor.c:service_supervisor_configure` | `src/core/service_supervisor.c` | `service_supervisor_configure` | `core` | `COVERED` | 1 |
+| `c:src/core/service_supervisor.c:service_supervisor_copy_name` | `src/core/service_supervisor.c` | `service_supervisor_copy_name` | `core` | `COVERED` | 1 |
+| `c:src/core/service_supervisor.c:service_supervisor_created_process_cleanup` | `src/core/service_supervisor.c` | `service_supervisor_created_process_cleanup` | `core` | `COVERED` | 1 |
+| `c:src/core/service_supervisor.c:service_supervisor_finish_failure` | `src/core/service_supervisor.c` | `service_supervisor_finish_failure` | `core` | `COVERED` | 1 |
+| `c:src/core/service_supervisor.c:service_supervisor_get_identity` | `src/core/service_supervisor.c` | `service_supervisor_get_identity` | `core` | `COVERED` | 1 |
+| `c:src/core/service_supervisor.c:service_supervisor_init` | `src/core/service_supervisor.c` | `service_supervisor_init` | `core` | `COVERED` | 1 |
+| `c:src/core/service_supervisor.c:service_supervisor_is_initialized` | `src/core/service_supervisor.c` | `service_supervisor_is_initialized` | `core` | `COVERED` | 1 |
+| `c:src/core/service_supervisor.c:service_supervisor_poll` | `src/core/service_supervisor.c` | `service_supervisor_poll` | `core` | `COVERED` | 1 |
+| `c:src/core/service_supervisor.c:service_supervisor_process_live_values` | `src/core/service_supervisor.c` | `service_supervisor_process_live_values` | `core` | `COVERED` | 1 |
+| `c:src/core/service_supervisor.c:service_supervisor_process_state_valid` | `src/core/service_supervisor.c` | `service_supervisor_process_state_valid` | `core` | `COVERED` | 1 |
+| `c:src/core/service_supervisor.c:service_supervisor_publish_recovery` | `src/core/service_supervisor.c` | `service_supervisor_publish_recovery` | `core` | `COVERED` | 1 |
+| `c:src/core/service_supervisor.c:service_supervisor_record_cleanup_failure` | `src/core/service_supervisor.c` | `service_supervisor_record_cleanup_failure` | `core` | `COVERED` | 1 |
+| `c:src/core/service_supervisor.c:service_supervisor_record_failure` | `src/core/service_supervisor.c` | `service_supervisor_record_failure` | `core` | `COVERED` | 1 |
+| `c:src/core/service_supervisor.c:service_supervisor_restart_after_loss` | `src/core/service_supervisor.c` | `service_supervisor_restart_after_loss` | `core` | `COVERED` | 1 |
+| `c:src/core/service_supervisor.c:service_supervisor_set_fallback` | `src/core/service_supervisor.c` | `service_supervisor_set_fallback` | `core` | `COVERED` | 1 |
+| `c:src/core/service_supervisor.c:service_supervisor_set_quiescing` | `src/core/service_supervisor.c` | `service_supervisor_set_quiescing` | `core` | `COVERED` | 1 |
+| `c:src/core/service_supervisor.c:service_supervisor_snapshot_copy` | `src/core/service_supervisor.c` | `service_supervisor_snapshot_copy` | `core` | `COVERED` | 1 |
+| `c:src/core/service_supervisor.c:service_supervisor_snapshot_list` | `src/core/service_supervisor.c` | `service_supervisor_snapshot_list` | `core` | `COVERED` | 1 |
+| `c:src/core/service_supervisor.c:service_supervisor_start` | `src/core/service_supervisor.c` | `service_supervisor_start` | `core` | `COVERED` | 1 |
+| `c:src/core/service_supervisor.c:service_supervisor_state_name` | `src/core/service_supervisor.c` | `service_supervisor_state_name` | `core` | `COVERED` | 1 |
+| `c:src/core/service_supervisor.c:service_supervisor_test_fail_next` | `src/core/service_supervisor.c` | `service_supervisor_test_fail_next` | `core` | `COVERED` | 1 |
+| `c:src/core/service_supervisor.c:service_supervisor_test_reset` | `src/core/service_supervisor.c` | `service_supervisor_test_reset` | `core` | `COVERED` | 1 |
+| `c:src/core/service_supervisor.c:service_supervisor_valid_id` | `src/core/service_supervisor.c` | `service_supervisor_valid_id` | `core` | `COVERED` | 1 |
+| `c:src/core/service_supervisor.c:service_supervisor_validate_state` | `src/core/service_supervisor.c` | `service_supervisor_validate_state` | `core` | `COVERED` | 1 |
 | `c:src/core/sk_buff.c:alloc_skb` | `src/core/sk_buff.c` | `alloc_skb` | `core` | `COVERED` | 1 |
 | `c:src/core/sk_buff.c:free_skb` | `src/core/sk_buff.c` | `free_skb` | `core` | `COVERED` | 1 |
 | `c:src/core/sk_buff.c:skb_check_geometry` | `src/core/sk_buff.c` | `skb_check_geometry` | `core` | `COVERED` | 3 |
@@ -3152,7 +3195,7 @@
 | `c:src/core/socket.c:socket_wait_owner` | `src/core/socket.c` | `socket_wait_owner` | `core` | `COVERED` | 3 |
 | `c:src/core/socket.c:socket_wake` | `src/core/socket.c` | `socket_wake` | `core` | `COVERED` | 3 |
 | `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 56 |
-| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 61 |
+| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 62 |
 | `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 52 |
 | `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 54 |
 | `c:src/core/syscall.c:syscall_copy_user_string` | `src/core/syscall.c` | `syscall_copy_user_string` | `core` | `COVERED` | 1 |
@@ -5663,19 +5706,36 @@
 | `c:src/kernel/kernel.c:desktop_process_main` | `src/kernel/kernel.c` | `desktop_process_main` | `kernel` | `COVERED` | 2 |
 | `c:src/kernel/kernel.c:global_mouse_handler` | `src/kernel/kernel.c` | `global_mouse_handler` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_cancel_foreground_app` | `src/kernel/kernel.c` | `kernel_cancel_foreground_app` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_create_desktop` | `src/kernel/kernel.c` | `kernel_create_desktop` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_create_kworker` | `src/kernel/kernel.c` | `kernel_create_kworker` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_create_shell` | `src/kernel/kernel.c` | `kernel_create_shell` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_create_system` | `src/kernel/kernel.c` | `kernel_create_system` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_dependency_desktop` | `src/kernel/kernel.c` | `kernel_dependency_desktop` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_dependency_kworker` | `src/kernel/kernel.c` | `kernel_dependency_kworker` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_dependency_shell` | `src/kernel/kernel.c` | `kernel_dependency_shell` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_dependency_system` | `src/kernel/kernel.c` | `kernel_dependency_system` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_dispatch_async_work` | `src/kernel/kernel.c` | `kernel_dispatch_async_work` | `kernel` | `COVERED` | 2 |
 | `c:src/kernel/kernel.c:kernel_dispatch_deferred_work` | `src/kernel/kernel.c` | `kernel_dispatch_deferred_work` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_dispatch_input_work` | `src/kernel/kernel.c` | `kernel_dispatch_input_work` | `kernel` | `COVERED` | 4 |
 | `c:src/kernel/kernel.c:kernel_dispatch_legacy_async` | `src/kernel/kernel.c` | `kernel_dispatch_legacy_async` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_dispatch_timers` | `src/kernel/kernel.c` | `kernel_dispatch_timers` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_fallback_desktop` | `src/kernel/kernel.c` | `kernel_fallback_desktop` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_fallback_kworker` | `src/kernel/kernel.c` | `kernel_fallback_kworker` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_fallback_shell` | `src/kernel/kernel.c` | `kernel_fallback_shell` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_fallback_system` | `src/kernel/kernel.c` | `kernel_fallback_system` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_handle_taskbar_mouse` | `src/kernel/kernel.c` | `kernel_handle_taskbar_mouse` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_host_test_run_finite_routes` | `src/kernel/kernel.c` | `kernel_host_test_run_finite_routes` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_index_work_callback` | `src/kernel/kernel.c` | `kernel_index_work_callback` | `kernel` | `COVERED` | 4 |
+| `c:src/kernel/kernel.c:kernel_init_service_supervisor` | `src/kernel/kernel.c` | `kernel_init_service_supervisor` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_irq_work_callback` | `src/kernel/kernel.c` | `kernel_irq_work_callback` | `kernel` | `COVERED` | 3 |
 | `c:src/kernel/kernel.c:kernel_irq_work_notify` | `src/kernel/kernel.c` | `kernel_irq_work_notify` | `kernel` | `COVERED` | 3 |
 | `c:src/kernel/kernel.c:kernel_main` | `src/kernel/kernel.c` | `kernel_main` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_network_work_callback` | `src/kernel/kernel.c` | `kernel_network_work_callback` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_poll_usb` | `src/kernel/kernel.c` | `kernel_poll_usb` | `kernel` | `COVERED` | 2 |
+| `c:src/kernel/kernel.c:kernel_prepare_desktop` | `src/kernel/kernel.c` | `kernel_prepare_desktop` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_prepare_kworker` | `src/kernel/kernel.c` | `kernel_prepare_kworker` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_prepare_shell` | `src/kernel/kernel.c` | `kernel_prepare_shell` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_prepare_system` | `src/kernel/kernel.c` | `kernel_prepare_system` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_redraw_after_menu_close` | `src/kernel/kernel.c` | `kernel_redraw_after_menu_close` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_request_shell_app` | `src/kernel/kernel.c` | `kernel_request_shell_app` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_retry_shell_request` | `src/kernel/kernel.c` | `kernel_retry_shell_request` | `kernel` | `COVERED` | 2 |
@@ -6407,6 +6467,7 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_print_named_state` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_print_named_state` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_print_query_failure` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_print_query_failure` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_recovery` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_recovery` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_service_supervisor` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_service_supervisor` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_signals` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_signals` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_sockets` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_sockets` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_tls` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_tls` | `shell` | `COVERED` | 1 |
@@ -6424,6 +6485,7 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_inline_state` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_inline_state` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_kernel` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_kernel` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_migrated_builtin` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_migrated_builtin` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_service_supervisor` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_service_supervisor` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_app_store` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_summary_app_store` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_component` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_summary_component` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_print_summary_components` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_print_summary_components` | `shell` | `COVERED` | 1 |
@@ -7484,6 +7546,7 @@
 | `host:core:network-manager` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar inventario com PCI, protocolos e driver simulados | interface detectada sem driver fica degradada e operacoes que exigem rede ativa retornam erro canonico | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do processo host e inventario de rede simulado | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:power` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar energia com ACPI, storage e dependencias simulados | estados de energia, cadeia de notificadores, quiescencia e limpeza apos falha preservam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do processo host e fixtures de energia | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:scheduling` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar os autotestes de wait, workqueue e irq_deferred, alem de limites e estados invalidos | coalescencia, rerun, cancelamento, FIFO, capacidade, disponibilidade e invariantes respeitam o contrato | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente filas, trabalhos e buffers estaticos no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:core:service-supervisor` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar bootstrap, dependencias, retry, fallback, quiescencia, identidade geracional e snapshots por copia | servicos mantem estados, identidades e limpeza consistentes sem ponteiros publicados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente processos falsos, snapshots e estado de recovery da fixture | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:spinlock` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inicializar, adquirir e liberar um spinlock em fixture estatica | as operacoes publicam os estados livre e adquirido sem residuos | compilador ausente, warning, falha de assercao ou timeout | somente a palavra de estado do lock no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:state` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar contratos de recovery e notificadores de energia | estados, capacidades opcionais, timeouts, ordem e erros canonicos sao observados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico dos servicos e artefatos host-only | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:core:syscall` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, habilitacao ring 3, dispatch de syscalls, limites, copias de usuario, IPC, sinais e rejeicoes ring 0 | dispatcher preserva os codigos canonicos, rejeita chamadas fora de estado e completa os caminhos de usuario e kernel | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado do dispatcher e buffers estaticos da fixture host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7622,6 +7685,7 @@
 | `qemu:tst6:fault:package` | `qemu` | `tst6` | `qemu:tst6:fault:package` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | App Store e seu estado de diagnostico estao READY | validar o armamento invalido do failpoint e o retorno ao estado normal | ERR_INVALID e publicado para armamento invalido e uma consulta posterior passa | mutacao residual, erro incorreto, timeout, protocolo ou QEMU | somente diagnostico e fixture de pacote em snapshot | confirmar que nenhuma mutacao ou transacao ficou pendente |
 | `qemu:tst6:fault:process` | `qemu` | `tst6` | `qemu:tst6:fault:process` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | processos, threads, filas e IPC estao READY | executar falha controlada do caminho de processo e depois o self-test normal | o processo e recursos associados sao coletados sem residuos | thread presa, waiter residual, estado incoerente, timeout, protocolo ou QEMU | objetos temporarios de processo e IPC em snapshot | cancelar, coletar e validar processos, threads, filas e mensagens |
 | `qemu:tst6:fault:recovery` | `qemu` | `tst6` | `qemu:tst6:fault:recovery` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage e rotinas de recuperacao estao READY | executar a sequencia de falha, limpeza e operacao normal posterior | a recuperacao termina com estado saudavel e sem recurso residual | rollback incompleto, lock preso, estado residual, timeout, protocolo ou QEMU | fixtures temporarios no snapshot isolado | confirmar o estado baseline antes de encerrar a instancia |
+| `qemu:tst6:fault:service-supervisor` | `qemu` | `tst6` | `qemu:tst6:fault:service-supervisor` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | boot normal com os quatro servicos nativos supervisionados | forcar a perda controlada do System e validar reinicio unico, identidade e fallback | System retorna READY com PID e generation novos sem residual ou reinicio infinito | identidade obsoleta, processo residual, fallback ausente, loop de reinicio, timeout, protocolo ou QEMU | processo System substituido no snapshot isolado | confirmar snapshots, scheduler, Shell, kworker e Desktop em estado consistente |
 | `qemu:tst6:fault:update` | `qemu` | `tst6` | `qemu:tst6:fault:update` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | runtime de atualizacao e seu journal estao READY | validar o armamento invalido do failpoint e consultar o estado recuperado | ERR_INVALID e publicado para armamento invalido e transaction_pending permanece falso | journal residual, rollback incompleto, timeout, protocolo ou QEMU | fixture de atualizacao somente no snapshot | confirmar que journal, rollback e transacao permanecem limpos |
 | `qemu:tst6:matrix:audio` | `qemu` | `tst6` | `qemu:tst6:matrix:audio` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | QEMU fornece AC97 com backend de audio nulo | validar o estado publicado de audio e os servicos de plataforma | audio disponivel ou degradado de forma coerente e sem tocar hardware real | estado publicado incoerente, reset, poweroff, timeout, protocolo ou QEMU | apenas inventario e estado de driver no snapshot | validar que nenhum recurso de audio ficou reservado |
 | `qemu:tst6:matrix:baseline` | `qemu` | `tst6` | `qemu:tst6:matrix:baseline` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | QEMU baseline fornece ACPI, PCI, VGA e NIC E1000 isolada | validar a matriz completa de capacidades publicadas pelo guest | capacidades esperadas estao coerentes e nenhuma fila ou recurso sobra | capacidade ausente, estado incoerente, timeout, protocolo ou QEMU | somente inventario e validadores internos em snapshot | encerrar a instancia e preservar todos os artefatos |

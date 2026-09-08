@@ -76,6 +76,7 @@ novo; o handshake e inerte no boot normal ate a validacao de `HELLO`.
 | `src/include/core/poll.h` | `docs/melhorias futuras/api de aplicativos e syscalls.md` |
 | `src/include/core/route.h` | `docs/roadmaps/14-stack-de-rede-avancada.md` |
 | `src/include/core/recovery.h` | `docs/04-kernel/kernel.md` |
+| `src/include/core/service_supervisor.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/spinlock.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/string.h` | `docs/04-kernel/kernel.md` |
 | `src/include/core/test_protocol.h` | `docs/roadmaps/17-testador-completo-e-regressao.md` |
@@ -605,8 +606,18 @@ bloqueadas no fechamento e liberam filas e buffers somente depois da ultima
 referencia valida. A workqueue registra, apenas internamente, `PID +
 generation` para trabalhos criados em contexto de processo e descarta callbacks
 obsoletos antes da execucao. Falhas retornam os codigos canonicos e preservam
-o estado consistente; o supervisor de servicos permanece reservado para a
-KRN5.2.
+o estado consistente.
+
+Desde a KRN5.2, `src/include/core/service_supervisor.h` descreve o controlador
+privado dos servicos nativos `kworker`, `System`, `Shell` e `Desktop`. A tabela
+interna usa somente `PID + generation`, estados `STARTING`, `READY`, `FAILED` e
+`STOPPED`, retry unico por ativacao, fallback e snapshots por copia. Nenhum
+ponteiro, stack, endereco fisico, processo adicional, scheduler, syscall ou
+layout publico e exposto. A inicializacao respeita dependencias, a
+quiescencia suspende reinicios e toda acao revalida a identidade antes de
+acordar, religar, destruir ou enviar IPC. O mapeamento para `recovery` preserva
+seu enum existente e o cleanup confirma o desaparecimento do processo antes
+de liberar o registro.
 
 Desde a NET2, `src/include/core/socket.h` publica a camada generica de
 sockets sobre descritores VFS. `AF_UNIX/SOCK_STREAM` oferece namespace global

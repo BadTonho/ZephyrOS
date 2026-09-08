@@ -2,6 +2,7 @@
 
 #include "core/app_package.h"
 #include "core/log.h"
+#include "core/service_supervisor.h"
 #include "core/update_runtime.h"
 #include "memory/paging.h"
 #include "process/process.h"
@@ -119,6 +120,60 @@ static int tst6_update_failure_contract(void) {
     return OK;
 }
 
+static int tst6_service_supervisor_failure_contract(
+    const kernel_tests_runtime_t* runtime) {
+    service_supervisor_snapshot_t snapshots[SERVICE_SUPERVISOR_ID_COUNT];
+    uint32_t count = 0U;
+    int result;
+
+    (void)runtime;
+
+    if (!service_supervisor_is_initialized() ||
+        service_supervisor_validate_state() != OK ||
+        service_supervisor_snapshot_list(
+            snapshots, SERVICE_SUPERVISOR_ID_COUNT, &count) != OK ||
+        count != SERVICE_SUPERVISOR_ID_COUNT) {
+        LOG_ERROR_CODE(KERNEL_TEST_TST6_TAG, ERR_STATE,
+                       "service-supervisor precondition failed");
+        return ERR_STATE;
+    }
+    result = service_supervisor_test_fail_next(SERVICE_SUPERVISOR_SYSTEM);
+    if (result != OK) {
+        LOG_ERROR_CODE(KERNEL_TEST_TST6_TAG, result,
+                       "service-supervisor failpoint setup failed");
+        return result;
+    }
+    result = service_supervisor_poll();
+    if (result != OK) {
+        LOG_ERROR_CODE(KERNEL_TEST_TST6_TAG, result,
+                       "service-supervisor recovery failed");
+        return result;
+    }
+    if (service_supervisor_validate_state() != OK ||
+        service_supervisor_snapshot_list(
+            snapshots, SERVICE_SUPERVISOR_ID_COUNT, &count) != OK ||
+        count != SERVICE_SUPERVISOR_ID_COUNT) {
+        LOG_ERROR_CODE(KERNEL_TEST_TST6_TAG, ERR_STATE,
+                       "service-supervisor postcondition failed");
+        return ERR_STATE;
+    }
+    for (uint32_t index = 0U; index < count; index++) {
+        if (snapshots[index].id == SERVICE_SUPERVISOR_SYSTEM) {
+            if (snapshots[index].state != SERVICE_SUPERVISOR_READY ||
+                !snapshots[index].pid || !snapshots[index].generation ||
+                snapshots[index].restart_attempts == 0U) {
+                LOG_ERROR_CODE(KERNEL_TEST_TST6_TAG, ERR_STATE,
+                               "service-supervisor identity was not restored");
+                return ERR_STATE;
+            }
+            return OK;
+        }
+    }
+    LOG_ERROR_CODE(KERNEL_TEST_TST6_TAG, ERR_NOT_FOUND,
+                   "service-supervisor snapshot was not found");
+    return ERR_NOT_FOUND;
+}
+
 static int tst6_run_matrix(const kernel_tests_runtime_t* runtime,
                            const char* suffix, uint32_t suffix_length) {
     if (tst6_equals(suffix, suffix_length, "baseline") ||
@@ -199,6 +254,10 @@ static int tst6_run_fault(const kernel_tests_runtime_t* runtime,
     if (tst6_equals(suffix, suffix_length, "recovery")) {
         return tst6_run_domain(runtime, "fault-recovery", tst6_run_storage);
     }
+    if (tst6_equals(suffix, suffix_length, "service-supervisor")) {
+        return tst6_run_domain(runtime, "fault-service-supervisor",
+                               tst6_service_supervisor_failure_contract);
+    }
     LOG_ERROR_CODE(KERNEL_TEST_TST6_TAG, ERR_NOT_FOUND, "fault");
     return ERR_NOT_FOUND;
 }
@@ -247,7 +306,8 @@ int kernel_tests_run_tst6(const kernel_tests_runtime_t* runtime,
         tst6_suffix(case_id, case_length, "fault:update") ||
         tst6_suffix(case_id, case_length, "fault:network") ||
         tst6_suffix(case_id, case_length, "fault:process") ||
-        tst6_suffix(case_id, case_length, "fault:recovery")) {
+        tst6_suffix(case_id, case_length, "fault:recovery") ||
+        tst6_suffix(case_id, case_length, "fault:service-supervisor")) {
         return tst6_run_fault(runtime, suffix + tst6_length("fault:"),
                               suffix_length - tst6_length("fault:"));
     }

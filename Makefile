@@ -153,6 +153,9 @@ WAIT_OBJ = $(BUILD_DIR)/wait.o
 WORKQUEUE_C = src/core/workqueue.c
 WORKQUEUE_OBJ = $(BUILD_DIR)/workqueue.o
 
+SERVICE_SUPERVISOR_C = src/core/service_supervisor.c
+SERVICE_SUPERVISOR_OBJ = $(BUILD_DIR)/service_supervisor.o
+
 CLOCK_C = src/core/clock.c
 CLOCK_OBJ = $(BUILD_DIR)/clock.o
 
@@ -658,7 +661,7 @@ STORE_AS5_FIXTURES_DIR = docs\fixtures\apps\store-as5
 STORE_AS5_PUBLIC = config\app-store-test-public.json
 
 # Todas as variáveis de objetos
-OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(TEST_PROTOCOL_CORE_OBJ) $(TEST_PROTOCOL_OBJ) $(TEST_COVERAGE_OBJ) $(KERNEL_TESTS_OBJ) $(KERNEL_TESTS_PAGING_OBJ) $(KERNEL_TESTS_EXECUTION_OBJ) $(KERNEL_TESTS_STORAGE_OBJ) $(KERNEL_TESTS_NETWORK_OBJ) $(KERNEL_TESTS_PLATFORM_OBJ) $(KERNEL_TESTS_BLACKBOX_OBJ) $(KERNEL_TESTS_TST6_OBJ) $(KERNEL_TESTS_ASSEMBLY_OBJ) $(INPUT_OBJ) $(IRQ_DEFERRED_OBJ) $(WAIT_OBJ) $(WORKQUEUE_OBJ) $(RECOVERY_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) $(BEARSSL_COMPAT_OBJ) $(BEARSSL_OBJ) $(UPDATE_OBJ) $(UPDATE_SYSTEM_OBJ) $(UPDATE_SYSTEM_SLOTS_OBJ) $(UPDATE_REMOTE_SYSTEM_OBJ) $(UPDATE_REMOTE_OBJ) $(UPDATE_REMOTE_RELEASE_OBJ) $(UPDATE_REMOTE_GITHUB_OBJ) $(UPDATE_RUNTIME_OBJ) $(UPDATE_REMOTE_RUNTIME_OBJ) $(STRING_OBJ) $(APP_API_OBJ) $(SYSCALL_OBJ) $(SWITCH_OBJ) \
+OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(TEST_PROTOCOL_CORE_OBJ) $(TEST_PROTOCOL_OBJ) $(TEST_COVERAGE_OBJ) $(KERNEL_TESTS_OBJ) $(KERNEL_TESTS_PAGING_OBJ) $(KERNEL_TESTS_EXECUTION_OBJ) $(KERNEL_TESTS_STORAGE_OBJ) $(KERNEL_TESTS_NETWORK_OBJ) $(KERNEL_TESTS_PLATFORM_OBJ) $(KERNEL_TESTS_BLACKBOX_OBJ) $(KERNEL_TESTS_TST6_OBJ) $(KERNEL_TESTS_ASSEMBLY_OBJ) $(INPUT_OBJ) $(IRQ_DEFERRED_OBJ) $(WAIT_OBJ) $(WORKQUEUE_OBJ) $(SERVICE_SUPERVISOR_OBJ) $(RECOVERY_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) $(BEARSSL_COMPAT_OBJ) $(BEARSSL_OBJ) $(UPDATE_OBJ) $(UPDATE_SYSTEM_OBJ) $(UPDATE_SYSTEM_SLOTS_OBJ) $(UPDATE_REMOTE_SYSTEM_OBJ) $(UPDATE_REMOTE_OBJ) $(UPDATE_REMOTE_RELEASE_OBJ) $(UPDATE_REMOTE_GITHUB_OBJ) $(UPDATE_RUNTIME_OBJ) $(UPDATE_REMOTE_RUNTIME_OBJ) $(STRING_OBJ) $(APP_API_OBJ) $(SYSCALL_OBJ) $(SWITCH_OBJ) \
        $(VIDEO_OBJ) $(VESA_OBJ) $(FONT_OBJ) $(IDT_OBJ) $(SERIAL_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
        $(MOUSE_OBJ) $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(UHCI_OBJ) $(EHCI_OBJ) $(USB_TRANSPORT_OBJ) $(USB_MSC_OBJ) $(USB_HID_OBJ) $(RTL8811CU_OBJ) $(E1000_OBJ) $(RTL8139_OBJ) $(AC97_OBJ) $(ACPI_OBJ) $(RNG_OBJ) \
        $(MEMORY_OBJ) $(PAGING_OBJ) $(VMA_OBJ) $(COMPRESS_OBJ) \
@@ -736,7 +739,7 @@ $(ENTRY_OBJ): $(ENTRY_SRC)
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(NASM) -f elf32 $< -o $@
 
-$(KERNEL_OBJ): $(KERNEL_C) src/core/test_coverage.h src/include/apps/shell_job.h src/include/core/keyboard.h src/include/core/power.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/workqueue.h src/include/core/ethernet.h src/include/core/clock.h src/include/core/tls.h src/include/core/update_system.h src/include/core/update_system_slots.h src/include/core/update_remote_system.h src/include/core/test_protocol.h src/include/drivers/serial.h src/include/drivers/rtc.h src/include/process/process.h src/include/process/thread.h src/include/memory/slab.h
+$(KERNEL_OBJ): $(KERNEL_C) src/core/test_coverage.h src/include/apps/shell_job.h src/include/core/keyboard.h src/include/core/power.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/workqueue.h src/include/core/service_supervisor.h src/include/core/ethernet.h src/include/core/clock.h src/include/core/tls.h src/include/core/update_system.h src/include/core/update_system_slots.h src/include/core/update_remote_system.h src/include/core/test_protocol.h src/include/drivers/serial.h src/include/drivers/rtc.h src/include/process/process.h src/include/process/thread.h src/include/memory/slab.h
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -793,7 +796,7 @@ $(KERNEL_TESTS_BLACKBOX_OBJ): $(KERNEL_TESTS_BLACKBOX_C) src/core/kernel_tests.h
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(KERNEL_TESTS_TST6_OBJ): $(KERNEL_TESTS_TST6_C) src/core/kernel_tests.h src/include/core/app_package.h src/include/core/errors.h src/include/core/log.h src/include/core/update_runtime.h src/include/memory/paging.h src/include/process/process.h
+$(KERNEL_TESTS_TST6_OBJ): $(KERNEL_TESTS_TST6_C) src/core/kernel_tests.h src/include/core/app_package.h src/include/core/errors.h src/include/core/log.h src/include/core/service_supervisor.h src/include/core/update_runtime.h src/include/memory/paging.h src/include/process/process.h
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -810,6 +813,10 @@ $(WAIT_OBJ): $(WAIT_C)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
 $(WORKQUEUE_OBJ): $(WORKQUEUE_C) src/include/core/workqueue.h src/include/core/wait.h src/include/core/timer.h src/include/process/process.h
+	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SERVICE_SUPERVISOR_OBJ): $(SERVICE_SUPERVISOR_C) src/include/core/service_supervisor.h src/include/core/recovery.h src/include/core/errors.h src/include/process/process.h
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -990,7 +997,7 @@ $(HTTP_OBJ): $(HTTP_C) src/include/core/http.h src/include/core/tls_client.h src
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(POWER_OBJ): $(POWER_C) src/include/core/power.h src/include/core/power_notifier.h src/include/core/errors.h src/include/core/keyboard.h src/include/core/log.h src/include/core/network_manager.h src/include/core/string.h src/include/core/timer.h src/include/core/video.h src/include/core/workqueue.h src/include/drivers/ac97.h src/include/drivers/acpi.h src/include/drivers/idt.h src/include/drivers/speaker.h src/include/fs/storage.h src/include/fs/vfs.h src/include/process/process.h
+$(POWER_OBJ): $(POWER_C) src/include/core/power.h src/include/core/power_notifier.h src/include/core/service_supervisor.h src/include/core/errors.h src/include/core/keyboard.h src/include/core/log.h src/include/core/network_manager.h src/include/core/string.h src/include/core/timer.h src/include/core/video.h src/include/core/workqueue.h src/include/drivers/ac97.h src/include/drivers/acpi.h src/include/drivers/idt.h src/include/drivers/speaker.h src/include/fs/storage.h src/include/fs/vfs.h src/include/process/process.h
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -1190,7 +1197,7 @@ $(BMP_OBJ): $(BMP_C)
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(PROCESS_OBJ): $(PROCESS_C) src/core/test_coverage.h src/include/process/process.h src/include/process/thread.h src/include/process/resource.h src/include/memory/slab.h src/include/memory/vma.h src/include/memory/paging.h src/include/core/app_api.h src/include/core/timer.h
+$(PROCESS_OBJ): $(PROCESS_C) src/core/test_coverage.h src/include/process/process.h src/include/process/thread.h src/include/process/resource.h src/include/memory/slab.h src/include/memory/vma.h src/include/memory/paging.h src/include/core/app_api.h src/include/core/service_supervisor.h src/include/core/timer.h
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -1242,7 +1249,7 @@ $(SHELL_COMMANDS_STORAGE_OBJ): $(SHELL_COMMANDS_STORAGE_C) src/include/apps/shel
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(SHELL_COMMANDS_DIAGNOSTICS_OBJ): $(SHELL_COMMANDS_DIAGNOSTICS_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_introspection.h src/include/apps/shell_runtime.h src/include/apps/shell_diagnostics_helpers.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/workqueue.h src/include/core/clock.h src/include/core/tls.h src/include/core/wifi_manager.h src/include/core/log.h src/include/core/power.h src/include/fs/vfs.h src/include/fs/procfs.h src/include/drivers/idt.h src/include/drivers/acpi.h src/include/drivers/rtc.h src/include/drivers/usb_hid.h src/include/process/process.h src/include/memory/slab.h src/include/memory/vma.h
+$(SHELL_COMMANDS_DIAGNOSTICS_OBJ): $(SHELL_COMMANDS_DIAGNOSTICS_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_introspection.h src/include/apps/shell_runtime.h src/include/apps/shell_diagnostics_helpers.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/workqueue.h src/include/core/service_supervisor.h src/include/core/clock.h src/include/core/tls.h src/include/core/wifi_manager.h src/include/core/log.h src/include/core/power.h src/include/fs/vfs.h src/include/fs/procfs.h src/include/drivers/idt.h src/include/drivers/acpi.h src/include/drivers/rtc.h src/include/drivers/usb_hid.h src/include/process/process.h src/include/memory/slab.h src/include/memory/vma.h
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -1258,7 +1265,7 @@ $(SHELL_COMMANDS_WIFI_OBJ): $(SHELL_COMMANDS_WIFI_C) src/include/apps/shell_comm
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(SHELL_CHECKS_OBJ): $(SHELL_CHECKS_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_job.h src/include/apps/shell_runtime.h src/include/core/keyboard.h src/include/core/power.h src/include/core/power_notifier.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/workqueue.h src/include/core/clock.h src/include/core/tls.h src/include/core/wifi_manager.h src/include/drivers/idt.h src/include/drivers/acpi.h src/include/drivers/rtc.h src/include/drivers/usb_hid.h src/include/process/process.h src/include/memory/vma.h
+$(SHELL_CHECKS_OBJ): $(SHELL_CHECKS_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_job.h src/include/apps/shell_runtime.h src/include/core/service_supervisor.h src/include/core/keyboard.h src/include/core/power.h src/include/core/power_notifier.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/workqueue.h src/include/core/clock.h src/include/core/tls.h src/include/core/wifi_manager.h src/include/drivers/idt.h src/include/drivers/acpi.h src/include/drivers/rtc.h src/include/drivers/usb_hid.h src/include/process/process.h src/include/memory/vma.h
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -1683,6 +1690,10 @@ test-tst6-qemu-fault-recovery: $(OS_IMG) tools\qemu_test_runner.py tests\catalog
 	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
 	python tools\qemu_test_runner.py stress --case qemu:tst6:fault:recovery --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
 
+test-tst6-qemu-fault-service-supervisor: $(OS_IMG) tools\qemu_test_runner.py tests\catalog.json
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	python tools\qemu_test_runner.py stress --case qemu:tst6:fault:service-supervisor --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
 test-tst7-host: tools\tst7_regression_runner.py tools\assembly_trace_collector.py tools\assembly_boot_trace.py tools\assembly_recovery_trace.py tests\unit\test_tst7_runner.py tests\unit\test_assembly_trace_collector.py tests\unit\test_assembly_boot_trace.py tests\unit\test_assembly_recovery_trace.py tests\catalog.json tests\regressions\manifest.json
 	python -m unittest tests.unit.test_tst7_runner tests.unit.test_assembly_trace_collector tests.unit.test_assembly_boot_trace tests.unit.test_assembly_recovery_trace
 
@@ -1790,6 +1801,7 @@ test-syscall-host: tools\core_host_runner.py tools\coverage_collector.py tests\u
 
 test-process-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_process_host.c tests\catalog.json src\process\process.c src\process\resource.c src\include\process\process.h src\include\process\resource.h src\include\process\signal.h src\include\memory\paging.h src\include\memory\vma.h src\include\memory\slab.h src\include\core\wait.h src\include\fs\vfs.h
 	python tools/core_host_runner.py --case host:process:runtime --cc "$(HOST_CC)"
+test-process-host: src\core\service_supervisor.c src\core\recovery.c src\core\string.c src\include\core\service_supervisor.h src\include\core\recovery.h
 
 test-process-resource-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_process_resource_host.c tests\catalog.json src\process\resource.c src\include\process\resource.h src\include\process\process.h src\include\memory\vma.h src\include\memory\paging.h
 	python tools/core_host_runner.py --case host:process:resources --cc "$(HOST_CC)"
@@ -1805,6 +1817,7 @@ test-input-host: tools\core_host_runner.py tools\coverage_collector.py tests\uni
 
 test-power-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_power_host.c tests\catalog.json src\core\power.c src\core\power_notifier.c
 	python tools\core_host_runner.py --case host:core:power --cc "$(HOST_CC)"
+test-power-host: src\core\service_supervisor.c src\include\core\service_supervisor.h
 
 test-vfs-path-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_vfs_path_host.c tests\catalog.json src\fs\vfs_path.c src\include\fs\vfs_internal.h
 	python tools\core_host_runner.py --case host:storage:vfs-path --cc "$(HOST_CC)"
@@ -1892,6 +1905,9 @@ test-process-ipc-host: tools\core_host_runner.py tools\coverage_collector.py tes
 
 test-workqueue-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_workqueue_host.c tests\catalog.json src\core\workqueue.c src\include\core\workqueue.h
 	python tools\core_host_runner.py --case host:core:workqueue --cc "$(HOST_CC)"
+
+test-service-supervisor-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_service_supervisor_host.c tests\catalog.json src\core\service_supervisor.c src\include\core\service_supervisor.h
+	python tools\core_host_runner.py --case host:core:service-supervisor --cc "$(HOST_CC)"
 
 test-bearssl-compat-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_bearssl_compat_host.c tests\catalog.json src\core\bearssl_compat.c src\include\types.h
 	python tools\core_host_runner.py --case host:core:bearssl-compat --cc "$(HOST_CC)"
@@ -2006,6 +2022,7 @@ test-shell-commands-apps-host: tools\core_host_runner.py tools\coverage_collecto
 
 test-shell-checks-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_shell_checks_host.c tests\catalog.json src\shell\shell_checks.c src\include\apps\shell_checks.h src\include\apps\shell_runtime.h src\include\apps\shell_job.h src\include\apps\shell_command_utils.h src\include\core\errors.h src\include\core\log.h src\include\core\string.h src\include\core\video.h src\include\core\app_loader.h src\include\core\app_api.h src\include\core\recovery.h src\include\core\device_manager.h src\include\drivers\acpi.h src\include\fs\block.h src\include\fs\storage.h src\include\fs\fs.h src\include\memory\paging.h src\include\memory\vma.h src\include\process\process.h
 	python tools\core_host_runner.py --case host:shell:checks --cc "$(HOST_CC)"
+test-shell-checks-host: src\core\service_supervisor.c src\include\core\service_supervisor.h
 
 test-updater-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_updater_host.c tests\catalog.json src\updater\updater.c src\core\string.c src\include\ui\updater.h src\include\ui\updater_test.h src\include\core\errors.h src\include\core\keyboard.h src\include\core\log.h src\include\core\recovery.h src\include\core\string.h src\include\core\update.h src\include\core\update_remote.h src\include\core\update_remote_runtime.h src\include\core\update_remote_system.h src\include\core\update_system_slots.h src\include\core\update_remote_config.h src\include\core\update_runtime.h src\include\core\update_system.h src\include\core\video.h src\include\core\wait.h src\include\drivers\vesa.h src\include\fs\fs.h src\include\process\process.h src\include\ui\desktop.h src\include\ui\gui.h src\include\ui\taskbar.h src\include\ui\wm.h
 	python tools\core_host_runner.py --case host:ui:updater --cc "$(HOST_CC)"
@@ -2018,6 +2035,7 @@ test-taskmanager-host: tools\core_host_runner.py tools\coverage_collector.py tes
 
 test-shell-diagnostics-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_shell_diagnostics_host.c tests\catalog.json src\shell\shell_commands_diagnostics.c src\shell\shell_diagnostics_helpers.c src\shell\shell_command_utils.c src\shell\shell_introspection.c src\core\string.c src\include\apps\shell_diagnostics_helpers.h src\include\apps\shell_command_utils.h src\include\apps\shell_introspection.h src\include\apps\shell_runtime.h src\include\core\errors.h src\include\core\keyboard.h src\include\core\log.h src\include\core\memory.h src\include\core\string.h src\include\core\video.h src\include\core\device_manager.h src\include\core\input.h src\include\core\network_manager.h src\include\core\power.h src\include\core\recovery.h src\include\core\usb_manager.h src\include\core\wifi_manager.h src\include\drivers\acpi.h src\include\drivers\mouse.h src\include\drivers\pci.h src\include\drivers\usb_hid.h src\include\drivers\usb_msc.h src\include\drivers\vesa.h src\include\fs\devfs.h src\include\fs\file_index.h src\include\fs\procfs.h src\include\fs\vfs.h src\include\memory\paging.h src\include\memory\slab.h src\include\process\process.h
 	python tools\core_host_runner.py --case host:shell:diagnostics --cc "$(HOST_CC)"
+test-shell-diagnostics-host: src\core\service_supervisor.c src\include\core\service_supervisor.h
 
 test-shell-commands-wifi-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_shell_commands_wifi_host.c tests\catalog.json src\shell\shell_commands_wifi.c src\shell\shell_command_utils.c src\core\string.c src\include\apps\shell_command_utils.h src\include\core\errors.h src\include\core\log.h src\include\core\string.h src\include\core\video.h src\include\core\wifi_manager.h src\include\core\usb_manager.h
 	python tools\core_host_runner.py --case host:shell:wifi --cc "$(HOST_CC)"
@@ -2045,6 +2063,7 @@ test-panic-host: tools\core_host_runner.py tools\coverage_collector.py tests\uni
 
 test-kernel-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_kernel_host.c tests\catalog.json src\kernel\kernel.c src\core\kernel_host_test.h
 	python tools/core_host_runner.py --case host:kernel:runtime --cc "$(HOST_CC)"
+test-kernel-host: src\core\service_supervisor.c src\core\recovery.c src\include\core\service_supervisor.h
 
 test-pci-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_pci_host.c tests\catalog.json src\drivers\pci.c src\include\drivers\pci.h src\include\core\errors.h src\include\core\log.h src\include\process\process.h
 	python tools/core_host_runner.py --case host:drivers:pci --cc "$(HOST_CC)"
@@ -2172,7 +2191,7 @@ clean:
 .PHONY: test-assembly-qemu test-assembly-trace-qemu test-assembly-boot-trace-qemu test-assembly-recovery-trace-qemu
 .PHONY: test-tst4-qemu-paging-vma test-tst4-qemu-execution test-tst4-qemu-storage-vfs test-tst4-qemu-network test-tst4-qemu-platform
 .PHONY: test-tst5-host test-tst5-qemu-shell test-tst5-qemu-input test-tst5-qemu-apps test-tst5-qemu-processes test-tst5-qemu-storage test-tst5-qemu-network test-tst5-qemu-update-recovery test-tst5-qemu-reboot test-tst5-qemu-poweroff
-.PHONY: test-tst6-host test-tst6-qemu-matrix-baseline test-tst6-qemu-matrix-minimal test-tst6-qemu-matrix-network test-tst6-qemu-matrix-usb-hid test-tst6-qemu-matrix-usb-storage test-tst6-qemu-matrix-audio test-tst6-qemu-matrix-display test-tst6-qemu-matrix-pci test-tst6-qemu-stress-kernel test-tst6-qemu-stress-storage test-tst6-qemu-stress-network test-tst6-qemu-stress-apps test-tst6-qemu-fault-memory test-tst6-qemu-fault-block test-tst6-qemu-fault-block-cache test-tst6-qemu-fault-package test-tst6-qemu-fault-update test-tst6-qemu-fault-network test-tst6-qemu-fault-process test-tst6-qemu-fault-recovery
+.PHONY: test-tst6-host test-tst6-qemu-matrix-baseline test-tst6-qemu-matrix-minimal test-tst6-qemu-matrix-network test-tst6-qemu-matrix-usb-hid test-tst6-qemu-matrix-usb-storage test-tst6-qemu-matrix-audio test-tst6-qemu-matrix-display test-tst6-qemu-matrix-pci test-tst6-qemu-stress-kernel test-tst6-qemu-stress-storage test-tst6-qemu-stress-network test-tst6-qemu-stress-apps test-tst6-qemu-fault-memory test-tst6-qemu-fault-block test-tst6-qemu-fault-block-cache test-tst6-qemu-fault-package test-tst6-qemu-fault-update test-tst6-qemu-fault-network test-tst6-qemu-fault-process test-tst6-qemu-fault-recovery test-tst6-qemu-fault-service-supervisor
 .PHONY: test-tst7-host test-tst7-quick test-tst7-full
 .PHONY: test-shell-commands-wifi-host
 .PHONY: test-app-loader-host test-taskbar-host test-appstore-host test-editor-host test-settings-icons-host test-desktop-host test-syscall-host test-thread-host
@@ -2189,6 +2208,7 @@ clean:
 .PHONY: test-spinlock-host
 .PHONY: test-shell-commands-storage-host test-shell-network-checks-host test-shell-commands-packages-host test-shell-commands-apps-host test-shell-checks-host
 .PHONY: test-shell-diagnostics-host
+.PHONY: test-service-supervisor-host
 .PHONY: test-updater-host
 .PHONY: test-filemanager-host
 .PHONY: test-taskmanager-host

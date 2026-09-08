@@ -6778,3 +6778,22 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   tentativa intermediária detectou corretamente a renomeação indevida de uma
   função `static` no baseline; o nome foi restaurado e o catálogo sincronizado
   antes da validação final. Nenhum bootloader foi alterado.
+
+- KRN5.2 — supervisor privado de serviços nativos — concluído em 2026-09-08
+  (America/Sao_Paulo). Foi criada a tabela privada para `kworker`, `System`,
+  `Shell` e `Desktop`, com estados `STARTING`, `READY`, `FAILED` e `STOPPED`,
+  dependências ordenadas, retry único, fallback, quiescência, snapshots por
+  cópia e identidade `PID + generation`. As ações administrativas revalidam a
+  identidade, o cleanup confirma o desaparecimento do processo e nenhum
+  ponteiro, stack ou endereço físico é publicado. ABI, syscalls, layouts,
+  bootloader, Rust e schedulers permaneceram inalterados.
+
+  Passaram `make q3check`, `make clean` seguido de `make`, os testes host de
+  supervisor, scheduling, processos, workqueue, diagnósticos do Shell e
+  energia, os fluxos QEMU de execução, processos, Shell, fault do supervisor
+  e estresse do kernel, `make catalog-test-strict` e `git diff --check`.
+  O `make test-tst7-full` terminou `PASS` no run
+  `tst7-20260908T184235Z-22600`, com 135 casos host e 38 casos QEMU; o caso
+  `host:core:service-supervisor` foi incluído no baseline por aprovação
+  explícita e `qemu:tst6:fault:service-supervisor` passou. O run registrou
+  `catalog-test`, `storage-fixtures`, cobertura estrita e nenhuma limitação.

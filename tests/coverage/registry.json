@@ -965,6 +965,38 @@
       "evidence": "QEMU TST6 fault update cov-tst6-fault-update-1 PASS com cancelamento e retorno ao estado anterior, coverage.json instrumentado, sem enderecos desconhecidos ou ambiguos"
     },
     {
+      "id": "service-supervisor-qemu-tst6",
+      "domain": "core-service-supervisor",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:tst6:fault:service-supervisor"
+      ],
+      "surface_ids": [
+        "c:src/core/kernel_tests_tst6.c:tst6_service_supervisor_failure_contract",
+        "c:src/kernel/kernel.c:kernel_create_desktop",
+        "c:src/kernel/kernel.c:kernel_create_kworker",
+        "c:src/kernel/kernel.c:kernel_create_shell",
+        "c:src/kernel/kernel.c:kernel_create_system",
+        "c:src/kernel/kernel.c:kernel_dependency_desktop",
+        "c:src/kernel/kernel.c:kernel_dependency_kworker",
+        "c:src/kernel/kernel.c:kernel_dependency_shell",
+        "c:src/kernel/kernel.c:kernel_dependency_system",
+        "c:src/kernel/kernel.c:kernel_fallback_desktop",
+        "c:src/kernel/kernel.c:kernel_fallback_kworker",
+        "c:src/kernel/kernel.c:kernel_fallback_shell",
+        "c:src/kernel/kernel.c:kernel_fallback_system",
+        "c:src/kernel/kernel.c:kernel_init_service_supervisor",
+        "c:src/kernel/kernel.c:kernel_prepare_desktop",
+        "c:src/kernel/kernel.c:kernel_prepare_kworker",
+        "c:src/kernel/kernel.c:kernel_prepare_shell",
+        "c:src/kernel/kernel.c:kernel_prepare_system"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-tst6-qemu-fault-service-supervisor PASS com failpoint one-shot do System, retry unico, identidade PID+generation e ausencia de residual"
+    },
+    {
       "id": "file-index-host-dynamic",
       "domain": "storage-file-index",
       "owner": "quality",
@@ -5499,6 +5531,24 @@
       ],
       "include_public_apis": true,
       "evidence": "make test-workqueue-host PASS com autoteste interno, prioridades, FIFO, atrasos, coalescencia, rerun, cancelamento, fallback, quiescencia e worker limitado no host; KRN5.1 tambem rejeitou callback com PID+generation obsoletos sem executa-lo"
+    },
+    {
+      "id": "service-supervisor-host-dynamic",
+      "domain": "core-service-supervisor",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:core:service-supervisor"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/service-supervisor-host/coverage.json",
+      "coverage_sources": [
+        "src/core/service_supervisor.c",
+        "src/core/string.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-service-supervisor-host PASS com bootstrap ordenado, retry unico, falhas, identidades PID+generation, quiescencia, snapshots por copia e limpeza"
     },
     {
       "id": "speaker-host-dynamic",

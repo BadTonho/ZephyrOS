@@ -41,6 +41,7 @@
 #include "core/input.h"
 #include "core/irq_deferred.h"
 #include "core/workqueue.h"
+#include "core/service_supervisor.h"
 #include "core/log.h"
 #include "drivers/mouse.h"
 #include "ui/gui.h"
@@ -344,6 +345,39 @@ static void cmd_health_print_migrated_builtin(shell_builtin_app_t app) {
 
 static void cmd_health_print_usb_hid(void);
 
+static void cmd_health_print_service_supervisor(void) {
+    service_supervisor_snapshot_t snapshots[SERVICE_SUPERVISOR_ID_COUNT];
+    uint32_t count = 0U;
+
+    if (!service_supervisor_is_initialized()) return;
+    video_print("  Native services:\n", 0x07);
+    if (service_supervisor_snapshot_list(
+            snapshots, SERVICE_SUPERVISOR_ID_COUNT, &count) != OK) {
+        video_print("    UNKNOWN\n", 0x0C);
+        return;
+    }
+    for (uint32_t index = 0U; index < count; index++) {
+        const service_supervisor_snapshot_t* snapshot = &snapshots[index];
+
+        video_print("    ", 0x07);
+        video_print(snapshot->name, 0x0B);
+        video_print(": ", 0x07);
+        video_print(service_supervisor_state_name(snapshot->state),
+                    snapshot->state == SERVICE_SUPERVISOR_READY ?
+                    0x0A : 0x0E);
+        video_print(" pid=", 0x08);
+        shell_command_print_num(snapshot->pid);
+        video_print(" generation=", 0x08);
+        shell_command_print_num(snapshot->generation);
+        video_print(" restarts=", 0x08);
+        shell_command_print_num(snapshot->restart_attempts);
+        video_print(" failures=", 0x08);
+        shell_command_print_num(snapshot->failures);
+        video_print(snapshot->fallback_active ? " fallback=ACTIVE\n" :
+                    "\n", snapshot->fallback_active ? 0x0E : 0x07);
+    }
+}
+
 static void cmd_health_print_user_fault(void) {
     process_user_fault_summary_t fault;
     uint32_t fault_count = process_get_user_fault_count();
@@ -480,6 +514,7 @@ static void cmd_health_print_kernel(void) {
                 app_package_is_ready() ? 0x0A : 0x0E);
     video_print("\n", 0x07);
     cmd_health_print_user_fault();
+    cmd_health_print_service_supervisor();
     video_print("  File API: ", 0x07);
     video_print((app_api_file_is_ready() &&
                  recovery_is_available(RECOVERY_COMPONENT_FILESYSTEM)) ?
@@ -886,6 +921,7 @@ static void cmd_health_print_summary_kernel(void) {
         shell_command_print_num(signals.frame_failures);
         video_print("\n", 0x07);
     }
+    cmd_health_print_service_supervisor();
     cmd_health_print_usb_hid();
 }
 
@@ -1177,6 +1213,43 @@ static void cmd_health_check_kernel(int* issue_count) {
     }
 }
 
+static void cmd_health_check_service_supervisor(int* issue_count) {
+    service_supervisor_snapshot_t snapshots[SERVICE_SUPERVISOR_ID_COUNT];
+    uint32_t count = 0U;
+    int result;
+
+    if (!issue_count || !service_supervisor_is_initialized()) return;
+    result = service_supervisor_validate_state();
+    if (result != OK) {
+        cmd_health_check_print_query_failure("Native services", result,
+                                             issue_count);
+        return;
+    }
+    result = service_supervisor_snapshot_list(
+        snapshots, SERVICE_SUPERVISOR_ID_COUNT, &count);
+    if (result != OK || count != SERVICE_SUPERVISOR_ID_COUNT) {
+        cmd_health_check_print_query_failure(
+            "Native services", result == OK ? ERR_STATE : result,
+            issue_count);
+        return;
+    }
+    for (uint32_t index = 0U; index < count; index++) {
+        const service_supervisor_snapshot_t* snapshot = &snapshots[index];
+
+        if (snapshot->state != SERVICE_SUPERVISOR_READY) {
+            cmd_health_check_print_named_state(
+                snapshot->name,
+                service_supervisor_state_name(snapshot->state),
+                snapshot->state == SERVICE_SUPERVISOR_STARTING ?
+                    SHELL_HEALTH_CHECK_WARN_COLOR :
+                    SHELL_HEALTH_CHECK_ERROR_COLOR,
+                snapshot->fallback_active ? "fallback active" :
+                                             "service unavailable",
+                issue_count);
+        }
+    }
+}
+
 static void cmd_health_check_usb_hid(int* issue_count) {
     usb_manager_status_t status;
     int result;
@@ -1441,6 +1514,7 @@ static void cmd_health_check(void) {
     cmd_health_check_clock(&issue_count);
     cmd_health_check_tls(&issue_count);
     cmd_health_check_kernel(&issue_count);
+    cmd_health_check_service_supervisor(&issue_count);
     cmd_health_check_irq(&issue_count);
     cmd_health_check_workqueue(&issue_count);
     cmd_health_check_wait(&issue_count);

@@ -473,6 +473,34 @@ As fixtures host e os fluxos QEMU de IPC, VFS, rede, processos, Shell e
 estresse validam filas cheias e vazias, timeout, cancelamento, fechamento,
 reutilizacao de identidade, EOF/HUP, wakeup e limpeza sem estado residual.
 
+### KRN5.2 — Supervisor privado de servicos nativos
+
+O kernel mantem uma tabela estatica privada para `kworker`, `System`, `Shell`
+e `Desktop`. O supervisor nao cria processo, scheduler, syscall ou layout
+publico adicional. Cada entrada publica somente snapshots por copia com nome,
+estado, diagnostico, fallback e identidade `PID + generation`; ponteiros,
+stacks e enderecos fisicos permanecem privados.
+
+A inicializacao ocorre em ordem deterministica: `kworker`, `System`, `Shell` e
+`Desktop`. A workqueue e dependencia do `kworker`; `System` depende de processo,
+IPC e Wait Queue; `Shell` depende de IPC e foco; `Desktop` depende do display.
+Uma falha de `System` nao impede a tentativa do scheduler existente nem remove
+o caminho textual do Shell. Cada servico admite uma unica tentativa automatica
+de reinicio por ativacao; falhas persistentes ficam em `FAILED` e mantem o
+fallback apropriado.
+
+Durante quiescencia de energia, reinicios ficam suspensos e nenhum processo
+ring 0 e destruido a forca. Ao retomar, o supervisor revalida as identidades
+antes de acordar, religar, destruir ou enviar IPC. O cleanup confirma que o
+processo desapareceu antes de liberar o registro e rejeita Idle, processo
+atual e PID reutilizado.
+
+Os estados privados sao `STARTING`, `READY`, `FAILED` e `STOPPED`. O recovery
+existente os representa como `DEGRADED`, `READY`, `DEGRADED`/`DISABLED` e
+`DISABLED`, respectivamente, preservando a API publica. `health`, `health
+summary`, `health check` e `regcheck full` consultam os snapshots privados;
+nao existe comando, procfs ou syscall adicional para o supervisor.
+
 ---
 
 ## Threads
