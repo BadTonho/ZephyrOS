@@ -91,22 +91,33 @@ agente deve apenas revisar o Makefile, os comandos e os artefatos.
 
 ### Política de validação por etapa e fechamento de roadmap
 
-A suíte completa de testes automatizados, incluindo `make q3check`,
-`make clean && make`, QEMU, TST7 e matrizes completas, NÃO deve ser executada
-automaticamente a cada etapa do processo. Ela deve ser concentrada no
-fechamento do roadmap, salvo autorização explícita do usuário para antecipá-la.
+Toda etapa deve executar sua validação essencial antes de ser considerada
+concluída. A validação essencial é formada pelos testes automatizados
+diretamente afetados pela alteração e pelos testes determinísticos mínimos
+necessários para confirmar seu contrato. Ela não precisa executar 100% dos
+testes do projeto.
 
-Antes de executar testes, build ou QEMU durante uma etapa, o agente DEVE
-perguntar ao usuário se ele deseja executar todos os testes ou somente a
-validação específica da etapa. O agente não deve presumir essa escolha com
-base no uso do modo Plan, porque planejar uma etapa não autoriza executar sua
-suíte de validação.
+Por padrão, durante uma etapa o agente deve executar somente essa validação
+essencial, depois de obter autorização explícita do usuário para executar
+testes, build ou QEMU. Para qualquer alteração de código, header ou Makefile,
+`make q3check` e `make clean && make` são gates essenciais da própria etapa:
+eles confirmam que as novas funções estão integradas à cadeia de build e não
+fazem parte da suíte opcional completa.
 
-Se a suíte completa não for autorizada durante a etapa, o agente deve manter
-o teste afetado identificado, atualizar ou registrar sua cobertura conforme a
-Regra #22 e declarar a validação completa como pendente para o fechamento do
-roadmap. O modo Plan pode organizar a matriz futura, mas não substitui a
-pergunta nem a autorização para executá-la.
+A suíte completa adicional, incluindo QEMU, TST7 e matrizes completas, deve
+ser concentrada no fechamento do roadmap, salvo autorização explícita para
+antecipá-la.
+
+O agente deve identificar no plano e no registro de validações quais testes
+formam o conjunto essencial da etapa. Se a alteração atravessar outra camada,
+o teste essencial dessa camada também deve ser incluído; testes sem relação
+direta não precisam ser repetidos em cada etapa.
+
+O modo Plan não autoriza a execução. Se não houver executor ou fixture viável,
+o agente deve registrar a cobertura como `PENDING` ou `BLOCKED`, informar a
+evidência faltante e o próximo critério reproduzível. A validação completa
+continua pendente para o fechamento do roadmap quando não for executada na
+etapa.
 
 ---
 

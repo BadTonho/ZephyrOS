@@ -30,6 +30,12 @@ O modelo minimo registra root como UID/GID 0 e usuario comum como UID/GID 1000,
 com credenciais herdadas; enforcement e validacao executavel ficam para SEC2,
 SEC3 e SEC5.
 
+A SEC2 registra a auditoria executável das fronteiras de memória, syscalls,
+VMA, handles e ownership em
+[`auditoria-sec2-memoria-syscalls.md`](auditoria-sec2-memoria-syscalls.md).
+O documento confirma que a etapa não alterou a ABI pública; a decisão de
+permissão por UID/GID no `open` continua reservada à SEC5.
+
 | Header publico | Documento canonico |
 |---|---|
 | `src/include/apps/editor.h` | `docs/13-aplicativos/aplicativos.md` |

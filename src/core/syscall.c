@@ -53,12 +53,33 @@ static int syscall_validate_user_caller(const registers_t* regs) {
 
 static int syscall_copy_user_string(char* destination, uint32_t capacity,
                                     const char* source) {
+    uint32_t source_address;
+    union {
+        const char* pointer;
+        uint32_t address;
+    } source_value;
+
     if (!destination || !source || capacity == 0) {
         LOG_ERROR("SYSCALL", "String de usuario com argumento invalido");
         return ERR_NULL;
     }
+    source_value.pointer = source;
+    source_address = source_value.address;
     for (uint32_t i = 0; i < capacity; i++) {
-        int result = paging_copy_from_user(&destination[i], source + i, 1);
+        const void* user_byte;
+        union {
+            const void* pointer;
+            uint32_t address;
+        } user_byte_value;
+        int result;
+
+        if (source_address > 0xFFFFFFFFU - i) {
+            LOG_WARN("SYSCALL", "Endereco da string de usuario excedeu o limite");
+            return ERR_OVERFLOW;
+        }
+        user_byte_value.address = source_address + i;
+        user_byte = user_byte_value.pointer;
+        result = paging_copy_from_user(&destination[i], user_byte, 1);
         if (result != OK) return result;
         if (destination[i] == '\0') return OK;
     }
@@ -134,7 +155,14 @@ static int syscall_user_file_open(const registers_t* regs) {
     if (result != OK) return result;
     result = app_api_file_open(path, regs->ecx, &handle);
     if (result != OK) return result;
-    return paging_copy_to_user((void*)regs->edx, &handle, sizeof(handle));
+    result = paging_copy_to_user((void*)regs->edx, &handle, sizeof(handle));
+    if (result != OK) {
+        if (app_api_file_close(handle) != OK) {
+            LOG_ERROR("SYSCALL", "Falha ao desfazer file_open sem saida valida");
+        }
+        LOG_ERROR("SYSCALL", "Falha ao publicar handle de arquivo no usuario");
+    }
+    return result;
 }
 
 static int syscall_user_chdir(const registers_t* regs) {
@@ -276,6 +304,10 @@ static int syscall_user_poll(const registers_t* regs) {
     if (regs->edi) {
         LOG_ERROR("SYSCALL", "poll recebeu argumento excedente");
         return ERR_INVALID;
+    }
+    if (regs->ecx > 0xFFFFFFFFU / (uint32_t)sizeof(pollfd_t)) {
+        LOG_ERROR("SYSCALL", "poll excedeu o limite de multiplicacao");
+        return ERR_OVERFLOW;
     }
     bytes = regs->ecx * (uint32_t)sizeof(pollfd_t);
     if (bytes) {
@@ -457,6 +489,8 @@ static int syscall_user_message_receive(const registers_t* regs) {
         if (wait_reason == WAIT_REASON_SIGNAL) return ERR_NOT_FOUND;
         if (wait_reason != WAIT_REASON_EVENT) return ERR_STATE;
     }
+    result = paging_validate_user_range(regs->ebx, sizeof(message), 1);
+    if (result != OK) return result;
     return paging_copy_to_user((void*)regs->ebx, &message, sizeof(message));
 }
 

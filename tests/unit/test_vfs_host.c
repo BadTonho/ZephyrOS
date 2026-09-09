@@ -800,6 +800,9 @@ int main(void) {
     EXPECT(vfs_read(fd, buffer, sizeof(buffer), &bytes) == OK);
     EXPECT(bytes == sizeof("vfs fixture data") - 1U);
     EXPECT(memcmp(buffer, "vfs fixture data", bytes) == 0);
+    EXPECT(vfs_read(fd, NULL, 1U, &bytes) == ERR_NULL);
+    EXPECT(vfs_read(fd, buffer, 1U, NULL) == ERR_NULL);
+    EXPECT(vfs_write(fd, NULL, 1U, &bytes) == ERR_NULL);
     EXPECT(vfs_lseek(fd, 0, VFS_SEEK_SET, &position) == OK);
     EXPECT(position == 0U);
     EXPECT(vfs_lseek(fd, -1, VFS_SEEK_SET, &position) == ERR_INVALID);

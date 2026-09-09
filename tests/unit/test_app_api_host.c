@@ -89,16 +89,18 @@ int app_files_open(const char* path, uint32_t mode, app_handle_t* handle) {
 
 int app_files_read(app_handle_t handle, uint8_t* buffer,
                    uint32_t size, uint32_t* bytes_read) {
-    (void)handle; (void)buffer;
+    (void)handle;
     if (!bytes_read) return ERR_NULL;
+    if (size && !buffer) return ERR_NULL;
     *bytes_read = size > 2U ? 2U : size;
     return OK;
 }
 
 int app_files_write(app_handle_t handle, const uint8_t* buffer,
                     uint32_t size, uint32_t* bytes_written) {
-    (void)handle; (void)buffer;
+    (void)handle;
     if (!bytes_written) return ERR_NULL;
+    if (size && !buffer) return ERR_NULL;
     *bytes_written = size;
     return OK;
 }
@@ -295,8 +297,10 @@ static int test_file_apis(void) {
         handle != 17U || app_api_file_open("/", 0U, NULL) != ERR_NULL) return 20;
     if (app_api_file_read(handle, buffer, sizeof(buffer), &value) != OK ||
         value != 2U || app_api_file_read(handle, buffer, 1U, NULL) != ERR_NULL ||
+        app_api_file_read(handle, NULL, 1U, &value) != ERR_NULL ||
         app_api_file_write(handle, buffer, 3U, &value) != OK || value != 3U ||
-        app_api_file_write(handle, buffer, 3U, NULL) != ERR_NULL) return 21;
+        app_api_file_write(handle, buffer, 3U, NULL) != ERR_NULL ||
+        app_api_file_write(handle, NULL, 1U, &value) != ERR_NULL) return 21;
     if (app_api_poll(&poll, 1U, 5U, &value) != OK || value != 1U ||
         app_api_select(1U, &set, NULL, NULL, 5U, &value) != OK || value != 2U) {
         return 22;

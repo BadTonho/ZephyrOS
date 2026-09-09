@@ -923,12 +923,20 @@ int paging_validate_user_range(uint32_t address, uint32_t size, int write) {
         LOG_ERROR("MEM", "Intervalo de usuario nulo ou vazio");
         return ERR_NULL;
     }
+    if (write != 0 && write != 1) {
+        LOG_ERROR("MEM", "Modo de acesso invalido no intervalo de usuario");
+        return ERR_INVALID;
+    }
     if (address < USER_SPACE_START || address >= USER_SPACE_END ||
         size > USER_SPACE_END - address) {
         LOG_ERROR("MEM", "Intervalo de usuario fora dos limites");
         return ERR_INVALID;
     }
     end = address + size;
+    if (end < address) {
+        LOG_ERROR("MEM", "Intervalo de usuario sofreu wraparound");
+        return ERR_OVERFLOW;
+    }
     for (uint32_t page_addr = address & ~(PAGE_SIZE - 1U);
          page_addr < end; page_addr += PAGE_SIZE) {
         page_entry_t* page = paging_get_page_in_directory(current_directory,
@@ -948,7 +956,10 @@ int paging_validate_user_range(uint32_t address, uint32_t size, int write) {
             LOG_WARN("MEM", "Pagina de usuario sem permissao");
             return ERR_UNAVAILABLE;
         }
-        if (page_addr > 0xFFFFFFFFU - PAGE_SIZE) break;
+        if (page_addr > 0xFFFFFFFFU - PAGE_SIZE) {
+            LOG_ERROR("MEM", "Avanco de pagina excedeu o limite");
+            return ERR_OVERFLOW;
+        }
     }
     return OK;
 }

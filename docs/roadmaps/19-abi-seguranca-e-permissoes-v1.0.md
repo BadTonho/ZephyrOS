@@ -65,17 +65,29 @@ a matriz final do Roadmap 19.
 
 ### SEC2 — Auditoria de memória e syscalls
 
-- [ ] Validar ponteiros de entrada e saída antes de qualquer cópia ou acesso.
-- [ ] Validar tamanhos, adições, multiplicações, alinhamento e conversões sem
+- [x] Validar ponteiros de entrada e saída antes de qualquer cópia ou acesso;
+  strings e estruturas ring 3 são copiadas para buffers internos.
+- [x] Validar tamanhos, adições, multiplicações, alinhamento e conversões sem
   overflow.
-- [ ] Revisar `mmap`/`munmap`, VMA, paging, cópia para usuário e encerramento
-  após page fault.
-- [ ] Revisar descritores, `lseek`, `ioctl`, pipes, sinais, IPC e sockets para
-  handles obsoletos, double close e uso após liberação.
+- [x] Revisar `mmap`/`munmap`, VMA, paging, cópia para usuário e encerramento
+  após page fault, incluindo ranges extremos e publicação segura.
+- [x] Revisar descritores, `lseek`, `ioctl`, pipes, sinais, IPC e sockets para
+  handles obsoletos, double close e uso após liberação; rollback de handles e
+  endereços foi coberto nas rotas ring 3 afetadas.
 - [ ] Executar a decisão de permissão no `open` e revalidar operações sensíveis
-  com as credenciais associadas ao processo e ao descritor.
-- [ ] Confirmar que falhas preservam ownership e retornam somente códigos
-  definidos em `errors.h`.
+  com as credenciais associadas ao processo e ao descritor; metadados de
+  proprietário/modo ainda não existem no VFS e este item fica reservado à
+  SEC5.
+- [x] Confirmar que falhas preservam ownership e retornam somente códigos
+  definidos em `errors.h` nos caminhos auditados.
+
+Registro técnico da matriz: [`docs/qualidade/auditoria-sec2-memoria-syscalls.md`](../qualidade/auditoria-sec2-memoria-syscalls.md).
+
+A implementação executável foi atualizada. Os testes essenciais da SEC2 e os
+gates de integração `make q3check`, `make clean` e `make` passaram; warnings
+legados fora da SEC2 foram observados sem erro de build. A suíte completa,
+QEMU, TST7 e a matriz adversarial continuam concentrados no fechamento do
+Roadmap 19.
 
 ### SEC3 — Ciclo de vida e isolamento de processos
 
@@ -148,9 +160,13 @@ Antivírus, rootkit detection, criptografia geral de arquivos, contas
 multiusuário, ACL completa, sandbox de rede e secure boot não serão simulados
 para preencher este roadmap. Eles podem ser priorizados depois da 1.0.0.
 
-## Validação do usuário
+## Validação por etapa e fechamento
 
-O agente não executará build, testes ou QEMU. A validação deve combinar os
-diagnósticos existentes (`appcheck`, `memcheck`, `schedcheck`, `proccheck`,
-`regcheck full` e `health check`) com as fixtures negativas registradas no
-roadmap e no registro de validações.
+Cada etapa deve executar, após autorização explícita, os gates essenciais
+`make q3check` e `make clean && make`, além dos testes automatizados diretamente
+afetados pela alteração. Isso não exige executar 100% da suíte em cada etapa.
+
+QEMU, TST7, a matriz adversarial completa e os diagnósticos finais
+(`appcheck`, `memcheck`, `schedcheck`, `proccheck`, `regcheck full` e
+`health check`) ficam concentrados no fechamento do Roadmap 19, salvo
+autorização explícita para antecipá-los.

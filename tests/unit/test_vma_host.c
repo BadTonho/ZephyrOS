@@ -429,6 +429,10 @@ static int test_mmap_limits_and_unmap(process_t* process) {
     }
     result = process_vma_munmap(process, address + 1U, PAGE_SIZE);
     if (check_result(result, ERR_INVALID, "munmap unaligned") != OK) return ERR_STATE;
+    if (check_result(process_vma_munmap(process,
+                                        VMA_USER_MMAP_END - PAGE_SIZE,
+                                        2U * PAGE_SIZE), ERR_INVALID,
+                     "munmap range limit") != OK) return ERR_STATE;
     return check_result(process_vma_munmap(process, address, 0U), ERR_INVALID,
                         "munmap zero");
 }

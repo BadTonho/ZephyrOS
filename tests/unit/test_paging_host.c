@@ -336,6 +336,10 @@ static int test_paging(void) {
                      OK, "validate writable page") != OK) return ERR_STATE;
     if (check_result(paging_validate_user_range(USER_DATA_BASE, 0U, 0),
                      ERR_NULL, "validate empty range") != OK) return ERR_STATE;
+    if (check_result(paging_validate_user_range(USER_DATA_BASE, PAGE_SIZE, 2),
+                     ERR_INVALID, "validate invalid access mode") != OK) {
+        return ERR_STATE;
+    }
     if (check_result(paging_validate_user_range(USER_SPACE_END - 1U, 2U, 0),
                      ERR_INVALID, "validate overflowing range") != OK) {
         return ERR_STATE;
@@ -357,6 +361,11 @@ static int test_paging(void) {
     fake_vma_enabled = 0;
     if (check_result(paging_validate_user_range(USER_STACK_BASE, PAGE_SIZE, 0),
                      ERR_UNAVAILABLE, "missing page unavailable") != OK) {
+        return ERR_STATE;
+    }
+    if (check_result(paging_validate_user_range(
+                         USER_DATA_BASE + PAGE_SIZE - 2U, 4U, 0),
+                     ERR_UNAVAILABLE, "cross-page missing range") != OK) {
         return ERR_STATE;
     }
 
@@ -394,6 +403,11 @@ static int test_paging(void) {
     if (check_result(paging_host_register_user_buffer(
                          USER_SPACE_END, user_buffer, sizeof(user_buffer)),
                      ERR_INVALID, "register invalid user buffer") != OK) {
+        return ERR_STATE;
+    }
+    if (check_result(paging_host_register_user_buffer(
+                         USER_SPACE_END - 1U, user_buffer, 2U),
+                     ERR_INVALID, "register overflowing user buffer") != OK) {
         return ERR_STATE;
     }
     kmemcpy(user_buffer, source, sizeof(source));

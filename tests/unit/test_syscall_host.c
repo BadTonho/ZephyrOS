@@ -50,6 +50,12 @@ static int fake_signal_raise_result = OK;
 static int fake_signal_return_result = OK;
 static int fake_process_exit_result = OK;
 static int fake_termination_result = OK;
+static uint32_t fake_copy_to_fail_address;
+static uint32_t fake_close_calls;
+static uint32_t fake_close_handles[4];
+static uint32_t fake_munmap_calls;
+static uint32_t fake_last_munmap_address;
+static uint32_t fake_last_munmap_length;
 static process_t fake_process;
 static uint8_t fake_heap[APP_API_MAX_FILE_IO_SIZE];
 static char user_path[FS_MAX_PATH];
@@ -212,6 +218,12 @@ static void reset_fixture(void) {
     fake_signal_return_result = OK;
     fake_process_exit_result = OK;
     fake_termination_result = OK;
+    fake_copy_to_fail_address = 0U;
+    fake_close_calls = 0U;
+    memset(fake_close_handles, 0, sizeof(fake_close_handles));
+    fake_munmap_calls = 0U;
+    fake_last_munmap_address = 0U;
+    fake_last_munmap_length = 0U;
 }
 
 void log_print(log_level_t level, const char* module, const char* message) {
@@ -318,7 +330,14 @@ int app_api_select(uint32_t nfds, fd_set_t* readfds, fd_set_t* writefds,
     return OK;
 }
 
-int app_api_file_close(app_handle_t handle) { return handle == 17U ? OK : ERR_INVALID; }
+int app_api_file_close(app_handle_t handle) {
+    if (fake_close_calls < sizeof(fake_close_handles) /
+                          sizeof(fake_close_handles[0])) {
+        fake_close_handles[fake_close_calls] = handle;
+    }
+    fake_close_calls++;
+    return handle == 17U || handle == 20U || handle == 21U ? OK : ERR_INVALID;
+}
 int app_api_file_fsync(app_handle_t handle) { return handle == 17U ? OK : ERR_INVALID; }
 int app_api_sync(void) { return OK; }
 
@@ -388,8 +407,9 @@ int app_api_mmap(uint32_t length, uint32_t protection, uint32_t flags,
 }
 
 int app_api_munmap(uint32_t address, uint32_t length) {
-    (void)address;
-    (void)length;
+    fake_munmap_calls++;
+    fake_last_munmap_address = address;
+    fake_last_munmap_length = length;
     return fake_munmap_result;
 }
 
@@ -414,7 +434,11 @@ int paging_copy_from_user(void* destination, const void* source, uint32_t size) 
 
 int paging_copy_to_user(void* destination, const void* source, uint32_t size) {
     uint8_t* mapped;
-    int result = map_user_address((uint32_t)(uintptr_t)destination, size, &mapped);
+    uint32_t destination_address = (uint32_t)(uintptr_t)destination;
+    int result;
+
+    if (destination_address == fake_copy_to_fail_address) return ERR_INVALID;
+    result = map_user_address(destination_address, size, &mapped);
 
     if (result != OK) {
         return result;
@@ -575,6 +599,10 @@ static int test_user_syscalls(void) {
     if (user_call(&regs) != OK) return 30;
     regs.ecx = APP_API_MAX_TEXT_SIZE + 1U;
     if (user_call(&regs) != ERR_OVERFLOW) return 31;
+    regs = make_registers(APP_SYSCALL_CONSOLE_WRITE);
+    regs.cs = USER_CODE_SELECTOR; regs.ss = USER_DATA_SELECTOR;
+    regs.ebx = 0xF000U; regs.ecx = 1U;
+    if (user_call(&regs) != ERR_INVALID) return 100;
     regs = make_registers(APP_SYSCALL_UPTIME);
     regs.cs = USER_CODE_SELECTOR; regs.ss = USER_DATA_SELECTOR;
     regs.ebx = USER_SELECT_ADDRESS;
@@ -591,6 +619,13 @@ static int test_user_syscalls(void) {
     if (file_open_result != OK) {
         return 34;
     }
+    fake_copy_to_fail_address = USER_COUNT_ADDRESS;
+    if (user_call(&regs) != ERR_INVALID || fake_close_calls != 1U ||
+        fake_close_handles[0] != 17U) return 101;
+    fake_copy_to_fail_address = 0U;
+    memset(user_path, 'x', sizeof(user_path));
+    if (user_call(&regs) != ERR_OVERFLOW) return 102;
+    strcpy(user_path, "/tmp");
     regs = make_registers(APP_SYSCALL_CHDIR);
     regs.cs = USER_CODE_SELECTOR; regs.ss = USER_DATA_SELECTOR;
     regs.ebx = USER_PATH_ADDRESS;
@@ -606,6 +641,11 @@ static int test_user_syscalls(void) {
     regs.ebx = 17U; regs.ecx = USER_BUFFER_ADDRESS; regs.edx = 4U;
     regs.esi = USER_COUNT_ADDRESS;
     if (user_call(&regs) != OK || user_count != 3U) return 38;
+    regs.ecx = 0xF000U;
+    if (user_call(&regs) != ERR_INVALID) return 103;
+    regs.ecx = USER_BUFFER_ADDRESS;
+    regs.esi = 0xF000U;
+    if (user_call(&regs) != ERR_INVALID) return 104;
     regs.edx = 0U;
     if (user_call(&regs) != ERR_INVALID) return 39;
     regs = make_registers(APP_SYSCALL_FILE_WRITE);
@@ -613,16 +653,24 @@ static int test_user_syscalls(void) {
     regs.ebx = 17U; regs.ecx = USER_BUFFER_ADDRESS; regs.edx = 4U;
     regs.esi = USER_COUNT_ADDRESS;
     if (user_call(&regs) != OK || user_count != 4U) return 40;
+    regs.esi = 0xF000U;
+    if (user_call(&regs) != ERR_INVALID) return 105;
     regs = make_registers(APP_SYSCALL_POLL);
     regs.cs = USER_CODE_SELECTOR; regs.ss = USER_DATA_SELECTOR;
     regs.ebx = USER_POLL_ADDRESS; regs.ecx = 1U; regs.edx = 0U;
     regs.esi = USER_COUNT_ADDRESS;
     if (user_call(&regs) != OK || user_count != 1U) return 41;
+    regs.ecx = POLL_MAX_FDS + 1U;
+    if (user_call(&regs) != ERR_OVERFLOW) return 106;
+    regs.ecx = 1U; regs.ebx = 0xF000U;
+    if (user_call(&regs) != ERR_INVALID) return 107;
     regs = make_registers(APP_SYSCALL_SELECT);
     regs.cs = USER_CODE_SELECTOR; regs.ss = USER_DATA_SELECTOR;
     regs.ebx = USER_SELECT_ADDRESS;
     user_select.set_mask = SELECT_SET_READ;
     if (user_call(&regs) != OK || user_select.ready_count != 1U) return 42;
+    regs.ebx = 0xF000U;
+    if (user_call(&regs) != ERR_INVALID) return 108;
     regs = make_registers(APP_SYSCALL_FILE_CLOSE);
     regs.cs = USER_CODE_SELECTOR; regs.ss = USER_DATA_SELECTOR; regs.ebx = 17U;
     if (user_call(&regs) != OK) return 43;
@@ -649,20 +697,34 @@ static int test_user_syscalls(void) {
     regs.cs = USER_CODE_SELECTOR; regs.ss = USER_DATA_SELECTOR;
     regs.ebx = USER_PIPE_ADDRESS;
     if (user_call(&regs) != OK || user_pipe[0] != 20U) return 50;
+    fake_copy_to_fail_address = USER_PIPE_ADDRESS;
+    if (user_call(&regs) != ERR_INVALID || fake_close_calls < 3U ||
+        fake_close_handles[fake_close_calls - 2U] != 20U ||
+        fake_close_handles[fake_close_calls - 1U] != 21U) return 109;
+    fake_copy_to_fail_address = 0U;
     regs = make_registers(APP_SYSCALL_MESSAGE_SEND);
     regs.cs = USER_CODE_SELECTOR; regs.ss = USER_DATA_SELECTOR;
     regs.ebx = 1U; regs.ecx = USER_MESSAGE_ADDRESS;
     user_message.type = APP_MESSAGE_KEYBOARD;
     if (user_call(&regs) != OK) return 51;
+    regs.ecx = 0xF000U;
+    if (user_call(&regs) != ERR_INVALID) return 110;
     regs = make_registers(APP_SYSCALL_MESSAGE_RECEIVE);
     regs.cs = USER_CODE_SELECTOR; regs.ss = USER_DATA_SELECTOR;
     regs.ebx = USER_MESSAGE_ADDRESS;
     if (user_call(&regs) != OK || user_message.data1 != 0x1CU) return 52;
+    regs.ebx = 0xF000U;
+    if (user_call(&regs) != ERR_INVALID) return 111;
     regs = make_registers(APP_SYSCALL_MMAP);
     regs.cs = USER_CODE_SELECTOR; regs.ss = USER_DATA_SELECTOR;
     regs.ebx = 4096U; regs.ecx = APP_MMAP_PROT_READ;
     regs.edx = APP_MMAP_FLAG_ANONYMOUS; regs.esi = USER_MMAP_ADDRESS;
     if (user_call(&regs) != OK || user_mmap_result != 0x40000000U) return 53;
+    fake_copy_to_fail_address = USER_MMAP_ADDRESS;
+    if (user_call(&regs) != ERR_INVALID || fake_munmap_calls != 1U ||
+        fake_last_munmap_address != 0x40000000U ||
+        fake_last_munmap_length != 4096U) return 112;
+    fake_copy_to_fail_address = 0U;
     regs = make_registers(APP_SYSCALL_MUNMAP);
     regs.cs = USER_CODE_SELECTOR; regs.ss = USER_DATA_SELECTOR;
     regs.ebx = 0x40000000U; regs.ecx = 4096U;

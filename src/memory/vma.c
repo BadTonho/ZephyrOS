@@ -157,8 +157,17 @@ static int process_vma_find_gap(const process_t* proc, uint32_t length,
 
 static int process_vma_unmap_pages(process_t* proc, uint32_t start_addr,
                                    uint32_t end_addr) {
-    for (uint32_t address = start_addr; address < end_addr;
-         address += PAGE_SIZE) {
+    uint32_t length;
+
+    if (!proc || start_addr >= end_addr ||
+        (start_addr % PAGE_SIZE) != 0U || (end_addr % PAGE_SIZE) != 0U ||
+        start_addr < USER_SPACE_START || end_addr > USER_SPACE_END) {
+        LOG_ERROR("MEM", "Intervalo invalido ao liberar paginas de VMA");
+        return ERR_INVALID;
+    }
+    length = end_addr - start_addr;
+    for (uint32_t offset = 0U; offset < length; offset += PAGE_SIZE) {
+        uint32_t address = start_addr + offset;
         page_entry_t* page = paging_get_page_in_directory(
             proc->page_directory, address, 0);
         if (page && page->present && !page->user) {
@@ -166,8 +175,8 @@ static int process_vma_unmap_pages(process_t* proc, uint32_t start_addr,
             return ERR_STATE;
         }
     }
-    for (uint32_t address = start_addr; address < end_addr;
-         address += PAGE_SIZE) {
+    for (uint32_t offset = 0U; offset < length; offset += PAGE_SIZE) {
+        uint32_t address = start_addr + offset;
         page_entry_t* page = paging_get_page_in_directory(
             proc->page_directory, address, 0);
         if (!page || !page->present) continue;
@@ -481,6 +490,10 @@ int process_vma_mmap(process_t* proc, uint32_t length,
     if (result != OK) return result;
     result = process_resource_check_vma(proc, rounded_length);
     if (result != OK) return result;
+    if (rounded_length > 0xFFFFFFFFU - address) {
+        LOG_ERROR("MEM", "Intervalo de mmap sofreu wraparound");
+        return ERR_OVERFLOW;
+    }
     end_addr = address + rounded_length;
     area = process_vma_create(address, end_addr, protection | flags);
     if (!area) return ERR_MEM;
@@ -516,6 +529,10 @@ int process_vma_munmap(process_t* proc, uint32_t address, uint32_t length) {
         rounded_length > VMA_USER_MMAP_END - address) {
         LOG_ERROR("MEM", "Intervalo invalido no munmap de VMA");
         return ERR_INVALID;
+    }
+    if (rounded_length > 0xFFFFFFFFU - address) {
+        LOG_ERROR("MEM", "Intervalo de munmap sofreu wraparound");
+        return ERR_OVERFLOW;
     }
     end_addr = address + rounded_length;
     area = process_vma_find_containing(proc, address, end_addr, &previous);

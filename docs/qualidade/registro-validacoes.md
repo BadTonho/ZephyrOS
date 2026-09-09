@@ -7,6 +7,39 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## 2026-09-08 - SEC2: auditoria de memoria e syscalls (implementacao)
+
+- Implementacao: reforçada a progressão de strings ring 3 com endereços
+  inteiros e proteção contra wraparound; `paging_validate_user_range()` agora
+  rejeita modos de acesso inválidos e explicita overflow no percurso de páginas.
+- Syscalls: `file_open`, `pipe` e `mmap` desfazem recursos quando a publicação
+  de seus resultados no espaço de usuário falha; `message_receive` revalida o
+  destino depois de uma espera; `poll` protege a multiplicação do tamanho do
+  array.
+- VMA: o desmapeamento faz preflight do intervalo alinhado antes de liberar
+  páginas e `mmap`/`munmap` rejeitam wraparound explícito. Nenhuma ABI, header,
+  syscall, App API, `process_t`, bootloader, Rust ou scheduler foi alterado.
+- Fixtures atualizadas: `test_syscall_host.c`, `test_paging_host.c`,
+  `test_vma_host.c`, `test_vfs_host.c` e `test_app_api_host.c` cobrem ponteiros
+  inválidos, strings sem terminador, cruzamento de páginas, modos inválidos,
+  overflow, buffers nulos e rollback. Os casos anteriores de handles, I/O,
+  pipes e cleanup foram preservados.
+- Permissões por UID/GID e metadados de proprietário no `open` permanecem
+  pendentes para a SEC5, conforme a matriz em
+  `docs/qualidade/auditoria-sec2-memoria-syscalls.md`.
+- Validação essencial executada com `make test-syscall-host
+  test-paging-host test-vma-host test-vfs-host test-app-api-host
+  HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe`: os cinco alvos host-only
+  terminaram em `PASS`.
+- Gates essenciais de integração executados e aprovados: `make q3check`,
+  `make clean` e `make` após a reconstrução limpa. O build terminou sem erro
+  de compilação, linkedição ou composição da imagem; os warnings observados
+  são legados e estão fora da SEC2.
+- Não foram executados QEMU, TST7, a suíte completa ou a matriz final,
+  conforme a política por etapa em `AGENTS.md`.
+- Estado: implementação e validação essencial da SEC2 `PASS`; validação
+  completa e fechamento do Roadmap 19 permanecem `PENDING`.
+
 ## 2026-09-08 - SEC1: modelo de ameaca e fronteiras (documental)
 
 - Implementacao documental: criado `docs/qualidade/abi-seguranca-fronteiras.md`
