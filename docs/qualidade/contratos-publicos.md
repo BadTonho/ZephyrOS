@@ -21,6 +21,15 @@ layout binario. O runner host-only conversa por COM1, usa QMP somente para
 controle externo e preserva os artefatos de cada execucao em um diretorio
 novo; o handshake e inerte no boot normal ate a validacao de `HELLO`.
 
+A SEC1 do Roadmap 19 congela o inventario de entradas externas, ownership,
+validade, mutabilidade, contexto e erros das fronteiras entre kernel, servicos
+nativos, ring 3, Shell, VFS, drivers, pacotes e interrupcoes em
+[`docs/qualidade/abi-seguranca-fronteiras.md`](abi-seguranca-fronteiras.md).
+Esse contrato e documental: nao altera headers, layouts, syscalls ou a App API.
+O modelo minimo registra root como UID/GID 0 e usuario comum como UID/GID 1000,
+com credenciais herdadas; enforcement e validacao executavel ficam para SEC2,
+SEC3 e SEC5.
+
 | Header publico | Documento canonico |
 |---|---|
 | `src/include/apps/editor.h` | `docs/13-aplicativos/aplicativos.md` |

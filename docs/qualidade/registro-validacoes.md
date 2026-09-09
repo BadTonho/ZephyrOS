@@ -7,6 +7,26 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## 2026-09-08 - SEC1: modelo de ameaca e fronteiras (documental)
+
+- Implementacao documental: criado `docs/qualidade/abi-seguranca-fronteiras.md`
+  com os dominios de confianca e o inventario de entradas de ring 3, Shell,
+  VFS, drivers, pacotes, interrupcoes e callbacks.
+- Contrato definido: cada fronteira registra ownership, validade,
+  mutabilidade, contexto de execucao e erro canonico; ponteiros privados,
+  objetos do kernel, stacks, enderecos fisicos e MMIO nao atravessam a ABI.
+- Identidade minima congelada para as proximas etapas: root UID/GID 0,
+  usuario comum UID/GID 1000, credenciais herdadas na criacao, sem contas
+  persistentes ou ACL completa nesta etapa.
+- Impacto: nenhum header, layout, syscall, App API, estrutura publica,
+  comportamento do kernel ou bootloader foi alterado. Enforcement de
+  credenciais e permissoes permanece para SEC2/SEC5.
+- Validacao executavel: nao realizada nesta etapa, conforme a decisao de
+  concentrar build, testes, QEMU, TST7 e a matriz negativa no fechamento do
+  Roadmap 19.
+- Criterio pendente: executar a matriz adversarial final e confirmar que as
+  fronteiras documentadas correspondem ao comportamento observado.
+
 ## 2026-09-08 - KRN6: integração e diagnóstico do kernel (validado)
 
 - Implementação: criado o caso QEMU `qemu:tst5:krn6-diagnostics`, com a

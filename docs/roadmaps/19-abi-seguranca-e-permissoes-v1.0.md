@@ -2,7 +2,9 @@
 
 ## Estado
 
-Planejado. Esta frente endurece as fronteiras já existentes entre kernel,
+Em andamento. A SEC1 documental foi concluída; a validação executável e as
+alterações de enforcement permanecem reservadas ao fechamento do Roadmap 19.
+Esta frente endurece as fronteiras já existentes entre kernel,
 processos ring 3, VFS, dispositivos e pacotes. Ela não cria um sistema
 multiusuário completo nem altera silenciosamente a ABI de aplicativos.
 
@@ -38,22 +40,28 @@ rede e políticas empresariais continuam fora do escopo.
 - [Roadmap 18](18-kernel-processos-e-userland-v1.0.md) para a linha de base e
   reprodutibilidade;
 - contratos atuais em `docs/qualidade/contratos-publicos.md` e `errors.h`.
+- [Contrato de ABI, segurança e fronteiras](../qualidade/abi-seguranca-fronteiras.md)
+  para o inventário e o modelo mínimo de identidade da SEC1.
 
 ## Fases
 
 ### SEC1 — Modelo de ameaça e fronteiras
 
-- [ ] Inventariar todas as entradas vindas de ring 3, Shell, VFS, drivers,
+- [x] Inventariar todas as entradas vindas de ring 3, Shell, VFS, drivers,
   pacotes e interrupções.
-- [ ] Definir para cada entrada o proprietário do recurso, a validade, a
+- [x] Definir para cada entrada o proprietário do recurso, a validade, a
   mutabilidade, o contexto de execução e o erro canônico.
-- [ ] Separar claramente dados de diagnóstico, comandos privilegiados e
+- [x] Separar claramente dados de diagnóstico, comandos privilegiados e
   operações que alteram estado.
-- [ ] Confirmar que nenhum ponteiro de kernel, objeto privado ou endereço de
+- [x] Confirmar documentalmente que nenhum ponteiro de kernel, objeto privado ou endereço de
   hardware atravessa a ABI.
-- [ ] Documentar quais capacidades continuam indisponíveis em processos ring3.
-- [ ] Fixar o modelo mínimo de identidade: root, usuário comum, UID, GID,
+- [x] Documentar quais capacidades continuam indisponíveis em processos ring3.
+- [x] Fixar o modelo mínimo de identidade: root, usuário comum, UID, GID,
   grupos e credenciais herdadas na criação do processo.
+
+Os itens da SEC1 estão concluídos no escopo documental. A confirmação
+executável das fronteiras, credenciais e capacidades permanece pendente para
+a matriz final do Roadmap 19.
 
 ### SEC2 — Auditoria de memória e syscalls
 
