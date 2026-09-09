@@ -140,6 +140,16 @@ vez por saida. Snapshots, callbacks e eventos que carregam geracao validam
 nao guardam ponteiros para uso posterior. Nenhuma syscall, layout publico ou
 `waitpid` foi criado nesta etapa.
 
+Na SEC3, callbacks de processo, sinais, encerramento por energia, IPC e App
+Loader usam `PID + event_generation` quando a operação pode sobreviver ao
+ponto de chamada. `process_signal_send_generation()`,
+`process_cancel_user_generation()` e
+`process_terminate_user_signal_generation()` são helpers internos que
+revalidam a identidade e preservam os wrappers legados por PID. Zombie,
+reparenting e `SIGCHLD` são idempotentes; callbacks com geração obsoleta são
+descartados sem tocar o processo reutilizado. O contexto persistido de
+`ipc_wait()` guarda apenas PID e geração, nunca um ponteiro de `process_t`.
+
 ### Snapshot de introspeccao PROC2
 
 `process_t` acrescenta ao final `event_generation`, uma geracao monotonicamente

@@ -7,6 +7,37 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## 2026-09-08 - SEC3: ciclo de vida e isolamento de processos
+
+- Implementação: callbacks de criação, saída e destruição passaram a validar
+  `PID + event_generation`; encerramento e cancelamento ganharam variantes
+  internas geracionais, mantendo os wrappers legados. Zombie, `SIGCHLD`,
+  reparenting, shutdown, IPC e App Loader passaram a descartar identidades
+  obsoletas sem alterar a nova instância do PID.
+- Ownership: o contexto persistido de `ipc_wait()` guarda PID e geração, não
+  ponteiro de processo. O App Loader mantém geração para estados pendente e
+  ativo e só libera handles ou destrói depois de revalidar a mesma identidade.
+- Fixtures atualizadas: `test_process_host.c`, `test_process_signal_host.c` e
+  `test_app_loader_host.c` cobrem zombie idempotente, PID reutilizado, callbacks
+  tardios, proteção de ring 0, `SIGCHLD` único e falhas do App Loader. As
+  fixtures essenciais de IPC, recursos, threads, scheduling, workqueue e
+  supervisor também foram executadas.
+- Testes essenciais executados e aprovados: `make test-process-host
+  test-process-signal-host test-process-ipc-host test-app-loader-host
+  test-process-resource-host test-thread-host test-scheduling-host
+  test-workqueue-host test-service-supervisor-host`.
+- Gates essenciais aprovados para esta mesma versão: `make q3check`, `make
+  clean` e `make`. O build completou a imagem híbrida; os warnings observados
+  são legados em `src/drivers/ac97.c`, `src/drivers/acpi.c`, `src/wm/wm.c`,
+  `src/shell/shell_commands_network.c` e `src/shell/shell_checks.c`, fora da
+  SEC3.
+- QEMU, TST7, suíte completa e matriz adversarial permanecem pendentes para o
+  fechamento do Roadmap 19.
+- Permissões efetivas por UID/GID e metadados de proprietário no VFS continuam
+  reservados à SEC5.
+- Estado: implementação e validação essencial da SEC3 `PASS`; validação
+  completa e fechamento do Roadmap 19 permanecem `PENDING`.
+
 ## 2026-09-08 - SEC2: auditoria de memoria e syscalls (implementacao)
 
 - Implementacao: reforçada a progressão de strings ring 3 com endereços

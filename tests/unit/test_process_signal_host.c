@@ -115,11 +115,14 @@ int process_is_user(const process_t* process) {
     return process && process->context.user_mode != 0U;
 }
 
-int process_terminate_user_signal(uint32_t pid, uint32_t signal_number,
-                                  int faulted) {
+int process_terminate_user_signal_generation(uint32_t pid,
+                                              uint32_t generation,
+                                              uint32_t signal_number,
+                                              int faulted) {
     process_t* process = process_get_by_pid(pid);
 
     if (!process) return ERR_NOT_FOUND;
+    if (generation && process->event_generation != generation) return ERR_AGAIN;
     process->state = PROCESS_STATE_ZOMBIE;
     process->termination_signal = signal_number;
     process->faulted = faulted ? 1U : 0U;
@@ -130,6 +133,12 @@ int process_terminate_user_signal(uint32_t pid, uint32_t signal_number,
     process->cancel_pending = 0U;
     process->cancel_exit_code = 0U;
     return OK;
+}
+
+int process_terminate_user_signal(uint32_t pid, uint32_t signal_number,
+                                  int faulted) {
+    return process_terminate_user_signal_generation(
+        pid, 0U, signal_number, faulted);
 }
 
 int process_prepare_user_termination(registers_t* regs) {
@@ -160,10 +169,12 @@ static void fixture_reset(void) {
     kmemset(&signal_user, 0, sizeof(signal_user));
     kmemset(&signal_child, 0, sizeof(signal_child));
     signal_user.pid = SIGNAL_FIXTURE_USER_PID;
+    signal_user.event_generation = SIGNAL_FIXTURE_USER_PID + 100U;
     signal_user.state = PROCESS_STATE_READY;
     signal_user.context.user_mode = 1U;
     signal_user.user_code_size = SIGNAL_FIXTURE_CODE_SIZE;
     signal_child.pid = SIGNAL_FIXTURE_CHILD_PID;
+    signal_child.event_generation = SIGNAL_FIXTURE_CHILD_PID + 100U;
     signal_child.state = PROCESS_STATE_READY;
     signal_child.context.user_mode = 1U;
     signal_child.user_code_size = SIGNAL_FIXTURE_CODE_SIZE;
@@ -184,22 +195,28 @@ static int check_initialization(void) {
     if (process_signal_init() != OK || process_signal_init() != OK) return 4;
     if (process_signal_get_stats(&stats) != OK || !stats.initialized ||
         stats.last_error != OK) return 5;
-    process_signal_process_created(SIGNAL_FIXTURE_USER_PID, 0U);
+    process_signal_process_created(SIGNAL_FIXTURE_USER_PID,
+                                   signal_user.event_generation, 0U);
     process_signal_process_created(SIGNAL_FIXTURE_CHILD_PID,
+                                   signal_child.event_generation,
                                    SIGNAL_FIXTURE_USER_PID);
     if (signal_user.parent_pid != 0U ||
         signal_child.parent_pid != SIGNAL_FIXTURE_USER_PID) return 6;
     signal_user.state = PROCESS_STATE_ZOMBIE;
     process_signal_process_created(SIGNAL_FIXTURE_CHILD_PID,
+                                   signal_child.event_generation,
                                    SIGNAL_FIXTURE_USER_PID);
     if (signal_child.parent_pid != 0U) return 61;
     signal_user.state = PROCESS_STATE_READY;
     process_signal_process_created(SIGNAL_FIXTURE_CHILD_PID,
+                                   signal_child.event_generation,
                                    SIGNAL_FIXTURE_USER_PID);
     process_signal_process_created(SIGNAL_FIXTURE_USER_PID,
+                                   signal_user.event_generation,
                                    SIGNAL_FIXTURE_USER_PID);
     if (signal_user.parent_pid != 0U) return 62;
-    process_signal_process_created(SIGNAL_FIXTURE_USER_PID, 0U);
+    process_signal_process_created(SIGNAL_FIXTURE_USER_PID,
+                                   signal_user.event_generation, 0U);
     if (process_signal_validate_state() != OK) return 7;
     if (!process_signal_name(APP_SIGNAL_INT) ||
         !process_signal_name(APP_SIGNAL_KILL) ||
@@ -261,7 +278,10 @@ static int check_delivery_and_send(void) {
     uint32_t old_pending;
 
     if (process_signal_send(SIGNAL_FIXTURE_USER_PID, 0U) != ERR_INVALID ||
-        process_signal_send(999U, APP_SIGNAL_INT) != ERR_NOT_FOUND) return 20;
+        process_signal_send(999U, APP_SIGNAL_INT) != ERR_NOT_FOUND ||
+        process_signal_send_generation(
+            SIGNAL_FIXTURE_USER_PID, signal_user.event_generation + 1U,
+            APP_SIGNAL_INT) != ERR_AGAIN) return 20;
     if (process_signal_send(SIGNAL_FIXTURE_USER_PID, APP_SIGNAL_INT) != OK ||
         process_signal_send(SIGNAL_FIXTURE_USER_PID, APP_SIGNAL_INT) != OK ||
         signal_user.pending_signals != APP_SIGNAL_BIT(APP_SIGNAL_INT)) {
@@ -320,7 +340,8 @@ static int check_delivery_and_send(void) {
         signal_user.state != PROCESS_STATE_ZOMBIE ||
         signal_user.termination_signal != APP_SIGNAL_TERM ||
         process_signal_validate_state() != OK) return 32;
-    process_signal_process_created(SIGNAL_FIXTURE_USER_PID, 0U);
+    process_signal_process_created(SIGNAL_FIXTURE_USER_PID,
+                                   signal_user.event_generation, 0U);
     signal_user.state = PROCESS_STATE_READY;
     return 0;
 }
@@ -330,11 +351,22 @@ static int check_lifecycle_and_self_test(void) {
     process_signal_stats_t stats;
 
     signal_child.state = PROCESS_STATE_ZOMBIE;
-    process_signal_process_exited(SIGNAL_FIXTURE_CHILD_PID);
+    process_signal_process_exited(SIGNAL_FIXTURE_CHILD_PID,
+                                  signal_child.event_generation + 1U);
+    if (signal_child.signal_exit_notified || signal_user.last_child_pid != 0U) {
+        return 39;
+    }
+    process_signal_process_exited(SIGNAL_FIXTURE_CHILD_PID,
+                                  signal_child.event_generation);
     if (!signal_child.signal_exit_notified ||
         signal_user.last_child_pid != SIGNAL_FIXTURE_CHILD_PID) return 40;
-    process_signal_process_exited(SIGNAL_FIXTURE_CHILD_PID);
-    process_signal_process_destroyed(SIGNAL_FIXTURE_USER_PID);
+    process_signal_process_exited(SIGNAL_FIXTURE_CHILD_PID,
+                                  signal_child.event_generation);
+    process_signal_process_destroyed(SIGNAL_FIXTURE_USER_PID,
+                                     signal_user.event_generation + 1U);
+    if (signal_child.parent_pid != SIGNAL_FIXTURE_USER_PID) return 401;
+    process_signal_process_destroyed(SIGNAL_FIXTURE_USER_PID,
+                                     signal_user.event_generation);
     if (signal_child.parent_pid != 0U) return 41;
     if (process_signal_get_stats(&stats) != OK || stats.sent == 0U ||
         stats.coalesced == 0U || stats.ignored == 0U ||

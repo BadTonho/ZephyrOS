@@ -13,7 +13,7 @@ static ipc_stats_t ipc_stats;
 static int ipc_ready = 0;
 
 typedef struct {
-    process_t* process;
+    uint32_t pid;
     uint32_t observed_generation;
     uint32_t observed_identity_generation;
 } ipc_wait_context_t;
@@ -43,20 +43,23 @@ static int ipc_wait_condition(void* context, uint8_t* out_ready) {
     ipc_wait_context_t* wait_context = (ipc_wait_context_t*)context;
     process_t* process;
 
-    if (!wait_context || !wait_context->process || !out_ready) {
+    if (!wait_context || !wait_context->pid || !out_ready) {
         LOG_ERROR("IPC", "Contexto nulo na condicao de espera");
         return ERR_NULL;
     }
-    process = wait_context->process;
     spinlock_acquire(&ipc_lock);
-    *out_ready = process->state == PROCESS_STATE_UNUSED ||
-                 process->state == PROCESS_STATE_ZOMBIE ||
-                 process->event_generation !=
-                     wait_context->observed_identity_generation ||
-                 process->msg_head != process->msg_tail ||
-                 process->ipc_wait_channel.condition !=
-                     wait_context->observed_generation ||
-                 (process->pending_signals & ~process->blocked_signals) != 0U;
+    process = process_get_by_pid(wait_context->pid);
+    *out_ready = !process;
+    if (process) {
+        *out_ready = process->state == PROCESS_STATE_UNUSED ||
+                     process->state == PROCESS_STATE_ZOMBIE ||
+                     process->event_generation !=
+                         wait_context->observed_identity_generation ||
+                     process->msg_head != process->msg_tail ||
+                     process->ipc_wait_channel.condition !=
+                         wait_context->observed_generation ||
+                     (process->pending_signals & ~process->blocked_signals) != 0U;
+    }
     spinlock_release(&ipc_lock);
     return OK;
 }
@@ -83,6 +86,7 @@ int ipc_send(uint32_t pid, ipc_msg_t* msg) {
     uint32_t next_head;
     uint32_t woken = 0U;
     uint32_t flags;
+    int wake_result;
 
     if (!ipc_ready) {
         LOG_ERROR("IPC", "Envio antes da inicializacao");
@@ -126,9 +130,11 @@ int ipc_send(uint32_t pid, ipc_msg_t* msg) {
     target->msg_head = next_head;
     ipc_stats.sent++;
 
+    wake_result = wake_up(&target->ipc_wait_channel, &woken);
+
     spinlock_release(&ipc_lock);
     ipc_irq_restore(flags);
-    if (wake_up(&target->ipc_wait_channel, &woken) != OK) {
+    if (wake_result != OK) {
         LOG_WARN("IPC", "Falha ao acordar consumidor IPC");
     }
     (void)vfs_poll_notify();
@@ -181,7 +187,9 @@ int ipc_current_has_pending(void) {
 
 int ipc_wait(uint32_t timeout_ticks, wait_reason_t* out_reason) {
     process_t* current = process_get_current();
+    process_t* process;
     ipc_wait_context_t context;
+    uint32_t pid;
     uint32_t generation;
     int result;
 
@@ -198,29 +206,30 @@ int ipc_wait(uint32_t timeout_ticks, wait_reason_t* out_reason) {
         LOG_ERROR("IPC", "Espera IPC sem processo atual");
         return ERR_STATE;
     }
-    context.process = current;
+    pid = current->pid;
     context.observed_generation = current->ipc_wait_generation;
     context.observed_identity_generation = current->event_generation;
     result = wait_event_timeout(&current->ipc_wait_channel,
                                 ipc_wait_condition, &context,
                                 timeout_ticks, out_reason);
     if (result != OK || *out_reason != WAIT_REASON_EVENT) return result;
-    if (current->state == PROCESS_STATE_UNUSED ||
-        current->state == PROCESS_STATE_ZOMBIE ||
-        current->event_generation != context.observed_identity_generation) {
+    process = process_get_by_pid(pid);
+    if (!process || process->state == PROCESS_STATE_UNUSED ||
+        process->state == PROCESS_STATE_ZOMBIE ||
+        process->event_generation != context.observed_identity_generation) {
         LOG_WARN("IPC", "IPC wait resumed for an obsolete process identity");
         return ERR_NOT_FOUND;
     }
-    if (current->pending_signals & ~current->blocked_signals) {
+    if (process->pending_signals & ~process->blocked_signals) {
         *out_reason = WAIT_REASON_SIGNAL;
         return OK;
     }
-    if (wait_channel_get_condition(&current->ipc_wait_channel,
+    if (wait_channel_get_condition(&process->ipc_wait_channel,
                                    &generation) != OK) {
         LOG_ERROR("IPC", "Falha ao confirmar geracao da espera IPC");
         return ERR_STATE;
     }
-    current->ipc_wait_generation = generation;
+    process->ipc_wait_generation = generation;
     return OK;
 }
 

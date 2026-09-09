@@ -33,6 +33,15 @@ SEC3 e SEC5.
 A SEC2 registra a auditoria executável das fronteiras de memória, syscalls,
 VMA, handles e ownership em
 [`auditoria-sec2-memoria-syscalls.md`](auditoria-sec2-memoria-syscalls.md).
+
+A SEC3 registra a auditoria incremental do ciclo de vida em
+[`auditoria-sec3-processos.md`](auditoria-sec3-processos.md). Os callbacks de
+processo, sinais, shutdown, IPC e App Loader usam a identidade privada `PID +
+event_generation` quando uma operacao pode sobreviver ao ponto de chamada. Os
+wrappers legados somente por PID continuam imediatos e nao retem ponteiros.
+Foram preservadas a ABI de aplicativos, as syscalls, a App API, `process_t`,
+`waitpid`, o bootloader, Rust e o scheduler publico. Permissoes efetivas por
+UID/GID continuam reservadas a SEC5.
 O documento confirma que a etapa não alterou a ABI pública; a decisão de
 permissão por UID/GID no `open` continua reservada à SEC5.
 

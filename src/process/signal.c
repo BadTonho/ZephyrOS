@@ -232,14 +232,15 @@ int process_signal_init(void) {
     return OK;
 }
 
-void process_signal_process_created(uint32_t pid, uint32_t parent_pid) {
+void process_signal_process_created(uint32_t pid, uint32_t generation,
+                                    uint32_t parent_pid) {
     process_t* process = process_get_by_pid(pid);
     process_t* parent = process_get_by_pid(parent_pid);
 
-    if (!process) {
+    if (!process || !generation || process->event_generation != generation) {
         signal_stats.invariant_failures++;
-        signal_stats.last_error = ERR_NOT_FOUND;
-        LOG_ERROR("PROC", "Processo inexistente ao inicializar sinais");
+        signal_stats.last_error = process ? ERR_AGAIN : ERR_NOT_FOUND;
+        LOG_ERROR("PROC", "Identidade invalida ao inicializar sinais");
         return;
     }
     process->parent_pid = parent && parent != process &&
@@ -272,7 +273,8 @@ static int signal_ignored_by_action(process_t* target,
            action->disposition == APP_SIGNAL_DISPOSITION_DEFAULT;
 }
 
-int process_signal_send(uint32_t pid, uint32_t signal_number) {
+int process_signal_send_generation(uint32_t pid, uint32_t generation,
+                                   uint32_t signal_number) {
     process_t* target;
     uint32_t bit;
     uint32_t flags;
@@ -289,14 +291,24 @@ int process_signal_send(uint32_t pid, uint32_t signal_number) {
         LOG_WARN("PROC", "Numero de sinal invalido");
         return ERR_INVALID;
     }
+    flags = signal_irq_save();
     target = process_get_by_pid(pid);
     if (!target || !signal_process_active(target)) {
+        signal_irq_restore(flags);
         signal_stats.rejected++;
         signal_stats.last_error = ERR_NOT_FOUND;
         LOG_WARN("PROC", "Destino de sinal inexistente ou inativo");
         return ERR_NOT_FOUND;
     }
+    if (generation && target->event_generation != generation) {
+        signal_irq_restore(flags);
+        signal_stats.rejected++;
+        signal_stats.last_error = ERR_AGAIN;
+        LOG_WARN("PROC", "Destino de sinal possui geracao obsoleta");
+        return ERR_AGAIN;
+    }
     if (!process_is_user(target) && signal_number != APP_SIGNAL_CHLD) {
+        signal_irq_restore(flags);
         signal_stats.rejected++;
         signal_stats.last_error = ERR_UNAVAILABLE;
         LOG_WARN("PROC", "Sinal recusado para processo ring0");
@@ -307,11 +319,19 @@ int process_signal_send(uint32_t pid, uint32_t signal_number) {
     if (signal_ignored_by_action(target, signal_number)) {
         target->signal_ignored++;
         signal_stats.ignored++;
+        signal_irq_restore(flags);
         return OK;
     }
     if (signal_unblockable(signal_number)) {
-        result = process_terminate_user_signal(
-            pid, signal_number, signal_number == APP_SIGNAL_SEGV);
+        signal_irq_restore(flags);
+        if (generation) {
+            result = process_terminate_user_signal_generation(
+                pid, generation, signal_number,
+                signal_number == APP_SIGNAL_SEGV);
+        } else {
+            result = process_terminate_user_signal(
+                pid, signal_number, signal_number == APP_SIGNAL_SEGV);
+        }
         if (result != OK) {
             signal_stats.internal_failures++;
             signal_stats.last_error = result;
@@ -324,7 +344,6 @@ int process_signal_send(uint32_t pid, uint32_t signal_number) {
     }
 
     bit = APP_SIGNAL_BIT(signal_number);
-    flags = signal_irq_save();
     if (target->pending_signals & bit) {
         signal_stats.coalesced++;
     } else {
@@ -336,7 +355,6 @@ int process_signal_send(uint32_t pid, uint32_t signal_number) {
                target->wait_active && target->wait_entry.linked) {
         wake_target = 1;
     }
-    signal_irq_restore(flags);
 
     if (wake_target) {
         result = wait_queue_remove(&target->wait_entry, WAIT_REASON_SIGNAL);
@@ -345,11 +363,17 @@ int process_signal_send(uint32_t pid, uint32_t signal_number) {
             signal_stats.last_error = result;
             LOG_ERROR_CODE("PROC", result,
                            "Falha ao acordar processo para sinal");
+            signal_irq_restore(flags);
             return result;
         }
         signal_stats.woken++;
     }
+    signal_irq_restore(flags);
     return OK;
+}
+
+int process_signal_send(uint32_t pid, uint32_t signal_number) {
+    return process_signal_send_generation(pid, 0U, signal_number);
 }
 
 int process_signal_raise(uint32_t signal_number) {
@@ -359,7 +383,9 @@ int process_signal_raise(uint32_t signal_number) {
         LOG_ERROR("PROC", "Sinal proprio sem processo ring3 atual");
         return ERR_STATE;
     }
-    return process_signal_send(current->pid, signal_number);
+    return process_signal_send_generation(current->pid,
+                                          current->event_generation,
+                                          signal_number);
 }
 
 int process_signal_action(uint32_t signal_number,
@@ -448,8 +474,9 @@ static int signal_terminate_current(registers_t* regs,
         signal_stats.frame_failures++;
         signal_number = APP_SIGNAL_SEGV;
     }
-    result = process_terminate_user_signal(current->pid, signal_number,
-                                           signal_number == APP_SIGNAL_SEGV);
+    result = process_terminate_user_signal_generation(
+        current->pid, current->event_generation, signal_number,
+        signal_number == APP_SIGNAL_SEGV);
     if (result != OK) {
         signal_stats.internal_failures++;
         signal_stats.last_error = result;
@@ -597,7 +624,8 @@ int process_signal_record_user_fault(registers_t* regs) {
     if (!regs || !current || !process_is_user(current) ||
         (regs->cs & 0x03U) != 0x03U) return ERR_STATE;
     signal_stats.user_faults++;
-    if (process_terminate_user_signal(current->pid, APP_SIGNAL_SEGV, 1) != OK) {
+    if (process_terminate_user_signal_generation(
+            current->pid, current->event_generation, APP_SIGNAL_SEGV, 1) != OK) {
         signal_stats.internal_failures++;
         signal_stats.last_error = ERR_STATE;
         return ERR_STATE;
@@ -607,11 +635,17 @@ int process_signal_record_user_fault(registers_t* regs) {
     return OK;
 }
 
-void process_signal_process_exited(uint32_t pid) {
+void process_signal_process_exited(uint32_t pid, uint32_t generation) {
     process_t* child = process_get_by_pid(pid);
     process_t* parent;
 
-    if (!child || child->signal_exit_notified) return;
+    if (!child || !generation || child->event_generation != generation) {
+        signal_stats.rejected++;
+        signal_stats.last_error = child ? ERR_AGAIN : ERR_NOT_FOUND;
+        LOG_WARN("PROC", "Callback de saida possui identidade obsoleta");
+        return;
+    }
+    if (child->signal_exit_notified) return;
     child->signal_exit_notified = 1U;
     if (!child->parent_pid) return;
     parent = process_get_by_pid(child->parent_pid);
@@ -621,13 +655,23 @@ void process_signal_process_exited(uint32_t pid) {
     }
     parent->last_child_pid = child->pid;
     signal_stats.child_notifications++;
-    if (process_signal_send(parent->pid, APP_SIGNAL_CHLD) != OK) {
+    if (process_signal_send_generation(parent->pid,
+                                       parent->event_generation,
+                                       APP_SIGNAL_CHLD) != OK) {
         signal_stats.internal_failures++;
         LOG_WARN("PROC", "Notificacao SIGCHLD nao foi entregue");
     }
 }
 
-void process_signal_process_destroyed(uint32_t pid) {
+void process_signal_process_destroyed(uint32_t pid, uint32_t generation) {
+    process_t* destroyed = process_get_by_pid(pid);
+
+    if (!destroyed || !generation || destroyed->event_generation != generation) {
+        signal_stats.rejected++;
+        signal_stats.last_error = destroyed ? ERR_AGAIN : ERR_NOT_FOUND;
+        LOG_WARN("PROC", "Callback de destruicao possui identidade obsoleta");
+        return;
+    }
     for (uint32_t index = 0U; index < MAX_PROCESSES; index++) {
         if (processes[index] && processes[index]->parent_pid == pid) {
             processes[index]->parent_pid = 0U;

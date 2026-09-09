@@ -769,7 +769,7 @@ void process_bootstrap_idle(void) {
     scheduler_tick_baseline = timer_get_ticks();
     current_process = proc;
     process_count = 1;
-    process_signal_process_created(proc->pid, 0U);
+    process_signal_process_created(proc->pid, proc->event_generation, 0U);
     LOG_INFO("PROC", "Processo Idle inicializado");
 }
 
@@ -986,7 +986,8 @@ static process_t* process_create_internal(const char* name,
     proc->state = PROCESS_STATE_READY;
     process_count++;
     process_signal_process_created(
-        proc->pid, current_process ? current_process->pid : 0U);
+        proc->pid, proc->event_generation,
+        current_process ? current_process->pid : 0U);
     LOG_INFO("PROC", "Processo criado com sucesso");
     return proc;
 }
@@ -1105,6 +1106,7 @@ static int process_mark_user_zombie(process_t* proc, uint32_t exit_code,
         LOG_WARN("PROC", "Encerramento recusado para processo ring 0");
         return ERR_UNAVAILABLE;
     }
+    if (proc->state == PROCESS_STATE_ZOMBIE) return OK;
     if (proc == current_process && !allow_current) {
         LOG_WARN("PROC", "Encerramento direto do processo atual recusado");
         return ERR_STATE;
@@ -1159,7 +1161,7 @@ static int process_mark_user_zombie(process_t* proc, uint32_t exit_code,
         user_test_result_pid = proc->pid;
         user_test_result_faulted = faulted ? 1U : 0U;
     }
-    process_signal_process_exited(proc->pid);
+    process_signal_process_exited(proc->pid, proc->event_generation);
     return OK;
 }
 
@@ -1260,7 +1262,8 @@ static int process_power_send_signal(const process_snapshot_t* snapshots,
         if (!snapshots[index].user_mode ||
             snapshots[index].state == PROCESS_STATE_ZOMBIE) continue;
         if (!process_power_snapshot_matches(&snapshots[index])) continue;
-        result = process_signal_send(snapshots[index].pid, signal);
+        result = process_signal_send_generation(
+            snapshots[index].pid, snapshots[index].generation, signal);
         if (result == ERR_NOT_FOUND) continue;
         if (result != OK) {
             LOG_ERROR_CODE("PROC", result,
@@ -1529,7 +1532,8 @@ static int process_user_initialize(process_t* proc, page_directory_t* dir,
     (void)process_stack_observe(proc, 0, 0U, 0U);
     process_count++;
     process_signal_process_created(
-        proc->pid, current_process ? current_process->pid : 0U);
+        proc->pid, proc->event_generation,
+        current_process ? current_process->pid : 0U);
     return OK;
 }
 
@@ -1734,12 +1738,19 @@ int process_exit_current(uint32_t exit_code) {
     return OK;
 }
 
-int process_cancel_user(uint32_t pid, uint32_t exit_code) {
+int process_cancel_user_generation(uint32_t pid, uint32_t generation,
+                                   uint32_t exit_code) {
     process_t* proc = process_get_by_pid(pid);
     int result;
 
     if (!proc) return ERR_NOT_FOUND;
+    if (generation && proc->event_generation != generation) {
+        LOG_WARN("PROC", "Geracao obsoleta ao cancelar processo");
+        return ERR_AGAIN;
+    }
+    if (proc->state == PROCESS_STATE_UNUSED) return ERR_NOT_FOUND;
     if (!process_is_user(proc) || proc->user_test) return ERR_UNAVAILABLE;
+    if (proc->state == PROCESS_STATE_ZOMBIE) return OK;
     if (proc == current_process) {
         LOG_WARN("PROC", "Cancelamento do processo atual requer trampoline");
         return ERR_STATE;
@@ -1767,18 +1778,29 @@ int process_cancel_user(uint32_t pid, uint32_t exit_code) {
     return OK;
 }
 
+int process_cancel_user(uint32_t pid, uint32_t exit_code) {
+    return process_cancel_user_generation(pid, 0U, exit_code);
+}
+
 int process_cancel_focused_user(uint32_t exit_code) {
     return process_cancel_user(process_get_focus(), exit_code);
 }
 
-int process_terminate_user_signal(uint32_t pid, uint32_t signal_number,
-                                  int faulted) {
+int process_terminate_user_signal_generation(uint32_t pid,
+                                              uint32_t generation,
+                                              uint32_t signal_number,
+                                              int faulted) {
     process_t* proc = process_get_by_pid(pid);
     int result;
 
-    if (!proc || !process_is_user(proc)) {
+    if (!proc) return ERR_NOT_FOUND;
+    if (!process_is_user(proc)) {
         LOG_WARN("PROC", "Destino invalido para encerramento por sinal");
-        return ERR_NOT_FOUND;
+        return ERR_UNAVAILABLE;
+    }
+    if (generation && proc->event_generation != generation) {
+        LOG_WARN("PROC", "Geracao obsoleta ao encerrar processo por sinal");
+        return ERR_AGAIN;
     }
     if (signal_number != APP_SIGNAL_INT &&
         signal_number != APP_SIGNAL_KILL &&
@@ -1801,6 +1823,12 @@ int process_terminate_user_signal(uint32_t pid, uint32_t signal_number,
     }
     LOG_DEBUG("PROC", "Processo ring3 encerrado por sinal");
     return OK;
+}
+
+int process_terminate_user_signal(uint32_t pid, uint32_t signal_number,
+                                  int faulted) {
+    return process_terminate_user_signal_generation(
+        pid, 0U, signal_number, faulted);
 }
 
 int process_handle_user_exception(registers_t* regs) {
@@ -1972,7 +2000,7 @@ void process_destroy(process_t* proc) {
         return;
     }
     pid = proc->pid;
-    process_signal_process_destroyed(pid);
+    process_signal_process_destroyed(pid, proc->event_generation);
     proc->state = PROCESS_STATE_UNUSED;
     process_stack_release(proc);
     process_vma_release(proc);

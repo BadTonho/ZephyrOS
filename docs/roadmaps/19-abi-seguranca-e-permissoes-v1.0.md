@@ -91,15 +91,22 @@ Roadmap 19.
 
 ### SEC3 — Ciclo de vida e isolamento de processos
 
-- [ ] Revalidar PID e generation em ações administrativas e callbacks tardios.
-- [ ] Impedir que processo encerrado continue recebendo eventos, sinais,
+- [x] Revalidar PID e generation em ações administrativas e callbacks tardios.
+- [x] Impedir que processo encerrado continue recebendo eventos, sinais,
   descritores ou callbacks.
-- [ ] Testar criação, execução, falha, `SIGTERM`, `SIGKILL`, zombie, reaping e
-  reutilização de PID.
-- [ ] Confirmar proteção dos processos ring0 sem manter ponteiros no Shell ou
+- [x] Testar criação, execução, falha, `SIGTERM`, `SIGKILL`, zombie, reaping e
+  reutilização de PID nos testes essenciais afetados.
+- [x] Confirmar proteção dos processos ring0 sem manter ponteiros no Shell ou
   em snapshots de longa duração.
-- [ ] Testar pressão da tabela de processos, heap, PMM, filas e limites de
-  argumentos.
+- [x] Testar os caminhos afetados de tabela de processos, recursos, threads,
+  filas, callbacks geracionais e falhas de recursos.
+
+A implementação e a validação essencial da SEC3 estão concluídas. A matriz
+completa, QEMU, TST7 e a validação adversarial permanecem pendentes para o
+fechamento do Roadmap 19. Permissões efetivas por UID/GID continuam reservadas
+à SEC5.
+
+Registro técnico: [`docs/qualidade/auditoria-sec3-processos.md`](../qualidade/auditoria-sec3-processos.md).
 
 ### SEC4 — Pacotes e confiança
 

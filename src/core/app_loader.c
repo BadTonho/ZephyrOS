@@ -11,7 +11,9 @@
 
 static int app_loader_ready;
 static uint32_t app_loader_pending_pid;
+static uint32_t app_loader_pending_generation;
 static uint32_t app_loader_active_pid;
+static uint32_t app_loader_active_generation;
 static uint32_t app_loader_focus_acquired;
 static app_loader_result_t app_loader_finished_result;
 static app_launch_info_t app_loader_prepared_launch;
@@ -21,6 +23,28 @@ static uint32_t app_loader_operation_generation;
 static int app_loader_is_busy(void) {
     return app_loader_pending_pid != 0 || app_loader_active_pid != 0 ||
            app_loader_result_pending;
+}
+
+static int app_loader_lookup_identity(uint32_t pid, uint32_t generation,
+                                      process_t** output) {
+    process_t* process;
+
+    if (output) *output = 0;
+    if (!pid || !generation) {
+        LOG_ERROR("APP_LOADER", "Identidade invalida no carregador");
+        return ERR_INVALID;
+    }
+    process = process_get_by_pid(pid);
+    if (!process) {
+        LOG_WARN("APP_LOADER", "PID ausente no carregador");
+        return ERR_NOT_FOUND;
+    }
+    if (process->event_generation != generation) {
+        LOG_WARN("APP_LOADER", "Geracao obsoleta no carregador");
+        return ERR_AGAIN;
+    }
+    if (output) *output = process;
+    return OK;
 }
 
 static int app_loader_is_launch_space(char value) {
@@ -164,30 +188,53 @@ static void app_loader_release_process_resources(uint32_t pid) {
 
 static int app_loader_start_pending(void) {
     uint32_t pid = app_loader_pending_pid;
+    uint32_t generation = app_loader_pending_generation;
     process_t* proc;
+    int identity_result;
     int result;
 
     if (pid == 0) return OK;
 
+    identity_result = app_loader_lookup_identity(pid, generation, &proc);
+    if (identity_result != OK) {
+        app_loader_pending_pid = 0U;
+        app_loader_pending_generation = 0U;
+        app_loader_store_result(pid, (uint32_t)identity_result, 0, 0, 1, 0,
+                                0U);
+        LOG_WARN("APP_LOADER", "Processo pendente possui identidade obsoleta");
+        return identity_result;
+    }
+
     result = process_start_user(pid);
+    if (result == OK) {
+        identity_result = app_loader_lookup_identity(pid, generation, &proc);
+        if (identity_result != OK) result = identity_result;
+    }
     if (result == OK) result = process_set_focus(pid);
+    if (result == OK) {
+        identity_result = app_loader_lookup_identity(pid, generation, &proc);
+        if (identity_result != OK) result = identity_result;
+    }
     if (result != OK) {
-        proc = process_get_by_pid(pid);
-        if (proc) {
-            process_cancel_user(pid, (uint32_t)result);
+        if (app_loader_lookup_identity(pid, generation, &proc) == OK) {
+            process_cancel_user_generation(pid, generation, (uint32_t)result);
             app_loader_release_process_resources(pid);
-            process_destroy(proc);
+            if (process_get_by_pid(pid) == proc &&
+                proc->event_generation == generation) {
+                process_destroy(proc);
+            }
         }
         app_loader_pending_pid = 0;
+        app_loader_pending_generation = 0U;
         app_loader_store_result(pid, (uint32_t)result, 0, 0, 1, 0, 0U);
         LOG_ERROR("APP_LOADER", "Falha ao iniciar aplicativo ZAPP pendente");
         return result;
     }
 
     app_loader_pending_pid = 0;
+    app_loader_pending_generation = 0U;
     app_loader_active_pid = pid;
-    /* process_set_focus() acabou de validar e registrar o PID. Nao lemos o
-       foco novamente porque o aplicativo pode encerrar entre as duas linhas. */
+    app_loader_active_generation = generation;
     app_loader_focus_acquired = 1U;
     LOG_DEBUG("APP_LOADER", "Processo ZAPP liberado e recebeu foco");
     return OK;
@@ -196,22 +243,26 @@ static int app_loader_start_pending(void) {
 static int app_loader_reap_active(void) {
     process_t* proc;
     uint32_t pid;
+    uint32_t generation;
     uint32_t exit_code;
     uint32_t faulted;
     uint32_t cancelled;
     uint32_t termination_signal;
+    int result;
 
     if (app_loader_active_pid == 0) return OK;
 
     pid = app_loader_active_pid;
-    proc = process_get_by_pid(pid);
-    if (!proc) {
+    generation = app_loader_active_generation;
+    result = app_loader_lookup_identity(pid, generation, &proc);
+    if (result != OK) {
         app_loader_active_pid = 0;
-        app_loader_store_result(pid, ERR_STATE, 1, 0, 1,
+        app_loader_active_generation = 0U;
+        app_loader_store_result(pid, (uint32_t)result, 1, 0, 1,
                                 app_loader_focus_acquired, 0U);
         app_loader_focus_acquired = 0;
-        LOG_ERROR("APP_LOADER", "Processo ZAPP ativo desapareceu");
-        return ERR_STATE;
+        LOG_WARN("APP_LOADER", "Processo ZAPP ativo possui identidade obsoleta");
+        return result;
     }
     if (proc->state != PROCESS_STATE_ZOMBIE) return OK;
 
@@ -221,12 +272,13 @@ static int app_loader_reap_active(void) {
     termination_signal = proc->termination_signal;
     app_loader_release_process_resources(pid);
     process_destroy(proc);
-    if (process_get_by_pid(pid)) {
+    if (process_get_by_pid(pid) == proc) {
         LOG_ERROR("APP_LOADER", "Processo ZAPP zombie nao foi removido");
         return ERR_STATE;
     }
 
     app_loader_active_pid = 0;
+    app_loader_active_generation = 0U;
     app_loader_store_result(pid, exit_code, faulted, cancelled, 0,
                             app_loader_focus_acquired, termination_signal);
     app_loader_focus_acquired = 0;
@@ -331,7 +383,9 @@ int app_loader_init(void) {
     LOG_INFO("APP_LOADER", "Inicializando carregador de aplicativos");
     app_loader_ready = 0;
     app_loader_pending_pid = 0;
+    app_loader_pending_generation = 0U;
     app_loader_active_pid = 0;
+    app_loader_active_generation = 0U;
     app_loader_focus_acquired = 0;
     app_loader_result_pending = 0;
     app_loader_operation_generation = 0U;
@@ -401,7 +455,17 @@ int app_loader_run_image(const char* name, const uint8_t* image,
         return result;
     }
 
-    app_loader_pending_pid = created_pid;
+    {
+        process_t* process = process_get_by_pid(created_pid);
+
+        if (!process || !process->event_generation) {
+            if (process) process_destroy(process);
+            LOG_ERROR("APP_LOADER", "Processo criado sem identidade valida");
+            return ERR_STATE;
+        }
+        app_loader_pending_pid = created_pid;
+        app_loader_pending_generation = process->event_generation;
+    }
     if (pid_out) *pid_out = created_pid;
     LOG_DEBUG("APP_LOADER", "Processo ZAPP preparado para execucao assincrona");
     return OK;
@@ -486,15 +550,31 @@ int app_loader_reap_finished(void) {
 
 int app_loader_cancel_foreground(uint32_t exit_code) {
     uint32_t pid = app_loader_get_foreground_pid();
+    uint32_t generation = app_loader_active_pid != 0U ?
+                          app_loader_active_generation :
+                          app_loader_pending_generation;
     process_t* proc;
+    int identity_result;
     int result;
 
     if (pid == 0) return ERR_NOT_FOUND;
 
-    proc = process_get_by_pid(pid);
+    identity_result = app_loader_lookup_identity(pid, generation, &proc);
+    if (identity_result != OK) {
+        if (app_loader_active_pid == pid) {
+            app_loader_active_pid = 0U;
+            app_loader_active_generation = 0U;
+        }
+        if (app_loader_pending_pid == pid) {
+            app_loader_pending_pid = 0U;
+            app_loader_pending_generation = 0U;
+        }
+        LOG_WARN("APP_LOADER", "Cancelamento encontrou identidade obsoleta");
+        return identity_result;
+    }
     if (proc && proc->state == PROCESS_STATE_ZOMBIE) return OK;
 
-    result = process_cancel_user(pid, exit_code);
+    result = process_cancel_user_generation(pid, generation, exit_code);
     if (result != OK) {
         LOG_WARN("APP_LOADER", "Falha ao cancelar aplicativo em primeiro plano");
         return result;
@@ -502,8 +582,12 @@ int app_loader_cancel_foreground(uint32_t exit_code) {
 
     if (app_loader_pending_pid == pid) {
         app_loader_pending_pid = 0;
+        app_loader_pending_generation = 0U;
         app_loader_release_process_resources(pid);
-        if (proc) process_destroy(proc);
+        if (process_get_by_pid(pid) == proc &&
+            proc->event_generation == generation) {
+            process_destroy(proc);
+        }
         app_loader_store_result(pid, exit_code, 0,
                                 exit_code == APP_EXIT_CANCELLED, 0, 0, 0U);
     }

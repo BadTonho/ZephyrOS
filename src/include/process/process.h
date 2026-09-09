@@ -260,6 +260,10 @@ int process_exit_current(uint32_t exit_code);
 int process_handle_user_exception(registers_t* regs);
 int process_terminate_user_signal(uint32_t pid, uint32_t signal_number,
                                   int faulted);
+int process_terminate_user_signal_generation(uint32_t pid,
+                                              uint32_t generation,
+                                              uint32_t signal_number,
+                                              int faulted);
 int process_prepare_user_termination(registers_t* regs);
 int process_apply_pending_cancel(registers_t* regs);
 void process_finish_user_termination(void);
@@ -302,6 +306,8 @@ int process_set_focus(uint32_t pid);
 int process_set_focus_fallback(uint32_t pid);
 int process_restore_focus(void);
 int process_cancel_user(uint32_t pid, uint32_t exit_code);
+int process_cancel_user_generation(uint32_t pid, uint32_t generation,
+                                   uint32_t exit_code);
 int process_cancel_focused_user(uint32_t exit_code);
 uint32_t process_get_focus(void);
 

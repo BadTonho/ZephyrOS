@@ -251,30 +251,44 @@ int process_signal_init(void) {
     return OK;
 }
 
-int process_signal_send(uint32_t pid, uint32_t signal_number) {
+int process_signal_send_generation(uint32_t pid, uint32_t generation,
+                                   uint32_t signal_number) {
     (void)signal_number;
-    if (fake_power_signal) {
-        process_t* process = process_get_by_pid(pid);
-        if (process) process->state = PROCESS_STATE_ZOMBIE;
+    process_t* process = process_get_by_pid(pid);
+
+    if (!process) return ERR_NOT_FOUND;
+    if (generation && process->event_generation != generation) {
+        return ERR_AGAIN;
     }
-    return process_get_by_pid(pid) ? OK : ERR_NOT_FOUND;
+    if (fake_power_signal) {
+        process->state = PROCESS_STATE_ZOMBIE;
+    }
+    return OK;
+}
+
+int process_signal_send(uint32_t pid, uint32_t signal_number) {
+    return process_signal_send_generation(pid, 0U, signal_number);
 }
 
 int process_signal_record_user_fault(registers_t* regs) {
     return regs ? OK : ERR_NULL;
 }
 
-void process_signal_process_created(uint32_t pid, uint32_t parent_pid) {
+void process_signal_process_created(uint32_t pid, uint32_t generation,
+                                    uint32_t parent_pid) {
     (void)pid;
+    (void)generation;
     (void)parent_pid;
 }
 
-void process_signal_process_exited(uint32_t pid) {
+void process_signal_process_exited(uint32_t pid, uint32_t generation) {
     (void)pid;
+    (void)generation;
 }
 
-void process_signal_process_destroyed(uint32_t pid) {
+void process_signal_process_destroyed(uint32_t pid, uint32_t generation) {
     (void)pid;
+    (void)generation;
 }
 
 uint32_t process_get_focus(void) {
@@ -657,6 +671,14 @@ static int test_process_transitions(void) {
                     PROCESS_STATE_READY, 1U);
     if (process_cancel_user(PROCESS_FIXTURE_USER_PID, 33U) != OK ||
         user_fixture.state != PROCESS_STATE_ZOMBIE) return 6;
+    if (process_cancel_user(PROCESS_FIXTURE_USER_PID, 44U) != OK ||
+        user_fixture.state != PROCESS_STATE_ZOMBIE ||
+        process_terminate_user_signal_generation(
+            PROCESS_FIXTURE_USER_PID, user_fixture.event_generation + 1U,
+            APP_SIGNAL_TERM, 0) != ERR_AGAIN ||
+        process_terminate_user_signal_generation(
+            PROCESS_FIXTURE_USER_PID, user_fixture.event_generation,
+            APP_SIGNAL_TERM, 0) != OK) return 61;
     if (process_terminate_user_signal(99U, APP_SIGNAL_TERM, 0) !=
             ERR_NOT_FOUND ||
         process_terminate_user_signal(PROCESS_FIXTURE_USER_PID, 99U, 0) !=
@@ -667,6 +689,9 @@ static int test_process_transitions(void) {
     reset_fixture();
     install_fixture(1U, &fixture, PROCESS_FIXTURE_PID, PROCESS_STATE_READY,
                     0U);
+    if (process_terminate_user_signal_generation(
+            PROCESS_FIXTURE_PID, fixture.event_generation, APP_SIGNAL_TERM,
+            0) != ERR_UNAVAILABLE) return 79;
     fake_owned_threads = 1U;
     process_destroy(&fixture);
     if (processes[1] != &fixture || process_count != 1U) return 80;

@@ -183,6 +183,7 @@ int process_create_user_image_suspended_with_launch(
     fake_process_present = 1;
     zero_bytes(&fake_process, sizeof(fake_process));
     fake_process.pid = HOST_PID;
+    fake_process.event_generation = HOST_PID + 100U;
     fake_process.state = PROCESS_STATE_READY;
     *pid_out = HOST_PID;
     return OK;
@@ -202,15 +203,21 @@ int process_set_focus(uint32_t pid) {
     return fake_focus_result;
 }
 
-int process_cancel_user(uint32_t pid, uint32_t exit_code) {
+int process_cancel_user_generation(uint32_t pid, uint32_t generation,
+                                   uint32_t exit_code) {
     fake_cancel_calls++;
     fake_cancel_exit_code = exit_code;
     EXPECT(pid == HOST_PID);
+    EXPECT(generation == 0U || generation == fake_process.event_generation);
     if (fake_cancel_result == OK) {
         fake_process.state = PROCESS_STATE_ZOMBIE;
         fake_process.exit_code = exit_code;
     }
     return fake_cancel_result;
+}
+
+int process_cancel_user(uint32_t pid, uint32_t exit_code) {
+    return process_cancel_user_generation(pid, 0U, exit_code);
 }
 
 void process_destroy(process_t* process) {
@@ -504,8 +511,32 @@ static void test_start_and_missing_failures(void) {
                                 0, &pid) == OK);
     EXPECT(app_loader_reap_finished() == OK);
     fake_process_present = 0;
-    EXPECT(app_loader_reap_finished() == ERR_STATE);
-    expect_result_available(&result, ERR_STATE);
+    EXPECT(app_loader_reap_finished() == ERR_NOT_FOUND);
+    expect_result_available(&result, ERR_NOT_FOUND);
+    EXPECT(result.faulted == 1U && result.start_failed == 1U);
+
+    reset_fixture();
+    make_valid_image();
+    EXPECT(app_loader_init() == OK);
+    EXPECT(app_loader_run_image(HOST_PROCESS_NAME, fake_image, fake_image_size,
+                                0, &pid) == OK);
+    fake_process.event_generation++;
+    EXPECT(app_loader_reap_finished() == ERR_AGAIN);
+    EXPECT(fake_start_calls == 0U && fake_cancel_calls == 0U);
+    EXPECT(fake_destroy_calls == 0U);
+    expect_result_available(&result, ERR_AGAIN);
+    EXPECT(result.faulted == 0U && result.start_failed == 1U);
+
+    reset_fixture();
+    make_valid_image();
+    EXPECT(app_loader_init() == OK);
+    EXPECT(app_loader_run_image(HOST_PROCESS_NAME, fake_image, fake_image_size,
+                                0, &pid) == OK);
+    EXPECT(app_loader_reap_finished() == OK);
+    fake_process.event_generation++;
+    EXPECT(app_loader_reap_finished() == ERR_AGAIN);
+    EXPECT(fake_destroy_calls == 0U);
+    expect_result_available(&result, ERR_AGAIN);
     EXPECT(result.faulted == 1U && result.start_failed == 1U);
 
     reset_fixture();

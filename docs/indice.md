@@ -82,6 +82,7 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [Contratos publicos](qualidade/contratos-publicos.md) | Mapa de headers publicos e documentos tecnicos canonicos |
 | [ABI, seguranca e fronteiras](qualidade/abi-seguranca-fronteiras.md) | Inventario SEC1, dominios de confianca, capacidades ring 3 e identidade minima |
 | [Auditoria SEC2 de memoria e syscalls](qualidade/auditoria-sec2-memoria-syscalls.md) | Matriz de ponteiros, ranges, ownership, handles, erros e fixtures da SEC2 |
+| [Auditoria SEC3 de processos](qualidade/auditoria-sec3-processos.md) | Identidade geracional, estados, callbacks, reparenting e reaping |
 | [Metricas de otimizacao](qualidade/metricas.md) | Linhas-base K1, validacoes K2/K3 e ganho K4 registrado |
 | [Dividas tecnicas da v1.0.0](qualidade/dividas-tecnicas-v1.0.0.md) | Registro canonico das limitacoes aceitas que devem ser quitadas antes da v1.0.0 |
 | [Registro de validacoes](qualidade/registro-validacoes.md) | Evidencias cronologicas de implementacoes, testes e conclusoes de fase |

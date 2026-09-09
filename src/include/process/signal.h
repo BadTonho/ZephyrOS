@@ -53,6 +53,8 @@ typedef struct {
 
 int process_signal_init(void);
 int process_signal_send(uint32_t pid, uint32_t signal_number);
+int process_signal_send_generation(uint32_t pid, uint32_t generation,
+                                   uint32_t signal_number);
 int process_signal_raise(uint32_t signal_number);
 int process_signal_action(uint32_t signal_number,
                           const app_signal_action_t* action,
@@ -62,9 +64,10 @@ int process_signal_mask(uint32_t operation, uint32_t mask,
 int process_signal_prepare_user_return(registers_t* regs);
 int process_signal_return(registers_t* regs);
 int process_signal_record_user_fault(registers_t* regs);
-void process_signal_process_created(uint32_t pid, uint32_t parent_pid);
-void process_signal_process_exited(uint32_t pid);
-void process_signal_process_destroyed(uint32_t pid);
+void process_signal_process_created(uint32_t pid, uint32_t generation,
+                                    uint32_t parent_pid);
+void process_signal_process_exited(uint32_t pid, uint32_t generation);
+void process_signal_process_destroyed(uint32_t pid, uint32_t generation);
 int process_signal_copy_info(process_signal_info_t* output,
                              uint32_t max_entries, uint32_t* out_count);
 int process_signal_get_stats(process_signal_stats_t* out_stats);
