@@ -89,6 +89,25 @@ testes e QEMU. O agente só pode executar esses comandos quando o usuário
 autorizar explicitamente a execução na conversa; sem essa autorização, o
 agente deve apenas revisar o Makefile, os comandos e os artefatos.
 
+### Política de validação por etapa e fechamento de roadmap
+
+A suíte completa de testes automatizados, incluindo `make q3check`,
+`make clean && make`, QEMU, TST7 e matrizes completas, NÃO deve ser executada
+automaticamente a cada etapa do processo. Ela deve ser concentrada no
+fechamento do roadmap, salvo autorização explícita do usuário para antecipá-la.
+
+Antes de executar testes, build ou QEMU durante uma etapa, o agente DEVE
+perguntar ao usuário se ele deseja executar todos os testes ou somente a
+validação específica da etapa. O agente não deve presumir essa escolha com
+base no uso do modo Plan, porque planejar uma etapa não autoriza executar sua
+suíte de validação.
+
+Se a suíte completa não for autorizada durante a etapa, o agente deve manter
+o teste afetado identificado, atualizar ou registrar sua cobertura conforme a
+Regra #22 e declarar a validação completa como pendente para o fechamento do
+roadmap. O modo Plan pode organizar a matriz futura, mas não substitui a
+pergunta nem a autorização para executá-la.
+
 ---
 
 ## Regra #0: Comunicar alterações no boot
