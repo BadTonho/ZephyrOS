@@ -87,6 +87,7 @@ Para construir um sistema operacional funcional do zero — codificando cada com
 | [Dividas tecnicas da v1.0.0](qualidade/dividas-tecnicas-v1.0.0.md) | Registro canonico das limitacoes aceitas que devem ser quitadas antes da v1.0.0 |
 | [Registro de validacoes](qualidade/registro-validacoes.md) | Evidencias cronologicas de implementacoes, testes e conclusoes de fase |
 | [Comandos de testes do sistema](qualidade/comandos-testes-sistema.md) | Indice operacional dos gates, testes host-only, QEMU e regressao TST2-TST7 |
+| [Ambiente Linux](qualidade/ambiente-linux.md) | Configuracao, build, verificacao da imagem hibrida e execucao no Linux |
 | [Supervisor contínuo de testes](qualidade/testador-continuo.md) | Proposta para executar a TST7 continuamente em um host dedicado e preservar falhas |
 | [Catalogo de testes](qualidade/catalogo-testes.md) | Visao gerada das superficies, casos e cobertura do testador permanente |
 | [Validação EP6.3 Runtime](qualidade/validacao-ep63-runtime.md) | Procedimento host e QEMU para fixtures, Releases A/B, rollback e auditoria do runtime v2 |
