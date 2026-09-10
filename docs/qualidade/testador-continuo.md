@@ -320,9 +320,10 @@ O modo direcionado poderá ser usado para validar uma alteração:
 make -j 4 test-qemu-parallel
 ```
 
-O alvo receberá a seleção de casos da etapa e poderá executar até quatro
-workers simultaneamente. O mesmo executor servirá para SEC5, SEC6,
-regressões e qualquer outra etapa.
+O alvo receberá a seleção de casos da etapa e poderá executar o número de
+workers definido pelo host. O exemplo usa quatro workers como configuração
+inicial conservadora, mas esse valor não é um limite do sistema. O mesmo
+executor servirá para SEC5, SEC6, regressões e qualquer outra etapa.
 
 O modo `soak` poderá permanecer em um computador dedicado por várias horas,
 selecionando casos de forma pseudoaleatória e reproduzível:
