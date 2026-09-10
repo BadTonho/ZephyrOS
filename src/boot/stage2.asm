@@ -40,6 +40,11 @@ BIOS_GATEWAY_OPERATION_WRITE equ 1
 BIOS_GATEWAY_OPERATION_KEY equ 2
 BIOS_TICKS_PER_DAY equ 0x1800B0
 BIOS_WAIT_FOREVER equ 0xFFFFFFFF
+BIOS_KEYBOARD_HEAD equ 0x041A
+BIOS_KEYBOARD_TAIL equ 0x041C
+BIOS_KEYBOARD_BUFFER equ 0x041E
+BIOS_KEYBOARD_BUFFER_END equ 0x043E
+BIOS_TICK_COUNT equ 0x046C
 SECTOR_SIZE      equ 512
 KERNEL_BUFFER    equ 0x00010000
 KERNEL_BUFFER_SEG equ (KERNEL_BUFFER >> 4)
@@ -898,9 +903,9 @@ bios_gateway_real:
     mov [BIOS_GATEWAY_TICK_START], eax
 
 .key_poll:
-    mov ah, 0x01
-    int 0x16
-    jnz .key_ready
+    mov si, [BIOS_KEYBOARD_HEAD]
+    cmp si, [BIOS_KEYBOARD_TAIL]
+    jne .key_ready
     cmp dword [BIOS_GATEWAY_TIMEOUT], 0
     je .key_timeout
     cmp dword [BIOS_GATEWAY_TIMEOUT], BIOS_WAIT_FOREVER
@@ -921,20 +926,21 @@ bios_gateway_real:
     jmp .key_poll
 
 .key_ready:
-    xor ax, ax
-    int 0x16
+    mov si, [BIOS_KEYBOARD_HEAD]
+    mov ax, [si]
+    add si, 2
+    cmp si, BIOS_KEYBOARD_BUFFER_END
+    jb .key_store_head
+    mov si, BIOS_KEYBOARD_BUFFER
+.key_store_head:
+    mov [BIOS_KEYBOARD_HEAD], si
     mov [BIOS_GATEWAY_KEY_RESULT], ax
 .key_timeout:
     mov byte [BIOS_GATEWAY_STATUS], 0
     jmp .return_protected
 
 .read_ticks:
-    xor eax, eax
-    mov ah, 0x00
-    int 0x1A
-    movzx eax, cx
-    shl eax, 16
-    mov ax, dx
+    mov eax, [BIOS_TICK_COUNT]
     ret
 
 .return_protected:

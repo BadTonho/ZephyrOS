@@ -7,6 +7,30 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## 2026-09-10 - Compatibilidade do recovery com QEMU/SeaBIOS no Linux
+
+- Diagnóstico: no QEMU 8.2.2 do Linux, o recovery alcançava o modo protegido e
+  dependia de `INT 13h` para ler o disco. A BIOS retornava falha nessa chamada,
+  produzindo `FAT32 INDISPONIVEL / MOTIVO IO`. A espera de teclado também ficava
+  presa em `INT 16h AH=01`, impedindo os timeouts de boot e de fallback.
+- Implementação: `src/boot/recovery_loader.c` passou a tentar ATA PIO no
+  controlador IDE primário, mantendo a BIOS como fallback. O gateway de
+  `src/boot/stage2.asm` passou a consultar o buffer de teclado e os ticks da
+  área de dados da BIOS diretamente, preservando o formato de teclas do menu e
+  o `hlt` durante a espera.
+- Evidência: `make -f Makefile.linux q3check`,
+  `make -f Makefile.linux test-recovery-menu-host
+  test-recovery-loader-host` e `make -f Makefile.linux` terminaram com
+  sucesso. No QEMU Linux com a imagem final, sem entrada, o recovery expirou
+  os dois prazos, leu a FAT32, exibiu o diagnóstico de estado esperado para a
+  imagem sem controles de slot e abriu o desktop legado. O erro anterior de
+  I/O não foi reproduzido.
+- Limitação: a imagem de teste não contém controles de slot válidos; por isso
+  o diagnóstico `STATE` e o fallback para o kernel legado são esperados.
+  TST7 e a matriz completa de QEMU permanecem pendentes.
+- Estado: compatibilidade do boot Linux/QEMU e fallback automático `PASS`;
+  cobertura TST7 `PENDING`.
+
 ## 2026-09-10 - Correção do fluxo de build Linux
 
 - Diagnóstico: o comando genérico `make` podia selecionar o `Makefile` original
@@ -18,11 +42,15 @@ segredos.
   local. O makefile Linux passou a usar `PYTHON` configurável, com padrão
   `python3`, e a imagem depende do próprio makefile para evitar reutilizar uma
   imagem antiga após mudança da receita.
-- Evidência read-only: `make -f Makefile.linux -n run` e `make -n run` apontam
-  para `build/zephyros.img` e exibem `prepare-hybrid-image`; nenhum build,
-  teste ou QEMU foi executado nesta etapa.
-- Estado: correção operacional aplicada; `make q3check`, `make clean`, `make` e
-  `make run` permanecem pendentes de execução pelo usuário.
+- Evidência: `make -f Makefile.linux q3check` terminou com resultado `OK`;
+  `make -f Makefile.linux clean` e `make -f Makefile.linux` terminaram com
+  sucesso, gerando o kernel, o boot, o recovery loader, o `stage2` e a imagem
+  híbrida FAT12/FAT32 com 26 arquivos FAT32. Os warnings observados são
+  existentes em `ac97.c`, `acpi.c`, `wm.c`, `shell_commands_network.c` e
+  `shell_checks.c`.
+- QEMU e TST7 ainda não foram executados nesta etapa.
+- Estado: q3check e build Linux `PASS`; validação funcional no QEMU permanece
+  `PENDING`.
 
 ## 2026-09-10 - Correção do hash da licença Terminus
 
@@ -35,8 +63,7 @@ segredos.
 - Evidência: o arquivo local não possui alteração em relação ao Git e seu
   SHA-256 é `29e51260692fca30c51c3c81c5aa12205cfaa1be7180bf5e7c8192e745e78308`;
   o hash anterior `c14f8d...` é o resultado da conversão para CRLF.
-- Estado: correção aplicada; repetir `make -f Makefile.linux q3check` pelo
-  usuário para confirmar o gate completo.
+- Estado: correção aplicada e confirmada por `make -f Makefile.linux q3check`.
 
 ## 2026-09-08 - SEC3: ciclo de vida e isolamento de processos
 
