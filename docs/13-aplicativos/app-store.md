@@ -11,11 +11,12 @@ Simple completo, e foi validado no host e no QEMU pelo usuario.
 A interface AS4 usa a aparencia Modern Dark dentro do renderer Classic VESA;
 `guimode modern` continua reservado. AS4 acrescenta atualizacao local FAT12,
 plano topologico de dependencias, rollback manual e historico compacto, sem
-rede, assinatura, alteracao do ZPKG, App API ou loader. A fase foi validada no
+rede ou raiz de confiança de pacotes. A SEC4 acrescenta assinatura individual
+ZPKG v2, sem alterar a App API ou o loader. A fase foi validada no
 host e no QEMU pelo usuario em 01/08/2026.
 
 AS5 acrescenta um repositorio HTTP manual autenticado por Ed25519, catalogo
-binario `ZAC1`, hash SHA-256 por pacote e cache FAT12 A/B. O codigo esta
+binario `ZAC1`, hash SHA-256 por pacote, assinatura individual ZPKG v2 e cache FAT12 A/B. O codigo esta
 implementado; build, auditorias host e matriz QEMU permanecem pendentes de
 validacao pelo usuario. HTTP e somente transporte: consulta, download,
 instalacao e atualizacao exigem acoes explicitas e o remoto inicia desabilitado
@@ -29,6 +30,7 @@ O snapshot combina:
 Fontes:     arquivos *.ZPK na raiz do volume
 Instalados: APPS/<ID>/META.DAT
 Executavel: APPS/<ID>/APP.ZAP
+Autorizacao: APPS/<ID>/AUTH.DAT
 ```
 
 O catalogo ignora diretorios e arquivos hidden/system. Ele percorre toda a
@@ -37,9 +39,17 @@ lexica. Ate 32 entradas combinadas ficam em memoria estatica; nenhum pacote
 completo permanece retido depois do refresh.
 
 Os pacotes sao validados por `app_package_verify_file()`. Assim, o catalogo
-nao duplica o parser de header, manifesto, CRC32 ou ZAPP. Um pacote valido
+nao duplica o parser de header, manifesto, CRC32, hash, assinatura ou ZAPP. Um pacote valido
 cujo ID nao corresponda exatamente ao alias `ID.ZPK` permanece visivel como
 `INVALID / ALIAS_MISMATCH`.
+
+Na SEC4, apenas uma fonte `TRUSTED` pode instalar ou atualizar. Fontes v1
+continuam visíveis para inspeção e remoção, mas aparecem como não assinadas e
+não recebem `INSTALL`, `UPDATE` ou `RUN`. Entradas instaladas também são
+revalidadas com `APP.ZAP`, `META.DAT` e `AUTH.DAT` antes de executar. O catálogo
+preserva os diagnósticos criptográficos (`UNKNOWN_KEY`, `REVOKED_KEY`,
+`SIGNATURE_INVALID` e `HASH_MISMATCH`) sem transformar uma fonte não confiável
+em pacote válido.
 
 Pacotes instalados sem fonte local aparecem como `INSTALLED`. A comparacao de
 `MAJOR.MINOR.PATCH` remove zeros a esquerda e compara o comprimento e os
@@ -148,7 +158,7 @@ implicito; fonte ausente/invalida, ciclo ou conflito recusam o plano antes de
 qualquer escrita.
 
 No FAT12, o servico cria staging privado, copia a versao anterior do alvo e
-persiste journal redundante antes de trocar `APP.ZAP` e `META.DAT` por escrita
+persiste journal redundante antes de trocar `APP.ZAP`, `META.DAT` e `AUTH.DAT` por escrita
 copy-on-write. No boot, `app_package_init()` recupera journal `PREPARED` ou
 `REPLACING` antes de o catalogo ser lido. Journal invalido ou recuperacao
 incompleta bloqueiam mutacoes, mas mantem as consultas. FAT32 informa suporte
@@ -180,7 +190,7 @@ O catalogo `ZAC1` possui header fixo de 128 bytes, ate 16 entradas de 256
 bytes em ordem lexical por ID e assinatura Ed25519 de 64 bytes sobre dominio
 proprio, header e entradas. Header e entradas registram geracao monotona,
 canal, key ID, SHA-256 do bloco, manifesto resumido, tamanho, SHA-256 e caminho
-HTTP de cada `ZPKG v1`. Campos reservados, caminhos inseguros, duplicacoes,
+HTTP de cada `ZPKG v2`. Campos reservados, caminhos inseguros, duplicacoes,
 conflitos, chave desconhecida/revogada, assinatura invalida e replay sao
 recusados antes de qualquer publicacao.
 
@@ -225,7 +235,7 @@ continuam consultaveis e `app_catalog_refresh()` retorna `OK`.
 | `store update <ID\|alias.ZPK> [--downgrade] [--confirm]` | Mostra/aplica o plano local; downgrade exige os dois tokens. |
 | `store rollback <ID> [--confirm]` | Restaura e consome a versao anterior recuperavel. |
 | `store history [ID]` | Lista o historico compacto, opcionalmente filtrado. |
-| `store test fail-after <1..32>` | Configura failpoint AS4 apenas para validacao QEMU. |
+| `store test fail-after <1..48>` | Configura failpoint AS4 apenas para validacao QEMU. |
 | `store remove <ID>` | Executa preflight de remocao sem escrita. |
 | `store remove <ID> --confirm` | Repete o preflight e remove o pacote. |
 | `store run <ID> [args]` | Executa somente o ZAPP instalado; F12 cancela. |
@@ -240,8 +250,11 @@ continuam consultaveis e `app_catalog_refresh()` retorna `OK`.
 | `store remote clear [--confirm]` | Mostra ou limpa somente os slots de cache. |
 | `store remote test fail-after <1..16>` | Configura failpoint de publicacao do cache. |
 
-Todo pacote fonte e apresentado como `LOCAL / NAO ASSINADO`. Os subcomandos
-preservam o diagnostico reproduzivel pelo Shell.
+Pacotes assinados locais são apresentados como `LOCAL / ASSINADO`; fontes v1
+como `LOCAL / NAO ASSINADO`. Um pacote remoto só recebe
+`REMOTE / AUTENTICADO` quando o catálogo ZAC1, o hash publicado e a assinatura
+individual ZPKG v2 forem válidos simultaneamente. Os subcomandos preservam o
+diagnóstico reproduzível pelo Shell.
 
 ## Interface AS3 a AS5
 
@@ -296,14 +309,15 @@ Os fixtures publicos ficam em `docs/fixtures/apps/store/`:
 Geracao e auditoria:
 
 ```text
-python tools/packager.py fixtures-store --output-dir docs/fixtures/apps/store
+python tools/packager.py fixtures-store --private operador-ed25519.pem --output-dir docs/fixtures/apps/store
 python tools/packager.py audit-store --fixtures-dir docs/fixtures/apps/store
 python tools/packager.py audit-store --fixtures-dir docs/fixtures/apps/store --image build/zephyros.img
 ```
 
 `fixtures.json` fixa formato, IDs, estados, motivos, tamanhos e SHA-256. O
 auditor tambem regenera os bytes esperados e, quando recebe `--image`, compara
-cada alias da raiz FAT12. Nenhuma chave privada e usada.
+cada alias da raiz FAT12. A chave privada é sempre externa e não é usada pelo
+runtime.
 
 Os atalhos sao:
 
@@ -365,10 +379,22 @@ make store-as5-seed-demo
 make store-as5-serve
 ```
 
-`store-as5-test` audita chave publica, key ID, assinatura, hashes, manifestos
-e cenarios negativos. Os outros dois alvos servem os perfis seed e update em
+`store-as5-test` audita chave publica, key ID, assinatura individual, hashes,
+manifestos e cenarios negativos. A geração dos perfis requer duas chaves
+externas: a chave AS5 para assinar o `ZAC1` e a chave de pacote para assinar
+cada pacote ZPKG v2. Os outros dois alvos servem os perfis seed e update em
 `10.0.2.2:8000`. A chave privada de teste nao pertence ao repositorio; o
-comando host `sign-store-as5` exige que ela seja fornecida externamente.
+comando host `sign-store-as5` exige ambas, por exemplo:
+
+```text
+python tools/packager.py sign-store-as5 --profile seed --private as5.pem --package-private operador-ed25519.pem --public config/app-store-test-public.json --output-dir docs/fixtures/apps/store-as5
+python tools/packager.py sign-store-as5 --profile update --private as5.pem --package-private operador-ed25519.pem --public config/app-store-test-public.json --output-dir docs/fixtures/apps/store-as5
+```
+
+No ambiente desta implementação os fixtures AS1/AS2/AS4 foram regenerados em
+ZPKG v2 e auditados. Os bytes AS5 existentes permanecem v1 até que a chave
+privada AS5 operacional seja fornecida; o runtime os recusa para instalação,
+atualização e execução, preservando-os somente para compatibilidade de leitura.
 
 O servidor tambem publica os catalogos negativos em
 `/zephyros/apps/invalid/<nome>.zac` e os catalogos de replay em

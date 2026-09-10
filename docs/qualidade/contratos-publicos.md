@@ -69,6 +69,7 @@ permissão por UID/GID no `open` continua reservada à SEC5.
 | `src/include/core/app_files.h` | `docs/melhorias futuras/api de aplicativos e syscalls.md` |
 | `src/include/core/app_loader.h` | `docs/melhorias futuras/api de aplicativos e syscalls.md` |
 | `src/include/core/app_package.h` | `docs/13-aplicativos/pacotes.md` |
+| `src/include/core/app_package_trust.h` | `docs/13-aplicativos/pacotes.md` |
 | `src/include/core/app_remote.h` | `docs/13-aplicativos/app-store.md` |
 | `src/include/core/app_remote_config.h` | `docs/13-aplicativos/app-store.md` |
 | `src/include/core/app_remote_trust.h` | `docs/13-aplicativos/app-store.md` |
@@ -372,6 +373,19 @@ confirmacao, motivos de acao, bloqueadores, serializacao, planos topologicos,
 status transacional, tabela de rollback por app, historico e execucao por ID instalado. O
 contrato canonico permanece em
 `docs/13-aplicativos/pacotes.md`.
+
+Desde a SEC4, `app_package.h` também define a leitura compatível de ZPKG v1 e
+o envelope assinado ZPKG v2. `app_package_info_t` publica o estado de confiança
+e o `key_id`; `app_package_verify_installed()` revalida `APP.ZAP`, `META.DAT`
+e `AUTH.DAT` em conjunto; `app_package_trust_name()` converte o estado para
+texto. `src/include/core/app_package_trust.h` é a raiz independente de
+pacotes, com domínio de assinatura, chave pública Ed25519 ativa e revogações
+estáticas. Os motivos `PACKAGE_UNAUTHORIZED`, `UNKNOWN_KEY`,
+`REVOKED_KEY`, `SIGNATURE_INVALID` e `HASH_MISMATCH` são append-only.
+Instalação, atualização, execução, rollback e planos remotos exigem
+`APP_PACKAGE_TRUST_TRUSTED`; v1 permanece disponível somente para inspeção e
+remoção. A SEC4 não altera `src/boot/boot.asm`, a ABI de aplicativos nem o
+layout das syscalls.
 
 Desde o AS3, `src/include/ui/appstore.h` define o ciclo de vida, os modos
 Simple/Classic e a entrada da App Store nativa. O contrato canonico permanece

@@ -98,13 +98,19 @@ static work_struct_t kernel_timer_work;
 static work_struct_t kernel_network_work;
 static work_struct_t kernel_index_work;
 
+static int kernel_should_wake_shell_for_event(int shell_job_active,
+                                              int app_loader_active) {
+    return shell_job_active || app_loader_active;
+}
+
 static void kernel_wake_shell_for_event(void) {
     process_t* shell_process;
     uint32_t shell_pid = 0U;
     uint32_t shell_generation = 0U;
     uint32_t woken = 0U;
 
-    if (!shell_job_is_active() ||
+    if (!kernel_should_wake_shell_for_event(shell_job_is_active(),
+                                            app_loader_is_foreground_active()) ||
         service_supervisor_get_identity(SERVICE_SUPERVISOR_SHELL,
                                         &shell_pid,
                                         &shell_generation) != OK) return;
@@ -117,7 +123,7 @@ static void kernel_wake_shell_for_event(void) {
     if (process_wake_channel(&shell_process->ipc_wait_channel,
                              WAIT_WAKE_ONE, WAIT_REASON_EVENT,
                              &woken) != OK) {
-        LOG_WARN("KERNEL", "Falha ao acordar Shell por evento de job");
+        LOG_WARN("KERNEL", "Falha ao acordar Shell por evento");
     }
 }
 
@@ -937,6 +943,12 @@ static int kernel_start_automatic_dhcp(void) {
 }
 
 #ifdef ZEPHYROS_HOST_TEST
+int kernel_host_test_should_wake_shell_for_event(int shell_job_active,
+                                                 int app_loader_active) {
+    return kernel_should_wake_shell_for_event(shell_job_active,
+                                              app_loader_active);
+}
+
 int kernel_host_test_run_finite_routes(void) {
     mouse_event_t event = {0};
     uint32_t generation = process_get_event_generation();

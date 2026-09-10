@@ -590,6 +590,7 @@ static void fixture_fill_package_info(app_package_info_t* info) {
     kmemcpy(info->id, "TESTAPP", 8U);
     kmemcpy(info->name, "Test App", 9U);
     kmemcpy(info->version, "1.0", 4U);
+    info->trust = APP_PACKAGE_TRUST_TRUSTED;
 }
 
 int app_package_get_installed_count(void) { return 1; }
@@ -714,6 +715,10 @@ int app_package_run_installed(const char* id, const app_launch_info_t* launch,
 const char* app_package_action_reason_name(
     app_package_action_reason_t reason) {
     return reason == APP_PACKAGE_ACTION_REASON_NONE ? "NONE" : "ERROR";
+}
+
+const char* app_package_trust_name(app_package_trust_t trust) {
+    return trust == APP_PACKAGE_TRUST_TRUSTED ? "TRUSTED" : "UNSIGNED";
 }
 
 const char* app_package_plan_action_name(app_package_plan_action_t action) {

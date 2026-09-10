@@ -576,7 +576,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -586,7 +585,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_handle_key",
@@ -604,7 +603,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -614,7 +612,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_handle_mouse",
@@ -688,7 +686,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -698,7 +695,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_process_command",
@@ -716,7 +713,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -726,7 +722,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_report_app_loader_result",
@@ -744,7 +740,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -754,7 +749,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_report_user_test_result",
@@ -772,7 +767,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -782,7 +776,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell.h:shell_update_hosted_terminal",
@@ -800,7 +794,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -810,7 +803,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_checks.h:shell_checks_host_test_contracts",
@@ -3611,7 +3604,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -3621,7 +3613,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible",
@@ -3663,7 +3655,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -3673,7 +3664,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_reset_input",
@@ -3691,7 +3682,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -3701,7 +3691,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal",
@@ -3719,7 +3709,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -3729,7 +3718,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal",
@@ -3775,7 +3764,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -3785,7 +3773,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/apps/taskmanager.h:taskmgr_close",
@@ -6332,10 +6320,54 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "api:src/include/core/app_package.h:app_package_trust_name",
+      "kind": "api_function",
+      "source": "src/include/core/app_package.h",
+      "symbol": "app_package_trust_name",
+      "linkage": "public",
+      "owner": "core",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-package",
+        "qemu:tst6:fault:package"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "api:src/include/core/app_package.h:app_package_verify_file",
       "kind": "api_function",
       "source": "src/include/core/app_package.h",
       "symbol": "app_package_verify_file",
+      "linkage": "public",
+      "owner": "core",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-package",
+        "qemu:tst6:fault:package"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "api:src/include/core/app_package.h:app_package_verify_installed",
+      "kind": "api_function",
+      "source": "src/include/core/app_package.h",
+      "symbol": "app_package_verify_installed",
       "linkage": "public",
       "owner": "core",
       "layer": "public-header",
@@ -22497,12 +22529,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering",
@@ -22520,12 +22551,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering",
@@ -22543,12 +22573,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_get_device",
@@ -22566,12 +22595,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_get_device_at",
@@ -22589,12 +22617,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_get_device_by_id",
@@ -22612,12 +22639,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_get_device_count",
@@ -22635,12 +22661,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_init",
@@ -22658,12 +22683,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_read",
@@ -22681,12 +22705,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/pci.h:pci_write",
@@ -22704,12 +22727,11 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:drivers:pci",
         "qemu:tst4:platform",
         "qemu:tst6:matrix:baseline"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/drivers/rng.h:rng_get_bytes",
@@ -32604,6 +32626,33 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "api:src/include/process/process.h:process_cancel_user_generation",
+      "kind": "api_function",
+      "source": "src/include/process/process.h",
+      "symbol": "process_cancel_user_generation",
+      "linkage": "public",
+      "owner": "process",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst4:execution",
+        "qemu:tst5:apps",
+        "qemu:tst5:processes",
+        "qemu:tst6:matrix:baseline",
+        "qemu:tst6:stress:kernel",
+        "qemu:tst6:stress:network",
+        "qemu:tst6:stress:storage"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
       "id": "api:src/include/process/process.h:process_cancel_user_test",
       "kind": "api_function",
       "source": "src/include/process/process.h",
@@ -33817,6 +33866,33 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "api:src/include/process/process.h:process_terminate_user_signal_generation",
+      "kind": "api_function",
+      "source": "src/include/process/process.h",
+      "symbol": "process_terminate_user_signal_generation",
+      "linkage": "public",
+      "owner": "process",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst4:execution",
+        "qemu:tst5:apps",
+        "qemu:tst5:processes",
+        "qemu:tst6:matrix:baseline",
+        "qemu:tst6:stress:kernel",
+        "qemu:tst6:stress:network",
+        "qemu:tst6:stress:storage"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
       "id": "api:src/include/process/process.h:process_unblock",
       "kind": "api_function",
       "source": "src/include/process/process.h",
@@ -34788,6 +34864,33 @@
       ],
       "tags": [],
       "coverage_mode": "direct"
+    },
+    {
+      "id": "api:src/include/process/signal.h:process_signal_send_generation",
+      "kind": "api_function",
+      "source": "src/include/process/signal.h",
+      "symbol": "process_signal_send_generation",
+      "linkage": "public",
+      "owner": "process",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:tst4:execution",
+        "qemu:tst5:apps",
+        "qemu:tst5:processes",
+        "qemu:tst6:matrix:baseline",
+        "qemu:tst6:stress:kernel",
+        "qemu:tst6:stress:network",
+        "qemu:tst6:stress:storage"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "api:src/include/process/signal.h:process_signal_validate_state",
@@ -47689,6 +47792,27 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/core/app_loader.c:app_loader_lookup_identity",
+      "kind": "c_function",
+      "source": "src/core/app_loader.c",
+      "symbol": "app_loader_lookup_identity",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-loader"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "c:src/core/app_loader.c:app_loader_magic_is_valid",
       "kind": "c_function",
       "source": "src/core/app_loader.c",
@@ -48270,6 +48394,48 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/core/app_package.c:app_package_build_auth",
+      "kind": "c_function",
+      "source": "src/core/app_package.c",
+      "symbol": "app_package_build_auth",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-package"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/app_package.c:app_package_build_auth_path",
+      "kind": "c_function",
+      "source": "src/core/app_package.c",
+      "symbol": "app_package_build_auth_path",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-package"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "c:src/core/app_package.c:app_package_build_directory",
       "kind": "c_function",
       "source": "src/core/app_package.c",
@@ -48295,6 +48461,27 @@
       "kind": "c_function",
       "source": "src/core/app_package.c",
       "symbol": "app_package_build_entry_path",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-package"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/app_package.c:app_package_build_metadata_path",
+      "kind": "c_function",
+      "source": "src/core/app_package.c",
+      "symbol": "app_package_build_metadata_path",
       "linkage": "static",
       "owner": "core",
       "layer": "kernel-source",
@@ -48652,6 +48839,27 @@
       "kind": "c_function",
       "source": "src/core/app_package.c",
       "symbol": "app_package_crc32",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-package"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/app_package.c:app_package_crc32_pair",
+      "kind": "c_function",
+      "source": "src/core/app_package.c",
+      "symbol": "app_package_crc32_pair",
       "linkage": "static",
       "owner": "core",
       "layer": "kernel-source",
@@ -49119,6 +49327,27 @@
       "source": "src/core/app_package.c",
       "symbol": "app_package_install_file",
       "linkage": "external",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-package"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/app_package.c:app_package_installed_files_are_exact",
+      "kind": "c_function",
+      "source": "src/core/app_package.c",
+      "symbol": "app_package_installed_files_are_exact",
+      "linkage": "static",
       "owner": "core",
       "layer": "kernel-source",
       "preconditions": "definir no caso de teste associado",
@@ -49853,6 +50082,27 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/core/app_package.c:app_package_require_trusted",
+      "kind": "c_function",
+      "source": "src/core/app_package.c",
+      "symbol": "app_package_require_trusted",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-package"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "c:src/core/app_package.c:app_package_restore_backup",
       "kind": "c_function",
       "source": "src/core/app_package.c",
@@ -49922,6 +50172,27 @@
       "source": "src/core/app_package.c",
       "symbol": "app_package_run_installed",
       "linkage": "external",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-package"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/app_package.c:app_package_set_trust_identity",
+      "kind": "c_function",
+      "source": "src/core/app_package.c",
+      "symbol": "app_package_set_trust_identity",
+      "linkage": "static",
       "owner": "core",
       "layer": "kernel-source",
       "preconditions": "definir no caso de teste associado",
@@ -50212,10 +50483,115 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/core/app_package.c:app_package_trust_name",
+      "kind": "c_function",
+      "source": "src/core/app_package.c",
+      "symbol": "app_package_trust_name",
+      "linkage": "external",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-package"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/app_package.c:app_package_trust_reason",
+      "kind": "c_function",
+      "source": "src/core/app_package.c",
+      "symbol": "app_package_trust_reason",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-package"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/app_package.c:app_package_v2_header_is_valid",
+      "kind": "c_function",
+      "source": "src/core/app_package.c",
+      "symbol": "app_package_v2_header_is_valid",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-package"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/app_package.c:app_package_v2_key_is_revoked",
+      "kind": "c_function",
+      "source": "src/core/app_package.c",
+      "symbol": "app_package_v2_key_is_revoked",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-package"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "c:src/core/app_package.c:app_package_validate_plan_entry",
       "kind": "c_function",
       "source": "src/core/app_package.c",
       "symbol": "app_package_validate_plan_entry",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-package"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/app_package.c:app_package_verify_components",
+      "kind": "c_function",
+      "source": "src/core/app_package.c",
+      "symbol": "app_package_verify_components",
       "linkage": "static",
       "owner": "core",
       "layer": "kernel-source",
@@ -50238,6 +50614,48 @@
       "source": "src/core/app_package.c",
       "symbol": "app_package_verify_file",
       "linkage": "external",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-package"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/app_package.c:app_package_verify_installed",
+      "kind": "c_function",
+      "source": "src/core/app_package.c",
+      "symbol": "app_package_verify_installed",
+      "linkage": "external",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:app-package"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/core/app_package.c:app_package_verify_v2",
+      "kind": "c_function",
+      "source": "src/core/app_package.c",
+      "symbol": "app_package_verify_v2",
+      "linkage": "static",
       "owner": "core",
       "layer": "kernel-source",
       "preconditions": "definir no caso de teste associado",
@@ -61734,7 +62152,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -61758,7 +62175,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -61782,7 +62198,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:tst5:krn6-diagnostics"
       ],
       "tags": [],
@@ -61804,7 +62219,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -61826,12 +62240,9 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:tst5:blackbox"
-      ],
-      "tags": [],
-      "coverage_mode": "integration"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_report",
@@ -61849,7 +62260,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -61895,7 +62305,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -61919,7 +62328,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:tst5:krn6-diagnostics"
       ],
       "tags": [],
@@ -61941,7 +62349,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -61965,7 +62372,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -127303,6 +127709,24 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/kernel/kernel.c:kernel_host_test_should_wake_shell_for_event",
+      "kind": "c_function",
+      "source": "src/kernel/kernel.c",
+      "symbol": "kernel_host_test_should_wake_shell_for_event",
+      "linkage": "external",
+      "owner": "kernel",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
       "id": "c:src/kernel/kernel.c:kernel_index_work_callback",
       "kind": "c_function",
       "source": "src/kernel/kernel.c",
@@ -127625,6 +128049,24 @@
       ],
       "tags": [],
       "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/kernel/kernel.c:kernel_should_wake_shell_for_event",
+      "kind": "c_function",
+      "source": "src/kernel/kernel.c",
+      "symbol": "kernel_should_wake_shell_for_event",
+      "linkage": "static",
+      "owner": "kernel",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/kernel/kernel.c:kernel_start_automatic_dhcp",
@@ -131930,6 +132372,24 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/process/process.c:process_cancel_user_generation",
+      "kind": "c_function",
+      "source": "src/process/process.c",
+      "symbol": "process_cancel_user_generation",
+      "linkage": "external",
+      "owner": "process",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
       "id": "c:src/process/process.c:process_cancel_user_test",
       "kind": "c_function",
       "source": "src/process/process.c",
@@ -133667,6 +134127,24 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/process/process.c:process_terminate_user_signal_generation",
+      "kind": "c_function",
+      "source": "src/process/process.c",
+      "symbol": "process_terminate_user_signal_generation",
+      "linkage": "external",
+      "owner": "process",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
       "id": "c:src/process/process.c:process_unblock",
       "kind": "c_function",
       "source": "src/process/process.c",
@@ -135136,6 +135614,24 @@
       ],
       "tags": [],
       "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/process/signal.c:process_signal_send_generation",
+      "kind": "c_function",
+      "source": "src/process/signal.c",
+      "symbol": "process_signal_send_generation",
+      "linkage": "external",
+      "owner": "process",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/process/signal.c:process_signal_validate_state",
@@ -138252,7 +138748,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -138262,7 +138757,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell.c:shell_handle_mouse",
@@ -138322,7 +138817,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:network",
@@ -138332,7 +138826,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell.c:shell_process_command",
@@ -138519,7 +139013,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -138527,7 +139020,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell.c:shell_runtime_resume_terminal",
@@ -138612,7 +139105,6 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:core",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -138620,7 +139112,7 @@
         "qemu:tst5:update-recovery"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/shell/shell.c:shell_update_hosted_terminal",
@@ -141548,6 +142040,27 @@
       "kind": "c_function",
       "source": "src/shell/shell_commands_apps.c",
       "symbol": "cmd_icons_print_status",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:commands-apps"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/shell/shell_commands_apps.c:shell_app_extract_package_id",
+      "kind": "c_function",
+      "source": "src/shell/shell_commands_apps.c",
+      "symbol": "shell_app_extract_package_id",
       "linkage": "static",
       "owner": "shell",
       "layer": "kernel-source",
@@ -163304,7 +163817,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:app",
@@ -163326,7 +163839,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:appcheck",
@@ -163350,7 +163863,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:beep",
@@ -163372,7 +163885,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:blkcheck",
@@ -163396,7 +163909,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:blkstat",
@@ -163418,7 +163931,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:cache",
@@ -163440,7 +163953,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:cachestat",
@@ -163462,7 +163975,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:cat",
@@ -163484,7 +163997,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:cd",
@@ -163506,7 +164019,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:clear",
@@ -163528,7 +164041,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:clock",
@@ -163552,7 +164065,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:compress",
@@ -163574,7 +164087,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:cpu",
@@ -163596,7 +164109,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:desktop",
@@ -163618,7 +164131,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:devcheck",
@@ -163642,7 +164155,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:device-info",
@@ -163664,7 +164177,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:device-scan",
@@ -163686,7 +164199,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:devices",
@@ -163708,7 +164221,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:display",
@@ -163730,7 +164243,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:echo",
@@ -163752,7 +164265,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:edit",
@@ -163774,7 +164287,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:explorer",
@@ -163796,7 +164309,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:grep",
@@ -163818,7 +164331,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:guimode",
@@ -163840,7 +164353,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:guitest",
@@ -163862,7 +164375,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:health",
@@ -163886,7 +164399,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:help",
@@ -163908,7 +164421,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:http",
@@ -163930,7 +164443,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:icons",
@@ -163952,7 +164465,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:index",
@@ -163974,7 +164487,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:irqstat",
@@ -163998,7 +164511,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:job",
@@ -164020,7 +164533,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:kill",
@@ -164042,7 +164555,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:kmetrics",
@@ -164066,7 +164579,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:log",
@@ -164088,7 +164601,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:ls",
@@ -164110,7 +164623,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:melody",
@@ -164132,7 +164645,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:mem",
@@ -164154,7 +164667,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:memcheck",
@@ -164178,7 +164691,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:mount",
@@ -164200,7 +164713,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:mouse",
@@ -164222,7 +164735,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:net",
@@ -164246,7 +164759,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:netstat",
@@ -164268,7 +164781,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:nslookup",
@@ -164290,7 +164803,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:pagefault",
@@ -164312,7 +164825,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:ping",
@@ -164334,7 +164847,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:pipetest",
@@ -164356,7 +164869,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:pkg",
@@ -164378,7 +164891,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:pkgcheck",
@@ -164400,7 +164913,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:play",
@@ -164422,7 +164935,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:power",
@@ -164444,7 +164957,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:poweroff",
@@ -164466,7 +164979,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:proccheck",
@@ -164490,7 +165003,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:procs",
@@ -164512,7 +165025,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:pwd",
@@ -164534,7 +165047,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:q2check",
@@ -164556,7 +165069,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:reboot",
@@ -164578,7 +165091,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:regcheck",
@@ -164602,7 +165115,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:route",
@@ -164626,7 +165139,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:schedcheck",
@@ -164650,7 +165163,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:search",
@@ -164672,7 +165185,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:selecttest",
@@ -164694,7 +165207,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:settings",
@@ -164716,7 +165229,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:shutdown",
@@ -164738,7 +165251,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:sigtest",
@@ -164760,7 +165273,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:skbstat",
@@ -164782,7 +165295,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:slabinfo",
@@ -164804,7 +165317,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:slabtest",
@@ -164828,7 +165341,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:sockstat",
@@ -164852,7 +165365,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:stack",
@@ -164874,7 +165387,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:stats",
@@ -164896,7 +165409,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:stop",
@@ -164918,7 +165431,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:storage",
@@ -164942,7 +165455,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:store",
@@ -164964,7 +165477,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:sync",
@@ -164986,7 +165499,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:taskcfg",
@@ -165008,7 +165521,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:taskmgr",
@@ -165030,7 +165543,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:threads",
@@ -165052,7 +165565,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:threadtest",
@@ -165074,7 +165587,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:timer",
@@ -165098,7 +165611,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:tls",
@@ -165122,7 +165635,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:update",
@@ -165144,7 +165657,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:updater",
@@ -165166,7 +165679,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:uptime",
@@ -165188,7 +165701,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:usb",
@@ -165210,7 +165723,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:usertest",
@@ -165232,7 +165745,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:vfs",
@@ -165256,7 +165769,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:view",
@@ -165278,7 +165791,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:vmamap",
@@ -165300,7 +165813,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:wait",
@@ -165324,7 +165837,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:wifi",
@@ -165346,7 +165859,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:wm",
@@ -165368,7 +165881,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:workq",
@@ -165392,7 +165905,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "command:wqinfo",
@@ -165416,7 +165929,7 @@
       "case_ids": [
         "host:shell:dispatch"
       ],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "syscall:0",
@@ -166662,6 +167175,7 @@
         "c:src/core/app_loader.c:app_loader_is_foreground_active",
         "c:src/core/app_loader.c:app_loader_is_launch_space",
         "c:src/core/app_loader.c:app_loader_is_ready",
+        "c:src/core/app_loader.c:app_loader_lookup_identity",
         "c:src/core/app_loader.c:app_loader_magic_is_valid",
         "c:src/core/app_loader.c:app_loader_prepare_launch",
         "c:src/core/app_loader.c:app_loader_reap_active",
@@ -166731,7 +167245,9 @@
         "api:src/include/core/app_package.h:app_package_run_diagnostics",
         "api:src/include/core/app_package.h:app_package_run_installed",
         "api:src/include/core/app_package.h:app_package_test_fail_after",
+        "api:src/include/core/app_package.h:app_package_trust_name",
         "api:src/include/core/app_package.h:app_package_verify_file",
+        "api:src/include/core/app_package.h:app_package_verify_installed",
         "api:src/include/core/log.h:log_clear_buffer",
         "api:src/include/core/log.h:log_copy_recent",
         "api:src/include/core/log.h:log_get_buffer",
@@ -166764,8 +167280,11 @@
         "c:src/core/app_package.c:app_package_apply_plan_from_directory_internal",
         "c:src/core/app_package.c:app_package_apply_staged_plan",
         "c:src/core/app_package.c:app_package_backup_path",
+        "c:src/core/app_package.c:app_package_build_auth",
+        "c:src/core/app_package.c:app_package_build_auth_path",
         "c:src/core/app_package.c:app_package_build_directory",
         "c:src/core/app_package.c:app_package_build_entry_path",
+        "c:src/core/app_package.c:app_package_build_metadata_path",
         "c:src/core/app_package.c:app_package_build_single_install_plan",
         "c:src/core/app_package.c:app_package_build_source_path",
         "c:src/core/app_package.c:app_package_check_action_ready",
@@ -166783,6 +167302,7 @@
         "c:src/core/app_package.c:app_package_copy_string",
         "c:src/core/app_package.c:app_package_copy_text",
         "c:src/core/app_package.c:app_package_crc32",
+        "c:src/core/app_package.c:app_package_crc32_pair",
         "c:src/core/app_package.c:app_package_decode",
         "c:src/core/app_package.c:app_package_delete_installed_file",
         "c:src/core/app_package.c:app_package_discard_rollback",
@@ -166805,6 +167325,7 @@
         "c:src/core/app_package.c:app_package_init",
         "c:src/core/app_package.c:app_package_install_confirmed",
         "c:src/core/app_package.c:app_package_install_file",
+        "c:src/core/app_package.c:app_package_installed_files_are_exact",
         "c:src/core/app_package.c:app_package_is_installed",
         "c:src/core/app_package.c:app_package_is_mutation_active",
         "c:src/core/app_package.c:app_package_is_ready",
@@ -166839,10 +167360,12 @@
         "c:src/core/app_package.c:app_package_remove",
         "c:src/core/app_package.c:app_package_remove_confirmed",
         "c:src/core/app_package.c:app_package_remove_root_if_present",
+        "c:src/core/app_package.c:app_package_require_trusted",
         "c:src/core/app_package.c:app_package_restore_backup",
         "c:src/core/app_package.c:app_package_rollback_confirmed",
         "c:src/core/app_package.c:app_package_run_diagnostics",
         "c:src/core/app_package.c:app_package_run_installed",
+        "c:src/core/app_package.c:app_package_set_trust_identity",
         "c:src/core/app_package.c:app_package_stage_entry",
         "c:src/core/app_package.c:app_package_stage_path",
         "c:src/core/app_package.c:app_package_stage_plan",
@@ -166856,8 +167379,15 @@
         "c:src/core/app_package.c:app_package_text_equals",
         "c:src/core/app_package.c:app_package_transaction_init",
         "c:src/core/app_package.c:app_package_transaction_load_records",
+        "c:src/core/app_package.c:app_package_trust_name",
+        "c:src/core/app_package.c:app_package_trust_reason",
+        "c:src/core/app_package.c:app_package_v2_header_is_valid",
+        "c:src/core/app_package.c:app_package_v2_key_is_revoked",
         "c:src/core/app_package.c:app_package_validate_plan_entry",
+        "c:src/core/app_package.c:app_package_verify_components",
         "c:src/core/app_package.c:app_package_verify_file",
+        "c:src/core/app_package.c:app_package_verify_installed",
+        "c:src/core/app_package.c:app_package_verify_v2",
         "c:src/core/app_package.c:app_package_version_is_valid",
         "c:src/core/app_package.c:app_package_write_backup",
         "c:src/core/app_package.c:app_package_write_history",
@@ -170723,16 +171253,6 @@
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
       "surface_ids": [
-        "api:src/include/drivers/pci.h:pci_enable_bus_mastering",
-        "api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering",
-        "api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering",
-        "api:src/include/drivers/pci.h:pci_get_device",
-        "api:src/include/drivers/pci.h:pci_get_device_at",
-        "api:src/include/drivers/pci.h:pci_get_device_by_id",
-        "api:src/include/drivers/pci.h:pci_get_device_count",
-        "api:src/include/drivers/pci.h:pci_init",
-        "api:src/include/drivers/pci.h:pci_read",
-        "api:src/include/drivers/pci.h:pci_write",
         "c:src/drivers/pci.c:inl",
         "c:src/drivers/pci.c:outl",
         "c:src/drivers/pci.c:pci_enable_bus_mastering",
@@ -174530,6 +175050,7 @@
         "c:src/shell/shell_commands_apps.c:cmd_guitest",
         "c:src/shell/shell_commands_apps.c:cmd_icons",
         "c:src/shell/shell_commands_apps.c:cmd_icons_print_status",
+        "c:src/shell/shell_commands_apps.c:shell_app_extract_package_id",
         "c:src/shell/shell_commands_apps.c:shell_commands_apps_host_test_contracts",
         "c:src/shell/shell_commands_apps.c:shell_dispatch_cmd_app",
         "c:src/shell/shell_commands_apps.c:shell_dispatch_cmd_desktop",
@@ -174943,31 +175464,15 @@
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
       "surface_ids": [
-        "api:src/include/apps/shell.h:shell_handle_app_request",
-        "api:src/include/apps/shell.h:shell_handle_key",
         "api:src/include/apps/shell.h:shell_handle_mouse",
         "api:src/include/apps/shell.h:shell_init",
-        "api:src/include/apps/shell.h:shell_print_prompt",
-        "api:src/include/apps/shell.h:shell_process_command",
-        "api:src/include/apps/shell.h:shell_report_app_loader_result",
-        "api:src/include/apps/shell.h:shell_report_user_test_result",
-        "api:src/include/apps/shell.h:shell_update_hosted_terminal",
         "api:src/include/apps/shell_runtime.h:shell_runtime_finish_command",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_reset_input",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal",
         "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal",
-        "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal_for_scene",
-        "c:src/shell/shell.c:shell_handle_key",
         "c:src/shell/shell.c:shell_handle_mouse",
         "c:src/shell/shell.c:shell_init",
-        "c:src/shell/shell.c:shell_print_prompt",
         "c:src/shell/shell.c:shell_redraw_after_overlay_close",
         "c:src/shell/shell.c:shell_runtime_finish_command",
-        "c:src/shell/shell.c:shell_runtime_reset_input",
-        "c:src/shell/shell.c:shell_runtime_suspend_terminal",
-        "c:src/shell/shell.c:shell_should_show_prompt"
+        "c:src/shell/shell.c:shell_runtime_suspend_terminal"
       ],
       "tags": [
         "host",
@@ -177948,17 +178453,7 @@
       "cleanup": "processo host encerrado e relatorio de cobertura preservado",
       "status": "AUTOMATED",
       "surface_ids": [
-        "c:src/core/kernel_tests_blackbox.c:blackbox_contains",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_equals",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_length",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_marker",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_report",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_snapshot",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_wait_for_marker",
-        "c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_is_krn6_case",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_reset_krn6_observation",
-        "c:src/core/kernel_tests_blackbox.c:blackbox_validate_krn6_output"
+        "c:src/core/kernel_tests_blackbox.c:blackbox_reset_krn6_observation"
       ]
     },
     {
@@ -179038,6 +179533,7 @@
         "api:src/include/process/process.h:process_bootstrap_idle",
         "api:src/include/process/process.h:process_cancel_focused_user",
         "api:src/include/process/process.h:process_cancel_user",
+        "api:src/include/process/process.h:process_cancel_user_generation",
         "api:src/include/process/process.h:process_cancel_user_test",
         "api:src/include/process/process.h:process_cancel_wait",
         "api:src/include/process/process.h:process_copy_waiters",
@@ -179077,6 +179573,7 @@
         "api:src/include/process/process.h:process_start_user",
         "api:src/include/process/process.h:process_take_user_test_result",
         "api:src/include/process/process.h:process_terminate_user_signal",
+        "api:src/include/process/process.h:process_terminate_user_signal_generation",
         "api:src/include/process/process.h:process_unblock",
         "api:src/include/process/process.h:process_wait",
         "api:src/include/process/process.h:process_wake_channel",
@@ -179102,6 +179599,7 @@
         "api:src/include/process/signal.h:process_signal_return",
         "api:src/include/process/signal.h:process_signal_self_test",
         "api:src/include/process/signal.h:process_signal_send",
+        "api:src/include/process/signal.h:process_signal_send_generation",
         "api:src/include/process/signal.h:process_signal_validate_state",
         "api:src/include/process/thread.h:thread_block",
         "api:src/include/process/thread.h:thread_block_indefinite",
@@ -181728,6 +182226,7 @@
         "api:src/include/process/process.h:process_bootstrap_idle",
         "api:src/include/process/process.h:process_cancel_focused_user",
         "api:src/include/process/process.h:process_cancel_user",
+        "api:src/include/process/process.h:process_cancel_user_generation",
         "api:src/include/process/process.h:process_cancel_user_test",
         "api:src/include/process/process.h:process_cancel_wait",
         "api:src/include/process/process.h:process_copy_waiters",
@@ -181771,6 +182270,7 @@
         "api:src/include/process/process.h:process_start_user",
         "api:src/include/process/process.h:process_take_user_test_result",
         "api:src/include/process/process.h:process_terminate_user_signal",
+        "api:src/include/process/process.h:process_terminate_user_signal_generation",
         "api:src/include/process/process.h:process_unblock",
         "api:src/include/process/process.h:process_wait",
         "api:src/include/process/process.h:process_wake_channel",
@@ -181796,6 +182296,7 @@
         "api:src/include/process/signal.h:process_signal_return",
         "api:src/include/process/signal.h:process_signal_self_test",
         "api:src/include/process/signal.h:process_signal_send",
+        "api:src/include/process/signal.h:process_signal_send_generation",
         "api:src/include/process/signal.h:process_signal_validate_state",
         "api:src/include/process/thread.h:thread_block",
         "api:src/include/process/thread.h:thread_block_indefinite",
@@ -183712,6 +184213,7 @@
         "api:src/include/process/process.h:process_bootstrap_idle",
         "api:src/include/process/process.h:process_cancel_focused_user",
         "api:src/include/process/process.h:process_cancel_user",
+        "api:src/include/process/process.h:process_cancel_user_generation",
         "api:src/include/process/process.h:process_cancel_user_test",
         "api:src/include/process/process.h:process_cancel_wait",
         "api:src/include/process/process.h:process_copy_waiters",
@@ -183755,6 +184257,7 @@
         "api:src/include/process/process.h:process_start_user",
         "api:src/include/process/process.h:process_take_user_test_result",
         "api:src/include/process/process.h:process_terminate_user_signal",
+        "api:src/include/process/process.h:process_terminate_user_signal_generation",
         "api:src/include/process/process.h:process_unblock",
         "api:src/include/process/process.h:process_wait",
         "api:src/include/process/process.h:process_wake_channel",
@@ -183780,6 +184283,7 @@
         "api:src/include/process/signal.h:process_signal_return",
         "api:src/include/process/signal.h:process_signal_self_test",
         "api:src/include/process/signal.h:process_signal_send",
+        "api:src/include/process/signal.h:process_signal_send_generation",
         "api:src/include/process/signal.h:process_signal_validate_state",
         "api:src/include/process/thread.h:thread_block",
         "api:src/include/process/thread.h:thread_block_indefinite",
@@ -185779,7 +186283,9 @@
         "api:src/include/core/app_package.h:app_package_run_diagnostics",
         "api:src/include/core/app_package.h:app_package_run_installed",
         "api:src/include/core/app_package.h:app_package_test_fail_after",
+        "api:src/include/core/app_package.h:app_package_trust_name",
         "api:src/include/core/app_package.h:app_package_verify_file",
+        "api:src/include/core/app_package.h:app_package_verify_installed",
         "c:src/core/app_package.c:app_package_action_fail",
         "c:src/core/app_package.c:app_package_action_reset",
         "c:src/core/app_package.c:app_package_evaluate_space",
@@ -186393,6 +186899,7 @@
         "api:src/include/process/process.h:process_bootstrap_idle",
         "api:src/include/process/process.h:process_cancel_focused_user",
         "api:src/include/process/process.h:process_cancel_user",
+        "api:src/include/process/process.h:process_cancel_user_generation",
         "api:src/include/process/process.h:process_cancel_user_test",
         "api:src/include/process/process.h:process_cancel_wait",
         "api:src/include/process/process.h:process_copy_waiters",
@@ -186432,6 +186939,7 @@
         "api:src/include/process/process.h:process_start_user",
         "api:src/include/process/process.h:process_take_user_test_result",
         "api:src/include/process/process.h:process_terminate_user_signal",
+        "api:src/include/process/process.h:process_terminate_user_signal_generation",
         "api:src/include/process/process.h:process_unblock",
         "api:src/include/process/process.h:process_wait",
         "api:src/include/process/process.h:process_wake_channel",
@@ -186457,6 +186965,7 @@
         "api:src/include/process/signal.h:process_signal_return",
         "api:src/include/process/signal.h:process_signal_self_test",
         "api:src/include/process/signal.h:process_signal_send",
+        "api:src/include/process/signal.h:process_signal_send_generation",
         "api:src/include/process/signal.h:process_signal_validate_state",
         "api:src/include/process/thread.h:thread_block",
         "api:src/include/process/thread.h:thread_block_indefinite",
@@ -187187,6 +187696,7 @@
         "api:src/include/process/process.h:process_bootstrap_idle",
         "api:src/include/process/process.h:process_cancel_focused_user",
         "api:src/include/process/process.h:process_cancel_user",
+        "api:src/include/process/process.h:process_cancel_user_generation",
         "api:src/include/process/process.h:process_cancel_user_test",
         "api:src/include/process/process.h:process_cancel_wait",
         "api:src/include/process/process.h:process_copy_waiters",
@@ -187230,6 +187740,7 @@
         "api:src/include/process/process.h:process_start_user",
         "api:src/include/process/process.h:process_take_user_test_result",
         "api:src/include/process/process.h:process_terminate_user_signal",
+        "api:src/include/process/process.h:process_terminate_user_signal_generation",
         "api:src/include/process/process.h:process_unblock",
         "api:src/include/process/process.h:process_wait",
         "api:src/include/process/process.h:process_wake_channel",
@@ -187255,6 +187766,7 @@
         "api:src/include/process/signal.h:process_signal_return",
         "api:src/include/process/signal.h:process_signal_self_test",
         "api:src/include/process/signal.h:process_signal_send",
+        "api:src/include/process/signal.h:process_signal_send_generation",
         "api:src/include/process/signal.h:process_signal_validate_state",
         "api:src/include/process/thread.h:thread_block",
         "api:src/include/process/thread.h:thread_block_indefinite",
@@ -187737,6 +188249,7 @@
         "api:src/include/process/process.h:process_bootstrap_idle",
         "api:src/include/process/process.h:process_cancel_focused_user",
         "api:src/include/process/process.h:process_cancel_user",
+        "api:src/include/process/process.h:process_cancel_user_generation",
         "api:src/include/process/process.h:process_cancel_user_test",
         "api:src/include/process/process.h:process_cancel_wait",
         "api:src/include/process/process.h:process_copy_waiters",
@@ -187776,6 +188289,7 @@
         "api:src/include/process/process.h:process_start_user",
         "api:src/include/process/process.h:process_take_user_test_result",
         "api:src/include/process/process.h:process_terminate_user_signal",
+        "api:src/include/process/process.h:process_terminate_user_signal_generation",
         "api:src/include/process/process.h:process_unblock",
         "api:src/include/process/process.h:process_wait",
         "api:src/include/process/process.h:process_wake_channel",
@@ -187801,6 +188315,7 @@
         "api:src/include/process/signal.h:process_signal_return",
         "api:src/include/process/signal.h:process_signal_self_test",
         "api:src/include/process/signal.h:process_signal_send",
+        "api:src/include/process/signal.h:process_signal_send_generation",
         "api:src/include/process/signal.h:process_signal_validate_state",
         "api:src/include/process/thread.h:thread_block",
         "api:src/include/process/thread.h:thread_block_indefinite",
@@ -188477,6 +188992,7 @@
         "api:src/include/process/process.h:process_bootstrap_idle",
         "api:src/include/process/process.h:process_cancel_focused_user",
         "api:src/include/process/process.h:process_cancel_user",
+        "api:src/include/process/process.h:process_cancel_user_generation",
         "api:src/include/process/process.h:process_cancel_user_test",
         "api:src/include/process/process.h:process_cancel_wait",
         "api:src/include/process/process.h:process_copy_waiters",
@@ -188520,6 +189036,7 @@
         "api:src/include/process/process.h:process_start_user",
         "api:src/include/process/process.h:process_take_user_test_result",
         "api:src/include/process/process.h:process_terminate_user_signal",
+        "api:src/include/process/process.h:process_terminate_user_signal_generation",
         "api:src/include/process/process.h:process_unblock",
         "api:src/include/process/process.h:process_wait",
         "api:src/include/process/process.h:process_wake_channel",
@@ -188545,6 +189062,7 @@
         "api:src/include/process/signal.h:process_signal_return",
         "api:src/include/process/signal.h:process_signal_self_test",
         "api:src/include/process/signal.h:process_signal_send",
+        "api:src/include/process/signal.h:process_signal_send_generation",
         "api:src/include/process/signal.h:process_signal_validate_state",
         "api:src/include/process/thread.h:thread_block",
         "api:src/include/process/thread.h:thread_block_indefinite",

@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "core/app_catalog.h"
+#include "core/app_package_trust.h"
 #include "core/app_loader.h"
 #include "core/errors.h"
 #include "core/log.h"
@@ -136,6 +137,9 @@ static host_package_t* host_add_package(const char* alias, const char* id,
     host_copy(package->info.id, sizeof(package->info.id), id);
     host_copy(package->info.name, sizeof(package->info.name), id);
     host_copy(package->info.version, sizeof(package->info.version), version);
+    package->info.trust = APP_PACKAGE_TRUST_TRUSTED;
+    memcpy(package->info.key_id, app_package_trust_active_key_id,
+           APP_PACKAGE_V2_KEY_ID_SIZE);
     package->verify_result = result;
     return package;
 }
@@ -148,6 +152,9 @@ static int host_add_installed(const char* id, const char* version) {
     host_copy(info->id, sizeof(info->id), id);
     host_copy(info->name, sizeof(info->name), id);
     host_copy(info->version, sizeof(info->version), version);
+    info->trust = APP_PACKAGE_TRUST_TRUSTED;
+    memcpy(info->key_id, app_package_trust_active_key_id,
+           APP_PACKAGE_V2_KEY_ID_SIZE);
     return OK;
 }
 
@@ -407,6 +414,13 @@ static int test_catalog_entries(void) {
         strcmp(app_catalog_reason_name((app_catalog_reason_t)99), "UNKNOWN") != 0) {
         return 27;
     }
+    fake_packages[0].info.trust = APP_PACKAGE_TRUST_UNSIGNED;
+    if (app_catalog_refresh() != OK ||
+        app_catalog_find_entry("APP1.ZPK", &entry) != OK ||
+        entry.reason != APP_CATALOG_REASON_PACKAGE_UNTRUSTED ||
+        entry.capabilities != APP_CATALOG_CAPABILITY_VERIFY) return 28;
+    fake_packages[0].info.trust = APP_PACKAGE_TRUST_TRUSTED;
+    if (app_catalog_refresh() != OK) return 29;
     return 0;
 }
 

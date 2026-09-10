@@ -1,3 +1,5 @@
+import argparse
+import hashlib
 import json
 import struct
 import tempfile
@@ -144,6 +146,37 @@ class PackagerContainerTests(unittest.TestCase):
         with self.assertRaises(packager.PackageError):
             packager.inject_package(self.package, Path("missing.img"), "OTHER.ZPK")
 
+    def test_signed_fixture_trust_and_rejections(self):
+        fixture_path = (Path(__file__).parents[2] /
+                        "docs/fixtures/apps/store/VALID.ZPK")
+        package = fixture_path.read_bytes()
+        parsed = packager.parse_package(package)
+        self.assertEqual(parsed.trust, "TRUSTED")
+        self.assertEqual(parsed.key_id, packager.PACKAGE_KEY_ID)
+        self.assertEqual(len(package[:packager.PACKAGE_V2_HEADER_SIZE]),
+                         packager.PACKAGE_V2_HEADER_SIZE)
+
+        candidates = {
+            "signature": bytearray(package),
+            "truncated": bytearray(package[:-1]),
+            "unknown_key": bytearray(package),
+            "revoked_key": bytearray(package),
+            "reserved": bytearray(package),
+            "crc": bytearray(package),
+        }
+        candidates["signature"][-1] ^= 0x01
+        candidates["unknown_key"][40:56] = bytes(16)
+        candidates["revoked_key"][40:56] = bytes.fromhex("aa" * 16)
+        struct.pack_into("<I", candidates["reserved"], 28, 1)
+        candidates["crc"][packager.PACKAGE_V2_HEADER_SIZE] ^= 0x01
+        content = candidates["crc"][packager.PACKAGE_V2_HEADER_SIZE:]
+        candidates["crc"][56:88] = hashlib.sha256(content).digest()
+
+        for label, candidate in candidates.items():
+            with self.subTest(label=label):
+                with self.assertRaises(packager.PackageError):
+                    packager.parse_package(bytes(candidate))
+
 
 def make_fat32_fixture(path: Path) -> None:
     start_lba = 4096
@@ -238,6 +271,131 @@ class PackagerFixtureTests(unittest.TestCase):
             with self.subTest(alias=alias):
                 with self.assertRaises(packager.PackageError):
                     packager.parse_package(first[alias])
+
+    def test_as5_profile_writer_uses_b64_and_updates_manifest_hashes(self):
+        with tempfile.TemporaryDirectory(prefix="zephyros-tst3-as5-") as root:
+            fixture_root = Path(root)
+            output_dir = fixture_root / "seed"
+            packages = {
+                package_id: package_id.encode("ascii")
+                for package_id in packager.STORE_AS5_IDS
+            }
+            catalog = b"catalog"
+            artifacts = [
+                {
+                    "expected": "NONE",
+                    "file": f"seed/{package_id}.ZPK.b64",
+                    "sha256": "",
+                    "type": "package",
+                }
+                for package_id in packager.STORE_AS5_IDS
+            ]
+            artifacts.append({
+                "expected": "NONE",
+                "file": "seed/stable.zac.b64",
+                "sha256": "",
+                "type": "catalog",
+            })
+            (fixture_root / "fixtures.json").write_text(
+                json.dumps({
+                    "format": packager.STORE_AS5_FIXTURE_FORMAT,
+                    "artifacts": artifacts,
+                }), encoding="utf-8"
+            )
+
+            packager.write_store_as5_profile(output_dir, packages, catalog)
+
+            for package_id, data in packages.items():
+                path = output_dir / f"{package_id}.ZPK.b64"
+                self.assertEqual(packager.store_as5_read_blob(path), data)
+            self.assertEqual(
+                packager.store_as5_read_blob(output_dir / "stable.zac.b64"),
+                catalog,
+            )
+            published = json.loads((fixture_root / "fixtures.json").read_text())
+            self.assertEqual(
+                {item["sha256"] for item in published["artifacts"]},
+                {
+                    hashlib.sha256(data).hexdigest()
+                    for data in (*packages.values(), catalog)
+                },
+            )
+
+    def test_as5_sign_command_generates_trusted_profile(self):
+        from cryptography.hazmat.primitives import serialization
+        from cryptography.hazmat.primitives.asymmetric import ed25519
+
+        with tempfile.TemporaryDirectory(prefix="zephyros-tst3-as5-sign-") as root:
+            fixture_root = Path(root)
+            output_dir = fixture_root / "seed"
+            package_private = ed25519.Ed25519PrivateKey.from_private_bytes(
+                bytes.fromhex(
+                    "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60"
+                )
+            )
+            catalog_private = ed25519.Ed25519PrivateKey.generate()
+            private_encoding = serialization.PrivateFormat.PKCS8
+            no_encryption = serialization.NoEncryption()
+            package_key_path = fixture_root / "package.pem"
+            package_key_path.write_bytes(package_private.private_bytes(
+                serialization.Encoding.PEM, private_encoding, no_encryption
+            ))
+            catalog_key_path = fixture_root / "catalog.pem"
+            catalog_key_path.write_bytes(catalog_private.private_bytes(
+                serialization.Encoding.PEM, private_encoding, no_encryption
+            ))
+            catalog_public = catalog_private.public_key().public_bytes(
+                serialization.Encoding.Raw, serialization.PublicFormat.Raw
+            )
+            public_path = fixture_root / "public.json"
+            public_path.write_text(json.dumps({
+                "format": packager.STORE_AS5_PUBLIC_FORMAT,
+                "algorithm": "Ed25519",
+                "trust": "test-only",
+                "public_key_hex": catalog_public.hex(),
+                "key_id_hex": hashlib.sha256(catalog_public).digest()[:16].hex(),
+                "revoked_key_ids": [],
+            }), encoding="utf-8")
+            artifacts = [
+                {
+                    "expected": "NONE",
+                    "file": f"seed/{package_id}.ZPK.b64",
+                    "sha256": "",
+                    "type": "package",
+                }
+                for package_id in packager.STORE_AS5_IDS
+            ]
+            artifacts.append({
+                "expected": "NONE",
+                "file": "seed/stable.zac.b64",
+                "sha256": "",
+                "type": "catalog",
+            })
+            (fixture_root / "fixtures.json").write_text(
+                json.dumps({
+                    "format": packager.STORE_AS5_FIXTURE_FORMAT,
+                    "artifacts": artifacts,
+                }), encoding="utf-8"
+            )
+
+            result = packager.command_sign_store_as5(argparse.Namespace(
+                profile="seed",
+                private=str(catalog_key_path),
+                package_private=str(package_key_path),
+                public=str(public_path),
+                output_dir=str(output_dir),
+            ))
+
+            self.assertEqual(result, 0)
+            for package_id in packager.STORE_AS5_IDS:
+                package = packager.store_as5_read_blob(
+                    output_dir / f"{package_id}.ZPK.b64"
+                )
+                self.assertEqual(packager.parse_package(package).trust, "TRUSTED")
+            catalog = packager.store_as5_read_blob(output_dir / "stable.zac.b64")
+            public = packager.store_as5_public_config(public_path)
+            _, reason = packager.parse_store_as5_catalog(catalog, public)
+            self.assertEqual(reason, "NONE")
 
 
 if __name__ == "__main__":

@@ -8,6 +8,7 @@
 #include "apps/shell_runtime.h"
 #include "core/app_builtin.h"
 #include "core/app_loader.h"
+#include "core/app_package.h"
 #include "core/errors.h"
 #include "core/log.h"
 #include "core/recovery.h"
@@ -40,6 +41,7 @@ static int fixture_recovery_enabled = 1;
 static int fixture_wm_active;
 static int fixture_desktop_active;
 static int fixture_calls_app;
+static int fixture_calls_package;
 static int fixture_calls_scene;
 static int fixture_calls_display;
 static int fixture_calls_media;
@@ -210,6 +212,15 @@ int app_loader_run_file_with_launch(const char* path,
     if (!path || !launch || !pid_out) return ERR_NULL;
     *pid_out = HOST_APP_PID;
     fixture_calls_app++;
+    return fixture_recovery_enabled ? OK : ERR_UNAVAILABLE;
+}
+
+int app_package_run_installed(const char* id, const app_launch_info_t* launch,
+                              uint32_t* pid_out,
+                              app_package_action_result_t* result_out) {
+    if (!id || !launch || !pid_out || !result_out) return ERR_NULL;
+    fixture_calls_package++;
+    *pid_out = HOST_APP_PID;
     return fixture_recovery_enabled ? OK : ERR_UNAVAILABLE;
 }
 
@@ -433,6 +444,7 @@ static int fixture_validate_calls(void) {
     int failures = 0;
 
     if (fixture_calls_app == 0) failures++;
+    if (fixture_calls_package == 0) failures++;
     if (fixture_calls_scene == 0) failures++;
     if (fixture_calls_display == 0) failures++;
     if (fixture_calls_media == 0) failures++;

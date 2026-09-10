@@ -1047,14 +1047,28 @@ static uint32_t appstore_gui_entry_color(const app_catalog_entry_t* entry) {
 
 static const char* appstore_entry_trust(const app_catalog_entry_t* entry,
                                         const app_package_info_t* info) {
-    if (entry && entry->installed.id[0]) {
-        if (!app_remote_is_provenance_available()) return "N/D";
-        if (info && app_remote_get_installed_trust(
+    const app_package_info_t* effective = entry && entry->installed.id[0] ?
+        &entry->installed : info;
+
+    if (effective && effective->trust == APP_PACKAGE_TRUST_TRUSTED) {
+        if (entry && entry->installed.id[0] &&
+            app_remote_is_provenance_available() &&
+            app_remote_get_installed_trust(
                 entry->installed.id, entry->installed.version)) {
-            return "REMOTO / AUTENTICADO (TESTE)";
+            return "REMOTE / AUTENTICADO";
         }
+        return "LOCAL / ASSINADO";
     }
-    return entry && entry->has_source ? "LOCAL / NAO ASSINADO" : "N/D";
+    if (effective && effective->trust == APP_PACKAGE_TRUST_UNSIGNED) {
+        return "LOCAL / NAO ASSINADO";
+    }
+    if (effective && effective->trust != APP_PACKAGE_TRUST_TRUSTED) {
+        return app_package_trust_name(effective->trust);
+    }
+    if (entry && entry->installed.id[0]) {
+        return "N/D";
+    }
+    return "N/D";
 }
 
 static void appstore_simple_draw_entries(void) {
@@ -1970,15 +1984,19 @@ static void appstore_host_prepare_entries(void) {
     appstore_entry_count = 3U;
     kmemcpy(appstore_entries[0].alias, "core", 5U);
     kmemcpy(appstore_entries[0].source.id, "CORE", 5U);
+    appstore_entries[0].source.trust = APP_PACKAGE_TRUST_TRUSTED;
     appstore_entries[0].has_source = 1U;
     appstore_entries[0].state = APP_CATALOG_STATE_AVAILABLE;
     kmemcpy(appstore_entries[1].alias, "tool", 5U);
     kmemcpy(appstore_entries[1].source.id, "TOOL", 5U);
     kmemcpy(appstore_entries[1].installed.id, "TOOL", 5U);
+    appstore_entries[1].source.trust = APP_PACKAGE_TRUST_TRUSTED;
+    appstore_entries[1].installed.trust = APP_PACKAGE_TRUST_TRUSTED;
     appstore_entries[1].has_source = 1U;
     appstore_entries[1].has_installed = 1U;
     appstore_entries[1].state = APP_CATALOG_STATE_UPDATE_AVAILABLE;
     kmemcpy(appstore_entries[2].installed.id, "OLD", 4U);
+    appstore_entries[2].installed.trust = APP_PACKAGE_TRUST_UNSIGNED;
     appstore_entries[2].has_installed = 1U;
     appstore_entries[2].state = APP_CATALOG_STATE_INSTALLED;
     kmemset(appstore_remote_entries, 0, sizeof(appstore_remote_entries));
@@ -2097,7 +2115,7 @@ static int appstore_host_state_contracts(void) {
     }
     entry->state = APP_CATALOG_STATE_UPDATE_AVAILABLE;
     if (appstore_host_expect(kstrcmp(appstore_entry_trust(entry, info),
-                                     "N/D") == 0) != OK) return ERR_STATE;
+                                  "LOCAL / ASSINADO") == 0) != OK) return ERR_STATE;
     appstore_clear_context();
     appstore_set_result(APPSTORE_RESULT_INSTALL, ERR_INVALID, "rejeitado");
     return appstore_host_expect(appstore_confirm == APPSTORE_CONFIRM_NONE &&

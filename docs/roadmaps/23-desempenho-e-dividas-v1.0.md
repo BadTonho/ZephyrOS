@@ -128,7 +128,7 @@ de segurança, memória, processos, VFS, hardware ou Shell para a release.
 
 ## Critérios de saída
 
-- As duas dívidas técnicas estão quitadas ou possuem aceite explícito renovado
+- As dívidas técnicas estão quitadas ou possuem aceite explícito renovado
   com impacto e prazo, sem serem escondidas no percentual da versão.
 - Todos os Roadmaps 18–22 possuem evidência própria de sucesso, falha,
   repetição e limpeza; o Roadmap 23 não substitui esses gates.

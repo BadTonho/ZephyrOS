@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "core/app_remote.h"
+#include "core/app_package_trust.h"
 #include "core/app_remote_trust.h"
 #include "core/crypto.h"
 #include "core/errors.h"
@@ -38,6 +39,7 @@ static const uint8_t host_application_package[HOST_PACKAGE_SIZE] = {'A', 'P', 'P
 static uint8_t host_network_ready;
 static uint8_t host_package_ready;
 static app_package_action_reason_t host_package_failure_reason;
+static uint8_t host_package_signature_invalid;
 static uint8_t host_installed_dependency;
 static uint8_t host_installed_application;
 static uint8_t host_application_updated;
@@ -178,6 +180,7 @@ static void host_reset(void) {
     host_network_ready = 1U;
     host_package_ready = 1U;
     host_package_failure_reason = APP_PACKAGE_ACTION_REASON_NONE;
+    host_package_signature_invalid = 0U;
     host_installed_dependency = 0U;
     host_installed_application = 0U;
     host_application_updated = 0U;
@@ -302,6 +305,9 @@ static void host_fill_info(app_package_info_t* info, const char* id,
     host_copy(info->name, sizeof(info->name),
               strcmp(id, "APP1") == 0 ? "Application" : "Dependency");
     host_copy(info->version, sizeof(info->version), version);
+    info->trust = APP_PACKAGE_TRUST_TRUSTED;
+    memcpy(info->key_id, app_package_trust_active_key_id,
+           APP_PACKAGE_V2_KEY_ID_SIZE);
     if (strcmp(id, "APP1") == 0) {
         info->dependency_count = 1U;
         host_copy(info->dependencies[0], sizeof(info->dependencies[0]), "DEP1");
@@ -661,6 +667,7 @@ int app_package_get_installed_info(int index, app_package_info_t* info_out) {
 
 int app_package_verify_file(const char* path, app_package_info_t* info_out) {
     if (!path || !info_out) return ERR_NULL;
+    if (host_package_signature_invalid) return ERR_INVALID;
     if (strstr(path, "DEP1.ZPK") || strstr(path, "APPS/DEP1/APP.ZAP")) {
         host_fill_info(info_out, "DEP1", "1.0.0");
         return OK;
@@ -806,6 +813,12 @@ static int host_test_contracts(void) {
     failures += host_check(app_remote_check("http://repo/stable.zac", NULL,
                                             &result) == OK,
                            "check_before_publish");
+    host_package_signature_invalid = 1U;
+    failures += host_check(app_remote_fetch("APP1", "http://repo/stable.zac", 1,
+                                            NULL, &result) == ERR_INVALID &&
+                           result.reason == APP_REMOTE_REASON_PACKAGE_VERIFY,
+                           "package_signature_rejected");
+    host_package_signature_invalid = 0U;
     failures += host_check(app_remote_fetch("APP1", "http://repo/stable.zac", 1,
                                             NULL, &result) == OK &&
                            result.cache_published && result.plan.entry_count == 2U,

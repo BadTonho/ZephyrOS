@@ -3,7 +3,9 @@
 #include <string.h>
 
 #include "core/app_package.h"
+#include "core/app_package_trust.h"
 #include "core/app_loader.h"
+#include "core/crypto.h"
 #include "core/errors.h"
 #include "core/log.h"
 #include "core/memory.h"
@@ -14,8 +16,8 @@
 #define HOST_FILE_CAPACITY 96U
 #define HOST_FILE_BYTES 16384U
 #define HOST_PACKAGE_BUFFER_SIZE \
-    (sizeof(app_package_header_t) + APP_PACKAGE_MAX_MANIFEST_SIZE + \
-     APP_IMAGE_MAX_FILE_SIZE + 1U)
+    (APP_PACKAGE_V2_HEADER_SIZE + APP_PACKAGE_MAX_MANIFEST_SIZE + \
+     APP_IMAGE_MAX_FILE_SIZE + APP_PACKAGE_V2_SIGNATURE_SIZE + 1U)
 
 static uintptr_t coverage_addresses[HOST_COVERAGE_CAPACITY];
 static uint32_t coverage_count;
@@ -40,6 +42,39 @@ static uint32_t host_next_pid;
 static uint8_t host_package_buffer[HOST_PACKAGE_BUFFER_SIZE];
 static uint8_t host_package_v2[HOST_PACKAGE_BUFFER_SIZE];
 static uint8_t host_package_dependency[HOST_PACKAGE_BUFFER_SIZE];
+static uint8_t host_package_legacy[HOST_PACKAGE_BUFFER_SIZE];
+
+int crypto_ed25519_verify_init(
+    crypto_ed25519_verify_ctx_t* context,
+    const uint8_t signature[CRYPTO_ED25519_SIGNATURE_SIZE],
+    const uint8_t public_key[CRYPTO_ED25519_PUBLIC_KEY_SIZE]) {
+    int nonzero = 0;
+
+    if (!context || !signature || !public_key) return ERR_NULL;
+    for (uint32_t index = 0U; index < CRYPTO_ED25519_SIGNATURE_SIZE; index++) {
+        if (signature[index] != 0U) nonzero = 1;
+    }
+    if (!crypto_equal(public_key, app_package_trust_active_public_key,
+                      CRYPTO_ED25519_PUBLIC_KEY_SIZE) || !nonzero) {
+        return ERR_INVALID;
+    }
+    memset(context, 0, sizeof(*context));
+    context->active = 1U;
+    return OK;
+}
+
+int crypto_ed25519_verify_update(crypto_ed25519_verify_ctx_t* context,
+                                 const uint8_t* data, uint32_t size) {
+    if (!context || (!data && size > 0U)) return ERR_NULL;
+    return context->active ? OK : ERR_STATE;
+}
+
+int crypto_ed25519_verify_final(crypto_ed25519_verify_ctx_t* context) {
+    if (!context) return ERR_NULL;
+    if (!context->active) return ERR_INVALID;
+    context->active = 0U;
+    return OK;
+}
 
 static void __attribute__((no_instrument_function))
 coverage_record(void* function) {
@@ -194,6 +229,7 @@ static void host_reset(void) {
     memset(host_package_buffer, 0, sizeof(host_package_buffer));
     memset(host_package_v2, 0, sizeof(host_package_v2));
     memset(host_package_dependency, 0, sizeof(host_package_dependency));
+    memset(host_package_legacy, 0, sizeof(host_package_legacy));
     host_fs_type = FS_TYPE_NONE;
     host_loader_ready = 0U;
     host_loader_foreground = 0U;
@@ -416,7 +452,9 @@ static int test_names(void) {
         "READ_ERROR", "WRITE_ERROR", "UPDATE_NOT_AVAILABLE",
         "DOWNGRADE_REQUIRES_CONFIRM", "PLAN_INCOMPLETE", "PLAN_CYCLE",
         "PLAN_CONFLICT", "TRANSACTION_UNAVAILABLE", "TRANSACTION_PENDING",
-        "ROLLBACK_UNAVAILABLE", "RECOVERY_FAILED", "HISTORY_UNAVAILABLE"
+        "ROLLBACK_UNAVAILABLE", "RECOVERY_FAILED", "HISTORY_UNAVAILABLE",
+        "PACKAGE_UNAUTHORIZED", "UNKNOWN_KEY", "REVOKED_KEY",
+        "SIGNATURE_INVALID", "HASH_MISMATCH"
     };
     static const char* const operations[] = {
         "NONE", "INSTALL", "REMOVE", "UPDATE", "ROLLBACK", "RECOVERY"
@@ -484,7 +522,7 @@ static uint32_t host_build_package(uint8_t* output, const char* id,
                                    const char* version,
                                    const char* dependencies) {
     char manifest[APP_PACKAGE_MAX_MANIFEST_SIZE];
-    app_package_header_t package_header;
+    app_package_v2_header_t package_header;
     app_image_header_t image_header;
     int manifest_size;
     uint32_t payload_size;
@@ -510,27 +548,89 @@ static uint32_t host_build_package(uint8_t* output, const char* id,
     payload_size = APP_IMAGE_HEADER_SIZE + 1U;
     memset(&package_header, 0, sizeof(package_header));
     memcpy(package_header.magic, "ZPKG", 4U);
+    package_header.version = APP_PACKAGE_SIGNED_VERSION;
+    package_header.header_size = APP_PACKAGE_V2_HEADER_SIZE;
+    package_header.architecture = APP_PACKAGE_ARCH_I386;
+    package_header.manifest_size = (uint32_t)manifest_size;
+    package_header.payload_size = payload_size;
+    package_header.flags = APP_PACKAGE_FLAG_SIGNED;
+    package_header.signature_offset = APP_PACKAGE_V2_HEADER_SIZE +
+                                      (uint32_t)manifest_size + payload_size;
+    package_header.signature_size = APP_PACKAGE_V2_SIGNATURE_SIZE;
+    package_header.signature_algorithm =
+        APP_PACKAGE_V2_SIGNATURE_ALGORITHM_ED25519;
+    memcpy(package_header.key_id, app_package_trust_active_key_id,
+           APP_PACKAGE_V2_KEY_ID_SIZE);
+    memcpy(output + APP_PACKAGE_V2_HEADER_SIZE, manifest, (size_t)manifest_size);
+    memcpy(output + APP_PACKAGE_V2_HEADER_SIZE + manifest_size,
+           &image_header, sizeof(image_header));
+    output[APP_PACKAGE_V2_HEADER_SIZE + manifest_size + APP_IMAGE_HEADER_SIZE] =
+        0xC3U;
+    package_header.content_crc32 = host_crc32(
+        output + APP_PACKAGE_V2_HEADER_SIZE,
+        (uint32_t)manifest_size + payload_size);
+    crypto_sha256(output + APP_PACKAGE_V2_HEADER_SIZE,
+                  (uint32_t)manifest_size + payload_size,
+                  package_header.content_sha256);
+    memcpy(output, &package_header, sizeof(package_header));
+    for (uint32_t index = 0U; index < APP_PACKAGE_V2_SIGNATURE_SIZE; index++) {
+        output[package_header.signature_offset + index] = (uint8_t)(index + 1U);
+    }
+    return package_header.signature_offset + APP_PACKAGE_V2_SIGNATURE_SIZE;
+}
+
+static uint32_t host_build_legacy_package(uint8_t* output, const char* id,
+                                          const char* version,
+                                          const char* dependencies) {
+    char manifest[APP_PACKAGE_MAX_MANIFEST_SIZE];
+    app_package_header_t package_header;
+    app_image_header_t image_header;
+    int manifest_size;
+    uint32_t payload_size = APP_IMAGE_HEADER_SIZE + 1U;
+    uint32_t content_size;
+
+    manifest_size = snprintf(
+        manifest, sizeof(manifest),
+        "id=%s\nname=Legacy package\nversion=%s\napi=0.9\n"
+        "entry=APP.ZAP\ndependencies=%s\n", id, version, dependencies);
+    if (manifest_size <= 0 ||
+        (uint32_t)manifest_size > APP_PACKAGE_MAX_MANIFEST_SIZE) return 0U;
+    memset(&image_header, 0, sizeof(image_header));
+    memcpy(image_header.magic, "ZAPP", 4U);
+    image_header.version = APP_IMAGE_VERSION;
+    image_header.architecture = APP_IMAGE_ARCH_I386;
+    image_header.header_size = APP_IMAGE_HEADER_SIZE;
+    image_header.code_offset = APP_IMAGE_HEADER_SIZE;
+    image_header.code_size = 1U;
+    image_header.data_offset = APP_IMAGE_HEADER_SIZE + 1U;
+    image_header.entry_offset = 0U;
+    image_header.stack_size = APP_IMAGE_STACK_SIZE;
+    image_header.flags = APP_IMAGE_FLAGS_NONE;
+    memset(&package_header, 0, sizeof(package_header));
+    memcpy(package_header.magic, "ZPKG", 4U);
     package_header.version = APP_PACKAGE_VERSION;
     package_header.header_size = sizeof(app_package_header_t);
     package_header.architecture = APP_PACKAGE_ARCH_I386;
     package_header.manifest_size = (uint32_t)manifest_size;
     package_header.payload_size = payload_size;
-    memcpy(output + sizeof(package_header), manifest, (size_t)manifest_size);
-    memcpy(output + sizeof(package_header) + manifest_size,
+    content_size = (uint32_t)manifest_size + payload_size;
+    memcpy(output + sizeof(app_package_header_t), manifest,
+           (size_t)manifest_size);
+    memcpy(output + sizeof(app_package_header_t) + manifest_size,
            &image_header, sizeof(image_header));
-    output[sizeof(package_header) + manifest_size + APP_IMAGE_HEADER_SIZE] =
+    output[sizeof(app_package_header_t) + manifest_size + APP_IMAGE_HEADER_SIZE] =
         0xC3U;
     package_header.content_crc32 = host_crc32(
-        output + sizeof(package_header),
-        (uint32_t)manifest_size + payload_size);
+        output + sizeof(app_package_header_t), content_size);
     memcpy(output, &package_header, sizeof(package_header));
-    return sizeof(package_header) + (uint32_t)manifest_size + payload_size;
+    return sizeof(app_package_header_t) + content_size;
 }
 
 static int host_prepare_package_files(void) {
     uint32_t package_size;
     uint32_t package_v2_size;
     uint32_t dependency_size;
+    uint32_t legacy_size;
     int result;
 
     host_reset();
@@ -541,7 +641,11 @@ static int host_prepare_package_files(void) {
     package_v2_size = host_build_package(host_package_v2, "DEMO", "2.0.0", "");
     dependency_size = host_build_package(
         host_package_dependency, "DEPS", "1.0.0", "MISSING");
-    if (!package_size || !package_v2_size || !dependency_size) return 0;
+    legacy_size = host_build_legacy_package(
+        host_package_legacy, "LEGACY", "1.0.0", "");
+    if (!package_size || !package_v2_size || !dependency_size || !legacy_size) {
+        return 0;
+    }
     result = host_store_file("DEMO.ZPK", host_package_buffer, package_size,
                              FS_ATTRIBUTE_ARCHIVE,
                              FS_ATOMIC_CREATE_OR_REPLACE);
@@ -554,12 +658,114 @@ static int host_prepare_package_files(void) {
                              dependency_size, FS_ATTRIBUTE_ARCHIVE,
                              FS_ATOMIC_CREATE_OR_REPLACE);
     if (result != OK) return 0;
+    result = host_store_file("LEGACY.ZPK", host_package_legacy, legacy_size,
+                             FS_ATTRIBUTE_ARCHIVE,
+                             FS_ATOMIC_CREATE_OR_REPLACE);
+    if (result != OK) return 0;
     host_package_buffer[0] = 'X';
     result = host_store_file("BAD.ZPK", host_package_buffer, package_size,
                              FS_ATTRIBUTE_ARCHIVE,
                              FS_ATOMIC_CREATE_OR_REPLACE);
     host_package_buffer[0] = 'Z';
     return result == OK;
+}
+
+static int test_v2_trust_rejections(void) {
+    app_package_info_t info;
+    app_package_v2_header_t header;
+    uint8_t variant[HOST_PACKAGE_BUFFER_SIZE];
+    uint32_t package_size;
+
+    memcpy(&header, host_package_v2, sizeof(header));
+    package_size = header.signature_offset + header.signature_size;
+    if (app_package_verify_file("SRC/DEMO.ZPK", &info) != OK ||
+        info.trust != APP_PACKAGE_TRUST_TRUSTED ||
+        strcmp(app_package_trust_name(info.trust), "TRUSTED") != 0) {
+        return 0;
+    }
+    memcpy(variant, host_package_v2, package_size);
+    variant[APP_PACKAGE_V2_HEADER_SIZE] ^= 1U;
+    if (host_store_file("HASH.ZPK", variant, package_size,
+                        FS_ATTRIBUTE_ARCHIVE,
+                        FS_ATOMIC_CREATE_OR_REPLACE) != OK ||
+        app_package_verify_file("HASH.ZPK", &info) != ERR_INVALID ||
+        info.trust != APP_PACKAGE_TRUST_HASH_MISMATCH) return 0;
+
+    memcpy(variant, host_package_v2, package_size);
+    memset(((app_package_v2_header_t*)variant)->key_id, 0xBB,
+           APP_PACKAGE_V2_KEY_ID_SIZE);
+    if (host_store_file("UNKNOWN.ZPK", variant, package_size,
+                        FS_ATTRIBUTE_ARCHIVE,
+                        FS_ATOMIC_CREATE_OR_REPLACE) != OK ||
+        app_package_verify_file("UNKNOWN.ZPK", &info) != ERR_INVALID ||
+        info.trust != APP_PACKAGE_TRUST_UNKNOWN_KEY) return 0;
+
+    memcpy(variant, host_package_v2, package_size);
+    memset(((app_package_v2_header_t*)variant)->key_id, 0xAA,
+           APP_PACKAGE_V2_KEY_ID_SIZE);
+    if (host_store_file("REVOKED.ZPK", variant, package_size,
+                        FS_ATTRIBUTE_ARCHIVE,
+                        FS_ATOMIC_CREATE_OR_REPLACE) != OK ||
+        app_package_verify_file("REVOKED.ZPK", &info) != ERR_INVALID ||
+        info.trust != APP_PACKAGE_TRUST_REVOKED_KEY) return 0;
+
+    memcpy(variant, host_package_v2, package_size);
+    memset(variant + header.signature_offset, 0, header.signature_size);
+    if (host_store_file("BADSIG.ZPK", variant, package_size,
+                        FS_ATTRIBUTE_ARCHIVE,
+                        FS_ATOMIC_CREATE_OR_REPLACE) != OK ||
+        app_package_verify_file("BADSIG.ZPK", &info) != ERR_INVALID ||
+        info.trust != APP_PACKAGE_TRUST_INVALID_SIGNATURE) return 0;
+
+    memcpy(variant, host_package_v2, package_size);
+    ((app_package_v2_header_t*)variant)->reserved_tail[0] = 1U;
+    if (host_store_file("BADHDR.ZPK", variant, package_size,
+                        FS_ATTRIBUTE_ARCHIVE,
+                        FS_ATOMIC_CREATE_OR_REPLACE) != OK ||
+        app_package_verify_file("BADHDR.ZPK", &info) != ERR_INVALID ||
+        info.trust != APP_PACKAGE_TRUST_INVALID) return 0;
+
+    memcpy(variant, host_package_v2, package_size);
+    variant[header.signature_offset - header.signature_size - 1U] ^= 1U;
+    crypto_sha256(variant + APP_PACKAGE_V2_HEADER_SIZE,
+                  header.manifest_size + header.payload_size,
+                  ((app_package_v2_header_t*)variant)->content_sha256);
+    if (host_store_file("BADCRC.ZPK", variant, package_size,
+                        FS_ATTRIBUTE_ARCHIVE,
+                        FS_ATOMIC_CREATE_OR_REPLACE) != OK ||
+        app_package_verify_file("BADCRC.ZPK", &info) != ERR_INVALID ||
+        info.trust != APP_PACKAGE_TRUST_INVALID) return 0;
+
+    if (host_store_file("TRUNC.ZPK", host_package_v2, package_size - 1U,
+                        FS_ATTRIBUTE_ARCHIVE,
+                        FS_ATOMIC_CREATE_OR_REPLACE) != OK ||
+        app_package_verify_file("TRUNC.ZPK", &info) != ERR_INVALID ||
+        info.trust != APP_PACKAGE_TRUST_INVALID) return 0;
+    return 1;
+}
+
+static int host_install_legacy_files(void) {
+    app_package_header_t header;
+    const uint8_t* manifest;
+    const uint8_t* image;
+
+    memcpy(&header, host_package_legacy, sizeof(header));
+    manifest = host_package_legacy + sizeof(header);
+    image = manifest + header.manifest_size;
+    if (host_find_file("APPS") < 0 &&
+        host_store_file("APPS", 0, 0U,
+                        APP_PACKAGE_DIRECTORY_ATTRIBUTE,
+                        FS_ATOMIC_CREATE_OR_REPLACE) != OK) return 0;
+    if (host_store_file("APPS/LEGACY", 0, 0U,
+                        APP_PACKAGE_DIRECTORY_ATTRIBUTE,
+                        FS_ATOMIC_CREATE_OR_REPLACE) != OK ||
+        host_store_file("APPS/LEGACY/APP.ZAP", image, header.payload_size,
+                        FS_ATTRIBUTE_ARCHIVE,
+                        FS_ATOMIC_CREATE_OR_REPLACE) != OK ||
+        host_store_file("APPS/LEGACY/META.DAT", manifest,
+                        header.manifest_size, FS_ATTRIBUTE_ARCHIVE,
+                        FS_ATOMIC_CREATE_OR_REPLACE) != OK) return 0;
+    return 1;
 }
 
 static int test_unready_and_invalid(void) {
@@ -592,6 +798,8 @@ static int test_unready_and_invalid(void) {
         app_package_verify_file("DEMO.ZPK", 0) != ERR_NULL ||
         app_package_verify_file("MISSING.ZPK", &info) != ERR_NOT_FOUND ||
         app_package_verify_file("BAD.ZPK", &info) != ERR_INVALID ||
+        app_package_verify_file("LEGACY.ZPK", &info) != OK ||
+        info.trust != APP_PACKAGE_TRUST_UNSIGNED ||
         app_package_get_status(0) != ERR_NULL ||
         app_package_get_history_count(0) != ERR_NULL ||
         app_package_get_history_count(&count) != OK || count != 0U ||
@@ -605,7 +813,7 @@ static int test_unready_and_invalid(void) {
         app_package_get_installed_info_by_id("DEMO", 0) != ERR_INVALID ||
         app_package_get_installed_count() != 0 ||
         app_package_test_fail_after(0U) != ERR_INVALID ||
-        app_package_test_fail_after(33U) != ERR_INVALID) {
+        app_package_test_fail_after(49U) != ERR_INVALID) {
         return 0;
     }
     if (app_package_preflight_install(0, &action) != ERR_NULL) {
@@ -623,6 +831,11 @@ static int test_unready_and_invalid(void) {
     }
     if (action.reason != APP_PACKAGE_ACTION_REASON_DEPENDENCY_MISSING ||
         action.blocker_count != 1U || strcmp(action.blocker_ids[0], "MISSING") != 0) {
+        return 0;
+    }
+    if (app_package_preflight_install("LEGACY.ZPK", &action) != ERR_INVALID ||
+        action.reason != APP_PACKAGE_ACTION_REASON_PACKAGE_UNAUTHORIZED ||
+        app_package_install_file("LEGACY.ZPK", &info) != ERR_INVALID) {
         return 0;
     }
     if (app_package_install_confirmed(0, &action) != ERR_NULL ||
@@ -684,7 +897,7 @@ static int test_unready_and_invalid(void) {
         app_package_is_mutation_active() != 0) {
         return 0;
     }
-    return 1;
+    return test_v2_trust_rejections();
 }
 
 static void host_fill_plan(app_package_plan_t* plan, const char* from_version,
@@ -707,6 +920,14 @@ static int test_install_update_rollback(void) {
     app_package_plan_t plan;
     app_package_status_t status;
     app_launch_info_t launch;
+    uint8_t saved_app[HOST_FILE_BYTES];
+    uint8_t saved_meta[HOST_FILE_BYTES];
+    uint8_t saved_auth[HOST_FILE_BYTES];
+    uint8_t original_auth[APP_PACKAGE_V2_HEADER_SIZE +
+                          APP_PACKAGE_V2_SIGNATURE_SIZE];
+    int saved_app_size;
+    int saved_meta_size;
+    int saved_auth_size;
     uint32_t history_count;
     uint32_t pid = 0U;
 
@@ -720,7 +941,50 @@ static int test_install_update_rollback(void) {
         strcmp(action.info.id, "DEMO") != 0 ||
         app_package_get_installed_count() != 1 ||
         app_package_get_installed_info(0, &info) != OK ||
-        strcmp(info.version, "1.0.0") != 0) return 0;
+        strcmp(info.version, "1.0.0") != 0 ||
+        info.trust != APP_PACKAGE_TRUST_TRUSTED ||
+        app_package_verify_installed("DEMO", &info) != OK) return 0;
+    saved_app_size = host_read_file("APPS/DEMO/APP.ZAP", saved_app,
+                                    sizeof(saved_app));
+    saved_meta_size = host_read_file("APPS/DEMO/META.DAT", saved_meta,
+                                     sizeof(saved_meta));
+    saved_auth_size = host_read_file("APPS/DEMO/AUTH.DAT", saved_auth,
+                                     sizeof(saved_auth));
+    if (saved_app_size <= 0 || saved_meta_size <= 0 ||
+        saved_auth_size != (int)(APP_PACKAGE_V2_HEADER_SIZE +
+                                 APP_PACKAGE_V2_SIGNATURE_SIZE)) return 0;
+    memcpy(original_auth, saved_auth, (size_t)saved_auth_size);
+    saved_app[APP_IMAGE_HEADER_SIZE] ^= 1U;
+    if (host_store_file("APPS/DEMO/APP.ZAP", saved_app,
+                        (uint32_t)saved_app_size, FS_ATTRIBUTE_ARCHIVE,
+                        FS_ATOMIC_CREATE_OR_REPLACE) != OK ||
+        app_package_run_installed("DEMO", &launch, &pid, &action) != ERR_INVALID ||
+        action.reason != APP_PACKAGE_ACTION_REASON_HASH_MISMATCH) return 0;
+    if (host_store_file("APPS/DEMO/APP.ZAP", host_package_buffer +
+                            APP_PACKAGE_V2_HEADER_SIZE +
+                            ((app_package_v2_header_t*)host_package_buffer)->manifest_size,
+                        (uint32_t)saved_app_size, FS_ATTRIBUTE_ARCHIVE,
+                        FS_ATOMIC_CREATE_OR_REPLACE) != OK) return 0;
+    saved_meta[13] = saved_meta[13] == 'H' ? 'J' : 'H';
+    if (host_store_file("APPS/DEMO/META.DAT", saved_meta,
+                        (uint32_t)saved_meta_size, FS_ATTRIBUTE_ARCHIVE,
+                        FS_ATOMIC_CREATE_OR_REPLACE) != OK ||
+        app_package_run_installed("DEMO", &launch, &pid, &action) != ERR_INVALID ||
+        action.reason != APP_PACKAGE_ACTION_REASON_HASH_MISMATCH) return 0;
+    if (host_store_file("APPS/DEMO/META.DAT", host_package_buffer +
+                            APP_PACKAGE_V2_HEADER_SIZE,
+                        (uint32_t)saved_meta_size, FS_ATTRIBUTE_ARCHIVE,
+                        FS_ATOMIC_CREATE_OR_REPLACE) != OK) return 0;
+    memset(saved_auth + APP_PACKAGE_V2_HEADER_SIZE, 0,
+           APP_PACKAGE_V2_SIGNATURE_SIZE);
+    if (host_store_file("APPS/DEMO/AUTH.DAT", saved_auth,
+                        (uint32_t)saved_auth_size, FS_ATTRIBUTE_ARCHIVE,
+                        FS_ATOMIC_CREATE_OR_REPLACE) != OK ||
+        app_package_run_installed("DEMO", &launch, &pid, &action) != ERR_INVALID ||
+        action.reason != APP_PACKAGE_ACTION_REASON_SIGNATURE_INVALID) return 0;
+    if (host_store_file("APPS/DEMO/AUTH.DAT", original_auth,
+                        (uint32_t)saved_auth_size, FS_ATTRIBUTE_ARCHIVE,
+                        FS_ATOMIC_CREATE_OR_REPLACE) != OK) return 0;
     if (app_package_preflight_install("DEMO.ZPK", &action) != ERR_STATE ||
         action.reason != APP_PACKAGE_ACTION_REASON_ALREADY_INSTALLED ||
         app_package_install_file("DEMO.ZPK", &info) != ERR_STATE) return 0;
@@ -770,6 +1034,13 @@ static int test_install_update_rollback(void) {
         app_package_get_installed_count() != 0 ||
         app_package_get_history_count(&history_count) != OK || history_count < 5U ||
         app_package_remove("DEMO") != ERR_NOT_FOUND) return 0;
+    if (!host_install_legacy_files() || app_package_get_installed_count() != 1 ||
+        app_package_get_installed_info(0, &info) != OK ||
+        info.trust != APP_PACKAGE_TRUST_UNSIGNED ||
+        app_package_run_installed("LEGACY", &launch, &pid, &action) != ERR_INVALID ||
+        action.reason != APP_PACKAGE_ACTION_REASON_PACKAGE_UNAUTHORIZED ||
+        app_package_remove("LEGACY") != OK ||
+        app_package_get_installed_count() != 0) return 0;
     host_fs_type = FS_TYPE_FAT32;
     if (app_package_init() != OK ||
         app_package_preflight_install("DEMO.ZPK", &action) != OK) return 0;

@@ -108,16 +108,29 @@ fechamento do Roadmap 19. Permissões efetivas por UID/GID continuam reservadas
 
 Registro técnico: [`docs/qualidade/auditoria-sec3-processos.md`](../qualidade/auditoria-sec3-processos.md).
 
-### SEC4 — Pacotes e confiança
+### SEC4 — Pacotes e confiança (encerrada; DT100-003 aceita)
 
-- [ ] Validar assinatura, versão, tamanho, CRC/hash, dependências e limites de
+SEC4 encerrada por decisão de escopo, com dívida técnica `DT100-003` aceita.
+Implementação concluída nas camadas de formato, raiz de confiança de
+pacotes, serviço `PKG`, App Store local/remota, Shell e empacotador. ZPKG v1
+permanece somente para inspeção/remoção; ZPKG v2 usa header de 128 bytes,
+Ed25519 e `AUTH.DAT` na transação de três arquivos. A validação host e o build
+completo passaram. A ausência das chaves privadas externas necessárias para
+regenerar os fixtures AS5 foi registrada como `DT100-003`; por isso o
+`make q3check` permanece pendente somente no gate `confianca_as5` e os testes
+QEMU da App Store remota ficam para a quitação da dívida. Os fixtures v1 não são
+aceitos pelo runtime.
+
+- [x] Validar assinatura, versão, tamanho, CRC/hash, dependências e limites de
   cada pacote antes de instalar ou executar.
-- [ ] Rejeitar caminhos fora do destino, nomes inválidos, duplicatas,
+- [x] Rejeitar caminhos fora do destino, nomes inválidos, duplicatas,
   truncamento, arquivos inesperados e manifestos ambíguos.
-- [ ] Confirmar que instalação, atualização, rollback e remoção são
+- [x] Confirmar que instalação, atualização, rollback e remoção são
   transacionais ou deixam estado explicitamente recuperável.
-- [ ] Impedir execução de pacote não autorizado sem apagar o estado anterior.
-- [ ] Garantir que logs de falha não exponham chaves, tokens ou dados sensíveis.
+- [x] Impedir execução de pacote não autorizado sem apagar o estado anterior.
+- [x] Garantir que logs de falha não exponham chaves, tokens ou dados sensíveis.
+- [x] Encerrar SEC4 com a limitação de chaves externas registrada em
+  `DT100-003`, sem versionar material privado nem enfraquecer a verificação.
 
 ### SEC5 — Política mínima de recursos
 

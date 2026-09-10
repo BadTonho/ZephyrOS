@@ -30,6 +30,43 @@ uma etapa.
 |---|---|---|---|---|
 | `DT100-001` | ACEITA | SYNC1 | Roadmap 23 / PERF2 | v1.0.0 |
 | `DT100-002` | ACEITA | SYNC3 / R4 | Roadmap 23 / PERF3 | v1.0.0 |
+| `DT100-003` | ACEITA | SEC4 | Roadmap 19 / SEC4 | v1.0.0 |
+
+## DT100-003 - Chaves externas dos fixtures AS5/ZPKG
+
+- **Estado:** `ACEITA`.
+- **Aceita em:** 2026-09-10 (America/Sao_Paulo).
+- **Origem:** SEC4 - Pacotes e confiança.
+- **Responsável:** [Roadmap 19 - SEC4](../roadmaps/19-abi-seguranca-e-permissoes-v1.0.md#sec4--pacotes-e-confiança).
+- **Versão limite:** v1.0.0.
+
+### Motivo da aceitação
+
+As chaves privadas de distribuição ZPKG e de assinatura do catálogo AS5 não
+serão versionadas. As chaves públicas e os contratos de verificação estão
+implementados, mas as chaves privadas externas necessárias para regenerar os
+fixtures AS5 não estão disponíveis neste ciclo.
+
+### Impacto conhecido
+
+Os fixtures AS5 legados permanecem bloqueados pelo auditor e pelo runtime. O
+`make q3check` não pode ser aprovado no gate `confianca_as5`, e a matriz QEMU
+específica da App Store remota permanece sem execução. A proteção de produção
+continua ativa: pacote sem assinatura ZPKG v2 não é instalável nem executável.
+
+### Critério de quitação
+
+Disponibilizar externamente uma chave privada ZPKG correspondente a
+`app_package_trust.h` e uma chave privada AS5 correspondente a
+`config/app-store-test-public.json`; regenerar os perfis `seed` e `update`,
+auditar hashes e assinaturas, obter `make q3check` em `OK` e executar a matriz
+QEMU remota correspondente. Nenhuma chave privada deverá entrar no repositório.
+
+### Referência de validação
+
+O aceite e o bloqueio reproduzível estão registrados em
+[`registro-validacoes.md`](registro-validacoes.md), no registro SEC4 de
+2026-09-10.
 
 ## DT100-001 - RegCheck full e entrada PS/2
 

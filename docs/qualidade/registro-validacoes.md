@@ -6906,3 +6906,44 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   `host:core:service-supervisor` foi incluído no baseline por aprovação
   explícita e `qemu:tst6:fault:service-supervisor` passou. O run registrou
   `catalog-test`, `storage-fixtures`, cobertura estrita e nenhuma limitação.
+
+- Shell — retorno do prompt corrigido em 2026-09-10 (America/Sao_Paulo).
+  Eventos de encerramento de aplicativo em primeiro plano passaram a acordar
+  o processo do Shell mesmo sem job cooperativo ativo, permitindo recolher o
+  resultado do `app run` e redesenhar o prompt. O reset da entrada também
+  invalida a marca de prompt visível, evitando tela vazia após `clear` ou
+  recriação do terminal.
+
+  Passaram `make test-shell-input-host`, `make test-kernel-host`,
+  `make test-shell-hosted-host`, `make test-app-loader-host`, `make catalog-test`,
+  `make clean` seguido de `make` e `git diff --check`. Nenhum bootloader,
+  syscall ou ABI foi alterado.
+
+- SEC4 — pacotes e confiança — implementação concluída em 2026-09-10
+  (America/Sao_Paulo). ZPKG v2 passou a usar header fixo de 128 bytes,
+  Ed25519, SHA-256, CRC32, `key_id` e raiz de confiança exclusiva. O parser v1
+  continua disponível para inspeção/remoção, mas instalação, atualização,
+  execução, rollback e planos remotos exigem confiança `TRUSTED`. A autorização
+  persistida em `AUTH.DAT` foi incorporada ao staging, journal, backup,
+  rollback, limpeza, remoção e cálculo transacional; `app run
+  APPS/<ID>/APP.ZAP` não contorna mais o serviço de pacotes. O empacotador
+  exige chave privada externa para distribuição e não versiona segredos.
+
+  Passaram `python -m unittest tests.unit.test_packager` (14 testes), o
+  autoteste do empacotador, as auditorias `audit-store`, `audit-store-as2` e
+  `audit-store-as4`, `make test-package-host`, `make test-app-catalog-host`,
+  `make test-app-remote-host`, `make test-appstore-host`,
+  `make test-shell-commands-packages-host`, `make test-shell-commands-apps-host`
+  e `make test-app-loader-host`, além de `make clean` seguido de `make` e
+  `git diff --check`. O catálogo de superfícies foi sincronizado, renderizado
+  e validado; os testes host C diretamente afetados passaram usando o
+  compilador configurado em `Makefile.local`. O gerador `sign-store-as5` também
+  foi ajustado e testado para produzir `.b64`, atualizar os hashes publicados
+  e gerar um perfil assinado auditável.
+  O `make q3check` executou todos
+  os gates anteriores, mas permanece `FAIL` somente porque os fixtures AS5
+  existentes ainda são v1 e aguardam a chave privada externa correspondente
+  para regeneração; a auditoria/runtime os recusam como pacotes instaláveis.
+  Por decisão do usuário, a SEC4 foi encerrada com essa limitação aceita como
+  dívida técnica `DT100-003`; QEMU permanece pendente para a quitação dessa
+  dívida.

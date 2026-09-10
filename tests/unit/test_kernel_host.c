@@ -214,6 +214,10 @@ uint32_t app_loader_get_foreground_pid(void) {
     return 0U;
 }
 
+int app_loader_is_foreground_active(void) {
+    return 0;
+}
+
 int app_loader_cancel_foreground(uint32_t exit_code) {
     (void)exit_code;
     return OK;
@@ -373,7 +377,17 @@ int main(void) {
     int result;
 
     coverage_active = 1U;
-    result = kernel_host_test_run_finite_routes();
+    result = kernel_host_test_should_wake_shell_for_event(0, 0) != 0 ? 1 : 0;
+    if (!result && kernel_host_test_should_wake_shell_for_event(1, 0) != 1) {
+        result = 2;
+    }
+    if (!result && kernel_host_test_should_wake_shell_for_event(0, 1) != 1) {
+        result = 3;
+    }
+    if (!result && kernel_host_test_should_wake_shell_for_event(1, 1) != 1) {
+        result = 4;
+    }
+    if (!result) result = kernel_host_test_run_finite_routes();
     coverage_active = 0U;
     coverage_emit(result);
     return result;

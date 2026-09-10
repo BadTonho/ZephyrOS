@@ -1180,6 +1180,12 @@ make package-test
 make update-test
 ```
 
+Os comandos `python tools/packager.py build` e `make package-demo` geram
+ZPKG v2 e exigem uma chave Ed25519 externa (`--private` ou
+`PACKAGE_PRIVATE_KEY` em `Makefile.local`). A opção `--legacy` fica restrita
+à geração explícita de ZPKG v1 para fixtures de compatibilidade; nenhuma chave
+privada deve ser colocada no repositório.
+
 `test-tst3-host` compila strings e compressao com `-std=c11 -Wall -Wextra
 -Werror`, consulta as estatisticas publicadas da compressao, executa os testes
 Python formais de packager/updater e roda os

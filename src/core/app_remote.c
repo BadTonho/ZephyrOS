@@ -359,6 +359,11 @@ static app_remote_reason_t app_remote_package_reason(
             return APP_REMOTE_REASON_IO;
         case APP_PACKAGE_ACTION_REASON_PACKAGE_INVALID:
         case APP_PACKAGE_ACTION_REASON_ALIAS_MISMATCH:
+        case APP_PACKAGE_ACTION_REASON_PACKAGE_UNAUTHORIZED:
+        case APP_PACKAGE_ACTION_REASON_UNKNOWN_KEY:
+        case APP_PACKAGE_ACTION_REASON_REVOKED_KEY:
+        case APP_PACKAGE_ACTION_REASON_SIGNATURE_INVALID:
+        case APP_PACKAGE_ACTION_REASON_HASH_MISMATCH:
             return APP_REMOTE_REASON_PACKAGE_VERIFY;
         case APP_PACKAGE_ACTION_REASON_SOURCE_NOT_FOUND:
             return APP_REMOTE_REASON_CACHE_INVALID;
@@ -1014,6 +1019,7 @@ static int app_remote_verify_cached_entry(uint8_t slot,
     if (app_remote_hash_cached(slot, entry) != OK) return ERR_INVALID;
     app_remote_cache_path(slot, entry->info.id, path);
     if (app_package_verify_file(path, &verified) != OK ||
+        verified.trust != APP_PACKAGE_TRUST_TRUSTED ||
         !app_remote_info_matches(&entry->info, &verified)) return ERR_INVALID;
     return OK;
 }
@@ -1335,6 +1341,10 @@ static int app_remote_write_cached_package(uint8_t slot,
     app_remote_cache_path(slot, entry->info.id, path);
     result = app_package_verify_file(path, &verified);
     if (result != OK) {
+        *reason_out = APP_REMOTE_REASON_PACKAGE_VERIFY;
+        return ERR_INVALID;
+    }
+    if (verified.trust != APP_PACKAGE_TRUST_TRUSTED) {
         *reason_out = APP_REMOTE_REASON_PACKAGE_VERIFY;
         return ERR_INVALID;
     }

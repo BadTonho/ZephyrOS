@@ -4,24 +4,24 @@
 
 ## Resumo
 
-- Superfícies ativas: **7444**
+- Superfícies ativas: **7470**
 - Casos de teste: **174**
 - Superfícies aposentadas: **59**
 
 | Tipo | Quantidade |
 |---|---:|
-| `api_function` | 1611 |
+| `api_function` | 1616 |
 | `asm_entry` | 101 |
-| `c_function` | 5612 |
+| `c_function` | 5633 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7444 |
+| `COVERED` | 7464 |
 | `MANUAL` | 0 |
-| `PENDING` | 0 |
+| `PENDING` | 6 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -37,18 +37,18 @@
 | `apps` | 172 |
 | `appstore` | 98 |
 | `boot` | 139 |
-| `core` | 2862 |
+| `core` | 2879 |
 | `desktop` | 40 |
 | `drivers` | 932 |
 | `filemanager` | 93 |
 | `fs` | 957 |
 | `gui` | 30 |
 | `icons` | 18 |
-| `kernel` | 58 |
+| `kernel` | 60 |
 | `memory` | 202 |
-| `process` | 295 |
+| `process` | 301 |
 | `settings` | 57 |
-| `shell` | 1091 |
+| `shell` | 1092 |
 | `taskbar` | 47 |
 | `thread` | 36 |
 | `ui` | 149 |
@@ -86,15 +86,15 @@
 | `api:src/include/apps/mediaplayer.h:mp_resume` | `src/include/apps/mediaplayer.h` | `mp_resume` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/mediaplayer.h:mp_stop` | `src/include/apps/mediaplayer.h` | `mp_stop` | `apps` | `COVERED` | 1 |
 | `api:src/include/apps/mediaplayer.h:mp_update` | `src/include/apps/mediaplayer.h` | `mp_update` | `apps` | `COVERED` | 1 |
-| `api:src/include/apps/shell.h:shell_handle_app_request` | `src/include/apps/shell.h` | `shell_handle_app_request` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell.h:shell_handle_key` | `src/include/apps/shell.h` | `shell_handle_key` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell.h:shell_handle_app_request` | `src/include/apps/shell.h` | `shell_handle_app_request` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell.h:shell_handle_key` | `src/include/apps/shell.h` | `shell_handle_key` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell.h:shell_handle_mouse` | `src/include/apps/shell.h` | `shell_handle_mouse` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell.h:shell_init` | `src/include/apps/shell.h` | `shell_init` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell.h:shell_print_prompt` | `src/include/apps/shell.h` | `shell_print_prompt` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell.h:shell_process_command` | `src/include/apps/shell.h` | `shell_process_command` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell.h:shell_report_app_loader_result` | `src/include/apps/shell.h` | `shell_report_app_loader_result` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell.h:shell_report_user_test_result` | `src/include/apps/shell.h` | `shell_report_user_test_result` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell.h:shell_update_hosted_terminal` | `src/include/apps/shell.h` | `shell_update_hosted_terminal` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell.h:shell_print_prompt` | `src/include/apps/shell.h` | `shell_print_prompt` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell.h:shell_process_command` | `src/include/apps/shell.h` | `shell_process_command` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell.h:shell_report_app_loader_result` | `src/include/apps/shell.h` | `shell_report_app_loader_result` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell.h:shell_report_user_test_result` | `src/include/apps/shell.h` | `shell_report_user_test_result` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell.h:shell_update_hosted_terminal` | `src/include/apps/shell.h` | `shell_update_hosted_terminal` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_checks.h:shell_checks_host_test_contracts` | `src/include/apps/shell_checks.h` | `shell_checks_host_test_contracts` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_command_utils.h:shell_command_args_equal` | `src/include/apps/shell_command_utils.h` | `shell_command_args_equal` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_command_utils.h:shell_command_match_subcommand` | `src/include/apps/shell_command_utils.h` | `shell_command_match_subcommand` | `apps` | `COVERED` | 7 |
@@ -211,13 +211,13 @@
 | `api:src/include/apps/shell_runtime.h:shell_network_validate_for_checks` | `src/include/apps/shell_runtime.h` | `shell_network_validate_for_checks` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_runtime.h:shell_packages_host_test_contracts` | `src/include/apps/shell_runtime.h` | `shell_packages_host_test_contracts` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_finish_command` | `src/include/apps/shell_runtime.h` | `shell_runtime_finish_command` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key` | `src/include/apps/shell_runtime.h` | `shell_runtime_handle_terminal_key` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key` | `src/include/apps/shell_runtime.h` | `shell_runtime_handle_terminal_key` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible` | `src/include/apps/shell_runtime.h` | `shell_runtime_is_hosted_visible` | `apps` | `COVERED` | 4 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager` | `src/include/apps/shell_runtime.h` | `shell_runtime_prepare_filemanager` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_reset_input` | `src/include/apps/shell_runtime.h` | `shell_runtime_reset_input` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal` | `src/include/apps/shell_runtime.h` | `shell_runtime_resume_terminal` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager` | `src/include/apps/shell_runtime.h` | `shell_runtime_prepare_filemanager` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_reset_input` | `src/include/apps/shell_runtime.h` | `shell_runtime_reset_input` | `apps` | `COVERED` | 7 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal` | `src/include/apps/shell_runtime.h` | `shell_runtime_resume_terminal` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal` | `src/include/apps/shell_runtime.h` | `shell_runtime_suspend_terminal` | `apps` | `COVERED` | 8 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal_for_scene` | `src/include/apps/shell_runtime.h` | `shell_runtime_suspend_terminal_for_scene` | `apps` | `COVERED` | 8 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal_for_scene` | `src/include/apps/shell_runtime.h` | `shell_runtime_suspend_terminal_for_scene` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/taskmanager.h:taskmgr_close` | `src/include/apps/taskmanager.h` | `taskmgr_close` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/taskmanager.h:taskmgr_gui_handle_key` | `src/include/apps/taskmanager.h` | `taskmgr_gui_handle_key` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/taskmanager.h:taskmgr_gui_handle_mouse` | `src/include/apps/taskmanager.h` | `taskmgr_gui_handle_mouse` | `apps` | `COVERED` | 2 |
@@ -334,7 +334,9 @@
 | `api:src/include/core/app_package.h:app_package_run_diagnostics` | `src/include/core/app_package.h` | `app_package_run_diagnostics` | `core` | `COVERED` | 2 |
 | `api:src/include/core/app_package.h:app_package_run_installed` | `src/include/core/app_package.h` | `app_package_run_installed` | `core` | `COVERED` | 2 |
 | `api:src/include/core/app_package.h:app_package_test_fail_after` | `src/include/core/app_package.h` | `app_package_test_fail_after` | `core` | `COVERED` | 2 |
+| `api:src/include/core/app_package.h:app_package_trust_name` | `src/include/core/app_package.h` | `app_package_trust_name` | `core` | `COVERED` | 2 |
 | `api:src/include/core/app_package.h:app_package_verify_file` | `src/include/core/app_package.h` | `app_package_verify_file` | `core` | `COVERED` | 2 |
+| `api:src/include/core/app_package.h:app_package_verify_installed` | `src/include/core/app_package.h` | `app_package_verify_installed` | `core` | `COVERED` | 2 |
 | `api:src/include/core/app_remote.h:app_remote_apply_cached` | `src/include/core/app_remote.h` | `app_remote_apply_cached` | `core` | `COVERED` | 1 |
 | `api:src/include/core/app_remote.h:app_remote_build_plan` | `src/include/core/app_remote.h` | `app_remote_build_plan` | `core` | `COVERED` | 1 |
 | `api:src/include/core/app_remote.h:app_remote_cache_state_name` | `src/include/core/app_remote.h` | `app_remote_cache_state_name` | `core` | `COVERED` | 1 |
@@ -1008,16 +1010,16 @@
 | `api:src/include/drivers/mouse.h:mouse_set_callback` | `src/include/drivers/mouse.h` | `mouse_set_callback` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/mouse.h:mouse_set_primary_button` | `src/include/drivers/mouse.h` | `mouse_set_primary_button` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/mouse.h:mouse_set_speed` | `src/include/drivers/mouse.h` | `mouse_set_speed` | `drivers` | `COVERED` | 4 |
-| `api:src/include/drivers/pci.h:pci_enable_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_bus_mastering` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_io_and_bus_mastering` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_memory_and_bus_mastering` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/pci.h:pci_get_device` | `src/include/drivers/pci.h` | `pci_get_device` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/pci.h:pci_get_device_at` | `src/include/drivers/pci.h` | `pci_get_device_at` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/pci.h:pci_get_device_by_id` | `src/include/drivers/pci.h` | `pci_get_device_by_id` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/pci.h:pci_get_device_count` | `src/include/drivers/pci.h` | `pci_get_device_count` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/pci.h:pci_init` | `src/include/drivers/pci.h` | `pci_init` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/pci.h:pci_read` | `src/include/drivers/pci.h` | `pci_read` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/pci.h:pci_write` | `src/include/drivers/pci.h` | `pci_write` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_enable_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_bus_mastering` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_io_and_bus_mastering` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_memory_and_bus_mastering` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/pci.h:pci_get_device` | `src/include/drivers/pci.h` | `pci_get_device` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/pci.h:pci_get_device_at` | `src/include/drivers/pci.h` | `pci_get_device_at` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/pci.h:pci_get_device_by_id` | `src/include/drivers/pci.h` | `pci_get_device_by_id` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/pci.h:pci_get_device_count` | `src/include/drivers/pci.h` | `pci_get_device_count` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/pci.h:pci_init` | `src/include/drivers/pci.h` | `pci_init` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/pci.h:pci_read` | `src/include/drivers/pci.h` | `pci_read` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/pci.h:pci_write` | `src/include/drivers/pci.h` | `pci_write` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/rng.h:rng_get_bytes` | `src/include/drivers/rng.h` | `rng_get_bytes` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/rng.h:rng_get_status` | `src/include/drivers/rng.h` | `rng_get_status` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/rng.h:rng_init` | `src/include/drivers/rng.h` | `rng_init` | `drivers` | `COVERED` | 3 |
@@ -1420,6 +1422,7 @@
 | `api:src/include/process/process.h:process_bootstrap_idle` | `src/include/process/process.h` | `process_bootstrap_idle` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_cancel_focused_user` | `src/include/process/process.h` | `process_cancel_focused_user` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_cancel_user` | `src/include/process/process.h` | `process_cancel_user` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_cancel_user_generation` | `src/include/process/process.h` | `process_cancel_user_generation` | `process` | `COVERED` | 7 |
 | `api:src/include/process/process.h:process_cancel_user_test` | `src/include/process/process.h` | `process_cancel_user_test` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_cancel_wait` | `src/include/process/process.h` | `process_cancel_wait` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_context_switch` | `src/include/process/process.h` | `process_context_switch` | `process` | `COVERED` | 1 |
@@ -1464,6 +1467,7 @@
 | `api:src/include/process/process.h:process_start_user` | `src/include/process/process.h` | `process_start_user` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_take_user_test_result` | `src/include/process/process.h` | `process_take_user_test_result` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_terminate_user_signal` | `src/include/process/process.h` | `process_terminate_user_signal` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_terminate_user_signal_generation` | `src/include/process/process.h` | `process_terminate_user_signal_generation` | `process` | `COVERED` | 7 |
 | `api:src/include/process/process.h:process_unblock` | `src/include/process/process.h` | `process_unblock` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_user_enter` | `src/include/process/process.h` | `process_user_enter` | `process` | `COVERED` | 1 |
 | `api:src/include/process/process.h:process_user_termination_enter` | `src/include/process/process.h` | `process_user_termination_enter` | `process` | `COVERED` | 1 |
@@ -1502,6 +1506,7 @@
 | `api:src/include/process/signal.h:process_signal_return` | `src/include/process/signal.h` | `process_signal_return` | `process` | `COVERED` | 8 |
 | `api:src/include/process/signal.h:process_signal_self_test` | `src/include/process/signal.h` | `process_signal_self_test` | `process` | `COVERED` | 8 |
 | `api:src/include/process/signal.h:process_signal_send` | `src/include/process/signal.h` | `process_signal_send` | `process` | `COVERED` | 8 |
+| `api:src/include/process/signal.h:process_signal_send_generation` | `src/include/process/signal.h` | `process_signal_send_generation` | `process` | `COVERED` | 7 |
 | `api:src/include/process/signal.h:process_signal_validate_state` | `src/include/process/signal.h` | `process_signal_validate_state` | `process` | `COVERED` | 8 |
 | `api:src/include/process/thread.h:thread_block` | `src/include/process/thread.h` | `thread_block` | `process` | `COVERED` | 8 |
 | `api:src/include/process/thread.h:thread_block_indefinite` | `src/include/process/thread.h` | `thread_block_indefinite` | `process` | `COVERED` | 8 |
@@ -2106,6 +2111,7 @@
 | `c:src/core/app_loader.c:app_loader_is_foreground_active` | `src/core/app_loader.c` | `app_loader_is_foreground_active` | `core` | `COVERED` | 3 |
 | `c:src/core/app_loader.c:app_loader_is_launch_space` | `src/core/app_loader.c` | `app_loader_is_launch_space` | `core` | `COVERED` | 1 |
 | `c:src/core/app_loader.c:app_loader_is_ready` | `src/core/app_loader.c` | `app_loader_is_ready` | `core` | `COVERED` | 1 |
+| `c:src/core/app_loader.c:app_loader_lookup_identity` | `src/core/app_loader.c` | `app_loader_lookup_identity` | `core` | `COVERED` | 1 |
 | `c:src/core/app_loader.c:app_loader_magic_is_valid` | `src/core/app_loader.c` | `app_loader_magic_is_valid` | `core` | `COVERED` | 1 |
 | `c:src/core/app_loader.c:app_loader_prepare_launch` | `src/core/app_loader.c` | `app_loader_prepare_launch` | `core` | `COVERED` | 1 |
 | `c:src/core/app_loader.c:app_loader_reap_active` | `src/core/app_loader.c` | `app_loader_reap_active` | `core` | `COVERED` | 4 |
@@ -2133,8 +2139,11 @@
 | `c:src/core/app_package.c:app_package_apply_plan_from_directory_internal` | `src/core/app_package.c` | `app_package_apply_plan_from_directory_internal` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_apply_staged_plan` | `src/core/app_package.c` | `app_package_apply_staged_plan` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_backup_path` | `src/core/app_package.c` | `app_package_backup_path` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_build_auth` | `src/core/app_package.c` | `app_package_build_auth` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_build_auth_path` | `src/core/app_package.c` | `app_package_build_auth_path` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_build_directory` | `src/core/app_package.c` | `app_package_build_directory` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_build_entry_path` | `src/core/app_package.c` | `app_package_build_entry_path` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_build_metadata_path` | `src/core/app_package.c` | `app_package_build_metadata_path` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_build_single_install_plan` | `src/core/app_package.c` | `app_package_build_single_install_plan` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_build_source_path` | `src/core/app_package.c` | `app_package_build_source_path` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_check_action_ready` | `src/core/app_package.c` | `app_package_check_action_ready` | `core` | `COVERED` | 1 |
@@ -2152,6 +2161,7 @@
 | `c:src/core/app_package.c:app_package_copy_string` | `src/core/app_package.c` | `app_package_copy_string` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_copy_text` | `src/core/app_package.c` | `app_package_copy_text` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_crc32` | `src/core/app_package.c` | `app_package_crc32` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_crc32_pair` | `src/core/app_package.c` | `app_package_crc32_pair` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_decode` | `src/core/app_package.c` | `app_package_decode` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_delete_installed_file` | `src/core/app_package.c` | `app_package_delete_installed_file` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_discard_rollback` | `src/core/app_package.c` | `app_package_discard_rollback` | `core` | `COVERED` | 1 |
@@ -2174,6 +2184,7 @@
 | `c:src/core/app_package.c:app_package_init` | `src/core/app_package.c` | `app_package_init` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_install_confirmed` | `src/core/app_package.c` | `app_package_install_confirmed` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_install_file` | `src/core/app_package.c` | `app_package_install_file` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_installed_files_are_exact` | `src/core/app_package.c` | `app_package_installed_files_are_exact` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_is_installed` | `src/core/app_package.c` | `app_package_is_installed` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_is_mutation_active` | `src/core/app_package.c` | `app_package_is_mutation_active` | `core` | `COVERED` | 2 |
 | `c:src/core/app_package.c:app_package_is_ready` | `src/core/app_package.c` | `app_package_is_ready` | `core` | `COVERED` | 2 |
@@ -2208,10 +2219,12 @@
 | `c:src/core/app_package.c:app_package_remove` | `src/core/app_package.c` | `app_package_remove` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_remove_confirmed` | `src/core/app_package.c` | `app_package_remove_confirmed` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_remove_root_if_present` | `src/core/app_package.c` | `app_package_remove_root_if_present` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_require_trusted` | `src/core/app_package.c` | `app_package_require_trusted` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_restore_backup` | `src/core/app_package.c` | `app_package_restore_backup` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_rollback_confirmed` | `src/core/app_package.c` | `app_package_rollback_confirmed` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_run_diagnostics` | `src/core/app_package.c` | `app_package_run_diagnostics` | `core` | `COVERED` | 2 |
 | `c:src/core/app_package.c:app_package_run_installed` | `src/core/app_package.c` | `app_package_run_installed` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_set_trust_identity` | `src/core/app_package.c` | `app_package_set_trust_identity` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_stage_entry` | `src/core/app_package.c` | `app_package_stage_entry` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_stage_path` | `src/core/app_package.c` | `app_package_stage_path` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_stage_plan` | `src/core/app_package.c` | `app_package_stage_plan` | `core` | `COVERED` | 1 |
@@ -2225,8 +2238,15 @@
 | `c:src/core/app_package.c:app_package_text_equals` | `src/core/app_package.c` | `app_package_text_equals` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_transaction_init` | `src/core/app_package.c` | `app_package_transaction_init` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_transaction_load_records` | `src/core/app_package.c` | `app_package_transaction_load_records` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_trust_name` | `src/core/app_package.c` | `app_package_trust_name` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_trust_reason` | `src/core/app_package.c` | `app_package_trust_reason` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_v2_header_is_valid` | `src/core/app_package.c` | `app_package_v2_header_is_valid` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_v2_key_is_revoked` | `src/core/app_package.c` | `app_package_v2_key_is_revoked` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_validate_plan_entry` | `src/core/app_package.c` | `app_package_validate_plan_entry` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_verify_components` | `src/core/app_package.c` | `app_package_verify_components` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_verify_file` | `src/core/app_package.c` | `app_package_verify_file` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_verify_installed` | `src/core/app_package.c` | `app_package_verify_installed` | `core` | `COVERED` | 1 |
+| `c:src/core/app_package.c:app_package_verify_v2` | `src/core/app_package.c` | `app_package_verify_v2` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_version_is_valid` | `src/core/app_package.c` | `app_package_version_is_valid` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_write_backup` | `src/core/app_package.c` | `app_package_write_backup` | `core` | `COVERED` | 1 |
 | `c:src/core/app_package.c:app_package_write_history` | `src/core/app_package.c` | `app_package_write_history` | `core` | `COVERED` | 1 |
@@ -2753,17 +2773,17 @@
 | `c:src/core/kernel_tests_assembly.c:kernel_tests_trigger_vector` | `src/core/kernel_tests_assembly.c` | `kernel_tests_trigger_vector` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests_assembly.c:kernel_tests_validate_interrupt_return` | `src/core/kernel_tests_assembly.c` | `kernel_tests_validate_interrupt_return` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests_assembly.c:kernel_tests_validate_vectors` | `src/core/kernel_tests_assembly.c` | `kernel_tests_validate_vectors` | `core` | `COVERED` | 1 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_contains` | `src/core/kernel_tests_blackbox.c` | `blackbox_contains` | `core` | `COVERED` | 4 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_equals` | `src/core/kernel_tests_blackbox.c` | `blackbox_equals` | `core` | `COVERED` | 4 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_is_krn6_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_krn6_case` | `core` | `COVERED` | 2 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_length` | `src/core/kernel_tests_blackbox.c` | `blackbox_length` | `core` | `COVERED` | 4 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_marker` | `src/core/kernel_tests_blackbox.c` | `blackbox_marker` | `core` | `COVERED` | 1 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_report` | `src/core/kernel_tests_blackbox.c` | `blackbox_report` | `core` | `COVERED` | 4 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_contains` | `src/core/kernel_tests_blackbox.c` | `blackbox_contains` | `core` | `COVERED` | 3 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_equals` | `src/core/kernel_tests_blackbox.c` | `blackbox_equals` | `core` | `COVERED` | 3 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_is_krn6_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_krn6_case` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_length` | `src/core/kernel_tests_blackbox.c` | `blackbox_length` | `core` | `COVERED` | 3 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_marker` | `src/core/kernel_tests_blackbox.c` | `blackbox_marker` | `core` | `PENDING` | 0 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_report` | `src/core/kernel_tests_blackbox.c` | `blackbox_report` | `core` | `COVERED` | 3 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_reset_krn6_observation` | `src/core/kernel_tests_blackbox.c` | `blackbox_reset_krn6_observation` | `core` | `COVERED` | 2 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_snapshot` | `src/core/kernel_tests_blackbox.c` | `blackbox_snapshot` | `core` | `COVERED` | 4 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_validate_krn6_output` | `src/core/kernel_tests_blackbox.c` | `blackbox_validate_krn6_output` | `core` | `COVERED` | 2 |
-| `c:src/core/kernel_tests_blackbox.c:blackbox_wait_for_marker` | `src/core/kernel_tests_blackbox.c` | `blackbox_wait_for_marker` | `core` | `COVERED` | 4 |
-| `c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox` | `src/core/kernel_tests_blackbox.c` | `kernel_tests_run_tst5_blackbox` | `core` | `COVERED` | 4 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_snapshot` | `src/core/kernel_tests_blackbox.c` | `blackbox_snapshot` | `core` | `COVERED` | 3 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_validate_krn6_output` | `src/core/kernel_tests_blackbox.c` | `blackbox_validate_krn6_output` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_wait_for_marker` | `src/core/kernel_tests_blackbox.c` | `blackbox_wait_for_marker` | `core` | `COVERED` | 3 |
+| `c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox` | `src/core/kernel_tests_blackbox.c` | `kernel_tests_run_tst5_blackbox` | `core` | `COVERED` | 3 |
 | `c:src/core/kernel_tests_execution.c:execution_check_ipc` | `src/core/kernel_tests_execution.c` | `execution_check_ipc` | `core` | `COVERED` | 2 |
 | `c:src/core/kernel_tests_execution.c:execution_check_processes` | `src/core/kernel_tests_execution.c` | `execution_check_processes` | `core` | `COVERED` | 2 |
 | `c:src/core/kernel_tests_execution.c:execution_check_signal` | `src/core/kernel_tests_execution.c` | `execution_check_signal` | `core` | `COVERED` | 2 |
@@ -5728,6 +5748,7 @@
 | `c:src/kernel/kernel.c:kernel_fallback_system` | `src/kernel/kernel.c` | `kernel_fallback_system` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_handle_taskbar_mouse` | `src/kernel/kernel.c` | `kernel_handle_taskbar_mouse` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_host_test_run_finite_routes` | `src/kernel/kernel.c` | `kernel_host_test_run_finite_routes` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_host_test_should_wake_shell_for_event` | `src/kernel/kernel.c` | `kernel_host_test_should_wake_shell_for_event` | `kernel` | `PENDING` | 0 |
 | `c:src/kernel/kernel.c:kernel_index_work_callback` | `src/kernel/kernel.c` | `kernel_index_work_callback` | `kernel` | `COVERED` | 4 |
 | `c:src/kernel/kernel.c:kernel_init_service_supervisor` | `src/kernel/kernel.c` | `kernel_init_service_supervisor` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_irq_work_callback` | `src/kernel/kernel.c` | `kernel_irq_work_callback` | `kernel` | `COVERED` | 3 |
@@ -5743,6 +5764,7 @@
 | `c:src/kernel/kernel.c:kernel_request_shell_app` | `src/kernel/kernel.c` | `kernel_request_shell_app` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_retry_shell_request` | `src/kernel/kernel.c` | `kernel_retry_shell_request` | `kernel` | `COVERED` | 2 |
 | `c:src/kernel/kernel.c:kernel_send_shell_request` | `src/kernel/kernel.c` | `kernel_send_shell_request` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_should_wake_shell_for_event` | `src/kernel/kernel.c` | `kernel_should_wake_shell_for_event` | `kernel` | `PENDING` | 0 |
 | `c:src/kernel/kernel.c:kernel_start_automatic_dhcp` | `src/kernel/kernel.c` | `kernel_start_automatic_dhcp` | `kernel` | `COVERED` | 2 |
 | `c:src/kernel/kernel.c:kernel_timer_work_callback` | `src/kernel/kernel.c` | `kernel_timer_work_callback` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_timer_work_notify` | `src/kernel/kernel.c` | `kernel_timer_work_notify` | `kernel` | `COVERED` | 1 |
@@ -5934,6 +5956,7 @@
 | `c:src/process/process.c:process_bootstrap_idle` | `src/process/process.c` | `process_bootstrap_idle` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:process_cancel_focused_user` | `src/process/process.c` | `process_cancel_focused_user` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_cancel_user` | `src/process/process.c` | `process_cancel_user` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_cancel_user_generation` | `src/process/process.c` | `process_cancel_user_generation` | `process` | `PENDING` | 0 |
 | `c:src/process/process.c:process_cancel_user_test` | `src/process/process.c` | `process_cancel_user_test` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_cancel_wait` | `src/process/process.c` | `process_cancel_wait` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_copy_wait_text` | `src/process/process.c` | `process_copy_wait_text` | `process` | `COVERED` | 1 |
@@ -6011,6 +6034,7 @@
 | `c:src/process/process.c:process_switch_after_termination` | `src/process/process.c` | `process_switch_after_termination` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_take_user_test_result` | `src/process/process.c` | `process_take_user_test_result` | `process` | `COVERED` | 4 |
 | `c:src/process/process.c:process_terminate_user_signal` | `src/process/process.c` | `process_terminate_user_signal` | `process` | `COVERED` | 1 |
+| `c:src/process/process.c:process_terminate_user_signal_generation` | `src/process/process.c` | `process_terminate_user_signal_generation` | `process` | `PENDING` | 0 |
 | `c:src/process/process.c:process_unblock` | `src/process/process.c` | `process_unblock` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_user_build_code` | `src/process/process.c` | `process_user_build_code` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_user_emit_mov` | `src/process/process.c` | `process_user_emit_mov` | `process` | `COVERED` | 1 |
@@ -6077,6 +6101,7 @@
 | `c:src/process/signal.c:process_signal_return` | `src/process/signal.c` | `process_signal_return` | `process` | `COVERED` | 1 |
 | `c:src/process/signal.c:process_signal_self_test` | `src/process/signal.c` | `process_signal_self_test` | `process` | `COVERED` | 3 |
 | `c:src/process/signal.c:process_signal_send` | `src/process/signal.c` | `process_signal_send` | `process` | `COVERED` | 2 |
+| `c:src/process/signal.c:process_signal_send_generation` | `src/process/signal.c` | `process_signal_send_generation` | `process` | `PENDING` | 0 |
 | `c:src/process/signal.c:process_signal_validate_state` | `src/process/signal.c` | `process_signal_validate_state` | `process` | `COVERED` | 3 |
 | `c:src/process/signal.c:signal_context_empty` | `src/process/signal.c` | `signal_context_empty` | `process` | `COVERED` | 3 |
 | `c:src/process/signal.c:signal_deliver_handler` | `src/process/signal.c` | `signal_deliver_handler` | `process` | `COVERED` | 1 |
@@ -6222,10 +6247,10 @@
 | `c:src/shell/mediaplayer.c:str_copy` | `src/shell/mediaplayer.c` | `str_copy` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:process_input` | `src/shell/shell.c` | `process_input` | `shell` | `COVERED` | 5 |
 | `c:src/shell/shell.c:shell_handle_app_request` | `src/shell/shell.c` | `shell_handle_app_request` | `shell` | `COVERED` | 7 |
-| `c:src/shell/shell.c:shell_handle_key` | `src/shell/shell.c` | `shell_handle_key` | `shell` | `COVERED` | 8 |
+| `c:src/shell/shell.c:shell_handle_key` | `src/shell/shell.c` | `shell_handle_key` | `shell` | `COVERED` | 7 |
 | `c:src/shell/shell.c:shell_handle_mouse` | `src/shell/shell.c` | `shell_handle_mouse` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:shell_init` | `src/shell/shell.c` | `shell_init` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell.c:shell_print_prompt` | `src/shell/shell.c` | `shell_print_prompt` | `shell` | `COVERED` | 8 |
+| `c:src/shell/shell.c:shell_print_prompt` | `src/shell/shell.c` | `shell_print_prompt` | `shell` | `COVERED` | 7 |
 | `c:src/shell/shell.c:shell_process_command` | `src/shell/shell.c` | `shell_process_command` | `shell` | `COVERED` | 5 |
 | `c:src/shell/shell.c:shell_redraw_after_overlay_close` | `src/shell/shell.c` | `shell_redraw_after_overlay_close` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:shell_report_app_loader_result` | `src/shell/shell.c` | `shell_report_app_loader_result` | `shell` | `COVERED` | 7 |
@@ -6233,11 +6258,11 @@
 | `c:src/shell/shell.c:shell_runtime_finish_command` | `src/shell/shell.c` | `shell_runtime_finish_command` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:shell_runtime_handle_terminal_key` | `src/shell/shell.c` | `shell_runtime_handle_terminal_key` | `shell` | `COVERED` | 7 |
 | `c:src/shell/shell.c:shell_runtime_prepare_filemanager` | `src/shell/shell.c` | `shell_runtime_prepare_filemanager` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell.c:shell_runtime_reset_input` | `src/shell/shell.c` | `shell_runtime_reset_input` | `shell` | `COVERED` | 6 |
+| `c:src/shell/shell.c:shell_runtime_reset_input` | `src/shell/shell.c` | `shell_runtime_reset_input` | `shell` | `COVERED` | 5 |
 | `c:src/shell/shell.c:shell_runtime_resume_terminal` | `src/shell/shell.c` | `shell_runtime_resume_terminal` | `shell` | `COVERED` | 5 |
 | `c:src/shell/shell.c:shell_runtime_suspend_terminal` | `src/shell/shell.c` | `shell_runtime_suspend_terminal` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:shell_runtime_suspend_terminal_for_scene` | `src/shell/shell.c` | `shell_runtime_suspend_terminal_for_scene` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell.c:shell_should_show_prompt` | `src/shell/shell.c` | `shell_should_show_prompt` | `shell` | `COVERED` | 6 |
+| `c:src/shell/shell.c:shell_should_show_prompt` | `src/shell/shell.c` | `shell_should_show_prompt` | `shell` | `COVERED` | 5 |
 | `c:src/shell/shell.c:shell_update_hosted_terminal` | `src/shell/shell.c` | `shell_update_hosted_terminal` | `shell` | `COVERED` | 7 |
 | `c:src/shell/shell_checks.c:cmd_appcheck` | `src/shell/shell_checks.c` | `cmd_appcheck` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:cmd_appcheck_devices` | `src/shell/shell_checks.c` | `cmd_appcheck_devices` | `shell` | `COVERED` | 1 |
@@ -6377,6 +6402,7 @@
 | `c:src/shell/shell_commands_apps.c:cmd_guitest` | `src/shell/shell_commands_apps.c` | `cmd_guitest` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_apps.c:cmd_icons` | `src/shell/shell_commands_apps.c` | `cmd_icons` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_apps.c:cmd_icons_print_status` | `src/shell/shell_commands_apps.c` | `cmd_icons_print_status` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_apps.c:shell_app_extract_package_id` | `src/shell/shell_commands_apps.c` | `shell_app_extract_package_id` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_apps.c:shell_commands_apps_host_test_contracts` | `src/shell/shell_commands_apps.c` | `shell_commands_apps_host_test_contracts` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_apps.c:shell_dispatch_cmd_app` | `src/shell/shell_commands_apps.c` | `shell_dispatch_cmd_app` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_apps.c:shell_dispatch_cmd_desktop` | `src/shell/shell_commands_apps.c` | `shell_dispatch_cmd_desktop` | `shell` | `COVERED` | 1 |
@@ -7707,7 +7733,12 @@
 
 ## Superfícies sem caso associado
 
-Nenhuma.
+- `c:src/core/kernel_tests_blackbox.c:blackbox_marker`
+- `c:src/kernel/kernel.c:kernel_host_test_should_wake_shell_for_event`
+- `c:src/kernel/kernel.c:kernel_should_wake_shell_for_event`
+- `c:src/process/process.c:process_cancel_user_generation`
+- `c:src/process/process.c:process_terminate_user_signal_generation`
+- `c:src/process/signal.c:process_signal_send_generation`
 
 ## Aposentadas
 

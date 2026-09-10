@@ -619,6 +619,7 @@ EP94C_MATRIX_IMAGE = $(EP94C_MATRIX_DIR)\EP94C_GUIDED.img
 EP94C_FIXTURES_DIR = $(EP94C_MATRIX_DIR)\preflight-fixtures
 # Defina somente em Makefile.local; a chave privada nunca entra no repositorio.
 SYSTEM_PRIVATE_KEY ?=
+PACKAGE_PRIVATE_KEY ?=
 SYSTEM_FIXTURE_IMAGE ?=
 
 # A area FAT12 legada continua contendo o boot, stage2 e kernel. O restante
@@ -1734,7 +1735,7 @@ test-crypto-host: tools\core_host_runner.py tools\coverage_collector.py tests\un
 test-scheduling-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_core_scheduling_host.c tests\catalog.json
 	python tools\core_host_runner.py --case host:core:scheduling --cc "$(HOST_CC)"
 
-test-package-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_package_host.c tests\catalog.json src\core\app_package.c
+test-package-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_package_host.c tests\catalog.json src\core\app_package.c src\include\core\app_package.h src\include\core\app_package_trust.h src\core\crypto.c
 	python tools\core_host_runner.py --case host:core:app-package --cc "$(HOST_CC)"
 
 test-update-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_update_host.c src\core\update.c src\core\update_host.h src\core\crypto.c tests\catalog.json
@@ -1749,7 +1750,7 @@ test-update-remote-runtime-host: tools\core_host_runner.py tools\coverage_collec
 test-update-remote-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_update_remote_host.c tests\catalog.json src\core\update_remote.c src\core\update_remote_host.h src\core\string.c
 	python tools\core_host_runner.py --case host:core:update-remote --cc "$(HOST_CC)"
 
-test-app-remote-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_app_remote_host.c tests\catalog.json src\core\app_remote.c src\include\core\app_remote.h src\include\core\app_remote_config.h src\include\core\app_remote_trust.h src\core\string.c
+test-app-remote-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_app_remote_host.c tests\catalog.json src\core\app_remote.c src\include\core\app_remote.h src\include\core\app_remote_config.h src\include\core\app_remote_trust.h src\include\core\app_package.h src\include\core\app_package_trust.h src\core\string.c
 	python tools\core_host_runner.py --case host:core:app-remote --cc "$(HOST_CC)"
 
 test-update-system-slots-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_update_system_slots_host.c tests\catalog.json src\core\update_system_slots.c src\core\update_system_slots_host.h src\core\string.c
@@ -1788,7 +1789,7 @@ test-app-loader-host: tools\core_host_runner.py tools\coverage_collector.py test
 test-taskbar-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_taskbar_host.c tests\catalog.json src\taskbar\taskbar.c src\include\ui\taskbar.h src\include\ui\display.h src\include\ui\desktop.h src\include\ui\gui.h src\include\drivers\vesa.h src\include\drivers\mouse.h src\include\core\timer.h src\include\core\video.h src\include\core\log.h
 	python tools/core_host_runner.py --case host:ui:taskbar --cc "$(HOST_CC)"
 
-test-appstore-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_appstore_host.c tests\catalog.json src\appstore\appstore.c src\include\ui\appstore.h src\include\ui\appstore_test.h src\include\core\app_catalog.h src\include\core\app_package.h src\include\core\app_remote.h src\include\core\errors.h src\include\core\log.h src\include\core\recovery.h src\include\core\string.h src\include\core\video.h src\include\drivers\mouse.h src\include\process\process.h src\include\ui\desktop.h src\include\ui\display.h src\include\ui\gui.h src\include\ui\taskbar.h src\include\ui\wm.h
+test-appstore-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_appstore_host.c tests\catalog.json src\appstore\appstore.c src\include\ui\appstore.h src\include\ui\appstore_test.h src\include\core\app_catalog.h src\include\core\app_package.h src\include\core\app_package_trust.h src\include\core\app_remote.h src\include\core\errors.h src\include\core\log.h src\include\core\recovery.h src\include\core\string.h src\include\core\video.h src\include\drivers\mouse.h src\include\process\process.h src\include\ui\desktop.h src\include\ui\display.h src\include\ui\gui.h src\include\ui\taskbar.h src\include\ui\wm.h
 	python tools/core_host_runner.py --case host:ui:appstore --cc "$(HOST_CC)"
 
 test-editor-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_editor_host.c tests\catalog.json src\shell\editor.c src\include\apps\editor.h src\include\apps\editor_test.h src\include\core\errors.h src\include\core\keyboard.h src\include\core\log.h src\include\core\memory.h src\include\core\recovery.h src\include\core\string.h src\include\core\timer.h src\include\core\video.h src\include\fs\fs.h src\include\process\process.h src\include\ui\desktop.h src\include\ui\taskbar.h
@@ -1813,7 +1814,7 @@ test-process-resource-host: tools\core_host_runner.py tools\coverage_collector.p
 test-thread-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_thread_host.c tests\catalog.json src\thread\thread.c src\include\process\thread.h src\include\process\process.h src\include\core\wait.h src\include\memory\slab.h
 	python tools/core_host_runner.py --case host:process:threads --cc "$(HOST_CC)"
 
-test-app-catalog-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_app_catalog_host.c tests\catalog.json src\core\app_catalog.c
+test-app-catalog-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_app_catalog_host.c tests\catalog.json src\core\app_catalog.c src\include\core\app_package.h src\include\core\app_package_trust.h
 	python tools\core_host_runner.py --case host:core:app-catalog --cc "$(HOST_CC)"
 
 test-input-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_input_host.c tests\catalog.json src\core\input.c
@@ -2019,9 +2020,13 @@ test-shell-network-checks-host: tools\core_host_runner.py tools\coverage_collect
 	python tools\core_host_runner.py --case host:shell:network-checks --cc "$(HOST_CC)"
 
 test-shell-commands-packages-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_shell_commands_packages_host.c tests\catalog.json src\shell\shell_commands_packages.c src\shell\shell_command_utils.c src\core\string.c src\include\apps\shell.h src\include\apps\shell_dispatch.h src\include\apps\shell_job.h src\include\apps\shell_runtime.h src\include\apps\shell_command_utils.h src\include\core\app_catalog.h src\include\core\app_loader.h src\include\core\app_package.h src\include\core\app_remote.h src\include\core\errors.h src\include\core\keyboard.h src\include\core\log.h src\include\core\memory.h src\include\core\recovery.h src\include\core\string.h src\include\core\update.h src\include\core\update_remote.h src\include\core\update_remote_runtime.h src\include\core\update_remote_system.h src\include\core\update_runtime.h src\include\core\video.h src\include\core\update_system.h src\include\core\update_system_slots.h src\include\fs\fs.h src\include\process\process.h
+
+test-shell-commands-packages-host: src\include\core\app_package_trust.h
 	python tools\core_host_runner.py --case host:shell:commands-packages --cc "$(HOST_CC)"
 
 test-shell-commands-apps-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_shell_commands_apps_host.c tests\catalog.json src\shell\shell_commands_apps.c src\core\string.c src\include\apps\editor.h src\include\apps\guitest.h src\include\apps\mediaplayer.h src\include\apps\shell_checks.h src\include\apps\shell_runtime.h src\include\core\app_api.h src\include\core\app_builtin.h src\include\core\app_loader.h src\include\core\errors.h src\include\core\log.h src\include\core\recovery.h src\include\core\string.h src\include\core\video.h src\include\drivers\vesa.h src\include\fs\fs.h src\include\ui\desktop.h src\include\ui\display.h src\include\ui\filemanager.h src\include\ui\icons.h src\include\ui\settings.h src\include\ui\taskbar.h src\include\ui\updater.h src\include\ui\wm.h
+
+test-shell-commands-apps-host: src\include\core\app_package.h src\include\core\app_package_trust.h
 	python tools\core_host_runner.py --case host:shell:commands-apps --cc "$(HOST_CC)"
 
 test-shell-checks-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_shell_checks_host.c tests\catalog.json src\shell\shell_checks.c src\include\apps\shell_checks.h src\include\apps\shell_runtime.h src\include\apps\shell_job.h src\include\apps\shell_command_utils.h src\include\core\errors.h src\include\core\log.h src\include\core\string.h src\include\core\video.h src\include\core\app_loader.h src\include\core\app_api.h src\include\core\recovery.h src\include\core\device_manager.h src\include\drivers\acpi.h src\include\fs\block.h src\include\fs\storage.h src\include\fs\fs.h src\include\memory\paging.h src\include\memory\vma.h src\include\process\process.h
@@ -2130,7 +2135,8 @@ update-test:
 	python tools\updater.py selftest
 
 package-demo: $(OS_IMG)
-	python tools\packager.py demo --output $(BUILD_DIR)\DEMO.zephyrosapp --image $(OS_IMG)
+	@if "$(PACKAGE_PRIVATE_KEY)"=="" (echo PACKAGE_PRIVATE_KEY nao configurada em Makefile.local & exit /b 2)
+	python tools\packager.py demo --private "$(PACKAGE_PRIVATE_KEY)" --output $(BUILD_DIR)\DEMO.zephyrosapp --image $(OS_IMG)
 
 store-test:
 	python tools\packager.py selftest

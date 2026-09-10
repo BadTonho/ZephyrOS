@@ -185,6 +185,7 @@ void shell_input_init(void) {
 
 void shell_input_reset(void) {
     input_pos = 0;
+    shell_prompt_visible = 0;
     shell_input_reset_modifiers();
     shell_input_overflow_warned = 0;
     shell_input_history_reset_navigation();

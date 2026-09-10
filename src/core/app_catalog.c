@@ -42,7 +42,8 @@ static int app_catalog_reason_priority(app_catalog_reason_t reason) {
     if (reason == APP_CATALOG_REASON_SOURCE_LIMIT ||
         reason == APP_CATALOG_REASON_ENTRY_LIMIT) return 2;
     if (reason == APP_CATALOG_REASON_PACKAGE_INVALID ||
-        reason == APP_CATALOG_REASON_ALIAS_MISMATCH) return 1;
+        reason == APP_CATALOG_REASON_ALIAS_MISMATCH ||
+        reason == APP_CATALOG_REASON_PACKAGE_UNTRUSTED) return 1;
     return 0;
 }
 
@@ -198,11 +199,24 @@ static void app_catalog_classify(app_catalog_entry_t* entry) {
     int comparison;
 
     entry->capabilities = APP_CATALOG_CAPABILITY_VERIFY;
+    if (entry->has_installed) {
+        entry->capabilities |= APP_CATALOG_CAPABILITY_REMOVE;
+        if (entry->installed.trust == APP_PACKAGE_TRUST_TRUSTED) {
+            entry->capabilities |= APP_CATALOG_CAPABILITY_RUN;
+        } else {
+            entry->state = APP_CATALOG_STATE_INVALID;
+            entry->reason = APP_CATALOG_REASON_PACKAGE_UNTRUSTED;
+            return;
+        }
+    }
+    if (entry->source.trust != APP_PACKAGE_TRUST_TRUSTED) {
+        entry->state = APP_CATALOG_STATE_INVALID;
+        entry->reason = APP_CATALOG_REASON_PACKAGE_UNTRUSTED;
+        return;
+    }
     if (!entry->has_installed) {
         entry->capabilities |= APP_CATALOG_CAPABILITY_INSTALL;
     } else {
-        entry->capabilities |= APP_CATALOG_CAPABILITY_RUN |
-                               APP_CATALOG_CAPABILITY_REMOVE;
         comparison = app_catalog_compare_versions(entry->source.version,
                                                   entry->installed.version);
         if (comparison > 0) {
@@ -273,6 +287,14 @@ static void app_catalog_add_source(const app_catalog_source_t* source) {
         app_catalog_append(&entry);
         return;
     }
+    if (entry.source.trust != APP_PACKAGE_TRUST_TRUSTED) {
+        entry.reason = APP_CATALOG_REASON_PACKAGE_UNTRUSTED;
+        entry.capabilities = APP_CATALOG_CAPABILITY_VERIFY;
+        catalog_status.invalid_source_count++;
+        app_catalog_record_problem(entry.reason);
+        app_catalog_append(&entry);
+        return;
+    }
     catalog_status.valid_source_count++;
     installed = app_catalog_find_installed(entry.source.id);
     if (installed) {
@@ -303,8 +325,13 @@ static void app_catalog_append_installed(void) {
         entry.has_installed = 1U;
         entry.state = APP_CATALOG_STATE_INSTALLED;
         entry.reason = APP_CATALOG_REASON_NONE;
-        entry.capabilities = APP_CATALOG_CAPABILITY_RUN |
-                             APP_CATALOG_CAPABILITY_REMOVE;
+        entry.capabilities = APP_CATALOG_CAPABILITY_REMOVE;
+        if (entry.installed.trust == APP_PACKAGE_TRUST_TRUSTED) {
+            entry.capabilities |= APP_CATALOG_CAPABILITY_RUN;
+        } else {
+            entry.state = APP_CATALOG_STATE_INVALID;
+            entry.reason = APP_CATALOG_REASON_PACKAGE_UNTRUSTED;
+        }
         app_catalog_append(&entry);
     }
 }
@@ -705,6 +732,8 @@ const char* app_catalog_reason_name(app_catalog_reason_t reason) {
             return "LOADER_UNAVAILABLE";
         case APP_CATALOG_REASON_PACKAGE_SERVICE_UNAVAILABLE:
             return "PACKAGE_SERVICE_UNAVAILABLE";
+        case APP_CATALOG_REASON_PACKAGE_UNTRUSTED:
+            return "PACKAGE_UNTRUSTED";
         default: return "UNKNOWN";
     }
 }

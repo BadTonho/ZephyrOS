@@ -171,13 +171,17 @@ static int check_prompt_and_resume(void) {
     shell_input_print_prompt(0U);
     if (kstrcmp(video_output, SHELL_PROMPT) != 0) return 1;
     if (terminal_begin_calls != 2U) return 2;
+    shell_input_reset();
+    output_reset();
+    shell_input_print_prompt(0U);
+    if (kstrcmp(video_output, SHELL_PROMPT) != 0) return 3;
     terminal_active = 0U;
     terminal_hosted = 0U;
     shell_input_resume_terminal(1U);
-    if (terminal_begin_calls != 3U) return 3;
+    if (terminal_begin_calls != 4U) return 4;
     terminal_active = 1U;
     shell_input_resume_terminal(1U);
-    if (terminal_begin_calls != 3U) return 4;
+    if (terminal_begin_calls != 4U) return 5;
     return 0;
 }
 

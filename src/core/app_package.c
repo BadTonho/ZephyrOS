@@ -1,5 +1,7 @@
 #include "core/app_package.h"
 #include "core/app_loader.h"
+#include "core/app_package_trust.h"
+#include "core/crypto.h"
 #include "core/errors.h"
 #include "core/log.h"
 #include "core/memory.h"
@@ -16,9 +18,11 @@
 #define APP_PACKAGE_API_CURRENT "0.9"
 
 #define APP_PACKAGE_HEADER_SIZE ((uint32_t)sizeof(app_package_header_t))
+#define APP_PACKAGE_V2_AUTH_SIZE \
+    (APP_PACKAGE_V2_HEADER_SIZE + APP_PACKAGE_V2_SIGNATURE_SIZE)
 #define APP_PACKAGE_MAX_FILE_SIZE \
-    (APP_PACKAGE_HEADER_SIZE + APP_PACKAGE_MAX_MANIFEST_SIZE + \
-     APP_IMAGE_MAX_FILE_SIZE)
+    (APP_PACKAGE_V2_HEADER_SIZE + APP_PACKAGE_MAX_MANIFEST_SIZE + \
+     APP_IMAGE_MAX_FILE_SIZE + APP_PACKAGE_V2_SIGNATURE_SIZE)
 #define APP_PACKAGE_READ_BUFFER_SIZE (APP_PACKAGE_MAX_FILE_SIZE + 1U)
 #define APP_PACKAGE_CLUSTER_OVERHEAD 2U
 #define APP_PACKAGE_CRC32_POLYNOMIAL 0xEDB88320U
@@ -36,6 +40,8 @@
 #define APP_PACKAGE_JOURNAL_COMMITTED 3U
 #define APP_PACKAGE_BACKUP_APP_SIZE APP_IMAGE_MAX_FILE_SIZE
 #define APP_PACKAGE_BACKUP_META_SIZE APP_PACKAGE_MAX_MANIFEST_SIZE
+#define APP_PACKAGE_BACKUP_AUTH_SIZE APP_PACKAGE_V2_AUTH_SIZE
+#define APP_PACKAGE_TRANSACTION_FILES_PER_ENTRY 3U
 #define APP_PACKAGE_HISTORY_ENTRIES_OFFSET \
     ((uint32_t)__builtin_offsetof(app_package_history_store_t, entries))
 #define APP_PACKAGE_JOURNAL_PLAN_ENTRIES_OFFSET \
@@ -54,7 +60,10 @@ typedef struct {
     uint8_t* data;
     const uint8_t* payload;
     uint32_t size;
+    uint32_t header_size;
+    uint32_t manifest_size;
     uint32_t payload_size;
+    uint32_t auth_size;
     app_package_info_t info;
 } app_package_install_context_t;
 
@@ -123,8 +132,14 @@ static int app_package_journal_slot = -1;
 static int app_package_history_slot = -1;
 static uint8_t app_package_transaction_app_buffer[APP_PACKAGE_BACKUP_APP_SIZE];
 static uint8_t app_package_transaction_meta_buffer[APP_PACKAGE_BACKUP_META_SIZE];
+static uint8_t app_package_transaction_auth_buffer[APP_PACKAGE_BACKUP_AUTH_SIZE];
 
 static uint32_t app_package_crc32(const uint8_t* content, uint32_t size);
+static int app_package_parse_manifest(const uint8_t* manifest,
+                                      uint32_t manifest_size,
+                                      app_package_info_t* info);
+static void app_package_build_directory(char* directory, const char* id);
+static void app_package_build_entry_path(char* path, const char* id);
 static int app_package_transaction_init(void);
 static void app_package_copy_string(char* destination, uint32_t capacity,
                                     const char* source);
@@ -342,6 +357,27 @@ static uint32_t app_package_crc32(const uint8_t* content, uint32_t size) {
     return ~crc;
 }
 
+static uint32_t app_package_crc32_pair(const uint8_t* first, uint32_t first_size,
+                                       const uint8_t* second,
+                                       uint32_t second_size) {
+    uint32_t crc = 0xFFFFFFFFU;
+
+    for (uint32_t part = 0; part < 2U; part++) {
+        const uint8_t* content = part == 0U ? first : second;
+        uint32_t size = part == 0U ? first_size : second_size;
+
+        for (uint32_t index = 0; index < size; index++) {
+            crc ^= content[index];
+            for (uint32_t bit = 0; bit < 8U; bit++) {
+                crc = (crc & 1U) ?
+                    (crc >> 1) ^ APP_PACKAGE_CRC32_POLYNOMIAL :
+                    (crc >> 1);
+            }
+        }
+    }
+    return ~crc;
+}
+
 static int app_package_header_is_valid(const app_package_header_t* header) {
     if (!header) return 0;
     return header->magic[0] == 'Z' && header->magic[1] == 'P' &&
@@ -354,6 +390,141 @@ static int app_package_header_is_valid(const app_package_header_t* header) {
            header->manifest_size <= APP_PACKAGE_MAX_MANIFEST_SIZE &&
            header->payload_size > 0 &&
            header->payload_size <= APP_IMAGE_MAX_FILE_SIZE;
+}
+
+static int app_package_v2_header_is_valid(
+    const app_package_v2_header_t* header, uint32_t file_size) {
+    uint32_t content_size;
+
+    if (!header || header->magic[0] != 'Z' || header->magic[1] != 'P' ||
+        header->magic[2] != 'K' || header->magic[3] != 'G' ||
+        header->version != APP_PACKAGE_SIGNED_VERSION ||
+        header->header_size != APP_PACKAGE_V2_HEADER_SIZE ||
+        header->architecture != APP_PACKAGE_ARCH_I386 ||
+        header->flags != APP_PACKAGE_FLAG_SIGNED || header->reserved != 0U ||
+        header->signature_size != APP_PACKAGE_V2_SIGNATURE_SIZE ||
+        header->signature_algorithm !=
+            APP_PACKAGE_V2_SIGNATURE_ALGORITHM_ED25519 ||
+        header->manifest_size == 0U ||
+        header->manifest_size > APP_PACKAGE_MAX_MANIFEST_SIZE ||
+        header->payload_size == 0U ||
+        header->payload_size > APP_IMAGE_MAX_FILE_SIZE) {
+        return 0;
+    }
+    for (uint32_t index = 0; index < sizeof(header->reserved_tail); index++) {
+        if (header->reserved_tail[index] != 0U) return 0;
+    }
+    content_size = header->manifest_size + header->payload_size;
+    if (content_size < header->manifest_size ||
+        content_size > 0xFFFFFFFFU - APP_PACKAGE_V2_HEADER_SIZE ||
+        header->signature_offset != APP_PACKAGE_V2_HEADER_SIZE + content_size ||
+        header->signature_offset < APP_PACKAGE_V2_HEADER_SIZE ||
+        header->signature_offset > 0xFFFFFFFFU - header->signature_size ||
+        file_size != header->signature_offset + header->signature_size) {
+        return 0;
+    }
+    return 1;
+}
+
+static void app_package_set_trust_identity(
+    app_package_info_t* info, const app_package_v2_header_t* header) {
+    if (!info || !header) return;
+    kmemcpy(info->key_id, header->key_id, APP_PACKAGE_V2_KEY_ID_SIZE);
+}
+
+static int app_package_v2_key_is_revoked(const uint8_t key_id[
+                                             APP_PACKAGE_V2_KEY_ID_SIZE]) {
+    for (uint32_t index = 0; index < APP_PACKAGE_TRUST_REVOKED_KEY_COUNT;
+         index++) {
+        if (crypto_equal(key_id, app_package_trust_revoked_key_ids[index],
+                         APP_PACKAGE_TRUST_KEY_ID_SIZE)) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+static int app_package_verify_v2(const uint8_t* data, uint32_t size,
+                                 app_package_info_t* info,
+                                 const uint8_t** payload_out,
+                                 uint32_t* payload_size_out) {
+    app_package_v2_header_t header;
+    crypto_ed25519_verify_ctx_t signature_context;
+    uint8_t content_hash[CRYPTO_SHA256_SIZE];
+    uint32_t content_size;
+    uint32_t domain_size = (uint32_t)sizeof(APP_PACKAGE_TRUST_DOMAIN) - 1U;
+    int result;
+
+    if (!data || !info || size < APP_PACKAGE_V2_HEADER_SIZE) {
+        LOG_ERROR("PKG", "Pacote v2 menor que o cabecalho");
+        return ERR_INVALID;
+    }
+    kmemcpy(&header, data, sizeof(header));
+    app_package_set_trust_identity(info, &header);
+    if (!app_package_v2_header_is_valid(&header, size)) {
+        info->trust = APP_PACKAGE_TRUST_INVALID;
+        LOG_ERROR("PKG", "Cabecalho ZPKG v2 invalido");
+        return ERR_INVALID;
+    }
+    content_size = header.manifest_size + header.payload_size;
+    result = crypto_sha256(data + APP_PACKAGE_V2_HEADER_SIZE, content_size,
+                           content_hash);
+    if (result != OK ||
+        !crypto_equal(content_hash, header.content_sha256,
+                      CRYPTO_SHA256_SIZE)) {
+        info->trust = APP_PACKAGE_TRUST_HASH_MISMATCH;
+        LOG_WARN("PKG", "Hash SHA-256 do pacote diverge");
+        return ERR_INVALID;
+    }
+    if (app_package_crc32(data + APP_PACKAGE_V2_HEADER_SIZE, content_size) !=
+        header.content_crc32) {
+        info->trust = APP_PACKAGE_TRUST_INVALID;
+        LOG_WARN("PKG", "CRC32 do pacote diverge");
+        return ERR_INVALID;
+    }
+    if (app_package_v2_key_is_revoked(header.key_id)) {
+        info->trust = APP_PACKAGE_TRUST_REVOKED_KEY;
+        LOG_WARN("PKG", "Pacote usa chave revogada");
+        return ERR_INVALID;
+    }
+    if (!crypto_equal(header.key_id, app_package_trust_active_key_id,
+                      APP_PACKAGE_TRUST_KEY_ID_SIZE)) {
+        info->trust = APP_PACKAGE_TRUST_UNKNOWN_KEY;
+        LOG_WARN("PKG", "Pacote usa chave desconhecida");
+        return ERR_INVALID;
+    }
+    result = crypto_ed25519_verify_init(
+        &signature_context, data + header.signature_offset,
+        app_package_trust_active_public_key);
+    if (result == OK) {
+        result = crypto_ed25519_verify_update(
+            &signature_context, (const uint8_t*)APP_PACKAGE_TRUST_DOMAIN,
+            domain_size);
+    }
+    if (result == OK) {
+        result = crypto_ed25519_verify_update(&signature_context, data,
+                                              header.signature_offset);
+    }
+    if (result == OK) result = crypto_ed25519_verify_final(&signature_context);
+    if (result != OK) {
+        info->trust = APP_PACKAGE_TRUST_INVALID_SIGNATURE;
+        LOG_WARN("PKG", "Assinatura Ed25519 do pacote invalida");
+        return ERR_INVALID;
+    }
+    result = app_package_parse_manifest(
+        data + APP_PACKAGE_V2_HEADER_SIZE, header.manifest_size, info);
+    app_package_set_trust_identity(info, &header);
+    if (result != OK) {
+        info->trust = APP_PACKAGE_TRUST_INVALID;
+        return result;
+    }
+    info->trust = APP_PACKAGE_TRUST_TRUSTED;
+    if (payload_out) {
+        *payload_out = data + APP_PACKAGE_V2_HEADER_SIZE +
+                       header.manifest_size;
+    }
+    if (payload_size_out) *payload_size_out = header.payload_size;
+    return OK;
 }
 
 static int app_package_parse_dependencies(const uint8_t* text, uint32_t length,
@@ -498,11 +669,21 @@ static int app_package_decode(const uint8_t* data, uint32_t size,
                               uint32_t* payload_size_out) {
     app_package_header_t header;
     app_image_header_t image_header;
+    uint16_t version;
     uint32_t content_size;
     int result;
 
-    if (!data || !info || size < APP_PACKAGE_HEADER_SIZE) {
+    if (!data || !info || size < sizeof(version)) {
         LOG_ERROR("PKG", "Pacote menor que o cabecalho");
+        return ERR_INVALID;
+    }
+    kmemcpy(&version, data + 4U, sizeof(version));
+    if (version == APP_PACKAGE_SIGNED_VERSION) {
+        return app_package_verify_v2(data, size, info, payload_out,
+                                     payload_size_out);
+    }
+    if (size < APP_PACKAGE_HEADER_SIZE) {
+        LOG_ERROR("PKG", "Pacote legado menor que o cabecalho");
         return ERR_INVALID;
     }
     kmemcpy(&header, data, APP_PACKAGE_HEADER_SIZE);
@@ -521,6 +702,8 @@ static int app_package_decode(const uint8_t* data, uint32_t size,
     result = app_package_parse_manifest(data + APP_PACKAGE_HEADER_SIZE,
                                         header.manifest_size, info);
     if (result != OK) return result;
+    info->trust = APP_PACKAGE_TRUST_UNSIGNED;
+    kmemset(info->key_id, 0, sizeof(info->key_id));
     result = app_loader_validate_image(data + APP_PACKAGE_HEADER_SIZE +
                                        header.manifest_size,
                                        header.payload_size, &image_header);
@@ -724,7 +907,8 @@ static int app_package_check_space(uint32_t payload_size,
     }
     result->free_clusters = fs_info.free_clusters;
     check = app_package_evaluate_space(
-        payload_size, metadata_size, 2U, &fs_info,
+        payload_size, metadata_size, APP_PACKAGE_TRANSACTION_FILES_PER_ENTRY,
+        &fs_info,
         &result->required_clusters);
     if (check == ERR_DISK) {
         LOG_WARN("PKG", "Espaco insuficiente para instalar pacote");
@@ -749,6 +933,7 @@ static void app_package_cleanup_partial(const char* id) {
     directory[kstrlen(APP_PACKAGE_DIRECTORY) + 1U + kstrlen(id)] = '\0';
     fs_delete_file_in_dir(directory, APP_PACKAGE_ENTRY_NAME);
     fs_delete_file_in_dir(directory, APP_PACKAGE_METADATA_NAME);
+    fs_delete_file_in_dir(directory, APP_PACKAGE_AUTH_NAME);
     fs_delete_file_in_dir(APP_PACKAGE_DIRECTORY, id);
 }
 
@@ -783,6 +968,219 @@ static int app_package_read_metadata(const char* id, app_package_info_t* info) {
         return ERR_NOT_FOUND;
     }
     return app_package_parse_manifest(manifest, (uint32_t)size, info);
+}
+
+static void app_package_build_metadata_path(char* path, const char* id) {
+    uint32_t directory_length;
+
+    app_package_build_directory(path, id);
+    directory_length = kstrlen(path);
+    path[directory_length] = '/';
+    app_package_copy_string(path + directory_length + 1U,
+                            FS_MAX_PATH - directory_length - 1U,
+                            APP_PACKAGE_METADATA_NAME);
+}
+
+static void app_package_build_auth_path(char* path, const char* id) {
+    uint32_t directory_length;
+
+    app_package_build_directory(path, id);
+    directory_length = kstrlen(path);
+    path[directory_length] = '/';
+    app_package_copy_string(path + directory_length + 1U,
+                            FS_MAX_PATH - directory_length - 1U,
+                            APP_PACKAGE_AUTH_NAME);
+}
+
+static int app_package_installed_files_are_exact(const char* directory) {
+    int count;
+    int found_app = 0;
+    int found_meta = 0;
+    int found_auth = 0;
+
+    if (!directory) {
+        LOG_ERROR("PKG", "Diretorio instalado nulo na validacao");
+        return ERR_NULL;
+    }
+    count = fs_get_file_count_at(directory);
+    if (count != 3) {
+        LOG_WARN("PKG", "Diretorio instalado possui arquivos inesperados");
+        return ERR_INVALID;
+    }
+    for (int index = 0; index < count; index++) {
+        char name[13];
+        uint8_t attributes = 0;
+
+        if (fs_get_file_info_at(directory, index, name, 0, &attributes) != OK ||
+            (attributes & APP_PACKAGE_DIRECTORY_ATTRIBUTE)) {
+            LOG_WARN("PKG", "Arquivo instalado invalido");
+            return ERR_INVALID;
+        }
+        if (kstrcmp(name, APP_PACKAGE_ENTRY_NAME) == 0) found_app = 1;
+        else if (kstrcmp(name, APP_PACKAGE_METADATA_NAME) == 0) found_meta = 1;
+        else if (kstrcmp(name, APP_PACKAGE_AUTH_NAME) == 0) found_auth = 1;
+        else {
+            LOG_WARN("PKG", "Arquivo inesperado no diretorio instalado");
+            return ERR_INVALID;
+        }
+    }
+    if (!found_app || !found_meta || !found_auth) {
+        LOG_WARN("PKG", "Arquivos obrigatorios do pacote ausentes");
+        return ERR_INVALID;
+    }
+    return OK;
+}
+
+static int app_package_verify_components(
+    const uint8_t* app, uint32_t app_size, const uint8_t* meta,
+    uint32_t meta_size, const uint8_t* auth, uint32_t auth_size,
+    const char* expected_id, app_package_info_t* info_out) {
+    app_package_v2_header_t header;
+    app_image_header_t image;
+    crypto_ed25519_verify_ctx_t signature_context;
+    uint8_t content_hash[CRYPTO_SHA256_SIZE];
+    uint32_t content_size;
+    uint32_t package_size;
+    uint32_t domain_size = (uint32_t)sizeof(APP_PACKAGE_TRUST_DOMAIN) - 1U;
+    int result;
+
+    if (!app || !meta || !auth || !info_out) {
+        LOG_ERROR("PKG", "Componentes instalados receberam argumento nulo");
+        return ERR_NULL;
+    }
+    kmemset(info_out, 0, sizeof(*info_out));
+    result = app_package_parse_manifest(meta, meta_size, info_out);
+    if (result != OK) return result;
+    info_out->trust = APP_PACKAGE_TRUST_UNSIGNED;
+    if (auth_size == 0U) return ERR_INVALID;
+    if (auth_size != APP_PACKAGE_V2_AUTH_SIZE) {
+        info_out->trust = APP_PACKAGE_TRUST_INVALID;
+        return ERR_INVALID;
+    }
+    kmemcpy(&header, auth, sizeof(header));
+    app_package_set_trust_identity(info_out, &header);
+    if (header.signature_offset > 0xFFFFFFFFU - header.signature_size) {
+        info_out->trust = APP_PACKAGE_TRUST_INVALID;
+        return ERR_INVALID;
+    }
+    package_size = header.signature_offset + header.signature_size;
+    content_size = header.manifest_size + header.payload_size;
+    if (!app_package_v2_header_is_valid(&header, package_size) ||
+        header.manifest_size != meta_size || header.payload_size != app_size ||
+        header.signature_offset != APP_PACKAGE_V2_HEADER_SIZE + content_size ||
+        (expected_id && kstrcmp(info_out->id, expected_id) != 0)) {
+        info_out->trust = APP_PACKAGE_TRUST_INVALID;
+        return ERR_INVALID;
+    }
+    result = app_loader_validate_image(app, app_size, &image);
+    if (result != OK) {
+        info_out->trust = APP_PACKAGE_TRUST_INVALID;
+        return result;
+    }
+    {
+        crypto_sha256_ctx_t hash_context;
+
+        result = crypto_sha256_init(&hash_context);
+        if (result == OK) result = crypto_sha256_update(
+            &hash_context, meta, meta_size);
+        if (result == OK) result = crypto_sha256_update(
+            &hash_context, app, app_size);
+        if (result == OK) result = crypto_sha256_final(&hash_context,
+                                                       content_hash);
+    }
+    if (result != OK ||
+        !crypto_equal(content_hash, header.content_sha256,
+                      CRYPTO_SHA256_SIZE)) {
+        info_out->trust = APP_PACKAGE_TRUST_HASH_MISMATCH;
+        return ERR_INVALID;
+    }
+    if (app_package_crc32_pair(meta, meta_size, app, app_size) !=
+        header.content_crc32) {
+        info_out->trust = APP_PACKAGE_TRUST_INVALID;
+        return ERR_INVALID;
+    }
+    if (app_package_v2_key_is_revoked(header.key_id)) {
+        info_out->trust = APP_PACKAGE_TRUST_REVOKED_KEY;
+        return ERR_INVALID;
+    }
+    if (!crypto_equal(header.key_id, app_package_trust_active_key_id,
+                      APP_PACKAGE_TRUST_KEY_ID_SIZE)) {
+        info_out->trust = APP_PACKAGE_TRUST_UNKNOWN_KEY;
+        return ERR_INVALID;
+    }
+    result = crypto_ed25519_verify_init(
+        &signature_context, auth + APP_PACKAGE_V2_HEADER_SIZE,
+        app_package_trust_active_public_key);
+    if (result == OK) result = crypto_ed25519_verify_update(
+        &signature_context, (const uint8_t*)APP_PACKAGE_TRUST_DOMAIN,
+        domain_size);
+    if (result == OK) result = crypto_ed25519_verify_update(
+        &signature_context, auth, APP_PACKAGE_V2_HEADER_SIZE);
+    if (result == OK) result = crypto_ed25519_verify_update(
+        &signature_context, meta, meta_size);
+    if (result == OK) result = crypto_ed25519_verify_update(
+        &signature_context, app, app_size);
+    if (result == OK) result = crypto_ed25519_verify_final(&signature_context);
+    if (result != OK) {
+        info_out->trust = APP_PACKAGE_TRUST_INVALID_SIGNATURE;
+        return ERR_INVALID;
+    }
+    info_out->trust = APP_PACKAGE_TRUST_TRUSTED;
+    return OK;
+}
+
+int app_package_verify_installed(const char* id,
+                                 app_package_info_t* info_out) {
+    char directory[FS_MAX_PATH];
+    char app_path[FS_MAX_PATH];
+    char meta_path[FS_MAX_PATH];
+    char auth_path[FS_MAX_PATH];
+    uint32_t app_size;
+    uint32_t meta_size;
+    uint32_t auth_size;
+    int app_read_size;
+    int meta_read_size;
+    int auth_read_size;
+    int result;
+
+    if (!id || !info_out) {
+        LOG_ERROR("PKG", "Validacao instalada recebeu argumento nulo");
+        return ERR_NULL;
+    }
+    kmemset(info_out, 0, sizeof(*info_out));
+    if (app_package_id_is_valid(id) != OK) return ERR_INVALID;
+    if (app_package_is_installed(id) != OK) return ERR_NOT_FOUND;
+    app_package_build_directory(directory, id);
+    app_package_build_entry_path(app_path, id);
+    app_package_build_metadata_path(meta_path, id);
+    app_package_build_auth_path(auth_path, id);
+    app_read_size = fs_read_file_at(
+        app_path, app_package_transaction_app_buffer,
+        sizeof(app_package_transaction_app_buffer));
+    meta_read_size = fs_read_file_at(
+        meta_path, app_package_transaction_meta_buffer,
+        sizeof(app_package_transaction_meta_buffer));
+    auth_read_size = fs_read_file_at(
+        auth_path, app_package_transaction_auth_buffer,
+        sizeof(app_package_transaction_auth_buffer));
+    if (app_read_size <= 0 || meta_read_size <= 0) {
+        LOG_WARN("PKG", "Componentes persistidos do pacote nao encontrados");
+        return ERR_NOT_FOUND;
+    }
+    app_size = (uint32_t)app_read_size;
+    meta_size = (uint32_t)meta_read_size;
+    auth_size = auth_read_size > 0 ? (uint32_t)auth_read_size : 0U;
+    result = app_package_verify_components(
+        app_package_transaction_app_buffer, app_size,
+        app_package_transaction_meta_buffer, meta_size,
+        app_package_transaction_auth_buffer, auth_size, id, info_out);
+    if (result != OK) return result;
+    if (app_package_installed_files_are_exact(directory) != OK) {
+        info_out->trust = APP_PACKAGE_TRUST_INVALID;
+        return ERR_INVALID;
+    }
+    info_out->trust = APP_PACKAGE_TRUST_TRUSTED;
+    return OK;
 }
 
 static int app_package_collect_dependents(
@@ -870,6 +1268,7 @@ int app_package_verify_file(const char* path, app_package_info_t* info_out) {
         LOG_ERROR("PKG", "Verificacao recebeu argumento nulo");
         return ERR_NULL;
     }
+    kmemset(info_out, 0, sizeof(*info_out));
     result = app_package_read_file(path, &data, &size);
     if (result == OK) result = app_package_decode(data, size, info_out, 0, 0);
     if (data) kfree(data);
@@ -915,10 +1314,38 @@ static int app_package_check_transaction_for_mutation(
     return OK;
 }
 
+static app_package_action_reason_t app_package_trust_reason(
+    app_package_trust_t trust) {
+    switch (trust) {
+        case APP_PACKAGE_TRUST_UNSIGNED:
+            return APP_PACKAGE_ACTION_REASON_PACKAGE_UNAUTHORIZED;
+        case APP_PACKAGE_TRUST_UNKNOWN_KEY:
+            return APP_PACKAGE_ACTION_REASON_UNKNOWN_KEY;
+        case APP_PACKAGE_TRUST_REVOKED_KEY:
+            return APP_PACKAGE_ACTION_REASON_REVOKED_KEY;
+        case APP_PACKAGE_TRUST_INVALID_SIGNATURE:
+            return APP_PACKAGE_ACTION_REASON_SIGNATURE_INVALID;
+        case APP_PACKAGE_TRUST_HASH_MISMATCH:
+            return APP_PACKAGE_ACTION_REASON_HASH_MISMATCH;
+        default:
+            return APP_PACKAGE_ACTION_REASON_PACKAGE_INVALID;
+    }
+}
+
+static int app_package_require_trusted(
+    const app_package_info_t* info, app_package_action_result_t* result) {
+    if (!info || !result) return ERR_NULL;
+    if (info->trust == APP_PACKAGE_TRUST_TRUSTED) return OK;
+    LOG_WARN("PKG", "Pacote sem autorizacao criptografica");
+    return app_package_action_fail(result, app_package_trust_reason(info->trust),
+                                   ERR_INVALID);
+}
+
 static int app_package_read_install_source(
     const char* path, int enforce_alias, app_package_install_context_t* context,
     app_package_action_result_t* result) {
     char expected_id[APP_PACKAGE_ID_SIZE];
+    uint16_t version = APP_PACKAGE_VERSION;
     int read_result;
 
     if (!path || !context || !result) {
@@ -947,11 +1374,33 @@ static int app_package_read_install_source(
     read_result = app_package_decode(
         context->data, context->size, &context->info, &context->payload,
         &context->payload_size);
+    result->info = context->info;
+    if (context->size >= 6U) kmemcpy(&version, context->data + 4U, 2U);
     if (read_result != OK) {
         return app_package_action_fail(
-            result, APP_PACKAGE_ACTION_REASON_PACKAGE_INVALID, read_result);
+            result, version == APP_PACKAGE_SIGNED_VERSION &&
+                        context->info.trust != APP_PACKAGE_TRUST_UNSIGNED ?
+                        app_package_trust_reason(context->info.trust) :
+                        APP_PACKAGE_ACTION_REASON_PACKAGE_INVALID,
+            read_result);
     }
-    result->info = context->info;
+    if (context->info.trust != APP_PACKAGE_TRUST_TRUSTED) {
+        return app_package_require_trusted(&context->info, result);
+    }
+    {
+        uint16_t version;
+
+        kmemcpy(&version, context->data + 4U, sizeof(version));
+        context->header_size = version == APP_PACKAGE_SIGNED_VERSION ?
+                               APP_PACKAGE_V2_HEADER_SIZE :
+                               APP_PACKAGE_HEADER_SIZE;
+        context->auth_size = version == APP_PACKAGE_SIGNED_VERSION ?
+                             APP_PACKAGE_V2_AUTH_SIZE : 0U;
+        context->manifest_size = context->size - context->header_size -
+                                 context->payload_size -
+                                 (version == APP_PACKAGE_SIGNED_VERSION ?
+                                  APP_PACKAGE_V2_SIGNATURE_SIZE : 0U);
+    }
     if (enforce_alias && kstrcmp(expected_id, context->info.id) != 0) {
         LOG_WARN("PKG", "Alias nao corresponde ao ID do pacote");
         return app_package_action_fail(
@@ -989,7 +1438,7 @@ static int app_package_check_install_constraints(
     }
     return app_package_check_space(
         context->payload_size,
-        context->size - APP_PACKAGE_HEADER_SIZE - context->payload_size,
+        context->manifest_size + context->auth_size,
         result);
 }
 
@@ -1026,11 +1475,35 @@ static int app_package_prepare_install(
         context, dependency_first, result);
 }
 
+static int app_package_build_auth(const uint8_t* data, uint32_t size,
+                                  uint8_t auth[APP_PACKAGE_V2_AUTH_SIZE]) {
+    app_package_v2_header_t header;
+
+    if (!data || !auth || size < APP_PACKAGE_V2_HEADER_SIZE) {
+        LOG_ERROR("PKG", "Envelope AUTH.DAT recebeu pacote invalido");
+        return ERR_INVALID;
+    }
+    kmemcpy(&header, data, sizeof(header));
+    if (header.version != APP_PACKAGE_SIGNED_VERSION ||
+        header.signature_size != APP_PACKAGE_V2_SIGNATURE_SIZE ||
+        header.signature_offset > size ||
+        header.signature_offset > 0xFFFFFFFFU - header.signature_size ||
+        header.signature_offset + header.signature_size > size) {
+        LOG_WARN("PKG", "Envelope AUTH.DAT nao corresponde ao ZPKG v2");
+        return ERR_INVALID;
+    }
+    kmemcpy(auth, data, APP_PACKAGE_V2_HEADER_SIZE);
+    kmemcpy(auth + APP_PACKAGE_V2_HEADER_SIZE,
+            data + header.signature_offset, APP_PACKAGE_V2_SIGNATURE_SIZE);
+    return OK;
+}
+
 static int app_package_commit_install(
     app_package_install_context_t* context,
     app_package_action_result_t* action_result) {
     char directory[FS_MAX_PATH];
     int package_directory_created = 0;
+    uint8_t auth[APP_PACKAGE_V2_AUTH_SIZE];
     int status;
 
     if (!context || !action_result) {
@@ -1049,6 +1522,9 @@ static int app_package_commit_install(
         }
     }
     if (status == OK) {
+        status = app_package_build_auth(context->data, context->size, auth);
+    }
+    if (status == OK) {
         kmemcpy(directory, APP_PACKAGE_DIRECTORY, kstrlen(APP_PACKAGE_DIRECTORY));
         directory[kstrlen(APP_PACKAGE_DIRECTORY)] = '/';
         kmemcpy(directory + kstrlen(APP_PACKAGE_DIRECTORY) + 1U,
@@ -1061,10 +1537,10 @@ static int app_package_commit_install(
         if (status >= 0) status = fs_write_file_in_dir(directory,
                                                         APP_PACKAGE_METADATA_NAME,
                                                         context->data +
-                                                        APP_PACKAGE_HEADER_SIZE,
-                                                        context->size -
-                                                        APP_PACKAGE_HEADER_SIZE -
-                                                        context->payload_size);
+                                                        context->header_size,
+                                                        context->manifest_size);
+        if (status >= 0) status = fs_write_file_in_dir(
+            directory, APP_PACKAGE_AUTH_NAME, auth, sizeof(auth));
         if (status >= 0) status = OK;
         else status = ERR_DISK;
     }
@@ -1232,7 +1708,8 @@ int app_package_get_installed_count(void) {
         if (fs_get_file_info_at(APP_PACKAGE_DIRECTORY, index, name, 0,
                                 &attributes) == OK &&
             (attributes & APP_PACKAGE_DIRECTORY_ATTRIBUTE) &&
-            app_package_read_metadata(name, &info) == OK) {
+            app_package_verify_installed(name, &info) != ERR_NOT_FOUND &&
+            info.id[0] != '\0') {
             installed++;
         }
     }
@@ -1256,10 +1733,13 @@ int app_package_get_installed_info(int index, app_package_info_t* info_out) {
         char name[13];
         uint8_t attributes = 0;
         app_package_info_t info;
+        int verify_result;
         if (fs_get_file_info_at(APP_PACKAGE_DIRECTORY, entry, name, 0,
                                 &attributes) != OK ||
             !(attributes & APP_PACKAGE_DIRECTORY_ATTRIBUTE) ||
             app_package_read_metadata(name, &info) != OK) continue;
+        verify_result = app_package_verify_installed(name, &info);
+        if (verify_result != OK && info.id[0] == '\0') continue;
         if (installed_index++ == index) {
             *info_out = info;
             return OK;
@@ -1356,8 +1836,22 @@ static int app_package_commit_remove(
     if (app_package_delete_installed_file(directory,
                                           APP_PACKAGE_ENTRY_NAME) != OK ||
         app_package_delete_installed_file(directory,
-                                          APP_PACKAGE_METADATA_NAME) != OK ||
-        fs_delete_file_in_dir(APP_PACKAGE_DIRECTORY, id) != OK) {
+                                          APP_PACKAGE_METADATA_NAME) != OK) {
+        LOG_ERROR("PKG", "Falha ao remover arquivos do pacote");
+        return app_package_action_fail(
+            action_result, APP_PACKAGE_ACTION_REASON_WRITE_ERROR, ERR_DISK);
+    }
+    {
+        int auth_result = app_package_delete_installed_file(
+            directory, APP_PACKAGE_AUTH_NAME);
+
+        if (auth_result != OK && auth_result != ERR_NOT_FOUND) {
+            LOG_ERROR("PKG", "Falha ao remover autorizacao do pacote");
+            return app_package_action_fail(
+                action_result, APP_PACKAGE_ACTION_REASON_WRITE_ERROR, ERR_DISK);
+        }
+    }
+    if (fs_delete_file_in_dir(APP_PACKAGE_DIRECTORY, id) != OK) {
         LOG_ERROR("PKG", "Falha ao remover registro de pacote");
         return app_package_action_fail(
             action_result, APP_PACKAGE_ACTION_REASON_WRITE_ERROR, ERR_DISK);
@@ -1476,12 +1970,19 @@ int app_package_run_installed(
         return app_package_action_fail(
             result_out, APP_PACKAGE_ACTION_REASON_LOADER_BUSY, ERR_STATE);
     }
-    result = app_package_read_metadata(id, &result_out->info);
+    result = app_package_verify_installed(id, &result_out->info);
     if (result != OK) {
         LOG_WARN("PKG", "Pacote instalado nao encontrado para execucao");
+        if (result == ERR_NOT_FOUND) {
+            return app_package_action_fail(
+                result_out, APP_PACKAGE_ACTION_REASON_NOT_INSTALLED,
+                ERR_NOT_FOUND);
+        }
         return app_package_action_fail(
-            result_out, APP_PACKAGE_ACTION_REASON_NOT_INSTALLED,
-            ERR_NOT_FOUND);
+            result_out, result_out->info.trust != APP_PACKAGE_TRUST_UNSIGNED ?
+                app_package_trust_reason(result_out->info.trust) :
+                APP_PACKAGE_ACTION_REASON_PACKAGE_UNAUTHORIZED,
+            result);
     }
     app_package_build_entry_path(path, id);
     result = app_loader_run_file_with_launch(path, launch, pid_out);
@@ -1771,14 +2272,16 @@ static void app_package_build_directory(char* directory, const char* id) {
 
 static int app_package_read_installed_files(const char* id,
                                             uint32_t* app_size_out,
-                                            uint32_t* meta_size_out) {
+                                            uint32_t* meta_size_out,
+                                            uint32_t* auth_size_out) {
     char directory[FS_MAX_PATH];
     char path[FS_MAX_PATH];
     uint32_t directory_length;
     int app_size;
     int meta_size;
+    int auth_size;
 
-    if (!id || !app_size_out || !meta_size_out) return ERR_NULL;
+    if (!id || !app_size_out || !meta_size_out || !auth_size_out) return ERR_NULL;
     app_package_build_directory(directory, id);
     app_package_build_entry_path(path, id);
     app_size = fs_read_file_at(path, app_package_transaction_app_buffer,
@@ -1793,8 +2296,18 @@ static int app_package_read_installed_files(const char* id,
     meta_size = fs_read_file_at(path, app_package_transaction_meta_buffer,
                                 sizeof(app_package_transaction_meta_buffer));
     if (meta_size <= 0) return ERR_NOT_FOUND;
+    directory_length = kstrlen(directory);
+    kmemcpy(path, directory, directory_length);
+    path[directory_length] = '/';
+    app_package_copy_string(path + directory_length + 1U,
+                            sizeof(path) - directory_length - 1U,
+                            APP_PACKAGE_AUTH_NAME);
+    auth_size = fs_read_file_at(path, app_package_transaction_auth_buffer,
+                                sizeof(app_package_transaction_auth_buffer));
+    if (auth_size <= 0) return ERR_NOT_FOUND;
     *app_size_out = (uint32_t)app_size;
     *meta_size_out = (uint32_t)meta_size;
+    *auth_size_out = (uint32_t)auth_size;
     return OK;
 }
 
@@ -1906,6 +2419,8 @@ static int app_package_validate_plan_entry(const app_package_plan_t* plan,
                                              ERR_STATE);
             goto done;
         }
+        status = app_package_require_trusted(&installed, result);
+        if (status != OK) goto done;
         status = app_package_compare_versions(context.info.version,
                                               installed.version,
                                               &version_comparison);
@@ -1936,21 +2451,21 @@ static int app_package_validate_plan_entry(const app_package_plan_t* plan,
         }
     }
     if (required_bytes) {
-        uint32_t manifest_size = context.size - APP_PACKAGE_HEADER_SIZE -
-                                 context.payload_size;
-        *required_bytes += 2U * (context.payload_size + manifest_size);
+        *required_bytes += 2U * (context.payload_size + context.manifest_size +
+                                  context.auth_size);
         if (item->action == APP_PACKAGE_PLAN_ACTION_UPDATE) {
             uint32_t app_size = 0;
             uint32_t meta_size = 0;
+            uint32_t auth_size = 0;
             status = app_package_read_installed_files(item->id, &app_size,
-                                                       &meta_size);
+                                                       &meta_size, &auth_size);
             if (status != OK) {
                 status = app_package_action_fail(result,
                                                  APP_PACKAGE_ACTION_REASON_READ_ERROR,
                                                  status);
                 goto done;
             }
-            *required_bytes += app_size + meta_size;
+            *required_bytes += app_size + meta_size + auth_size;
         }
     }
     result->info = context.info;
@@ -2019,7 +2534,7 @@ static int app_package_preflight_plan_internal(
     cluster_size = info.bytes_per_sector * info.sectors_per_cluster;
     result_out->required_clusters =
         (required_bytes + cluster_size - 1U) / cluster_size +
-        8U + 2U * plan->entry_count;
+        8U + 3U * plan->entry_count;
     result_out->free_clusters = info.free_clusters;
     if (result_out->required_clusters > result_out->free_clusters) {
         return app_package_action_fail(result_out,
@@ -2072,23 +2587,29 @@ static void app_package_remove_root_if_present(const char* path) {
 static void app_package_cleanup_stage_files(uint8_t slot, uint32_t count) {
     char app_path[13];
     char meta_path[13];
+    char auth_path[13];
 
     for (uint32_t index = 0; index < count; index++) {
         app_package_stage_path(slot, index, "ZAP", app_path);
         app_package_stage_path(slot, index, "MET", meta_path);
+        app_package_stage_path(slot, index, "AUT", auth_path);
         app_package_remove_root_if_present(app_path);
         app_package_remove_root_if_present(meta_path);
+        app_package_remove_root_if_present(auth_path);
     }
 }
 
 static void app_package_cleanup_backup_files(uint8_t slot) {
     char app_path[13];
     char meta_path[13];
+    char auth_path[13];
 
     app_package_backup_path(slot, "ZAP", app_path);
     app_package_backup_path(slot, "MET", meta_path);
+    app_package_backup_path(slot, "AUT", auth_path);
     app_package_remove_root_if_present(app_path);
     app_package_remove_root_if_present(meta_path);
+    app_package_remove_root_if_present(auth_path);
 }
 
 static void app_package_discard_rollback(const char* id) {
@@ -2113,7 +2634,7 @@ static int app_package_stage_entry(const app_package_plan_entry_t* item,
     char source_path[APP_PACKAGE_SOURCE_PATH_SIZE];
     char app_path[13];
     char meta_path[13];
-    uint32_t manifest_size;
+    char auth_path[13];
     int result;
 
     kmemset(&context, 0, sizeof(context));
@@ -2133,19 +2654,28 @@ static int app_package_stage_entry(const app_package_plan_entry_t* item,
                                          ERR_STATE);
         goto done;
     }
-    manifest_size = context.size - APP_PACKAGE_HEADER_SIZE -
-                    context.payload_size;
     app_package_stage_path(slot, index, "ZAP", app_path);
     app_package_stage_path(slot, index, "MET", meta_path);
+    app_package_stage_path(slot, index, "AUT", auth_path);
     result = fs_atomic_write_root(app_path, context.payload, context.payload_size,
                                   APP_PACKAGE_CONTROL_ATTRIBUTES,
                                   FS_ATOMIC_CREATE_OR_REPLACE);
     if (result == OK) {
         result = fs_atomic_write_root(meta_path,
-                                      context.data + APP_PACKAGE_HEADER_SIZE,
-                                      manifest_size,
+                                      context.data + context.header_size,
+                                      context.manifest_size,
                                       APP_PACKAGE_CONTROL_ATTRIBUTES,
                                       FS_ATOMIC_CREATE_OR_REPLACE);
+    }
+    if (result == OK) {
+        result = app_package_build_auth(
+            context.data, context.size, app_package_transaction_auth_buffer);
+    }
+    if (result == OK) {
+        result = fs_atomic_write_root(
+            auth_path, app_package_transaction_auth_buffer,
+            APP_PACKAGE_V2_AUTH_SIZE, APP_PACKAGE_CONTROL_ATTRIBUTES,
+            FS_ATOMIC_CREATE_OR_REPLACE);
     }
     if (result != OK) {
         result = app_package_action_fail(result_out,
@@ -2177,9 +2707,12 @@ static int app_package_write_backup(const char* id, uint8_t slot,
                                     app_package_action_result_t* result_out) {
     char app_path[13];
     char meta_path[13];
+    char auth_path[13];
     uint32_t app_size = 0;
     uint32_t meta_size = 0;
-    int result = app_package_read_installed_files(id, &app_size, &meta_size);
+    uint32_t auth_size = 0;
+    int result = app_package_read_installed_files(id, &app_size, &meta_size,
+                                                  &auth_size);
 
     if (result != OK) {
         return app_package_action_fail(result_out,
@@ -2188,6 +2721,7 @@ static int app_package_write_backup(const char* id, uint8_t slot,
     }
     app_package_backup_path(slot, "ZAP", app_path);
     app_package_backup_path(slot, "MET", meta_path);
+    app_package_backup_path(slot, "AUT", auth_path);
     result = fs_atomic_write_root(app_path, app_package_transaction_app_buffer,
                                   app_size, APP_PACKAGE_CONTROL_ATTRIBUTES,
                                   FS_ATOMIC_CREATE_OR_REPLACE);
@@ -2195,6 +2729,12 @@ static int app_package_write_backup(const char* id, uint8_t slot,
         result = fs_atomic_write_root(meta_path,
                                       app_package_transaction_meta_buffer,
                                       meta_size, APP_PACKAGE_CONTROL_ATTRIBUTES,
+                                      FS_ATOMIC_CREATE_OR_REPLACE);
+    }
+    if (result == OK) {
+        result = fs_atomic_write_root(auth_path,
+                                      app_package_transaction_auth_buffer,
+                                      auth_size, APP_PACKAGE_CONTROL_ATTRIBUTES,
                                       FS_ATOMIC_CREATE_OR_REPLACE);
     }
     if (result != OK) {
@@ -2220,14 +2760,22 @@ static int app_package_read_root_file(const char* path, uint8_t* buffer,
 static int app_package_apply_file(const char* directory, const char* filename,
                                   const char* stage_path, int replace_only,
                                   app_package_action_result_t* result_out) {
-    uint8_t* buffer = kstrcmp(filename, APP_PACKAGE_ENTRY_NAME) == 0 ?
-                      app_package_transaction_app_buffer :
-                      app_package_transaction_meta_buffer;
-    uint32_t capacity = kstrcmp(filename, APP_PACKAGE_ENTRY_NAME) == 0 ?
-                        sizeof(app_package_transaction_app_buffer) :
-                        sizeof(app_package_transaction_meta_buffer);
+    uint8_t* buffer;
+    uint32_t capacity;
     uint32_t size = 0;
-    int result = app_package_read_root_file(stage_path, buffer, capacity, &size);
+    int result;
+
+    if (kstrcmp(filename, APP_PACKAGE_ENTRY_NAME) == 0) {
+        buffer = app_package_transaction_app_buffer;
+        capacity = sizeof(app_package_transaction_app_buffer);
+    } else if (kstrcmp(filename, APP_PACKAGE_METADATA_NAME) == 0) {
+        buffer = app_package_transaction_meta_buffer;
+        capacity = sizeof(app_package_transaction_meta_buffer);
+    } else {
+        buffer = app_package_transaction_auth_buffer;
+        capacity = sizeof(app_package_transaction_auth_buffer);
+    }
+    result = app_package_read_root_file(stage_path, buffer, capacity, &size);
 
     if (result == OK) {
         result = fs_atomic_write_file_in_dir(
@@ -2271,6 +2819,7 @@ static int app_package_apply_plan_entry(const app_package_plan_t* plan,
     char directory[FS_MAX_PATH];
     char app_stage[13];
     char meta_stage[13];
+    char auth_stage[13];
     int replace_only = item->action == APP_PACKAGE_PLAN_ACTION_UPDATE;
     int result;
 
@@ -2289,6 +2838,7 @@ static int app_package_apply_plan_entry(const app_package_plan_t* plan,
     }
     app_package_stage_path(app_package_journal.slot, index, "ZAP", app_stage);
     app_package_stage_path(app_package_journal.slot, index, "MET", meta_stage);
+    app_package_stage_path(app_package_journal.slot, index, "AUT", auth_stage);
     result = app_package_apply_file(directory, APP_PACKAGE_ENTRY_NAME, app_stage,
                                     replace_only, result_out);
     if (result != OK) return result;
@@ -2296,6 +2846,11 @@ static int app_package_apply_plan_entry(const app_package_plan_t* plan,
     if (result != OK) return result;
     result = app_package_apply_file(directory, APP_PACKAGE_METADATA_NAME,
                                     meta_stage, replace_only, result_out);
+    if (result != OK) return result;
+    result = app_package_record_progress(result_out);
+    if (result != OK) return result;
+    result = app_package_apply_file(directory, APP_PACKAGE_AUTH_NAME,
+                                    auth_stage, replace_only, result_out);
     if (result != OK) return result;
     return app_package_record_progress(result_out);
 }
@@ -2348,13 +2903,16 @@ static int app_package_restore_backup(const app_package_journal_t* journal) {
     char directory[FS_MAX_PATH];
     char app_path[13];
     char meta_path[13];
+    char auth_path[13];
     uint32_t app_size = 0;
     uint32_t meta_size = 0;
+    uint32_t auth_size = 0;
     int result;
 
     if (!journal->backup_id[0]) return OK;
     app_package_backup_path(journal->backup_slot, "ZAP", app_path);
     app_package_backup_path(journal->backup_slot, "MET", meta_path);
+    app_package_backup_path(journal->backup_slot, "AUT", auth_path);
     result = app_package_read_root_file(app_path, app_package_transaction_app_buffer,
                                         sizeof(app_package_transaction_app_buffer),
                                         &app_size);
@@ -2364,15 +2922,24 @@ static int app_package_restore_backup(const app_package_journal_t* journal) {
                                         sizeof(app_package_transaction_meta_buffer),
                                         &meta_size);
     if (result != OK) return result;
+    result = app_package_read_root_file(
+        auth_path, app_package_transaction_auth_buffer,
+        sizeof(app_package_transaction_auth_buffer), &auth_size);
+    if (result != OK) return result;
     app_package_build_directory(directory, journal->backup_id);
     result = fs_atomic_write_file_in_dir(directory, APP_PACKAGE_ENTRY_NAME,
                                          app_package_transaction_app_buffer,
                                          app_size, FS_ATTRIBUTE_ARCHIVE,
                                          FS_ATOMIC_REPLACE_ONLY);
     if (result != OK) return result;
-    return fs_atomic_write_file_in_dir(directory, APP_PACKAGE_METADATA_NAME,
-                                       app_package_transaction_meta_buffer,
-                                       meta_size, FS_ATTRIBUTE_ARCHIVE,
+    result = fs_atomic_write_file_in_dir(directory, APP_PACKAGE_METADATA_NAME,
+                                         app_package_transaction_meta_buffer,
+                                         meta_size, FS_ATTRIBUTE_ARCHIVE,
+                                         FS_ATOMIC_REPLACE_ONLY);
+    if (result != OK) return result;
+    return fs_atomic_write_file_in_dir(directory, APP_PACKAGE_AUTH_NAME,
+                                       app_package_transaction_auth_buffer,
+                                       auth_size, FS_ATTRIBUTE_ARCHIVE,
                                        FS_ATOMIC_REPLACE_ONLY);
 }
 
@@ -2688,15 +3255,17 @@ int app_package_apply_plan_from_directory_confirmed(
 
 static int app_package_read_backup_files(uint8_t slot, app_package_info_t* info,
                                          uint32_t* app_size_out,
-                                         uint32_t* meta_size_out) {
+                                         uint32_t* meta_size_out,
+                                         uint32_t* auth_size_out) {
     char app_path[13];
     char meta_path[13];
-    app_image_header_t image;
+    char auth_path[13];
     uint32_t app_size;
     uint32_t meta_size;
+    uint32_t auth_size;
     int result;
 
-    if (!info || !app_size_out || !meta_size_out) return ERR_NULL;
+    if (!info || !app_size_out || !meta_size_out || !auth_size_out) return ERR_NULL;
     app_package_backup_path(slot, "ZAP", app_path);
     app_package_backup_path(slot, "MET", meta_path);
     result = app_package_read_root_file(app_path,
@@ -2704,19 +3273,24 @@ static int app_package_read_backup_files(uint8_t slot, app_package_info_t* info,
                                         sizeof(app_package_transaction_app_buffer),
                                         &app_size);
     if (result != OK) return result;
-    result = app_loader_validate_image(app_package_transaction_app_buffer,
-                                       app_size, &image);
-    if (result != OK) return result;
     result = app_package_read_root_file(meta_path,
                                         app_package_transaction_meta_buffer,
                                         sizeof(app_package_transaction_meta_buffer),
                                         &meta_size);
     if (result != OK) return result;
-    result = app_package_parse_manifest(app_package_transaction_meta_buffer,
-                                        meta_size, info);
+    app_package_backup_path(slot, "AUT", auth_path);
+    result = app_package_read_root_file(
+        auth_path, app_package_transaction_auth_buffer,
+        sizeof(app_package_transaction_auth_buffer), &auth_size);
+    if (result != OK) return result;
+    result = app_package_verify_components(
+        app_package_transaction_app_buffer, app_size,
+        app_package_transaction_meta_buffer, meta_size,
+        app_package_transaction_auth_buffer, auth_size, NULL, info);
     if (result != OK) return result;
     *app_size_out = app_size;
     *meta_size_out = meta_size;
+    *auth_size_out = auth_size;
     return OK;
 }
 
@@ -2724,15 +3298,18 @@ static int app_package_stage_rollback(uint8_t source_slot, uint8_t stage_slot,
                                       app_package_action_result_t* result_out) {
     char source_app[13];
     char source_meta[13];
+    char source_auth[13];
     char stage_app[13];
     char stage_meta[13];
+    char stage_auth[13];
     uint32_t app_size;
     uint32_t meta_size;
+    uint32_t auth_size;
     app_package_info_t info;
     int result;
 
     result = app_package_read_backup_files(source_slot, &info, &app_size,
-                                           &meta_size);
+                                           &meta_size, &auth_size);
     if (result != OK) {
         return app_package_action_fail(result_out,
                                        APP_PACKAGE_ACTION_REASON_ROLLBACK_UNAVAILABLE,
@@ -2740,8 +3317,10 @@ static int app_package_stage_rollback(uint8_t source_slot, uint8_t stage_slot,
     }
     app_package_backup_path(source_slot, "ZAP", source_app);
     app_package_backup_path(source_slot, "MET", source_meta);
+    app_package_backup_path(source_slot, "AUT", source_auth);
     app_package_stage_path(stage_slot, 0U, "ZAP", stage_app);
     app_package_stage_path(stage_slot, 0U, "MET", stage_meta);
+    app_package_stage_path(stage_slot, 0U, "AUT", stage_auth);
     result = fs_atomic_write_root(stage_app,
                                   app_package_transaction_app_buffer, app_size,
                                   APP_PACKAGE_CONTROL_ATTRIBUTES,
@@ -2753,6 +3332,13 @@ static int app_package_stage_rollback(uint8_t source_slot, uint8_t stage_slot,
                                       APP_PACKAGE_CONTROL_ATTRIBUTES,
                                       FS_ATOMIC_CREATE_OR_REPLACE);
     }
+    if (result == OK) {
+        result = fs_atomic_write_root(stage_auth,
+                                      app_package_transaction_auth_buffer,
+                                      auth_size,
+                                      APP_PACKAGE_CONTROL_ATTRIBUTES,
+                                      FS_ATOMIC_CREATE_OR_REPLACE);
+    }
     if (result != OK) {
         app_package_cleanup_stage_files(stage_slot, 1U);
         return app_package_action_fail(result_out,
@@ -2761,6 +3347,7 @@ static int app_package_stage_rollback(uint8_t source_slot, uint8_t stage_slot,
     }
     (void)source_app;
     (void)source_meta;
+    (void)source_auth;
     return OK;
 }
 
@@ -2771,8 +3358,10 @@ static int app_package_prepare_rollback_internal(
     fs_info_t fs_info;
     uint32_t app_size;
     uint32_t meta_size;
+    uint32_t auth_size;
     uint32_t installed_app_size;
     uint32_t installed_meta_size;
+    uint32_t installed_auth_size;
     uint32_t cluster_size;
     int rollback_index;
     int result;
@@ -2821,10 +3410,11 @@ static int app_package_prepare_rollback_internal(
                                        APP_PACKAGE_ACTION_REASON_NOT_INSTALLED,
                                        result);
     }
+    result = app_package_require_trusted(&installed, result_out);
+    if (result != OK) return result;
     result = app_package_read_backup_files(
         app_package_transaction_state.rollbacks[rollback_index].slot,
-        &backup, &app_size,
-        &meta_size);
+        &backup, &app_size, &meta_size, &auth_size);
     if (result != OK || kstrcmp(backup.id, id) != 0 ||
         kstrcmp(backup.version,
                 app_package_transaction_state.rollbacks[rollback_index].version) != 0) {
@@ -2834,7 +3424,8 @@ static int app_package_prepare_rollback_internal(
                                        ERR_INVALID);
     }
     result = app_package_read_installed_files(id, &installed_app_size,
-                                              &installed_meta_size);
+                                              &installed_meta_size,
+                                              &installed_auth_size);
     if (result != OK || fs_get_info(&fs_info) != OK ||
         fs_info.bytes_per_sector == 0U || fs_info.sectors_per_cluster == 0U) {
         return app_package_action_fail(result_out,
@@ -2843,7 +3434,8 @@ static int app_package_prepare_rollback_internal(
     }
     cluster_size = fs_info.bytes_per_sector * fs_info.sectors_per_cluster;
     result_out->required_clusters =
-        (2U * (app_size + meta_size) + installed_app_size + installed_meta_size +
+        (2U * (app_size + meta_size + auth_size) + installed_app_size +
+         installed_meta_size + installed_auth_size +
          cluster_size - 1U) / cluster_size + 10U;
     result_out->free_clusters = fs_info.free_clusters;
     if (result_out->required_clusters > result_out->free_clusters) {
@@ -3040,7 +3632,9 @@ int app_package_get_history_entry(uint32_t newest_index,
 }
 
 int app_package_test_fail_after(uint16_t completed_files) {
-    if (completed_files == 0U || completed_files > 32U) {
+    if (completed_files == 0U ||
+        completed_files > APP_PACKAGE_MAX_PLAN_ENTRIES *
+                              APP_PACKAGE_TRANSACTION_FILES_PER_ENTRY) {
         LOG_ERROR("PKG", "Failpoint AS4 fora do intervalo");
         return ERR_INVALID;
     }
@@ -3065,16 +3659,20 @@ int app_package_run_diagnostics(app_package_diagnostic_t* diagnostic_out) {
     kmemset(diagnostic_out, 0, sizeof(app_package_diagnostic_t));
     kmemset(&invalid_header, 0, sizeof(invalid_header));
     diagnostic_out->invalid_package = !app_package_header_is_valid(&invalid_header);
+    diagnostic_out->untrusted_package = 0;
     kmemset(&info, 0, sizeof(info));
     kmemcpy(info.id, "MISSING", 7);
     diagnostic_out->missing_dependency = 1;
     installed_count = app_package_get_installed_count();
     for (int index = 0; index < installed_count; index++) {
         app_package_info_t installed;
-        if (app_package_get_installed_info(index, &installed) == OK &&
-            kstrcmp(installed.id, info.id) == 0) {
-            diagnostic_out->missing_dependency = 0;
-            break;
+        if (app_package_get_installed_info(index, &installed) == OK) {
+            if (installed.trust != APP_PACKAGE_TRUST_TRUSTED) {
+                diagnostic_out->untrusted_package = 1;
+            }
+            if (kstrcmp(installed.id, info.id) == 0) {
+                diagnostic_out->missing_dependency = 0;
+            }
         }
     }
     if (fs_get_info(&fs_info) == OK) {
@@ -3152,6 +3750,28 @@ const char* app_package_action_reason_name(
             return "RECOVERY_FAILED";
         case APP_PACKAGE_ACTION_REASON_HISTORY_UNAVAILABLE:
             return "HISTORY_UNAVAILABLE";
+        case APP_PACKAGE_ACTION_REASON_PACKAGE_UNAUTHORIZED:
+            return "PACKAGE_UNAUTHORIZED";
+        case APP_PACKAGE_ACTION_REASON_UNKNOWN_KEY: return "UNKNOWN_KEY";
+        case APP_PACKAGE_ACTION_REASON_REVOKED_KEY: return "REVOKED_KEY";
+        case APP_PACKAGE_ACTION_REASON_SIGNATURE_INVALID:
+            return "SIGNATURE_INVALID";
+        case APP_PACKAGE_ACTION_REASON_HASH_MISMATCH:
+            return "HASH_MISMATCH";
+        default: return "UNKNOWN";
+    }
+}
+
+const char* app_package_trust_name(app_package_trust_t trust) {
+    switch (trust) {
+        case APP_PACKAGE_TRUST_UNSIGNED: return "UNSIGNED";
+        case APP_PACKAGE_TRUST_TRUSTED: return "TRUSTED";
+        case APP_PACKAGE_TRUST_UNKNOWN_KEY: return "UNKNOWN_KEY";
+        case APP_PACKAGE_TRUST_REVOKED_KEY: return "REVOKED_KEY";
+        case APP_PACKAGE_TRUST_INVALID_SIGNATURE:
+            return "INVALID_SIGNATURE";
+        case APP_PACKAGE_TRUST_HASH_MISMATCH: return "HASH_MISMATCH";
+        case APP_PACKAGE_TRUST_INVALID: return "INVALID";
         default: return "UNKNOWN";
     }
 }

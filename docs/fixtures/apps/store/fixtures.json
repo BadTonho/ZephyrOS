@@ -3,43 +3,43 @@
     "BADALIAS.ZPK": {
       "id": "ALIASOK",
       "reason": "ALIAS_MISMATCH",
-      "sha256": "67014c8258c5029be29c24931a4dc11618970ec0a6ed10fa0ef3db25bae5d6d8",
-      "size": 163,
+      "sha256": "927a62bbbb1beae8c94d5007427bee71f0504e56a6c26047ac3e2d0e7bc1ae88",
+      "size": 323,
       "state": "INVALID"
     },
     "BADAPI.ZPK": {
       "id": "BADAPI",
       "reason": "PACKAGE_INVALID",
-      "sha256": "ccf9d22ca39b25e85d9493ac072a13df8521099f63dcc624616edd2ba029c300",
-      "size": 160,
+      "sha256": "25873b447d221bb934740691b2360a295b6cd1dab393d00dd43f00068eb1ab50",
+      "size": 320,
       "state": "INVALID"
     },
     "BADCRC.ZPK": {
       "id": "BADCRC",
       "reason": "PACKAGE_INVALID",
-      "sha256": "7a9970d4d95918dfac6379fb607e359f48d1f33a0944c09169cb97fa25298863",
-      "size": 160,
+      "sha256": "284fc15273836031ac94b99aca30640b43ee9733e88e6c615eb5adfb5ce3e3ab",
+      "size": 320,
       "state": "INVALID"
     },
     "NEEDSDEP.ZPK": {
       "id": "NEEDSDEP",
       "reason": "DEPENDENCY_MISSING",
-      "sha256": "8a8d75ab5efee7e59e1a2cc8aa7887b7a22c86f0b8ab4ae43eef1b62df80a13f",
-      "size": 178,
+      "sha256": "ef8071d3679883e5fb8f8bc598024569ddb2317b6e358cbdccc0ebd71ed4e6ca",
+      "size": 338,
       "state": "BLOCKED"
     },
     "SAMEVER.ZPK": {
       "id": "SAMEVER",
       "reason": "NONE",
-      "sha256": "bf01c033fa4092481b2441d37a2cf864a91db19a3af95c84a9f36e8ac843ab9b",
-      "size": 166,
+      "sha256": "0827459b4a6b29f312021c419eb968476902c0121c7e31e0f25862e27749ffb8",
+      "size": 326,
       "state": "AVAILABLE_THEN_SAME_VERSION"
     },
     "VALID.ZPK": {
       "id": "VALID",
       "reason": "NONE",
-      "sha256": "f3416401e4af0d35a665ee398928237da4b8272aa99a7950f625640a37440c78",
-      "size": 163,
+      "sha256": "e35ff82f4911f3a0ea211cbccf9a0677c025eb64a6a70b4176b971c6608a336b",
+      "size": 323,
       "state": "AVAILABLE"
     }
   },

@@ -1763,6 +1763,10 @@ static void cmd_pkg_print_info(const app_package_info_t* info) {
     video_print(info->name, 0x07);
     video_print("\n  Versao: ", 0x07);
     video_print(info->version, 0x07);
+    video_print("\n  Confianca: ", 0x07);
+    video_print(app_package_trust_name(info->trust), 0x0E);
+    video_print("\n  key_id: ", 0x07);
+    video_print(info->key_id[0] ? "presente" : "ausente", 0x08);
     video_print("\n  API: 0.3\n  Dependencias: ", 0x07);
     if (info->dependency_count == 0) {
         video_print("nenhuma\n", 0x08);
@@ -2052,7 +2056,7 @@ static void cmd_store_print_usage(void) {
                 0x0E);
     video_print("     store rollback <ID> [--confirm]\n", 0x0E);
     video_print("     store history [ID]\n", 0x0E);
-    video_print("     store test fail-after <1..32>\n", 0x0E);
+    video_print("     store test fail-after <1..48>\n", 0x0E);
     video_print("     store remove <ID> [--confirm]\n", 0x0E);
     video_print("     store run <ID> [args]\n", 0x0E);
     video_print("     store remote status|enable|disable|list\n", 0x0E);
@@ -2157,7 +2161,7 @@ static void cmd_store_list(void) {
         video_print("Erro: catalogo da App Store indisponivel.\n", 0x0C);
         return;
     }
-    video_print("Catalogo local (LOCAL / NAO ASSINADO):\n", 0x0B);
+    video_print("Catalogo local:\n", 0x0B);
     if (count == 0) {
         video_print("  (vazio)\n", 0x08);
         return;
@@ -2205,14 +2209,18 @@ static void cmd_store_info(char* key) {
     video_print(app_catalog_reason_name(entry.reason),
                 entry.reason == APP_CATALOG_REASON_NONE ? 0x0A : 0x0E);
     video_print("\n  Confianca: ", 0x07);
-    video_print(entry.installed.id[0] &&
-                app_remote_is_provenance_available() &&
-                app_remote_get_installed_trust(
-                    entry.installed.id, entry.installed.version) ?
-                "REMOTO / AUTENTICADO (TESTE)" :
-                entry.installed.id[0] &&
-                !app_remote_is_provenance_available() ? "N/D" :
-                entry.has_source ? "LOCAL / NAO ASSINADO" : "N/D", 0x0E);
+    if (info->trust == APP_PACKAGE_TRUST_TRUSTED && entry.installed.id[0] &&
+        app_remote_is_provenance_available() &&
+        app_remote_get_installed_trust(entry.installed.id,
+                                       entry.installed.version)) {
+        video_print("REMOTE / AUTENTICADO", 0x0A);
+    } else if (info->trust == APP_PACKAGE_TRUST_TRUSTED) {
+        video_print("LOCAL / ASSINADO", 0x0A);
+    } else if (info->trust == APP_PACKAGE_TRUST_UNSIGNED) {
+        video_print("LOCAL / NAO ASSINADO", 0x0C);
+    } else {
+        video_print(app_package_trust_name(info->trust), 0x0C);
+    }
     video_print("\n  Tamanho fonte: ", 0x07);
     shell_command_print_num(entry.source_size);
     video_print("\n  Dependencias: ", 0x07);
@@ -2540,7 +2548,7 @@ static void cmd_store_test_fail_after(char* value) {
         shell_command_print_num(count);
         video_print(" trocas de arquivo.\n", 0x0A);
     } else {
-        video_print("Uso: store test fail-after <1..32>\n", 0x0E);
+        video_print("Uso: store test fail-after <1..48>\n", 0x0E);
     }
 }
 

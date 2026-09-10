@@ -119,6 +119,27 @@
 #define SHELL_REGCHECK_ACPI_MAX_TABLE_SIZE (1024U * 1024U)
 #define SHELL_REGCHECK_ACPI_MAX_ROOT_ENTRIES 256U
 
+static int shell_app_extract_package_id(const char* path, char* id_out) {
+    uint32_t index = 5U;
+    uint32_t id_length = 0U;
+
+    if (!path || !id_out || kstrlen(path) < 5U || path[0] != 'A' ||
+        path[1] != 'P' ||
+        path[2] != 'P' || path[3] != 'S' || path[4] != '/') return 0;
+    while (path[index] && path[index] != '/' && id_length + 1U <
+           APP_PACKAGE_ID_SIZE) {
+        char value = path[index++];
+
+        if (!((value >= 'A' && value <= 'Z') ||
+              (value >= '0' && value <= '9') || value == '_')) return -1;
+        id_out[id_length++] = value;
+    }
+    if (id_length == 0U || path[index] != '/' ||
+        kstrcmp(path + index + 1U, APP_PACKAGE_ENTRY_NAME) != 0) return -1;
+    id_out[id_length] = '\0';
+    return 1;
+}
+
 typedef enum {
     SHELL_Q2CHECK_IDLE = 0,
     SHELL_Q2CHECK_FIRST_FAULT,
@@ -363,6 +384,9 @@ static void cmd_app_devtest(void) {
 static void cmd_app(const char* args) {
     char subcommand[16];
     char path[FS_MAX_PATH];
+    char package_id[APP_PACKAGE_ID_SIZE];
+    app_package_action_result_t package_action;
+    int package_path_kind;
     app_launch_info_t launch;
     uint32_t sub_length = 0;
     uint32_t path_length = 0;
@@ -437,7 +461,16 @@ static void cmd_app(const char* args) {
         return;
     }
 
-    result = app_loader_run_file_with_launch(path, &launch, &pid);
+    package_path_kind = shell_app_extract_package_id(path, package_id);
+    if (package_path_kind == 1) {
+        result = app_package_run_installed(package_id, &launch, &pid,
+                                           &package_action);
+    } else if (kstrlen(path) >= 5U && path[0] == 'A' && path[1] == 'P' &&
+               path[2] == 'P' && path[3] == 'S' && path[4] == '/') {
+        result = ERR_INVALID;
+    } else {
+        result = app_loader_run_file_with_launch(path, &launch, &pid);
+    }
     if (result != OK) {
         video_print("Erro: nao foi possivel executar o aplicativo (codigo ", 0x0C);
         shell_command_print_num((uint32_t)result);
@@ -924,6 +957,7 @@ int shell_commands_apps_host_test_contracts(void) {
     shell_dispatch_cmd_app("pathtest");
     shell_dispatch_cmd_app("run");
     shell_dispatch_cmd_app("run APP.ZAP --alpha");
+    shell_dispatch_cmd_app("run APPS/DEMO/APP.ZAP");
     shell_dispatch_cmd_icons("");
 
     shell_dispatch_cmd_guimode("");

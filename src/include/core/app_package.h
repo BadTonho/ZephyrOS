@@ -3,8 +3,10 @@
 
 #include "types.h"
 #include "core/app_api.h"
+#include "core/crypto.h"
 
 #define APP_PACKAGE_VERSION                1U
+#define APP_PACKAGE_SIGNED_VERSION         2U
 #define APP_PACKAGE_ARCH_I386              1U
 #define APP_PACKAGE_MAX_MANIFEST_SIZE      512U
 #define APP_PACKAGE_ID_SIZE                9U
@@ -18,7 +20,13 @@
 #define APP_PACKAGE_DIRECTORY              "APPS"
 #define APP_PACKAGE_ENTRY_NAME             "APP.ZAP"
 #define APP_PACKAGE_METADATA_NAME          "META.DAT"
+#define APP_PACKAGE_AUTH_NAME              "AUTH.DAT"
 #define APP_PACKAGE_DIRECTORY_ATTRIBUTE    0x10U
+#define APP_PACKAGE_V2_HEADER_SIZE         128U
+#define APP_PACKAGE_V2_SIGNATURE_SIZE      CRYPTO_ED25519_SIGNATURE_SIZE
+#define APP_PACKAGE_V2_KEY_ID_SIZE         16U
+#define APP_PACKAGE_V2_SIGNATURE_ALGORITHM_ED25519 1U
+#define APP_PACKAGE_FLAG_SIGNED            1U
 
 typedef struct __attribute__((packed)) {
     char magic[4];
@@ -32,12 +40,42 @@ typedef struct __attribute__((packed)) {
     uint32_t reserved;
 } app_package_header_t;
 
+typedef struct __attribute__((packed)) {
+    char magic[4];
+    uint16_t version;
+    uint16_t header_size;
+    uint32_t architecture;
+    uint32_t manifest_size;
+    uint32_t payload_size;
+    uint32_t content_crc32;
+    uint32_t flags;
+    uint32_t reserved;
+    uint32_t signature_offset;
+    uint16_t signature_size;
+    uint16_t signature_algorithm;
+    uint8_t key_id[APP_PACKAGE_V2_KEY_ID_SIZE];
+    uint8_t content_sha256[CRYPTO_SHA256_SIZE];
+    uint8_t reserved_tail[40];
+} app_package_v2_header_t;
+
+typedef enum {
+    APP_PACKAGE_TRUST_UNSIGNED = 0,
+    APP_PACKAGE_TRUST_TRUSTED,
+    APP_PACKAGE_TRUST_UNKNOWN_KEY,
+    APP_PACKAGE_TRUST_REVOKED_KEY,
+    APP_PACKAGE_TRUST_INVALID_SIGNATURE,
+    APP_PACKAGE_TRUST_HASH_MISMATCH,
+    APP_PACKAGE_TRUST_INVALID
+} app_package_trust_t;
+
 typedef struct {
     char id[APP_PACKAGE_ID_SIZE];
     char name[APP_PACKAGE_NAME_SIZE];
     char version[APP_PACKAGE_VERSION_TEXT_SIZE];
     char dependencies[APP_PACKAGE_MAX_DEPENDENCIES][APP_PACKAGE_ID_SIZE];
     uint32_t dependency_count;
+    app_package_trust_t trust;
+    uint8_t key_id[APP_PACKAGE_V2_KEY_ID_SIZE];
 } app_package_info_t;
 
 typedef enum {
@@ -67,7 +105,12 @@ typedef enum {
     APP_PACKAGE_ACTION_REASON_TRANSACTION_PENDING = 23,
     APP_PACKAGE_ACTION_REASON_ROLLBACK_UNAVAILABLE = 24,
     APP_PACKAGE_ACTION_REASON_RECOVERY_FAILED = 25,
-    APP_PACKAGE_ACTION_REASON_HISTORY_UNAVAILABLE = 26
+    APP_PACKAGE_ACTION_REASON_HISTORY_UNAVAILABLE = 26,
+    APP_PACKAGE_ACTION_REASON_PACKAGE_UNAUTHORIZED = 27,
+    APP_PACKAGE_ACTION_REASON_UNKNOWN_KEY = 28,
+    APP_PACKAGE_ACTION_REASON_REVOKED_KEY = 29,
+    APP_PACKAGE_ACTION_REASON_SIGNATURE_INVALID = 30,
+    APP_PACKAGE_ACTION_REASON_HASH_MISMATCH = 31
 } app_package_action_reason_t;
 
 typedef enum {
@@ -140,6 +183,7 @@ typedef struct {
 
 typedef struct {
     int invalid_package;
+    int untrusted_package;
     int missing_dependency;
     int insufficient_space;
     int mutation_serialization;
@@ -165,6 +209,8 @@ int app_package_is_ready(void);
 int app_package_compare_versions(const char* left, const char* right,
                                  int* comparison_out);
 int app_package_verify_file(const char* path, app_package_info_t* info_out);
+int app_package_verify_installed(const char* id,
+                                 app_package_info_t* info_out);
 int app_package_install_file(const char* path, app_package_info_t* info_out);
 int app_package_remove(const char* id);
 int app_package_get_installed_count(void);
@@ -206,6 +252,7 @@ int app_package_is_mutation_active(void);
 int app_package_run_diagnostics(app_package_diagnostic_t* diagnostic_out);
 const char* app_package_action_reason_name(
     app_package_action_reason_t reason);
+const char* app_package_trust_name(app_package_trust_t trust);
 const char* app_package_plan_action_name(app_package_plan_action_t action);
 const char* app_package_history_operation_name(
     app_package_history_operation_t operation);

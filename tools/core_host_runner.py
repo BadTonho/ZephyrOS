@@ -245,6 +245,7 @@ SCHEDULING_SOURCE_FILES = (
 PACKAGE_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_package_host.c",
     ROOT / "src" / "core" / "app_package.c",
+    ROOT / "src" / "core" / "crypto.c",
     ROOT / "src" / "core" / "log.c",
     ROOT / "src" / "core" / "string.c",
 )

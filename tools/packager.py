@@ -21,9 +21,22 @@ from typing import Any
 
 PACKAGE_MAGIC = b"ZPKG"
 PACKAGE_VERSION = 1
+PACKAGE_SIGNED_VERSION = 2
 PACKAGE_ARCH_I386 = 1
 PACKAGE_HEADER = struct.Struct("<4sHHIIIIII")
 PACKAGE_HEADER_SIZE = PACKAGE_HEADER.size
+PACKAGE_V2_HEADER = struct.Struct("<4sHHIIIIIIIHH16s32s40s")
+PACKAGE_V2_HEADER_SIZE = PACKAGE_V2_HEADER.size
+PACKAGE_SIGNATURE_SIZE = 64
+PACKAGE_SIGNATURE_ED25519 = 1
+PACKAGE_FLAG_SIGNED = 1
+PACKAGE_DOMAIN = b"ZEPHYROS-PACKAGE-V2\0"
+PACKAGE_PUBLIC_KEY = bytes.fromhex(
+    "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a"
+)
+PACKAGE_KEY_ID = hashlib.sha256(PACKAGE_PUBLIC_KEY).digest()[:16]
+PACKAGE_REVOKED_KEY_IDS = (bytes.fromhex("aa" * 16),)
+PACKAGER_ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_MAX_MANIFEST = 512
 ZAPP_MAGIC = b"ZAPP"
 ZAPP_VERSION = 1
@@ -96,12 +109,31 @@ class PackageError(ValueError):
     """Erro controlado para entrada, pacote ou imagem FAT invalidos."""
 
 
+def load_package_private_key(path: Path) -> Any:
+    """Carrega a chave privada ZPKG v2 de um caminho externo ao repositorio."""
+    try:
+        from cryptography.hazmat.primitives import serialization
+        from cryptography.hazmat.primitives.asymmetric import ed25519
+        private = serialization.load_pem_private_key(
+            path.read_bytes(), password=None
+        )
+    except (ImportError, OSError, ValueError, TypeError) as error:
+        raise PackageError("chave privada ZPKG nao pode ser carregada") from error
+    if not isinstance(private, ed25519.Ed25519PrivateKey):
+        raise PackageError("chave privada ZPKG nao e Ed25519")
+    if private.public_key().public_bytes_raw() != PACKAGE_PUBLIC_KEY:
+        raise PackageError("chave privada ZPKG nao corresponde a raiz publica")
+    return private
+
+
 @dataclass(frozen=True)
 class PackageInfo:
     """Conteudo validado de um pacote ZPKG."""
 
     manifest: dict[str, str]
     payload: bytes
+    trust: str = "UNSIGNED"
+    key_id: bytes = b""
 
 
 def ensure_ascii(value: str, label: str, limit: int) -> str:
@@ -246,10 +278,89 @@ def build_package(manifest: dict[str, str], zapp: bytes) -> bytes:
     return header + content
 
 
+def build_signed_package(manifest: dict[str, str], zapp: bytes,
+                         private_key: Any) -> bytes:
+    """Monta um ZPKG v2 Ed25519 com a chave privada fornecida pelo operador."""
+    validate_zapp(zapp)
+    manifest_raw = encode_manifest(manifest)
+    content = manifest_raw + zapp
+    key_id = hashlib.sha256(
+        private_key.public_key().public_bytes_raw()
+    ).digest()[:16]
+    if key_id != PACKAGE_KEY_ID:
+        raise PackageError("chave privada de pacote nao corresponde a raiz")
+    header = PACKAGE_V2_HEADER.pack(
+        PACKAGE_MAGIC,
+        PACKAGE_SIGNED_VERSION,
+        PACKAGE_V2_HEADER_SIZE,
+        PACKAGE_ARCH_I386,
+        len(manifest_raw),
+        len(zapp),
+        zlib.crc32(content) & 0xFFFFFFFF,
+        PACKAGE_FLAG_SIGNED,
+        0,
+        PACKAGE_V2_HEADER_SIZE + len(content),
+        PACKAGE_SIGNATURE_SIZE,
+        PACKAGE_SIGNATURE_ED25519,
+        key_id,
+        hashlib.sha256(content).digest(),
+        bytes(40),
+    )
+    return header + content + private_key.sign(PACKAGE_DOMAIN + header + content)
+
+
 def parse_package(data: bytes) -> PackageInfo:
     """Valida o container completo e retorna manifesto e payload confiaveis."""
-    if len(data) < PACKAGE_HEADER_SIZE:
+    if len(data) < 6:
         raise PackageError("pacote menor que o cabecalho")
+    version = struct.unpack_from("<H", data, 4)[0]
+    if version == PACKAGE_SIGNED_VERSION:
+        if len(data) < PACKAGE_V2_HEADER_SIZE:
+            raise PackageError("pacote v2 menor que o cabecalho")
+        fields = PACKAGE_V2_HEADER.unpack_from(data)
+        (magic, version, header_size, arch, manifest_size, payload_size,
+         checksum, flags, reserved, signature_offset, signature_size,
+         signature_algorithm, key_id, content_hash, reserved_tail) = fields
+        if (
+            magic != PACKAGE_MAGIC or version != PACKAGE_SIGNED_VERSION
+            or header_size != PACKAGE_V2_HEADER_SIZE or arch != PACKAGE_ARCH_I386
+            or flags != PACKAGE_FLAG_SIGNED or reserved != 0
+            or signature_size != PACKAGE_SIGNATURE_SIZE
+            or signature_algorithm != PACKAGE_SIGNATURE_ED25519
+            or any(reserved_tail)
+            or not 1 <= manifest_size <= PACKAGE_MAX_MANIFEST
+            or not 1 <= payload_size <= ZAPP_MAX_SIZE
+            or signature_offset != header_size + manifest_size + payload_size
+            or len(data) != signature_offset + signature_size
+        ):
+            raise PackageError("cabecalho ZPKG v2 invalido")
+        if key_id in PACKAGE_REVOKED_KEY_IDS:
+            raise PackageError("chave do pacote revogada")
+        if key_id != PACKAGE_KEY_ID:
+            raise PackageError("chave do pacote desconhecida")
+        content = data[header_size:signature_offset]
+        if hashlib.sha256(content).digest() != content_hash:
+            raise PackageError("SHA-256 do pacote diverge")
+        if zlib.crc32(content) & 0xFFFFFFFF != checksum:
+            raise PackageError("CRC32 do pacote diverge")
+        try:
+            from cryptography.hazmat.primitives.asymmetric import ed25519
+            from cryptography.exceptions import InvalidSignature
+            ed25519.Ed25519PublicKey.from_public_bytes(PACKAGE_PUBLIC_KEY).verify(
+                data[signature_offset:], PACKAGE_DOMAIN + data[:signature_offset]
+            )
+        except ImportError as error:
+            raise PackageError("ZPKG v2 requer cryptography") from error
+        except InvalidSignature as error:
+            raise PackageError("assinatura Ed25519 do pacote invalida") from error
+        manifest_end = header_size + manifest_size
+        manifest = parse_manifest(data[header_size:manifest_end])
+        payload = data[manifest_end:signature_offset]
+        validate_zapp(payload)
+        return PackageInfo(manifest=manifest, payload=payload,
+                           trust="TRUSTED", key_id=key_id)
+    if version != PACKAGE_VERSION:
+        raise PackageError("magic ou versao do pacote invalida")
     magic, version, header_size, arch, manifest_size, payload_size, checksum, flags, reserved = PACKAGE_HEADER.unpack_from(data)
     if magic != PACKAGE_MAGIC or version != PACKAGE_VERSION:
         raise PackageError("magic ou versao do pacote invalida")
@@ -271,7 +382,7 @@ def parse_package(data: bytes) -> PackageInfo:
     manifest = parse_manifest(data[header_size:manifest_end])
     payload = data[manifest_end:]
     validate_zapp(payload)
-    return PackageInfo(manifest=manifest, payload=payload)
+    return PackageInfo(manifest=manifest, payload=payload, trust="UNSIGNED")
 
 
 def alias_name(package_id: str) -> str:
@@ -1129,31 +1240,34 @@ def store_fixture_manifest(
     }
 
 
-def build_store_fixtures() -> dict[str, bytes]:
+def build_store_fixtures(private_key: Any | None = None) -> dict[str, bytes]:
     """Gera deterministicamente a matriz publica do catalogo AS1."""
     zapp = build_demo_zapp()
+    def build(manifest: dict[str, str], image: bytes) -> bytes:
+        return (build_signed_package(manifest, image, private_key)
+                if private_key is not None else build_package(manifest, image))
     fixtures = {
-        "VALID.ZPK": build_package(
+        "VALID.ZPK": build(
             store_fixture_manifest("VALID", "Store Valid"), zapp
         ),
-        "BADAPI.ZPK": build_package(
+        "BADAPI.ZPK": build(
             store_fixture_manifest("BADAPI", "Bad API", api="9.9"), zapp
         ),
-        "BADALIAS.ZPK": build_package(
+        "BADALIAS.ZPK": build(
             store_fixture_manifest("ALIASOK", "Bad Alias"), zapp
         ),
-        "NEEDSDEP.ZPK": build_package(
+        "NEEDSDEP.ZPK": build(
             store_fixture_manifest(
                 "NEEDSDEP", "Needs Dependency", dependencies="MISSING"
             ),
-            zapp,
+            zapp
         ),
-        "SAMEVER.ZPK": build_package(
+        "SAMEVER.ZPK": build(
             store_fixture_manifest("SAMEVER", "Same Version"), zapp
         ),
     }
     bad_crc = bytearray(
-        build_package(store_fixture_manifest("BADCRC", "Bad CRC"), zapp)
+        build(store_fixture_manifest("BADCRC", "Bad CRC"), zapp)
     )
     bad_crc[-1] ^= 0xFF
     fixtures["BADCRC.ZPK"] = bytes(bad_crc)
@@ -1196,9 +1310,9 @@ def store_fixture_expectations() -> dict[str, dict[str, str]]:
     }
 
 
-def write_store_fixtures(output_dir: Path) -> None:
+def write_store_fixtures(output_dir: Path, private_key: Any | None = None) -> None:
     """Grava somente os artefatos publicos conhecidos e seu manifesto."""
-    fixtures = build_store_fixtures()
+    fixtures = build_store_fixtures(private_key)
     expectations = store_fixture_expectations()
     output_dir.mkdir(parents=True, exist_ok=True)
     published: dict[str, object] = {
@@ -1239,12 +1353,17 @@ def load_store_fixture_manifest(fixtures_dir: Path) -> dict[str, object]:
     return published
 
 
-def audit_store_fixture_semantics(fixtures: dict[str, bytes]) -> None:
+def audit_store_fixture_semantics(fixtures: dict[str, bytes],
+                                  require_trusted: bool = True) -> None:
     """Confere que cada vetor cobre exatamente o caso publicado."""
     valid = parse_package(fixtures["VALID.ZPK"])
     bad_alias = parse_package(fixtures["BADALIAS.ZPK"])
     needs_dep = parse_package(fixtures["NEEDSDEP.ZPK"])
     same_version = parse_package(fixtures["SAMEVER.ZPK"])
+    if require_trusted and any(item.trust != "TRUSTED"
+                               for item in (valid, bad_alias, needs_dep,
+                                            same_version)):
+        raise PackageError("fixture valido sem assinatura ZPKG v2")
     if valid.manifest["id"] != "VALID":
         raise PackageError("fixture VALID divergiu")
     if (
@@ -1265,12 +1384,12 @@ def audit_store_fixture_semantics(fixtures: dict[str, bytes]) -> None:
 
 
 def audit_store_fixtures(
-    fixtures_dir: Path, image_path: Path | None = None
+    fixtures_dir: Path, image_path: Path | None = None,
+    require_trusted: bool = True
 ) -> None:
     """Audita hashes, semantica e, opcionalmente, aliases na imagem FAT12."""
     published = load_store_fixture_manifest(fixtures_dir)
     metadata = published["fixtures"]
-    expected = build_store_fixtures()
     expectations = store_fixture_expectations()
     fixtures: dict[str, bytes] = {}
     if not isinstance(metadata, dict):
@@ -1284,8 +1403,7 @@ def audit_store_fixtures(
         if not isinstance(entry, dict):
             raise PackageError(f"metadado ausente: {alias}")
         if (
-            data != expected[alias]
-            or entry.get("size") != len(data)
+            entry.get("size") != len(data)
             or entry.get("sha256") != hashlib.sha256(data).hexdigest()
             or any(
                 entry.get(field) != value
@@ -1297,26 +1415,29 @@ def audit_store_fixtures(
             raise PackageError(f"fixture divergiu na imagem: {alias}")
         fixtures[alias] = data
         print(f"store_fixture_{alias} OK")
-    audit_store_fixture_semantics(fixtures)
+    audit_store_fixture_semantics(fixtures, require_trusted)
     print("App Store fixtures: OK")
 
 
-def build_store_as2_fixtures() -> dict[str, bytes]:
+def build_store_as2_fixtures(private_key: Any | None = None) -> dict[str, bytes]:
     """Gera a matriz separada de ciclo de vida local do AS2."""
     demo = build_demo_zapp()
     wait = build_wait_zapp()
+    def build(manifest: dict[str, str], image: bytes) -> bytes:
+        return (build_signed_package(manifest, image, private_key)
+                if private_key is not None else build_package(manifest, image))
     fixtures = {
-        "WAITAPP.ZPK": build_package(
+        "WAITAPP.ZPK": build(
             store_fixture_manifest("WAITAPP", "Wait for F12"), wait
         ),
-        "BASE.ZPK": build_package(
+        "BASE.ZPK": build(
             store_fixture_manifest("BASE", "Dependency Base"), demo
         ),
-        "DEPEND.ZPK": build_package(
+        "DEPEND.ZPK": build(
             store_fixture_manifest(
                 "DEPEND", "Reverse Dependent", dependencies="BASE"
             ),
-            demo,
+            demo
         ),
     }
     return {
@@ -1348,9 +1469,9 @@ def store_as2_fixture_expectations() -> dict[str, dict[str, str]]:
     }
 
 
-def write_store_as2_fixtures(output_dir: Path) -> None:
+def write_store_as2_fixtures(output_dir: Path, private_key: Any | None = None) -> None:
     """Grava os artefatos AS2 sem alterar o conjunto canonico do AS1."""
-    fixtures = build_store_as2_fixtures()
+    fixtures = build_store_as2_fixtures(private_key)
     expectations = store_as2_fixture_expectations()
     output_dir.mkdir(parents=True, exist_ok=True)
     published: dict[str, object] = {
@@ -1393,11 +1514,15 @@ def load_store_as2_manifest(fixtures_dir: Path) -> dict[str, object]:
     return published
 
 
-def audit_store_as2_semantics(fixtures: dict[str, bytes]) -> None:
+def audit_store_as2_semantics(fixtures: dict[str, bytes],
+                              require_trusted: bool = True) -> None:
     """Confere espera por F12 e o par de dependencia reversa."""
     wait = parse_package(fixtures["WAITAPP.ZPK"])
     base = parse_package(fixtures["BASE.ZPK"])
     dependent = parse_package(fixtures["DEPEND.ZPK"])
+    if require_trusted and any(item.trust != "TRUSTED"
+                               for item in (wait, base, dependent)):
+        raise PackageError("fixture AS2 sem assinatura ZPKG v2")
     if wait.manifest["id"] != "WAITAPP" or wait.payload != build_wait_zapp():
         raise PackageError("fixture WAITAPP divergiu")
     if base.manifest["id"] != "BASE" or base.manifest["dependencies"]:
@@ -1410,12 +1535,12 @@ def audit_store_as2_semantics(fixtures: dict[str, bytes]) -> None:
 
 
 def audit_store_as2_fixtures(
-    fixtures_dir: Path, image_path: Path | None = None
+    fixtures_dir: Path, image_path: Path | None = None,
+    require_trusted: bool = True
 ) -> None:
     """Audita hashes, semantica e bytes FAT12 da matriz AS2."""
     published = load_store_as2_manifest(fixtures_dir)
     metadata = published["fixtures"]
-    expected = build_store_as2_fixtures()
     expectations = store_as2_fixture_expectations()
     fixtures: dict[str, bytes] = {}
     if not isinstance(metadata, dict):
@@ -1429,8 +1554,7 @@ def audit_store_as2_fixtures(
         if not isinstance(entry, dict):
             raise PackageError(f"metadado AS2 ausente: {alias}")
         if (
-            data != expected[alias]
-            or entry.get("size") != len(data)
+            entry.get("size") != len(data)
             or entry.get("sha256") != hashlib.sha256(data).hexdigest()
             or any(
                 entry.get(field) != value
@@ -1442,40 +1566,43 @@ def audit_store_as2_fixtures(
             raise PackageError(f"fixture AS2 divergiu na imagem: {alias}")
         fixtures[alias] = data
         print(f"store_as2_fixture_{alias} OK")
-    audit_store_as2_semantics(fixtures)
+    audit_store_as2_semantics(fixtures, require_trusted)
     print("App Store AS2 fixtures: OK")
 
 
-def build_store_as4_fixtures(profile: str) -> dict[str, bytes]:
+def build_store_as4_fixtures(profile: str, private_key: Any | None = None) -> dict[str, bytes]:
     """Gera as fontes locais de update e planejamento do AS4."""
     if profile not in ("seed", "update"):
         raise PackageError("perfil AS4 invalido")
     demo = build_demo_zapp()
+    def build(manifest: dict[str, str], image: bytes) -> bytes:
+        return (build_signed_package(manifest, image, private_key)
+                if private_key is not None else build_package(manifest, image))
     target_version = "1.0.0" if profile == "seed" else "1.1.0"
     target_dependencies = "" if profile == "seed" else "UPDEPA"
     fixtures = {
-        "UPTARGET.ZPK": build_package(
+        "UPTARGET.ZPK": build(
             store_fixture_manifest("UPTARGET", "Update Target", target_version,
                                    dependencies=target_dependencies), demo
         ),
-        "UPDEPA.ZPK": build_package(
+        "UPDEPA.ZPK": build(
             store_fixture_manifest("UPDEPA", "Update Dependency A",
                                    dependencies="UPDEPB"), demo
         ),
-        "UPDEPB.ZPK": build_package(
+        "UPDEPB.ZPK": build(
             store_fixture_manifest("UPDEPB", "Update Dependency B"), demo
         ),
-        "BROKEN.ZPK": build_package(
+        "BROKEN.ZPK": build(
             store_fixture_manifest("BROKEN", "Broken Plan",
                                    dependencies="NOFONTE"), demo
         ),
-        "CYCLEA.ZPK": build_package(
+        "CYCLEA.ZPK": build(
             store_fixture_manifest("CYCLEA", "Cycle A", dependencies="CYCLEB"),
-            demo,
+            demo
         ),
-        "CYCLEB.ZPK": build_package(
+        "CYCLEB.ZPK": build(
             store_fixture_manifest("CYCLEB", "Cycle B", dependencies="CYCLEA"),
-            demo,
+            demo
         ),
     }
     return {alias: fixtures[alias] for alias in STORE_AS4_FIXTURE_ALIASES}
@@ -1496,9 +1623,10 @@ def store_as4_fixture_expectations(profile: str) -> dict[str, dict[str, str]]:
     }
 
 
-def write_store_as4_fixtures(output_dir: Path, profile: str) -> None:
+def write_store_as4_fixtures(output_dir: Path, profile: str,
+                             private_key: Any | None = None) -> None:
     """Grava seed ou update deterministico, com metadados auditaveis."""
-    fixtures = build_store_as4_fixtures(profile)
+    fixtures = build_store_as4_fixtures(profile, private_key)
     expectations = store_as4_fixture_expectations(profile)
     output_dir.mkdir(parents=True, exist_ok=True)
     published: dict[str, object] = {
@@ -1519,7 +1647,8 @@ def write_store_as4_fixtures(output_dir: Path, profile: str) -> None:
 
 
 def audit_store_as4_fixtures(
-    fixtures_dir: Path, image_path: Path | None = None
+    fixtures_dir: Path, image_path: Path | None = None,
+    require_trusted: bool = True
 ) -> None:
     """Audita pacote, perfil e aliases FAT12 da matriz AS4."""
     try:
@@ -1537,16 +1666,15 @@ def audit_store_as4_fixtures(
         or set(metadata) != set(STORE_AS4_FIXTURE_ALIASES)
     ):
         raise PackageError("conjunto dos fixtures AS4 divergiu")
-    fixtures = build_store_as4_fixtures(profile)
     expectations = store_as4_fixture_expectations(profile)
-    for alias, expected in fixtures.items():
+    for alias in STORE_AS4_FIXTURE_ALIASES:
         try:
             data = (fixtures_dir / alias).read_bytes()
         except OSError as error:
             raise PackageError(f"fixture AS4 ausente: {alias}") from error
         entry = metadata.get(alias)
         if (
-            not isinstance(entry, dict) or data != expected
+            not isinstance(entry, dict)
             or entry.get("size") != len(data)
             or entry.get("sha256") != hashlib.sha256(data).hexdigest()
             or any(entry.get(field) != value
@@ -1554,6 +1682,8 @@ def audit_store_as4_fixtures(
         ):
             raise PackageError(f"fixture AS4 dessincronizado: {alias}")
         parsed = parse_package(data)
+        if require_trusted and parsed.trust != "TRUSTED":
+            raise PackageError(f"fixture AS4 sem assinatura ZPKG v2: {alias}")
         if any(parsed.manifest.get(field) != value
                for field, value in expectations[alias].items()):
             raise PackageError(f"semantica AS4 divergiu: {alias}")
@@ -1612,21 +1742,25 @@ def store_as5_fixed(value: str, size: int, label: str) -> bytes:
     return encoded + bytes(size - len(encoded))
 
 
-def build_store_as5_packages(profile: str) -> dict[str, bytes]:
+def build_store_as5_packages(profile: str,
+                             package_private_key: Any | None = None) -> dict[str, bytes]:
     """Gera os tres pacotes remotos deterministas de instalacao/update."""
     if profile not in STORE_AS5_PROFILES:
         raise PackageError("perfil AS5 invalido")
     demo = build_demo_zapp()
     target_version = "1.0.0" if profile == "seed" else "1.1.0"
+    def build(manifest: dict[str, str], image: bytes) -> bytes:
+        return (build_signed_package(manifest, image, package_private_key)
+                if package_private_key is not None else build_package(manifest, image))
     packages = {
-        "RMDEPA": build_package(
+        "RMDEPA": build(
             store_fixture_manifest("RMDEPA", "Remote Dependency A",
                                    dependencies="RMDEPB"), demo
         ),
-        "RMDEPB": build_package(
+        "RMDEPB": build(
             store_fixture_manifest("RMDEPB", "Remote Dependency B"), demo
         ),
-        "RMTARGET": build_package(
+        "RMTARGET": build(
             store_fixture_manifest("RMTARGET", "Remote Target",
                                    target_version,
                                    dependencies="RMDEPA"), demo
@@ -1647,6 +1781,8 @@ def build_store_as5_catalog(
     for package_id in sorted(packages):
         data = packages[package_id]
         parsed = parse_package(data)
+        if parsed.trust != "TRUSTED":
+            raise PackageError("catalogo AS5 requer pacotes ZPKG v2 assinados")
         override = overrides.get(package_id, {})
         catalog_id = str(override.get("id", parsed.manifest["id"]))
         name = str(override.get("name", parsed.manifest["name"]))
@@ -1840,6 +1976,8 @@ def store_as5_catalog_semantics(
         if len(package) != entry["size"] or hashlib.sha256(package).digest() != entry["sha256"]:
             return "PACKAGE_HASH"
         parsed = parse_package(package)
+        if parsed.trust != "TRUSTED":
+            return "PACKAGE_SIGNATURE"
         dependencies = [] if not parsed.manifest["dependencies"] else parsed.manifest["dependencies"].split(",")
         if (
             parsed.manifest["id"] != entry["id"]
@@ -1904,7 +2042,8 @@ def audit_store_as5_fixtures(
         if hashlib.sha256(blob).hexdigest() != item.get("sha256"):
             raise PackageError(f"hash publicado AS5 divergiu: {path}")
         if item.get("type") == "package":
-            parse_package(blob)
+            if parse_package(blob).trust != "TRUSTED":
+                raise PackageError(f"pacote AS5 sem assinatura ZPKG v2: {path}")
             print(f"store_as5_{path.name} OK")
             continue
         if item.get("type") != "catalog":
@@ -2022,6 +2161,7 @@ def run_selftest() -> int:
     package = build_package(manifest, build_demo_zapp())
     checks = {
         "criar": True,
+        "v2_assinado": False,
         "api_legada": False,
         "crc_invalido": False,
         "injecao": False,
@@ -2040,6 +2180,10 @@ def run_selftest() -> int:
     }
     try:
         parse_package(package)
+        signed_fixture = (PACKAGER_ROOT / "docs" / "fixtures" / "apps" /
+                          "store" / "VALID.ZPK")
+        signed_info = parse_package(signed_fixture.read_bytes())
+        checks["v2_assinado"] = signed_info.trust == "TRUSTED"
         legacy_manifest = dict(manifest)
         legacy_manifest["api"] = "0.3"
         parse_package(build_package(legacy_manifest, build_demo_zapp()))
@@ -2069,7 +2213,7 @@ def run_selftest() -> int:
                 inject_root_file(
                     (store_dir / alias).read_bytes(), image_path, alias
                 )
-            audit_store_fixtures(store_dir, image_path)
+            audit_store_fixtures(store_dir, image_path, require_trusted=False)
             checks["store_fixtures"] = True
 
             store_as2_dir = Path(temp_dir) / "store-as2"
@@ -2078,7 +2222,8 @@ def run_selftest() -> int:
                 inject_root_file(
                     (store_as2_dir / alias).read_bytes(), image_path, alias
                 )
-            audit_store_as2_fixtures(store_as2_dir, image_path)
+            audit_store_as2_fixtures(store_as2_dir, image_path,
+                                     require_trusted=False)
             checks["store_as2_fixtures"] = True
 
             store_as4_dir = Path(temp_dir) / "store-as4"
@@ -2087,7 +2232,8 @@ def run_selftest() -> int:
                 inject_root_file(
                     (store_as4_dir / alias).read_bytes(), image_path, alias
                 )
-            audit_store_as4_fixtures(store_as4_dir, image_path)
+            audit_store_as4_fixtures(store_as4_dir, image_path,
+                                     require_trusted=False)
             checks["store_as4_fixtures"] = True
 
             hybrid_path = Path(temp_dir) / "hybrid.img"
@@ -2205,7 +2351,17 @@ def command_build(arguments: argparse.Namespace) -> int:
     manifest = manifest_from_json(Path(arguments.manifest))
     try:
         zapp = Path(arguments.zapp).read_bytes()
-        Path(arguments.output).write_bytes(build_package(manifest, zapp))
+        if arguments.legacy:
+            package = build_package(manifest, zapp)
+        else:
+            if not arguments.private:
+                raise PackageError(
+                    "build de distribuicao requer --private; use --legacy para ZPKG v1"
+                )
+            package = build_signed_package(
+                manifest, zapp, load_package_private_key(Path(arguments.private))
+            )
+        Path(arguments.output).write_bytes(package)
     except OSError as error:
         raise PackageError("falha ao ler ou gravar arquivo do pacote") from error
     print(f"Pacote criado: {arguments.output}")
@@ -2218,7 +2374,7 @@ def command_verify(arguments: argparse.Namespace) -> int:
         info = parse_package(Path(arguments.package).read_bytes())
     except OSError as error:
         raise PackageError("nao foi possivel ler pacote") from error
-    print(f"Pacote valido: {info.manifest['id']} {info.manifest['version']}")
+    print(f"Pacote valido: {info.manifest['id']} {info.manifest['version']} ({info.trust})")
     return 0
 
 
@@ -2314,7 +2470,17 @@ def command_demo(arguments: argparse.Namespace) -> int:
         "entry": "APP.ZAP",
         "dependencies": "",
     }
-    package = build_package(manifest, build_demo_zapp())
+    if arguments.legacy:
+        package = build_package(manifest, build_demo_zapp())
+    else:
+        if not arguments.private:
+            raise PackageError(
+                "demo de distribuicao requer --private; use --legacy para ZPKG v1"
+            )
+        package = build_signed_package(
+            manifest, build_demo_zapp(),
+            load_package_private_key(Path(arguments.private)),
+        )
     output = Path(arguments.output)
     output.write_bytes(package)
     image_path = Path(arguments.image)
@@ -2334,8 +2500,9 @@ def command_demo(arguments: argparse.Namespace) -> int:
 def command_fixtures_store(arguments: argparse.Namespace) -> int:
     """Gera os fixtures publicos e deterministicos do catalogo AS1."""
     output_dir = Path(arguments.output_dir)
+    private_key = load_package_private_key(Path(arguments.private))
     try:
-        write_store_fixtures(output_dir)
+        write_store_fixtures(output_dir, private_key)
     except OSError as error:
         raise PackageError("falha ao gravar fixtures da App Store") from error
     print(f"Fixtures da App Store criados em {output_dir.resolve()}")
@@ -2355,8 +2522,9 @@ def command_audit_store(arguments: argparse.Namespace) -> int:
 def command_fixtures_store_as2(arguments: argparse.Namespace) -> int:
     """Gera os fixtures deterministicos de ciclo de vida AS2."""
     output_dir = Path(arguments.output_dir)
+    private_key = load_package_private_key(Path(arguments.private))
     try:
-        write_store_as2_fixtures(output_dir)
+        write_store_as2_fixtures(output_dir, private_key)
     except OSError as error:
         raise PackageError("falha ao gravar fixtures AS2") from error
     print(f"Fixtures AS2 criados em {output_dir.resolve()}")
@@ -2378,8 +2546,9 @@ def command_audit_store_as2(arguments: argparse.Namespace) -> int:
 def command_fixtures_store_as4(arguments: argparse.Namespace) -> int:
     """Gera os fixtures AS4 para a imagem seed ou update."""
     output_dir = Path(arguments.output_dir)
+    private_key = load_package_private_key(Path(arguments.private))
     try:
-        write_store_as4_fixtures(output_dir, arguments.profile)
+        write_store_as4_fixtures(output_dir, arguments.profile, private_key)
     except OSError as error:
         raise PackageError("falha ao gravar fixtures AS4") from error
     print(f"Fixtures AS4 ({arguments.profile}) criados em {output_dir.resolve()}")
@@ -2413,18 +2582,64 @@ def command_sign_store_as5(arguments: argparse.Namespace) -> int:
     )
     if raw_public != public["public"]:
         raise PackageError("chave privada AS5 nao corresponde a raiz publica")
-    packages = build_store_as5_packages(arguments.profile)
+    if not arguments.package_private:
+        raise PackageError("AS5 requer --package-private para ZPKG v2")
+    package_private = load_package_private_key(Path(arguments.package_private))
+    packages = build_store_as5_packages(arguments.profile, package_private)
     generation = 1 if arguments.profile == "seed" else 2
     catalog = build_store_as5_catalog(
         packages, generation, public["key_id"], private
     )
+    write_store_as5_profile(Path(arguments.output_dir), packages, catalog)
     output = Path(arguments.output_dir)
-    output.mkdir(parents=True, exist_ok=True)
-    (output / "stable.zac").write_bytes(catalog)
-    for package_id, package in packages.items():
-        (output / f"{package_id}.ZPK").write_bytes(package)
     print(f"Catalogo AS5 {arguments.profile} assinado em {output.resolve()}")
     return 0
+
+
+def write_store_as5_profile(
+    output_dir: Path, packages: dict[str, bytes], catalog: bytes
+) -> None:
+    """Grava perfil AS5 em Base64 e atualiza os hashes publicados."""
+    if output_dir.name not in STORE_AS5_PROFILES or set(packages) != set(STORE_AS5_IDS):
+        raise PackageError("perfil ou conjunto de pacotes AS5 invalido")
+    fixture_root = output_dir.parent
+    manifest_path = fixture_root / "fixtures.json"
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise PackageError("manifesto dos fixtures AS5 invalido") from error
+    artifacts = manifest.get("artifacts") if isinstance(manifest, dict) else None
+    if (
+        not isinstance(manifest, dict)
+        or manifest.get("format") != STORE_AS5_FIXTURE_FORMAT
+        or not isinstance(artifacts, list)
+    ):
+        raise PackageError("conjunto dos fixtures AS5 divergiu")
+    blobs = {
+        f"{output_dir.name}/{package_id}.ZPK.b64": package
+        for package_id, package in packages.items()
+    }
+    blobs[f"{output_dir.name}/stable.zac.b64"] = catalog
+    found: set[str] = set()
+    for item in artifacts:
+        if not isinstance(item, dict):
+            raise PackageError("entrada de fixture AS5 invalida")
+        file_name = str(item.get("file", ""))
+        data = blobs.get(file_name)
+        if data is not None:
+            item["sha256"] = hashlib.sha256(data).hexdigest()
+            found.add(file_name)
+    if found != set(blobs):
+        raise PackageError("manifesto AS5 nao contem o perfil solicitado")
+    output_dir.mkdir(parents=True, exist_ok=True)
+    for file_name, data in blobs.items():
+        path = fixture_root / file_name
+        path.write_text(
+            base64.b64encode(data).decode("ascii") + "\n", encoding="ascii"
+        )
+    manifest_path.write_text(
+        json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
 
 
 def command_audit_store_as5(arguments: argparse.Namespace) -> int:
@@ -2464,6 +2679,9 @@ def build_parser() -> argparse.ArgumentParser:
     build.add_argument("--manifest", required=True)
     build.add_argument("--zapp", required=True)
     build.add_argument("--output", required=True)
+    build.add_argument("--private")
+    build.add_argument("--legacy", action="store_true",
+                       help="gera ZPKG v1 somente para compatibilidade")
     build.set_defaults(handler=command_build)
     verify = commands.add_parser("verify")
     verify.add_argument("package")
@@ -2511,9 +2729,12 @@ def build_parser() -> argparse.ArgumentParser:
     demo = commands.add_parser("demo")
     demo.add_argument("--output", required=True)
     demo.add_argument("--image", required=True)
+    demo.add_argument("--private")
+    demo.add_argument("--legacy", action="store_true")
     demo.set_defaults(handler=command_demo)
     fixtures_store = commands.add_parser("fixtures-store")
     fixtures_store.add_argument("--output-dir", required=True)
+    fixtures_store.add_argument("--private", required=True)
     fixtures_store.set_defaults(handler=command_fixtures_store)
     audit_store = commands.add_parser("audit-store")
     audit_store.add_argument("--fixtures-dir", required=True)
@@ -2521,6 +2742,7 @@ def build_parser() -> argparse.ArgumentParser:
     audit_store.set_defaults(handler=command_audit_store)
     fixtures_store_as2 = commands.add_parser("fixtures-store-as2")
     fixtures_store_as2.add_argument("--output-dir", required=True)
+    fixtures_store_as2.add_argument("--private", required=True)
     fixtures_store_as2.set_defaults(handler=command_fixtures_store_as2)
     audit_store_as2 = commands.add_parser("audit-store-as2")
     audit_store_as2.add_argument("--fixtures-dir", required=True)
@@ -2530,6 +2752,7 @@ def build_parser() -> argparse.ArgumentParser:
     fixtures_store_as4.add_argument("--output-dir", required=True)
     fixtures_store_as4.add_argument("--profile", required=True,
                                     choices=("seed", "update"))
+    fixtures_store_as4.add_argument("--private", required=True)
     fixtures_store_as4.set_defaults(handler=command_fixtures_store_as4)
     audit_store_as4 = commands.add_parser("audit-store-as4")
     audit_store_as4.add_argument("--fixtures-dir", required=True)
@@ -2539,6 +2762,7 @@ def build_parser() -> argparse.ArgumentParser:
     sign_store_as5.add_argument("--profile", required=True,
                                 choices=STORE_AS5_PROFILES)
     sign_store_as5.add_argument("--private", required=True)
+    sign_store_as5.add_argument("--package-private", required=True)
     sign_store_as5.add_argument("--public", required=True)
     sign_store_as5.add_argument("--output-dir", required=True)
     sign_store_as5.set_defaults(handler=command_sign_store_as5)

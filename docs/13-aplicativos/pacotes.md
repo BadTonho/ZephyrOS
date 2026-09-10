@@ -59,18 +59,64 @@ auto-dependencia.
 Antes de qualquer escrita, o kernel valida header, tamanhos, arquitetura,
 manifesto, CRC32 e o payload pelo validador ZAPP existente.
 
+## Container ZPKG v2 e confiança SEC4
+
+O ZPKG v2 mantém o manifesto e o payload ZAPP, mas acrescenta autenticação
+individual Ed25519. O header é fixo em 128 bytes e o layout é little-endian:
+
+| Offset | Campo | Regra |
+|---|---|---|
+| 0 | `magic` | `ZPKG` |
+| 4 | `version` | `2` |
+| 6 | `header_size` | `128` |
+| 8 | `architecture` | i386 (`1`) |
+| 12 | `manifest_size` | 1 a 512 bytes |
+| 16 | `payload_size` | ZAPP válido, até 8236 bytes |
+| 20 | `content_crc32` | CRC32 de manifesto mais payload |
+| 24 | `flags` | somente `SIGNED` (`1`) |
+| 28 | `reserved` | zero |
+| 32 | `signature_offset` | imediatamente após manifesto e payload |
+| 36 | `signature_size` | `64` |
+| 38 | `signature_algorithm` | Ed25519 (`1`) |
+| 40 | `key_id` | primeiros 16 bytes de SHA-256 da chave pública |
+| 56 | `content_sha256` | SHA-256 de manifesto mais payload |
+| 88 | `reserved_tail` | 40 bytes obrigatoriamente zero |
+
+O arquivo é `[header][manifesto][payload][assinatura]`. A assinatura cobre
+`APP_PACKAGE_TRUST_DOMAIN || header || manifesto || payload`; o único trecho
+excluído é a própria assinatura. CRC32 e SHA-256 são verificados antes da
+assinatura para vincular o envelope ao conteúdo exato.
+
+A raiz de confiança é exclusiva de pacotes e está declarada em
+`src/include/core/app_package_trust.h`. A SEC4 aceita somente Ed25519, uma
+chave ativa estática e uma lista estática de `key_id` revogados. A chave
+privada nunca é versionada: o empacotador recebe-a por `--private` durante a
+geração de distribuição.
+
+O parser v1 continua disponível para inspeção. Um v1 é reportado como
+`UNSIGNED` e pode ser listado ou removido quando já estiver instalado, mas não
+pode ser instalado, atualizado, executado, usado em rollback ou aplicado em
+plano local/remoto. Os estados públicos de confiança são `UNSIGNED`,
+`TRUSTED`, `UNKNOWN_KEY`, `REVOKED_KEY`, `INVALID_SIGNATURE`,
+`HASH_MISMATCH` e `INVALID`. Os motivos correspondentes são append-only:
+`PACKAGE_UNAUTHORIZED`, `UNKNOWN_KEY`, `REVOKED_KEY`, `SIGNATURE_INVALID` e
+`HASH_MISMATCH`.
+
 ## Fluxo no host
 
 `tools/packager.py` usa apenas a biblioteca padrao do Python:
 
 ```text
 python tools\packager.py build --manifest app.json --zapp APP.ZAP --output DEMO.zephyrosapp
+python tools\packager.py build --manifest app.json --zapp APP.ZAP --private operador-ed25519.pem --output DEMO.zephyrosapp
+python tools\packager.py build --manifest app.json --zapp APP.ZAP --legacy --output DEMO-v1.zephyrosapp
 python tools\packager.py verify DEMO.zephyrosapp
 python tools\packager.py inject --package DEMO.zephyrosapp --image build\zephyros.img
 python tools\packager.py inject --package DEMO.zephyrosapp --image build\zephyros.img --replace
 ```
 
-O `app.json` precisa de `id`, `name` e `version`; `api` assume `0.9`, aceita
+O `build` exige uma chave privada externa para gerar ZPKG v2. `--legacy` é a
+única forma explícita de gerar ZPKG v1 para compatibilidade. O `app.json` precisa de `id`, `name` e `version`; `api` assume `0.9`, aceita
 explicitamente `0.3`, `0.4`, `0.5`, `0.6`, `0.7` e `0.8` para pacotes legados e
 `dependencies` assume lista vazia quando omitidos. O `inject` deriva o alias
 `ID.ZPK`, recusa alias invalido, arquivo ja existente, diretorio raiz cheio,
@@ -103,15 +149,28 @@ ao Shell:
 ```text
 APPS/<ID>/APP.ZAP
 APPS/<ID>/META.DAT
+APPS/<ID>/AUTH.DAT
 ```
 
-`META.DAT` preserva o manifesto validado. A instalacao recusa ID ja instalado,
+`META.DAT` preserva o manifesto validado. `AUTH.DAT` preserva o envelope v2
+necessário para revalidar a assinatura, o hash, o CRC, o `key_id` e os limites
+do pacote. Antes de executar, `APP.ZAP`, `META.DAT` e `AUTH.DAT` são validados
+conjuntamente; qualquer alteração, ausência, arquivo inesperado ou corrupção
+bloqueia a execução. A autorização é uma cópia revalidável da assinatura
+aprovada na instalação, não um bypass.
+
+A instalacao recusa ID ja instalado,
 dependencia ausente, aplicativo em primeiro plano, servicos indisponiveis ou
-espaco insuficiente. Em falha de escrita, tenta remover `APP.ZAP`, `META.DAT`
-e o diretorio parcial. A remocao e bloqueada se outro pacote instalado
+espaco insuficiente. Em falha de escrita, tenta remover `APP.ZAP`, `META.DAT`,
+`AUTH.DAT` e o diretorio parcial. Staging, journal, backup, rollback, limpeza
+parcial e remoção incluem os três arquivos. O failpoint AS4 usa até 48 pontos
+de troca para refletir esse terceiro arquivo. A remocao e bloqueada se outro pacote instalado
 depender do ID; o arquivo-fonte `ID.ZPK` no diretorio raiz nunca e apagado.
 
-O loader aceita caminhos; assim uma instalacao pode ser executada com:
+O comando `app run APPS/<ID>/APP.ZAP` é reconhecido como pacote instalado e
+encaminhado a `app_package_run_installed()`, sem bypass do controle de
+confiança. Imagens ZAPP internas dos serviços nativos continuam usando
+`app_loader_run_image()`. Assim uma instalacao pode ser executada com:
 
 ```text
 app run APPS/DEMO/APP.ZAP
@@ -150,6 +209,11 @@ LOADER_BUSY
 MUTATION_BUSY
 READ_ERROR
 WRITE_ERROR
+PACKAGE_UNAUTHORIZED
+UNKNOWN_KEY
+REVOKED_KEY
+SIGNATURE_INVALID
+HASH_MISMATCH
 ```
 
 `app_package_run_installed()` aceita somente um ID instalado, monta
@@ -157,16 +221,22 @@ WRITE_ERROR
 Mutacoes sao recusadas enquanto um ZAPP externo estiver em primeiro plano;
 execucao tambem e recusada durante uma mutacao.
 
+As consultas públicas de confiança são `app_package_verify_file()`,
+`app_package_verify_installed()` e `app_package_trust_name()`. A primeira
+classifica a fonte sem gravar; a segunda valida o trio persistido antes da
+execução. Uma instalação v2 só publica o estado `TRUSTED`; uma instalação v1
+legada permanece `UNSIGNED` e somente pode ser consultada/removida.
+
 ## Atualizacao transacional AS4
 
-AS4 preserva o container `ZPKG v1` e centraliza a comparacao de versao em
+AS4 preserva a leitura do container `ZPKG v1` e centraliza a comparacao de versao em
 `app_package_compare_versions()`. Planos possuem ate 16 entradas e sao
 revalidados integralmente no preflight e na confirmacao. Uma instalacao pode
 incluir dependencias locais transitivas em ordem topologica; uma atualizacao
 altera somente o alvo e nao atualiza dependencias ja instaladas.
 
 No FAT12, staging, backup, journal, estado e historico usam aliases privados
-hidden/system. `APP.ZAP` e `META.DAT` sao escritos copy-on-write dentro de
+hidden/system. `APP.ZAP`, `META.DAT` e `AUTH.DAT` sao escritos copy-on-write dentro de
 `APPS/<ID>`. O journal e recuperado em `app_package_init()` antes do catalogo;
 falha de journal bloqueia mutacoes e preserva consultas. FAT32 recusa a
 mutacao AS4 sem escrita. Cada app atualizado conserva uma unica versao
@@ -188,7 +258,7 @@ mais recente e evita associar status de uma transacao antiga ao job seguinte.
 
 ## Fonte de plano em diretorio AS5
 
-AS5 preserva integralmente `ZPKG v1` e acrescenta somente duas APIs publicas
+AS5 preserva a leitura de `ZPKG v1` e acrescenta somente duas APIs publicas
 append-only:
 
 ```text
@@ -200,9 +270,10 @@ Elas recebem um plano ja construido e o alias de um diretorio FAT12 privado.
 Cada entrada ainda passa pelo parser ZPKG, CRC32, manifesto, ID, versao,
 dependencias, ZAPP, espaco, loader e gate de mutacao do servico. As APIs AS1 a
 AS4 continuam chamando o mesmo motor com a raiz como fonte. O servico remoto
-usa essas operacoes somente depois de validar assinatura do catalogo e
-SHA-256 dos pacotes em cache; `app_package` nao conhece HTTP, Ed25519 nem a
-tabela de confianca AS5.
+usa essas operacoes somente depois de validar assinatura do catalogo,
+SHA-256 publicado e assinatura individual ZPKG v2 dos pacotes em cache;
+`app_package` conhece somente a raiz de pacotes, não HTTP nem a tabela de
+confiança AS5.
 
 ## Comandos
 

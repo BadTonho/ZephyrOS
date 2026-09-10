@@ -377,6 +377,10 @@ const char* app_package_action_reason_name(
     return "nenhum";
 }
 
+const char* app_package_trust_name(app_package_trust_t trust) {
+    return trust == APP_PACKAGE_TRUST_TRUSTED ? "TRUSTED" : "UNSIGNED";
+}
+
 const char* app_remote_entry_state_name(app_remote_entry_state_t state) {
     (void)state;
     return "disponivel";
@@ -496,6 +500,7 @@ int main(void) {
     kmemcpy(fixture_catalog_entries[0].source.id, "CORE", 5U);
     kmemcpy(fixture_catalog_entries[0].source.name, "Core", 5U);
     kmemcpy(fixture_catalog_entries[0].source.version, "1.0", 4U);
+    fixture_catalog_entries[0].source.trust = APP_PACKAGE_TRUST_TRUSTED;
     fixture_catalog_entries[0].has_source = 1U;
     fixture_catalog_entries[0].state = APP_CATALOG_STATE_AVAILABLE;
     fixture_catalog_entries[0].capabilities = APP_CATALOG_CAPABILITY_VERIFY |
@@ -507,6 +512,7 @@ int main(void) {
     kmemcpy(fixture_catalog_entries[1].source.version, "2.0", 4U);
     kmemcpy(fixture_catalog_entries[1].installed.id, "TOOL", 5U);
     kmemcpy(fixture_catalog_entries[1].installed.version, "1.0", 4U);
+    fixture_catalog_entries[1].installed.trust = APP_PACKAGE_TRUST_TRUSTED;
     fixture_catalog_entries[1].has_source = 1U;
     fixture_catalog_entries[1].has_installed = 1U;
     fixture_catalog_entries[1].state = APP_CATALOG_STATE_UPDATE_AVAILABLE;
