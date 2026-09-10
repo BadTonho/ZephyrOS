@@ -1,14 +1,13 @@
 # Ambiente Linux do ZephyrOS
 
 Este arquivo registra o procedimento para compilar, verificar e executar o
-ZephyrOS em um PC Linux. O `GNUmakefile` tem prioridade automática sobre
-`makefile` e `Makefile`; `Makefile.linux` só é usado quando informado com
-`-f`.
+ZephyrOS em um PC Linux. O `GNUmakefile` tem prioridade automática e seleciona
+o `Makefile` original no Windows ou o `Makefile.linux` no Linux.
 
 ## Pré-requisitos
 
 As ferramentas precisam estar disponíveis no `PATH` ou configuradas no
-`GNUmakefile`:
+`Makefile.local`:
 
 ```text
 python3
@@ -38,17 +37,21 @@ command -v i686-elf-ld
 
 ## Qual makefile está sendo usado
 
-Se existir `GNUmakefile`, o comando simples `make` usará esse arquivo. Para
-forçar um arquivo específico:
+O `GNUmakefile` é versionado junto com os outros dois Makefiles. No Linux, o
+comando simples `make` seleciona automaticamente o fluxo Linux:
 
 ```bash
-make -f GNUmakefile q3check
+make q3check
+```
+
+Para forçar o arquivo Linux diretamente, também é possível usar:
+
+```bash
 make -f Makefile.linux q3check
 ```
 
-O repositório ignora `GNUmakefile` e `Makefile.linux` porque eles podem conter
-caminhos locais. Eles precisam ser copiados manualmente para o outro PC, ou
-ser recriados a partir deste procedimento.
+Somente configurações específicas da máquina devem ficar em `Makefile.local`,
+que não é versionado.
 
 Confirme que o runner está com o nome correto:
 

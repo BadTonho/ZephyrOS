@@ -7,6 +7,23 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## 2026-09-10 - Correção do fluxo de build Linux
+
+- Diagnóstico: o comando genérico `make` podia selecionar o `Makefile` original
+  específico do Windows quando o `GNUmakefile` Linux local não existisse. Além
+  disso, o makefile Linux dependia do comando não portátil `python`.
+- Implementação: `GNUmakefile` passou a selecionar o `Makefile` original no
+  Windows e o `Makefile.linux` no Linux. Os três arquivos permanecem
+  versionados para sincronização entre máquinas; somente `Makefile.local` fica
+  local. O makefile Linux passou a usar `PYTHON` configurável, com padrão
+  `python3`, e a imagem depende do próprio makefile para evitar reutilizar uma
+  imagem antiga após mudança da receita.
+- Evidência read-only: `make -f Makefile.linux -n run` e `make -n run` apontam
+  para `build/zephyros.img` e exibem `prepare-hybrid-image`; nenhum build,
+  teste ou QEMU foi executado nesta etapa.
+- Estado: correção operacional aplicada; `make q3check`, `make clean`, `make` e
+  `make run` permanecem pendentes de execução pelo usuário.
+
 ## 2026-09-08 - SEC3: ciclo de vida e isolamento de processos
 
 - Implementação: callbacks de criação, saída e destruição passaram a validar
