@@ -100,6 +100,30 @@ snapshot, seed, portas, timeout, `run_id` e diretório próprio. Os resultados
 agregados ficam em `build/test-results/parallel/<run-id>/`; falhas não
 substituem artefatos anteriores.
 
+## SEC6 — validação adversarial
+
+Os alvos SEC6 executam a validação host, os diagnósticos QEMU adversariais e a
+matriz TST6 reutilizada de falhas, recuperação e hardware. O perfil interno
+`no-vesa` mantém serial/QMP ativos e desliga somente o framebuffer:
+
+```text
+make test-sec6-host
+make test-sec6-qemu SEC6_QEMU_WORKERS=4 SEC6_QEMU_SEED=606
+make test-sec6
+```
+
+Para o ciclo contínuo controlado, use o supervisor com limite finito; o
+`--stop-file` pode ser criado para solicitar parada graciosa:
+
+```text
+python tools/tst7_continuous_runner.py start --mode soak-parallel --max-cycles 1 --interval 0 --workers 4 --seed 606 --stop-file build/sec6-stop
+```
+
+O fechamento SEC6 exige `PASS` agregado, nenhum processo QEMU residual e
+artefatos preservados em `build/test-results/parallel/<run-id>/` e
+`.tst7-results/continuous/<session-id>/`. `DT100-003` permanece visível como
+dívida técnica aceita da SEC4.
+
 ## TST3 — logica host-only e limites
 
 ```text

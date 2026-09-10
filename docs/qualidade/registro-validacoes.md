@@ -7021,3 +7021,37 @@ dívida.
   2/2 casos e zero grupos de falha. A tentativa inicial sem QEMU no `PATH`
   foi preservada como `BLOCKED` e a repetição com o caminho configurado passou.
   Nenhum kernel, bootloader, Stage 2, ABI ou syscall foi alterado.
+- SEC6 — validação adversarial — implementação e validação final concluídas em
+  2026-09-10 (America/Sao_Paulo). Foram adicionados o perfil QEMU `no-vesa`,
+  fixtures/casos determinísticos SEC6, validação dos marcadores de diagnóstico
+  e cobertura do retorno ao prompt em Simple, Classic e após jobs cooperativos.
+  A correção desativa o Desktop ao trocar para Simple, evitando que a entrada
+  seguinte seja consumida pela cena gráfica; o host-only cobre o contrato e o
+  caso QEMU reproduz o fluxo real.
+
+  Passaram `make q3check`, `make clean && make`, `make test-sec6-host`,
+  `make catalog-test`, `make storage-fixtures-verify` e `make test-sec6-qemu`.
+  O lote SEC6 executou 22/22 casos com quatro workers em
+  `qpp-20260910T183535Z-27660`, incluindo Simple, Classic, sem VESA, falhas,
+  recuperação e USB-storage. O ciclo controlado de `soak-parallel` passou com
+  18/18 casos em `tst7c-20260910T183921Z-26976-1`, quatro workers, seed
+  derivada registrada e zero grupos de falha.
+
+  Os resultados e artefatos foram preservados em
+  `build/test-results/parallel/qpp-20260910T183535Z-27660/` e
+  `.tst7-results/continuous/session-20260910T183921Z-26976/`. Não há processos
+  QEMU residuais. `DT100-003` continua separada como dívida técnica aceita da
+  SEC4 e não foi mascarada pela SEC6.
+
+  Reteste final após o build limpo: a imagem `build/zephyros.img` foi
+  recompilada com SHA-256
+  `73dc46748db21ab3c755f590cf127179490d3adf6991e7c02b8ed1f0475b654c`.
+  `make test-sec6-qemu` passou novamente no run
+  `qpp-20260910T184857Z-10000`, com 22/22 casos, quatro workers, seed 606 e
+  nenhum processo QEMU residual. O resultado agregado está em
+  `build/test-results/parallel/qpp-20260910T184857Z-10000/`.
+
+  O soak-parallel final, executado sobre a mesma imagem, passou no supervisor
+  `session-20260910T185300Z-696`, com 18/18 casos, quatro workers, zero grupos
+  de falha e nenhum processo QEMU residual. Os artefatos estão em
+  `.tst7-results/continuous/session-20260910T185300Z-696/`.

@@ -250,6 +250,7 @@ static void shell_redraw_after_overlay_close(void) {
     /* Menus desenham por coordenadas e nao pertencem ao historico textual. */
     video_terminal_begin();
     taskbar_draw();
+    if (shell_should_show_prompt()) shell_print_prompt();
 }
 
 void shell_runtime_finish_command(void) {
@@ -353,6 +354,7 @@ static int shell_should_show_prompt(void) {
 
 void shell_update_hosted_terminal(void) {
     shell_hosted_present_progress();
+    if (shell_should_show_prompt()) shell_print_prompt();
 }
 
 static void process_input(void) {

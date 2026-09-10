@@ -37,6 +37,7 @@ static uint8_t terminal_hosted;
 static uint8_t terminal_scrolled;
 static uint32_t terminal_begin_calls;
 static uint32_t log_calls;
+static uint8_t terminal_begin_available;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -102,6 +103,7 @@ static void reset_terminal(void) {
     terminal_hosted = 0U;
     terminal_scrolled = 0U;
     terminal_begin_calls = 0U;
+    terminal_begin_available = 1U;
     output_reset();
 }
 
@@ -128,7 +130,7 @@ int video_terminal_is_hosted(void) {
 }
 
 void video_terminal_begin(void) {
-    terminal_active = 1U;
+    if (terminal_begin_available) terminal_active = 1U;
     terminal_begin_calls++;
 }
 
@@ -255,6 +257,18 @@ static int check_cancel_block_and_limits(void) {
     return 0;
 }
 
+static int check_prompt_retries_after_terminal_failure(void) {
+    reset_terminal();
+    terminal_begin_available = 0U;
+    shell_input_init();
+    shell_input_print_prompt(0U);
+    if (video_output_length != 0U) return 1;
+    terminal_begin_available = 1U;
+    shell_input_print_prompt(0U);
+    if (kstrcmp(video_output, SHELL_PROMPT) != 0) return 2;
+    return 0;
+}
+
 int main(void) {
     int result;
 
@@ -263,6 +277,7 @@ int main(void) {
     if (result == 0) result = check_history();
     if (result == 0) result = check_scrolling_and_editing();
     if (result == 0) result = check_cancel_block_and_limits();
+    if (result == 0) result = check_prompt_retries_after_terminal_failure();
     coverage_active = 0U;
     coverage_emit(result);
     return result;

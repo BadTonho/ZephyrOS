@@ -14,6 +14,18 @@
         "tst7-continuous:soak-parallel"
       ],
       "artifact_schema": "zephyros-qemu-parallel-result-v1"
+    },
+    "sec6_adversarial": {
+      "case_ids": [
+        "qemu:tst5:sec6-simple",
+        "qemu:tst5:sec6-classic",
+        "qemu:tst5:sec6-diagnostics",
+        "qemu:tst6:sec6:no-vesa"
+      ],
+      "reused_tags": ["fault", "matrix", "recovery"],
+      "profiles": ["baseline", "no-vesa"],
+      "statuses": ["PASS", "FAIL", "BLOCKED", "STOPPED"],
+      "artifact_schema": "zephyros-qemu-parallel-result-v1"
     }
   },
   "entries": [

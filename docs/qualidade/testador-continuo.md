@@ -330,6 +330,24 @@ O teste finito do supervisor é:
 make test-tst7-continuous-host
 ```
 
+## SEC6 — validação adversarial
+
+O perfil `no-vesa` é reservado para testes sem framebuffer e mantém serial/QMP
+para observação. A bateria SEC6 usa casos determinísticos em Simple, Classic,
+falhas TST6, recuperação, perfis de hardware ausente e diagnósticos do Shell.
+O comando de fechamento é:
+
+```text
+make test-sec6-host
+make test-sec6-qemu SEC6_QEMU_WORKERS=4 SEC6_QEMU_SEED=606
+make test-sec6
+```
+
+Um ciclo finito de `soak-parallel` deve registrar seed, commit, hashes,
+workers, casos e artefatos no supervisor TST7. `PASS` só é aceito quando não
+há `FAIL`, `BLOCKED`, timeout ou processo QEMU residual; `DT100-003` continua
+visível separadamente como dívida técnica aceita.
+
 ## Primeiro MVP
 
 O primeiro executor pode ser um programa Python empacotado como executável no

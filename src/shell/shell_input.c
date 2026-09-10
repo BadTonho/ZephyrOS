@@ -208,6 +208,10 @@ const char* shell_input_get_buffer(void) {
 
 void shell_input_print_prompt(uint8_t window_manager_active) {
     shell_input_resume_terminal(window_manager_active);
+    if (!video_terminal_is_active()) {
+        LOG_WARN("SHELL", "Terminal indisponivel; prompt sera tentado novamente");
+        return;
+    }
     if (shell_prompt_visible) return;
     video_print(SHELL_PROMPT, SHELL_INPUT_COLOR_PROMPT);
     shell_prompt_visible = 1;

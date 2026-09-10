@@ -178,6 +178,7 @@ static int tst6_run_matrix(const kernel_tests_runtime_t* runtime,
                            const char* suffix, uint32_t suffix_length) {
     if (tst6_equals(suffix, suffix_length, "baseline") ||
         tst6_equals(suffix, suffix_length, "minimal") ||
+        tst6_equals(suffix, suffix_length, "sec6:no-vesa") ||
         tst6_equals(suffix, suffix_length, "audio") ||
         tst6_equals(suffix, suffix_length, "display") ||
         tst6_equals(suffix, suffix_length, "pci") ||
@@ -281,6 +282,9 @@ int kernel_tests_run_tst6(const kernel_tests_runtime_t* runtime,
     }
     suffix = case_id + prefix_length;
     suffix_length = case_length - prefix_length;
+    if (tst6_equals(suffix, suffix_length, "sec6:no-vesa")) {
+        return tst6_run_domain(runtime, "sec6-no-vesa", tst6_run_platform);
+    }
     if (tst6_suffix(case_id, case_length, "matrix:baseline") ||
         tst6_suffix(case_id, case_length, "matrix:minimal") ||
         tst6_suffix(case_id, case_length, "matrix:network") ||

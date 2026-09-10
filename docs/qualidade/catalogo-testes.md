@@ -4,15 +4,15 @@
 
 ## Resumo
 
-- Superfícies ativas: **7546**
-- Casos de teste: **176**
+- Superfícies ativas: **7550**
+- Casos de teste: **180**
 - Superfícies aposentadas: **59**
 
 | Tipo | Quantidade |
 |---|---:|
 | `api_function` | 1645 |
 | `asm_entry` | 101 |
-| `c_function` | 5680 |
+| `c_function` | 5684 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
@@ -21,11 +21,11 @@
 | `BLOCKED` | 0 |
 | `COVERED` | 7540 |
 | `MANUAL` | 0 |
-| `PENDING` | 6 |
+| `PENDING` | 10 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 176 |
+| `AUTOMATED` | 180 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -37,7 +37,7 @@
 | `apps` | 172 |
 | `appstore` | 98 |
 | `boot` | 139 |
-| `core` | 2879 |
+| `core` | 2883 |
 | `desktop` | 40 |
 | `drivers` | 932 |
 | `filemanager` | 93 |
@@ -2805,12 +2805,16 @@
 | `c:src/core/kernel_tests_blackbox.c:blackbox_contains` | `src/core/kernel_tests_blackbox.c` | `blackbox_contains` | `core` | `COVERED` | 3 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_equals` | `src/core/kernel_tests_blackbox.c` | `blackbox_equals` | `core` | `COVERED` | 3 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_is_krn6_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_krn6_case` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_is_sec6_case` | `src/core/kernel_tests_blackbox.c` | `blackbox_is_sec6_case` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_length` | `src/core/kernel_tests_blackbox.c` | `blackbox_length` | `core` | `COVERED` | 3 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_marker` | `src/core/kernel_tests_blackbox.c` | `blackbox_marker` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_report` | `src/core/kernel_tests_blackbox.c` | `blackbox_report` | `core` | `COVERED` | 3 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_requires_prompt` | `src/core/kernel_tests_blackbox.c` | `blackbox_requires_prompt` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_reset_krn6_observation` | `src/core/kernel_tests_blackbox.c` | `blackbox_reset_krn6_observation` | `core` | `COVERED` | 2 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_reset_sec6_observation` | `src/core/kernel_tests_blackbox.c` | `blackbox_reset_sec6_observation` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_snapshot` | `src/core/kernel_tests_blackbox.c` | `blackbox_snapshot` | `core` | `COVERED` | 3 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_validate_krn6_output` | `src/core/kernel_tests_blackbox.c` | `blackbox_validate_krn6_output` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_blackbox.c:blackbox_validate_sec6_output` | `src/core/kernel_tests_blackbox.c` | `blackbox_validate_sec6_output` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_blackbox.c:blackbox_wait_for_marker` | `src/core/kernel_tests_blackbox.c` | `blackbox_wait_for_marker` | `core` | `COVERED` | 3 |
 | `c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox` | `src/core/kernel_tests_blackbox.c` | `kernel_tests_run_tst5_blackbox` | `core` | `COVERED` | 3 |
 | `c:src/core/kernel_tests_execution.c:execution_check_ipc` | `src/core/kernel_tests_execution.c` | `execution_check_ipc` | `core` | `COVERED` | 2 |
@@ -7717,6 +7721,7 @@
 | `host:process:runtime` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, bootstrap duplicado e fora de ordem, snapshots, round-robin sem PID 0, fallback para Idle, limites de criacao, transicoes, cancelamento, sinais, energia e filas de espera com processos estaticos | o gerenciador preserva codigos canonicos, estados, identidade, snapshots, limpeza e invariantes sem executar instrucoes privilegiadas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas, processos e buffers estaticos da fixture host | processo host encerrado, processos estaticos removidos e manifesto, logs e cobertura preservados |
 | `host:process:signals` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar a fixture de sinais com processos estaticos | mascaras, handlers, coalescencia, notificacao e invariantes validas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente processos estaticos e stubs de paging no processo host | estado de sinais restaurado e artefatos preservados |
 | `host:process:threads` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar inicializacao, criacao, selecao, yield, bloqueio, espera, cancelamento, desbloqueio, timeouts, limites e limpeza com threads e stacks estaticas | o scheduler preserva estados, identidade, filas de espera, codigos canonicos e limpeza sem executar troca de contexto Assembly | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas, threads e stacks estaticas da fixture host | processo host encerrado, threads estaticas removidas e manifesto, logs e cobertura preservados |
+| `host:quality:qemu-parallel` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | Python, catalogo e ferramentas host disponiveis | validar selecao, workers, seeds, comandos, execucao mockada e relatorios agregados | casos independentes sao coordenados sem perda de artefatos e falhas preservam o diagnostico | selecao invalida, worker fora do limite, timeout, parada ou resultado inconsistente | somente processos e artefatos temporarios do teste host | processos mockados encerrados e artefatos temporarios liberados |
 | `host:security:tls` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar politica, estados, validade, cadeia, SAN, pinning, rotacao, revogacao e autoteste TLS com relogio e RNG falsos | identidades validas sao aceitas, rejeicoes retornam motivo canonico e capacidades indisponiveis permanecem explicitas | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado TLS, politica e dependencias falsas no processo host | estado TLS e dependencias falsas reiniciados e artefatos preservados |
 | `host:security:tls-client` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar tls_client.c com engine BearSSL, socket, relogio e RNG falsos | handshake, envio, recepcao, EOF, estados de erro e limpeza preservam os contratos do adaptador | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do adaptador e fixtures do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:shell:checks` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | executar os caminhos internos de appcheck, q2check, regcheck e blkcheck, incluindo dispatchers, jobs, loader, migracao de aplicativos, fixtures de entrada, validacoes de servicos, scheduler, dispositivos, USB, ACPI, energia, pacotes, imagens ZAPP e limpeza | helpers preservam nomes, estados, codigos canonicos, limites, bytes, snapshots de paging e limpeza esperados | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estruturas estaticas da fixture host; nenhum hardware, armazenamento ou processo real | estado interno resetado, processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7782,6 +7787,9 @@
 | `qemu:tst5:poweroff` | `qemu` | `smoke` | `qemu:tst5:poweroff` | `AUTOMATED` | 60 | 15 | `snapshot` | `quality` | `qemu` | QEMU isolado e suporte de poweroff do guest disponivel | confirmar caminho do Shell e enviar poweroff somente apos PASS | o caso publica PASS e QMP observa SHUTDOWN ou a saida esperada do QEMU | poweroff antes do PASS, reset inesperado, timeout, protocolo ou QEMU | encerra somente a instancia QEMU em snapshot | fechar sockets e preservar logs mesmo apos a saida do guest |
 | `qemu:tst5:processes` | `qemu` | `smoke` | `qemu:tst5:processes` | `AUTOMATED` | 75 | 15 | `snapshot` | `quality` | `qemu` | processos, threads, scheduler e Shell estao READY | consultar processos e threads por teclado externo | os diagnosticos terminam e o marcador confirma o retorno ao prompt | processo residual, diagnostico preso, timeout, protocolo ou QEMU | somente consultas de estado do guest em snapshot | encerrar o QEMU e preservar historico de entrada |
 | `qemu:tst5:reboot` | `qemu` | `smoke` | `qemu:tst5:reboot` | `AUTOMATED` | 90 | 15 | `snapshot` | `quality` | `qemu` | QEMU isolado e caminho de reboot do guest disponivel | confirmar o terminal, enviar reboot apos PASS e aguardar novo HELLO/READY | QMP publica RESET e uma segunda sessao publica READY e HEARTBEAT | reset prematuro, handshake ausente, timeout, protocolo ou QEMU | reinicia somente a instancia QEMU em snapshot | encerrar a segunda sessao via QMP e preservar as duas fases |
+| `qemu:tst5:sec6-classic` | `qemu` | `sec6` | `qemu:tst5:sec6-classic` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | imagem QEMU com Shell e modo Classic disponiveis | alternar para Classic e executar comando apos retorno de overlay | prompt retorna uma vez e aceita nova entrada | prompt ausente ou duplicado, entrada indisponivel | somente estado da sessao QEMU isolada | sessao QEMU encerrada e artefatos preservados |
+| `qemu:tst5:sec6-diagnostics` | `qemu` | `sec6` | `qemu:tst5:sec6-diagnostics` | `AUTOMATED` | 240 | 20 | `snapshot` | `quality` | `qemu` | imagem QEMU com diagnosticos SEC6 disponiveis | executar diagnosticos e confirmar recuperacao do prompt | diagnosticos terminam em OK ou degradacao esperada e o prompt retorna | resultado ERRO, prompt ausente ou sessao sem heartbeat | somente estado da sessao QEMU isolada | sessao QEMU encerrada e artefatos preservados |
+| `qemu:tst5:sec6-simple` | `qemu` | `sec6` | `qemu:tst5:sec6-simple` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | imagem QEMU com Shell e modo Simple disponiveis | alternar para Simple e executar comando apos retorno de overlay | prompt retorna uma vez e aceita nova entrada | prompt ausente ou duplicado, entrada indisponivel | somente estado da sessao QEMU isolada | sessao QEMU encerrada e artefatos preservados |
 | `qemu:tst5:shell` | `qemu` | `smoke` | `qemu:tst5:shell` | `AUTOMATED` | 60 | 15 | `snapshot` | `quality` | `qemu` | imagem pronta, teclado virtual e Shell inicializados | abrir o Shell com Enter e enviar comandos somente leitura por QMP | o observer confirma texto gerado pelo caminho real de entrada e retorno ao prompt | dispatcher ausente, entrada perdida, prompt preso, timeout, protocolo ou QEMU | somente texto e estado de diagnostico no snapshot | encerrar o QEMU e preservar script, serial, QMP e resultado |
 | `qemu:tst5:storage` | `qemu` | `smoke` | `qemu:tst5:storage` | `AUTOMATED` | 90 | 15 | `snapshot` | `quality` | `qemu` | VFS e filesystems virtuais estao READY | consultar cwd, mounts e procfs sem escrita destrutiva | leituras terminam, descritores sao liberados e o marcador volta ao prompt | escrita inesperada, descritor residual, mount preso, timeout, protocolo ou QEMU | somente leituras no armazenamento da imagem em snapshot | encerrar o QEMU sem modificar a imagem base |
 | `qemu:tst5:update-recovery` | `qemu` | `smoke` | `qemu:tst5:update-recovery` | `AUTOMATED` | 90 | 20 | `snapshot` | `quality` | `qemu` | fixture de atualizacao somente leitura e Shell estao disponiveis | consultar o updater, cancelar a operacao e verificar retorno ao prompt | a operacao nao grava a imagem base e a recuperacao publica o marcador final | staging destrutivo, rollback ausente, estado residual, timeout, protocolo ou QEMU | fixture e snapshot isolados, sem escrita no hospedeiro | descartar o snapshot e preservar manifestos e logs |
@@ -7802,16 +7810,20 @@
 | `qemu:tst6:matrix:pci` | `qemu` | `tst6` | `qemu:tst6:matrix:pci` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | inventario PCI e dispositivo virtual esperado estao disponiveis | validar inventario e estados dos dispositivos sem acesso externo | o inventario e consistente e recursos temporarios sao liberados | dispositivo duplicado, inventario incoerente, timeout, protocolo ou QEMU | somente leitura do inventario PCI | encerrar a instancia e preservar o inventario observado |
 | `qemu:tst6:matrix:usb-hid` | `qemu` | `tst6` | `qemu:tst6:matrix:usb-hid` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | controladora USB e dispositivos HID virtuais estao presentes | validar inventario e estados de input USB sem Shell | HID e publicado como pronto ou degradado de forma coerente | fila presa, estado incoerente, timeout, protocolo ou QEMU | somente estado de input no snapshot | drenar filas e encerrar a controladora virtual |
 | `qemu:tst6:matrix:usb-storage` | `qemu` | `tst6` | `qemu:tst6:matrix:usb-storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | fixture de armazenamento e controladora USB somente leitura existem | validar storage, block-cache e inventario do dispositivo USB | leituras passam, escritas destrutivas nao ocorrem e o estado retorna ao baseline | escrita real, fixture ausente, cache residual, timeout, protocolo ou QEMU | fixture raw somente leitura anexado ao snapshot | desmontar o dispositivo e preservar logs e manifesto |
+| `qemu:tst6:sec6:no-vesa` | `qemu` | `sec6` | `qemu:tst6:sec6:no-vesa` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | QEMU com serial e QMP, sem framebuffer VESA | executar matriz TST6 pelo canal serial/QMP | o caso termina com resultado deterministico sem depender de framebuffer | hardware ausente tratado como degradacao esperada ou bloqueio explicito | somente estado da sessao QEMU isolada | sessao QEMU encerrada e artefatos preservados |
 | `qemu:tst6:stress:apps` | `qemu` | `tst6` | `qemu:tst6:stress:apps` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | Shell hospedado e estados de processo estao READY | repetir o ciclo de aplicacoes com teto explicito de iteracoes | cada ciclo termina, restaura a cena e nao deixa threads ou filas | falha na primeira iteracao, recurso residual, timeout, protocolo ou QEMU | somente cenas e objetos temporarios no snapshot | fechar cenas, coletar processos e preservar o primeiro erro |
 | `qemu:tst6:stress:kernel` | `qemu` | `tst6` | `qemu:tst6:stress:kernel` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | paging, heap, SLAB, processos e threads estao READY | repetir ciclos deterministas de memoria e execucao sob teto obrigatorio | invariantes estaveis permanecem iguais e a primeira falha interrompe a suite | overflow, vazamento, deadlock, timeout, protocolo ou QEMU | alocacoes e objetos temporarios de cada ciclo em snapshot | devolver paginas, destruir objetos e registrar seed e iteracao |
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
 | `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, validar retorno com IF desabilitado, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez, o retorno preserva o EFLAGS salvo e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
-| `host:quality:qemu-parallel` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | Python, catalogo e ferramentas host disponiveis | validar selecao, workers, seeds, comandos, execucao mockada e relatorios agregados | casos independentes sao coordenados sem perda de artefatos e falhas preservam o diagnostico | selecao invalida, worker fora do limite, timeout, parada ou resultado inconsistente | somente processos e artefatos temporarios do teste host | processos mockados encerrados e artefatos temporarios liberados |
 
 ## Superfícies sem caso associado
 
+- `c:src/core/kernel_tests_blackbox.c:blackbox_is_sec6_case`
 - `c:src/core/kernel_tests_blackbox.c:blackbox_marker`
+- `c:src/core/kernel_tests_blackbox.c:blackbox_requires_prompt`
+- `c:src/core/kernel_tests_blackbox.c:blackbox_reset_sec6_observation`
+- `c:src/core/kernel_tests_blackbox.c:blackbox_validate_sec6_output`
 - `c:src/kernel/kernel.c:kernel_host_test_should_wake_shell_for_event`
 - `c:src/kernel/kernel.c:kernel_should_wake_shell_for_event`
 - `c:src/process/resource.c:process_resource_note_descriptor_success`

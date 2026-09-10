@@ -1627,6 +1627,19 @@ com limite operacional de 64. Cada execução registra manifest, seeds, commit,
 hashes, parâmetros, comando filho e diretório de artefatos em
 `build/test-results/parallel/<run-id>/`.
 
+Na SEC6, o caso `qemu:tst6:sec6:no-vesa` usa o perfil `no-vesa`: o framebuffer
+fica ausente, mas serial e QMP continuam disponíveis para observar o guest.
+O alvo `make test-sec6-qemu` combina os casos `sec6`, `fault`, `matrix` e
+`recovery`; o fechamento requer todos os casos em `PASS`, inclusive a fixture
+de `usb-storage`, e nenhum processo QEMU residual. O ciclo controlado pelo
+supervisor é:
+
+```text
+make test-sec6-host
+make test-sec6-qemu SEC6_QEMU_WORKERS=4 SEC6_QEMU_SEED=606
+python tools/tst7_continuous_runner.py start --mode soak-parallel --max-cycles 1 --interval 0 --workers 4 --seed 606 --stop-file build/sec6-stop
+```
+
 ## Cobertura Assembly de interrupcoes
 
 O caso QEMU `qemu:tst7:assembly` usa uma imagem de cobertura separada para

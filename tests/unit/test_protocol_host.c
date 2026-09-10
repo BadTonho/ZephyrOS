@@ -309,7 +309,8 @@ static int check_all_case_routes(void) {
         "qemu:tst4:platform",
         "qemu:tst7:assembly",
         "qemu:tst5:shell",
-        "qemu:tst6:matrix:baseline"
+        "qemu:tst6:matrix:baseline",
+        "qemu:tst6:sec6:no-vesa"
     };
 
     for (uint32_t index = 0U; index < sizeof(cases) / sizeof(cases[0]);

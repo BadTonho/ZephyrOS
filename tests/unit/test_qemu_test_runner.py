@@ -97,6 +97,21 @@ class CatalogAndStatusTests(unittest.TestCase):
             runner.QEMU_COMMON_ARGS,
             ["-accel", "tcg,thread=single"])
 
+    def test_no_vesa_profile_keeps_serial_capabilities_without_framebuffer(self):
+        runner.validate_qemu_profile("no-vesa")
+        self.assertEqual(
+            runner.qemu_profile_capabilities("no-vesa"), ["acpi", "pci"])
+        arguments = SimpleNamespace(
+            image="build/zephyros.img", qemu="qemu-system-i386", cpu="max",
+            snapshot=True, network="none", qemu_profile="no-vesa",
+            qemu_arg=[], storage_image=None,
+        )
+        session = runner.QemuSession(arguments, Path("build/results"))
+        command = session.command()
+        self.assertIn("-serial", command)
+        self.assertIn("-qmp", command)
+        self.assertEqual(command[-2:], ["-vga", "none"])
+
 
 class QemuSessionTests(unittest.TestCase):
     def test_start_retries_after_serial_port_collision(self):

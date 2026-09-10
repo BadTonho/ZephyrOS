@@ -492,7 +492,8 @@ static int test_redraw_fallback(void) {
     reset_fixture();
     fake_taskbar_config_result = 9;
     shell_handle_key(0U);
-    if (fake_terminal_begin_calls != 1U || fake_taskbar_draw_calls != 1U) {
+    if (fake_terminal_begin_calls != 1U || fake_taskbar_draw_calls != 1U ||
+        fake_prompt_calls != 1U) {
         return 8;
     }
     return 0;

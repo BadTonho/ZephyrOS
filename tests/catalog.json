@@ -62833,6 +62833,24 @@
       "coverage_mode": "integration"
     },
     {
+      "id": "c:src/core/kernel_tests_blackbox.c:blackbox_is_sec6_case",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_blackbox.c",
+      "symbol": "blackbox_is_sec6_case",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_length",
       "kind": "c_function",
       "source": "src/core/kernel_tests_blackbox.c",
@@ -62897,6 +62915,24 @@
       "coverage_mode": "integration"
     },
     {
+      "id": "c:src/core/kernel_tests_blackbox.c:blackbox_requires_prompt",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_blackbox.c",
+      "symbol": "blackbox_requires_prompt",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_reset_krn6_observation",
       "kind": "c_function",
       "source": "src/core/kernel_tests_blackbox.c",
@@ -62917,6 +62953,24 @@
       ],
       "tags": [],
       "coverage_mode": "integration"
+    },
+    {
+      "id": "c:src/core/kernel_tests_blackbox.c:blackbox_reset_sec6_observation",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_blackbox.c",
+      "symbol": "blackbox_reset_sec6_observation",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_snapshot",
@@ -62961,6 +63015,24 @@
       ],
       "tags": [],
       "coverage_mode": "integration"
+    },
+    {
+      "id": "c:src/core/kernel_tests_blackbox.c:blackbox_validate_sec6_output",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_blackbox.c",
+      "symbol": "blackbox_validate_sec6_output",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_wait_for_marker",
@@ -176287,6 +176359,35 @@
       "status": "AUTOMATED"
     },
     {
+      "id": "host:quality:qemu-parallel",
+      "scenario": "Orquestrador host-only de casos QEMU paralelos",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "runner": "tools/qemu_parallel_runner.py"
+      },
+      "preconditions": "Python, catalogo e ferramentas host disponiveis",
+      "action": "validar selecao, workers, seeds, comandos, execucao mockada e relatorios agregados",
+      "expected": "casos independentes sao coordenados sem perda de artefatos e falhas preservam o diagnostico",
+      "errors": "selecao invalida, worker fora do limite, timeout, parada ou resultado inconsistente",
+      "effects": "somente processos e artefatos temporarios do teste host",
+      "cleanup": "processos mockados encerrados e artefatos temporarios liberados",
+      "surface_ids": [],
+      "tags": [
+        "quality",
+        "qemu",
+        "parallel",
+        "soak"
+      ],
+      "status": "AUTOMATED"
+    },
+    {
       "id": "host:security:tls",
       "scenario": "Contrato host-only da politica TLS com dependencias falsas",
       "owner": "quality",
@@ -186283,6 +186384,324 @@
       }
     },
     {
+      "id": "qemu:tst5:sec6-classic",
+      "scenario": "SEC6 retorno do prompt apos alternancia para Classic",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "sec6",
+      "guest_case": "qemu:tst5:sec6-classic",
+      "qemu_profile": "baseline",
+      "required_capabilities": [],
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 20,
+      "isolation": "snapshot",
+      "parameters": {
+        "protocol": "ZTEST/1",
+        "input": "qmp-keyboard"
+      },
+      "preconditions": "imagem QEMU com Shell e modo Classic disponiveis",
+      "action": "alternar para Classic e executar comando apos retorno de overlay",
+      "expected": "prompt retorna uma vez e aceita nova entrada",
+      "errors": "prompt ausente ou duplicado, entrada indisponivel",
+      "effects": "somente estado da sessao QEMU isolada",
+      "cleanup": "sessao QEMU encerrada e artefatos preservados",
+      "surface_ids": [],
+      "tags": [
+        "qemu",
+        "sec6",
+        "adversarial",
+        "shell",
+        "classic",
+        "prompt"
+      ],
+      "status": "AUTOMATED",
+      "interaction": {
+        "mode": "qmp-keyboard",
+        "steps": [
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "text",
+            "text": "guimode classic"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "text",
+            "text": "echo sec6-classic"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          }
+        ],
+        "post_action": {
+          "type": "none",
+          "steps": []
+        }
+      }
+    },
+    {
+      "id": "qemu:tst5:sec6-diagnostics",
+      "scenario": "SEC6 diagnosticos adversariais e recuperacao do Shell",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "sec6",
+      "guest_case": "qemu:tst5:sec6-diagnostics",
+      "qemu_profile": "baseline",
+      "required_capabilities": [],
+      "timeout_seconds": 240,
+      "heartbeat_timeout_seconds": 20,
+      "isolation": "snapshot",
+      "parameters": {
+        "protocol": "ZTEST/1",
+        "input": "qmp-keyboard"
+      },
+      "preconditions": "imagem QEMU com diagnosticos SEC6 disponiveis",
+      "action": "executar diagnosticos e confirmar recuperacao do prompt",
+      "expected": "diagnosticos terminam em OK ou degradacao esperada e o prompt retorna",
+      "errors": "resultado ERRO, prompt ausente ou sessao sem heartbeat",
+      "effects": "somente estado da sessao QEMU isolada",
+      "cleanup": "sessao QEMU encerrada e artefatos preservados",
+      "surface_ids": [],
+      "tags": [
+        "qemu",
+        "sec6",
+        "adversarial",
+        "diagnostics",
+        "fault",
+        "recovery",
+        "prompt"
+      ],
+      "status": "AUTOMATED",
+      "interaction": {
+        "mode": "qmp-keyboard",
+        "steps": [
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "text",
+            "text": "appcheck compact"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 10
+          },
+          {
+            "op": "text",
+            "text": "memcheck"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "text",
+            "text": "schedcheck"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "text",
+            "text": "health check"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "text",
+            "text": "proccheck"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 5
+          },
+          {
+            "op": "text",
+            "text": "vfs status"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "text",
+            "text": "regcheck full"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 10
+          },
+          {
+            "op": "key",
+            "key": "f11"
+          },
+          {
+            "op": "wait",
+            "seconds": 5
+          },
+          {
+            "op": "text",
+            "text": "echo sec6-diagnostics"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          }
+        ],
+        "post_action": {
+          "type": "none",
+          "steps": []
+        }
+      }
+    },
+    {
+      "id": "qemu:tst5:sec6-simple",
+      "scenario": "SEC6 retorno do prompt apos alternancia para Simple",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "sec6",
+      "guest_case": "qemu:tst5:sec6-simple",
+      "qemu_profile": "baseline",
+      "required_capabilities": [],
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 20,
+      "isolation": "snapshot",
+      "parameters": {
+        "protocol": "ZTEST/1",
+        "input": "qmp-keyboard"
+      },
+      "preconditions": "imagem QEMU com Shell e modo Simple disponiveis",
+      "action": "alternar para Simple e executar comando apos retorno de overlay",
+      "expected": "prompt retorna uma vez e aceita nova entrada",
+      "errors": "prompt ausente ou duplicado, entrada indisponivel",
+      "effects": "somente estado da sessao QEMU isolada",
+      "cleanup": "sessao QEMU encerrada e artefatos preservados",
+      "surface_ids": [],
+      "tags": [
+        "qemu",
+        "sec6",
+        "adversarial",
+        "shell",
+        "simple",
+        "prompt"
+      ],
+      "status": "AUTOMATED",
+      "interaction": {
+        "mode": "qmp-keyboard",
+        "steps": [
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "text",
+            "text": "guimode simple"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "text",
+            "text": "echo sec6-simple"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          }
+        ],
+        "post_action": {
+          "type": "none",
+          "steps": []
+        }
+      }
+    },
+    {
       "id": "qemu:tst5:shell",
       "scenario": "Caminho black-box de teclado, Shell e dispatcher",
       "owner": "quality",
@@ -189238,6 +189657,43 @@
       ]
     },
     {
+      "id": "qemu:tst6:sec6:no-vesa",
+      "scenario": "SEC6 perfil de hardware sem framebuffer VESA",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "sec6",
+      "guest_case": "qemu:tst6:sec6:no-vesa",
+      "qemu_profile": "no-vesa",
+      "required_capabilities": [
+        "acpi",
+        "pci"
+      ],
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 20,
+      "isolation": "snapshot",
+      "parameters": {
+        "protocol": "ZTEST/1",
+        "hardware": "no-vesa"
+      },
+      "preconditions": "QEMU com serial e QMP, sem framebuffer VESA",
+      "action": "executar matriz TST6 pelo canal serial/QMP",
+      "expected": "o caso termina com resultado deterministico sem depender de framebuffer",
+      "errors": "hardware ausente tratado como degradacao esperada ou bloqueio explicito",
+      "effects": "somente estado da sessao QEMU isolada",
+      "cleanup": "sessao QEMU encerrada e artefatos preservados",
+      "surface_ids": [],
+      "tags": [
+        "qemu",
+        "sec6",
+        "adversarial",
+        "matrix",
+        "hardware",
+        "no-vesa"
+      ],
+      "status": "AUTOMATED"
+    },
+    {
       "id": "qemu:tst6:stress:apps",
       "scenario": "Estresse limitado de abertura e fechamento de aplicacoes",
       "owner": "quality",
@@ -191429,35 +191885,6 @@
         "interrupts",
         "coverage",
         "snapshot"
-      ],
-      "status": "AUTOMATED"
-    },
-    {
-      "id": "host:quality:qemu-parallel",
-      "scenario": "Orquestrador host-only de casos QEMU paralelos",
-      "owner": "quality",
-      "layer": "host",
-      "executor": "host",
-      "profile": "host-only",
-      "timeout_seconds": 120,
-      "heartbeat_timeout_seconds": 1,
-      "isolation": "fixture",
-      "parameters": {
-        "compiler": "HOST_CC",
-        "runner": "tools/qemu_parallel_runner.py"
-      },
-      "preconditions": "Python, catalogo e ferramentas host disponiveis",
-      "action": "validar selecao, workers, seeds, comandos, execucao mockada e relatorios agregados",
-      "expected": "casos independentes sao coordenados sem perda de artefatos e falhas preservam o diagnostico",
-      "errors": "selecao invalida, worker fora do limite, timeout, parada ou resultado inconsistente",
-      "effects": "somente processos e artefatos temporarios do teste host",
-      "cleanup": "processos mockados encerrados e artefatos temporarios liberados",
-      "surface_ids": [],
-      "tags": [
-        "quality",
-        "qemu",
-        "parallel",
-        "soak"
       ],
       "status": "AUTOMATED"
     }

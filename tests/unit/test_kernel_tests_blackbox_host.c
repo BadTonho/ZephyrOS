@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "apps/shell.h"
 #include "core/log.h"
 #include "kernel_tests.h"
 #include "video_test.h"
@@ -9,11 +10,12 @@
 #define HOST_COVERAGE_CAPACITY 96U
 #define HOST_COVERAGE_LINE_SIZE 32U
 #define HOST_TEXT_CAPACITY 768U
-#define HOST_CASE_COUNT 10U
+#define HOST_CASE_COUNT 13U
 
 typedef enum {
     HOST_TERMINAL_NORMAL,
     HOST_TERMINAL_KRN6,
+    HOST_TERMINAL_SEC6,
     HOST_TERMINAL_INCOMPLETE,
     HOST_TERMINAL_ABSENT
 } host_terminal_mode_t;
@@ -98,7 +100,16 @@ int video_test_copy_terminal(char* output, uint32_t capacity,
                      "RegCheck: OK\n"
                      "Processos ativos:\n"
                      "Total: 4 processos\n"
-                     "prompt %s", expected_marker);
+                     SHELL_PROMPT "%s", expected_marker);
+        } else if (terminal_mode == HOST_TERMINAL_SEC6) {
+            snprintf(terminal_text, sizeof(terminal_text),
+                     "AppCheck compacto:\n"
+                     "MemCheck:\n"
+                     "SchedCheck:\n"
+                     "Health check: OK\n"
+                     "PROC5 introspeccao: OK\n"
+                     "VFS:\n"
+                     SHELL_PROMPT "%s", expected_marker);
         } else if (terminal_mode == HOST_TERMINAL_INCOMPLETE) {
             snprintf(terminal_text, sizeof(terminal_text),
                      "SchedCheck:\nprompt %s", expected_marker);
@@ -106,7 +117,7 @@ int video_test_copy_terminal(char* output, uint32_t capacity,
             strcpy(terminal_text, "prompt");
         } else {
             snprintf(terminal_text, sizeof(terminal_text),
-                     "prompt %s", expected_marker);
+                     SHELL_PROMPT "%s", expected_marker);
         }
     }
     length = (uint32_t)strlen(terminal_text);
@@ -185,7 +196,10 @@ static int check_valid_cases(void) {
         {"qemu:tst5:update-recovery", "tst5-update"},
         {"qemu:tst5:reboot", "tst5-reboot"},
         {"qemu:tst5:poweroff", "tst5-poweroff"},
-        {"qemu:tst5:krn6-diagnostics", "krn6-diagnostics"}
+        {"qemu:tst5:krn6-diagnostics", "krn6-diagnostics"},
+        {"qemu:tst5:sec6-simple", "sec6-simple"},
+        {"qemu:tst5:sec6-classic", "sec6-classic"},
+        {"qemu:tst5:sec6-diagnostics", "sec6-diagnostics"}
     };
     kernel_tests_runtime_t runtime;
 
@@ -194,6 +208,8 @@ static int check_valid_cases(void) {
     runtime.report_phase = fake_report;
     for (uint32_t index = 0U; index < HOST_CASE_COUNT; index++) {
         host_terminal_mode_t mode = index == HOST_CASE_COUNT - 1U ?
+                                    HOST_TERMINAL_SEC6 :
+                                    index == HOST_CASE_COUNT - 4U ?
                                     HOST_TERMINAL_KRN6 : HOST_TERMINAL_NORMAL;
         if (!run_case(&runtime, cases[index][0], cases[index][1], mode, OK)) {
             return 10 + (int)index;

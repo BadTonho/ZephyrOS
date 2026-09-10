@@ -39,6 +39,8 @@ TST7_FULL_TIMEOUT ?= 7200
 QEMU_PARALLEL_WORKERS ?= 4
 QEMU_PARALLEL_ARGS ?= --profile smoke
 QEMU_PARALLEL_SOAK_ARGS ?=
+SEC6_QEMU_WORKERS ?= 4
+SEC6_QEMU_SEED ?= 606
 COVERAGE_BUILD_DIR ?= build-coverage
 ASSEMBLY_RUN_ID ?= tst7-assembly-1
 ASSEMBLY_TRACE_RUN_ID ?= tst7-assembly-trace-1
@@ -801,7 +803,7 @@ $(KERNEL_TESTS_PLATFORM_OBJ): $(KERNEL_TESTS_PLATFORM_C) src/core/kernel_tests.h
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(KERNEL_TESTS_BLACKBOX_OBJ): $(KERNEL_TESTS_BLACKBOX_C) src/core/kernel_tests.h src/core/video_test.h src/include/core/errors.h src/include/core/log.h src/include/core/timer.h src/include/process/process.h src/include/core/video.h src/include/ui/desktop.h
+$(KERNEL_TESTS_BLACKBOX_OBJ): $(KERNEL_TESTS_BLACKBOX_C) src/core/kernel_tests.h src/core/video_test.h src/include/apps/shell.h src/include/core/errors.h src/include/core/log.h src/include/core/timer.h src/include/process/process.h src/include/core/video.h src/include/ui/desktop.h
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -1547,6 +1549,16 @@ test-qemu-parallel: $(OS_IMG) tools\qemu_parallel_runner.py tools\qemu_test_runn
 	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
 	python tools\qemu_parallel_runner.py parallel --workers "$(QEMU_PARALLEL_WORKERS)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" $(QEMU_PARALLEL_ARGS)
 
+test-sec6-host: tools\qemu_test_runner.py tools\qemu_parallel_runner.py tools\test_catalog.py tests\unit\test_sec6_runner.py tests\unit\test_qemu_test_runner.py tests\unit\test_qemu_parallel_runner.py tests\unit\test_tst7_continuous_runner.py tests\unit\test_shell_input_host.c tests\unit\test_shell_host.c tests\unit\test_kernel_tests_blackbox_host.c tests\catalog.json tests\coverage\registry.json
+	python -m unittest tests.unit.test_sec6_runner tests.unit.test_qemu_test_runner tests.unit.test_qemu_parallel_runner tests.unit.test_tst7_continuous_runner
+	$(MAKE) test-shell-input-host test-shell-core-host test-blackbox-host test-tst6-host
+
+test-sec6-qemu: $(OS_IMG) tools\qemu_parallel_runner.py tools\qemu_test_runner.py tests\catalog.json
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	python tools\qemu_parallel_runner.py parallel --workers "$(SEC6_QEMU_WORKERS)" --seed "$(SEC6_QEMU_SEED)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --tag sec6 --tag fault --tag matrix --tag recovery
+
+test-sec6: test-sec6-host test-sec6-qemu
+
 test-qemu-soak-parallel: $(OS_IMG) tools\qemu_parallel_runner.py tools\qemu_test_runner.py tests\catalog.json
 	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
 	python tools\qemu_parallel_runner.py soak --workers "$(QEMU_PARALLEL_WORKERS)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" $(QEMU_PARALLEL_SOAK_ARGS)
@@ -2018,7 +2030,7 @@ test-keyboard-host: tools\core_host_runner.py tools\coverage_collector.py tests\
 test-protocol-adapter-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_protocol_host.c tests\catalog.json src\core\test_protocol.c src\core\test_protocol_core.c src\core\kernel_tests.h src\include\core\test_protocol.h src\include\drivers\serial.h src\include\core\timer.h
 	python tools\core_host_runner.py --case host:tst2:protocol-adapter --cc "$(HOST_CC)"
 
-test-blackbox-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_kernel_tests_blackbox_host.c tests\catalog.json src\core\kernel_tests_blackbox.c src\core\kernel_tests.h src\core\video_test.h
+test-blackbox-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_kernel_tests_blackbox_host.c tests\catalog.json src\core\kernel_tests_blackbox.c src\core\kernel_tests.h src\core\video_test.h src\include\apps\shell.h
 	python tools\core_host_runner.py --case host:tst5:blackbox --cc "$(HOST_CC)"
 
 test-coverage-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_coverage_host.c tests\catalog.json src\core\test_coverage.c src\core\test_coverage.h src\include\drivers\serial.h
@@ -2231,7 +2243,7 @@ clean:
 .PHONY: all coverage-image coverage-map run run-stage2-lba run-stage2-chs run-usb run-usb-msc run-usb-hid run-usb-wifi run-system-fixture run-system-slots-fixture run-system-slots-matrix run-system-update-matrix ep94b-fixtures ep94b-matrix run-ep94b-matrix ep94c-matrix run-ep94c-matrix run-recovery-menu-vga run-storage storage-fixtures storage-fixtures-test storage-fixtures-verify system-fixtures system-slots-fixtures system-slots-matrix debug q3check catalog-test test-qemu test-qemu-selftest test-core-host test-tst2-host test-tst3-host test-tst3-sanitize test-tst4-qemu q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean
 .PHONY: kernel-elf
 .PHONY: test-assembly-qemu test-assembly-trace-qemu test-assembly-boot-trace-qemu test-assembly-recovery-trace-qemu
-.PHONY: test-qemu-parallel test-qemu-soak-parallel
+.PHONY: test-qemu-parallel test-qemu-soak-parallel test-sec6-host test-sec6-qemu test-sec6
 .PHONY: test-tst4-qemu-paging-vma test-tst4-qemu-execution test-tst4-qemu-storage-vfs test-tst4-qemu-network test-tst4-qemu-platform
 .PHONY: test-tst5-host test-tst5-qemu-shell test-tst5-qemu-input test-tst5-qemu-apps test-tst5-qemu-processes test-tst5-qemu-storage test-tst5-qemu-network test-tst5-qemu-update-recovery test-tst5-qemu-reboot test-tst5-qemu-poweroff
 .PHONY: test-krn6-qemu-diagnostics

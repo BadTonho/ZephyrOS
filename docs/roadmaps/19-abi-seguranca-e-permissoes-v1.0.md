@@ -174,14 +174,26 @@ encerrada; a pendência não é uma falha nova desta etapa.
 
 ### SEC6 — Validação adversarial
 
-- [ ] Criar fixtures para ponteiros inválidos, tamanhos máximos, handles
+- [x] Criar fixtures para ponteiros inválidos, tamanhos máximos, handles
   obsoletos, caminhos inválidos, pacotes corrompidos e recursos ausentes.
-- [ ] Exercitar falha de memória, tabela cheia, timeout, cancelamento e erro
+- [x] Exercitar falha de memória, tabela cheia, timeout, cancelamento e erro
   de hardware sem deixar recursos residuais.
-- [ ] Repetir os testes nos modos Simple e Classic e nos perfis sem ACPI, NIC,
+- [x] Repetir os testes nos modos Simple e Classic e nos perfis sem ACPI, NIC,
   USB, áudio, VESA e Storage adicional.
-- [ ] Integrar os invariantes ao diagnóstico apropriado sem tornar o comando
+- [x] Integrar os invariantes ao diagnóstico apropriado sem tornar o comando
   destrutivo.
+
+SEC6 foi concluída com fixtures determinísticas host-only e casos QEMU
+adversariais. O retorno ao prompt foi reproduzido e corrigido na transição
+para Simple e após jobs cooperativos, com cobertura host e QEMU em Simple,
+Classic e no perfil sem VESA. Os diagnósticos, falhas controladas, rollback,
+limpeza e recuperação passaram sem processos QEMU residuais.
+
+Validação final executada em 2026-09-10: `make q3check`, `make clean && make`,
+`make test-sec6-host`, `make catalog-test`, `make storage-fixtures-verify`,
+`make test-sec6-qemu` (22/22 casos PASS, 4 workers) e um ciclo controlado de
+`soak-parallel` (18/18 casos PASS). `DT100-003` continua reportada
+separadamente como dívida técnica aceita da SEC4.
 
 ## Critérios de saída
 

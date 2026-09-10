@@ -534,6 +534,7 @@ static void cmd_guimode(const char* args) {
         result = desktop_set_mode(DESKTOP_MODE_SIMPLE);
         if (result == OK) {
             if (wm_is_active()) wm_set_active(0);
+            desktop_set_active(0);
             shell_runtime_resume_terminal();
             video_print("Desktop em modo simple.\n", 0x0A);
         }
@@ -963,7 +964,9 @@ int shell_commands_apps_host_test_contracts(void) {
     shell_dispatch_cmd_guimode("");
     shell_dispatch_cmd_guimode("modern");
     shell_dispatch_cmd_guimode("invalid");
+    desktop_set_active(1);
     shell_dispatch_cmd_guimode("simple");
+    if (desktop_is_active()) failures++;
     shell_commands_apps_host_set_environment(
         FS_TYPE_FAT32, DESKTOP_MODE_SIMPLE, 0);
     shell_dispatch_cmd_guimode("classic");
