@@ -9,6 +9,7 @@ SHELL := /bin/sh
 
 BUILD_DIR ?= build
 MAKE_TOOL ?= make
+PYTHON ?= python3
 
 NASM ?= nasm
 GCC ?= i686-elf-gcc
@@ -685,10 +686,10 @@ OBJS += $(POWER_NOTIFIER_OBJ)
 all: $(OS_IMG)
 
 coverage-image:
-	python tools/build_coverage_image.py --make "$(MAKE_TOOL)" --build-dir "$(COVERAGE_BUILD_DIR)" --cflags "$(COVERAGE_CFLAGS)"
+	$(PYTHON) tools/build_coverage_image.py --make "$(MAKE_TOOL)" --build-dir "$(COVERAGE_BUILD_DIR)" --cflags "$(COVERAGE_CFLAGS)"
 
 coverage-map: coverage-image tools/coverage_collector.py
-	python tools/coverage_collector.py symbols --image $(COVERAGE_BUILD_DIR)/kernel.elf --output $(COVERAGE_BUILD_DIR)/coverage-symbols.json --nm "$(NM)" --addr2line "addr2line" --compiler "$(GCC)"
+	$(PYTHON) tools/coverage_collector.py symbols --image $(COVERAGE_BUILD_DIR)/kernel.elf --output $(COVERAGE_BUILD_DIR)/coverage-symbols.json --nm "$(NM)" --addr2line "addr2line" --compiler "$(GCC)"
 
 kernel-elf: $(KERNEL_ELF)
 
@@ -726,7 +727,7 @@ $(RECOVERY_ENTRY_OBJ): $(RECOVERY_ENTRY_ASM)
 
 $(RECOVERY_LAYOUT_HEADER): $(KERNEL_BIN) $(RECOVERY_LAYOUT_TOOL)
 	@mkdir -p $(BUILD_DIR)
-	python $(RECOVERY_LAYOUT_TOOL) --kernel $(KERNEL_BIN) --output $@
+	$(PYTHON) $(RECOVERY_LAYOUT_TOOL) --kernel $(KERNEL_BIN) --output $@
 
 $(RECOVERY_LOADER_OBJ): $(RECOVERY_LOADER_C) $(RECOVERY_MENU_HEADER) $(RECOVERY_CHAIN_HEADER) $(RECOVERY_LAYOUT_HEADER) src/include/core/crypto.h src/include/core/update_system.h src/include/core/update_system_slots.h src/include/core/update_trust.h
 	@mkdir -p $(BUILD_DIR)
@@ -744,7 +745,7 @@ $(RECOVERY_LOADER_BIN): $(RECOVERY_ENTRY_OBJ) $(RECOVERY_LOADER_OBJ) $(RECOVERY_
 	$(LD) -m elf_i386 -T $(RECOVERY_LOADER_LD) $(RECOVERY_ENTRY_OBJ) $(RECOVERY_LOADER_OBJ) $(RECOVERY_MENU_OBJ) $(RECOVERY_RUNTIME_OBJ) $(RECOVERY_CRYPTO_OBJ) $(RECOVERY_CRYPTO_ED25519_OBJ) -o $@
 
 $(RECOVERY_LOADER_PADDED_BIN): $(RECOVERY_LOADER_BIN) $(RECOVERY_LOADER_PAD_TOOL)
-	python $(RECOVERY_LOADER_PAD_TOOL) --input $(RECOVERY_LOADER_BIN) --output $@
+	$(PYTHON) $(RECOVERY_LOADER_PAD_TOOL) --input $(RECOVERY_LOADER_BIN) --output $@
 
 $(ENTRY_OBJ): $(ENTRY_SRC)
 	@mkdir -p $(BUILD_DIR)
@@ -1372,49 +1373,49 @@ $(KERNEL_BIN): $(OBJS) src/linker.ld
 $(KERNEL_ELF): $(OBJS) src/linker.ld
 	$(LD) -m elf_i386 --oformat elf32-i386 -T src/linker.ld $(OBJS) -o $@
 
-$(OS_IMG): $(BOOT_BIN) $(STAGE2_BIN) $(RECOVERY_LOADER_PADDED_BIN) $(KERNEL_BIN) tools/packager.py $(RECOVERY_IMAGE_COMPOSE_TOOL) \
+$(OS_IMG): Makefile.linux $(BOOT_BIN) $(STAGE2_BIN) $(RECOVERY_LOADER_PADDED_BIN) $(KERNEL_BIN) tools/packager.py $(RECOVERY_IMAGE_COMPOSE_TOOL) \
           assets/icons/SHELL.BMP assets/icons/EXPLORER.BMP assets/icons/TASKMGR.BMP \
           $(STORE_FIXTURES) $(STORE_AS2_FIXTURES) $(STORE_AS4_UPDATE_FIXTURES) \
           docs/fixtures/updates/u2/VALID.ZUP docs/fixtures/updates/u2/TRUNC.ZUP \
           docs/fixtures/updates/u2/BADHASH.ZUP docs/fixtures/updates/u2/BADSIG.ZUP \
           docs/fixtures/updates/u2/BADVER.ZUP docs/fixtures/updates/u2/BADFMT.ZUP \
           docs/fixtures/updates/u2/UNKKEY.ZUP docs/fixtures/updates/u3/APPLY.ZUP
-	python $(RECOVERY_IMAGE_COMPOSE_TOOL) --boot $(BOOT_BIN) --stage2 $(STAGE2_BIN) --kernel $(KERNEL_BIN) --loader $(RECOVERY_LOADER_PADDED_BIN) --kernel-lba $(LEGACY_KERNEL_LBA) --loader-lba $(RECOVERY_LOADER_LBA) --fat32-start-lba $(FAT32_START_LBA) --output $(OS_IMG)
-	python tools/packager.py prepare-hybrid-image --image $(OS_IMG) --disk-bytes $(HYBRID_DISK_BYTES) --fat32-start-lba $(FAT32_START_LBA) --label $(FAT32_LABEL)
-	python tools/packager.py inject-files-fat32 --image $(OS_IMG) --fat32-start-lba $(FAT32_START_LBA) --entry assets/icons/SHELL.BMP=SHELL.BMP --entry assets/icons/EXPLORER.BMP=EXPLORER.BMP --entry assets/icons/TASKMGR.BMP=TASKMGR.BMP --entry $(STORE_FIXTURES_DIR)/VALID.ZPK=VALID.ZPK --entry $(STORE_FIXTURES_DIR)/BADCRC.ZPK=BADCRC.ZPK --entry $(STORE_FIXTURES_DIR)/BADAPI.ZPK=BADAPI.ZPK --entry $(STORE_FIXTURES_DIR)/BADALIAS.ZPK=BADALIAS.ZPK --entry $(STORE_FIXTURES_DIR)/NEEDSDEP.ZPK=NEEDSDEP.ZPK --entry $(STORE_FIXTURES_DIR)/SAMEVER.ZPK=SAMEVER.ZPK --entry $(STORE_AS2_FIXTURES_DIR)/WAITAPP.ZPK=WAITAPP.ZPK --entry $(STORE_AS2_FIXTURES_DIR)/BASE.ZPK=BASE.ZPK --entry $(STORE_AS2_FIXTURES_DIR)/DEPEND.ZPK=DEPEND.ZPK --entry $(STORE_AS4_UPDATE_FIXTURES_DIR)/UPTARGET.ZPK=UPTARGET.ZPK --entry $(STORE_AS4_UPDATE_FIXTURES_DIR)/UPDEPA.ZPK=UPDEPA.ZPK --entry $(STORE_AS4_UPDATE_FIXTURES_DIR)/UPDEPB.ZPK=UPDEPB.ZPK --entry $(STORE_AS4_UPDATE_FIXTURES_DIR)/BROKEN.ZPK=BROKEN.ZPK --entry $(STORE_AS4_UPDATE_FIXTURES_DIR)/CYCLEA.ZPK=CYCLEA.ZPK --entry $(STORE_AS4_UPDATE_FIXTURES_DIR)/CYCLEB.ZPK=CYCLEB.ZPK --entry docs/fixtures/updates/u2/VALID.ZUP=VALID.ZUP --entry docs/fixtures/updates/u2/TRUNC.ZUP=TRUNC.ZUP --entry docs/fixtures/updates/u2/BADHASH.ZUP=BADHASH.ZUP --entry docs/fixtures/updates/u2/BADSIG.ZUP=BADSIG.ZUP --entry docs/fixtures/updates/u2/BADVER.ZUP=BADVER.ZUP --entry docs/fixtures/updates/u2/BADFMT.ZUP=BADFMT.ZUP --entry docs/fixtures/updates/u2/UNKKEY.ZUP=UNKKEY.ZUP --entry docs/fixtures/updates/u3/APPLY.ZUP=APPLY.ZUP
+	$(PYTHON) $(RECOVERY_IMAGE_COMPOSE_TOOL) --boot $(BOOT_BIN) --stage2 $(STAGE2_BIN) --kernel $(KERNEL_BIN) --loader $(RECOVERY_LOADER_PADDED_BIN) --kernel-lba $(LEGACY_KERNEL_LBA) --loader-lba $(RECOVERY_LOADER_LBA) --fat32-start-lba $(FAT32_START_LBA) --output $(OS_IMG)
+	$(PYTHON) tools/packager.py prepare-hybrid-image --image $(OS_IMG) --disk-bytes $(HYBRID_DISK_BYTES) --fat32-start-lba $(FAT32_START_LBA) --label $(FAT32_LABEL)
+	$(PYTHON) tools/packager.py inject-files-fat32 --image $(OS_IMG) --fat32-start-lba $(FAT32_START_LBA) --entry assets/icons/SHELL.BMP=SHELL.BMP --entry assets/icons/EXPLORER.BMP=EXPLORER.BMP --entry assets/icons/TASKMGR.BMP=TASKMGR.BMP --entry $(STORE_FIXTURES_DIR)/VALID.ZPK=VALID.ZPK --entry $(STORE_FIXTURES_DIR)/BADCRC.ZPK=BADCRC.ZPK --entry $(STORE_FIXTURES_DIR)/BADAPI.ZPK=BADAPI.ZPK --entry $(STORE_FIXTURES_DIR)/BADALIAS.ZPK=BADALIAS.ZPK --entry $(STORE_FIXTURES_DIR)/NEEDSDEP.ZPK=NEEDSDEP.ZPK --entry $(STORE_FIXTURES_DIR)/SAMEVER.ZPK=SAMEVER.ZPK --entry $(STORE_AS2_FIXTURES_DIR)/WAITAPP.ZPK=WAITAPP.ZPK --entry $(STORE_AS2_FIXTURES_DIR)/BASE.ZPK=BASE.ZPK --entry $(STORE_AS2_FIXTURES_DIR)/DEPEND.ZPK=DEPEND.ZPK --entry $(STORE_AS4_UPDATE_FIXTURES_DIR)/UPTARGET.ZPK=UPTARGET.ZPK --entry $(STORE_AS4_UPDATE_FIXTURES_DIR)/UPDEPA.ZPK=UPDEPA.ZPK --entry $(STORE_AS4_UPDATE_FIXTURES_DIR)/UPDEPB.ZPK=UPDEPB.ZPK --entry $(STORE_AS4_UPDATE_FIXTURES_DIR)/BROKEN.ZPK=BROKEN.ZPK --entry $(STORE_AS4_UPDATE_FIXTURES_DIR)/CYCLEA.ZPK=CYCLEA.ZPK --entry $(STORE_AS4_UPDATE_FIXTURES_DIR)/CYCLEB.ZPK=CYCLEB.ZPK --entry docs/fixtures/updates/u2/VALID.ZUP=VALID.ZUP --entry docs/fixtures/updates/u2/TRUNC.ZUP=TRUNC.ZUP --entry docs/fixtures/updates/u2/BADHASH.ZUP=BADHASH.ZUP --entry docs/fixtures/updates/u2/BADSIG.ZUP=BADSIG.ZUP --entry docs/fixtures/updates/u2/BADVER.ZUP=BADVER.ZUP --entry docs/fixtures/updates/u2/BADFMT.ZUP=BADFMT.ZUP --entry docs/fixtures/updates/u2/UNKKEY.ZUP=UNKKEY.ZUP --entry docs/fixtures/updates/u3/APPLY.ZUP=APPLY.ZUP
 
 system-fixtures: $(OS_IMG) $(SYSTEM_BOOT_BIN) $(SYSTEM_STAGE2_BIN) $(SYSTEM_FIXTURES_MANIFEST) tools/updater.py tools/packager.py
 	@test -n "$(SYSTEM_PRIVATE_KEY)" || { echo "SYSTEM_PRIVATE_KEY nao configurada em Makefile.local" >&2; exit 2; }
 	@rm -rf "$(SYSTEM_FIXTURES_DIR)"
 	@rm -rf "$(SYSTEM_FIXTURE_IMAGES_DIR)"
 	@mkdir -p "$(SYSTEM_FIXTURE_IMAGES_DIR)"
-	python tools/updater.py fixtures-system-qemu --full-kernel --manifest $(SYSTEM_FIXTURES_MANIFEST) --boot $(SYSTEM_BOOT_BIN) --stage2 $(SYSTEM_STAGE2_BIN) --kernel $(KERNEL_BIN) --private "$(SYSTEM_PRIVATE_KEY)" --public $(SYSTEM_FIXTURES_PUBLIC) --output-dir $(SYSTEM_FIXTURES_DIR)
+	$(PYTHON) tools/updater.py fixtures-system-qemu --full-kernel --manifest $(SYSTEM_FIXTURES_MANIFEST) --boot $(SYSTEM_BOOT_BIN) --stage2 $(SYSTEM_STAGE2_BIN) --kernel $(KERNEL_BIN) --private "$(SYSTEM_PRIVATE_KEY)" --public $(SYSTEM_FIXTURES_PUBLIC) --output-dir $(SYSTEM_FIXTURES_DIR)
 	cp -f '$(OS_IMG)' '$(SYSTEM_FIXTURE_IMAGES_DIR)/VALID.img'
-	python tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/valid.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/VALID.img --path VALID.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/valid.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/VALID.img --path VALID.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
 	cp -f '$(OS_IMG)' '$(SYSTEM_FIXTURE_IMAGES_DIR)/TRUNC.img'
-	python tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/truncated.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/TRUNC.img --path TRUNC.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/truncated.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/TRUNC.img --path TRUNC.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
 	cp -f '$(OS_IMG)' '$(SYSTEM_FIXTURE_IMAGES_DIR)/HDRBAD.img'
-	python tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/tampered-header.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/HDRBAD.img --path HDRBAD.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/tampered-header.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/HDRBAD.img --path HDRBAD.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
 	cp -f '$(OS_IMG)' '$(SYSTEM_FIXTURE_IMAGES_DIR)/PAYBAD.img'
-	python tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/tampered-payload.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/PAYBAD.img --path PAYBAD.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/tampered-payload.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/PAYBAD.img --path PAYBAD.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
 	cp -f '$(OS_IMG)' '$(SYSTEM_FIXTURE_IMAGES_DIR)/SIGBAD.img'
-	python tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/tampered-signature.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/SIGBAD.img --path SIGBAD.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/tampered-signature.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/SIGBAD.img --path SIGBAD.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
 	cp -f '$(OS_IMG)' '$(SYSTEM_FIXTURE_IMAGES_DIR)/OVERSIZ.img'
-	python tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/oversized.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/OVERSIZ.img --path OVERSIZ.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/oversized.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/OVERSIZ.img --path OVERSIZ.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
 	cp -f '$(OS_IMG)' '$(SYSTEM_FIXTURE_IMAGES_DIR)/MISALGN.img'
-	python tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/misaligned.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/MISALGN.img --path MISALGN.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/misaligned.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/MISALGN.img --path MISALGN.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
 	cp -f '$(OS_IMG)' '$(SYSTEM_FIXTURE_IMAGES_DIR)/VERBAD.img'
-	python tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/incompatible-version.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/VERBAD.img --path VERBAD.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/incompatible-version.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/VERBAD.img --path VERBAD.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
 	cp -f '$(OS_IMG)' '$(SYSTEM_FIXTURE_IMAGES_DIR)/EPCHBAD.img'
-	python tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/incompatible-epoch.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/EPCHBAD.img --path EPCHBAD.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/incompatible-epoch.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/EPCHBAD.img --path EPCHBAD.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
 	cp -f '$(OS_IMG)' '$(SYSTEM_FIXTURE_IMAGES_DIR)/ABIBAD.img'
-	python tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/incompatible-abi.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/ABIBAD.img --path ABIBAD.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/incompatible-abi.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/ABIBAD.img --path ABIBAD.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
 	cp -f '$(OS_IMG)' '$(SYSTEM_FIXTURE_IMAGES_DIR)/SCHBAD.img'
-	python tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/incompatible-schema.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/SCHBAD.img --path SCHBAD.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/incompatible-schema.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/SCHBAD.img --path SCHBAD.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
 	cp -f '$(OS_IMG)' '$(SYSTEM_FIXTURE_IMAGES_DIR)/IMGHASH.img'
-	python tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/hash-divergent-image.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/IMGHASH.img --path IMGHASH.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/hash-divergent-image.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/IMGHASH.img --path IMGHASH.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
 	cp -f '$(OS_IMG)' '$(SYSTEM_FIXTURE_IMAGES_DIR)/CMPHASH.img'
-	python tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/hash-divergent-component.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/CMPHASH.img --path CMPHASH.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/hash-divergent-component.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/CMPHASH.img --path CMPHASH.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
 
 run-system-fixture:
 	@test -n "$(SYSTEM_FIXTURE_IMAGE)" || { echo "SYSTEM_FIXTURE_IMAGE nao configurada" >&2; exit 2; }
@@ -1425,13 +1426,13 @@ system-slots-fixtures: system-fixtures $(SYSTEM_SLOTS_BASELINE_MANIFEST) tools/u
 	@test -n "$(SYSTEM_PRIVATE_KEY)" || { echo "SYSTEM_PRIVATE_KEY nao configurada em Makefile.local" >&2; exit 2; }
 	@rm -rf "$(SYSTEM_SLOTS_FIXTURES_DIR)"
 	@mkdir -p "$(SYSTEM_SLOTS_BASELINE_DIR)"
-	python tools/updater.py fixtures-system-qemu --full-kernel --manifest $(SYSTEM_SLOTS_BASELINE_MANIFEST) --boot $(BOOT_BIN) --stage2 $(STAGE2_BIN) --kernel $(KERNEL_BIN) --private "$(SYSTEM_PRIVATE_KEY)" --public $(SYSTEM_FIXTURES_PUBLIC) --output-dir $(SYSTEM_SLOTS_BASELINE_DIR)
-	python tools/system_slots_fixtures.py --package $(SYSTEM_SLOTS_BASELINE_DIR)/valid.zsys --output-dir $(SYSTEM_SLOTS_FIXTURES_DIR)
+	$(PYTHON) tools/updater.py fixtures-system-qemu --full-kernel --manifest $(SYSTEM_SLOTS_BASELINE_MANIFEST) --boot $(BOOT_BIN) --stage2 $(STAGE2_BIN) --kernel $(KERNEL_BIN) --private "$(SYSTEM_PRIVATE_KEY)" --public $(SYSTEM_FIXTURES_PUBLIC) --output-dir $(SYSTEM_SLOTS_BASELINE_DIR)
+	$(PYTHON) tools/system_slots_fixtures.py --package $(SYSTEM_SLOTS_BASELINE_DIR)/valid.zsys --output-dir $(SYSTEM_SLOTS_FIXTURES_DIR)
 	cp -f '$(OS_IMG)' '$(SYSTEM_SLOTS_FIXTURE_IMAGE)'
-	python tools/packager.py inject-file-fat32 --file $(SYSTEM_SLOTS_BASELINE_DIR)/valid.zsys --image $(SYSTEM_SLOTS_FIXTURE_IMAGE) --path ZSA0.ZSY --fat32-start-lba $(FAT32_START_LBA) --replace
-	python tools/packager.py inject-file-fat32 --file $(SYSTEM_SLOTS_FIXTURES_DIR)/ZSI0.STA --image $(SYSTEM_SLOTS_FIXTURE_IMAGE) --path ZSI0.STA --fat32-start-lba $(FAT32_START_LBA) --replace
-	python tools/packager.py inject-file-fat32 --file $(SYSTEM_SLOTS_FIXTURES_DIR)/ZSI1.STA --image $(SYSTEM_SLOTS_FIXTURE_IMAGE) --path ZSI1.STA --fat32-start-lba $(FAT32_START_LBA) --replace
-	python tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/valid.zsys --image $(SYSTEM_SLOTS_FIXTURE_IMAGE) --path VALID.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(SYSTEM_SLOTS_BASELINE_DIR)/valid.zsys --image $(SYSTEM_SLOTS_FIXTURE_IMAGE) --path ZSA0.ZSY --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(SYSTEM_SLOTS_FIXTURES_DIR)/ZSI0.STA --image $(SYSTEM_SLOTS_FIXTURE_IMAGE) --path ZSI0.STA --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(SYSTEM_SLOTS_FIXTURES_DIR)/ZSI1.STA --image $(SYSTEM_SLOTS_FIXTURE_IMAGE) --path ZSI1.STA --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/valid.zsys --image $(SYSTEM_SLOTS_FIXTURE_IMAGE) --path VALID.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
 
 run-system-slots-fixture: system-slots-fixtures
 	$(QEMU) $(QEMU_CPU_ARGS) -drive file=$(SYSTEM_SLOTS_FIXTURE_IMAGE),format=raw,if=none,id=systemslots -device ide-hd,drive=systemslots,bootindex=1 $(QEMU_NET_ARGS)
@@ -1439,7 +1440,7 @@ run-system-slots-fixture: system-slots-fixtures
 system-slots-matrix: system-slots-fixtures tools/system_slots_matrix.py tools/packager.py
 	@rm -rf "$(SYSTEM_SLOTS_MATRIX_DIR)"
 	@mkdir -p "$(SYSTEM_SLOTS_MATRIX_DIR)"
-	python tools/system_slots_matrix.py --base-image $(SYSTEM_SLOTS_FIXTURE_IMAGE) --baseline $(SYSTEM_SLOTS_BASELINE_DIR)/valid.zsys --candidate $(SYSTEM_FIXTURES_DIR)/valid.zsys --bad-signature $(SYSTEM_FIXTURES_DIR)/tampered-signature.zsys --bad-image-hash $(SYSTEM_FIXTURES_DIR)/hash-divergent-image.zsys --bad-component-hash $(SYSTEM_FIXTURES_DIR)/hash-divergent-component.zsys --output-dir $(SYSTEM_SLOTS_MATRIX_DIR) --fat32-start-lba $(FAT32_START_LBA)
+	$(PYTHON) tools/system_slots_matrix.py --base-image $(SYSTEM_SLOTS_FIXTURE_IMAGE) --baseline $(SYSTEM_SLOTS_BASELINE_DIR)/valid.zsys --candidate $(SYSTEM_FIXTURES_DIR)/valid.zsys --bad-signature $(SYSTEM_FIXTURES_DIR)/tampered-signature.zsys --bad-image-hash $(SYSTEM_FIXTURES_DIR)/hash-divergent-image.zsys --bad-component-hash $(SYSTEM_FIXTURES_DIR)/hash-divergent-component.zsys --output-dir $(SYSTEM_SLOTS_MATRIX_DIR) --fat32-start-lba $(FAT32_START_LBA)
 
 run-system-slots-matrix: system-slots-matrix
 	@test -n "$(SYSTEM_SLOTS_MATRIX_IMAGE)" || { echo "SYSTEM_SLOTS_MATRIX_IMAGE nao configurada" >&2; exit 2; }
@@ -1455,12 +1456,12 @@ ep94b-fixtures: $(OS_IMG) $(SYSTEM_BOOT_BIN) $(SYSTEM_BOOT_HANDOFF_INVALID_BIN) 
 	@rm -rf "$(EP94B_FIXTURES_DIR)"
 	@mkdir -p "$(EP94B_ABI1_DIR)"
 	@mkdir -p "$(EP94B_ABI2_DIR)"
-	python tools/updater.py fixtures-system-qemu --full-kernel --manifest $(SYSTEM_FIXTURES_MANIFEST) --boot $(SYSTEM_BOOT_BIN) --stage2 $(SYSTEM_STAGE2_BIN) --kernel $(KERNEL_BIN) --private "$(SYSTEM_PRIVATE_KEY)" --public $(SYSTEM_FIXTURES_PUBLIC) --output-dir $(EP94B_ABI2_DIR) --handoff-invalid-boot $(SYSTEM_BOOT_HANDOFF_INVALID_BIN) --returning-boot $(SYSTEM_BOOT_RETURN_BIN) --legacy-manifest $(SYSTEM_SLOTS_BASELINE_MANIFEST) --legacy-boot $(BOOT_BIN) --legacy-stage2 $(STAGE2_BIN) --legacy-output-dir $(EP94B_ABI1_DIR)
+	$(PYTHON) tools/updater.py fixtures-system-qemu --full-kernel --manifest $(SYSTEM_FIXTURES_MANIFEST) --boot $(SYSTEM_BOOT_BIN) --stage2 $(SYSTEM_STAGE2_BIN) --kernel $(KERNEL_BIN) --private "$(SYSTEM_PRIVATE_KEY)" --public $(SYSTEM_FIXTURES_PUBLIC) --output-dir $(EP94B_ABI2_DIR) --handoff-invalid-boot $(SYSTEM_BOOT_HANDOFF_INVALID_BIN) --returning-boot $(SYSTEM_BOOT_RETURN_BIN) --legacy-manifest $(SYSTEM_SLOTS_BASELINE_MANIFEST) --legacy-boot $(BOOT_BIN) --legacy-stage2 $(STAGE2_BIN) --legacy-output-dir $(EP94B_ABI1_DIR)
 
 ep94b-matrix: ep94b-fixtures tools/ep94b_matrix.py tools/system_slots_matrix.py tools/packager.py
 	@rm -rf "$(EP94B_MATRIX_DIR)"
 	@mkdir -p "$(EP94B_MATRIX_DIR)"
-	python tools/ep94b_matrix.py --base-image $(OS_IMG) --abi1 $(EP94B_ABI1_DIR)/valid.zsys --abi2 $(EP94B_ABI2_DIR)/valid.zsys --bad-boot $(EP94B_ABI2_DIR)/hash-divergent-boot.zsys --bad-stage2 $(EP94B_ABI2_DIR)/hash-divergent-stage2.zsys --bad-kernel $(EP94B_ABI2_DIR)/hash-divergent-kernel.zsys --handoff-invalid $(EP94B_ABI2_DIR)/handoff-invalid.zsys --returning-boot $(EP94B_ABI2_DIR)/returning-boot.zsys --output $(EP94B_MATRIX_IMAGE) --fat32-start-lba $(FAT32_START_LBA)
+	$(PYTHON) tools/ep94b_matrix.py --base-image $(OS_IMG) --abi1 $(EP94B_ABI1_DIR)/valid.zsys --abi2 $(EP94B_ABI2_DIR)/valid.zsys --bad-boot $(EP94B_ABI2_DIR)/hash-divergent-boot.zsys --bad-stage2 $(EP94B_ABI2_DIR)/hash-divergent-stage2.zsys --bad-kernel $(EP94B_ABI2_DIR)/hash-divergent-kernel.zsys --handoff-invalid $(EP94B_ABI2_DIR)/handoff-invalid.zsys --returning-boot $(EP94B_ABI2_DIR)/returning-boot.zsys --output $(EP94B_MATRIX_IMAGE) --fat32-start-lba $(FAT32_START_LBA)
 
 run-ep94b-matrix: ep94b-matrix
 	@test -f "$(EP94B_MATRIX_IMAGE)" || { echo "Imagem guiada EP9.4B nao encontrada: $(EP94B_MATRIX_IMAGE)" >&2; exit 2; }
@@ -1469,14 +1470,14 @@ run-ep94b-matrix: ep94b-matrix
 ep94c-matrix: ep94b-fixtures tools/ep94c_matrix.py tools/ep94b_matrix.py tools/system_slots_matrix.py tools/packager.py
 	@rm -rf "$(EP94C_MATRIX_DIR)"
 	@mkdir -p "$(EP94C_MATRIX_DIR)"
-	python tools/ep94c_matrix.py --base-image $(OS_IMG) --active $(EP94B_ABI1_DIR)/valid.zsys --candidate $(EP94B_ABI2_DIR)/valid.zsys --output $(EP94C_MATRIX_IMAGE) --fixtures-dir $(EP94C_FIXTURES_DIR) --fat32-start-lba $(FAT32_START_LBA)
+	$(PYTHON) tools/ep94c_matrix.py --base-image $(OS_IMG) --active $(EP94B_ABI1_DIR)/valid.zsys --candidate $(EP94B_ABI2_DIR)/valid.zsys --output $(EP94C_MATRIX_IMAGE) --fixtures-dir $(EP94C_FIXTURES_DIR) --fat32-start-lba $(FAT32_START_LBA)
 
 run-ep94c-matrix: ep94c-matrix
 	@test -f "$(EP94C_MATRIX_IMAGE)" || { echo "Imagem guiada EP9.4C nao encontrada: $(EP94C_MATRIX_IMAGE)" >&2; exit 2; }
 	$(QEMU) $(QEMU_CPU_ARGS) -snapshot -monitor stdio -drive file=$(EP94C_MATRIX_IMAGE),format=raw,if=none,id=ep94cmatrix -device ide-hd,drive=ep94cmatrix,bootindex=1 $(QEMU_NET_ARGS)
 
 $(RECOVERY_MENU_VGA_IMAGE): system-slots-matrix $(RECOVERY_STAGE2_VGA_BIN) $(STAGE2_BIN) $(RECOVERY_STAGE2_PATCH_TOOL)
-	python $(RECOVERY_STAGE2_PATCH_TOOL) --base $(SYSTEM_SLOTS_MATRIX_DIR)/MENU_FAILED_VALID.img --stage2 $(RECOVERY_STAGE2_VGA_BIN) --reference-stage2 $(STAGE2_BIN) --output $@ --stage2-lba 1 --kernel-lba 64
+	$(PYTHON) $(RECOVERY_STAGE2_PATCH_TOOL) --base $(SYSTEM_SLOTS_MATRIX_DIR)/MENU_FAILED_VALID.img --stage2 $(RECOVERY_STAGE2_VGA_BIN) --reference-stage2 $(STAGE2_BIN) --output $@ --stage2-lba 1 --kernel-lba 64
 
 run-recovery-menu-vga: $(RECOVERY_MENU_VGA_IMAGE)
 	$(QEMU) $(QEMU_CPU_ARGS) -drive file=$(RECOVERY_MENU_VGA_IMAGE),format=raw,if=none,id=recoverymenuvga -device ide-hd,drive=recoverymenuvga,bootindex=1 $(QEMU_NET_ARGS)
@@ -1507,15 +1508,15 @@ run-usb-wifi: $(OS_IMG)
 
 $(STORAGE_FIXTURES_STAMP): $(STORAGE_FIXTURES_TOOL)
 	@mkdir -p $(BUILD_DIR)
-	python $(STORAGE_FIXTURES_TOOL) generate --output-dir $(BUILD_DIR)
+	$(PYTHON) $(STORAGE_FIXTURES_TOOL) generate --output-dir $(BUILD_DIR)
 
 storage-fixtures: $(STORAGE_FIXTURES_STAMP)
 
 storage-fixtures-test:
-	python $(STORAGE_FIXTURES_TOOL) selftest
+	$(PYTHON) $(STORAGE_FIXTURES_TOOL) selftest
 
 storage-fixtures-verify: $(STORAGE_FIXTURES_STAMP)
-	python $(STORAGE_FIXTURES_TOOL) verify --output-dir $(BUILD_DIR)
+	$(PYTHON) $(STORAGE_FIXTURES_TOOL) verify --output-dir $(BUILD_DIR)
 
 run-storage: $(OS_IMG) $(STORAGE_FIXTURES_STAMP)
 	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_BOOT_DISK_ARGS) -drive format=raw,file=$(STORAGE_VALID_IMG),if=ide,index=1 -drive format=raw,file=$(STORAGE_CORRUPT_IMG),if=ide,index=2 -drive format=raw,file=$(STORAGE_UNKNOWN_IMG),if=ide,index=3 $(QEMU_NET_ARGS)
@@ -1526,716 +1527,716 @@ debug: $(OS_IMG)
 Q3CHECK_ARGS ?= --accept-debt DT100-003
 
 q3check:
-	python tools/q3check.py $(Q3CHECK_ARGS)
-	python tools/vendor_terminus.py --check
+	$(PYTHON) tools/q3check.py $(Q3CHECK_ARGS)
+	$(PYTHON) tools/vendor_terminus.py --check
 
 catalog-test: tools/test_catalog.py tests/unit/test_catalog.py tests/coverage/registry.json tests/catalog.json docs/qualidade/catalogo-testes.md
-	python -m unittest tests.unit.test_catalog
-	python tools/test_catalog.py validate --catalog tests/catalog.json --coverage-registry tests/coverage/registry.json
-	python tools/test_catalog.py check-rendered --catalog tests/catalog.json --view docs/qualidade/catalogo-testes.md
+	$(PYTHON) -m unittest tests.unit.test_catalog
+	$(PYTHON) tools/test_catalog.py validate --catalog tests/catalog.json --coverage-registry tests/coverage/registry.json
+	$(PYTHON) tools/test_catalog.py check-rendered --catalog tests/catalog.json --view docs/qualidade/catalogo-testes.md
 
 catalog-test-strict: tools/test_catalog.py tests/coverage/registry.json tests/catalog.json
-	python tools/test_catalog.py validate --strict --catalog tests/catalog.json --coverage-registry tests/coverage/registry.json
+	$(PYTHON) tools/test_catalog.py validate --strict --catalog tests/catalog.json --coverage-registry tests/coverage/registry.json
 
 test-qemu: tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py run --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+	$(PYTHON) tools/qemu_test_runner.py run --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
 
 test-qemu-selftest: tools/qemu_test_runner.py tests/unit/test_qemu_test_runner.py
-	python tools/qemu_test_runner.py --self-test
-	python -m unittest tests.unit.test_qemu_test_runner
+	$(PYTHON) tools/qemu_test_runner.py --self-test
+	$(PYTHON) -m unittest tests.unit.test_qemu_test_runner
 
 test-qemu-parallel: $(OS_IMG) tools/qemu_parallel_runner.py tools/qemu_test_runner.py tests/catalog.json tests/unit/test_qemu_parallel_runner.py
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_parallel_runner.py parallel --workers "$(QEMU_PARALLEL_WORKERS)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" $(QEMU_PARALLEL_ARGS)
+	$(PYTHON) tools/qemu_parallel_runner.py parallel --workers "$(QEMU_PARALLEL_WORKERS)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" $(QEMU_PARALLEL_ARGS)
 
 test-sec6-host: tools/qemu_test_runner.py tools/qemu_parallel_runner.py tools/test_catalog.py tests/unit/test_sec6_runner.py tests/unit/test_qemu_test_runner.py tests/unit/test_qemu_parallel_runner.py tests/unit/test_tst7_continuous_runner.py tests/unit/test_shell_input_host.c tests/unit/test_shell_host.c tests/unit/test_kernel_tests_blackbox_host.c tests/catalog.json tests/coverage/registry.json
-	python -m unittest tests.unit.test_sec6_runner tests.unit.test_qemu_test_runner tests.unit.test_qemu_parallel_runner tests.unit.test_tst7_continuous_runner
+	$(PYTHON) -m unittest tests.unit.test_sec6_runner tests.unit.test_qemu_test_runner tests.unit.test_qemu_parallel_runner tests.unit.test_tst7_continuous_runner
 	$(MAKE) test-shell-input-host test-shell-core-host test-blackbox-host test-tst6-host
 
 test-sec6-qemu: $(OS_IMG) tools/qemu_parallel_runner.py tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_parallel_runner.py parallel --workers "$(SEC6_QEMU_WORKERS)" --seed "$(SEC6_QEMU_SEED)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --tag sec6 --tag fault --tag matrix --tag recovery
+	$(PYTHON) tools/qemu_parallel_runner.py parallel --workers "$(SEC6_QEMU_WORKERS)" --seed "$(SEC6_QEMU_SEED)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --tag sec6 --tag fault --tag matrix --tag recovery
 
 test-sec6: test-sec6-host test-sec6-qemu
 
 test-qemu-soak-parallel: $(OS_IMG) tools/qemu_parallel_runner.py tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_parallel_runner.py soak --workers "$(QEMU_PARALLEL_WORKERS)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" $(QEMU_PARALLEL_SOAK_ARGS)
+	$(PYTHON) tools/qemu_parallel_runner.py soak --workers "$(QEMU_PARALLEL_WORKERS)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" $(QEMU_PARALLEL_SOAK_ARGS)
 
 test-assembly-qemu: coverage-map tools/qemu_test_runner.py tests/catalog.json
-	python tools/qemu_test_runner.py stress --case qemu:tst7:assembly --iterations 1 --boot-timeout 60 --case-timeout 120 --heartbeat-timeout 15 --image "$(COVERAGE_BUILD_DIR)/zephyros.img" --results "$(COVERAGE_BUILD_DIR)/test-results/tst7-assembly" --run-id $(ASSEMBLY_RUN_ID) --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none --coverage-symbols "$(COVERAGE_BUILD_DIR)/coverage-symbols.json"
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst7:assembly --iterations 1 --boot-timeout 60 --case-timeout 120 --heartbeat-timeout 15 --image "$(COVERAGE_BUILD_DIR)/zephyros.img" --results "$(COVERAGE_BUILD_DIR)/test-results/tst7-assembly" --run-id $(ASSEMBLY_RUN_ID) --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none --coverage-symbols "$(COVERAGE_BUILD_DIR)/coverage-symbols.json"
 
 test-assembly-trace-qemu: coverage-map tools/assembly_trace_collector.py tools/qemu_test_runner.py tests/catalog.json
-	python tools/assembly_trace_collector.py symbols --build-dir "$(COVERAGE_BUILD_DIR)" --catalog tests/catalog.json --nasm "$(NASM)" --nm "$(NM)" --compiler "$(GCC)" --output "$(COVERAGE_BUILD_DIR)/assembly-symbols.json"
-	python tools/qemu_test_runner.py stress --case qemu:tst7:assembly --iterations 1 --boot-timeout 60 --case-timeout 120 --heartbeat-timeout 15 --image "$(COVERAGE_BUILD_DIR)/zephyros.img" --results "$(COVERAGE_BUILD_DIR)/test-results/assembly-trace" --run-id $(ASSEMBLY_TRACE_RUN_ID) --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none --coverage-symbols "$(COVERAGE_BUILD_DIR)/coverage-symbols.json" --qemu-arg=-d --qemu-arg=in_asm --qemu-arg=-D --qemu-arg=$(COVERAGE_BUILD_DIR)/test-results/assembly-trace/$(ASSEMBLY_TRACE_RUN_ID)/qemu-in-asm.log
-	python tools/assembly_trace_collector.py collect --trace "$(COVERAGE_BUILD_DIR)/test-results/assembly-trace/$(ASSEMBLY_TRACE_RUN_ID)/qemu-in-asm.log" --symbols "$(COVERAGE_BUILD_DIR)/assembly-symbols.json" --case-id qemu:tst7:assembly --source src/boot/boot.asm --source src/boot/stage2.asm --source src/boot/recovery_entry.asm --source src/kernel/entry.asm --output "$(COVERAGE_BUILD_DIR)/test-results/assembly-trace/$(ASSEMBLY_TRACE_RUN_ID)/assembly-trace.json"
+	$(PYTHON) tools/assembly_trace_collector.py symbols --build-dir "$(COVERAGE_BUILD_DIR)" --catalog tests/catalog.json --nasm "$(NASM)" --nm "$(NM)" --compiler "$(GCC)" --output "$(COVERAGE_BUILD_DIR)/assembly-symbols.json"
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst7:assembly --iterations 1 --boot-timeout 60 --case-timeout 120 --heartbeat-timeout 15 --image "$(COVERAGE_BUILD_DIR)/zephyros.img" --results "$(COVERAGE_BUILD_DIR)/test-results/assembly-trace" --run-id $(ASSEMBLY_TRACE_RUN_ID) --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none --coverage-symbols "$(COVERAGE_BUILD_DIR)/coverage-symbols.json" --qemu-arg=-d --qemu-arg=in_asm --qemu-arg=-D --qemu-arg=$(COVERAGE_BUILD_DIR)/test-results/assembly-trace/$(ASSEMBLY_TRACE_RUN_ID)/qemu-in-asm.log
+	$(PYTHON) tools/assembly_trace_collector.py collect --trace "$(COVERAGE_BUILD_DIR)/test-results/assembly-trace/$(ASSEMBLY_TRACE_RUN_ID)/qemu-in-asm.log" --symbols "$(COVERAGE_BUILD_DIR)/assembly-symbols.json" --case-id qemu:tst7:assembly --source src/boot/boot.asm --source src/boot/stage2.asm --source src/boot/recovery_entry.asm --source src/kernel/entry.asm --output "$(COVERAGE_BUILD_DIR)/test-results/assembly-trace/$(ASSEMBLY_TRACE_RUN_ID)/assembly-trace.json"
 
 test-assembly-boot-trace-qemu: coverage-image tools/assembly_boot_trace.py tools/assembly_trace_collector.py tests/catalog.json
-	python tools/assembly_boot_trace.py --build-dir "$(COVERAGE_BUILD_DIR)" --catalog tests/catalog.json --output-dir "$(COVERAGE_BUILD_DIR)/test-results/assembly-boot-trace/$(ASSEMBLY_BOOT_TRACE_RUN_ID)" --nasm $(NASM) --nm "$(NM)" --compiler "$(GCC)" --qemu $(QEMU) --timeout 5
+	$(PYTHON) tools/assembly_boot_trace.py --build-dir "$(COVERAGE_BUILD_DIR)" --catalog tests/catalog.json --output-dir "$(COVERAGE_BUILD_DIR)/test-results/assembly-boot-trace/$(ASSEMBLY_BOOT_TRACE_RUN_ID)" --nasm $(NASM) --nm "$(NM)" --compiler "$(GCC)" --qemu $(QEMU) --timeout 5
 
 test-assembly-recovery-trace-qemu: coverage-image $(SYSTEM_BOOT_RETURN_BIN) tools/assembly_recovery_trace.py tools/assembly_trace_collector.py tests/catalog.json
-	python tools/assembly_recovery_trace.py --build-dir "$(COVERAGE_BUILD_DIR)" --catalog tests/catalog.json --output-dir "$(COVERAGE_BUILD_DIR)/test-results/assembly-recovery-trace/$(ASSEMBLY_RECOVERY_TRACE_RUN_ID)" --system-boot-return "$(SYSTEM_BOOT_RETURN_BIN)" --nasm $(NASM) --ld "$(LD)" --nm "$(NM)" --compiler "$(GCC)" --qemu $(QEMU) --timeout 30
+	$(PYTHON) tools/assembly_recovery_trace.py --build-dir "$(COVERAGE_BUILD_DIR)" --catalog tests/catalog.json --output-dir "$(COVERAGE_BUILD_DIR)/test-results/assembly-recovery-trace/$(ASSEMBLY_RECOVERY_TRACE_RUN_ID)" --system-boot-return "$(SYSTEM_BOOT_RETURN_BIN)" --nasm $(NASM) --ld "$(LD)" --nm "$(NM)" --compiler "$(GCC)" --qemu $(QEMU) --timeout 30
 
 test-execution-coverage-qemu: coverage-map tools/qemu_test_runner.py tests/catalog.json
-	python tools/qemu_test_runner.py stress --case qemu:tst4:execution --iterations 1 --boot-timeout 60 --case-timeout 120 --heartbeat-timeout 60 --image "$(COVERAGE_BUILD_DIR)/zephyros.img" --results "$(COVERAGE_BUILD_DIR)/test-results/cov-tst4-execution" --run-id $(EXECUTION_COVERAGE_RUN_ID) --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none --coverage-symbols "$(COVERAGE_BUILD_DIR)/coverage-symbols.json"
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst4:execution --iterations 1 --boot-timeout 60 --case-timeout 120 --heartbeat-timeout 60 --image "$(COVERAGE_BUILD_DIR)/zephyros.img" --results "$(COVERAGE_BUILD_DIR)/test-results/cov-tst4-execution" --run-id $(EXECUTION_COVERAGE_RUN_ID) --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none --coverage-symbols "$(COVERAGE_BUILD_DIR)/coverage-symbols.json"
 
 test-paging-coverage-qemu: coverage-map tools/qemu_test_runner.py tests/catalog.json
-	python tools/qemu_test_runner.py stress --case qemu:tst4:paging-vma --iterations 1 --boot-timeout 60 --case-timeout 120 --heartbeat-timeout 60 --image "$(COVERAGE_BUILD_DIR)/zephyros.img" --results "$(COVERAGE_BUILD_DIR)/test-results/cov-tst4-paging" --run-id $(PAGING_COVERAGE_RUN_ID) --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none --coverage-symbols "$(COVERAGE_BUILD_DIR)/coverage-symbols.json"
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst4:paging-vma --iterations 1 --boot-timeout 60 --case-timeout 120 --heartbeat-timeout 60 --image "$(COVERAGE_BUILD_DIR)/zephyros.img" --results "$(COVERAGE_BUILD_DIR)/test-results/cov-tst4-paging" --run-id $(PAGING_COVERAGE_RUN_ID) --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none --coverage-symbols "$(COVERAGE_BUILD_DIR)/coverage-symbols.json"
 
 test-tst4-qemu: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst4:memory-slab --iterations 1 --boot-timeout "$(TST4_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST4_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST4_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst4:memory-slab --iterations 1 --boot-timeout "$(TST4_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST4_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST4_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
 
 test-tst4-qemu-paging-vma: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst4:paging-vma --iterations 1 --boot-timeout "$(TST4_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST4_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST4_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst4:paging-vma --iterations 1 --boot-timeout "$(TST4_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST4_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST4_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
 
 test-tst4-qemu-execution: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst4:execution --iterations 1 --boot-timeout "$(TST4_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST4_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST4_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst4:execution --iterations 1 --boot-timeout "$(TST4_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST4_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST4_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
 
 test-tst4-qemu-storage-vfs: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst4:storage-vfs --iterations 1 --boot-timeout "$(TST4_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST4_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST4_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst4:storage-vfs --iterations 1 --boot-timeout "$(TST4_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST4_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST4_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
 
 test-tst4-qemu-network: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst4:network --iterations 1 --boot-timeout "$(TST4_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST4_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST4_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst4:network --iterations 1 --boot-timeout "$(TST4_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST4_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST4_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
 
 test-tst4-qemu-platform: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst4:platform --iterations 1 --boot-timeout "$(TST4_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST4_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST4_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst4:platform --iterations 1 --boot-timeout "$(TST4_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST4_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST4_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
 
 test-tst5-host: tools/tst5_host_runner.py tests/unit/test_tst5_runner.py tools/qemu_test_runner.py
-	python tools/tst5_host_runner.py
+	$(PYTHON) tools/tst5_host_runner.py
 
 test-tst5-qemu-shell: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst5:shell --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst5:shell --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
 
 test-krn6-qemu-diagnostics: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst5:krn6-diagnostics --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst5:krn6-diagnostics --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
 
 test-tst5-qemu-input: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst5:input --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst5:input --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
 
 test-tst5-qemu-apps: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst5:apps --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst5:apps --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
 
 test-tst5-qemu-processes: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst5:processes --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst5:processes --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
 
 test-tst5-qemu-storage: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst5:storage --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst5:storage --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
 
 test-tst5-qemu-network: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst5:network --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst5:network --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
 
 test-tst5-qemu-update-recovery: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst5:update-recovery --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none --fixture readonly-update
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst5:update-recovery --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none --fixture readonly-update
 
 test-tst5-qemu-reboot: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst5:reboot --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst5:reboot --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
 
 test-tst5-qemu-poweroff: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst5:poweroff --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst5:poweroff --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
 
 test-tst6-host: tools/tst6_host_runner.py tests/unit/test_tst6_runner.py tools/qemu_test_runner.py
-	python tools/tst6_host_runner.py
+	$(PYTHON) tools/tst6_host_runner.py
 
 test-tst6-qemu-matrix-baseline: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst6:matrix:baseline --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(TST6_QEMU_NETWORK)"
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst6:matrix:baseline --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(TST6_QEMU_NETWORK)"
 
 test-tst6-qemu-matrix-minimal: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst6:matrix:minimal --iterations 1 --qemu-profile minimal --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst6:matrix:minimal --iterations 1 --qemu-profile minimal --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
 
 test-tst6-qemu-matrix-network: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst6:matrix:network --iterations 1 --qemu-profile network --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(TST6_QEMU_NETWORK)"
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst6:matrix:network --iterations 1 --qemu-profile network --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(TST6_QEMU_NETWORK)"
 
 test-tst6-qemu-matrix-usb-hid: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst6:matrix:usb-hid --iterations 1 --qemu-profile usb-hid --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst6:matrix:usb-hid --iterations 1 --qemu-profile usb-hid --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
 
 test-tst6-qemu-matrix-usb-storage: $(OS_IMG) $(STORAGE_FIXTURES_STAMP) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst6:matrix:usb-storage --iterations 1 --qemu-profile usb-storage --storage-image "$(STORAGE_VALID_IMG)" --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst6:matrix:usb-storage --iterations 1 --qemu-profile usb-storage --storage-image "$(STORAGE_VALID_IMG)" --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
 
 test-tst6-qemu-matrix-audio: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst6:matrix:audio --iterations 1 --qemu-profile audio --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst6:matrix:audio --iterations 1 --qemu-profile audio --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
 
 test-tst6-qemu-matrix-display: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst6:matrix:display --iterations 1 --qemu-profile display --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst6:matrix:display --iterations 1 --qemu-profile display --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
 
 test-tst6-qemu-matrix-pci: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst6:matrix:pci --iterations 1 --qemu-profile pci --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst6:matrix:pci --iterations 1 --qemu-profile pci --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
 
 test-tst6-qemu-stress-kernel: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst6:stress:kernel --iterations "$(TST6_QEMU_STRESS_ITERATIONS)" --suite-timeout "$(TST6_QEMU_STRESS_DURATION)" --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(TST6_QEMU_NETWORK)"
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst6:stress:kernel --iterations "$(TST6_QEMU_STRESS_ITERATIONS)" --suite-timeout "$(TST6_QEMU_STRESS_DURATION)" --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(TST6_QEMU_NETWORK)"
 
 test-tst6-qemu-stress-storage: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst6:stress:storage --iterations "$(TST6_QEMU_STRESS_ITERATIONS)" --suite-timeout "$(TST6_QEMU_STRESS_DURATION)" --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst6:stress:storage --iterations "$(TST6_QEMU_STRESS_ITERATIONS)" --suite-timeout "$(TST6_QEMU_STRESS_DURATION)" --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
 
 test-tst6-qemu-stress-network: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst6:stress:network --iterations "$(TST6_QEMU_STRESS_ITERATIONS)" --suite-timeout "$(TST6_QEMU_STRESS_DURATION)" --qemu-profile network --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(TST6_QEMU_NETWORK)"
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst6:stress:network --iterations "$(TST6_QEMU_STRESS_ITERATIONS)" --suite-timeout "$(TST6_QEMU_STRESS_DURATION)" --qemu-profile network --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(TST6_QEMU_NETWORK)"
 
 test-tst6-qemu-stress-apps: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst6:stress:apps --iterations "$(TST6_QEMU_STRESS_ITERATIONS)" --suite-timeout "$(TST6_QEMU_STRESS_DURATION)" --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst6:stress:apps --iterations "$(TST6_QEMU_STRESS_ITERATIONS)" --suite-timeout "$(TST6_QEMU_STRESS_DURATION)" --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
 
 test-tst6-qemu-fault-memory: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst6:fault:memory --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst6:fault:memory --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
 
 test-tst6-qemu-fault-block: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst6:fault:block --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst6:fault:block --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
 
 test-tst6-qemu-fault-block-cache: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst6:fault:block-cache --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst6:fault:block-cache --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
 
 test-tst6-qemu-fault-package: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst6:fault:package --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst6:fault:package --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
 
 test-tst6-qemu-fault-update: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst6:fault:update --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst6:fault:update --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
 
 test-tst6-qemu-fault-network: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst6:fault:network --iterations 1 --qemu-profile network --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(TST6_QEMU_NETWORK)"
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst6:fault:network --iterations 1 --qemu-profile network --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(TST6_QEMU_NETWORK)"
 
 test-tst6-qemu-fault-process: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst6:fault:process --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst6:fault:process --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
 
 test-tst6-qemu-fault-recovery: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst6:fault:recovery --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst6:fault:recovery --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
 
 test-tst6-qemu-fault-service-supervisor: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
 	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
-	python tools/qemu_test_runner.py stress --case qemu:tst6:fault:service-supervisor --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+	$(PYTHON) tools/qemu_test_runner.py stress --case qemu:tst6:fault:service-supervisor --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
 
 test-tst7-host: tools/tst7_regression_runner.py tools/assembly_trace_collector.py tools/assembly_boot_trace.py tools/assembly_recovery_trace.py tests/unit/test_tst7_runner.py tests/unit/test_assembly_trace_collector.py tests/unit/test_assembly_boot_trace.py tests/unit/test_assembly_recovery_trace.py tests/catalog.json tests/regressions/manifest.json
-	python -m unittest tests.unit.test_tst7_runner tests.unit.test_assembly_trace_collector tests.unit.test_assembly_boot_trace tests.unit.test_assembly_recovery_trace
+	$(PYTHON) -m unittest tests.unit.test_tst7_runner tests.unit.test_assembly_trace_collector tests.unit.test_assembly_boot_trace tests.unit.test_assembly_recovery_trace
 
 test-tst7-quick: tools/tst7_regression_runner.py tests/catalog.json tests/regressions/manifest.json
-	python tools/tst7_regression_runner.py quick --make "$(MAKE)" --qemu $(QEMU) --image "$(OS_IMG)" --command-timeout "$(TST7_COMMAND_TIMEOUT)" --suite-timeout "$(TST7_QUICK_TIMEOUT)"
+	$(PYTHON) tools/tst7_regression_runner.py quick --make "$(MAKE)" --qemu $(QEMU) --image "$(OS_IMG)" --command-timeout "$(TST7_COMMAND_TIMEOUT)" --suite-timeout "$(TST7_QUICK_TIMEOUT)"
 
 test-tst7-full: tools/tst7_regression_runner.py tools/test_catalog.py tests/coverage/registry.json tests/catalog.json tests/regressions/manifest.json
-	python tools/tst7_regression_runner.py full --strict-coverage --make "$(MAKE)" --qemu $(QEMU) --image "$(OS_IMG)" --command-timeout "$(TST7_COMMAND_TIMEOUT)" --suite-timeout "$(TST7_FULL_TIMEOUT)"
+	$(PYTHON) tools/tst7_regression_runner.py full --strict-coverage --make "$(MAKE)" --qemu $(QEMU) --image "$(OS_IMG)" --command-timeout "$(TST7_COMMAND_TIMEOUT)" --suite-timeout "$(TST7_FULL_TIMEOUT)"
 
 test-tst7-continuous-host: tools/tst7_continuous_runner.py tools/qemu_parallel_runner.py tests/unit/test_tst7_continuous_runner.py tests/unit/test_qemu_parallel_runner.py
-	python -m unittest tests.unit.test_tst7_continuous_runner tests.unit.test_qemu_parallel_runner
+	$(PYTHON) -m unittest tests.unit.test_tst7_continuous_runner tests.unit.test_qemu_parallel_runner
 
 test-tst7-continuous: tools/tst7_continuous_runner.py tools/tst7_regression_runner.py
-	python tools/tst7_continuous_runner.py start --mode full --forever --interval 60 --cycle-timeout "$(TST7_FULL_TIMEOUT)" --make "$(MAKE)" --qemu $(QEMU) --image "$(OS_IMG)" --catalog tests/catalog.json
+	$(PYTHON) tools/tst7_continuous_runner.py start --mode full --forever --interval 60 --cycle-timeout "$(TST7_FULL_TIMEOUT)" --make "$(MAKE)" --qemu $(QEMU) --image "$(OS_IMG)" --catalog tests/catalog.json
 
 test-tst7-continuous-parallel: tools/tst7_continuous_runner.py tools/qemu_parallel_runner.py tools/qemu_test_runner.py
-	python tools/tst7_continuous_runner.py start --mode soak-parallel --forever --interval 60 --cycle-timeout "$(TST7_FULL_TIMEOUT)" --workers "$(QEMU_PARALLEL_WORKERS)" --qemu $(QEMU) --image "$(OS_IMG)" --catalog tests/catalog.json
+	$(PYTHON) tools/tst7_continuous_runner.py start --mode soak-parallel --forever --interval 60 --cycle-timeout "$(TST7_FULL_TIMEOUT)" --workers "$(QEMU_PARALLEL_WORKERS)" --qemu $(QEMU) --image "$(OS_IMG)" --catalog tests/catalog.json
 
 test-core-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_core_contracts.c tests/unit/test_core_host_runner.py tests/catalog.json
-	python tools/core_host_runner.py --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --cc "$(HOST_CC)"
 
 test-network-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_network_host.c tests/catalog.json
-	python tools/core_host_runner.py --case host:core:net-buffer --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:net-buffer --cc "$(HOST_CC)"
 
 test-network-manager-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_network_manager_host.c tests/catalog.json src/core/network_manager.c src/core/recovery.c
-	python tools/core_host_runner.py --case host:core:network-manager --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:network-manager --cc "$(HOST_CC)"
 
 test-route-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_route_host.c tests/catalog.json
-	python tools/core_host_runner.py --case host:network:route --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:network:route --cc "$(HOST_CC)"
 
 test-ipv4-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_ipv4_host.c tests/catalog.json
-	python tools/core_host_runner.py --case host:network:ipv4 --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:network:ipv4 --cc "$(HOST_CC)"
 
 test-crypto-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_crypto_host.c tests/catalog.json
-	python tools/core_host_runner.py --case host:core:crypto --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:crypto --cc "$(HOST_CC)"
 
 test-scheduling-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_core_scheduling_host.c tests/catalog.json
-	python tools/core_host_runner.py --case host:core:scheduling --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:scheduling --cc "$(HOST_CC)"
 
 test-package-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_package_host.c tests/catalog.json src/core/app_package.c src/include/core/app_package.h src/include/core/app_package_trust.h src/core/crypto.c
-	python tools/core_host_runner.py --case host:core:app-package --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:app-package --cc "$(HOST_CC)"
 
 test-update-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_update_host.c src/core/update.c src/core/update_host.h src/core/crypto.c tests/catalog.json
-	python tools/core_host_runner.py --case host:core:update --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:update --cc "$(HOST_CC)"
 
 test-update-runtime-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_update_runtime_host.c tests/catalog.json src/core/update_runtime.c src/core/update_runtime_host.h src/core/string.c
-	python tools/core_host_runner.py --case host:core:update-runtime --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:update-runtime --cc "$(HOST_CC)"
 
 test-update-remote-runtime-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_update_remote_runtime_host.c tests/catalog.json src/core/update_remote_runtime.c src/core/update_remote_runtime_host.h src/core/string.c
-	python tools/core_host_runner.py --case host:core:update-remote-runtime --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:update-remote-runtime --cc "$(HOST_CC)"
 
 test-update-remote-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_update_remote_host.c tests/catalog.json src/core/update_remote.c src/core/update_remote_host.h src/core/string.c
-	python tools/core_host_runner.py --case host:core:update-remote --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:update-remote --cc "$(HOST_CC)"
 
 test-app-remote-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_app_remote_host.c tests/catalog.json src/core/app_remote.c src/include/core/app_remote.h src/include/core/app_remote_config.h src/include/core/app_remote_trust.h src/include/core/app_package.h src/include/core/app_package_trust.h src/core/string.c
-	python tools/core_host_runner.py --case host:core:app-remote --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:app-remote --cc "$(HOST_CC)"
 
 test-update-system-slots-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_update_system_slots_host.c tests/catalog.json src/core/update_system_slots.c src/core/update_system_slots_host.h src/core/string.c
-	python tools/core_host_runner.py --case host:core:update-system-slots --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:update-system-slots --cc "$(HOST_CC)"
 
 test-update-remote-system-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_update_remote_system_host.c tests/catalog.json src/core/update_remote_system.c src/core/update_remote_system_host.h src/core/string.c
-	python tools/core_host_runner.py --case host:core:update-remote-system --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:update-remote-system --cc "$(HOST_CC)"
 
 test-update-remote-github-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_update_remote_github_host.c tests/catalog.json src/core/update_remote_github.c src/core/update_remote_github_host.h src/core/string.c
-	python tools/core_host_runner.py --case host:core:update-remote-github --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:update-remote-github --cc "$(HOST_CC)"
 
 test-update-remote-release-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_update_remote_release_host.c tests/catalog.json src/core/update_remote_release.c src/core/update_remote_release_host.h src/core/string.c
-	python tools/core_host_runner.py --case host:core:update-remote-release --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:update-remote-release --cc "$(HOST_CC)"
 
 test-update-system-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_update_system_host.c tests/catalog.json src/core/update_system.c src/core/update_system_host.h src/core/string.c
-	python tools/core_host_runner.py --case host:core:update-system --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:update-system --cc "$(HOST_CC)"
 
 test-state-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_core_state_host.c tests/catalog.json src/core/recovery.c src/core/power_notifier.c
-	python tools/core_host_runner.py --case host:core:state --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:state --cc "$(HOST_CC)"
 
 test-device-manager-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_device_manager_host.c tests/catalog.json src/core/device_manager.c src/core/recovery.c
-	python tools/core_host_runner.py --case host:core:device-manager --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:device-manager --cc "$(HOST_CC)"
 
 test-app-api-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_app_api_host.c tests/catalog.json src/core/app_api.c
-	python tools/core_host_runner.py --case host:core:app-api --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:app-api --cc "$(HOST_CC)"
 
 test-app-files-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_app_files_host.c tests/catalog.json src/core/app_files.c src/include/core/app_files.h
-	python tools/core_host_runner.py --case host:core:app-files --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:app-files --cc "$(HOST_CC)"
 
 test-app-builtin-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_app_builtin_host.c tests/catalog.json src/core/app_builtin.c src/include/core/app_builtin.h src/include/core/app_loader.h
-	python tools/core_host_runner.py --case host:core:app-builtin --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:app-builtin --cc "$(HOST_CC)"
 
 test-app-loader-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_app_loader_host.c tests/catalog.json src/core/app_loader.c src/include/core/app_loader.h src/include/core/app_api.h src/include/core/app_files.h
-	python tools/core_host_runner.py --case host:core:app-loader --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:app-loader --cc "$(HOST_CC)"
 
 test-taskbar-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_taskbar_host.c tests/catalog.json src/taskbar/taskbar.c src/include/ui/taskbar.h src/include/ui/display.h src/include/ui/desktop.h src/include/ui/gui.h src/include/drivers/vesa.h src/include/drivers/mouse.h src/include/core/timer.h src/include/core/video.h src/include/core/log.h
-	python tools/core_host_runner.py --case host:ui:taskbar --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:ui:taskbar --cc "$(HOST_CC)"
 
 test-appstore-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_appstore_host.c tests/catalog.json src/appstore/appstore.c src/include/ui/appstore.h src/include/ui/appstore_test.h src/include/core/app_catalog.h src/include/core/app_package.h src/include/core/app_package_trust.h src/include/core/app_remote.h src/include/core/errors.h src/include/core/log.h src/include/core/recovery.h src/include/core/string.h src/include/core/video.h src/include/drivers/mouse.h src/include/process/process.h src/include/ui/desktop.h src/include/ui/display.h src/include/ui/gui.h src/include/ui/taskbar.h src/include/ui/wm.h
-	python tools/core_host_runner.py --case host:ui:appstore --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:ui:appstore --cc "$(HOST_CC)"
 
 test-editor-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_editor_host.c tests/catalog.json src/shell/editor.c src/include/apps/editor.h src/include/apps/editor_test.h src/include/core/errors.h src/include/core/keyboard.h src/include/core/log.h src/include/core/memory.h src/include/core/recovery.h src/include/core/string.h src/include/core/timer.h src/include/core/video.h src/include/fs/fs.h src/include/process/process.h src/include/ui/desktop.h src/include/ui/taskbar.h
-	python tools/core_host_runner.py --case host:shell:editor --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:shell:editor --cc "$(HOST_CC)"
 
 test-settings-icons-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_settings_host.c tests/catalog.json src/settings/settings.c src/settings/settings_test.h src/include/ui/settings.h src/include/ui/icons.h src/include/ui/gui.h src/include/ui/display.h src/include/core/video.h src/include/core/log.h src/include/ui/taskbar.h
-	python tools/core_host_runner.py --case host:ui:settings-icons --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:ui:settings-icons --cc "$(HOST_CC)"
 
 test-desktop-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_desktop_host.c tests/catalog.json src/desktop/desktop.c src/include/ui/desktop.h src/include/ui/display.h src/include/ui/gui.h src/include/ui/icons.h src/include/ui/taskbar.h src/include/drivers/vesa.h src/include/drivers/mouse.h src/include/drivers/font.h src/include/core/timer.h src/include/core/video.h src/include/core/errors.h src/include/core/log.h
-	python tools/core_host_runner.py --case host:ui:desktop --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:ui:desktop --cc "$(HOST_CC)"
 
 test-syscall-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_syscall_host.c tests/catalog.json src/core/syscall.c src/include/core/syscall.h src/include/core/app_api.h src/include/core/poll.h src/include/memory/paging.h src/include/process/process.h src/include/process/signal.h src/include/drivers/idt.h src/include/drivers/tss.h
-	python tools/core_host_runner.py --case host:core:syscall --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:syscall --cc "$(HOST_CC)"
 
 test-process-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_process_host.c tests/catalog.json src/process/process.c src/process/credentials.c src/process/resource.c src/include/process/process.h src/include/process/credentials.h src/include/process/resource.h src/include/process/signal.h src/include/memory/paging.h src/include/memory/vma.h src/include/memory/slab.h src/include/core/wait.h src/include/fs/vfs.h
-	python tools/core_host_runner.py --case host:process:runtime --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:process:runtime --cc "$(HOST_CC)"
 test-process-host: src/core/service_supervisor.c src/core/recovery.c src/core/string.c src/include/core/service_supervisor.h src/include/core/recovery.h
 
 test-process-resource-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_process_resource_host.c tests/catalog.json src/process/resource.c src/include/process/resource.h src/include/process/process.h src/include/memory/vma.h src/include/memory/paging.h
-	python tools/core_host_runner.py --case host:process:resources --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:process:resources --cc "$(HOST_CC)"
 
 test-thread-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_thread_host.c tests/catalog.json src/thread/thread.c src/include/process/thread.h src/include/process/process.h src/include/core/wait.h src/include/memory/slab.h
-	python tools/core_host_runner.py --case host:process:threads --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:process:threads --cc "$(HOST_CC)"
 
 test-app-catalog-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_app_catalog_host.c tests/catalog.json src/core/app_catalog.c src/include/core/app_package.h src/include/core/app_package_trust.h
-	python tools/core_host_runner.py --case host:core:app-catalog --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:app-catalog --cc "$(HOST_CC)"
 
 test-input-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_input_host.c tests/catalog.json src/core/input.c
-	python tools/core_host_runner.py --case host:core:input --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:input --cc "$(HOST_CC)"
 
 test-power-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_power_host.c tests/catalog.json src/core/power.c src/core/power_notifier.c
-	python tools/core_host_runner.py --case host:core:power --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:power --cc "$(HOST_CC)"
 test-power-host: src/core/service_supervisor.c src/include/core/service_supervisor.h
 
 test-vfs-path-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_vfs_path_host.c tests/catalog.json src/fs/vfs_path.c src/fs/permissions.c src/process/credentials.c src/include/fs/vfs_internal.h src/include/fs/permissions.h src/include/process/credentials.h
-	python tools/core_host_runner.py --case host:storage:vfs-path --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:storage:vfs-path --cc "$(HOST_CC)"
 
 test-file-index-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_file_index_host.c tests/catalog.json src/fs/file_index.c src/include/fs/file_index.h
-	python tools/core_host_runner.py --case host:storage:file-index --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:storage:file-index --cc "$(HOST_CC)"
 
 test-fs-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_fs_host.c tests/catalog.json src/fs/fs.c src/include/fs/fs.h src/include/fs/permissions.h
-	python tools/core_host_runner.py --case host:storage:fs --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:storage:fs --cc "$(HOST_CC)"
 
 test-permissions-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_permissions_host.c tests/catalog.json src/fs/permissions.c src/process/credentials.c src/include/fs/permissions.h src/include/process/credentials.h
-	python tools/core_host_runner.py --case host:storage:permissions --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:storage:permissions --cc "$(HOST_CC)"
 
 test-storage-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_storage_host.c tests/catalog.json src/fs/storage.c src/include/fs/storage.h
-	python tools/core_host_runner.py --case host:storage:storage --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:storage:storage --cc "$(HOST_CC)"
 
 test-storage-fat32-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_storage_fat32_host.c tests/catalog.json src/fs/storage.c src/include/fs/storage.h
-	python tools/core_host_runner.py --case host:storage:storage-fat32 --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:storage:storage-fat32 --cc "$(HOST_CC)"
 
 test-block-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_block_host.c tests/catalog.json src/fs/block.c src/fs/block_cache.c src/include/fs/block.h src/include/fs/block_cache.h
-	python tools/core_host_runner.py --case host:storage:block --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:storage:block --cc "$(HOST_CC)"
 
 test-fat12-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_fat12_host.c tests/catalog.json src/fs/fat12.c src/include/fs/fat12.h
-	python tools/core_host_runner.py --case host:storage:fat12 --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:storage:fat12 --cc "$(HOST_CC)"
 
 test-fat32-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_fat32_host.c tests/catalog.json src/fs/fat32.c src/include/fs/fat32.h
-	python tools/core_host_runner.py --case host:storage:fat32 --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:storage:fat32 --cc "$(HOST_CC)"
 
 test-vfs-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_vfs_host.c tests/catalog.json src/fs/vfs.c src/fs/permissions.c src/process/credentials.c src/include/fs/vfs.h src/include/fs/permissions.h src/include/process/credentials.h src/include/process/resource.h
-	python tools/core_host_runner.py --case host:storage:vfs --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:storage:vfs --cc "$(HOST_CC)"
 
 test-slab-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_slab_metadata_host.c tests/catalog.json src/memory/slab.c src/include/memory/slab.h
-	python tools/core_host_runner.py --case host:memory:slab-metadata --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:memory:slab-metadata --cc "$(HOST_CC)"
 
 test-timer-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_timer_host.c tests/catalog.json src/drivers/timer.c src/include/core/timer.h
-	python tools/core_host_runner.py --case host:core:timer --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:timer --cc "$(HOST_CC)"
 
 test-udp-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_udp_host.c tests/catalog.json src/core/udp.c src/include/core/udp.h
-	python tools/core_host_runner.py --case host:network:udp --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:network:udp --cc "$(HOST_CC)"
 
 test-arp-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_arp_host.c tests/catalog.json src/core/arp.c src/include/core/arp.h
-	python tools/core_host_runner.py --case host:network:arp --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:network:arp --cc "$(HOST_CC)"
 
 test-icmp-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_icmp_host.c tests/catalog.json src/core/icmp.c src/include/core/icmp.h
-	python tools/core_host_runner.py --case host:network:icmp --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:network:icmp --cc "$(HOST_CC)"
 
 test-dns-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_dns_host.c tests/catalog.json src/core/dns.c src/include/core/dns.h
-	python tools/core_host_runner.py --case host:network:dns --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:network:dns --cc "$(HOST_CC)"
 
 test-dhcp-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_dhcp_host.c tests/catalog.json src/core/dhcp.c src/include/core/dhcp.h
-	python tools/core_host_runner.py --case host:network:dhcp --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:network:dhcp --cc "$(HOST_CC)"
 
 test-ethernet-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_ethernet_host.c tests/catalog.json src/core/ethernet.c src/core/sk_buff.c src/core/net_buffer.c src/memory/slab.c src/include/core/ethernet.h src/include/core/sk_buff.h src/include/core/net_buffer.h
-	python tools/core_host_runner.py --case host:network:ethernet --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:network:ethernet --cc "$(HOST_CC)"
 
 test-tcp-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_tcp_host.c tests/catalog.json src/core/tcp.c src/include/core/tcp.h
-	python tools/core_host_runner.py --case host:network:tcp --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:network:tcp --cc "$(HOST_CC)"
 
 test-tls-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_tls_host.c tests/catalog.json src/core/tls.c src/include/core/tls.h
-	python tools/core_host_runner.py --case host:security:tls --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:security:tls --cc "$(HOST_CC)"
 
 test-tls-client-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_tls_client_host.c tests/unit/host_include/bearssl.h tests/catalog.json src/core/tls_client.c src/include/core/tls_client.h
-	python tools/core_host_runner.py --case host:security:tls-client --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:security:tls-client --cc "$(HOST_CC)"
 
 test-http-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_http_host.c tests/catalog.json src/core/http.c src/include/core/http.h
-	python tools/core_host_runner.py --case host:network:http --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:network:http --cc "$(HOST_CC)"
 
 test-net-socket-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_net_socket_host.c tests/catalog.json src/core/net_socket.c src/core/wait.c src/core/net_buffer.c src/include/core/net_socket.h src/include/core/wait.h
-	python tools/core_host_runner.py --case host:network:socket --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:network:socket --cc "$(HOST_CC)"
 
 test-socket-runtime-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_socket_host.c tests/catalog.json src/core/socket.c src/include/core/socket.h src/include/core/net_socket.h src/include/core/sk_buff.h src/include/core/wait.h src/include/fs/vfs.h src/include/fs/vfs_internal.h
-	python tools/core_host_runner.py --case host:network:socket-runtime --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:network:socket-runtime --cc "$(HOST_CC)"
 
 test-vma-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_vma_host.c tests/catalog.json src/memory/vma.c src/process/resource.c src/include/memory/vma.h src/include/process/resource.h
-	python tools/core_host_runner.py --case host:memory:vma --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:memory:vma --cc "$(HOST_CC)"
 
 test-paging-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_paging_host.c tests/catalog.json src/memory/paging.c src/include/memory/paging.h
-	python tools/core_host_runner.py --case host:memory:paging --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:memory:paging --cc "$(HOST_CC)"
 
 test-memory-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_memory_host.c tests/catalog.json src/memory/memory.c src/include/core/memory.h
-	python tools/core_host_runner.py --case host:memory:memory --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:memory:memory --cc "$(HOST_CC)"
 
 test-process-signal-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_process_signal_host.c tests/catalog.json src/process/signal.c src/include/process/signal.h
-	python tools/core_host_runner.py --case host:process:signals --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:process:signals --cc "$(HOST_CC)"
 
 test-process-ipc-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_process_ipc_host.c tests/catalog.json src/process/ipc.c src/include/process/process.h
-	python tools/core_host_runner.py --case host:process:ipc --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:process:ipc --cc "$(HOST_CC)"
 
 test-workqueue-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_workqueue_host.c tests/catalog.json src/core/workqueue.c src/include/core/workqueue.h
-	python tools/core_host_runner.py --case host:core:workqueue --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:workqueue --cc "$(HOST_CC)"
 
 test-service-supervisor-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_service_supervisor_host.c tests/catalog.json src/core/service_supervisor.c src/include/core/service_supervisor.h
-	python tools/core_host_runner.py --case host:core:service-supervisor --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:service-supervisor --cc "$(HOST_CC)"
 
 test-bearssl-compat-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_bearssl_compat_host.c tests/catalog.json src/core/bearssl_compat.c src/include/types.h
-	python tools/core_host_runner.py --case host:core:bearssl-compat --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:bearssl-compat --cc "$(HOST_CC)"
 
 test-shell-dispatch-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_dispatch_host.c tests/catalog.json src/shell/shell_dispatch.c src/include/apps/shell_dispatch.h
-	python tools/core_host_runner.py --case host:shell:dispatch --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:shell:dispatch --cc "$(HOST_CC)"
 
 test-shell-introspection-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_introspection_host.c tests/catalog.json src/shell/shell_introspection.c src/include/apps/shell_introspection.h src/core/string.c
-	python tools/core_host_runner.py --case host:shell:introspection --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:shell:introspection --cc "$(HOST_CC)"
 
 test-spinlock-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_spinlock_host.c tests/catalog.json src/include/core/spinlock.h
-	python tools/core_host_runner.py --case host:core:spinlock --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:spinlock --cc "$(HOST_CC)"
 
 test-font-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_font_host.c tests/catalog.json src/drivers/font.c src/drivers/font_data.inc src/include/drivers/font.h
-	python tools/core_host_runner.py --case host:drivers:font --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:drivers:font --cc "$(HOST_CC)"
 
 test-rtc-status-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_rtc_host.c tests/catalog.json src/drivers/rtc.c src/include/drivers/rtc.h src/core/string.c
-	python tools/core_host_runner.py --case host:drivers:rtc-status --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:drivers:rtc-status --cc "$(HOST_CC)"
 
 test-wifi-manager-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_wifi_manager_host.c tests/catalog.json src/core/wifi_manager.c src/include/core/wifi_manager.h src/include/drivers/pci.h src/include/drivers/rtl8811cu.h src/include/core/usb_manager.h src/core/string.c
-	python tools/core_host_runner.py --case host:core:wifi-manager --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:wifi-manager --cc "$(HOST_CC)"
 
 test-usb-manager-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_usb_manager_host.c tests/catalog.json src/core/usb_manager.c src/include/core/usb_manager.h src/include/drivers/pci.h src/include/drivers/uhci.h src/include/drivers/ehci.h src/include/drivers/usb_hid.h src/include/drivers/usb_msc.h src/include/core/recovery.h src/core/string.c
-	python tools/core_host_runner.py --case host:core:usb-manager --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:usb-manager --cc "$(HOST_CC)"
 
 test-usb-hid-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_usb_hid_host.c tests/catalog.json src/drivers/usb_hid.c src/include/drivers/usb_hid.h src/include/core/usb_manager.h src/include/drivers/uhci.h src/include/core/input.h src/core/string.c
-	python tools/core_host_runner.py --case host:drivers:usb-hid --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:drivers:usb-hid --cc "$(HOST_CC)"
 
 test-usb-msc-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_usb_msc_host.c tests/catalog.json src/drivers/usb_msc.c src/include/drivers/usb_msc.h src/include/core/usb_manager.h src/include/drivers/uhci.h src/include/fs/block.h src/core/string.c
-	python tools/core_host_runner.py --case host:drivers:usb-msc --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:drivers:usb-msc --cc "$(HOST_CC)"
 
 test-devfs-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_devfs_host.c tests/catalog.json src/fs/devfs.c src/include/fs/devfs.h src/include/fs/vfs.h src/include/fs/vfs_internal.h src/include/fs/block.h src/include/fs/block_cache.h src/include/core/app_api.h src/include/drivers/speaker.h src/core/string.c
-	python tools/core_host_runner.py --case host:storage:devfs --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:storage:devfs --cc "$(HOST_CC)"
 
 test-procfs-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_procfs_host.c tests/catalog.json src/fs/procfs.c src/process/resource.c src/process/credentials.c src/include/fs/procfs.h src/include/fs/vfs.h src/include/core/log.h src/include/core/memory.h src/include/core/timer.h src/include/memory/slab.h src/include/process/process.h src/include/process/credentials.h src/include/process/resource.h src/core/string.c
-	python tools/core_host_runner.py --case host:storage:procfs --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:storage:procfs --cc "$(HOST_CC)"
 
 test-sysfs-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_sysfs_host.c tests/catalog.json src/fs/sysfs.c src/include/fs/sysfs.h src/include/fs/procfs.h src/include/fs/vfs.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h src/include/core/poll.h src/include/core/power.h src/include/core/spinlock.h src/include/core/string.h src/include/drivers/pci.h src/include/core/network_manager.h src/include/fs/block.h src/core/string.c
-	python tools/core_host_runner.py --case host:storage:sysfs --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:storage:sysfs --cc "$(HOST_CC)"
 
 test-wav-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_wav_host.c tests/catalog.json src/fs/wav.c src/include/fs/wav.h src/include/core/memory.h src/include/drivers/ac97.h src/core/string.c
-	python tools/core_host_runner.py --case host:storage:wav --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:storage:wav --cc "$(HOST_CC)"
 
 test-mediaplayer-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_mediaplayer_host.c tests/catalog.json src/shell/mediaplayer.c src/include/apps/mediaplayer.h src/include/fs/wav.h src/include/fs/bmp.h src/include/fs/fs.h src/include/drivers/ac97.h src/include/drivers/vesa.h src/include/core/recovery.h
-	python tools/core_host_runner.py --case host:shell:mediaplayer --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:shell:mediaplayer --cc "$(HOST_CC)"
 
 test-shell-job-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_job_host.c tests/catalog.json src/shell/shell_job.c src/include/apps/shell_job.h src/include/apps/shell.h src/include/apps/shell_command_utils.h src/include/apps/shell_runtime.h src/include/core/errors.h src/include/core/keyboard.h src/include/core/log.h src/include/core/timer.h src/include/core/video.h src/include/core/wait.h src/include/process/process.h
-	python tools/core_host_runner.py --case host:shell:job --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:shell:job --cc "$(HOST_CC)"
 
 test-shell-pipeline-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_pipeline_host.c tests/catalog.json src/shell/shell_pipeline.c src/include/apps/shell_pipeline.h src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/core/app_api.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h src/include/core/string.h src/include/core/video.h src/include/fs/vfs.h src/include/process/thread.h
-	python tools/core_host_runner.py --case host:shell:pipeline --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:shell:pipeline --cc "$(HOST_CC)"
 
 test-bmp-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_bmp_host.c tests/catalog.json src/fs/bmp.c src/include/fs/bmp.h src/include/drivers/vesa.h src/include/core/memory.h src/include/core/video.h src/include/core/log.h src/core/string.c
-	python tools/core_host_runner.py --case host:storage:bmp --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:storage:bmp --cc "$(HOST_CC)"
 
 test-rng-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_rng_host.c tests/catalog.json src/drivers/rng.c src/include/drivers/rng.h src/include/core/errors.h src/include/core/log.h src/core/string.c
-	python tools/core_host_runner.py --case host:drivers:rng --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:drivers:rng --cc "$(HOST_CC)"
 
 test-serial-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_serial_host.c tests/catalog.json src/drivers/serial.c src/include/drivers/serial.h src/include/core/log.h
-	python tools/core_host_runner.py --case host:drivers:serial --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:drivers:serial --cc "$(HOST_CC)"
 
 test-tss-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_tss_host.c tests/catalog.json src/drivers/tss.c src/include/drivers/tss.h src/include/core/log.h src/include/core/memory.h src/core/string.c
-	python tools/core_host_runner.py --case host:drivers:tss --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:drivers:tss --cc "$(HOST_CC)"
 
 test-speaker-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_speaker_host.c tests/catalog.json src/drivers/speaker.c src/include/drivers/speaker.h src/include/core/log.h src/include/core/timer.h
-	python tools/core_host_runner.py --case host:drivers:speaker --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:drivers:speaker --cc "$(HOST_CC)"
 
 test-keyboard-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_keyboard_host.c tests/catalog.json src/drivers/keyboard.c src/include/core/keyboard.h src/include/core/input.h src/include/core/irq_deferred.h src/include/drivers/idt.h src/include/core/log.h src/include/core/errors.h src/include/process/process.h src/core/string.c
-	python tools/core_host_runner.py --case host:drivers:keyboard --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:drivers:keyboard --cc "$(HOST_CC)"
 
 test-protocol-adapter-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_protocol_host.c tests/catalog.json src/core/test_protocol.c src/core/test_protocol_core.c src/core/kernel_tests.h src/include/core/test_protocol.h src/include/drivers/serial.h src/include/core/timer.h
-	python tools/core_host_runner.py --case host:tst2:protocol-adapter --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:tst2:protocol-adapter --cc "$(HOST_CC)"
 
 test-blackbox-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_kernel_tests_blackbox_host.c tests/catalog.json src/core/kernel_tests_blackbox.c src/core/kernel_tests.h src/core/video_test.h src/include/apps/shell.h
-	python tools/core_host_runner.py --case host:tst5:blackbox --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:tst5:blackbox --cc "$(HOST_CC)"
 
 test-coverage-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_coverage_host.c tests/catalog.json src/core/test_coverage.c src/core/test_coverage.h src/include/drivers/serial.h
-	python tools/core_host_runner.py --case host:core:test-coverage --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:test-coverage --cc "$(HOST_CC)"
 
 test-shell-input-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_input_host.c tests/catalog.json src/shell/shell_input.c src/include/apps/shell_input.h src/include/apps/shell.h src/include/core/keyboard.h src/include/core/video.h src/core/string.c
-	python tools/core_host_runner.py --case host:shell:input --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:shell:input --cc "$(HOST_CC)"
 
 test-shell-hosted-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_hosted_host.c tests/catalog.json src/shell/shell_hosted.c src/include/apps/shell.h src/include/apps/shell_runtime.h src/include/core/errors.h src/include/core/log.h src/include/core/video.h src/include/drivers/mouse.h src/include/ui/desktop.h src/include/ui/wm.h
-	python tools/core_host_runner.py --case host:shell:hosted --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:shell:hosted --cc "$(HOST_CC)"
 
 test-shell-command-utils-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_command_utils_host.c tests/catalog.json src/shell/shell_command_utils.c src/include/apps/shell_command_utils.h src/include/core/video.h src/include/core/errors.h src/core/string.c
-	python tools/core_host_runner.py --case host:shell:command-utils --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:shell:command-utils --cc "$(HOST_CC)"
 
 test-display-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_display_host.c tests/catalog.json src/gui/display.c src/include/ui/display.h src/include/drivers/vesa.h src/include/ui/desktop.h src/include/ui/taskbar.h src/include/ui/wm.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/core/string.c
-	python tools/core_host_runner.py --case host:gui:display --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:gui:display --cc "$(HOST_CC)"
 
 test-shell-core-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_host.c tests/catalog.json src/shell/shell.c src/include/apps/shell.h src/include/apps/shell_input.h src/include/apps/shell_job.h src/include/apps/shell_runtime.h src/include/core/app_loader.h src/include/core/errors.h src/include/core/log.h src/include/core/video.h src/include/drivers/mouse.h src/include/apps/guitest.h src/include/ui/appstore.h src/include/ui/desktop.h src/include/ui/filemanager.h src/include/ui/settings.h src/include/ui/taskbar.h src/include/ui/updater.h src/include/ui/wm.h
-	python tools/core_host_runner.py --case host:shell:core --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:shell:core --cc "$(HOST_CC)"
 
 test-shell-commands-core-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_commands_core_host.c tests/catalog.json src/shell/shell_commands_core.c src/shell/shell_command_utils.c src/core/string.c src/include/apps/shell_runtime.h src/include/apps/shell_command_utils.h src/include/apps/shell_pipeline.h src/include/core/app_builtin.h src/include/core/app_loader.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h src/include/core/power.h src/include/core/string.h src/include/core/video.h src/include/drivers/speaker.h src/include/fs/vfs.h src/include/memory/compress.h src/include/process/process.h src/include/process/thread.h
-	python tools/core_host_runner.py --case host:shell:commands-core --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:shell:commands-core --cc "$(HOST_CC)"
 
 test-shell-diagnostics-helpers-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_diagnostics_helpers_host.c tests/catalog.json src/shell/shell_diagnostics_helpers.c src/include/apps/shell_diagnostics_helpers.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h src/include/core/recovery.h src/include/core/tls.h src/include/core/update.h src/include/core/update_remote.h src/include/core/device_manager.h src/include/core/usb_manager.h src/include/drivers/acpi.h src/include/drivers/mouse.h src/include/fs/fs.h src/include/fs/vfs.h src/include/memory/paging.h src/include/process/process.h
-	python tools/core_host_runner.py --case host:shell:diagnostics-helpers --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:shell:diagnostics-helpers --cc "$(HOST_CC)"
 
 test-shell-commands-storage-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_commands_storage_host.c tests/catalog.json src/shell/shell_commands_storage.c src/core/string.c src/include/apps/shell_job.h src/include/fs/file_index.h
-	python tools/core_host_runner.py --case host:shell:commands-storage --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:shell:commands-storage --cc "$(HOST_CC)"
 
 test-shell-network-checks-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_network_checks_host.c tests/catalog.json src/shell/shell_commands_network.c src/shell/shell_command_utils.c src/core/string.c src/include/apps/shell_job.h src/include/apps/shell_runtime.h src/include/apps/shell_command_utils.h src/include/core/arp.h src/include/core/dhcp.h src/include/core/dns.h src/include/core/errors.h src/include/core/ethernet.h src/include/core/http.h src/include/core/icmp.h src/include/core/ipv4.h src/include/core/log.h src/include/core/net_buffer.h src/include/core/net_socket.h src/include/core/network_manager.h src/include/core/poll.h src/include/core/recovery.h src/include/core/route.h src/include/core/sk_buff.h src/include/core/socket.h src/include/core/string.h src/include/core/tcp.h src/include/core/timer.h src/include/core/udp.h src/include/core/video.h src/include/core/wait.h src/include/drivers/idt.h src/include/fs/vfs.h src/include/process/thread.h
-	python tools/core_host_runner.py --case host:shell:network-checks --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:shell:network-checks --cc "$(HOST_CC)"
 
 test-shell-commands-packages-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_commands_packages_host.c tests/catalog.json src/shell/shell_commands_packages.c src/shell/shell_command_utils.c src/core/string.c src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_job.h src/include/apps/shell_runtime.h src/include/apps/shell_command_utils.h src/include/core/app_catalog.h src/include/core/app_loader.h src/include/core/app_package.h src/include/core/app_remote.h src/include/core/errors.h src/include/core/keyboard.h src/include/core/log.h src/include/core/memory.h src/include/core/recovery.h src/include/core/string.h src/include/core/update.h src/include/core/update_remote.h src/include/core/update_remote_runtime.h src/include/core/update_remote_system.h src/include/core/update_runtime.h src/include/core/video.h src/include/core/update_system.h src/include/core/update_system_slots.h src/include/fs/fs.h src/include/process/process.h
 
 test-shell-commands-packages-host: src/include/core/app_package_trust.h
-	python tools/core_host_runner.py --case host:shell:commands-packages --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:shell:commands-packages --cc "$(HOST_CC)"
 
 test-shell-commands-apps-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_commands_apps_host.c tests/catalog.json src/shell/shell_commands_apps.c src/core/string.c src/include/apps/editor.h src/include/apps/guitest.h src/include/apps/mediaplayer.h src/include/apps/shell_checks.h src/include/apps/shell_runtime.h src/include/core/app_api.h src/include/core/app_builtin.h src/include/core/app_loader.h src/include/core/errors.h src/include/core/log.h src/include/core/recovery.h src/include/core/string.h src/include/core/video.h src/include/drivers/vesa.h src/include/fs/fs.h src/include/ui/desktop.h src/include/ui/display.h src/include/ui/filemanager.h src/include/ui/icons.h src/include/ui/settings.h src/include/ui/taskbar.h src/include/ui/updater.h src/include/ui/wm.h
 
 test-shell-commands-apps-host: src/include/core/app_package.h src/include/core/app_package_trust.h
-	python tools/core_host_runner.py --case host:shell:commands-apps --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:shell:commands-apps --cc "$(HOST_CC)"
 
 test-shell-checks-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_checks_host.c tests/catalog.json src/shell/shell_checks.c src/include/apps/shell_checks.h src/include/apps/shell_runtime.h src/include/apps/shell_job.h src/include/apps/shell_command_utils.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/include/core/video.h src/include/core/app_loader.h src/include/core/app_api.h src/include/core/recovery.h src/include/core/device_manager.h src/include/drivers/acpi.h src/include/fs/block.h src/include/fs/storage.h src/include/fs/fs.h src/include/memory/paging.h src/include/memory/vma.h src/include/process/process.h
-	python tools/core_host_runner.py --case host:shell:checks --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:shell:checks --cc "$(HOST_CC)"
 test-shell-checks-host: src/core/service_supervisor.c src/include/core/service_supervisor.h
 
 test-updater-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_updater_host.c tests/catalog.json src/updater/updater.c src/core/string.c src/include/ui/updater.h src/include/ui/updater_test.h src/include/core/errors.h src/include/core/keyboard.h src/include/core/log.h src/include/core/recovery.h src/include/core/string.h src/include/core/update.h src/include/core/update_remote.h src/include/core/update_remote_runtime.h src/include/core/update_remote_system.h src/include/core/update_system_slots.h src/include/core/update_remote_config.h src/include/core/update_runtime.h src/include/core/update_system.h src/include/core/video.h src/include/core/wait.h src/include/drivers/vesa.h src/include/fs/fs.h src/include/process/process.h src/include/ui/desktop.h src/include/ui/gui.h src/include/ui/taskbar.h src/include/ui/wm.h
-	python tools/core_host_runner.py --case host:ui:updater --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:ui:updater --cc "$(HOST_CC)"
 
 test-filemanager-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_filemanager_host.c tests/catalog.json src/filemanager/filemanager.c src/core/string.c src/include/ui/filemanager.h src/include/ui/filemanager_test.h src/include/apps/shell.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h src/include/core/string.h src/include/core/video.h src/include/core/recovery.h src/include/core/keyboard.h src/include/drivers/font.h src/include/drivers/mouse.h src/include/drivers/vesa.h src/include/fs/fs.h src/include/fs/storage.h src/include/fs/file_index.h src/include/ui/taskbar.h src/include/ui/desktop.h src/include/ui/wm.h src/include/ui/icons.h src/include/ui/gui.h src/include/ui/display.h
-	python tools/core_host_runner.py --case host:ui:filemanager --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:ui:filemanager --cc "$(HOST_CC)"
 
 test-taskmanager-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_taskmanager_host.c tests/catalog.json src/shell/taskmanager.c src/shell/shell_introspection.c src/core/string.c src/include/apps/taskmanager.h src/include/apps/taskmanager_test.h src/include/apps/shell.h src/include/apps/shell_command_utils.h src/include/apps/shell_introspection.h src/include/apps/shell_runtime.h src/include/core/errors.h src/include/core/keyboard.h src/include/core/log.h src/include/core/memory.h src/include/core/panic.h src/include/core/power.h src/include/core/recovery.h src/include/core/string.h src/include/core/timer.h src/include/core/video.h src/include/drivers/ata.h src/include/drivers/font.h src/include/drivers/vesa.h src/include/fs/vfs.h src/include/process/process.h src/include/process/signal.h src/include/process/thread.h src/include/ui/desktop.h src/include/ui/display.h src/include/ui/filemanager.h src/include/ui/gui.h src/include/ui/settings.h src/include/ui/taskbar.h src/include/ui/wm.h
-	python tools/core_host_runner.py --case host:shell:taskmanager --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:shell:taskmanager --cc "$(HOST_CC)"
 
 test-shell-diagnostics-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_diagnostics_host.c tests/catalog.json src/shell/shell_commands_diagnostics.c src/shell/shell_diagnostics_helpers.c src/shell/shell_command_utils.c src/shell/shell_introspection.c src/core/string.c src/include/apps/shell_diagnostics_helpers.h src/include/apps/shell_command_utils.h src/include/apps/shell_introspection.h src/include/apps/shell_runtime.h src/include/core/errors.h src/include/core/keyboard.h src/include/core/log.h src/include/core/memory.h src/include/core/string.h src/include/core/video.h src/include/core/device_manager.h src/include/core/input.h src/include/core/network_manager.h src/include/core/power.h src/include/core/recovery.h src/include/core/usb_manager.h src/include/core/wifi_manager.h src/include/drivers/acpi.h src/include/drivers/mouse.h src/include/drivers/pci.h src/include/drivers/usb_hid.h src/include/drivers/usb_msc.h src/include/drivers/vesa.h src/include/fs/devfs.h src/include/fs/file_index.h src/include/fs/procfs.h src/include/fs/vfs.h src/include/memory/paging.h src/include/memory/slab.h src/include/process/process.h
-	python tools/core_host_runner.py --case host:shell:diagnostics --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:shell:diagnostics --cc "$(HOST_CC)"
 test-shell-diagnostics-host: src/core/service_supervisor.c src/include/core/service_supervisor.h
 
 test-shell-commands-wifi-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_commands_wifi_host.c tests/catalog.json src/shell/shell_commands_wifi.c src/shell/shell_command_utils.c src/core/string.c src/include/apps/shell_command_utils.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/include/core/video.h src/include/core/wifi_manager.h src/include/core/usb_manager.h
-	python tools/core_host_runner.py --case host:shell:wifi --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:shell:wifi --cc "$(HOST_CC)"
 
 test-usb-transport-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_usb_transport_host.c tests/catalog.json src/core/usb_transport.c src/include/core/usb_transport.h src/include/core/usb_manager.h src/include/drivers/ehci.h src/include/drivers/uhci.h src/include/core/errors.h src/include/core/log.h
-	python tools/core_host_runner.py --case host:core:usb-transport --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:core:usb-transport --cc "$(HOST_CC)"
 
 test-gui-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_gui_host.c tests/catalog.json src/gui/gui.c src/include/ui/gui.h src/include/ui/display.h src/include/drivers/vesa.h src/include/drivers/font.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/core/string.c
-	python tools/core_host_runner.py --case host:gui:widgets --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:gui:widgets --cc "$(HOST_CC)"
 
 test-shell-commands-vfs-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_commands_vfs_host.c tests/catalog.json src/shell/shell_commands_vfs.c src/shell/shell_command_utils.c src/include/apps/shell_command_utils.h src/include/apps/shell_pipeline.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/include/core/video.h src/core/string.c
-	python tools/core_host_runner.py --case host:shell:commands-vfs --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:shell:commands-vfs --cc "$(HOST_CC)"
 
 test-recovery-runtime-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_recovery_runtime_host.c tests/catalog.json src/boot/recovery_runtime.c src/include/core/log.h src/include/core/string.h
-	python tools/core_host_runner.py --case host:boot:recovery-runtime --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:boot:recovery-runtime --cc "$(HOST_CC)"
 
 test-recovery-menu-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_recovery_menu_host.c tests/catalog.json src/boot/recovery_menu.c src/boot/recovery_menu.h
-	python tools/core_host_runner.py --case host:boot:recovery-menu --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:boot:recovery-menu --cc "$(HOST_CC)"
 
 test-recovery-loader-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_recovery_loader_host.c tests/catalog.json tests/unit/host_include/recovery_layout.h src/boot/recovery_loader.c src/boot/recovery_chain.h src/boot/recovery_menu.h src/include/core/crypto.h src/include/core/update_system.h src/include/core/update_system_slots.h src/include/core/update_trust.h
-	python tools/core_host_runner.py --case host:boot:recovery-loader --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:boot:recovery-loader --cc "$(HOST_CC)"
 
 test-panic-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_panic_host.c tests/catalog.json src/kernel/panic.c src/include/core/panic.h src/include/core/test_protocol.h src/include/core/video.h
-	python tools/core_host_runner.py --case host:kernel:panic --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:kernel:panic --cc "$(HOST_CC)"
 
 test-kernel-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_kernel_host.c tests/catalog.json src/kernel/kernel.c src/core/kernel_host_test.h
-	python tools/core_host_runner.py --case host:kernel:runtime --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:kernel:runtime --cc "$(HOST_CC)"
 test-kernel-host: src/core/service_supervisor.c src/core/recovery.c src/include/core/service_supervisor.h
 
 test-pci-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_pci_host.c tests/catalog.json src/drivers/pci.c src/include/drivers/pci.h src/include/core/errors.h src/include/core/log.h src/include/process/process.h
-	python tools/core_host_runner.py --case host:drivers:pci --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:drivers:pci --cc "$(HOST_CC)"
 
 test-ata-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_ata_host.c tests/catalog.json src/drivers/ata.c src/include/drivers/ata.h src/include/drivers/idt.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h
-	python tools/core_host_runner.py --case host:drivers:ata --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:drivers:ata --cc "$(HOST_CC)"
 
 test-idt-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_idt_host.c tests/catalog.json src/drivers/idt.c src/include/drivers/idt.h src/include/drivers/tss.h src/include/process/process.h src/include/process/signal.h src/include/core/errors.h src/include/core/log.h src/include/core/panic.h src/include/core/test_protocol.h src/include/core/video.h
-	python tools/core_host_runner.py --case host:drivers:idt --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:drivers:idt --cc "$(HOST_CC)"
 
 test-icons-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_icons_host.c tests/catalog.json src/icons/icons.c src/include/ui/icons.h src/include/fs/bmp.h src/include/fs/fs.h src/include/drivers/vesa.h src/include/core/memory.h src/include/core/errors.h src/include/core/log.h
-	python tools/core_host_runner.py --case host:ui:icons --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:ui:icons --cc "$(HOST_CC)"
 
 test-vesa-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_vesa_host.c tests/catalog.json src/drivers/vesa.c src/include/drivers/vesa.h src/include/drivers/font.h src/include/core/memory.h src/include/core/log.h src/include/core/timer.h src/include/core/string.h
-	python tools/core_host_runner.py --case host:drivers:vesa --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:drivers:vesa --cc "$(HOST_CC)"
 
 test-video-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_video_host.c tests/catalog.json src/drivers/video.c src/include/core/video.h src/core/video_test.h src/include/drivers/vesa.h src/include/drivers/font.h src/include/drivers/mouse.h src/include/core/spinlock.h src/include/core/errors.h src/include/core/log.h
-	python tools/core_host_runner.py --case host:drivers:video --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:drivers:video --cc "$(HOST_CC)"
 
 test-acpi-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_acpi_host.c tests/catalog.json src/drivers/acpi.c src/include/drivers/acpi.h src/include/core/memory.h src/include/core/string.h src/include/core/errors.h src/include/core/log.h src/include/core/timer.h
-	python tools/core_host_runner.py --case host:drivers:acpi --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:drivers:acpi --cc "$(HOST_CC)"
 
 test-uhci-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_uhci_host.c tests/catalog.json src/drivers/uhci.c src/include/drivers/uhci.h src/include/drivers/pci.h src/include/core/usb_manager.h src/include/core/memory.h src/include/core/string.h src/include/core/errors.h src/include/core/log.h src/include/core/timer.h src/include/core/irq_deferred.h src/include/core/spinlock.h src/include/drivers/idt.h
-	python tools/core_host_runner.py --case host:drivers:uhci --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:drivers:uhci --cc "$(HOST_CC)"
 
 test-ehci-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_ehci_host.c tests/catalog.json src/drivers/ehci.c src/include/drivers/ehci.h src/include/drivers/pci.h src/include/core/usb_manager.h src/include/core/memory.h src/include/core/string.h src/include/core/errors.h src/include/core/log.h src/include/core/timer.h src/include/core/spinlock.h src/include/drivers/idt.h src/include/memory/paging.h
-	python tools/core_host_runner.py --case host:drivers:ehci --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:drivers:ehci --cc "$(HOST_CC)"
 
 test-rtl8139-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_rtl8139_host.c tests/catalog.json src/drivers/rtl8139.c src/include/drivers/rtl8139.h src/include/core/ethernet.h src/include/core/irq_deferred.h src/include/core/memory.h src/include/core/string.h src/include/core/errors.h src/include/core/log.h src/include/core/timer.h src/include/drivers/idt.h src/include/drivers/pci.h
-	python tools/core_host_runner.py --case host:drivers:rtl8139 --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:drivers:rtl8139 --cc "$(HOST_CC)"
 
 test-mouse-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_mouse_host.c tests/catalog.json src/drivers/mouse.c src/include/drivers/mouse.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/log.h src/include/core/errors.h src/include/drivers/idt.h src/include/drivers/vesa.h
-	python tools/core_host_runner.py --case host:drivers:mouse --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:drivers:mouse --cc "$(HOST_CC)"
 
 test-e1000-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_e1000_host.c tests/catalog.json src/drivers/e1000.c src/include/drivers/e1000.h src/include/core/ethernet.h src/include/core/errors.h src/include/core/irq_deferred.h src/include/core/memory.h src/include/core/string.h src/include/core/timer.h src/include/drivers/idt.h src/include/drivers/pci.h src/include/memory/paging.h
-	python tools/core_host_runner.py --case host:drivers:e1000 --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:drivers:e1000 --cc "$(HOST_CC)"
 
 test-ac97-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_ac97_host.c tests/catalog.json src/drivers/ac97.c src/include/drivers/ac97.h src/include/drivers/idt.h src/include/drivers/pci.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h
-	python tools/core_host_runner.py --case host:drivers:ac97 --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:drivers:ac97 --cc "$(HOST_CC)"
 
 test-rtl8811cu-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_rtl8811cu_host.c tests/catalog.json src/drivers/rtl8811cu.c src/include/drivers/rtl8811cu.h src/include/core/ethernet.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/include/core/usb_manager.h src/include/fs/fs.h
-	python tools/core_host_runner.py --case host:drivers:rtl8811cu --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:drivers:rtl8811cu --cc "$(HOST_CC)"
 
 test-tst2-host: tools/tst2_host_runner.py tests/unit/test_protocol_core.c tests/unit/test_qemu_test_runner.py src/core/test_protocol_core.c src/core/test_protocol_core.h
-	python tools/tst2_host_runner.py --cc "$(HOST_CC)"
+	$(PYTHON) tools/tst2_host_runner.py --cc "$(HOST_CC)"
 
 test-tst3-host: tools/tst3_host_runner.py tests/unit/test_string_compress.c tests/unit/test_packager.py tests/unit/test_updater.py src/core/string.c src/memory/compress.c
-	python tools/tst3_host_runner.py --mode strict --cc "$(HOST_CC)"
+	$(PYTHON) tools/tst3_host_runner.py --mode strict --cc "$(HOST_CC)"
 
 test-tst3-sanitize: tools/tst3_host_runner.py tests/unit/test_string_compress.c src/core/string.c src/memory/compress.c
-	python tools/tst3_host_runner.py --mode sanitize --sanitize-cc "$(HOST_SANITIZE_CC)"
+	$(PYTHON) tools/tst3_host_runner.py --mode sanitize --sanitize-cc "$(HOST_SANITIZE_CC)"
 
 q3check-test:
-	python tools/q3check.py --self-test
+	$(PYTHON) tools/q3check.py --self-test
 
 package-test:
-	python tools/packager.py selftest
+	$(PYTHON) tools/packager.py selftest
 
 update-test:
-	python tools/updater.py selftest
+	$(PYTHON) tools/updater.py selftest
 
 package-demo: $(OS_IMG)
 	@test -n "$(PACKAGE_PRIVATE_KEY)" || { echo "PACKAGE_PRIVATE_KEY nao configurada em Makefile.local" >&2; exit 2; }
-	python tools/packager.py demo --private "$(PACKAGE_PRIVATE_KEY)" --output $(BUILD_DIR)/DEMO.zephyrosapp --image $(OS_IMG)
+	$(PYTHON) tools/packager.py demo --private "$(PACKAGE_PRIVATE_KEY)" --output $(BUILD_DIR)/DEMO.zephyrosapp --image $(OS_IMG)
 
 store-test:
-	python tools/packager.py selftest
-	python tools/packager.py audit-store --fixtures-dir $(STORE_FIXTURES_DIR)
+	$(PYTHON) tools/packager.py selftest
+	$(PYTHON) tools/packager.py audit-store --fixtures-dir $(STORE_FIXTURES_DIR)
 
 store-demo: $(OS_IMG) $(STORE_FIXTURES)
-	python tools/packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)/VALID.ZPK --image $(OS_IMG) --path VALID.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
-	python tools/packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)/BADCRC.ZPK --image $(OS_IMG) --path BADCRC.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
-	python tools/packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)/BADAPI.ZPK --image $(OS_IMG) --path BADAPI.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
-	python tools/packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)/BADALIAS.ZPK --image $(OS_IMG) --path BADALIAS.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
-	python tools/packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)/NEEDSDEP.ZPK --image $(OS_IMG) --path NEEDSDEP.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
-	python tools/packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)/SAMEVER.ZPK --image $(OS_IMG) --path SAMEVER.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
-	python tools/packager.py audit-store --fixtures-dir $(STORE_FIXTURES_DIR) --image $(OS_IMG)
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)/VALID.ZPK --image $(OS_IMG) --path VALID.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)/BADCRC.ZPK --image $(OS_IMG) --path BADCRC.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)/BADAPI.ZPK --image $(OS_IMG) --path BADAPI.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)/BADALIAS.ZPK --image $(OS_IMG) --path BADALIAS.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)/NEEDSDEP.ZPK --image $(OS_IMG) --path NEEDSDEP.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)/SAMEVER.ZPK --image $(OS_IMG) --path SAMEVER.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py audit-store --fixtures-dir $(STORE_FIXTURES_DIR) --image $(OS_IMG)
 
 store-as2-test:
-	python tools/packager.py selftest
-	python tools/packager.py audit-store-as2 --fixtures-dir $(STORE_AS2_FIXTURES_DIR)
+	$(PYTHON) tools/packager.py selftest
+	$(PYTHON) tools/packager.py audit-store-as2 --fixtures-dir $(STORE_AS2_FIXTURES_DIR)
 
 store-as2-demo: $(OS_IMG) $(STORE_AS2_FIXTURES)
-	python tools/packager.py inject-file-fat32 --file $(STORE_AS2_FIXTURES_DIR)/WAITAPP.ZPK --image $(OS_IMG) --path WAITAPP.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
-	python tools/packager.py inject-file-fat32 --file $(STORE_AS2_FIXTURES_DIR)/BASE.ZPK --image $(OS_IMG) --path BASE.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
-	python tools/packager.py inject-file-fat32 --file $(STORE_AS2_FIXTURES_DIR)/DEPEND.ZPK --image $(OS_IMG) --path DEPEND.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
-	python tools/packager.py audit-store-as2 --fixtures-dir $(STORE_AS2_FIXTURES_DIR) --image $(OS_IMG)
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(STORE_AS2_FIXTURES_DIR)/WAITAPP.ZPK --image $(OS_IMG) --path WAITAPP.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(STORE_AS2_FIXTURES_DIR)/BASE.ZPK --image $(OS_IMG) --path BASE.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(STORE_AS2_FIXTURES_DIR)/DEPEND.ZPK --image $(OS_IMG) --path DEPEND.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py audit-store-as2 --fixtures-dir $(STORE_AS2_FIXTURES_DIR) --image $(OS_IMG)
 
 store-as4-test:
-	python tools/packager.py selftest
-	python tools/packager.py audit-store-as4 --fixtures-dir $(STORE_AS4_SEED_FIXTURES_DIR)
-	python tools/packager.py audit-store-as4 --fixtures-dir $(STORE_AS4_UPDATE_FIXTURES_DIR)
+	$(PYTHON) tools/packager.py selftest
+	$(PYTHON) tools/packager.py audit-store-as4 --fixtures-dir $(STORE_AS4_SEED_FIXTURES_DIR)
+	$(PYTHON) tools/packager.py audit-store-as4 --fixtures-dir $(STORE_AS4_UPDATE_FIXTURES_DIR)
 
 store-as4-seed-demo: $(OS_IMG) $(STORE_AS4_SEED_FIXTURES)
-	python tools/packager.py inject-file-fat32 --file $(STORE_AS4_SEED_FIXTURES_DIR)/UPTARGET.ZPK --image $(OS_IMG) --path UPTARGET.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
-	python tools/packager.py inject-file-fat32 --file $(STORE_AS4_SEED_FIXTURES_DIR)/UPDEPA.ZPK --image $(OS_IMG) --path UPDEPA.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
-	python tools/packager.py inject-file-fat32 --file $(STORE_AS4_SEED_FIXTURES_DIR)/UPDEPB.ZPK --image $(OS_IMG) --path UPDEPB.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
-	python tools/packager.py inject-file-fat32 --file $(STORE_AS4_SEED_FIXTURES_DIR)/BROKEN.ZPK --image $(OS_IMG) --path BROKEN.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
-	python tools/packager.py inject-file-fat32 --file $(STORE_AS4_SEED_FIXTURES_DIR)/CYCLEA.ZPK --image $(OS_IMG) --path CYCLEA.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
-	python tools/packager.py inject-file-fat32 --file $(STORE_AS4_SEED_FIXTURES_DIR)/CYCLEB.ZPK --image $(OS_IMG) --path CYCLEB.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
-	python tools/packager.py audit-store-as4 --fixtures-dir $(STORE_AS4_SEED_FIXTURES_DIR) --image $(OS_IMG)
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(STORE_AS4_SEED_FIXTURES_DIR)/UPTARGET.ZPK --image $(OS_IMG) --path UPTARGET.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(STORE_AS4_SEED_FIXTURES_DIR)/UPDEPA.ZPK --image $(OS_IMG) --path UPDEPA.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(STORE_AS4_SEED_FIXTURES_DIR)/UPDEPB.ZPK --image $(OS_IMG) --path UPDEPB.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(STORE_AS4_SEED_FIXTURES_DIR)/BROKEN.ZPK --image $(OS_IMG) --path BROKEN.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(STORE_AS4_SEED_FIXTURES_DIR)/CYCLEA.ZPK --image $(OS_IMG) --path CYCLEA.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(STORE_AS4_SEED_FIXTURES_DIR)/CYCLEB.ZPK --image $(OS_IMG) --path CYCLEB.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py audit-store-as4 --fixtures-dir $(STORE_AS4_SEED_FIXTURES_DIR) --image $(OS_IMG)
 
 store-as4-update-demo: $(OS_IMG) $(STORE_AS4_UPDATE_FIXTURES)
-	python tools/packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)/UPTARGET.ZPK --image $(OS_IMG) --path UPTARGET.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
-	python tools/packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)/UPDEPA.ZPK --image $(OS_IMG) --path UPDEPA.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
-	python tools/packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)/UPDEPB.ZPK --image $(OS_IMG) --path UPDEPB.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
-	python tools/packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)/BROKEN.ZPK --image $(OS_IMG) --path BROKEN.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
-	python tools/packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)/CYCLEA.ZPK --image $(OS_IMG) --path CYCLEA.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
-	python tools/packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)/CYCLEB.ZPK --image $(OS_IMG) --path CYCLEB.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
-	python tools/packager.py audit-store-as4 --fixtures-dir $(STORE_AS4_UPDATE_FIXTURES_DIR) --image $(OS_IMG)
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)/UPTARGET.ZPK --image $(OS_IMG) --path UPTARGET.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)/UPDEPA.ZPK --image $(OS_IMG) --path UPDEPA.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)/UPDEPB.ZPK --image $(OS_IMG) --path UPDEPB.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)/BROKEN.ZPK --image $(OS_IMG) --path BROKEN.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)/CYCLEA.ZPK --image $(OS_IMG) --path CYCLEA.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)/CYCLEB.ZPK --image $(OS_IMG) --path CYCLEB.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	$(PYTHON) tools/packager.py audit-store-as4 --fixtures-dir $(STORE_AS4_UPDATE_FIXTURES_DIR) --image $(OS_IMG)
 
 store-as5-test:
-	python tools/packager.py audit-store-as5 --fixtures-dir $(STORE_AS5_FIXTURES_DIR) --public $(STORE_AS5_PUBLIC) --header src/include/core/app_remote_trust.h
+	$(PYTHON) tools/packager.py audit-store-as5 --fixtures-dir $(STORE_AS5_FIXTURES_DIR) --public $(STORE_AS5_PUBLIC) --header src/include/core/app_remote_trust.h
 
 store-as5-seed-demo: store-as5-test
-	python tools/packager.py serve-store-as5 --fixtures-dir $(STORE_AS5_FIXTURES_DIR) --profile seed --port 8000
+	$(PYTHON) tools/packager.py serve-store-as5 --fixtures-dir $(STORE_AS5_FIXTURES_DIR) --profile seed --port 8000
 
 store-as5-serve: store-as5-test
-	python tools/packager.py serve-store-as5 --fixtures-dir $(STORE_AS5_FIXTURES_DIR) --profile update --port 8000
+	$(PYTHON) tools/packager.py serve-store-as5 --fixtures-dir $(STORE_AS5_FIXTURES_DIR) --profile update --port 8000
 
 clean:
 	rm -rf $(BUILD_DIR)
@@ -2272,7 +2273,7 @@ clean:
 .PHONY: test-wm-host test-guitest-host test-recovery-menu-host test-recovery-loader-host
 
 test-wm-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_wm_host.c tests/catalog.json src/wm/wm.c src/include/ui/wm.h src/include/ui/desktop.h src/include/ui/display.h src/include/ui/gui.h src/include/ui/icons.h src/include/ui/taskbar.h src/include/core/errors.h src/include/core/log.h src/include/core/recovery.h src/include/core/timer.h src/include/core/video.h src/include/drivers/mouse.h src/include/drivers/vesa.h
-	python tools/core_host_runner.py --case host:ui:wm --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:ui:wm --cc "$(HOST_CC)"
 
 test-guitest-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_guitest_host.c tests/catalog.json src/shell/guitest_app.c src/include/apps/guitest.h src/include/apps/shell.h src/include/core/errors.h src/include/core/log.h src/include/core/recovery.h src/include/core/video.h src/include/drivers/mouse.h src/include/drivers/speaker.h src/include/drivers/vesa.h src/include/ui/desktop.h src/include/ui/display.h src/include/ui/gui.h src/include/ui/taskbar.h
-	python tools/core_host_runner.py --case host:ui:guitest --cc "$(HOST_CC)"
+	$(PYTHON) tools/core_host_runner.py --case host:ui:guitest --cc "$(HOST_CC)"
