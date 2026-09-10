@@ -1,0 +1,2278 @@
+# Makefile para ZephyrOS
+
+SHELL := /bin/sh
+
+# Ferramentas
+# Os caminhos locais podem ficar em Makefile.local, que nao e versionado.
+# Sem esse arquivo, as ferramentas sao procuradas no PATH do sistema.
+-include Makefile.local
+
+BUILD_DIR ?= build
+MAKE_TOOL ?= make
+
+NASM ?= nasm
+GCC ?= i686-elf-gcc
+LD ?= i686-elf-ld
+NM ?= i686-elf-nm
+HOST_CC ?= cc
+HOST_SANITIZE_CC ?= clang
+QEMU ?= qemu-system-i386
+QEMU_CPU_ARGS ?= -cpu max
+QEMU_NET_ARGS ?= -nic user,model=e1000
+QEMU_TEST_CPU ?= max
+QEMU_TEST_NETWORK ?= user,model=e1000
+TST4_QEMU_BOOT_TIMEOUT ?= 60
+TST4_QEMU_CASE_TIMEOUT ?= 90
+TST4_QEMU_HEARTBEAT_TIMEOUT ?= 60
+TST5_QEMU_BOOT_TIMEOUT ?= 60
+TST5_QEMU_CASE_TIMEOUT ?= 120
+TST5_QEMU_HEARTBEAT_TIMEOUT ?= 20
+TST6_QEMU_BOOT_TIMEOUT ?= 60
+TST6_QEMU_CASE_TIMEOUT ?= 120
+TST6_QEMU_HEARTBEAT_TIMEOUT ?= 60
+TST6_QEMU_STRESS_ITERATIONS ?= 8
+TST6_QEMU_STRESS_DURATION ?= 300
+TST6_QEMU_NETWORK ?= user,model=e1000,restrict=on
+TST7_COMMAND_TIMEOUT ?= 300
+TST7_QUICK_TIMEOUT ?= 1800
+TST7_FULL_TIMEOUT ?= 7200
+QEMU_PARALLEL_WORKERS ?= 4
+QEMU_PARALLEL_ARGS ?= --profile smoke
+QEMU_PARALLEL_SOAK_ARGS ?=
+SEC6_QEMU_WORKERS ?= 4
+SEC6_QEMU_SEED ?= 606
+COVERAGE_BUILD_DIR ?= build-coverage
+ASSEMBLY_RUN_ID ?= tst7-assembly-1
+ASSEMBLY_TRACE_RUN_ID ?= tst7-assembly-trace-1
+ASSEMBLY_BOOT_TRACE_RUN_ID ?= tst7-assembly-boot-5
+ASSEMBLY_RECOVERY_TRACE_RUN_ID ?= tst7-recovery-1
+EXECUTION_COVERAGE_RUN_ID ?= tst7-execution-coverage-1
+PAGING_COVERAGE_RUN_ID ?= tst7-paging-coverage-1
+COVERAGE_CFLAGS ?= -g -DZEPHYROS_TEST_COVERAGE -finstrument-functions -I src
+QEMU_BOOT_DISK_ARGS ?= -drive file=$(OS_IMG),format=raw,if=none,id=bootdisk -device ide-hd,drive=bootdisk,bus=ide.0,unit=0,bootindex=1
+QEMU_STAGE2_LBA_DISK_ARGS ?= -drive file=$(OS_IMG),format=raw,if=none,id=stage2lbadisk -device ide-hd,drive=stage2lbadisk,bootindex=1
+QEMU_STAGE2_CHS_DISK_ARGS ?= -drive file=$(STAGE2_CHS_IMG),format=raw,if=floppy,index=0 -drive file=$(OS_IMG),format=raw,if=none,id=stage2chssystem -device ide-hd,drive=stage2chssystem,cyls=80,heads=2,secs=18 -boot order=a
+QEMU_USB_ARGS ?= -device piix3-usb-uhci,id=usb
+QEMU_USB_DEVICE_ARGS ?= -device usb-kbd,bus=usb.0
+QEMU_USB_HID_DEVICE_ARGS ?= -device usb-kbd,bus=usb.0,port=1 -device usb-mouse,bus=usb.0,port=2
+QEMU_USB_MSC_ARGS ?= -drive if=none,id=usb-stick,format=raw,file=$(STORAGE_VALID_IMG),readonly=on -device usb-storage,bus=usb.0,drive=usb-stick
+QEMU_USB_WIFI_EHCI_ARGS ?= -machine q35 -device ich9-usb-ehci1,id=ehci
+QEMU_USB_WIFI_ARGS ?= -device usb-host,vendorid=0x0BDA,productid=0xC811,bus=ehci.0
+
+# Flags
+CFLAGS_EXTRA ?=
+CFLAGS = -m32 -O2 -fno-strict-aliasing -ffreestanding -nostdlib -nostdinc -fno-builtin -fno-stack-protector -nostartfiles -nodefaultlibs -Wall -Wextra -I src/include -I src/include/core -I src/include/drivers -I src/include/fs -I src/include/memory -I src/include/process -I src/include/apps -I src/include/ui $(CFLAGS_EXTRA)
+LDFLAGS = -m elf_i386 -T src/linker.ld
+NASMFLAGS = -f bin
+NASMFLAGS_EXTRA ?=
+
+# Arquivos - Boot
+BOOT_SRC = src/boot/boot.asm
+BOOT_BIN = $(BUILD_DIR)/boot.bin
+STAGE2_SRC = src/boot/stage2.asm
+STAGE2_BIN = $(BUILD_DIR)/stage2.bin
+SYSTEM_BOOT_SRC = src/boot/system_boot.asm
+SYSTEM_BOOT_BIN = $(BUILD_DIR)/system_boot.bin
+SYSTEM_BOOT_HANDOFF_INVALID_BIN = $(BUILD_DIR)/system_boot_handoff_invalid.bin
+SYSTEM_BOOT_RETURN_BIN = $(BUILD_DIR)/system_boot_return.bin
+SYSTEM_STAGE2_SRC = src/boot/system_stage2.asm
+SYSTEM_STAGE2_BIN = $(BUILD_DIR)/system_stage2.bin
+RECOVERY_LOADER_C = src/boot/recovery_loader.c
+RECOVERY_LOADER_OBJ = $(BUILD_DIR)/recovery_loader.o
+RECOVERY_MENU_C = src/boot/recovery_menu.c
+RECOVERY_MENU_HEADER = src/boot/recovery_menu.h
+RECOVERY_CHAIN_HEADER = src/boot/recovery_chain.h
+RECOVERY_MENU_OBJ = $(BUILD_DIR)/recovery_menu.o
+RECOVERY_RUNTIME_C = src/boot/recovery_runtime.c
+RECOVERY_RUNTIME_OBJ = $(BUILD_DIR)/recovery_runtime.o
+RECOVERY_ENTRY_ASM = src/boot/recovery_entry.asm
+RECOVERY_ENTRY_OBJ = $(BUILD_DIR)/recovery_entry.o
+RECOVERY_LOADER_LD = src/boot/recovery_loader.ld
+RECOVERY_LOADER_BIN = $(BUILD_DIR)/recovery_loader.bin
+RECOVERY_LOADER_PADDED_BIN = $(BUILD_DIR)/recovery_loader_padded.bin
+RECOVERY_LOADER_PAD_TOOL = tools/pad_boot_payload.py
+RECOVERY_IMAGE_COMPOSE_TOOL = tools/compose_recovery_image.py
+RECOVERY_LAYOUT_TOOL = tools/recovery_layout.py
+RECOVERY_LAYOUT_HEADER = $(BUILD_DIR)/recovery_layout.h
+RECOVERY_STAGE2_VGA_BIN = $(BUILD_DIR)/stage2-recovery-menu-vga.bin
+RECOVERY_MENU_VGA_IMAGE = $(BUILD_DIR)/recovery-menu-vga.img
+RECOVERY_STAGE2_PATCH_TOOL = tools/patch_stage2_image.py
+
+# Arquivos - Kernel
+ENTRY_SRC = src/kernel/entry.asm
+ENTRY_OBJ = $(BUILD_DIR)/entry.o
+
+KERNEL_C = src/kernel/kernel.c
+KERNEL_OBJ = $(BUILD_DIR)/kernel.o
+
+PANIC_C = src/kernel/panic.c
+PANIC_OBJ = $(BUILD_DIR)/panic.o
+
+LOG_C = src/core/log.c
+LOG_OBJ = $(BUILD_DIR)/log.o
+
+TEST_PROTOCOL_C = src/core/test_protocol.c
+TEST_PROTOCOL_OBJ = $(BUILD_DIR)/test_protocol.o
+TEST_PROTOCOL_CORE_C = src/core/test_protocol_core.c
+TEST_PROTOCOL_CORE_OBJ = $(BUILD_DIR)/test_protocol_core.o
+
+TEST_COVERAGE_C = src/core/test_coverage.c
+TEST_COVERAGE_OBJ = $(BUILD_DIR)/test_coverage.o
+
+KERNEL_TESTS_ASSEMBLY_C = src/core/kernel_tests_assembly.c
+KERNEL_TESTS_ASSEMBLY_OBJ = $(BUILD_DIR)/kernel_tests_assembly.o
+
+KERNEL_TESTS_C = src/core/kernel_tests.c
+KERNEL_TESTS_OBJ = $(BUILD_DIR)/kernel_tests.o
+
+KERNEL_TESTS_PAGING_C = src/core/kernel_tests_paging.c
+KERNEL_TESTS_PAGING_OBJ = $(BUILD_DIR)/kernel_tests_paging.o
+
+KERNEL_TESTS_EXECUTION_C = src/core/kernel_tests_execution.c
+KERNEL_TESTS_EXECUTION_OBJ = $(BUILD_DIR)/kernel_tests_execution.o
+
+KERNEL_TESTS_STORAGE_C = src/core/kernel_tests_storage.c
+KERNEL_TESTS_STORAGE_OBJ = $(BUILD_DIR)/kernel_tests_storage.o
+
+KERNEL_TESTS_NETWORK_C = src/core/kernel_tests_network.c
+KERNEL_TESTS_NETWORK_OBJ = $(BUILD_DIR)/kernel_tests_network.o
+
+KERNEL_TESTS_PLATFORM_C = src/core/kernel_tests_platform.c
+KERNEL_TESTS_PLATFORM_OBJ = $(BUILD_DIR)/kernel_tests_platform.o
+
+KERNEL_TESTS_BLACKBOX_C = src/core/kernel_tests_blackbox.c
+KERNEL_TESTS_BLACKBOX_OBJ = $(BUILD_DIR)/kernel_tests_blackbox.o
+
+KERNEL_TESTS_TST6_C = src/core/kernel_tests_tst6.c
+KERNEL_TESTS_TST6_OBJ = $(BUILD_DIR)/kernel_tests_tst6.o
+
+INPUT_C = src/core/input.c
+INPUT_OBJ = $(BUILD_DIR)/input.o
+
+IRQ_DEFERRED_C = src/core/irq_deferred.c
+IRQ_DEFERRED_OBJ = $(BUILD_DIR)/irq_deferred.o
+
+WAIT_C = src/core/wait.c
+WAIT_OBJ = $(BUILD_DIR)/wait.o
+
+WORKQUEUE_C = src/core/workqueue.c
+WORKQUEUE_OBJ = $(BUILD_DIR)/workqueue.o
+
+SERVICE_SUPERVISOR_C = src/core/service_supervisor.c
+SERVICE_SUPERVISOR_OBJ = $(BUILD_DIR)/service_supervisor.o
+
+CLOCK_C = src/core/clock.c
+CLOCK_OBJ = $(BUILD_DIR)/clock.o
+
+TLS_C = src/core/tls.c
+TLS_OBJ = $(BUILD_DIR)/tls.o
+
+TLS_CLIENT_C = src/core/tls_client.c
+TLS_CLIENT_OBJ = $(BUILD_DIR)/tls_client.o
+
+BEARSSL_COMPAT_C = src/core/bearssl_compat.c
+BEARSSL_COMPAT_OBJ = $(BUILD_DIR)/bearssl_compat.o
+
+BEARSSL_SRC = $(wildcard vendor/bearssl/src/*.c) \
+              $(wildcard vendor/bearssl/src/aead/*.c) \
+              $(wildcard vendor/bearssl/src/codec/*.c) \
+              $(wildcard vendor/bearssl/src/ec/*.c) \
+              $(wildcard vendor/bearssl/src/hash/*.c) \
+              $(wildcard vendor/bearssl/src/int/*.c) \
+              $(wildcard vendor/bearssl/src/kdf/*.c) \
+              $(wildcard vendor/bearssl/src/mac/*.c) \
+              $(wildcard vendor/bearssl/src/rand/*.c) \
+              $(wildcard vendor/bearssl/src/rsa/*.c) \
+              $(wildcard vendor/bearssl/src/ssl/*.c) \
+              $(wildcard vendor/bearssl/src/symcipher/*.c) \
+              $(wildcard vendor/bearssl/src/x509/*.c)
+# ZephyrOS usa o perfil TLS cliente restrito a ECDHE + AES-GCM. Os perfis
+# BearSSL full e os módulos DES/3DES não entram no artefato do sistema.
+BEARSSL_EXCLUDED_SRC = vendor/bearssl/src/ssl/ssl_client_full.c \
+                       vendor/bearssl/src/ssl/ssl_engine_default_descbc.c \
+                       vendor/bearssl/src/ssl/ssl_server_full_ec.c \
+                       vendor/bearssl/src/ssl/ssl_server_full_rsa.c \
+                       $(wildcard vendor/bearssl/src/symcipher/des_*.c)
+BEARSSL_SRC := $(filter-out $(BEARSSL_EXCLUDED_SRC),$(BEARSSL_SRC))
+BEARSSL_OBJ = $(patsubst vendor/bearssl/src/%.c,$(BUILD_DIR)/bearssl/%.o,$(BEARSSL_SRC))
+BEARSSL_CFLAGS = $(CFLAGS) -I vendor/bearssl/inc -I vendor/bearssl/src -include vendor/bearssl/inc/string.h
+
+RECOVERY_C = src/core/recovery.c
+RECOVERY_OBJ = $(BUILD_DIR)/recovery.o
+
+CRYPTO_C = src/core/crypto.c
+CRYPTO_OBJ = $(BUILD_DIR)/crypto.o
+
+CRYPTO_ED25519_C = src/core/crypto_ed25519.c
+CRYPTO_ED25519_OBJ = $(BUILD_DIR)/crypto_ed25519.o
+
+RECOVERY_CFLAGS = $(CFLAGS) -fno-instrument-functions
+RECOVERY_CRYPTO_OBJ = $(BUILD_DIR)/recovery_crypto.o
+RECOVERY_CRYPTO_ED25519_OBJ = $(BUILD_DIR)/recovery_crypto_ed25519.o
+
+UPDATE_C = src/core/update.c
+UPDATE_OBJ = $(BUILD_DIR)/update.o
+
+UPDATE_SYSTEM_C = src/core/update_system.c
+UPDATE_SYSTEM_OBJ = $(BUILD_DIR)/update_system.o
+
+UPDATE_SYSTEM_SLOTS_C = src/core/update_system_slots.c
+UPDATE_SYSTEM_SLOTS_OBJ = $(BUILD_DIR)/update_system_slots.o
+
+UPDATE_REMOTE_SYSTEM_C = src/core/update_remote_system.c
+UPDATE_REMOTE_SYSTEM_OBJ = $(BUILD_DIR)/update_remote_system.o
+
+UPDATE_REMOTE_C = src/core/update_remote.c
+UPDATE_REMOTE_OBJ = $(BUILD_DIR)/update_remote.o
+
+UPDATE_REMOTE_RELEASE_C = src/core/update_remote_release.c
+UPDATE_REMOTE_RELEASE_OBJ = $(BUILD_DIR)/update_remote_release.o
+
+UPDATE_REMOTE_GITHUB_C = src/core/update_remote_github.c
+UPDATE_REMOTE_GITHUB_OBJ = $(BUILD_DIR)/update_remote_github.o
+
+UPDATE_RUNTIME_C = src/core/update_runtime.c
+UPDATE_RUNTIME_OBJ = $(BUILD_DIR)/update_runtime.o
+
+UPDATE_REMOTE_RUNTIME_C = src/core/update_remote_runtime.c
+UPDATE_REMOTE_RUNTIME_OBJ = $(BUILD_DIR)/update_remote_runtime.o
+
+DEVICE_MANAGER_C = src/core/device_manager.c
+DEVICE_MANAGER_OBJ = $(BUILD_DIR)/device_manager.o
+
+USB_MANAGER_C = src/core/usb_manager.c
+USB_MANAGER_OBJ = $(BUILD_DIR)/usb_manager.o
+
+UHCI_C = src/drivers/uhci.c
+UHCI_OBJ = $(BUILD_DIR)/uhci.o
+
+EHCI_C = src/drivers/ehci.c
+EHCI_OBJ = $(BUILD_DIR)/ehci.o
+
+USB_TRANSPORT_C = src/core/usb_transport.c
+USB_TRANSPORT_OBJ = $(BUILD_DIR)/usb_transport.o
+
+USB_MSC_C = src/drivers/usb_msc.c
+USB_MSC_OBJ = $(BUILD_DIR)/usb_msc.o
+
+USB_HID_C = src/drivers/usb_hid.c
+USB_HID_OBJ = $(BUILD_DIR)/usb_hid.o
+
+RTL8811CU_C = src/drivers/rtl8811cu.c
+RTL8811CU_OBJ = $(BUILD_DIR)/rtl8811cu.o
+
+NETWORK_MANAGER_C = src/core/network_manager.c
+NETWORK_MANAGER_OBJ = $(BUILD_DIR)/network_manager.o
+
+WIFI_MANAGER_C = src/core/wifi_manager.c
+WIFI_MANAGER_OBJ = $(BUILD_DIR)/wifi_manager.o
+
+ETHERNET_C = src/core/ethernet.c
+ETHERNET_OBJ = $(BUILD_DIR)/ethernet.o
+
+NET_BUFFER_C = src/core/net_buffer.c
+NET_BUFFER_OBJ = $(BUILD_DIR)/net_buffer.o
+
+SK_BUFF_C = src/core/sk_buff.c
+SK_BUFF_OBJ = $(BUILD_DIR)/sk_buff.o
+
+SOCKET_C = src/core/socket.c
+SOCKET_OBJ = $(BUILD_DIR)/socket.o
+
+ARP_C = src/core/arp.c
+ARP_OBJ = $(BUILD_DIR)/arp.o
+
+IPV4_C = src/core/ipv4.c
+IPV4_OBJ = $(BUILD_DIR)/ipv4.o
+
+ROUTE_C = src/core/route.c
+ROUTE_OBJ = $(BUILD_DIR)/route.o
+
+ICMP_C = src/core/icmp.c
+ICMP_OBJ = $(BUILD_DIR)/icmp.o
+
+UDP_C = src/core/udp.c
+UDP_OBJ = $(BUILD_DIR)/udp.o
+
+DHCP_C = src/core/dhcp.c
+DHCP_OBJ = $(BUILD_DIR)/dhcp.o
+
+DNS_C = src/core/dns.c
+DNS_OBJ = $(BUILD_DIR)/dns.o
+
+TCP_C = src/core/tcp.c
+TCP_OBJ = $(BUILD_DIR)/tcp.o
+
+NET_SOCKET_C = src/core/net_socket.c
+NET_SOCKET_OBJ = $(BUILD_DIR)/net_socket.o
+
+HTTP_C = src/core/http.c
+HTTP_OBJ = $(BUILD_DIR)/http.o
+
+POWER_C = src/core/power.c
+POWER_OBJ = $(BUILD_DIR)/power.o
+
+POWER_NOTIFIER_C = src/core/power_notifier.c
+POWER_NOTIFIER_OBJ = $(BUILD_DIR)/power_notifier.o
+
+STRING_C = src/core/string.c
+STRING_OBJ = $(BUILD_DIR)/string.o
+
+APP_API_C = src/core/app_api.c
+APP_API_OBJ = $(BUILD_DIR)/app_api.o
+
+APP_FILES_C = src/core/app_files.c
+APP_FILES_OBJ = $(BUILD_DIR)/app_files.o
+
+APP_LOADER_C = src/core/app_loader.c
+APP_LOADER_OBJ = $(BUILD_DIR)/app_loader.o
+
+APP_BUILTIN_C = src/core/app_builtin.c
+APP_BUILTIN_OBJ = $(BUILD_DIR)/app_builtin.o
+
+APP_PACKAGE_C = src/core/app_package.c
+APP_PACKAGE_OBJ = $(BUILD_DIR)/app_package.o
+
+APP_REMOTE_C = src/core/app_remote.c
+APP_REMOTE_OBJ = $(BUILD_DIR)/app_remote.o
+
+APP_CATALOG_C = src/core/app_catalog.c
+APP_CATALOG_OBJ = $(BUILD_DIR)/app_catalog.o
+
+SYSCALL_C = src/core/syscall.c
+SYSCALL_OBJ = $(BUILD_DIR)/syscall.o
+
+SWITCH_ASM = src/kernel/switch.asm
+SWITCH_OBJ = $(BUILD_DIR)/switch.o
+
+# Arquivos - Drivers
+VIDEO_C = src/drivers/video.c
+VIDEO_OBJ = $(BUILD_DIR)/video.o
+
+VESA_C = src/drivers/vesa.c
+VESA_OBJ = $(BUILD_DIR)/vesa.o
+
+FONT_C = src/drivers/font.c
+FONT_OBJ = $(BUILD_DIR)/font.o
+
+IDT_C = src/drivers/idt.c
+IDT_OBJ = $(BUILD_DIR)/idt.o
+
+SERIAL_C = src/drivers/serial.c
+SERIAL_OBJ = $(BUILD_DIR)/serial.o
+
+ISR_ASM = src/drivers/isr.asm
+ISR_OBJ = $(BUILD_DIR)/isr.o
+
+IRQ_ASM = src/drivers/irq.asm
+IRQ_OBJ = $(BUILD_DIR)/irq.o
+
+KEYBOARD_C = src/drivers/keyboard.c
+KEYBOARD_OBJ = $(BUILD_DIR)/keyboard.o
+
+MOUSE_C = src/drivers/mouse.c
+MOUSE_OBJ = $(BUILD_DIR)/mouse.o
+
+TIMER_C = src/drivers/timer.c
+TIMER_OBJ = $(BUILD_DIR)/timer.o
+
+RTC_C = src/drivers/rtc.c
+RTC_OBJ = $(BUILD_DIR)/rtc.o
+
+RNG_C = src/drivers/rng.c
+RNG_OBJ = $(BUILD_DIR)/rng.o
+
+TSS_C = src/drivers/tss.c
+TSS_OBJ = $(BUILD_DIR)/tss.o
+
+ATA_C = src/drivers/ata.c
+ATA_OBJ = $(BUILD_DIR)/ata.o
+
+SPEAKER_C = src/drivers/speaker.c
+SPEAKER_OBJ = $(BUILD_DIR)/speaker.o
+
+PCI_C = src/drivers/pci.c
+PCI_OBJ = $(BUILD_DIR)/pci.o
+
+E1000_C = src/drivers/e1000.c
+E1000_OBJ = $(BUILD_DIR)/e1000.o
+
+RTL8139_C = src/drivers/rtl8139.c
+RTL8139_OBJ = $(BUILD_DIR)/rtl8139.o
+
+AC97_C = src/drivers/ac97.c
+AC97_OBJ = $(BUILD_DIR)/ac97.o
+
+ACPI_C = src/drivers/acpi.c
+ACPI_OBJ = $(BUILD_DIR)/acpi.o
+
+# Arquivos - Memoria
+MEMORY_C = src/memory/memory.c
+MEMORY_OBJ = $(BUILD_DIR)/memory.o
+
+SLAB_C = src/memory/slab.c
+SLAB_OBJ = $(BUILD_DIR)/slab.o
+
+PAGING_C = src/memory/paging.c
+PAGING_OBJ = $(BUILD_DIR)/paging.o
+
+VMA_C = src/memory/vma.c
+VMA_OBJ = $(BUILD_DIR)/vma.o
+
+COMPRESS_C = src/memory/compress.c
+COMPRESS_OBJ = $(BUILD_DIR)/compress.o
+
+# Arquivos - Sistema de Arquivos
+FAT12_C = src/fs/fat12.c
+FAT12_OBJ = $(BUILD_DIR)/fat12.o
+
+FAT32_C = src/fs/fat32.c
+FAT32_OBJ = $(BUILD_DIR)/fat32.o
+
+FS_C = src/fs/fs.c
+FS_OBJ = $(BUILD_DIR)/fs.o
+
+VFS_C = src/fs/vfs.c
+VFS_OBJ = $(BUILD_DIR)/vfs.o
+
+PERMISSIONS_C = src/fs/permissions.c
+PERMISSIONS_OBJ = $(BUILD_DIR)/permissions.o
+
+VFS_PATH_C = src/fs/vfs_path.c
+VFS_PATH_OBJ = $(BUILD_DIR)/vfs_path.o
+
+DEVFS_C = src/fs/devfs.c
+DEVFS_OBJ = $(BUILD_DIR)/devfs.o
+
+PROCFS_C = src/fs/procfs.c
+PROCFS_OBJ = $(BUILD_DIR)/procfs.o
+
+SYSFS_C = src/fs/sysfs.c
+SYSFS_OBJ = $(BUILD_DIR)/sysfs.o
+
+BLOCK_C = src/fs/block.c
+BLOCK_OBJ = $(BUILD_DIR)/block.o
+
+BLOCK_CACHE_C = src/fs/block_cache.c
+BLOCK_CACHE_OBJ = $(BUILD_DIR)/block_cache.o
+
+STORAGE_C = src/fs/storage.c
+STORAGE_OBJ = $(BUILD_DIR)/storage.o
+
+FILE_INDEX_C = src/fs/file_index.c
+FILE_INDEX_OBJ = $(BUILD_DIR)/file_index.o
+
+WAV_C = src/fs/wav.c
+WAV_OBJ = $(BUILD_DIR)/wav.o
+
+BMP_C = src/fs/bmp.c
+BMP_OBJ = $(BUILD_DIR)/bmp.o
+
+# Arquivos - Processos
+PROCESS_C = src/process/process.c
+PROCESS_OBJ = $(BUILD_DIR)/process.o
+PROCESS_CREDENTIALS_C = src/process/credentials.c
+PROCESS_CREDENTIALS_OBJ = $(BUILD_DIR)/credentials.o
+RESOURCE_C = src/process/resource.c
+RESOURCE_OBJ = $(BUILD_DIR)/resource.o
+SIGNAL_C = src/process/signal.c
+SIGNAL_OBJ = $(BUILD_DIR)/signal.o
+IPC_C = src/process/ipc.c
+IPC_OBJ = $(BUILD_DIR)/ipc.o
+
+
+# Arquivos - Threads
+THREAD_C = src/thread/thread.c
+THREAD_OBJ = $(BUILD_DIR)/thread.o
+
+# Arquivos - Shell
+SHELL_C = src/shell/shell.c
+SHELL_OBJ = $(BUILD_DIR)/shell.o
+
+SHELL_INPUT_C = src/shell/shell_input.c
+SHELL_INPUT_OBJ = $(BUILD_DIR)/shell_input.o
+
+SHELL_DISPATCH_C = src/shell/shell_dispatch.c
+SHELL_DISPATCH_OBJ = $(BUILD_DIR)/shell_dispatch.o
+
+SHELL_COMMAND_UTILS_C = src/shell/shell_command_utils.c
+SHELL_COMMAND_UTILS_OBJ = $(BUILD_DIR)/shell_command_utils.o
+
+SHELL_PIPELINE_C = src/shell/shell_pipeline.c
+SHELL_PIPELINE_OBJ = $(BUILD_DIR)/shell_pipeline.o
+
+SHELL_COMMANDS_VFS_C = src/shell/shell_commands_vfs.c
+SHELL_COMMANDS_VFS_OBJ = $(BUILD_DIR)/shell_commands_vfs.o
+
+SHELL_COMMANDS_CORE_C = src/shell/shell_commands_core.c
+SHELL_COMMANDS_CORE_OBJ = $(BUILD_DIR)/shell_commands_core.o
+
+SHELL_COMMANDS_STORAGE_C = src/shell/shell_commands_storage.c
+SHELL_COMMANDS_STORAGE_OBJ = $(BUILD_DIR)/shell_commands_storage.o
+
+SHELL_COMMANDS_DIAGNOSTICS_C = src/shell/shell_commands_diagnostics.c
+SHELL_COMMANDS_DIAGNOSTICS_OBJ = $(BUILD_DIR)/shell_commands_diagnostics.o
+
+SHELL_DIAGNOSTICS_HELPERS_C = src/shell/shell_diagnostics_helpers.c
+SHELL_DIAGNOSTICS_HELPERS_OBJ = $(BUILD_DIR)/shell_diagnostics_helpers.o
+
+SHELL_COMMANDS_NETWORK_C = src/shell/shell_commands_network.c
+SHELL_COMMANDS_NETWORK_OBJ = $(BUILD_DIR)/shell_commands_network.o
+
+SHELL_COMMANDS_WIFI_C = src/shell/shell_commands_wifi.c
+SHELL_COMMANDS_WIFI_OBJ = $(BUILD_DIR)/shell_commands_wifi.o
+
+SHELL_CHECKS_C = src/shell/shell_checks.c
+SHELL_CHECKS_OBJ = $(BUILD_DIR)/shell_checks.o
+
+SHELL_COMMANDS_PACKAGES_C = src/shell/shell_commands_packages.c
+SHELL_COMMANDS_PACKAGES_OBJ = $(BUILD_DIR)/shell_commands_packages.o
+
+SHELL_COMMANDS_APPS_C = src/shell/shell_commands_apps.c
+SHELL_COMMANDS_APPS_OBJ = $(BUILD_DIR)/shell_commands_apps.o
+
+SHELL_HOSTED_C = src/shell/shell_hosted.c
+SHELL_HOSTED_OBJ = $(BUILD_DIR)/shell_hosted.o
+
+SHELL_JOB_C = src/shell/shell_job.c
+SHELL_JOB_OBJ = $(BUILD_DIR)/shell_job.o
+
+TASKMGR_C = src/shell/taskmanager.c
+TASKMGR_OBJ = $(BUILD_DIR)/taskmanager.o
+
+SHELL_INTROSPECTION_C = src/shell/shell_introspection.c
+SHELL_INTROSPECTION_OBJ = $(BUILD_DIR)/shell_introspection.o
+
+MEDIAPLAYER_C = src/shell/mediaplayer.c
+MEDIAPLAYER_OBJ = $(BUILD_DIR)/mediaplayer.o
+
+EDITOR_C = src/shell/editor.c
+EDITOR_OBJ = $(BUILD_DIR)/editor.o
+
+GUITEST_C = src/shell/guitest_app.c
+GUITEST_OBJ = $(BUILD_DIR)/guitest_app.o
+
+
+# Arquivos - File Manager
+FILEMANAGER_C = src/filemanager/filemanager.c
+FILEMANAGER_OBJ = $(BUILD_DIR)/filemanager.o
+
+# Arquivos - Taskbar
+TASKBAR_C = src/taskbar/taskbar.c
+TASKBAR_OBJ = $(BUILD_DIR)/taskbar.o
+
+# Arquivos - Desktop
+DESKTOP_C = src/desktop/desktop.c
+DESKTOP_OBJ = $(BUILD_DIR)/desktop.o
+
+# Arquivos - Settings
+SETTINGS_C = src/settings/settings.c
+SETTINGS_OBJ = $(BUILD_DIR)/settings.o
+
+# Arquivos - System Updater
+UPDATER_C = src/updater/updater.c
+UPDATER_OBJ = $(BUILD_DIR)/updater.o
+
+# Arquivos - App Store
+APPSTORE_C = src/appstore/appstore.c
+APPSTORE_OBJ = $(BUILD_DIR)/appstore.o
+
+# Arquivos - Window Manager
+WM_C = src/wm/wm.c
+WM_OBJ = $(BUILD_DIR)/wm.o
+
+# Arquivos - Icons
+ICONS_C = src/icons/icons.c
+ICONS_OBJ = $(BUILD_DIR)/icons.o
+
+# Arquivos - GUI Gráfica
+GUI_C = src/gui/gui.c
+GUI_OBJ = $(BUILD_DIR)/gui.o
+
+# Arquivos - Display Layout
+DISPLAY_C = src/gui/display.c
+DISPLAY_OBJ = $(BUILD_DIR)/display.o
+
+
+# Output
+KERNEL_BIN = $(BUILD_DIR)/kernel.bin
+KERNEL_ELF = $(BUILD_DIR)/kernel.elf
+OS_IMG = $(BUILD_DIR)/zephyros.img
+STAGE2_CHS_IMG = $(BUILD_DIR)/zephyros-stage2-chs.img
+STORAGE_FIXTURES_TOOL = tools/storage_fixtures.py
+STORAGE_FIXTURES_STAMP = $(BUILD_DIR)/storage-fixtures.stamp
+STORAGE_VALID_IMG = $(BUILD_DIR)/storage-valid.img
+STORAGE_CORRUPT_IMG = $(BUILD_DIR)/storage-corrupt.img
+STORAGE_UNKNOWN_IMG = $(BUILD_DIR)/storage-unknown.img
+STORAGE_NO_SPACE_IMG = $(BUILD_DIR)/storage-fat32-no-space.img
+STORAGE_FAT_DIVERGENT_IMG = $(BUILD_DIR)/storage-fat32-fat-divergent.img
+STORAGE_CHAIN_CORRUPT_IMG = $(BUILD_DIR)/storage-fat32-chain-corrupt.img
+STORAGE_LFN_INVALID_IMG = $(BUILD_DIR)/storage-fat32-lfn-invalid.img
+SYSTEM_FIXTURES_DIR = $(BUILD_DIR)/system-fixtures
+SYSTEM_FIXTURE_IMAGES_DIR = $(BUILD_DIR)/system-fixture-images
+SYSTEM_FIXTURES_MANIFEST = docs/fixtures/updates/system/system.json
+SYSTEM_FIXTURES_PUBLIC = config/update-release-public.json
+SYSTEM_SLOTS_FIXTURES_DIR = $(BUILD_DIR)/system-slots-fixtures
+SYSTEM_SLOTS_BASELINE_DIR = $(SYSTEM_SLOTS_FIXTURES_DIR)/baseline
+SYSTEM_SLOTS_BASELINE_MANIFEST = docs/fixtures/updates/system/baseline.json
+SYSTEM_SLOTS_FIXTURE_IMAGE = $(SYSTEM_SLOTS_FIXTURES_DIR)/SLOTS.img
+SYSTEM_SLOTS_MATRIX_DIR = $(BUILD_DIR)/system-slots-matrix
+SYSTEM_SLOTS_MATRIX_IMAGE ?=
+SYSTEM_UPDATE_MATRIX_IMAGE = $(SYSTEM_SLOTS_MATRIX_DIR)/SYSTEM_UPDATE_GUIDED.img
+EP94B_FIXTURES_DIR = $(BUILD_DIR)/ep94b-fixtures
+EP94B_ABI1_DIR = $(EP94B_FIXTURES_DIR)/abi1
+EP94B_ABI2_DIR = $(EP94B_FIXTURES_DIR)/abi2
+EP94B_MATRIX_DIR = $(BUILD_DIR)/ep94b-matrix
+EP94B_MATRIX_IMAGE = $(EP94B_MATRIX_DIR)/EP94B_GUIDED.img
+EP94C_MATRIX_DIR = $(BUILD_DIR)/ep94c-matrix
+EP94C_MATRIX_IMAGE = $(EP94C_MATRIX_DIR)/EP94C_GUIDED.img
+EP94C_FIXTURES_DIR = $(EP94C_MATRIX_DIR)/preflight-fixtures
+# Defina somente em Makefile.local; a chave privada nunca entra no repositorio.
+SYSTEM_PRIVATE_KEY ?=
+PACKAGE_PRIVATE_KEY ?=
+SYSTEM_FIXTURE_IMAGE ?=
+
+# A area FAT12 legada continua contendo o boot, stage2 e kernel. O restante
+# da imagem abriga a particao FAT32 de sistema sem alterar o setor de boot.
+HYBRID_DISK_BYTES = 268435456
+LEGACY_KERNEL_LBA = 64
+RECOVERY_LOADER_LBA = 6144
+FAT32_START_LBA = 8192
+FAT32_LABEL = ZEPHYROS
+STORE_FIXTURES_DIR = docs/fixtures/apps/store
+STORE_FIXTURES = $(STORE_FIXTURES_DIR)/VALID.ZPK \
+                 $(STORE_FIXTURES_DIR)/BADCRC.ZPK \
+                 $(STORE_FIXTURES_DIR)/BADAPI.ZPK \
+                 $(STORE_FIXTURES_DIR)/BADALIAS.ZPK \
+                 $(STORE_FIXTURES_DIR)/NEEDSDEP.ZPK \
+                 $(STORE_FIXTURES_DIR)/SAMEVER.ZPK \
+                 $(STORE_FIXTURES_DIR)/fixtures.json
+STORE_AS2_FIXTURES_DIR = docs/fixtures/apps/store-as2
+STORE_AS2_FIXTURES = $(STORE_AS2_FIXTURES_DIR)/WAITAPP.ZPK \
+                     $(STORE_AS2_FIXTURES_DIR)/BASE.ZPK \
+                     $(STORE_AS2_FIXTURES_DIR)/DEPEND.ZPK \
+                     $(STORE_AS2_FIXTURES_DIR)/fixtures.json
+STORE_AS4_SEED_FIXTURES_DIR = docs/fixtures/apps/store-as4-seed
+STORE_AS4_UPDATE_FIXTURES_DIR = docs/fixtures/apps/store-as4-update
+STORE_AS4_SEED_FIXTURES = $(STORE_AS4_SEED_FIXTURES_DIR)/UPTARGET.ZPK \
+                          $(STORE_AS4_SEED_FIXTURES_DIR)/UPDEPA.ZPK \
+                          $(STORE_AS4_SEED_FIXTURES_DIR)/UPDEPB.ZPK \
+                          $(STORE_AS4_SEED_FIXTURES_DIR)/BROKEN.ZPK \
+                          $(STORE_AS4_SEED_FIXTURES_DIR)/CYCLEA.ZPK \
+                          $(STORE_AS4_SEED_FIXTURES_DIR)/CYCLEB.ZPK \
+                          $(STORE_AS4_SEED_FIXTURES_DIR)/fixtures.json
+STORE_AS4_UPDATE_FIXTURES = $(STORE_AS4_UPDATE_FIXTURES_DIR)/UPTARGET.ZPK \
+                            $(STORE_AS4_UPDATE_FIXTURES_DIR)/UPDEPA.ZPK \
+                            $(STORE_AS4_UPDATE_FIXTURES_DIR)/UPDEPB.ZPK \
+                            $(STORE_AS4_UPDATE_FIXTURES_DIR)/BROKEN.ZPK \
+                            $(STORE_AS4_UPDATE_FIXTURES_DIR)/CYCLEA.ZPK \
+                            $(STORE_AS4_UPDATE_FIXTURES_DIR)/CYCLEB.ZPK \
+                            $(STORE_AS4_UPDATE_FIXTURES_DIR)/fixtures.json
+STORE_AS5_FIXTURES_DIR = docs/fixtures/apps/store-as5
+STORE_AS5_PUBLIC = config/app-store-test-public.json
+
+# Todas as variáveis de objetos
+OBJS = $(ENTRY_OBJ) $(KERNEL_OBJ) $(PANIC_OBJ) $(LOG_OBJ) $(TEST_PROTOCOL_CORE_OBJ) $(TEST_PROTOCOL_OBJ) $(TEST_COVERAGE_OBJ) $(KERNEL_TESTS_OBJ) $(KERNEL_TESTS_PAGING_OBJ) $(KERNEL_TESTS_EXECUTION_OBJ) $(KERNEL_TESTS_STORAGE_OBJ) $(KERNEL_TESTS_NETWORK_OBJ) $(KERNEL_TESTS_PLATFORM_OBJ) $(KERNEL_TESTS_BLACKBOX_OBJ) $(KERNEL_TESTS_TST6_OBJ) $(KERNEL_TESTS_ASSEMBLY_OBJ) $(INPUT_OBJ) $(IRQ_DEFERRED_OBJ) $(WAIT_OBJ) $(WORKQUEUE_OBJ) $(SERVICE_SUPERVISOR_OBJ) $(RECOVERY_OBJ) $(CRYPTO_OBJ) $(CRYPTO_ED25519_OBJ) $(BEARSSL_COMPAT_OBJ) $(BEARSSL_OBJ) $(UPDATE_OBJ) $(UPDATE_SYSTEM_OBJ) $(UPDATE_SYSTEM_SLOTS_OBJ) $(UPDATE_REMOTE_SYSTEM_OBJ) $(UPDATE_REMOTE_OBJ) $(UPDATE_REMOTE_RELEASE_OBJ) $(UPDATE_REMOTE_GITHUB_OBJ) $(UPDATE_RUNTIME_OBJ) $(UPDATE_REMOTE_RUNTIME_OBJ) $(STRING_OBJ) $(APP_API_OBJ) $(SYSCALL_OBJ) $(SWITCH_OBJ) \
+       $(VIDEO_OBJ) $(VESA_OBJ) $(FONT_OBJ) $(IDT_OBJ) $(SERIAL_OBJ) $(ISR_OBJ) $(IRQ_OBJ) $(KEYBOARD_OBJ) \
+       $(MOUSE_OBJ) $(TIMER_OBJ) $(TSS_OBJ) $(ATA_OBJ) $(SPEAKER_OBJ) $(PCI_OBJ) $(UHCI_OBJ) $(EHCI_OBJ) $(USB_TRANSPORT_OBJ) $(USB_MSC_OBJ) $(USB_HID_OBJ) $(RTL8811CU_OBJ) $(E1000_OBJ) $(RTL8139_OBJ) $(AC97_OBJ) $(ACPI_OBJ) $(RNG_OBJ) \
+       $(MEMORY_OBJ) $(PAGING_OBJ) $(VMA_OBJ) $(COMPRESS_OBJ) \
+       $(FAT12_OBJ) $(FAT32_OBJ) $(FS_OBJ) $(VFS_OBJ) $(VFS_PATH_OBJ) $(PERMISSIONS_OBJ) $(DEVFS_OBJ) $(PROCFS_OBJ) $(SYSFS_OBJ) $(BLOCK_OBJ) $(BLOCK_CACHE_OBJ) $(STORAGE_OBJ) $(FILE_INDEX_OBJ) $(WAV_OBJ) $(BMP_OBJ) $(PROCESS_OBJ) $(PROCESS_CREDENTIALS_OBJ) $(RESOURCE_OBJ) $(SIGNAL_OBJ) $(IPC_OBJ) $(THREAD_OBJ) $(SHELL_OBJ) $(TASKMGR_OBJ) $(SHELL_INTROSPECTION_OBJ) $(MEDIAPLAYER_OBJ) $(EDITOR_OBJ) $(GUITEST_OBJ) $(FILEMANAGER_OBJ) $(TASKBAR_OBJ) $(DESKTOP_OBJ) $(SETTINGS_OBJ) $(UPDATER_OBJ) $(APPSTORE_OBJ) $(WM_OBJ) $(ICONS_OBJ) $(GUI_OBJ) $(APP_FILES_OBJ) $(APP_LOADER_OBJ) $(APP_BUILTIN_OBJ) $(APP_PACKAGE_OBJ) $(APP_REMOTE_OBJ) $(DEVICE_MANAGER_OBJ) $(USB_MANAGER_OBJ) $(NETWORK_MANAGER_OBJ) $(WIFI_MANAGER_OBJ) $(POWER_OBJ) $(NET_BUFFER_OBJ) $(SK_BUFF_OBJ) $(SOCKET_OBJ) $(ETHERNET_OBJ) $(ARP_OBJ) $(IPV4_OBJ) $(ICMP_OBJ) $(UDP_OBJ) $(DHCP_OBJ) $(DNS_OBJ) $(TCP_OBJ) $(NET_SOCKET_OBJ) $(HTTP_OBJ) $(APP_CATALOG_OBJ) $(DISPLAY_OBJ) $(SHELL_INPUT_OBJ) $(SHELL_DISPATCH_OBJ) $(SHELL_COMMAND_UTILS_OBJ) $(SHELL_PIPELINE_OBJ) $(SHELL_COMMANDS_VFS_OBJ) $(SHELL_COMMANDS_CORE_OBJ) $(SHELL_COMMANDS_STORAGE_OBJ) $(SHELL_COMMANDS_DIAGNOSTICS_OBJ) $(SHELL_DIAGNOSTICS_HELPERS_OBJ) $(SHELL_COMMANDS_NETWORK_OBJ) $(SHELL_COMMANDS_WIFI_OBJ) $(SHELL_CHECKS_OBJ) $(SHELL_COMMANDS_PACKAGES_OBJ) $(SHELL_COMMANDS_APPS_OBJ) $(SHELL_HOSTED_OBJ) $(SHELL_JOB_OBJ) $(RTC_OBJ) $(CLOCK_OBJ) $(TLS_OBJ) $(TLS_CLIENT_OBJ) $(SLAB_OBJ)
+
+OBJS += $(ROUTE_OBJ)
+OBJS += $(POWER_NOTIFIER_OBJ)
+
+# Targets
+all: $(OS_IMG)
+
+coverage-image:
+	python tools/build_coverage_image.py --make "$(MAKE_TOOL)" --build-dir "$(COVERAGE_BUILD_DIR)" --cflags "$(COVERAGE_CFLAGS)"
+
+coverage-map: coverage-image tools/coverage_collector.py
+	python tools/coverage_collector.py symbols --image $(COVERAGE_BUILD_DIR)/kernel.elf --output $(COVERAGE_BUILD_DIR)/coverage-symbols.json --nm "$(NM)" --addr2line "addr2line" --compiler "$(GCC)"
+
+kernel-elf: $(KERNEL_ELF)
+
+$(BOOT_BIN): $(BOOT_SRC) $(STAGE2_BIN)
+	@mkdir -p $(BUILD_DIR)
+	size=$$(stat -c %s '$(STAGE2_BIN)'); sectors=$$(( (size + 511) / 512 )); $(NASM) $(NASMFLAGS) -dSTAGE2_SECTORS=$$sectors $< -o $@
+
+$(STAGE2_BIN): $(STAGE2_SRC) $(RECOVERY_LOADER_PADDED_BIN) $(KERNEL_BIN)
+	@mkdir -p $(BUILD_DIR)
+	kernel_bytes=$$(stat -c %s '$(KERNEL_BIN)'); kernel_sectors=$$(( (kernel_bytes + 511) / 512 )); loader_bytes=$$(stat -c %s '$(RECOVERY_LOADER_PADDED_BIN)'); loader_sectors=$$(( loader_bytes / 512 )); $(NASM) $(NASMFLAGS) -dKERNEL_SECTORS=$$kernel_sectors -dKERNEL_BYTES=$$kernel_bytes -dRECOVERY_LOADER_SECTORS=$$loader_sectors -dLEGACY_KERNEL_LBA=$(LEGACY_KERNEL_LBA) -dRECOVERY_LOADER_LBA=$(RECOVERY_LOADER_LBA) -dFAT32_START_LBA=$(FAT32_START_LBA) $< -o $@
+
+$(SYSTEM_BOOT_BIN): $(SYSTEM_BOOT_SRC)
+	@mkdir -p $(BUILD_DIR)
+	$(NASM) $(NASMFLAGS) $< -o $@
+
+$(SYSTEM_BOOT_HANDOFF_INVALID_BIN): $(SYSTEM_BOOT_SRC)
+	@mkdir -p $(BUILD_DIR)
+	$(NASM) $(NASMFLAGS) -dSYSTEM_BOOT_CORRUPT_HANDOFF=1 $< -o $@
+
+$(SYSTEM_BOOT_RETURN_BIN): $(SYSTEM_BOOT_SRC)
+	@mkdir -p $(BUILD_DIR)
+	$(NASM) $(NASMFLAGS) -dSYSTEM_BOOT_FORCE_RETURN=1 $< -o $@
+
+$(SYSTEM_STAGE2_BIN): $(SYSTEM_STAGE2_SRC)
+	@mkdir -p $(BUILD_DIR)
+	$(NASM) $(NASMFLAGS) $< -o $@
+
+$(RECOVERY_STAGE2_VGA_BIN): $(STAGE2_SRC) $(RECOVERY_LOADER_PADDED_BIN) $(KERNEL_BIN)
+	@mkdir -p $(BUILD_DIR)
+	kernel_bytes=$$(stat -c %s '$(KERNEL_BIN)'); kernel_sectors=$$(( (kernel_bytes + 511) / 512 )); loader_bytes=$$(stat -c %s '$(RECOVERY_LOADER_PADDED_BIN)'); loader_sectors=$$(( loader_bytes / 512 )); $(NASM) $(NASMFLAGS) -dKERNEL_SECTORS=$$kernel_sectors -dKERNEL_BYTES=$$kernel_bytes -dRECOVERY_LOADER_SECTORS=$$loader_sectors -dLEGACY_KERNEL_LBA=$(LEGACY_KERNEL_LBA) -dRECOVERY_LOADER_LBA=$(RECOVERY_LOADER_LBA) -dFAT32_START_LBA=$(FAT32_START_LBA) -dRECOVERY_FORCE_VGA_TEXT=1 $< -o $@
+
+$(RECOVERY_ENTRY_OBJ): $(RECOVERY_ENTRY_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(NASM) -f elf32 $< -o $@
+
+$(RECOVERY_LAYOUT_HEADER): $(KERNEL_BIN) $(RECOVERY_LAYOUT_TOOL)
+	@mkdir -p $(BUILD_DIR)
+	python $(RECOVERY_LAYOUT_TOOL) --kernel $(KERNEL_BIN) --output $@
+
+$(RECOVERY_LOADER_OBJ): $(RECOVERY_LOADER_C) $(RECOVERY_MENU_HEADER) $(RECOVERY_CHAIN_HEADER) $(RECOVERY_LAYOUT_HEADER) src/include/core/crypto.h src/include/core/update_system.h src/include/core/update_system_slots.h src/include/core/update_trust.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(RECOVERY_CFLAGS) -I $(BUILD_DIR) -c $< -o $@
+
+$(RECOVERY_MENU_OBJ): $(RECOVERY_MENU_C) $(RECOVERY_MENU_HEADER)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(RECOVERY_CFLAGS) -c $< -o $@
+
+$(RECOVERY_RUNTIME_OBJ): $(RECOVERY_RUNTIME_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(RECOVERY_CFLAGS) -c $< -o $@
+
+$(RECOVERY_LOADER_BIN): $(RECOVERY_ENTRY_OBJ) $(RECOVERY_LOADER_OBJ) $(RECOVERY_MENU_OBJ) $(RECOVERY_RUNTIME_OBJ) $(RECOVERY_CRYPTO_OBJ) $(RECOVERY_CRYPTO_ED25519_OBJ) $(RECOVERY_LOADER_LD)
+	$(LD) -m elf_i386 -T $(RECOVERY_LOADER_LD) $(RECOVERY_ENTRY_OBJ) $(RECOVERY_LOADER_OBJ) $(RECOVERY_MENU_OBJ) $(RECOVERY_RUNTIME_OBJ) $(RECOVERY_CRYPTO_OBJ) $(RECOVERY_CRYPTO_ED25519_OBJ) -o $@
+
+$(RECOVERY_LOADER_PADDED_BIN): $(RECOVERY_LOADER_BIN) $(RECOVERY_LOADER_PAD_TOOL)
+	python $(RECOVERY_LOADER_PAD_TOOL) --input $(RECOVERY_LOADER_BIN) --output $@
+
+$(ENTRY_OBJ): $(ENTRY_SRC)
+	@mkdir -p $(BUILD_DIR)
+	$(NASM) -f elf32 $< -o $@
+
+$(KERNEL_OBJ): $(KERNEL_C) src/core/test_coverage.h src/include/apps/shell_job.h src/include/core/keyboard.h src/include/core/power.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/workqueue.h src/include/core/service_supervisor.h src/include/core/ethernet.h src/include/core/clock.h src/include/core/tls.h src/include/core/update_system.h src/include/core/update_system_slots.h src/include/core/update_remote_system.h src/include/core/test_protocol.h src/include/drivers/serial.h src/include/drivers/rtc.h src/include/process/process.h src/include/process/thread.h src/include/memory/slab.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(PANIC_OBJ): $(PANIC_C) src/include/core/test_protocol.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(LOG_OBJ): $(LOG_C) src/include/drivers/serial.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(TEST_PROTOCOL_CORE_OBJ): $(TEST_PROTOCOL_CORE_C) src/core/test_protocol_core.h src/include/core/test_protocol.h src/include/core/errors.h src/include/types.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(TEST_PROTOCOL_OBJ): $(TEST_PROTOCOL_C) src/core/test_protocol_core.h src/core/kernel_tests.h src/core/test_coverage.h src/include/core/test_protocol.h src/include/core/errors.h src/include/core/log.h src/include/core/timer.h src/include/drivers/serial.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(TEST_COVERAGE_OBJ): $(TEST_COVERAGE_C) src/core/test_coverage.h src/include/drivers/serial.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(KERNEL_TESTS_ASSEMBLY_OBJ): $(KERNEL_TESTS_ASSEMBLY_C) src/core/kernel_tests.h src/drivers/idt_internal.h src/include/core/errors.h src/include/core/log.h src/include/drivers/idt.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+
+$(KERNEL_TESTS_OBJ): $(KERNEL_TESTS_C) src/core/kernel_tests.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h src/include/memory/paging.h src/include/memory/slab.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(KERNEL_TESTS_PAGING_OBJ): $(KERNEL_TESTS_PAGING_C) src/core/kernel_tests.h src/include/core/app_api.h src/include/core/log.h src/include/core/memory.h src/include/core/string.h src/include/core/syscall.h src/include/core/timer.h src/include/memory/paging.h src/include/memory/vma.h src/include/process/process.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(KERNEL_TESTS_EXECUTION_OBJ): $(KERNEL_TESTS_EXECUTION_C) src/core/kernel_tests.h src/include/core/log.h src/include/core/wait.h src/include/core/workqueue.h src/include/process/process.h src/include/process/signal.h src/include/process/thread.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(KERNEL_TESTS_STORAGE_OBJ): $(KERNEL_TESTS_STORAGE_C) src/core/kernel_tests.h src/include/core/log.h src/include/fs/block.h src/include/fs/block_cache.h src/include/fs/devfs.h src/include/fs/file_index.h src/include/fs/procfs.h src/include/fs/storage.h src/include/fs/sysfs.h src/include/fs/vfs.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(KERNEL_TESTS_NETWORK_OBJ): $(KERNEL_TESTS_NETWORK_C) src/core/kernel_tests.h src/include/core/arp.h src/include/core/crypto.h src/include/core/dhcp.h src/include/core/dns.h src/include/core/ethernet.h src/include/core/http.h src/include/core/icmp.h src/include/core/ipv4.h src/include/core/log.h src/include/core/net_buffer.h src/include/core/net_socket.h src/include/core/route.h src/include/core/sk_buff.h src/include/core/socket.h src/include/core/tcp.h src/include/core/tls.h src/include/core/tls_client.h src/include/core/udp.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(KERNEL_TESTS_PLATFORM_OBJ): $(KERNEL_TESTS_PLATFORM_C) src/core/kernel_tests.h src/include/core/clock.h src/include/core/device_manager.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/log.h src/include/core/power.h src/include/core/power_notifier.h src/include/core/timer.h src/include/core/usb_manager.h src/include/core/wifi_manager.h src/include/drivers/acpi.h src/include/drivers/idt.h src/include/drivers/rng.h src/include/drivers/rtc.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(KERNEL_TESTS_BLACKBOX_OBJ): $(KERNEL_TESTS_BLACKBOX_C) src/core/kernel_tests.h src/core/video_test.h src/include/apps/shell.h src/include/core/errors.h src/include/core/log.h src/include/core/timer.h src/include/process/process.h src/include/core/video.h src/include/ui/desktop.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(KERNEL_TESTS_TST6_OBJ): $(KERNEL_TESTS_TST6_C) src/core/kernel_tests.h src/include/core/app_package.h src/include/core/errors.h src/include/core/log.h src/include/core/service_supervisor.h src/include/core/update_runtime.h src/include/memory/paging.h src/include/process/process.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(INPUT_OBJ): $(INPUT_C) src/include/core/input.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(IRQ_DEFERRED_OBJ): $(IRQ_DEFERRED_C) src/include/core/irq_deferred.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(WAIT_OBJ): $(WAIT_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(WORKQUEUE_OBJ): $(WORKQUEUE_C) src/include/core/workqueue.h src/include/core/wait.h src/include/core/timer.h src/include/process/process.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SERVICE_SUPERVISOR_OBJ): $(SERVICE_SUPERVISOR_C) src/include/core/service_supervisor.h src/include/core/recovery.h src/include/core/errors.h src/include/process/process.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(CLOCK_OBJ): $(CLOCK_C) src/include/core/clock.h src/include/drivers/rtc.h src/include/core/timer.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(TLS_OBJ): $(TLS_C) src/include/core/tls.h src/include/core/clock.h src/include/core/tls_client.h src/include/drivers/rng.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(TLS_CLIENT_OBJ): $(TLS_CLIENT_C) src/include/core/tls_client.h src/include/core/tls.h src/include/core/clock.h src/include/core/net_socket.h src/include/core/string.h src/include/drivers/rng.h vendor/bearssl/inc/bearssl.h vendor/bearssl/inc/string.h vendor/bearssl/inc/stddef.h vendor/bearssl/inc/stdint.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(BEARSSL_CFLAGS) -c $< -o $@
+
+$(BEARSSL_COMPAT_OBJ): $(BEARSSL_COMPAT_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(BEARSSL_OBJ): $(BUILD_DIR)/bearssl/%.o: vendor/bearssl/src/%.c vendor/bearssl/inc/string.h vendor/bearssl/inc/stddef.h vendor/bearssl/inc/stdint.h
+	@mkdir -p $(BUILD_DIR)
+	@mkdir -p "$(@D)"
+	$(GCC) $(BEARSSL_CFLAGS) -c $< -o $@
+
+$(RECOVERY_OBJ): $(RECOVERY_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(CRYPTO_OBJ): $(CRYPTO_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(CRYPTO_ED25519_OBJ): $(CRYPTO_ED25519_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(RECOVERY_CRYPTO_OBJ): $(CRYPTO_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(RECOVERY_CFLAGS) -c $< -o $@
+
+$(RECOVERY_CRYPTO_ED25519_OBJ): $(CRYPTO_ED25519_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(RECOVERY_CFLAGS) -c $< -o $@
+
+$(UPDATE_OBJ): $(UPDATE_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(UPDATE_SYSTEM_OBJ): $(UPDATE_SYSTEM_C) src/include/core/update_system.h src/include/core/update_trust.h src/include/core/update.h src/include/core/update_remote_github.h src/include/core/update_remote_config.h src/include/core/http.h src/include/fs/fs.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(UPDATE_SYSTEM_SLOTS_OBJ): $(UPDATE_SYSTEM_SLOTS_C) src/include/core/update_system_slots.h src/include/core/update_system.h src/include/core/update.h src/include/fs/fs.h src/include/fs/storage.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(UPDATE_REMOTE_SYSTEM_OBJ): $(UPDATE_REMOTE_SYSTEM_C) src/include/core/update_remote_system.h src/include/core/update_system.h src/include/core/update_remote.h src/include/fs/fs.h src/include/fs/storage.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(UPDATE_REMOTE_OBJ): $(UPDATE_REMOTE_C) src/include/core/update_remote.h src/include/core/update_remote_config.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(UPDATE_REMOTE_RELEASE_OBJ): $(UPDATE_REMOTE_RELEASE_C) src/include/core/update_remote.h src/include/core/update_remote_config.h src/include/core/update_remote_github.h src/include/core/http.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(UPDATE_REMOTE_GITHUB_OBJ): $(UPDATE_REMOTE_GITHUB_C) src/include/core/update_remote_github.h src/include/core/update_remote.h src/include/core/update_system.h src/include/core/update_remote_config.h src/include/core/http.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(UPDATE_RUNTIME_OBJ): $(UPDATE_RUNTIME_C) src/include/core/update_runtime.h src/include/core/update_remote_runtime.h src/include/core/update_trust.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(UPDATE_REMOTE_RUNTIME_OBJ): $(UPDATE_REMOTE_RUNTIME_C) src/include/core/update_remote_runtime.h src/include/core/update_runtime.h src/include/core/update_remote_github.h src/include/core/update_remote_config.h src/include/core/http.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(APP_REMOTE_OBJ): $(APP_REMOTE_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(DEVICE_MANAGER_OBJ): $(DEVICE_MANAGER_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(USB_MANAGER_OBJ): $(USB_MANAGER_C) src/include/drivers/usb_hid.h src/include/drivers/ehci.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(UHCI_OBJ): $(UHCI_C) src/include/drivers/uhci.h src/include/core/irq_deferred.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(EHCI_OBJ): $(EHCI_C) src/include/drivers/ehci.h src/include/core/usb_manager.h src/include/core/irq_deferred.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(USB_TRANSPORT_OBJ): $(USB_TRANSPORT_C) src/include/core/usb_transport.h src/include/drivers/uhci.h src/include/drivers/ehci.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(USB_MSC_OBJ): $(USB_MSC_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(USB_HID_OBJ): $(USB_HID_C) src/include/drivers/usb_hid.h src/include/core/input.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(RTL8811CU_OBJ): $(RTL8811CU_C) src/include/drivers/rtl8811cu.h src/include/core/usb_manager.h src/include/core/usb_transport.h src/include/core/ethernet.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/include/fs/fs.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(NETWORK_MANAGER_OBJ): $(NETWORK_MANAGER_C) src/include/core/network_manager.h src/include/core/ethernet.h src/include/core/usb_manager.h src/include/drivers/rtl8811cu.h src/include/core/socket.h src/include/core/route.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(WIFI_MANAGER_OBJ): $(WIFI_MANAGER_C) src/include/core/wifi_manager.h src/include/core/usb_manager.h src/include/drivers/pci.h src/include/drivers/rtl8811cu.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(ETHERNET_OBJ): $(ETHERNET_C) src/include/core/ethernet.h src/include/core/net_buffer.h src/include/core/sk_buff.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(NET_BUFFER_OBJ): $(NET_BUFFER_C) src/include/core/net_buffer.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/include/core/spinlock.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SK_BUFF_OBJ): $(SK_BUFF_C) src/include/core/sk_buff.h src/include/core/net_buffer.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/include/core/spinlock.h src/include/memory/slab.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SOCKET_OBJ): $(SOCKET_C) src/include/core/socket.h src/include/core/poll.h src/include/core/net_socket.h src/include/core/net_buffer.h src/include/core/sk_buff.h src/include/core/errors.h src/include/core/ipv4.h src/include/core/log.h src/include/core/spinlock.h src/include/core/string.h src/include/core/wait.h src/include/fs/vfs.h src/include/fs/vfs_internal.h src/include/process/process.h src/include/memory/slab.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(ARP_OBJ): $(ARP_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(IPV4_OBJ): $(IPV4_C) src/include/core/route.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(ROUTE_OBJ): $(ROUTE_C) src/include/core/route.h src/include/core/ipv4.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(ICMP_OBJ): $(ICMP_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(UDP_OBJ): $(UDP_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(DHCP_OBJ): $(DHCP_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(DNS_OBJ): $(DNS_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(TCP_OBJ): $(TCP_C) src/include/core/tcp.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(NET_SOCKET_OBJ): $(NET_SOCKET_C) src/include/core/net_buffer.h src/include/fs/vfs.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(HTTP_OBJ): $(HTTP_C) src/include/core/http.h src/include/core/tls_client.h src/include/core/tls.h src/include/process/process.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(POWER_OBJ): $(POWER_C) src/include/core/power.h src/include/core/power_notifier.h src/include/core/service_supervisor.h src/include/core/errors.h src/include/core/keyboard.h src/include/core/log.h src/include/core/network_manager.h src/include/core/string.h src/include/core/timer.h src/include/core/video.h src/include/core/workqueue.h src/include/drivers/ac97.h src/include/drivers/acpi.h src/include/drivers/idt.h src/include/drivers/speaker.h src/include/fs/storage.h src/include/fs/vfs.h src/include/process/process.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(POWER_NOTIFIER_OBJ): $(POWER_NOTIFIER_C) src/include/core/power_notifier.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/include/core/timer.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(STRING_OBJ): $(STRING_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(APP_API_OBJ): $(APP_API_C) src/include/core/app_api.h src/include/core/app_files.h src/include/core/poll.h src/include/memory/vma.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(APP_FILES_OBJ): $(APP_FILES_C) src/include/core/app_files.h src/include/core/app_api.h src/include/core/poll.h src/include/fs/vfs.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(APP_LOADER_OBJ): $(APP_LOADER_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(APP_BUILTIN_OBJ): $(APP_BUILTIN_C) src/include/core/syscall.h src/include/core/app_api.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(APP_PACKAGE_OBJ): $(APP_PACKAGE_C) src/include/core/app_package.h src/include/core/app_loader.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(APP_CATALOG_OBJ): $(APP_CATALOG_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SYSCALL_OBJ): $(SYSCALL_C) src/include/core/syscall.h src/include/core/app_api.h src/include/core/app_files.h src/include/core/poll.h src/include/memory/paging.h src/include/memory/vma.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SWITCH_OBJ): $(SWITCH_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(NASM) -f elf32 $(NASMFLAGS_EXTRA) $< -o $@
+
+$(VIDEO_OBJ): $(VIDEO_C) src/include/core/video.h src/include/drivers/vesa.h src/include/core/errors.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(VESA_OBJ): $(VESA_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(FONT_OBJ): $(FONT_C) src/drivers/font_data.inc src/include/drivers/font.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(IDT_OBJ): $(IDT_C) src/include/drivers/idt.h src/include/core/test_protocol.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SERIAL_OBJ): $(SERIAL_C) src/include/drivers/serial.h src/include/core/errors.h src/include/core/log.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(ISR_OBJ): $(ISR_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(NASM) -f elf32 $(NASMFLAGS_EXTRA) $< -o $@
+
+$(IRQ_OBJ): $(IRQ_ASM)
+	@mkdir -p $(BUILD_DIR)
+	$(NASM) -f elf32 $(NASMFLAGS_EXTRA) $< -o $@
+
+$(KEYBOARD_OBJ): $(KEYBOARD_C) src/include/core/keyboard.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/errors.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(MOUSE_OBJ): $(MOUSE_C) src/include/core/input.h src/include/core/irq_deferred.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(TIMER_OBJ): $(TIMER_C) src/include/core/timer.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(RTC_OBJ): $(RTC_C) src/include/drivers/rtc.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(RNG_OBJ): $(RNG_C) src/include/drivers/rng.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(TSS_OBJ): $(TSS_C) src/core/test_coverage.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(ATA_OBJ): $(ATA_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SPEAKER_OBJ): $(SPEAKER_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(PCI_OBJ): $(PCI_C) src/include/process/process.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(E1000_OBJ): $(E1000_C) src/include/core/ethernet.h src/include/core/irq_deferred.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(RTL8139_OBJ): $(RTL8139_C) src/include/core/ethernet.h src/include/core/irq_deferred.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(AC97_OBJ): $(AC97_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(ACPI_OBJ): $(ACPI_C) src/include/drivers/acpi.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(MEMORY_OBJ): $(MEMORY_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SLAB_OBJ): $(SLAB_C) src/include/memory/slab.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h src/include/core/spinlock.h src/include/core/string.h src/include/memory/paging.h src/core/kernel_tests.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(PAGING_OBJ): $(PAGING_C) src/include/memory/paging.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(VMA_OBJ): $(VMA_C) src/include/memory/vma.h src/include/process/process.h src/include/process/resource.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(COMPRESS_OBJ): $(COMPRESS_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(FAT12_OBJ): $(FAT12_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(FAT32_OBJ): $(FAT32_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(FS_OBJ): $(FS_C) src/include/fs/fs.h src/include/fs/permissions.h src/include/fs/vfs.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(VFS_OBJ): $(VFS_C) src/include/fs/vfs.h src/include/fs/permissions.h src/include/core/poll.h src/include/fs/vfs_internal.h src/include/fs/devfs.h src/include/fs/procfs.h src/include/fs/sysfs.h src/include/fs/storage.h src/include/process/process.h src/include/process/resource.h src/include/process/thread.h src/include/core/app_api.h src/include/core/wait.h src/include/memory/slab.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(PERMISSIONS_OBJ): $(PERMISSIONS_C) src/include/fs/permissions.h src/include/fs/vfs.h src/include/fs/storage.h src/include/fs/fs.h src/include/process/credentials.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h src/include/core/string.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(VFS_PATH_OBJ): $(VFS_PATH_C) src/include/fs/vfs.h src/include/fs/permissions.h src/include/fs/vfs_internal.h src/include/fs/devfs.h src/include/fs/procfs.h src/include/fs/sysfs.h src/include/fs/storage.h src/include/process/process.h src/include/core/timer.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(DEVFS_OBJ): $(DEVFS_C) src/include/fs/devfs.h src/include/fs/vfs.h src/include/fs/block.h src/include/core/app_api.h src/include/drivers/speaker.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(PROCFS_OBJ): $(PROCFS_C) src/include/fs/procfs.h src/include/fs/vfs.h src/include/fs/vfs_internal.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h src/include/core/spinlock.h src/include/core/string.h src/include/core/timer.h src/include/core/version.h src/include/fs/block_cache.h src/include/memory/slab.h src/include/memory/paging.h src/include/memory/vma.h src/include/process/process.h src/include/process/thread.h src/include/process/resource.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SYSFS_OBJ): $(SYSFS_C) src/include/fs/sysfs.h src/include/fs/procfs.h src/include/fs/vfs.h src/include/fs/vfs_internal.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h src/include/core/poll.h src/include/core/power.h src/include/core/spinlock.h src/include/core/string.h src/include/drivers/pci.h src/include/core/network_manager.h src/include/core/ethernet.h src/include/fs/block.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(BLOCK_OBJ): $(BLOCK_C) src/include/fs/block.h src/include/fs/block_cache.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(BLOCK_CACHE_OBJ): $(BLOCK_CACHE_C) src/include/fs/block_cache.h src/include/fs/block.h src/include/core/errors.h src/include/core/log.h src/include/core/spinlock.h src/include/core/string.h src/include/core/timer.h src/include/core/wait.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(STORAGE_OBJ): $(STORAGE_C) src/include/fs/storage.h src/include/fs/block_cache.h src/include/core/wait.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(FILE_INDEX_OBJ): $(FILE_INDEX_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(WAV_OBJ): $(WAV_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(BMP_OBJ): $(BMP_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(PROCESS_OBJ): $(PROCESS_C) src/core/test_coverage.h src/include/process/process.h src/include/process/credentials.h src/include/process/thread.h src/include/process/resource.h src/include/memory/slab.h src/include/memory/vma.h src/include/memory/paging.h src/include/core/app_api.h src/include/core/service_supervisor.h src/include/core/timer.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(PROCESS_CREDENTIALS_OBJ): $(PROCESS_CREDENTIALS_C) src/include/process/credentials.h src/include/process/process.h src/include/process/thread.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(RESOURCE_OBJ): $(RESOURCE_C) src/include/process/resource.h src/include/process/process.h src/include/process/credentials.h src/include/fs/vfs.h src/include/memory/vma.h src/include/memory/paging.h src/include/core/app_api.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SIGNAL_OBJ): $(SIGNAL_C) src/include/process/signal.h src/include/process/process.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(IPC_OBJ): $(IPC_C) src/include/process/process.h src/include/core/poll.h src/include/fs/vfs.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(THREAD_OBJ): $(THREAD_C) src/core/test_coverage.h src/include/process/thread.h src/include/process/process.h src/include/memory/slab.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SHELL_OBJ): $(SHELL_C) src/include/apps/shell_input.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_job.h src/include/apps/shell_runtime.h src/include/core/keyboard.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SHELL_INPUT_OBJ): $(SHELL_INPUT_C) src/include/apps/shell_input.h src/include/apps/shell.h src/include/core/keyboard.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SHELL_DISPATCH_OBJ): $(SHELL_DISPATCH_C) src/include/apps/shell_dispatch.h src/include/apps/shell_job.h src/include/apps/shell_pipeline.h src/include/core/log.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SHELL_COMMAND_UTILS_OBJ): $(SHELL_COMMAND_UTILS_C) src/include/apps/shell_command_utils.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SHELL_PIPELINE_OBJ): $(SHELL_PIPELINE_C) src/include/apps/shell_pipeline.h src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/core/app_api.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h src/include/core/string.h src/include/core/video.h src/include/core/wait.h src/include/fs/vfs.h src/include/process/thread.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SHELL_COMMANDS_VFS_OBJ): $(SHELL_COMMANDS_VFS_C) src/include/apps/shell_command_utils.h src/include/apps/shell_pipeline.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/include/core/video.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SHELL_COMMANDS_CORE_OBJ): $(SHELL_COMMANDS_CORE_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_pipeline.h src/include/apps/shell_runtime.h src/include/core/power.h src/include/process/process.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SHELL_COMMANDS_STORAGE_OBJ): $(SHELL_COMMANDS_STORAGE_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_job.h src/include/apps/shell_runtime.h src/include/fs/block_cache.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SHELL_COMMANDS_DIAGNOSTICS_OBJ): $(SHELL_COMMANDS_DIAGNOSTICS_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_introspection.h src/include/apps/shell_runtime.h src/include/apps/shell_diagnostics_helpers.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/workqueue.h src/include/core/service_supervisor.h src/include/core/clock.h src/include/core/tls.h src/include/core/wifi_manager.h src/include/core/log.h src/include/core/power.h src/include/fs/vfs.h src/include/fs/procfs.h src/include/drivers/idt.h src/include/drivers/acpi.h src/include/drivers/rtc.h src/include/drivers/usb_hid.h src/include/process/process.h src/include/memory/slab.h src/include/memory/vma.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SHELL_DIAGNOSTICS_HELPERS_OBJ): $(SHELL_DIAGNOSTICS_HELPERS_C) src/include/apps/shell_diagnostics_helpers.h src/include/apps/shell_command_utils.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h src/include/core/recovery.h src/include/core/string.h src/include/core/tls.h src/include/core/update.h src/include/core/update_remote.h src/include/core/usb_manager.h src/include/drivers/acpi.h src/include/drivers/mouse.h src/include/fs/fs.h src/include/fs/vfs.h src/include/memory/paging.h src/include/process/process.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SHELL_COMMANDS_NETWORK_OBJ): $(SHELL_COMMANDS_NETWORK_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_job.h src/include/apps/shell_runtime.h src/include/core/poll.h src/include/core/route.h src/include/core/wait.h src/include/fs/vfs.h src/include/process/process.h src/include/process/thread.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SHELL_COMMANDS_WIFI_OBJ): $(SHELL_COMMANDS_WIFI_C) src/include/apps/shell_command_utils.h src/include/core/wifi_manager.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SHELL_CHECKS_OBJ): $(SHELL_CHECKS_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_job.h src/include/apps/shell_runtime.h src/include/core/service_supervisor.h src/include/core/keyboard.h src/include/core/power.h src/include/core/power_notifier.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/workqueue.h src/include/core/clock.h src/include/core/tls.h src/include/core/wifi_manager.h src/include/drivers/idt.h src/include/drivers/acpi.h src/include/drivers/rtc.h src/include/drivers/usb_hid.h src/include/process/process.h src/include/memory/vma.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SHELL_COMMANDS_PACKAGES_OBJ): $(SHELL_COMMANDS_PACKAGES_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_job.h src/include/apps/shell_runtime.h src/include/core/update_system.h src/include/core/update_system_slots.h src/include/core/update_remote_system.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SHELL_COMMANDS_APPS_OBJ): $(SHELL_COMMANDS_APPS_C) src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_command_utils.h src/include/apps/shell_runtime.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SHELL_HOSTED_OBJ): $(SHELL_HOSTED_C) src/include/apps/shell.h src/include/apps/shell_input.h src/include/apps/shell_runtime.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SHELL_JOB_OBJ): $(SHELL_JOB_C) src/include/apps/shell_job.h src/include/apps/shell.h src/include/apps/shell_command_utils.h src/include/apps/shell_runtime.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(TASKMGR_OBJ): $(TASKMGR_C) src/include/apps/shell_introspection.h src/include/apps/taskmanager_test.h src/include/core/power.h src/include/fs/vfs.h src/include/process/process.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SHELL_INTROSPECTION_OBJ): $(SHELL_INTROSPECTION_C) src/include/apps/shell_introspection.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/include/fs/vfs.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(MEDIAPLAYER_OBJ): $(MEDIAPLAYER_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(EDITOR_OBJ): $(EDITOR_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(GUITEST_OBJ): $(GUITEST_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+
+$(FILEMANAGER_OBJ): $(FILEMANAGER_C) src/include/ui/filemanager_test.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(TASKBAR_OBJ): $(TASKBAR_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(DESKTOP_OBJ): $(DESKTOP_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(SETTINGS_OBJ): $(SETTINGS_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(UPDATER_OBJ): $(UPDATER_C) src/include/ui/updater_test.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(APPSTORE_OBJ): $(APPSTORE_C) src/include/ui/appstore_test.h
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(WM_OBJ): $(WM_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(ICONS_OBJ): $(ICONS_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(GUI_OBJ): $(GUI_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+$(DISPLAY_OBJ): $(DISPLAY_C)
+	@mkdir -p $(BUILD_DIR)
+	$(GCC) $(CFLAGS) -c $< -o $@
+
+
+$(KERNEL_BIN): $(OBJS) src/linker.ld
+	$(LD) $(LDFLAGS) $(OBJS) -o $@
+
+$(KERNEL_ELF): $(OBJS) src/linker.ld
+	$(LD) -m elf_i386 --oformat elf32-i386 -T src/linker.ld $(OBJS) -o $@
+
+$(OS_IMG): $(BOOT_BIN) $(STAGE2_BIN) $(RECOVERY_LOADER_PADDED_BIN) $(KERNEL_BIN) tools/packager.py $(RECOVERY_IMAGE_COMPOSE_TOOL) \
+          assets/icons/SHELL.BMP assets/icons/EXPLORER.BMP assets/icons/TASKMGR.BMP \
+          $(STORE_FIXTURES) $(STORE_AS2_FIXTURES) $(STORE_AS4_UPDATE_FIXTURES) \
+          docs/fixtures/updates/u2/VALID.ZUP docs/fixtures/updates/u2/TRUNC.ZUP \
+          docs/fixtures/updates/u2/BADHASH.ZUP docs/fixtures/updates/u2/BADSIG.ZUP \
+          docs/fixtures/updates/u2/BADVER.ZUP docs/fixtures/updates/u2/BADFMT.ZUP \
+          docs/fixtures/updates/u2/UNKKEY.ZUP docs/fixtures/updates/u3/APPLY.ZUP
+	python $(RECOVERY_IMAGE_COMPOSE_TOOL) --boot $(BOOT_BIN) --stage2 $(STAGE2_BIN) --kernel $(KERNEL_BIN) --loader $(RECOVERY_LOADER_PADDED_BIN) --kernel-lba $(LEGACY_KERNEL_LBA) --loader-lba $(RECOVERY_LOADER_LBA) --fat32-start-lba $(FAT32_START_LBA) --output $(OS_IMG)
+	python tools/packager.py prepare-hybrid-image --image $(OS_IMG) --disk-bytes $(HYBRID_DISK_BYTES) --fat32-start-lba $(FAT32_START_LBA) --label $(FAT32_LABEL)
+	python tools/packager.py inject-files-fat32 --image $(OS_IMG) --fat32-start-lba $(FAT32_START_LBA) --entry assets/icons/SHELL.BMP=SHELL.BMP --entry assets/icons/EXPLORER.BMP=EXPLORER.BMP --entry assets/icons/TASKMGR.BMP=TASKMGR.BMP --entry $(STORE_FIXTURES_DIR)/VALID.ZPK=VALID.ZPK --entry $(STORE_FIXTURES_DIR)/BADCRC.ZPK=BADCRC.ZPK --entry $(STORE_FIXTURES_DIR)/BADAPI.ZPK=BADAPI.ZPK --entry $(STORE_FIXTURES_DIR)/BADALIAS.ZPK=BADALIAS.ZPK --entry $(STORE_FIXTURES_DIR)/NEEDSDEP.ZPK=NEEDSDEP.ZPK --entry $(STORE_FIXTURES_DIR)/SAMEVER.ZPK=SAMEVER.ZPK --entry $(STORE_AS2_FIXTURES_DIR)/WAITAPP.ZPK=WAITAPP.ZPK --entry $(STORE_AS2_FIXTURES_DIR)/BASE.ZPK=BASE.ZPK --entry $(STORE_AS2_FIXTURES_DIR)/DEPEND.ZPK=DEPEND.ZPK --entry $(STORE_AS4_UPDATE_FIXTURES_DIR)/UPTARGET.ZPK=UPTARGET.ZPK --entry $(STORE_AS4_UPDATE_FIXTURES_DIR)/UPDEPA.ZPK=UPDEPA.ZPK --entry $(STORE_AS4_UPDATE_FIXTURES_DIR)/UPDEPB.ZPK=UPDEPB.ZPK --entry $(STORE_AS4_UPDATE_FIXTURES_DIR)/BROKEN.ZPK=BROKEN.ZPK --entry $(STORE_AS4_UPDATE_FIXTURES_DIR)/CYCLEA.ZPK=CYCLEA.ZPK --entry $(STORE_AS4_UPDATE_FIXTURES_DIR)/CYCLEB.ZPK=CYCLEB.ZPK --entry docs/fixtures/updates/u2/VALID.ZUP=VALID.ZUP --entry docs/fixtures/updates/u2/TRUNC.ZUP=TRUNC.ZUP --entry docs/fixtures/updates/u2/BADHASH.ZUP=BADHASH.ZUP --entry docs/fixtures/updates/u2/BADSIG.ZUP=BADSIG.ZUP --entry docs/fixtures/updates/u2/BADVER.ZUP=BADVER.ZUP --entry docs/fixtures/updates/u2/BADFMT.ZUP=BADFMT.ZUP --entry docs/fixtures/updates/u2/UNKKEY.ZUP=UNKKEY.ZUP --entry docs/fixtures/updates/u3/APPLY.ZUP=APPLY.ZUP
+
+system-fixtures: $(OS_IMG) $(SYSTEM_BOOT_BIN) $(SYSTEM_STAGE2_BIN) $(SYSTEM_FIXTURES_MANIFEST) tools/updater.py tools/packager.py
+	@test -n "$(SYSTEM_PRIVATE_KEY)" || { echo "SYSTEM_PRIVATE_KEY nao configurada em Makefile.local" >&2; exit 2; }
+	@rm -rf "$(SYSTEM_FIXTURES_DIR)"
+	@rm -rf "$(SYSTEM_FIXTURE_IMAGES_DIR)"
+	@mkdir -p "$(SYSTEM_FIXTURE_IMAGES_DIR)"
+	python tools/updater.py fixtures-system-qemu --full-kernel --manifest $(SYSTEM_FIXTURES_MANIFEST) --boot $(SYSTEM_BOOT_BIN) --stage2 $(SYSTEM_STAGE2_BIN) --kernel $(KERNEL_BIN) --private "$(SYSTEM_PRIVATE_KEY)" --public $(SYSTEM_FIXTURES_PUBLIC) --output-dir $(SYSTEM_FIXTURES_DIR)
+	cp -f '$(OS_IMG)' '$(SYSTEM_FIXTURE_IMAGES_DIR)/VALID.img'
+	python tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/valid.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/VALID.img --path VALID.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
+	cp -f '$(OS_IMG)' '$(SYSTEM_FIXTURE_IMAGES_DIR)/TRUNC.img'
+	python tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/truncated.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/TRUNC.img --path TRUNC.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
+	cp -f '$(OS_IMG)' '$(SYSTEM_FIXTURE_IMAGES_DIR)/HDRBAD.img'
+	python tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/tampered-header.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/HDRBAD.img --path HDRBAD.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
+	cp -f '$(OS_IMG)' '$(SYSTEM_FIXTURE_IMAGES_DIR)/PAYBAD.img'
+	python tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/tampered-payload.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/PAYBAD.img --path PAYBAD.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
+	cp -f '$(OS_IMG)' '$(SYSTEM_FIXTURE_IMAGES_DIR)/SIGBAD.img'
+	python tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/tampered-signature.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/SIGBAD.img --path SIGBAD.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
+	cp -f '$(OS_IMG)' '$(SYSTEM_FIXTURE_IMAGES_DIR)/OVERSIZ.img'
+	python tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/oversized.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/OVERSIZ.img --path OVERSIZ.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
+	cp -f '$(OS_IMG)' '$(SYSTEM_FIXTURE_IMAGES_DIR)/MISALGN.img'
+	python tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/misaligned.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/MISALGN.img --path MISALGN.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
+	cp -f '$(OS_IMG)' '$(SYSTEM_FIXTURE_IMAGES_DIR)/VERBAD.img'
+	python tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/incompatible-version.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/VERBAD.img --path VERBAD.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
+	cp -f '$(OS_IMG)' '$(SYSTEM_FIXTURE_IMAGES_DIR)/EPCHBAD.img'
+	python tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/incompatible-epoch.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/EPCHBAD.img --path EPCHBAD.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
+	cp -f '$(OS_IMG)' '$(SYSTEM_FIXTURE_IMAGES_DIR)/ABIBAD.img'
+	python tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/incompatible-abi.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/ABIBAD.img --path ABIBAD.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
+	cp -f '$(OS_IMG)' '$(SYSTEM_FIXTURE_IMAGES_DIR)/SCHBAD.img'
+	python tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/incompatible-schema.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/SCHBAD.img --path SCHBAD.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
+	cp -f '$(OS_IMG)' '$(SYSTEM_FIXTURE_IMAGES_DIR)/IMGHASH.img'
+	python tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/hash-divergent-image.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/IMGHASH.img --path IMGHASH.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
+	cp -f '$(OS_IMG)' '$(SYSTEM_FIXTURE_IMAGES_DIR)/CMPHASH.img'
+	python tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/hash-divergent-component.zsys --image $(SYSTEM_FIXTURE_IMAGES_DIR)/CMPHASH.img --path CMPHASH.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
+
+run-system-fixture:
+	@test -n "$(SYSTEM_FIXTURE_IMAGE)" || { echo "SYSTEM_FIXTURE_IMAGE nao configurada" >&2; exit 2; }
+	@test -f "$(SYSTEM_FIXTURE_IMAGE)" || { echo "Imagem de fixture nao encontrada: $(SYSTEM_FIXTURE_IMAGE)" >&2; exit 2; }
+	$(QEMU) $(QEMU_CPU_ARGS) -drive file=$(SYSTEM_FIXTURE_IMAGE),format=raw,if=none,id=systemfixture -device ide-hd,drive=systemfixture,bootindex=1 $(QEMU_NET_ARGS)
+
+system-slots-fixtures: system-fixtures $(SYSTEM_SLOTS_BASELINE_MANIFEST) tools/updater.py tools/system_slots_fixtures.py tools/packager.py
+	@test -n "$(SYSTEM_PRIVATE_KEY)" || { echo "SYSTEM_PRIVATE_KEY nao configurada em Makefile.local" >&2; exit 2; }
+	@rm -rf "$(SYSTEM_SLOTS_FIXTURES_DIR)"
+	@mkdir -p "$(SYSTEM_SLOTS_BASELINE_DIR)"
+	python tools/updater.py fixtures-system-qemu --full-kernel --manifest $(SYSTEM_SLOTS_BASELINE_MANIFEST) --boot $(BOOT_BIN) --stage2 $(STAGE2_BIN) --kernel $(KERNEL_BIN) --private "$(SYSTEM_PRIVATE_KEY)" --public $(SYSTEM_FIXTURES_PUBLIC) --output-dir $(SYSTEM_SLOTS_BASELINE_DIR)
+	python tools/system_slots_fixtures.py --package $(SYSTEM_SLOTS_BASELINE_DIR)/valid.zsys --output-dir $(SYSTEM_SLOTS_FIXTURES_DIR)
+	cp -f '$(OS_IMG)' '$(SYSTEM_SLOTS_FIXTURE_IMAGE)'
+	python tools/packager.py inject-file-fat32 --file $(SYSTEM_SLOTS_BASELINE_DIR)/valid.zsys --image $(SYSTEM_SLOTS_FIXTURE_IMAGE) --path ZSA0.ZSY --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools/packager.py inject-file-fat32 --file $(SYSTEM_SLOTS_FIXTURES_DIR)/ZSI0.STA --image $(SYSTEM_SLOTS_FIXTURE_IMAGE) --path ZSI0.STA --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools/packager.py inject-file-fat32 --file $(SYSTEM_SLOTS_FIXTURES_DIR)/ZSI1.STA --image $(SYSTEM_SLOTS_FIXTURE_IMAGE) --path ZSI1.STA --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools/packager.py inject-file-fat32 --file $(SYSTEM_FIXTURES_DIR)/valid.zsys --image $(SYSTEM_SLOTS_FIXTURE_IMAGE) --path VALID.ZSYS --fat32-start-lba $(FAT32_START_LBA) --replace
+
+run-system-slots-fixture: system-slots-fixtures
+	$(QEMU) $(QEMU_CPU_ARGS) -drive file=$(SYSTEM_SLOTS_FIXTURE_IMAGE),format=raw,if=none,id=systemslots -device ide-hd,drive=systemslots,bootindex=1 $(QEMU_NET_ARGS)
+
+system-slots-matrix: system-slots-fixtures tools/system_slots_matrix.py tools/packager.py
+	@rm -rf "$(SYSTEM_SLOTS_MATRIX_DIR)"
+	@mkdir -p "$(SYSTEM_SLOTS_MATRIX_DIR)"
+	python tools/system_slots_matrix.py --base-image $(SYSTEM_SLOTS_FIXTURE_IMAGE) --baseline $(SYSTEM_SLOTS_BASELINE_DIR)/valid.zsys --candidate $(SYSTEM_FIXTURES_DIR)/valid.zsys --bad-signature $(SYSTEM_FIXTURES_DIR)/tampered-signature.zsys --bad-image-hash $(SYSTEM_FIXTURES_DIR)/hash-divergent-image.zsys --bad-component-hash $(SYSTEM_FIXTURES_DIR)/hash-divergent-component.zsys --output-dir $(SYSTEM_SLOTS_MATRIX_DIR) --fat32-start-lba $(FAT32_START_LBA)
+
+run-system-slots-matrix: system-slots-matrix
+	@test -n "$(SYSTEM_SLOTS_MATRIX_IMAGE)" || { echo "SYSTEM_SLOTS_MATRIX_IMAGE nao configurada" >&2; exit 2; }
+	@test -f "$(SYSTEM_SLOTS_MATRIX_IMAGE)" || { echo "Imagem de matriz nao encontrada: $(SYSTEM_SLOTS_MATRIX_IMAGE)" >&2; exit 2; }
+	$(QEMU) $(QEMU_CPU_ARGS) -drive file=$(SYSTEM_SLOTS_MATRIX_IMAGE),format=raw,if=none,id=systemslotsmatrix -device ide-hd,drive=systemslotsmatrix,bootindex=1 $(QEMU_NET_ARGS)
+
+run-system-update-matrix: system-slots-matrix
+	@test -f "$(SYSTEM_UPDATE_MATRIX_IMAGE)" || { echo "Imagem guiada EP9.3 nao encontrada: $(SYSTEM_UPDATE_MATRIX_IMAGE)" >&2; exit 2; }
+	$(QEMU) $(QEMU_CPU_ARGS) -snapshot -monitor stdio -drive file=$(SYSTEM_UPDATE_MATRIX_IMAGE),format=raw,if=none,id=systemupdatematrix -device ide-hd,drive=systemupdatematrix,bootindex=1 $(QEMU_NET_ARGS)
+
+ep94b-fixtures: $(OS_IMG) $(SYSTEM_BOOT_BIN) $(SYSTEM_BOOT_HANDOFF_INVALID_BIN) $(SYSTEM_BOOT_RETURN_BIN) $(SYSTEM_STAGE2_BIN) $(SYSTEM_FIXTURES_MANIFEST) $(SYSTEM_SLOTS_BASELINE_MANIFEST) tools/updater.py
+	@test -n "$(SYSTEM_PRIVATE_KEY)" || { echo "SYSTEM_PRIVATE_KEY nao configurada em Makefile.local" >&2; exit 2; }
+	@rm -rf "$(EP94B_FIXTURES_DIR)"
+	@mkdir -p "$(EP94B_ABI1_DIR)"
+	@mkdir -p "$(EP94B_ABI2_DIR)"
+	python tools/updater.py fixtures-system-qemu --full-kernel --manifest $(SYSTEM_FIXTURES_MANIFEST) --boot $(SYSTEM_BOOT_BIN) --stage2 $(SYSTEM_STAGE2_BIN) --kernel $(KERNEL_BIN) --private "$(SYSTEM_PRIVATE_KEY)" --public $(SYSTEM_FIXTURES_PUBLIC) --output-dir $(EP94B_ABI2_DIR) --handoff-invalid-boot $(SYSTEM_BOOT_HANDOFF_INVALID_BIN) --returning-boot $(SYSTEM_BOOT_RETURN_BIN) --legacy-manifest $(SYSTEM_SLOTS_BASELINE_MANIFEST) --legacy-boot $(BOOT_BIN) --legacy-stage2 $(STAGE2_BIN) --legacy-output-dir $(EP94B_ABI1_DIR)
+
+ep94b-matrix: ep94b-fixtures tools/ep94b_matrix.py tools/system_slots_matrix.py tools/packager.py
+	@rm -rf "$(EP94B_MATRIX_DIR)"
+	@mkdir -p "$(EP94B_MATRIX_DIR)"
+	python tools/ep94b_matrix.py --base-image $(OS_IMG) --abi1 $(EP94B_ABI1_DIR)/valid.zsys --abi2 $(EP94B_ABI2_DIR)/valid.zsys --bad-boot $(EP94B_ABI2_DIR)/hash-divergent-boot.zsys --bad-stage2 $(EP94B_ABI2_DIR)/hash-divergent-stage2.zsys --bad-kernel $(EP94B_ABI2_DIR)/hash-divergent-kernel.zsys --handoff-invalid $(EP94B_ABI2_DIR)/handoff-invalid.zsys --returning-boot $(EP94B_ABI2_DIR)/returning-boot.zsys --output $(EP94B_MATRIX_IMAGE) --fat32-start-lba $(FAT32_START_LBA)
+
+run-ep94b-matrix: ep94b-matrix
+	@test -f "$(EP94B_MATRIX_IMAGE)" || { echo "Imagem guiada EP9.4B nao encontrada: $(EP94B_MATRIX_IMAGE)" >&2; exit 2; }
+	$(QEMU) $(QEMU_CPU_ARGS) -snapshot -monitor stdio -drive file=$(EP94B_MATRIX_IMAGE),format=raw,if=none,id=ep94bmatrix -device ide-hd,drive=ep94bmatrix,bootindex=1 $(QEMU_NET_ARGS)
+
+ep94c-matrix: ep94b-fixtures tools/ep94c_matrix.py tools/ep94b_matrix.py tools/system_slots_matrix.py tools/packager.py
+	@rm -rf "$(EP94C_MATRIX_DIR)"
+	@mkdir -p "$(EP94C_MATRIX_DIR)"
+	python tools/ep94c_matrix.py --base-image $(OS_IMG) --active $(EP94B_ABI1_DIR)/valid.zsys --candidate $(EP94B_ABI2_DIR)/valid.zsys --output $(EP94C_MATRIX_IMAGE) --fixtures-dir $(EP94C_FIXTURES_DIR) --fat32-start-lba $(FAT32_START_LBA)
+
+run-ep94c-matrix: ep94c-matrix
+	@test -f "$(EP94C_MATRIX_IMAGE)" || { echo "Imagem guiada EP9.4C nao encontrada: $(EP94C_MATRIX_IMAGE)" >&2; exit 2; }
+	$(QEMU) $(QEMU_CPU_ARGS) -snapshot -monitor stdio -drive file=$(EP94C_MATRIX_IMAGE),format=raw,if=none,id=ep94cmatrix -device ide-hd,drive=ep94cmatrix,bootindex=1 $(QEMU_NET_ARGS)
+
+$(RECOVERY_MENU_VGA_IMAGE): system-slots-matrix $(RECOVERY_STAGE2_VGA_BIN) $(STAGE2_BIN) $(RECOVERY_STAGE2_PATCH_TOOL)
+	python $(RECOVERY_STAGE2_PATCH_TOOL) --base $(SYSTEM_SLOTS_MATRIX_DIR)/MENU_FAILED_VALID.img --stage2 $(RECOVERY_STAGE2_VGA_BIN) --reference-stage2 $(STAGE2_BIN) --output $@ --stage2-lba 1 --kernel-lba 64
+
+run-recovery-menu-vga: $(RECOVERY_MENU_VGA_IMAGE)
+	$(QEMU) $(QEMU_CPU_ARGS) -drive file=$(RECOVERY_MENU_VGA_IMAGE),format=raw,if=none,id=recoverymenuvga -device ide-hd,drive=recoverymenuvga,bootindex=1 $(QEMU_NET_ARGS)
+
+run: $(OS_IMG)
+	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_BOOT_DISK_ARGS) $(QEMU_NET_ARGS)
+
+run-stage2-lba: $(OS_IMG)
+	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_STAGE2_LBA_DISK_ARGS) $(QEMU_NET_ARGS)
+
+$(STAGE2_CHS_IMG): $(OS_IMG)
+	cp -f '$(OS_IMG)' '$(STAGE2_CHS_IMG)'
+
+run-stage2-chs: $(STAGE2_CHS_IMG)
+	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_STAGE2_CHS_DISK_ARGS) $(QEMU_NET_ARGS)
+
+run-usb: $(OS_IMG)
+	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_BOOT_DISK_ARGS) $(QEMU_NET_ARGS) $(QEMU_USB_ARGS) $(QEMU_USB_DEVICE_ARGS)
+
+run-usb-msc: $(OS_IMG) $(STORAGE_FIXTURES_STAMP)
+	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_BOOT_DISK_ARGS) $(QEMU_NET_ARGS) $(QEMU_USB_ARGS) $(QEMU_USB_DEVICE_ARGS) $(QEMU_USB_MSC_ARGS)
+
+run-usb-hid: $(OS_IMG)
+	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_BOOT_DISK_ARGS) $(QEMU_NET_ARGS) $(QEMU_USB_ARGS) $(QEMU_USB_HID_DEVICE_ARGS)
+
+run-usb-wifi: $(OS_IMG)
+	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_BOOT_DISK_ARGS) $(QEMU_NET_ARGS) $(QEMU_USB_WIFI_EHCI_ARGS) $(QEMU_USB_WIFI_ARGS)
+
+$(STORAGE_FIXTURES_STAMP): $(STORAGE_FIXTURES_TOOL)
+	@mkdir -p $(BUILD_DIR)
+	python $(STORAGE_FIXTURES_TOOL) generate --output-dir $(BUILD_DIR)
+
+storage-fixtures: $(STORAGE_FIXTURES_STAMP)
+
+storage-fixtures-test:
+	python $(STORAGE_FIXTURES_TOOL) selftest
+
+storage-fixtures-verify: $(STORAGE_FIXTURES_STAMP)
+	python $(STORAGE_FIXTURES_TOOL) verify --output-dir $(BUILD_DIR)
+
+run-storage: $(OS_IMG) $(STORAGE_FIXTURES_STAMP)
+	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_BOOT_DISK_ARGS) -drive format=raw,file=$(STORAGE_VALID_IMG),if=ide,index=1 -drive format=raw,file=$(STORAGE_CORRUPT_IMG),if=ide,index=2 -drive format=raw,file=$(STORAGE_UNKNOWN_IMG),if=ide,index=3 $(QEMU_NET_ARGS)
+
+debug: $(OS_IMG)
+	$(QEMU) $(QEMU_CPU_ARGS) $(QEMU_BOOT_DISK_ARGS) $(QEMU_NET_ARGS) -s -S &
+
+Q3CHECK_ARGS ?= --accept-debt DT100-003
+
+q3check:
+	python tools/q3check.py $(Q3CHECK_ARGS)
+	python tools/vendor_terminus.py --check
+
+catalog-test: tools/test_catalog.py tests/unit/test_catalog.py tests/coverage/registry.json tests/catalog.json docs/qualidade/catalogo-testes.md
+	python -m unittest tests.unit.test_catalog
+	python tools/test_catalog.py validate --catalog tests/catalog.json --coverage-registry tests/coverage/registry.json
+	python tools/test_catalog.py check-rendered --catalog tests/catalog.json --view docs/qualidade/catalogo-testes.md
+
+catalog-test-strict: tools/test_catalog.py tests/coverage/registry.json tests/catalog.json
+	python tools/test_catalog.py validate --strict --catalog tests/catalog.json --coverage-registry tests/coverage/registry.json
+
+test-qemu: tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py run --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+
+test-qemu-selftest: tools/qemu_test_runner.py tests/unit/test_qemu_test_runner.py
+	python tools/qemu_test_runner.py --self-test
+	python -m unittest tests.unit.test_qemu_test_runner
+
+test-qemu-parallel: $(OS_IMG) tools/qemu_parallel_runner.py tools/qemu_test_runner.py tests/catalog.json tests/unit/test_qemu_parallel_runner.py
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_parallel_runner.py parallel --workers "$(QEMU_PARALLEL_WORKERS)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" $(QEMU_PARALLEL_ARGS)
+
+test-sec6-host: tools/qemu_test_runner.py tools/qemu_parallel_runner.py tools/test_catalog.py tests/unit/test_sec6_runner.py tests/unit/test_qemu_test_runner.py tests/unit/test_qemu_parallel_runner.py tests/unit/test_tst7_continuous_runner.py tests/unit/test_shell_input_host.c tests/unit/test_shell_host.c tests/unit/test_kernel_tests_blackbox_host.c tests/catalog.json tests/coverage/registry.json
+	python -m unittest tests.unit.test_sec6_runner tests.unit.test_qemu_test_runner tests.unit.test_qemu_parallel_runner tests.unit.test_tst7_continuous_runner
+	$(MAKE) test-shell-input-host test-shell-core-host test-blackbox-host test-tst6-host
+
+test-sec6-qemu: $(OS_IMG) tools/qemu_parallel_runner.py tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_parallel_runner.py parallel --workers "$(SEC6_QEMU_WORKERS)" --seed "$(SEC6_QEMU_SEED)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --tag sec6 --tag fault --tag matrix --tag recovery
+
+test-sec6: test-sec6-host test-sec6-qemu
+
+test-qemu-soak-parallel: $(OS_IMG) tools/qemu_parallel_runner.py tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_parallel_runner.py soak --workers "$(QEMU_PARALLEL_WORKERS)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" $(QEMU_PARALLEL_SOAK_ARGS)
+
+test-assembly-qemu: coverage-map tools/qemu_test_runner.py tests/catalog.json
+	python tools/qemu_test_runner.py stress --case qemu:tst7:assembly --iterations 1 --boot-timeout 60 --case-timeout 120 --heartbeat-timeout 15 --image "$(COVERAGE_BUILD_DIR)/zephyros.img" --results "$(COVERAGE_BUILD_DIR)/test-results/tst7-assembly" --run-id $(ASSEMBLY_RUN_ID) --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none --coverage-symbols "$(COVERAGE_BUILD_DIR)/coverage-symbols.json"
+
+test-assembly-trace-qemu: coverage-map tools/assembly_trace_collector.py tools/qemu_test_runner.py tests/catalog.json
+	python tools/assembly_trace_collector.py symbols --build-dir "$(COVERAGE_BUILD_DIR)" --catalog tests/catalog.json --nasm "$(NASM)" --nm "$(NM)" --compiler "$(GCC)" --output "$(COVERAGE_BUILD_DIR)/assembly-symbols.json"
+	python tools/qemu_test_runner.py stress --case qemu:tst7:assembly --iterations 1 --boot-timeout 60 --case-timeout 120 --heartbeat-timeout 15 --image "$(COVERAGE_BUILD_DIR)/zephyros.img" --results "$(COVERAGE_BUILD_DIR)/test-results/assembly-trace" --run-id $(ASSEMBLY_TRACE_RUN_ID) --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none --coverage-symbols "$(COVERAGE_BUILD_DIR)/coverage-symbols.json" --qemu-arg=-d --qemu-arg=in_asm --qemu-arg=-D --qemu-arg=$(COVERAGE_BUILD_DIR)/test-results/assembly-trace/$(ASSEMBLY_TRACE_RUN_ID)/qemu-in-asm.log
+	python tools/assembly_trace_collector.py collect --trace "$(COVERAGE_BUILD_DIR)/test-results/assembly-trace/$(ASSEMBLY_TRACE_RUN_ID)/qemu-in-asm.log" --symbols "$(COVERAGE_BUILD_DIR)/assembly-symbols.json" --case-id qemu:tst7:assembly --source src/boot/boot.asm --source src/boot/stage2.asm --source src/boot/recovery_entry.asm --source src/kernel/entry.asm --output "$(COVERAGE_BUILD_DIR)/test-results/assembly-trace/$(ASSEMBLY_TRACE_RUN_ID)/assembly-trace.json"
+
+test-assembly-boot-trace-qemu: coverage-image tools/assembly_boot_trace.py tools/assembly_trace_collector.py tests/catalog.json
+	python tools/assembly_boot_trace.py --build-dir "$(COVERAGE_BUILD_DIR)" --catalog tests/catalog.json --output-dir "$(COVERAGE_BUILD_DIR)/test-results/assembly-boot-trace/$(ASSEMBLY_BOOT_TRACE_RUN_ID)" --nasm $(NASM) --nm "$(NM)" --compiler "$(GCC)" --qemu $(QEMU) --timeout 5
+
+test-assembly-recovery-trace-qemu: coverage-image $(SYSTEM_BOOT_RETURN_BIN) tools/assembly_recovery_trace.py tools/assembly_trace_collector.py tests/catalog.json
+	python tools/assembly_recovery_trace.py --build-dir "$(COVERAGE_BUILD_DIR)" --catalog tests/catalog.json --output-dir "$(COVERAGE_BUILD_DIR)/test-results/assembly-recovery-trace/$(ASSEMBLY_RECOVERY_TRACE_RUN_ID)" --system-boot-return "$(SYSTEM_BOOT_RETURN_BIN)" --nasm $(NASM) --ld "$(LD)" --nm "$(NM)" --compiler "$(GCC)" --qemu $(QEMU) --timeout 30
+
+test-execution-coverage-qemu: coverage-map tools/qemu_test_runner.py tests/catalog.json
+	python tools/qemu_test_runner.py stress --case qemu:tst4:execution --iterations 1 --boot-timeout 60 --case-timeout 120 --heartbeat-timeout 60 --image "$(COVERAGE_BUILD_DIR)/zephyros.img" --results "$(COVERAGE_BUILD_DIR)/test-results/cov-tst4-execution" --run-id $(EXECUTION_COVERAGE_RUN_ID) --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none --coverage-symbols "$(COVERAGE_BUILD_DIR)/coverage-symbols.json"
+
+test-paging-coverage-qemu: coverage-map tools/qemu_test_runner.py tests/catalog.json
+	python tools/qemu_test_runner.py stress --case qemu:tst4:paging-vma --iterations 1 --boot-timeout 60 --case-timeout 120 --heartbeat-timeout 60 --image "$(COVERAGE_BUILD_DIR)/zephyros.img" --results "$(COVERAGE_BUILD_DIR)/test-results/cov-tst4-paging" --run-id $(PAGING_COVERAGE_RUN_ID) --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none --coverage-symbols "$(COVERAGE_BUILD_DIR)/coverage-symbols.json"
+
+test-tst4-qemu: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst4:memory-slab --iterations 1 --boot-timeout "$(TST4_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST4_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST4_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+
+test-tst4-qemu-paging-vma: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst4:paging-vma --iterations 1 --boot-timeout "$(TST4_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST4_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST4_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+
+test-tst4-qemu-execution: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst4:execution --iterations 1 --boot-timeout "$(TST4_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST4_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST4_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+
+test-tst4-qemu-storage-vfs: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst4:storage-vfs --iterations 1 --boot-timeout "$(TST4_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST4_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST4_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+
+test-tst4-qemu-network: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst4:network --iterations 1 --boot-timeout "$(TST4_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST4_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST4_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+
+test-tst4-qemu-platform: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst4:platform --iterations 1 --boot-timeout "$(TST4_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST4_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST4_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+
+test-tst5-host: tools/tst5_host_runner.py tests/unit/test_tst5_runner.py tools/qemu_test_runner.py
+	python tools/tst5_host_runner.py
+
+test-tst5-qemu-shell: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst5:shell --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+
+test-krn6-qemu-diagnostics: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst5:krn6-diagnostics --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+
+test-tst5-qemu-input: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst5:input --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+
+test-tst5-qemu-apps: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst5:apps --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+
+test-tst5-qemu-processes: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst5:processes --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+
+test-tst5-qemu-storage: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst5:storage --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+
+test-tst5-qemu-network: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst5:network --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst5-qemu-update-recovery: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst5:update-recovery --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none --fixture readonly-update
+
+test-tst5-qemu-reboot: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst5:reboot --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+
+test-tst5-qemu-poweroff: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst5:poweroff --iterations 1 --boot-timeout "$(TST5_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST5_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST5_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(QEMU_TEST_NETWORK)"
+
+test-tst6-host: tools/tst6_host_runner.py tests/unit/test_tst6_runner.py tools/qemu_test_runner.py
+	python tools/tst6_host_runner.py
+
+test-tst6-qemu-matrix-baseline: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst6:matrix:baseline --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(TST6_QEMU_NETWORK)"
+
+test-tst6-qemu-matrix-minimal: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst6:matrix:minimal --iterations 1 --qemu-profile minimal --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst6-qemu-matrix-network: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst6:matrix:network --iterations 1 --qemu-profile network --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(TST6_QEMU_NETWORK)"
+
+test-tst6-qemu-matrix-usb-hid: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst6:matrix:usb-hid --iterations 1 --qemu-profile usb-hid --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst6-qemu-matrix-usb-storage: $(OS_IMG) $(STORAGE_FIXTURES_STAMP) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst6:matrix:usb-storage --iterations 1 --qemu-profile usb-storage --storage-image "$(STORAGE_VALID_IMG)" --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst6-qemu-matrix-audio: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst6:matrix:audio --iterations 1 --qemu-profile audio --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst6-qemu-matrix-display: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst6:matrix:display --iterations 1 --qemu-profile display --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst6-qemu-matrix-pci: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst6:matrix:pci --iterations 1 --qemu-profile pci --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst6-qemu-stress-kernel: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst6:stress:kernel --iterations "$(TST6_QEMU_STRESS_ITERATIONS)" --suite-timeout "$(TST6_QEMU_STRESS_DURATION)" --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(TST6_QEMU_NETWORK)"
+
+test-tst6-qemu-stress-storage: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst6:stress:storage --iterations "$(TST6_QEMU_STRESS_ITERATIONS)" --suite-timeout "$(TST6_QEMU_STRESS_DURATION)" --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst6-qemu-stress-network: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst6:stress:network --iterations "$(TST6_QEMU_STRESS_ITERATIONS)" --suite-timeout "$(TST6_QEMU_STRESS_DURATION)" --qemu-profile network --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(TST6_QEMU_NETWORK)"
+
+test-tst6-qemu-stress-apps: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst6:stress:apps --iterations "$(TST6_QEMU_STRESS_ITERATIONS)" --suite-timeout "$(TST6_QEMU_STRESS_DURATION)" --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst6-qemu-fault-memory: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst6:fault:memory --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst6-qemu-fault-block: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst6:fault:block --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst6-qemu-fault-block-cache: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst6:fault:block-cache --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst6-qemu-fault-package: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst6:fault:package --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst6-qemu-fault-update: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst6:fault:update --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst6-qemu-fault-network: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst6:fault:network --iterations 1 --qemu-profile network --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network "$(TST6_QEMU_NETWORK)"
+
+test-tst6-qemu-fault-process: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst6:fault:process --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst6-qemu-fault-recovery: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst6:fault:recovery --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst6-qemu-fault-service-supervisor: $(OS_IMG) tools/qemu_test_runner.py tests/catalog.json
+	@test -f "$(OS_IMG)" || { echo "Imagem ausente: $(OS_IMG)" >&2; exit 2; }
+	python tools/qemu_test_runner.py stress --case qemu:tst6:fault:service-supervisor --iterations 1 --qemu-profile baseline --boot-timeout "$(TST6_QEMU_BOOT_TIMEOUT)" --case-timeout "$(TST6_QEMU_CASE_TIMEOUT)" --heartbeat-timeout "$(TST6_QEMU_HEARTBEAT_TIMEOUT)" --image "$(OS_IMG)" --catalog tests/catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --network none
+
+test-tst7-host: tools/tst7_regression_runner.py tools/assembly_trace_collector.py tools/assembly_boot_trace.py tools/assembly_recovery_trace.py tests/unit/test_tst7_runner.py tests/unit/test_assembly_trace_collector.py tests/unit/test_assembly_boot_trace.py tests/unit/test_assembly_recovery_trace.py tests/catalog.json tests/regressions/manifest.json
+	python -m unittest tests.unit.test_tst7_runner tests.unit.test_assembly_trace_collector tests.unit.test_assembly_boot_trace tests.unit.test_assembly_recovery_trace
+
+test-tst7-quick: tools/tst7_regression_runner.py tests/catalog.json tests/regressions/manifest.json
+	python tools/tst7_regression_runner.py quick --make "$(MAKE)" --qemu $(QEMU) --image "$(OS_IMG)" --command-timeout "$(TST7_COMMAND_TIMEOUT)" --suite-timeout "$(TST7_QUICK_TIMEOUT)"
+
+test-tst7-full: tools/tst7_regression_runner.py tools/test_catalog.py tests/coverage/registry.json tests/catalog.json tests/regressions/manifest.json
+	python tools/tst7_regression_runner.py full --strict-coverage --make "$(MAKE)" --qemu $(QEMU) --image "$(OS_IMG)" --command-timeout "$(TST7_COMMAND_TIMEOUT)" --suite-timeout "$(TST7_FULL_TIMEOUT)"
+
+test-tst7-continuous-host: tools/tst7_continuous_runner.py tools/qemu_parallel_runner.py tests/unit/test_tst7_continuous_runner.py tests/unit/test_qemu_parallel_runner.py
+	python -m unittest tests.unit.test_tst7_continuous_runner tests.unit.test_qemu_parallel_runner
+
+test-tst7-continuous: tools/tst7_continuous_runner.py tools/tst7_regression_runner.py
+	python tools/tst7_continuous_runner.py start --mode full --forever --interval 60 --cycle-timeout "$(TST7_FULL_TIMEOUT)" --make "$(MAKE)" --qemu $(QEMU) --image "$(OS_IMG)" --catalog tests/catalog.json
+
+test-tst7-continuous-parallel: tools/tst7_continuous_runner.py tools/qemu_parallel_runner.py tools/qemu_test_runner.py
+	python tools/tst7_continuous_runner.py start --mode soak-parallel --forever --interval 60 --cycle-timeout "$(TST7_FULL_TIMEOUT)" --workers "$(QEMU_PARALLEL_WORKERS)" --qemu $(QEMU) --image "$(OS_IMG)" --catalog tests/catalog.json
+
+test-core-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_core_contracts.c tests/unit/test_core_host_runner.py tests/catalog.json
+	python tools/core_host_runner.py --cc "$(HOST_CC)"
+
+test-network-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_network_host.c tests/catalog.json
+	python tools/core_host_runner.py --case host:core:net-buffer --cc "$(HOST_CC)"
+
+test-network-manager-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_network_manager_host.c tests/catalog.json src/core/network_manager.c src/core/recovery.c
+	python tools/core_host_runner.py --case host:core:network-manager --cc "$(HOST_CC)"
+
+test-route-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_route_host.c tests/catalog.json
+	python tools/core_host_runner.py --case host:network:route --cc "$(HOST_CC)"
+
+test-ipv4-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_ipv4_host.c tests/catalog.json
+	python tools/core_host_runner.py --case host:network:ipv4 --cc "$(HOST_CC)"
+
+test-crypto-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_crypto_host.c tests/catalog.json
+	python tools/core_host_runner.py --case host:core:crypto --cc "$(HOST_CC)"
+
+test-scheduling-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_core_scheduling_host.c tests/catalog.json
+	python tools/core_host_runner.py --case host:core:scheduling --cc "$(HOST_CC)"
+
+test-package-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_package_host.c tests/catalog.json src/core/app_package.c src/include/core/app_package.h src/include/core/app_package_trust.h src/core/crypto.c
+	python tools/core_host_runner.py --case host:core:app-package --cc "$(HOST_CC)"
+
+test-update-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_update_host.c src/core/update.c src/core/update_host.h src/core/crypto.c tests/catalog.json
+	python tools/core_host_runner.py --case host:core:update --cc "$(HOST_CC)"
+
+test-update-runtime-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_update_runtime_host.c tests/catalog.json src/core/update_runtime.c src/core/update_runtime_host.h src/core/string.c
+	python tools/core_host_runner.py --case host:core:update-runtime --cc "$(HOST_CC)"
+
+test-update-remote-runtime-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_update_remote_runtime_host.c tests/catalog.json src/core/update_remote_runtime.c src/core/update_remote_runtime_host.h src/core/string.c
+	python tools/core_host_runner.py --case host:core:update-remote-runtime --cc "$(HOST_CC)"
+
+test-update-remote-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_update_remote_host.c tests/catalog.json src/core/update_remote.c src/core/update_remote_host.h src/core/string.c
+	python tools/core_host_runner.py --case host:core:update-remote --cc "$(HOST_CC)"
+
+test-app-remote-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_app_remote_host.c tests/catalog.json src/core/app_remote.c src/include/core/app_remote.h src/include/core/app_remote_config.h src/include/core/app_remote_trust.h src/include/core/app_package.h src/include/core/app_package_trust.h src/core/string.c
+	python tools/core_host_runner.py --case host:core:app-remote --cc "$(HOST_CC)"
+
+test-update-system-slots-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_update_system_slots_host.c tests/catalog.json src/core/update_system_slots.c src/core/update_system_slots_host.h src/core/string.c
+	python tools/core_host_runner.py --case host:core:update-system-slots --cc "$(HOST_CC)"
+
+test-update-remote-system-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_update_remote_system_host.c tests/catalog.json src/core/update_remote_system.c src/core/update_remote_system_host.h src/core/string.c
+	python tools/core_host_runner.py --case host:core:update-remote-system --cc "$(HOST_CC)"
+
+test-update-remote-github-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_update_remote_github_host.c tests/catalog.json src/core/update_remote_github.c src/core/update_remote_github_host.h src/core/string.c
+	python tools/core_host_runner.py --case host:core:update-remote-github --cc "$(HOST_CC)"
+
+test-update-remote-release-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_update_remote_release_host.c tests/catalog.json src/core/update_remote_release.c src/core/update_remote_release_host.h src/core/string.c
+	python tools/core_host_runner.py --case host:core:update-remote-release --cc "$(HOST_CC)"
+
+test-update-system-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_update_system_host.c tests/catalog.json src/core/update_system.c src/core/update_system_host.h src/core/string.c
+	python tools/core_host_runner.py --case host:core:update-system --cc "$(HOST_CC)"
+
+test-state-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_core_state_host.c tests/catalog.json src/core/recovery.c src/core/power_notifier.c
+	python tools/core_host_runner.py --case host:core:state --cc "$(HOST_CC)"
+
+test-device-manager-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_device_manager_host.c tests/catalog.json src/core/device_manager.c src/core/recovery.c
+	python tools/core_host_runner.py --case host:core:device-manager --cc "$(HOST_CC)"
+
+test-app-api-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_app_api_host.c tests/catalog.json src/core/app_api.c
+	python tools/core_host_runner.py --case host:core:app-api --cc "$(HOST_CC)"
+
+test-app-files-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_app_files_host.c tests/catalog.json src/core/app_files.c src/include/core/app_files.h
+	python tools/core_host_runner.py --case host:core:app-files --cc "$(HOST_CC)"
+
+test-app-builtin-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_app_builtin_host.c tests/catalog.json src/core/app_builtin.c src/include/core/app_builtin.h src/include/core/app_loader.h
+	python tools/core_host_runner.py --case host:core:app-builtin --cc "$(HOST_CC)"
+
+test-app-loader-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_app_loader_host.c tests/catalog.json src/core/app_loader.c src/include/core/app_loader.h src/include/core/app_api.h src/include/core/app_files.h
+	python tools/core_host_runner.py --case host:core:app-loader --cc "$(HOST_CC)"
+
+test-taskbar-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_taskbar_host.c tests/catalog.json src/taskbar/taskbar.c src/include/ui/taskbar.h src/include/ui/display.h src/include/ui/desktop.h src/include/ui/gui.h src/include/drivers/vesa.h src/include/drivers/mouse.h src/include/core/timer.h src/include/core/video.h src/include/core/log.h
+	python tools/core_host_runner.py --case host:ui:taskbar --cc "$(HOST_CC)"
+
+test-appstore-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_appstore_host.c tests/catalog.json src/appstore/appstore.c src/include/ui/appstore.h src/include/ui/appstore_test.h src/include/core/app_catalog.h src/include/core/app_package.h src/include/core/app_package_trust.h src/include/core/app_remote.h src/include/core/errors.h src/include/core/log.h src/include/core/recovery.h src/include/core/string.h src/include/core/video.h src/include/drivers/mouse.h src/include/process/process.h src/include/ui/desktop.h src/include/ui/display.h src/include/ui/gui.h src/include/ui/taskbar.h src/include/ui/wm.h
+	python tools/core_host_runner.py --case host:ui:appstore --cc "$(HOST_CC)"
+
+test-editor-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_editor_host.c tests/catalog.json src/shell/editor.c src/include/apps/editor.h src/include/apps/editor_test.h src/include/core/errors.h src/include/core/keyboard.h src/include/core/log.h src/include/core/memory.h src/include/core/recovery.h src/include/core/string.h src/include/core/timer.h src/include/core/video.h src/include/fs/fs.h src/include/process/process.h src/include/ui/desktop.h src/include/ui/taskbar.h
+	python tools/core_host_runner.py --case host:shell:editor --cc "$(HOST_CC)"
+
+test-settings-icons-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_settings_host.c tests/catalog.json src/settings/settings.c src/settings/settings_test.h src/include/ui/settings.h src/include/ui/icons.h src/include/ui/gui.h src/include/ui/display.h src/include/core/video.h src/include/core/log.h src/include/ui/taskbar.h
+	python tools/core_host_runner.py --case host:ui:settings-icons --cc "$(HOST_CC)"
+
+test-desktop-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_desktop_host.c tests/catalog.json src/desktop/desktop.c src/include/ui/desktop.h src/include/ui/display.h src/include/ui/gui.h src/include/ui/icons.h src/include/ui/taskbar.h src/include/drivers/vesa.h src/include/drivers/mouse.h src/include/drivers/font.h src/include/core/timer.h src/include/core/video.h src/include/core/errors.h src/include/core/log.h
+	python tools/core_host_runner.py --case host:ui:desktop --cc "$(HOST_CC)"
+
+test-syscall-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_syscall_host.c tests/catalog.json src/core/syscall.c src/include/core/syscall.h src/include/core/app_api.h src/include/core/poll.h src/include/memory/paging.h src/include/process/process.h src/include/process/signal.h src/include/drivers/idt.h src/include/drivers/tss.h
+	python tools/core_host_runner.py --case host:core:syscall --cc "$(HOST_CC)"
+
+test-process-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_process_host.c tests/catalog.json src/process/process.c src/process/credentials.c src/process/resource.c src/include/process/process.h src/include/process/credentials.h src/include/process/resource.h src/include/process/signal.h src/include/memory/paging.h src/include/memory/vma.h src/include/memory/slab.h src/include/core/wait.h src/include/fs/vfs.h
+	python tools/core_host_runner.py --case host:process:runtime --cc "$(HOST_CC)"
+test-process-host: src/core/service_supervisor.c src/core/recovery.c src/core/string.c src/include/core/service_supervisor.h src/include/core/recovery.h
+
+test-process-resource-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_process_resource_host.c tests/catalog.json src/process/resource.c src/include/process/resource.h src/include/process/process.h src/include/memory/vma.h src/include/memory/paging.h
+	python tools/core_host_runner.py --case host:process:resources --cc "$(HOST_CC)"
+
+test-thread-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_thread_host.c tests/catalog.json src/thread/thread.c src/include/process/thread.h src/include/process/process.h src/include/core/wait.h src/include/memory/slab.h
+	python tools/core_host_runner.py --case host:process:threads --cc "$(HOST_CC)"
+
+test-app-catalog-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_app_catalog_host.c tests/catalog.json src/core/app_catalog.c src/include/core/app_package.h src/include/core/app_package_trust.h
+	python tools/core_host_runner.py --case host:core:app-catalog --cc "$(HOST_CC)"
+
+test-input-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_input_host.c tests/catalog.json src/core/input.c
+	python tools/core_host_runner.py --case host:core:input --cc "$(HOST_CC)"
+
+test-power-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_power_host.c tests/catalog.json src/core/power.c src/core/power_notifier.c
+	python tools/core_host_runner.py --case host:core:power --cc "$(HOST_CC)"
+test-power-host: src/core/service_supervisor.c src/include/core/service_supervisor.h
+
+test-vfs-path-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_vfs_path_host.c tests/catalog.json src/fs/vfs_path.c src/fs/permissions.c src/process/credentials.c src/include/fs/vfs_internal.h src/include/fs/permissions.h src/include/process/credentials.h
+	python tools/core_host_runner.py --case host:storage:vfs-path --cc "$(HOST_CC)"
+
+test-file-index-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_file_index_host.c tests/catalog.json src/fs/file_index.c src/include/fs/file_index.h
+	python tools/core_host_runner.py --case host:storage:file-index --cc "$(HOST_CC)"
+
+test-fs-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_fs_host.c tests/catalog.json src/fs/fs.c src/include/fs/fs.h src/include/fs/permissions.h
+	python tools/core_host_runner.py --case host:storage:fs --cc "$(HOST_CC)"
+
+test-permissions-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_permissions_host.c tests/catalog.json src/fs/permissions.c src/process/credentials.c src/include/fs/permissions.h src/include/process/credentials.h
+	python tools/core_host_runner.py --case host:storage:permissions --cc "$(HOST_CC)"
+
+test-storage-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_storage_host.c tests/catalog.json src/fs/storage.c src/include/fs/storage.h
+	python tools/core_host_runner.py --case host:storage:storage --cc "$(HOST_CC)"
+
+test-storage-fat32-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_storage_fat32_host.c tests/catalog.json src/fs/storage.c src/include/fs/storage.h
+	python tools/core_host_runner.py --case host:storage:storage-fat32 --cc "$(HOST_CC)"
+
+test-block-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_block_host.c tests/catalog.json src/fs/block.c src/fs/block_cache.c src/include/fs/block.h src/include/fs/block_cache.h
+	python tools/core_host_runner.py --case host:storage:block --cc "$(HOST_CC)"
+
+test-fat12-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_fat12_host.c tests/catalog.json src/fs/fat12.c src/include/fs/fat12.h
+	python tools/core_host_runner.py --case host:storage:fat12 --cc "$(HOST_CC)"
+
+test-fat32-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_fat32_host.c tests/catalog.json src/fs/fat32.c src/include/fs/fat32.h
+	python tools/core_host_runner.py --case host:storage:fat32 --cc "$(HOST_CC)"
+
+test-vfs-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_vfs_host.c tests/catalog.json src/fs/vfs.c src/fs/permissions.c src/process/credentials.c src/include/fs/vfs.h src/include/fs/permissions.h src/include/process/credentials.h src/include/process/resource.h
+	python tools/core_host_runner.py --case host:storage:vfs --cc "$(HOST_CC)"
+
+test-slab-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_slab_metadata_host.c tests/catalog.json src/memory/slab.c src/include/memory/slab.h
+	python tools/core_host_runner.py --case host:memory:slab-metadata --cc "$(HOST_CC)"
+
+test-timer-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_timer_host.c tests/catalog.json src/drivers/timer.c src/include/core/timer.h
+	python tools/core_host_runner.py --case host:core:timer --cc "$(HOST_CC)"
+
+test-udp-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_udp_host.c tests/catalog.json src/core/udp.c src/include/core/udp.h
+	python tools/core_host_runner.py --case host:network:udp --cc "$(HOST_CC)"
+
+test-arp-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_arp_host.c tests/catalog.json src/core/arp.c src/include/core/arp.h
+	python tools/core_host_runner.py --case host:network:arp --cc "$(HOST_CC)"
+
+test-icmp-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_icmp_host.c tests/catalog.json src/core/icmp.c src/include/core/icmp.h
+	python tools/core_host_runner.py --case host:network:icmp --cc "$(HOST_CC)"
+
+test-dns-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_dns_host.c tests/catalog.json src/core/dns.c src/include/core/dns.h
+	python tools/core_host_runner.py --case host:network:dns --cc "$(HOST_CC)"
+
+test-dhcp-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_dhcp_host.c tests/catalog.json src/core/dhcp.c src/include/core/dhcp.h
+	python tools/core_host_runner.py --case host:network:dhcp --cc "$(HOST_CC)"
+
+test-ethernet-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_ethernet_host.c tests/catalog.json src/core/ethernet.c src/core/sk_buff.c src/core/net_buffer.c src/memory/slab.c src/include/core/ethernet.h src/include/core/sk_buff.h src/include/core/net_buffer.h
+	python tools/core_host_runner.py --case host:network:ethernet --cc "$(HOST_CC)"
+
+test-tcp-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_tcp_host.c tests/catalog.json src/core/tcp.c src/include/core/tcp.h
+	python tools/core_host_runner.py --case host:network:tcp --cc "$(HOST_CC)"
+
+test-tls-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_tls_host.c tests/catalog.json src/core/tls.c src/include/core/tls.h
+	python tools/core_host_runner.py --case host:security:tls --cc "$(HOST_CC)"
+
+test-tls-client-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_tls_client_host.c tests/unit/host_include/bearssl.h tests/catalog.json src/core/tls_client.c src/include/core/tls_client.h
+	python tools/core_host_runner.py --case host:security:tls-client --cc "$(HOST_CC)"
+
+test-http-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_http_host.c tests/catalog.json src/core/http.c src/include/core/http.h
+	python tools/core_host_runner.py --case host:network:http --cc "$(HOST_CC)"
+
+test-net-socket-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_net_socket_host.c tests/catalog.json src/core/net_socket.c src/core/wait.c src/core/net_buffer.c src/include/core/net_socket.h src/include/core/wait.h
+	python tools/core_host_runner.py --case host:network:socket --cc "$(HOST_CC)"
+
+test-socket-runtime-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_socket_host.c tests/catalog.json src/core/socket.c src/include/core/socket.h src/include/core/net_socket.h src/include/core/sk_buff.h src/include/core/wait.h src/include/fs/vfs.h src/include/fs/vfs_internal.h
+	python tools/core_host_runner.py --case host:network:socket-runtime --cc "$(HOST_CC)"
+
+test-vma-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_vma_host.c tests/catalog.json src/memory/vma.c src/process/resource.c src/include/memory/vma.h src/include/process/resource.h
+	python tools/core_host_runner.py --case host:memory:vma --cc "$(HOST_CC)"
+
+test-paging-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_paging_host.c tests/catalog.json src/memory/paging.c src/include/memory/paging.h
+	python tools/core_host_runner.py --case host:memory:paging --cc "$(HOST_CC)"
+
+test-memory-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_memory_host.c tests/catalog.json src/memory/memory.c src/include/core/memory.h
+	python tools/core_host_runner.py --case host:memory:memory --cc "$(HOST_CC)"
+
+test-process-signal-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_process_signal_host.c tests/catalog.json src/process/signal.c src/include/process/signal.h
+	python tools/core_host_runner.py --case host:process:signals --cc "$(HOST_CC)"
+
+test-process-ipc-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_process_ipc_host.c tests/catalog.json src/process/ipc.c src/include/process/process.h
+	python tools/core_host_runner.py --case host:process:ipc --cc "$(HOST_CC)"
+
+test-workqueue-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_workqueue_host.c tests/catalog.json src/core/workqueue.c src/include/core/workqueue.h
+	python tools/core_host_runner.py --case host:core:workqueue --cc "$(HOST_CC)"
+
+test-service-supervisor-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_service_supervisor_host.c tests/catalog.json src/core/service_supervisor.c src/include/core/service_supervisor.h
+	python tools/core_host_runner.py --case host:core:service-supervisor --cc "$(HOST_CC)"
+
+test-bearssl-compat-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_bearssl_compat_host.c tests/catalog.json src/core/bearssl_compat.c src/include/types.h
+	python tools/core_host_runner.py --case host:core:bearssl-compat --cc "$(HOST_CC)"
+
+test-shell-dispatch-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_dispatch_host.c tests/catalog.json src/shell/shell_dispatch.c src/include/apps/shell_dispatch.h
+	python tools/core_host_runner.py --case host:shell:dispatch --cc "$(HOST_CC)"
+
+test-shell-introspection-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_introspection_host.c tests/catalog.json src/shell/shell_introspection.c src/include/apps/shell_introspection.h src/core/string.c
+	python tools/core_host_runner.py --case host:shell:introspection --cc "$(HOST_CC)"
+
+test-spinlock-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_spinlock_host.c tests/catalog.json src/include/core/spinlock.h
+	python tools/core_host_runner.py --case host:core:spinlock --cc "$(HOST_CC)"
+
+test-font-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_font_host.c tests/catalog.json src/drivers/font.c src/drivers/font_data.inc src/include/drivers/font.h
+	python tools/core_host_runner.py --case host:drivers:font --cc "$(HOST_CC)"
+
+test-rtc-status-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_rtc_host.c tests/catalog.json src/drivers/rtc.c src/include/drivers/rtc.h src/core/string.c
+	python tools/core_host_runner.py --case host:drivers:rtc-status --cc "$(HOST_CC)"
+
+test-wifi-manager-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_wifi_manager_host.c tests/catalog.json src/core/wifi_manager.c src/include/core/wifi_manager.h src/include/drivers/pci.h src/include/drivers/rtl8811cu.h src/include/core/usb_manager.h src/core/string.c
+	python tools/core_host_runner.py --case host:core:wifi-manager --cc "$(HOST_CC)"
+
+test-usb-manager-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_usb_manager_host.c tests/catalog.json src/core/usb_manager.c src/include/core/usb_manager.h src/include/drivers/pci.h src/include/drivers/uhci.h src/include/drivers/ehci.h src/include/drivers/usb_hid.h src/include/drivers/usb_msc.h src/include/core/recovery.h src/core/string.c
+	python tools/core_host_runner.py --case host:core:usb-manager --cc "$(HOST_CC)"
+
+test-usb-hid-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_usb_hid_host.c tests/catalog.json src/drivers/usb_hid.c src/include/drivers/usb_hid.h src/include/core/usb_manager.h src/include/drivers/uhci.h src/include/core/input.h src/core/string.c
+	python tools/core_host_runner.py --case host:drivers:usb-hid --cc "$(HOST_CC)"
+
+test-usb-msc-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_usb_msc_host.c tests/catalog.json src/drivers/usb_msc.c src/include/drivers/usb_msc.h src/include/core/usb_manager.h src/include/drivers/uhci.h src/include/fs/block.h src/core/string.c
+	python tools/core_host_runner.py --case host:drivers:usb-msc --cc "$(HOST_CC)"
+
+test-devfs-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_devfs_host.c tests/catalog.json src/fs/devfs.c src/include/fs/devfs.h src/include/fs/vfs.h src/include/fs/vfs_internal.h src/include/fs/block.h src/include/fs/block_cache.h src/include/core/app_api.h src/include/drivers/speaker.h src/core/string.c
+	python tools/core_host_runner.py --case host:storage:devfs --cc "$(HOST_CC)"
+
+test-procfs-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_procfs_host.c tests/catalog.json src/fs/procfs.c src/process/resource.c src/process/credentials.c src/include/fs/procfs.h src/include/fs/vfs.h src/include/core/log.h src/include/core/memory.h src/include/core/timer.h src/include/memory/slab.h src/include/process/process.h src/include/process/credentials.h src/include/process/resource.h src/core/string.c
+	python tools/core_host_runner.py --case host:storage:procfs --cc "$(HOST_CC)"
+
+test-sysfs-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_sysfs_host.c tests/catalog.json src/fs/sysfs.c src/include/fs/sysfs.h src/include/fs/procfs.h src/include/fs/vfs.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h src/include/core/poll.h src/include/core/power.h src/include/core/spinlock.h src/include/core/string.h src/include/drivers/pci.h src/include/core/network_manager.h src/include/fs/block.h src/core/string.c
+	python tools/core_host_runner.py --case host:storage:sysfs --cc "$(HOST_CC)"
+
+test-wav-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_wav_host.c tests/catalog.json src/fs/wav.c src/include/fs/wav.h src/include/core/memory.h src/include/drivers/ac97.h src/core/string.c
+	python tools/core_host_runner.py --case host:storage:wav --cc "$(HOST_CC)"
+
+test-mediaplayer-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_mediaplayer_host.c tests/catalog.json src/shell/mediaplayer.c src/include/apps/mediaplayer.h src/include/fs/wav.h src/include/fs/bmp.h src/include/fs/fs.h src/include/drivers/ac97.h src/include/drivers/vesa.h src/include/core/recovery.h
+	python tools/core_host_runner.py --case host:shell:mediaplayer --cc "$(HOST_CC)"
+
+test-shell-job-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_job_host.c tests/catalog.json src/shell/shell_job.c src/include/apps/shell_job.h src/include/apps/shell.h src/include/apps/shell_command_utils.h src/include/apps/shell_runtime.h src/include/core/errors.h src/include/core/keyboard.h src/include/core/log.h src/include/core/timer.h src/include/core/video.h src/include/core/wait.h src/include/process/process.h
+	python tools/core_host_runner.py --case host:shell:job --cc "$(HOST_CC)"
+
+test-shell-pipeline-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_pipeline_host.c tests/catalog.json src/shell/shell_pipeline.c src/include/apps/shell_pipeline.h src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/core/app_api.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h src/include/core/string.h src/include/core/video.h src/include/fs/vfs.h src/include/process/thread.h
+	python tools/core_host_runner.py --case host:shell:pipeline --cc "$(HOST_CC)"
+
+test-bmp-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_bmp_host.c tests/catalog.json src/fs/bmp.c src/include/fs/bmp.h src/include/drivers/vesa.h src/include/core/memory.h src/include/core/video.h src/include/core/log.h src/core/string.c
+	python tools/core_host_runner.py --case host:storage:bmp --cc "$(HOST_CC)"
+
+test-rng-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_rng_host.c tests/catalog.json src/drivers/rng.c src/include/drivers/rng.h src/include/core/errors.h src/include/core/log.h src/core/string.c
+	python tools/core_host_runner.py --case host:drivers:rng --cc "$(HOST_CC)"
+
+test-serial-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_serial_host.c tests/catalog.json src/drivers/serial.c src/include/drivers/serial.h src/include/core/log.h
+	python tools/core_host_runner.py --case host:drivers:serial --cc "$(HOST_CC)"
+
+test-tss-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_tss_host.c tests/catalog.json src/drivers/tss.c src/include/drivers/tss.h src/include/core/log.h src/include/core/memory.h src/core/string.c
+	python tools/core_host_runner.py --case host:drivers:tss --cc "$(HOST_CC)"
+
+test-speaker-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_speaker_host.c tests/catalog.json src/drivers/speaker.c src/include/drivers/speaker.h src/include/core/log.h src/include/core/timer.h
+	python tools/core_host_runner.py --case host:drivers:speaker --cc "$(HOST_CC)"
+
+test-keyboard-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_keyboard_host.c tests/catalog.json src/drivers/keyboard.c src/include/core/keyboard.h src/include/core/input.h src/include/core/irq_deferred.h src/include/drivers/idt.h src/include/core/log.h src/include/core/errors.h src/include/process/process.h src/core/string.c
+	python tools/core_host_runner.py --case host:drivers:keyboard --cc "$(HOST_CC)"
+
+test-protocol-adapter-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_protocol_host.c tests/catalog.json src/core/test_protocol.c src/core/test_protocol_core.c src/core/kernel_tests.h src/include/core/test_protocol.h src/include/drivers/serial.h src/include/core/timer.h
+	python tools/core_host_runner.py --case host:tst2:protocol-adapter --cc "$(HOST_CC)"
+
+test-blackbox-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_kernel_tests_blackbox_host.c tests/catalog.json src/core/kernel_tests_blackbox.c src/core/kernel_tests.h src/core/video_test.h src/include/apps/shell.h
+	python tools/core_host_runner.py --case host:tst5:blackbox --cc "$(HOST_CC)"
+
+test-coverage-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_coverage_host.c tests/catalog.json src/core/test_coverage.c src/core/test_coverage.h src/include/drivers/serial.h
+	python tools/core_host_runner.py --case host:core:test-coverage --cc "$(HOST_CC)"
+
+test-shell-input-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_input_host.c tests/catalog.json src/shell/shell_input.c src/include/apps/shell_input.h src/include/apps/shell.h src/include/core/keyboard.h src/include/core/video.h src/core/string.c
+	python tools/core_host_runner.py --case host:shell:input --cc "$(HOST_CC)"
+
+test-shell-hosted-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_hosted_host.c tests/catalog.json src/shell/shell_hosted.c src/include/apps/shell.h src/include/apps/shell_runtime.h src/include/core/errors.h src/include/core/log.h src/include/core/video.h src/include/drivers/mouse.h src/include/ui/desktop.h src/include/ui/wm.h
+	python tools/core_host_runner.py --case host:shell:hosted --cc "$(HOST_CC)"
+
+test-shell-command-utils-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_command_utils_host.c tests/catalog.json src/shell/shell_command_utils.c src/include/apps/shell_command_utils.h src/include/core/video.h src/include/core/errors.h src/core/string.c
+	python tools/core_host_runner.py --case host:shell:command-utils --cc "$(HOST_CC)"
+
+test-display-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_display_host.c tests/catalog.json src/gui/display.c src/include/ui/display.h src/include/drivers/vesa.h src/include/ui/desktop.h src/include/ui/taskbar.h src/include/ui/wm.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/core/string.c
+	python tools/core_host_runner.py --case host:gui:display --cc "$(HOST_CC)"
+
+test-shell-core-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_host.c tests/catalog.json src/shell/shell.c src/include/apps/shell.h src/include/apps/shell_input.h src/include/apps/shell_job.h src/include/apps/shell_runtime.h src/include/core/app_loader.h src/include/core/errors.h src/include/core/log.h src/include/core/video.h src/include/drivers/mouse.h src/include/apps/guitest.h src/include/ui/appstore.h src/include/ui/desktop.h src/include/ui/filemanager.h src/include/ui/settings.h src/include/ui/taskbar.h src/include/ui/updater.h src/include/ui/wm.h
+	python tools/core_host_runner.py --case host:shell:core --cc "$(HOST_CC)"
+
+test-shell-commands-core-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_commands_core_host.c tests/catalog.json src/shell/shell_commands_core.c src/shell/shell_command_utils.c src/core/string.c src/include/apps/shell_runtime.h src/include/apps/shell_command_utils.h src/include/apps/shell_pipeline.h src/include/core/app_builtin.h src/include/core/app_loader.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h src/include/core/power.h src/include/core/string.h src/include/core/video.h src/include/drivers/speaker.h src/include/fs/vfs.h src/include/memory/compress.h src/include/process/process.h src/include/process/thread.h
+	python tools/core_host_runner.py --case host:shell:commands-core --cc "$(HOST_CC)"
+
+test-shell-diagnostics-helpers-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_diagnostics_helpers_host.c tests/catalog.json src/shell/shell_diagnostics_helpers.c src/include/apps/shell_diagnostics_helpers.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h src/include/core/recovery.h src/include/core/tls.h src/include/core/update.h src/include/core/update_remote.h src/include/core/device_manager.h src/include/core/usb_manager.h src/include/drivers/acpi.h src/include/drivers/mouse.h src/include/fs/fs.h src/include/fs/vfs.h src/include/memory/paging.h src/include/process/process.h
+	python tools/core_host_runner.py --case host:shell:diagnostics-helpers --cc "$(HOST_CC)"
+
+test-shell-commands-storage-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_commands_storage_host.c tests/catalog.json src/shell/shell_commands_storage.c src/core/string.c src/include/apps/shell_job.h src/include/fs/file_index.h
+	python tools/core_host_runner.py --case host:shell:commands-storage --cc "$(HOST_CC)"
+
+test-shell-network-checks-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_network_checks_host.c tests/catalog.json src/shell/shell_commands_network.c src/shell/shell_command_utils.c src/core/string.c src/include/apps/shell_job.h src/include/apps/shell_runtime.h src/include/apps/shell_command_utils.h src/include/core/arp.h src/include/core/dhcp.h src/include/core/dns.h src/include/core/errors.h src/include/core/ethernet.h src/include/core/http.h src/include/core/icmp.h src/include/core/ipv4.h src/include/core/log.h src/include/core/net_buffer.h src/include/core/net_socket.h src/include/core/network_manager.h src/include/core/poll.h src/include/core/recovery.h src/include/core/route.h src/include/core/sk_buff.h src/include/core/socket.h src/include/core/string.h src/include/core/tcp.h src/include/core/timer.h src/include/core/udp.h src/include/core/video.h src/include/core/wait.h src/include/drivers/idt.h src/include/fs/vfs.h src/include/process/thread.h
+	python tools/core_host_runner.py --case host:shell:network-checks --cc "$(HOST_CC)"
+
+test-shell-commands-packages-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_commands_packages_host.c tests/catalog.json src/shell/shell_commands_packages.c src/shell/shell_command_utils.c src/core/string.c src/include/apps/shell.h src/include/apps/shell_dispatch.h src/include/apps/shell_job.h src/include/apps/shell_runtime.h src/include/apps/shell_command_utils.h src/include/core/app_catalog.h src/include/core/app_loader.h src/include/core/app_package.h src/include/core/app_remote.h src/include/core/errors.h src/include/core/keyboard.h src/include/core/log.h src/include/core/memory.h src/include/core/recovery.h src/include/core/string.h src/include/core/update.h src/include/core/update_remote.h src/include/core/update_remote_runtime.h src/include/core/update_remote_system.h src/include/core/update_runtime.h src/include/core/video.h src/include/core/update_system.h src/include/core/update_system_slots.h src/include/fs/fs.h src/include/process/process.h
+
+test-shell-commands-packages-host: src/include/core/app_package_trust.h
+	python tools/core_host_runner.py --case host:shell:commands-packages --cc "$(HOST_CC)"
+
+test-shell-commands-apps-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_commands_apps_host.c tests/catalog.json src/shell/shell_commands_apps.c src/core/string.c src/include/apps/editor.h src/include/apps/guitest.h src/include/apps/mediaplayer.h src/include/apps/shell_checks.h src/include/apps/shell_runtime.h src/include/core/app_api.h src/include/core/app_builtin.h src/include/core/app_loader.h src/include/core/errors.h src/include/core/log.h src/include/core/recovery.h src/include/core/string.h src/include/core/video.h src/include/drivers/vesa.h src/include/fs/fs.h src/include/ui/desktop.h src/include/ui/display.h src/include/ui/filemanager.h src/include/ui/icons.h src/include/ui/settings.h src/include/ui/taskbar.h src/include/ui/updater.h src/include/ui/wm.h
+
+test-shell-commands-apps-host: src/include/core/app_package.h src/include/core/app_package_trust.h
+	python tools/core_host_runner.py --case host:shell:commands-apps --cc "$(HOST_CC)"
+
+test-shell-checks-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_checks_host.c tests/catalog.json src/shell/shell_checks.c src/include/apps/shell_checks.h src/include/apps/shell_runtime.h src/include/apps/shell_job.h src/include/apps/shell_command_utils.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/include/core/video.h src/include/core/app_loader.h src/include/core/app_api.h src/include/core/recovery.h src/include/core/device_manager.h src/include/drivers/acpi.h src/include/fs/block.h src/include/fs/storage.h src/include/fs/fs.h src/include/memory/paging.h src/include/memory/vma.h src/include/process/process.h
+	python tools/core_host_runner.py --case host:shell:checks --cc "$(HOST_CC)"
+test-shell-checks-host: src/core/service_supervisor.c src/include/core/service_supervisor.h
+
+test-updater-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_updater_host.c tests/catalog.json src/updater/updater.c src/core/string.c src/include/ui/updater.h src/include/ui/updater_test.h src/include/core/errors.h src/include/core/keyboard.h src/include/core/log.h src/include/core/recovery.h src/include/core/string.h src/include/core/update.h src/include/core/update_remote.h src/include/core/update_remote_runtime.h src/include/core/update_remote_system.h src/include/core/update_system_slots.h src/include/core/update_remote_config.h src/include/core/update_runtime.h src/include/core/update_system.h src/include/core/video.h src/include/core/wait.h src/include/drivers/vesa.h src/include/fs/fs.h src/include/process/process.h src/include/ui/desktop.h src/include/ui/gui.h src/include/ui/taskbar.h src/include/ui/wm.h
+	python tools/core_host_runner.py --case host:ui:updater --cc "$(HOST_CC)"
+
+test-filemanager-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_filemanager_host.c tests/catalog.json src/filemanager/filemanager.c src/core/string.c src/include/ui/filemanager.h src/include/ui/filemanager_test.h src/include/apps/shell.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h src/include/core/string.h src/include/core/video.h src/include/core/recovery.h src/include/core/keyboard.h src/include/drivers/font.h src/include/drivers/mouse.h src/include/drivers/vesa.h src/include/fs/fs.h src/include/fs/storage.h src/include/fs/file_index.h src/include/ui/taskbar.h src/include/ui/desktop.h src/include/ui/wm.h src/include/ui/icons.h src/include/ui/gui.h src/include/ui/display.h
+	python tools/core_host_runner.py --case host:ui:filemanager --cc "$(HOST_CC)"
+
+test-taskmanager-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_taskmanager_host.c tests/catalog.json src/shell/taskmanager.c src/shell/shell_introspection.c src/core/string.c src/include/apps/taskmanager.h src/include/apps/taskmanager_test.h src/include/apps/shell.h src/include/apps/shell_command_utils.h src/include/apps/shell_introspection.h src/include/apps/shell_runtime.h src/include/core/errors.h src/include/core/keyboard.h src/include/core/log.h src/include/core/memory.h src/include/core/panic.h src/include/core/power.h src/include/core/recovery.h src/include/core/string.h src/include/core/timer.h src/include/core/video.h src/include/drivers/ata.h src/include/drivers/font.h src/include/drivers/vesa.h src/include/fs/vfs.h src/include/process/process.h src/include/process/signal.h src/include/process/thread.h src/include/ui/desktop.h src/include/ui/display.h src/include/ui/filemanager.h src/include/ui/gui.h src/include/ui/settings.h src/include/ui/taskbar.h src/include/ui/wm.h
+	python tools/core_host_runner.py --case host:shell:taskmanager --cc "$(HOST_CC)"
+
+test-shell-diagnostics-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_diagnostics_host.c tests/catalog.json src/shell/shell_commands_diagnostics.c src/shell/shell_diagnostics_helpers.c src/shell/shell_command_utils.c src/shell/shell_introspection.c src/core/string.c src/include/apps/shell_diagnostics_helpers.h src/include/apps/shell_command_utils.h src/include/apps/shell_introspection.h src/include/apps/shell_runtime.h src/include/core/errors.h src/include/core/keyboard.h src/include/core/log.h src/include/core/memory.h src/include/core/string.h src/include/core/video.h src/include/core/device_manager.h src/include/core/input.h src/include/core/network_manager.h src/include/core/power.h src/include/core/recovery.h src/include/core/usb_manager.h src/include/core/wifi_manager.h src/include/drivers/acpi.h src/include/drivers/mouse.h src/include/drivers/pci.h src/include/drivers/usb_hid.h src/include/drivers/usb_msc.h src/include/drivers/vesa.h src/include/fs/devfs.h src/include/fs/file_index.h src/include/fs/procfs.h src/include/fs/vfs.h src/include/memory/paging.h src/include/memory/slab.h src/include/process/process.h
+	python tools/core_host_runner.py --case host:shell:diagnostics --cc "$(HOST_CC)"
+test-shell-diagnostics-host: src/core/service_supervisor.c src/include/core/service_supervisor.h
+
+test-shell-commands-wifi-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_commands_wifi_host.c tests/catalog.json src/shell/shell_commands_wifi.c src/shell/shell_command_utils.c src/core/string.c src/include/apps/shell_command_utils.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/include/core/video.h src/include/core/wifi_manager.h src/include/core/usb_manager.h
+	python tools/core_host_runner.py --case host:shell:wifi --cc "$(HOST_CC)"
+
+test-usb-transport-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_usb_transport_host.c tests/catalog.json src/core/usb_transport.c src/include/core/usb_transport.h src/include/core/usb_manager.h src/include/drivers/ehci.h src/include/drivers/uhci.h src/include/core/errors.h src/include/core/log.h
+	python tools/core_host_runner.py --case host:core:usb-transport --cc "$(HOST_CC)"
+
+test-gui-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_gui_host.c tests/catalog.json src/gui/gui.c src/include/ui/gui.h src/include/ui/display.h src/include/drivers/vesa.h src/include/drivers/font.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/core/string.c
+	python tools/core_host_runner.py --case host:gui:widgets --cc "$(HOST_CC)"
+
+test-shell-commands-vfs-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_shell_commands_vfs_host.c tests/catalog.json src/shell/shell_commands_vfs.c src/shell/shell_command_utils.c src/include/apps/shell_command_utils.h src/include/apps/shell_pipeline.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/include/core/video.h src/core/string.c
+	python tools/core_host_runner.py --case host:shell:commands-vfs --cc "$(HOST_CC)"
+
+test-recovery-runtime-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_recovery_runtime_host.c tests/catalog.json src/boot/recovery_runtime.c src/include/core/log.h src/include/core/string.h
+	python tools/core_host_runner.py --case host:boot:recovery-runtime --cc "$(HOST_CC)"
+
+test-recovery-menu-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_recovery_menu_host.c tests/catalog.json src/boot/recovery_menu.c src/boot/recovery_menu.h
+	python tools/core_host_runner.py --case host:boot:recovery-menu --cc "$(HOST_CC)"
+
+test-recovery-loader-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_recovery_loader_host.c tests/catalog.json tests/unit/host_include/recovery_layout.h src/boot/recovery_loader.c src/boot/recovery_chain.h src/boot/recovery_menu.h src/include/core/crypto.h src/include/core/update_system.h src/include/core/update_system_slots.h src/include/core/update_trust.h
+	python tools/core_host_runner.py --case host:boot:recovery-loader --cc "$(HOST_CC)"
+
+test-panic-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_panic_host.c tests/catalog.json src/kernel/panic.c src/include/core/panic.h src/include/core/test_protocol.h src/include/core/video.h
+	python tools/core_host_runner.py --case host:kernel:panic --cc "$(HOST_CC)"
+
+test-kernel-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_kernel_host.c tests/catalog.json src/kernel/kernel.c src/core/kernel_host_test.h
+	python tools/core_host_runner.py --case host:kernel:runtime --cc "$(HOST_CC)"
+test-kernel-host: src/core/service_supervisor.c src/core/recovery.c src/include/core/service_supervisor.h
+
+test-pci-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_pci_host.c tests/catalog.json src/drivers/pci.c src/include/drivers/pci.h src/include/core/errors.h src/include/core/log.h src/include/process/process.h
+	python tools/core_host_runner.py --case host:drivers:pci --cc "$(HOST_CC)"
+
+test-ata-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_ata_host.c tests/catalog.json src/drivers/ata.c src/include/drivers/ata.h src/include/drivers/idt.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h
+	python tools/core_host_runner.py --case host:drivers:ata --cc "$(HOST_CC)"
+
+test-idt-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_idt_host.c tests/catalog.json src/drivers/idt.c src/include/drivers/idt.h src/include/drivers/tss.h src/include/process/process.h src/include/process/signal.h src/include/core/errors.h src/include/core/log.h src/include/core/panic.h src/include/core/test_protocol.h src/include/core/video.h
+	python tools/core_host_runner.py --case host:drivers:idt --cc "$(HOST_CC)"
+
+test-icons-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_icons_host.c tests/catalog.json src/icons/icons.c src/include/ui/icons.h src/include/fs/bmp.h src/include/fs/fs.h src/include/drivers/vesa.h src/include/core/memory.h src/include/core/errors.h src/include/core/log.h
+	python tools/core_host_runner.py --case host:ui:icons --cc "$(HOST_CC)"
+
+test-vesa-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_vesa_host.c tests/catalog.json src/drivers/vesa.c src/include/drivers/vesa.h src/include/drivers/font.h src/include/core/memory.h src/include/core/log.h src/include/core/timer.h src/include/core/string.h
+	python tools/core_host_runner.py --case host:drivers:vesa --cc "$(HOST_CC)"
+
+test-video-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_video_host.c tests/catalog.json src/drivers/video.c src/include/core/video.h src/core/video_test.h src/include/drivers/vesa.h src/include/drivers/font.h src/include/drivers/mouse.h src/include/core/spinlock.h src/include/core/errors.h src/include/core/log.h
+	python tools/core_host_runner.py --case host:drivers:video --cc "$(HOST_CC)"
+
+test-acpi-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_acpi_host.c tests/catalog.json src/drivers/acpi.c src/include/drivers/acpi.h src/include/core/memory.h src/include/core/string.h src/include/core/errors.h src/include/core/log.h src/include/core/timer.h
+	python tools/core_host_runner.py --case host:drivers:acpi --cc "$(HOST_CC)"
+
+test-uhci-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_uhci_host.c tests/catalog.json src/drivers/uhci.c src/include/drivers/uhci.h src/include/drivers/pci.h src/include/core/usb_manager.h src/include/core/memory.h src/include/core/string.h src/include/core/errors.h src/include/core/log.h src/include/core/timer.h src/include/core/irq_deferred.h src/include/core/spinlock.h src/include/drivers/idt.h
+	python tools/core_host_runner.py --case host:drivers:uhci --cc "$(HOST_CC)"
+
+test-ehci-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_ehci_host.c tests/catalog.json src/drivers/ehci.c src/include/drivers/ehci.h src/include/drivers/pci.h src/include/core/usb_manager.h src/include/core/memory.h src/include/core/string.h src/include/core/errors.h src/include/core/log.h src/include/core/timer.h src/include/core/spinlock.h src/include/drivers/idt.h src/include/memory/paging.h
+	python tools/core_host_runner.py --case host:drivers:ehci --cc "$(HOST_CC)"
+
+test-rtl8139-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_rtl8139_host.c tests/catalog.json src/drivers/rtl8139.c src/include/drivers/rtl8139.h src/include/core/ethernet.h src/include/core/irq_deferred.h src/include/core/memory.h src/include/core/string.h src/include/core/errors.h src/include/core/log.h src/include/core/timer.h src/include/drivers/idt.h src/include/drivers/pci.h
+	python tools/core_host_runner.py --case host:drivers:rtl8139 --cc "$(HOST_CC)"
+
+test-mouse-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_mouse_host.c tests/catalog.json src/drivers/mouse.c src/include/drivers/mouse.h src/include/core/input.h src/include/core/irq_deferred.h src/include/core/log.h src/include/core/errors.h src/include/drivers/idt.h src/include/drivers/vesa.h
+	python tools/core_host_runner.py --case host:drivers:mouse --cc "$(HOST_CC)"
+
+test-e1000-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_e1000_host.c tests/catalog.json src/drivers/e1000.c src/include/drivers/e1000.h src/include/core/ethernet.h src/include/core/errors.h src/include/core/irq_deferred.h src/include/core/memory.h src/include/core/string.h src/include/core/timer.h src/include/drivers/idt.h src/include/drivers/pci.h src/include/memory/paging.h
+	python tools/core_host_runner.py --case host:drivers:e1000 --cc "$(HOST_CC)"
+
+test-ac97-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_ac97_host.c tests/catalog.json src/drivers/ac97.c src/include/drivers/ac97.h src/include/drivers/idt.h src/include/drivers/pci.h src/include/core/errors.h src/include/core/log.h src/include/core/memory.h
+	python tools/core_host_runner.py --case host:drivers:ac97 --cc "$(HOST_CC)"
+
+test-rtl8811cu-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_rtl8811cu_host.c tests/catalog.json src/drivers/rtl8811cu.c src/include/drivers/rtl8811cu.h src/include/core/ethernet.h src/include/core/errors.h src/include/core/log.h src/include/core/string.h src/include/core/usb_manager.h src/include/fs/fs.h
+	python tools/core_host_runner.py --case host:drivers:rtl8811cu --cc "$(HOST_CC)"
+
+test-tst2-host: tools/tst2_host_runner.py tests/unit/test_protocol_core.c tests/unit/test_qemu_test_runner.py src/core/test_protocol_core.c src/core/test_protocol_core.h
+	python tools/tst2_host_runner.py --cc "$(HOST_CC)"
+
+test-tst3-host: tools/tst3_host_runner.py tests/unit/test_string_compress.c tests/unit/test_packager.py tests/unit/test_updater.py src/core/string.c src/memory/compress.c
+	python tools/tst3_host_runner.py --mode strict --cc "$(HOST_CC)"
+
+test-tst3-sanitize: tools/tst3_host_runner.py tests/unit/test_string_compress.c src/core/string.c src/memory/compress.c
+	python tools/tst3_host_runner.py --mode sanitize --sanitize-cc "$(HOST_SANITIZE_CC)"
+
+q3check-test:
+	python tools/q3check.py --self-test
+
+package-test:
+	python tools/packager.py selftest
+
+update-test:
+	python tools/updater.py selftest
+
+package-demo: $(OS_IMG)
+	@test -n "$(PACKAGE_PRIVATE_KEY)" || { echo "PACKAGE_PRIVATE_KEY nao configurada em Makefile.local" >&2; exit 2; }
+	python tools/packager.py demo --private "$(PACKAGE_PRIVATE_KEY)" --output $(BUILD_DIR)/DEMO.zephyrosapp --image $(OS_IMG)
+
+store-test:
+	python tools/packager.py selftest
+	python tools/packager.py audit-store --fixtures-dir $(STORE_FIXTURES_DIR)
+
+store-demo: $(OS_IMG) $(STORE_FIXTURES)
+	python tools/packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)/VALID.ZPK --image $(OS_IMG) --path VALID.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools/packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)/BADCRC.ZPK --image $(OS_IMG) --path BADCRC.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools/packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)/BADAPI.ZPK --image $(OS_IMG) --path BADAPI.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools/packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)/BADALIAS.ZPK --image $(OS_IMG) --path BADALIAS.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools/packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)/NEEDSDEP.ZPK --image $(OS_IMG) --path NEEDSDEP.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools/packager.py inject-file-fat32 --file $(STORE_FIXTURES_DIR)/SAMEVER.ZPK --image $(OS_IMG) --path SAMEVER.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools/packager.py audit-store --fixtures-dir $(STORE_FIXTURES_DIR) --image $(OS_IMG)
+
+store-as2-test:
+	python tools/packager.py selftest
+	python tools/packager.py audit-store-as2 --fixtures-dir $(STORE_AS2_FIXTURES_DIR)
+
+store-as2-demo: $(OS_IMG) $(STORE_AS2_FIXTURES)
+	python tools/packager.py inject-file-fat32 --file $(STORE_AS2_FIXTURES_DIR)/WAITAPP.ZPK --image $(OS_IMG) --path WAITAPP.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools/packager.py inject-file-fat32 --file $(STORE_AS2_FIXTURES_DIR)/BASE.ZPK --image $(OS_IMG) --path BASE.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools/packager.py inject-file-fat32 --file $(STORE_AS2_FIXTURES_DIR)/DEPEND.ZPK --image $(OS_IMG) --path DEPEND.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools/packager.py audit-store-as2 --fixtures-dir $(STORE_AS2_FIXTURES_DIR) --image $(OS_IMG)
+
+store-as4-test:
+	python tools/packager.py selftest
+	python tools/packager.py audit-store-as4 --fixtures-dir $(STORE_AS4_SEED_FIXTURES_DIR)
+	python tools/packager.py audit-store-as4 --fixtures-dir $(STORE_AS4_UPDATE_FIXTURES_DIR)
+
+store-as4-seed-demo: $(OS_IMG) $(STORE_AS4_SEED_FIXTURES)
+	python tools/packager.py inject-file-fat32 --file $(STORE_AS4_SEED_FIXTURES_DIR)/UPTARGET.ZPK --image $(OS_IMG) --path UPTARGET.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools/packager.py inject-file-fat32 --file $(STORE_AS4_SEED_FIXTURES_DIR)/UPDEPA.ZPK --image $(OS_IMG) --path UPDEPA.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools/packager.py inject-file-fat32 --file $(STORE_AS4_SEED_FIXTURES_DIR)/UPDEPB.ZPK --image $(OS_IMG) --path UPDEPB.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools/packager.py inject-file-fat32 --file $(STORE_AS4_SEED_FIXTURES_DIR)/BROKEN.ZPK --image $(OS_IMG) --path BROKEN.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools/packager.py inject-file-fat32 --file $(STORE_AS4_SEED_FIXTURES_DIR)/CYCLEA.ZPK --image $(OS_IMG) --path CYCLEA.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools/packager.py inject-file-fat32 --file $(STORE_AS4_SEED_FIXTURES_DIR)/CYCLEB.ZPK --image $(OS_IMG) --path CYCLEB.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools/packager.py audit-store-as4 --fixtures-dir $(STORE_AS4_SEED_FIXTURES_DIR) --image $(OS_IMG)
+
+store-as4-update-demo: $(OS_IMG) $(STORE_AS4_UPDATE_FIXTURES)
+	python tools/packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)/UPTARGET.ZPK --image $(OS_IMG) --path UPTARGET.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools/packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)/UPDEPA.ZPK --image $(OS_IMG) --path UPDEPA.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools/packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)/UPDEPB.ZPK --image $(OS_IMG) --path UPDEPB.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools/packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)/BROKEN.ZPK --image $(OS_IMG) --path BROKEN.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools/packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)/CYCLEA.ZPK --image $(OS_IMG) --path CYCLEA.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools/packager.py inject-file-fat32 --file $(STORE_AS4_UPDATE_FIXTURES_DIR)/CYCLEB.ZPK --image $(OS_IMG) --path CYCLEB.ZPK --fat32-start-lba $(FAT32_START_LBA) --replace
+	python tools/packager.py audit-store-as4 --fixtures-dir $(STORE_AS4_UPDATE_FIXTURES_DIR) --image $(OS_IMG)
+
+store-as5-test:
+	python tools/packager.py audit-store-as5 --fixtures-dir $(STORE_AS5_FIXTURES_DIR) --public $(STORE_AS5_PUBLIC) --header src/include/core/app_remote_trust.h
+
+store-as5-seed-demo: store-as5-test
+	python tools/packager.py serve-store-as5 --fixtures-dir $(STORE_AS5_FIXTURES_DIR) --profile seed --port 8000
+
+store-as5-serve: store-as5-test
+	python tools/packager.py serve-store-as5 --fixtures-dir $(STORE_AS5_FIXTURES_DIR) --profile update --port 8000
+
+clean:
+	rm -rf $(BUILD_DIR)
+
+.PHONY: all coverage-image coverage-map run run-stage2-lba run-stage2-chs run-usb run-usb-msc run-usb-hid run-usb-wifi run-system-fixture run-system-slots-fixture run-system-slots-matrix run-system-update-matrix ep94b-fixtures ep94b-matrix run-ep94b-matrix ep94c-matrix run-ep94c-matrix run-recovery-menu-vga run-storage storage-fixtures storage-fixtures-test storage-fixtures-verify system-fixtures system-slots-fixtures system-slots-matrix debug q3check catalog-test test-qemu test-qemu-selftest test-core-host test-tst2-host test-tst3-host test-tst3-sanitize test-tst4-qemu q3check-test package-test update-test package-demo store-test store-demo store-as2-test store-as2-demo store-as4-test store-as4-seed-demo store-as4-update-demo store-as5-test store-as5-seed-demo store-as5-serve clean
+.PHONY: kernel-elf
+.PHONY: test-assembly-qemu test-assembly-trace-qemu test-assembly-boot-trace-qemu test-assembly-recovery-trace-qemu
+.PHONY: test-qemu-parallel test-qemu-soak-parallel test-sec6-host test-sec6-qemu test-sec6
+.PHONY: test-tst4-qemu-paging-vma test-tst4-qemu-execution test-tst4-qemu-storage-vfs test-tst4-qemu-network test-tst4-qemu-platform
+.PHONY: test-tst5-host test-tst5-qemu-shell test-tst5-qemu-input test-tst5-qemu-apps test-tst5-qemu-processes test-tst5-qemu-storage test-tst5-qemu-network test-tst5-qemu-update-recovery test-tst5-qemu-reboot test-tst5-qemu-poweroff
+.PHONY: test-krn6-qemu-diagnostics
+.PHONY: test-tst6-host test-tst6-qemu-matrix-baseline test-tst6-qemu-matrix-minimal test-tst6-qemu-matrix-network test-tst6-qemu-matrix-usb-hid test-tst6-qemu-matrix-usb-storage test-tst6-qemu-matrix-audio test-tst6-qemu-matrix-display test-tst6-qemu-matrix-pci test-tst6-qemu-stress-kernel test-tst6-qemu-stress-storage test-tst6-qemu-stress-network test-tst6-qemu-stress-apps test-tst6-qemu-fault-memory test-tst6-qemu-fault-block test-tst6-qemu-fault-block-cache test-tst6-qemu-fault-package test-tst6-qemu-fault-update test-tst6-qemu-fault-network test-tst6-qemu-fault-process test-tst6-qemu-fault-recovery test-tst6-qemu-fault-service-supervisor
+.PHONY: test-tst7-host test-tst7-quick test-tst7-full
+.PHONY: test-shell-commands-wifi-host
+.PHONY: test-app-loader-host test-taskbar-host test-appstore-host test-editor-host test-settings-icons-host test-desktop-host test-syscall-host test-thread-host
+.PHONY: test-tst7-continuous-host test-tst7-continuous
+.PHONY: test-tst7-continuous-parallel
+.PHONY: test-network-host test-network-manager-host test-route-host test-ipv4-host test-crypto-host test-scheduling-host test-package-host test-update-host test-update-runtime-host test-update-remote-runtime-host test-update-remote-host test-app-remote-host test-update-system-slots-host test-update-remote-system-host test-update-remote-github-host test-update-remote-release-host test-update-system-host test-state-host test-device-manager-host test-app-api-host test-app-files-host test-app-builtin-host test-app-catalog-host test-input-host test-power-host test-vfs-path-host test-file-index-host test-fs-host test-permissions-host test-storage-host test-storage-fat32-host test-block-host test-fat12-host test-fat32-host test-vfs-host test-slab-host test-timer-host test-udp-host test-arp-host test-icmp-host test-dns-host test-dhcp-host test-ethernet-host test-tcp-host test-tls-host test-tls-client-host test-mediaplayer-host test-shell-job-host test-shell-pipeline-host test-http-host test-net-socket-host test-socket-runtime-host test-vma-host test-paging-host test-memory-host test-process-signal-host test-process-ipc-host test-process-host test-process-resource-host test-thread-host test-workqueue-host test-bearssl-compat-host test-shell-dispatch-host test-shell-introspection-host test-font-host test-rtc-status-host test-wifi-manager-host test-usb-manager-host test-usb-hid-host test-usb-msc-host test-devfs-host test-procfs-host test-sysfs-host test-wav-host test-bmp-host test-rng-host test-serial-host test-tss-host test-speaker-host test-keyboard-host test-protocol-adapter-host test-blackbox-host test-coverage-host test-shell-input-host test-shell-hosted-host test-shell-command-utils-host test-usb-transport-host test-gui-host test-shell-commands-vfs-host test-recovery-runtime-host test-panic-host test-kernel-host test-pci-host test-ata-host test-idt-host test-icons-host test-vesa-host test-video-host test-mouse-host
+.PHONY: catalog-test-strict
+.PHONY: test-acpi-host
+.PHONY: test-uhci-host
+.PHONY: test-ehci-host
+.PHONY: test-rtl8139-host
+.PHONY: test-mouse-host test-e1000-host test-ac97-host test-rtl8811cu-host
+.PHONY: test-shell-commands-core-host
+.PHONY: test-shell-diagnostics-helpers-host
+.PHONY: test-spinlock-host
+.PHONY: test-shell-commands-storage-host test-shell-network-checks-host test-shell-commands-packages-host test-shell-commands-apps-host test-shell-checks-host
+.PHONY: test-shell-diagnostics-host
+.PHONY: test-service-supervisor-host
+.PHONY: test-updater-host
+.PHONY: test-filemanager-host
+.PHONY: test-taskmanager-host
+.PHONY: test-wm-host test-guitest-host test-recovery-menu-host test-recovery-loader-host
+
+test-wm-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_wm_host.c tests/catalog.json src/wm/wm.c src/include/ui/wm.h src/include/ui/desktop.h src/include/ui/display.h src/include/ui/gui.h src/include/ui/icons.h src/include/ui/taskbar.h src/include/core/errors.h src/include/core/log.h src/include/core/recovery.h src/include/core/timer.h src/include/core/video.h src/include/drivers/mouse.h src/include/drivers/vesa.h
+	python tools/core_host_runner.py --case host:ui:wm --cc "$(HOST_CC)"
+
+test-guitest-host: tools/core_host_runner.py tools/coverage_collector.py tests/unit/test_guitest_host.c tests/catalog.json src/shell/guitest_app.c src/include/apps/guitest.h src/include/apps/shell.h src/include/core/errors.h src/include/core/log.h src/include/core/recovery.h src/include/core/video.h src/include/drivers/mouse.h src/include/drivers/speaker.h src/include/drivers/vesa.h src/include/ui/desktop.h src/include/ui/display.h src/include/ui/gui.h src/include/ui/taskbar.h
+	python tools/core_host_runner.py --case host:ui:guitest --cc "$(HOST_CC)"
