@@ -308,6 +308,43 @@ O MVP deve aceitar um limite de ciclos para validação e exigir uma opção
 explícita para execução permanente. Mesmo no modo permanente, cada subprocesso
 terá timeout máximo e o supervisor deverá ser interrompido de forma segura.
 
+## Execução paralela geral
+
+O executor deve permanecer geral e não ser criado para uma etapa específica.
+Cada etapa seleciona somente os casos afetados no catálogo, enquanto o
+orquestrador inicia os casos independentes em processos QEMU separados.
+
+O modo direcionado poderá ser usado para validar uma alteração:
+
+```text
+make -j 4 test-qemu-parallel
+```
+
+O alvo receberá a seleção de casos da etapa e poderá executar até quatro
+workers simultaneamente. O mesmo executor servirá para SEC5, SEC6,
+regressões e qualquer outra etapa.
+
+O modo `soak` poderá permanecer em um computador dedicado por várias horas,
+selecionando casos de forma pseudoaleatória e reproduzível:
+
+```text
+make test-qemu-soak QEMU_WORKERS=4 QEMU_DURATION=8h QEMU_SEED=12345
+```
+
+Cada worker deverá usar snapshot, `run_id`, portas e diretório de artefatos
+próprios. A seed, o commit, o hash da imagem, o catálogo e a configuração
+completa precisam ser registrados para repetir uma falha.
+
+Casos que exigem fixture mutável, hardware exclusivo ou uma sequência de
+recuperação dependente de estado serão marcados no catálogo como serializados.
+Os demais poderão ser executados simultaneamente. Um timeout ou falha de um
+worker não deve interromper os outros; o supervisor deve preservar os
+artefatos e consolidar `PASS`, `FAIL`, `TIMEOUT` e `BLOCKED` ao final.
+
+Os gates `q3check`, `clean` e `make` continuarão sendo executados antes da
+matriz QEMU. A paralelização se aplica aos testes selecionados depois que a
+mesma imagem tiver sido validada.
+
 ## Evoluções possíveis
 
 - rotação configurável de artefatos;
