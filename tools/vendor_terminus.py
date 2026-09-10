@@ -15,7 +15,7 @@ ASCII_LAST = 0x7E
 GLYPH_COUNT = ASCII_LAST - ASCII_FIRST + 1
 FONT_DIR = Path("assets/fonts/terminus")
 OUTPUT_PATH = Path("src/drivers/font_data.inc")
-LICENSE_SHA256 = "c14f8d795784a547ea35e69c51dee2957bb71a1cdb492ec5321e4b61d3d97630"
+LICENSE_SHA256 = "29e51260692fca30c51c3c81c5aa12205cfaa1be7180bf5e7c8192e745e78308"
 
 
 @dataclass(frozen=True)

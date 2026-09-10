@@ -24,6 +24,20 @@ segredos.
 - Estado: correção operacional aplicada; `make q3check`, `make clean`, `make` e
   `make run` permanecem pendentes de execução pelo usuário.
 
+## 2026-09-10 - Correção do hash da licença Terminus
+
+- Diagnóstico: `q3check` falhou em `tools/vendor_terminus.py --check` porque o
+  hash esperado de `assets/fonts/terminus/OFL.TXT` correspondia à mesma licença
+  com finais de linha CRLF, enquanto o arquivo versionado usa LF.
+- Implementação: atualizado o hash fixado no gerador e em
+  `assets/fonts/terminus/SOURCE.md` para o conteúdo versionado em LF. A licença
+  não foi convertida entre formatos.
+- Evidência: o arquivo local não possui alteração em relação ao Git e seu
+  SHA-256 é `29e51260692fca30c51c3c81c5aa12205cfaa1be7180bf5e7c8192e745e78308`;
+  o hash anterior `c14f8d...` é o resultado da conversão para CRLF.
+- Estado: correção aplicada; repetir `make -f Makefile.linux q3check` pelo
+  usuário para confirmar o gate completo.
+
 ## 2026-09-08 - SEC3: ciclo de vida e isolamento de processos
 
 - Implementação: callbacks de criação, saída e destruição passaram a validar
