@@ -38,6 +38,9 @@ seus logs devem ser preservados e o ciclo deve continuar nos casos seguintes.
 - `full`: ciclo completo da TST7, incluindo catálogo e casos QEMU.
 - `soak`: ciclos determinísticos e limitados de estresse, principalmente os
   casos da TST6.
+- `parallel`: um ciclo com casos QEMU independentes em processos paralelos.
+- `soak-parallel`: ciclos contínuos do supervisor usando o pool de tags
+  `stress`, `fault`, `apps` e `storage`.
 
 Cada ciclo terá um identificador próprio, seed reproduzível e um limite claro
 de duração. O modo contínuo pode repetir ciclos, mas nunca repete
@@ -284,6 +287,43 @@ aguarda o watchdog do processo atual. Cada sessão fica em
 `.tst7-results/continuous/<session-id>/`, e os diretórios TST7 individuais não
 são sobrescritos.
 
+O orquestrador paralelo direto está disponível em
+`tools/qemu_parallel_runner.py`. A seleção é sempre explícita no modo
+`parallel`; `--profile` e `--tag` podem ser combinados, enquanto `--case` e
+`--all` são seleções exclusivas. O padrão é quatro workers, configurável de 1
+ a 64:
+
+```text
+python tools/qemu_parallel_runner.py parallel --profile smoke --workers 4
+python tools/qemu_parallel_runner.py parallel --case qemu:tst5:apps --case qemu:tst5:processes --workers 6 --seed 12345
+python tools/qemu_parallel_runner.py parallel --profile tst6 --tag fault --workers 6
+python tools/qemu_parallel_runner.py parallel --all --workers 8
+python tools/qemu_parallel_runner.py soak --workers 4 --seed 12345
+python tools/qemu_parallel_runner.py soak --tag apps --tag storage --workers 6
+```
+
+Cada caso recebe `run_id`, seed, snapshot, portas, timeout e diretório de
+artefatos próprios. Os manifestos e resultados ficam em
+`build/test-results/parallel/<run-id>/`, com `manifest.json`,
+`partial.json`, `result.json` e `cases/`. Os resultados finais são `PASS`,
+`FAIL`, `BLOCKED` ou `STOPPED`; nenhuma execução anterior é sobrescrita.
+
+O supervisor TST7 delega aos mesmos modos sem alterar o significado dos
+modos antigos:
+
+```text
+python tools/tst7_continuous_runner.py start --mode parallel --max-cycles 1 --profile smoke --workers 6 --seed 12345
+python tools/tst7_continuous_runner.py start --mode soak-parallel --max-cycles 2 --interval 0 --workers 6 --seed 12345
+make test-qemu-parallel QEMU_PARALLEL_WORKERS=6 QEMU_PARALLEL_ARGS="--profile smoke"
+make test-qemu-soak-parallel QEMU_PARALLEL_WORKERS=6 QEMU_PARALLEL_SOAK_ARGS="--tag fault --tag storage --seed 12345"
+make test-tst7-continuous-parallel QEMU_PARALLEL_WORKERS=6
+```
+
+O alvo paralelo não usa `make -j` para controlar os casos: o pool é mantido
+pelo próprio orquestrador, que encerra o processo QEMU e seus descendentes em
+timeout ou parada. Os gates `make q3check` e `make clean && make` continuam
+obrigatórios antes da validação QEMU da mesma imagem.
+
 O teste finito do supervisor é:
 
 ```text
@@ -317,19 +357,20 @@ orquestrador inicia os casos independentes em processos QEMU separados.
 O modo direcionado poderá ser usado para validar uma alteração:
 
 ```text
-make -j 4 test-qemu-parallel
+make test-qemu-parallel QEMU_PARALLEL_WORKERS=4 QEMU_PARALLEL_ARGS="--case qemu:tst5:apps --case qemu:tst5:processes"
 ```
 
-O alvo receberá a seleção de casos da etapa e poderá executar o número de
-workers definido pelo host. O exemplo usa quatro workers como configuração
-inicial conservadora, mas esse valor não é um limite do sistema. O mesmo
-executor servirá para SEC5, SEC6, regressões e qualquer outra etapa.
+O alvo recebe a seleção de casos da etapa por `QEMU_PARALLEL_ARGS` e pode
+executar o número de workers definido pelo host. O exemplo usa quatro workers
+como configuração inicial conservadora, mas esse valor não é um limite do
+sistema. O mesmo executor servirá para SEC5, SEC6, regressões e qualquer outra
+etapa.
 
 O modo `soak` poderá permanecer em um computador dedicado por várias horas,
 selecionando casos de forma pseudoaleatória e reproduzível:
 
 ```text
-make test-qemu-soak QEMU_WORKERS=4 QEMU_DURATION=8h QEMU_SEED=12345
+make test-qemu-soak-parallel QEMU_PARALLEL_WORKERS=4 QEMU_PARALLEL_SOAK_ARGS="--seed 12345"
 ```
 
 Cada worker deverá usar snapshot, `run_id`, portas e diretório de artefatos

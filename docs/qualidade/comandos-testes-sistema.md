@@ -82,6 +82,24 @@ python tools/qemu_test_runner.py stress --case qemu:tst2:boot-ready --iterations
 
 Os resultados do runner QEMU ficam em `build/test-results/<run-id>/`.
 
+## QEMU paralelo e soak contínuo
+
+O orquestrador geral executa casos QEMU independentes em processos paralelos.
+O modo `parallel` exige uma seleção explícita; `--profile` e `--tag` podem ser
+combinados. O modo `soak` usa por padrão as tags `stress`, `fault`, `apps` e
+`storage`:
+
+```text
+make test-qemu-parallel QEMU_PARALLEL_WORKERS=4 QEMU_PARALLEL_ARGS="--profile smoke"
+make test-qemu-parallel QEMU_PARALLEL_WORKERS=6 QEMU_PARALLEL_ARGS="--case qemu:tst5:apps --case qemu:tst5:processes --seed 12345"
+make test-qemu-soak-parallel QEMU_PARALLEL_WORKERS=6 QEMU_PARALLEL_SOAK_ARGS="--seed 12345"
+```
+
+O intervalo operacional de workers é de 1 a 64, com padrão 4. Cada caso usa
+snapshot, seed, portas, timeout, `run_id` e diretório próprio. Os resultados
+agregados ficam em `build/test-results/parallel/<run-id>/`; falhas não
+substituem artefatos anteriores.
+
 ## TST3 — logica host-only e limites
 
 ```text
@@ -193,12 +211,19 @@ Suite rapida, sem a matriz QEMU completa:
 make test-tst7-quick
 ```
 
-Suite completa, com `clean`, build, gates, catalogo e os 36 casos QEMU em
+Suite completa, com `clean`, build, gates, catalogo e os 39 casos QEMU em
 processos separados:
 
 ```text
 make test-tst7-full
+make test-tst7-continuous-host
+make test-tst7-continuous-parallel QEMU_PARALLEL_WORKERS=6
 ```
+
+O supervisor também aceita `--mode parallel` e `--mode soak-parallel`. O
+primeiro executa um ciclo com seleção por `--case`, `--profile`, `--tag` ou
+`--all`; o segundo repete o pool de tags com novas seeds por ciclo e respeita o
+mesmo `--stop-file`.
 
 A execucao completa nao aprova baseline automaticamente. Depois de revisar o
 relatorio de um `full` sem `FAIL`, `BLOCKED` ou timeout, aprove explicitamente:

@@ -1,6 +1,21 @@
 {
   "schema": "zephyros-coverage-registry-v1",
   "version": 1,
+  "orchestrators": {
+    "qemu_parallel_runner": {
+      "case_ids": [
+        "host:quality:qemu-parallel"
+      ],
+      "modes": [
+        "parallel",
+        "soak",
+        "soak-parallel",
+        "tst7-continuous:parallel",
+        "tst7-continuous:soak-parallel"
+      ],
+      "artifact_schema": "zephyros-qemu-parallel-result-v1"
+    }
+  },
   "entries": [
     {
       "id": "app-api-host-dynamic",

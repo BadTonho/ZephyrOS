@@ -1,4 +1,9 @@
+import io
+import tempfile
 import unittest
+from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import patch
 
 from tools import qemu_test_runner as runner
 
@@ -91,6 +96,71 @@ class CatalogAndStatusTests(unittest.TestCase):
         self.assertEqual(
             runner.QEMU_COMMON_ARGS,
             ["-accel", "tcg,thread=single"])
+
+
+class QemuSessionTests(unittest.TestCase):
+    def test_start_retries_after_serial_port_collision(self):
+        class FakeProcess:
+            def __init__(self):
+                self.pid = 4321
+                self.returncode = None
+                self.stdout = io.BytesIO()
+                self.stderr = io.BytesIO()
+
+            def poll(self):
+                return self.returncode
+
+            def wait(self, timeout=None):
+                self.returncode = 0
+                return self.returncode
+
+            def terminate(self):
+                self.returncode = 143
+
+            def kill(self):
+                self.returncode = 137
+
+        class FakeQmp:
+            def __init__(self, port):
+                self.port = port
+
+            def connect(self, deadline):
+                return None
+
+            def command(self, name, arguments=None):
+                return {"return": {"status": "running"}}
+
+            def close(self):
+                return None
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            image = root / "zephyros.img"
+            image.write_bytes(b"image")
+            artifact_dir = root / "artifacts"
+            artifact_dir.mkdir()
+            arguments = SimpleNamespace(
+                image=str(image), qemu="qemu-system-i386", cpu="max",
+                snapshot=True, network="none", qemu_profile="baseline",
+                qemu_arg=[], boot_timeout=1, storage_image=None,
+            )
+            session = runner.QemuSession(arguments, artifact_dir)
+            with patch.object(runner.shutil, "which", return_value="qemu"), \
+                    patch.object(runner.subprocess, "Popen",
+                                 side_effect=[FakeProcess(), FakeProcess()]), \
+                    patch.object(runner, "QmpClient", FakeQmp), \
+                    patch.object(runner, "free_port",
+                                 side_effect=[1001, 2001, 1002, 2002]), \
+                    patch.object(
+                        session, "_connect_serial",
+                        side_effect=[
+                            runner.RunnerError("serial_timeout", "serial_timeout"),
+                            None,
+                        ]):
+                session.start()
+            self.assertEqual(session.serial_port, 1002)
+            self.assertEqual(session.qmp_port, 2002)
+            session.stop()
 
 
 class ProgressTests(unittest.TestCase):

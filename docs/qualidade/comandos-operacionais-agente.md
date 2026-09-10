@@ -1599,15 +1599,19 @@ dependência obrigatória é `BLOCKED`; falha do guest, timeout ou regressão é
 ## Supervisor continuo TST7
 
 O supervisor implementado em `tools/tst7_continuous_runner.py` possui os
-modos `quick`, `full` e `soak`. O modo `soak` executa somente os quatro casos
-de estresse TST6; `full` exige `--strict-coverage` e, portanto, permanece
-reprovado enquanto houver superficie de software `PENDING`.
+modos `quick`, `full`, `soak`, `parallel` e `soak-parallel`. O modo `soak`
+executa os casos de estresse TST6; `parallel` delega uma seleção explícita ao
+orquestrador QEMU paralelo; `soak-parallel` repete o pool de tags
+`stress,fault,apps,storage`. `full` exige `--strict-coverage` e, portanto,
+permanece reprovado enquanto houver superficie de software `PENDING`.
 
 ```text
 python tools/tst7_continuous_runner.py start --mode quick --max-cycles 2 --interval 0
 python tools/tst7_continuous_runner.py start --mode full --max-cycles 2 --interval 60
 python tools/tst7_continuous_runner.py start --mode soak --max-cycles 2 --interval 0
 python tools/tst7_continuous_runner.py start --mode full --forever --interval 60
+python tools/tst7_continuous_runner.py start --mode parallel --max-cycles 1 --profile smoke --workers 6 --seed 12345
+python tools/tst7_continuous_runner.py start --mode soak-parallel --max-cycles 2 --interval 0 --workers 6 --seed 12345
 ```
 
 `Ctrl+C` ou o arquivo definido por `--stop-file` solicita parada graciosa.
@@ -1615,6 +1619,13 @@ Cada ciclo preserva artefatos em `.tst7-results/continuous/` sem sobrescrever
 execucoes anteriores. A entrada Linux equivalente e
 `tools/tst7-continuous`; use `chmod +x tools/tst7-continuous` antes da primeira
 execucao.
+
+Para executar o orquestrador diretamente, use `parallel` com `--case`
+repetível, `--profile`, `--tag` repetível ou `--all`. A seleção por perfil e
+tags é combinada; a ausência de seleção é `BLOCKED`. O padrão de workers é 4,
+com limite operacional de 64. Cada execução registra manifest, seeds, commit,
+hashes, parâmetros, comando filho e diretório de artefatos em
+`build/test-results/parallel/<run-id>/`.
 
 ## Cobertura Assembly de interrupcoes
 

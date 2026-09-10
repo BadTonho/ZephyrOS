@@ -36,6 +36,7 @@ CASE_TIMEOUT_DEFAULT = 30.0
 SUITE_TIMEOUT_DEFAULT = 300.0
 QMP_TIMEOUT = 2.0
 QEMU_TERMINATE_TIMEOUT = 3.0
+QEMU_PORT_RETRIES = 3
 HELLO_RETRY_INTERVAL = 0.5
 QMP_KEY_HOLD_TIME_MS = 20
 QMP_KEY_GAP_SECONDS = 0.025
@@ -565,10 +566,10 @@ class QemuSession:
         self.arguments = arguments
         self.artifact_dir = artifact_dir
         self.image = resolve_path(arguments.image, DEFAULT_IMAGE)
-        self.serial_port = free_port()
-        self.qmp_port = free_port()
+        self.serial_port = 0
+        self.qmp_port = 0
         self.serial: socket.socket | None = None
-        self.qmp = QmpClient(self.qmp_port)
+        self.qmp = QmpClient(0)
         self.process: subprocess.Popen[bytes] | None = None
         self.serial_buffer = bytearray()
         self.protocol_errors: list[str] = []
@@ -648,31 +649,51 @@ class QemuSession:
         qemu = self.command()[0]
         if not Path(qemu).is_file() and shutil.which(qemu) is None:
             raise RunnerError(f"qemu_ausente:{qemu}", "precondition", True)
-        try:
-            self.process = subprocess.Popen(
-                self.command(),
-                cwd=ROOT,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-            )
-        except OSError as error:
-            raise RunnerError(f"qemu_inicio:{error}", "qemu_exit", True) from error
-        import threading
-        self.stdout_thread = threading.Thread(
-            target=self._drain_pipe,
-            args=(self.process.stdout, self.artifact_dir / "qemu.stdout.log"),
-            daemon=True,
-        )
-        self.stderr_thread = threading.Thread(
-            target=self._drain_pipe,
-            args=(self.process.stderr, self.artifact_dir / "qemu.stderr.log"),
-            daemon=True,
-        )
-        self.stdout_thread.start()
-        self.stderr_thread.start()
-        deadline = time.monotonic() + self.arguments.boot_timeout
-        self._connect_serial(deadline)
-        self.qmp.connect(deadline)
+        retry_causes = {
+            "qemu_encerrou_antes_do_serial", "serial_timeout", "qmp_timeout",
+        }
+        last_error: RunnerError | None = None
+        for attempt in range(QEMU_PORT_RETRIES):
+            self.serial_port = free_port()
+            self.qmp_port = free_port()
+            self.qmp = QmpClient(self.qmp_port)
+            try:
+                self.process = subprocess.Popen(
+                    self.command(),
+                    cwd=ROOT,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                )
+                import threading
+                self.stdout_thread = threading.Thread(
+                    target=self._drain_pipe,
+                    args=(self.process.stdout,
+                          self.artifact_dir / "qemu.stdout.log"),
+                    daemon=True,
+                )
+                self.stderr_thread = threading.Thread(
+                    target=self._drain_pipe,
+                    args=(self.process.stderr,
+                          self.artifact_dir / "qemu.stderr.log"),
+                    daemon=True,
+                )
+                self.stdout_thread.start()
+                self.stderr_thread.start()
+                deadline = time.monotonic() + self.arguments.boot_timeout
+                self._connect_serial(deadline)
+                self.qmp.connect(deadline)
+                return
+            except OSError as error:
+                self.stop()
+                raise RunnerError(
+                    f"qemu_inicio:{error}", "qemu_exit", True) from error
+            except RunnerError as error:
+                last_error = error
+                self.stop()
+                if error.cause not in retry_causes or attempt + 1 >= QEMU_PORT_RETRIES:
+                    raise
+        if last_error:
+            raise last_error
 
     def _connect_serial(self, deadline: float) -> None:
         while time.monotonic() < deadline:

@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7546**
-- Casos de teste: **175**
+- Casos de teste: **176**
 - Superfícies aposentadas: **59**
 
 | Tipo | Quantidade |
@@ -25,7 +25,7 @@
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 175 |
+| `AUTOMATED` | 176 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -7807,6 +7807,7 @@
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
 | `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, validar retorno com IF desabilitado, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez, o retorno preserva o EFLAGS salvo e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
+| `host:quality:qemu-parallel` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | Python, catalogo e ferramentas host disponiveis | validar selecao, workers, seeds, comandos, execucao mockada e relatorios agregados | casos independentes sao coordenados sem perda de artefatos e falhas preservam o diagnostico | selecao invalida, worker fora do limite, timeout, parada ou resultado inconsistente | somente processos e artefatos temporarios do teste host | processos mockados encerrados e artefatos temporarios liberados |
 
 ## Superfícies sem caso associado
 

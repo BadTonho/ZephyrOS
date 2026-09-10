@@ -191431,6 +191431,35 @@
         "snapshot"
       ],
       "status": "AUTOMATED"
+    },
+    {
+      "id": "host:quality:qemu-parallel",
+      "scenario": "Orquestrador host-only de casos QEMU paralelos",
+      "owner": "quality",
+      "layer": "host",
+      "executor": "host",
+      "profile": "host-only",
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 1,
+      "isolation": "fixture",
+      "parameters": {
+        "compiler": "HOST_CC",
+        "runner": "tools/qemu_parallel_runner.py"
+      },
+      "preconditions": "Python, catalogo e ferramentas host disponiveis",
+      "action": "validar selecao, workers, seeds, comandos, execucao mockada e relatorios agregados",
+      "expected": "casos independentes sao coordenados sem perda de artefatos e falhas preservam o diagnostico",
+      "errors": "selecao invalida, worker fora do limite, timeout, parada ou resultado inconsistente",
+      "effects": "somente processos e artefatos temporarios do teste host",
+      "cleanup": "processos mockados encerrados e artefatos temporarios liberados",
+      "surface_ids": [],
+      "tags": [
+        "quality",
+        "qemu",
+        "parallel",
+        "soak"
+      ],
+      "status": "AUTOMATED"
     }
   ],
   "retired": [

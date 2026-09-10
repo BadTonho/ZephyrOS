@@ -6994,3 +6994,30 @@ dívida.
   `DT100-003`, pois os fixtures AS5 ainda não possuem assinatura v2 válida.
   Estado SEC5: `PASS`; fechamento do Roadmap 19 continua dependente da dívida
   aceita da SEC4 e da SEC6.
+
+- Testador QEMU paralelo e contínuo — implementação e validação essencial
+  concluídas em 2026-09-10 (America/Sao_Paulo). Foi criado o orquestrador
+  `tools/qemu_parallel_runner.py`, com seleção explícita por caso, perfil, tag
+  ou `--all`, modo `soak`, seeds determinísticas, quatro workers por padrão,
+  isolamento por snapshot, timeouts, stop-file, encerramento de processos,
+  artefatos individuais e manifestos/resultados atômicos. O supervisor TST7
+  recebeu `parallel` e `soak-parallel`; os modos existentes permanecem sem
+  alteração semântica.
+
+  Foram adicionados os alvos `make test-qemu-parallel`,
+  `make test-qemu-soak-parallel` e `make test-tst7-continuous-parallel`, além
+  dos testes host-only, do registro de cobertura e da documentação operacional.
+  O runner QEMU também passou a tentar novamente colisões de portas serial/QMP
+  com diagnóstico explícito.
+
+  Passaram `make q3check` (com `DT100-003 ACEITA`), `make clean` seguido de
+  `make`, `make test-qemu-selftest`, `make test-tst7-continuous-host`,
+  `make catalog-test`, os testes unitários do orquestrador/supervisor,
+  `git diff --check` e a validação/renderização do catálogo. O alvo real
+  `make test-qemu-parallel` terminou `PASS` no run
+  `qpp-20260910T165030Z-11796`, com 17/17 casos, quatro workers e nenhum
+  processo QEMU residual. Um ciclo controlado de `soak-parallel` terminou
+  `PASS` no supervisor `session-20260910T165424Z-24812`, com a tag `apps`,
+  2/2 casos e zero grupos de falha. A tentativa inicial sem QEMU no `PATH`
+  foi preservada como `BLOCKED` e a repetição com o caminho configurado passou.
+  Nenhum kernel, bootloader, Stage 2, ABI ou syscall foi alterado.

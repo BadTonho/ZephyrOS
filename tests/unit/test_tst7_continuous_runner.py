@@ -17,6 +17,33 @@ class ContinuousRunnerTests(unittest.TestCase):
         self.assertIn("--strict-coverage", command)
         self.assertNotIn("--shell", command)
 
+    def test_parallel_mode_delegates_to_parallel_runner(self):
+        arguments = runner.parse_arguments([
+            "start", "--mode", "parallel", "--max-cycles", "1",
+            "--workers", "6", "--case", "qemu:tst5:apps",
+            "--seed", "12345"])
+        command = runner.build_command(
+            arguments, "tst7c-20260901T000000Z-1-1")
+        self.assertIn("qemu_parallel_runner.py", command[1])
+        self.assertIn("parallel", command)
+        self.assertIn("--workers", command)
+        self.assertIn("6", command)
+        self.assertIn("--case", command)
+        self.assertIn("qemu:tst5:apps", command)
+        self.assertIn("--qemu", command)
+        self.assertIn(arguments.qemu, command)
+
+    def test_parallel_worker_limit_is_validated(self):
+        arguments = runner.parse_arguments([
+            "start", "--mode", "soak-parallel", "--max-cycles", "1",
+            "--workers", "65"])
+        self.assertEqual(runner.validate_arguments(arguments), "workers_invalidos")
+
+    def test_cycle_seed_is_reproducible_and_changes_by_cycle(self):
+        first = runner.cycle_seed(12345, 1)
+        self.assertEqual(first, runner.cycle_seed(12345, 1))
+        self.assertNotEqual(first, runner.cycle_seed(12345, 2))
+
     def test_permanent_mode_requires_explicit_forever(self):
         arguments = runner.parse_arguments([
             "start", "--forever", "--interval", "0"])

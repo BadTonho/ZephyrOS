@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -18,6 +19,7 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 TST7_RUNNER = ROOT / "tools" / "tst7_regression_runner.py"
+QEMU_PARALLEL_RUNNER = ROOT / "tools" / "qemu_parallel_runner.py"
 RESULTS_ROOT = ROOT / ".tst7-results"
 DEFAULT_INTERVAL = 60.0
 DEFAULT_CYCLE_TIMEOUT = 7200.0
@@ -26,7 +28,13 @@ MAX_CYCLE_TIMEOUT = 7200.0
 MAX_CYCLES = 1000
 STOP_POLL_INTERVAL = 1.0
 RUN_ID_RE = re.compile(r"^tst7c-[0-9]{8}T[0-9]{6}Z-[0-9]+-[0-9]+$")
-MODE_TARGETS = {"quick": "quick", "full": "full", "soak": "soak"}
+MODE_TARGETS = {
+    "quick": "quick", "full": "full", "soak": "soak",
+    "parallel": "parallel", "soak-parallel": "soak",
+}
+PARALLEL_MODES = {"parallel", "soak-parallel"}
+DEFAULT_PARALLEL_WORKERS = 4
+MAX_PARALLEL_WORKERS = 64
 
 
 def utc_stamp() -> str:
@@ -115,7 +123,41 @@ def terminate_process(process: subprocess.Popen[bytes]) -> None:
             pass
 
 
-def build_command(arguments: argparse.Namespace, run_id: str) -> list[str]:
+def cycle_seed(seed: int | None, cycle: int) -> int | None:
+    if seed is None:
+        return None
+    material = f"zephyros-tst7-continuous:v1:{seed}:{cycle}"
+    digest = hashlib.sha256(material.encode("utf-8")).digest()
+    return int.from_bytes(digest[:4], "big")
+
+
+def build_command(arguments: argparse.Namespace, run_id: str,
+                  cycle: int = 1) -> list[str]:
+    if arguments.mode in PARALLEL_MODES:
+        target = "parallel" if arguments.mode == "parallel" else "soak"
+        command = [
+            sys.executable, str(QEMU_PARALLEL_RUNNER), target,
+            "--run-id", run_id, "--results", str(RESULTS_ROOT),
+            "--image", arguments.image, "--catalog", arguments.catalog,
+            "--workers", str(arguments.workers),
+            "--qemu", arguments.qemu,
+            "--boot-timeout", str(arguments.command_timeout),
+            "--case-timeout", str(arguments.case_timeout),
+            "--heartbeat-timeout", str(arguments.heartbeat_timeout),
+            "--suite-timeout", str(arguments.suite_timeout),
+            "--stop-file", str(arguments.stop_file),
+        ]
+        if arguments.seed is not None:
+            command.extend(["--seed", str(cycle_seed(arguments.seed, cycle))])
+        if arguments.profile:
+            command.extend(["--profile", arguments.profile])
+        for case_id in arguments.case:
+            command.extend(["--case", case_id])
+        for tag in arguments.tag:
+            command.extend(["--tag", tag])
+        if arguments.all_cases:
+            command.append("--all")
+        return command
     target = MODE_TARGETS[arguments.mode]
     command = [
         sys.executable,
@@ -156,7 +198,7 @@ def read_cycle_result(run_id: str) -> dict[str, Any] | None:
 def run_cycle(arguments: argparse.Namespace, session_dir: Path,
               cycle: int) -> dict[str, Any]:
     run_id = cycle_run_id(cycle)
-    command = build_command(arguments, run_id)
+    command = build_command(arguments, run_id, cycle)
     started = time.monotonic()
     stdout = b""
     stderr = b""
@@ -254,12 +296,18 @@ def validate_arguments(arguments: argparse.Namespace) -> str | None:
         return "timeout_de_suite_invalido"
     if arguments.case_timeout <= 0 or arguments.case_timeout > MAX_CYCLE_TIMEOUT:
         return "timeout_de_caso_invalido"
+    if (arguments.heartbeat_timeout <= 0 or
+            arguments.heartbeat_timeout > MAX_CYCLE_TIMEOUT):
+        return "timeout_de_heartbeat_invalido"
     if arguments.forever and arguments.max_cycles is not None:
         return "forever_e_max_cycles_sao_exclusivos"
     if not arguments.forever and arguments.max_cycles is None:
         return "defina_max_cycles_ou_forever"
     if arguments.max_cycles is not None and not 1 <= arguments.max_cycles <= MAX_CYCLES:
         return "max_cycles_invalido"
+    if arguments.mode in PARALLEL_MODES and not \
+            1 <= arguments.workers <= MAX_PARALLEL_WORKERS:
+        return "workers_invalidos"
     if not arguments.stop_file.is_absolute():
         arguments.stop_file = ROOT / arguments.stop_file
     return None
@@ -278,6 +326,13 @@ def parse_arguments(argv: list[str] | None = None) -> argparse.Namespace:
     start.add_argument("--command-timeout", type=float, default=300.0)
     start.add_argument("--suite-timeout", type=float, default=7200.0)
     start.add_argument("--case-timeout", type=float, default=120.0)
+    start.add_argument("--heartbeat-timeout", type=float, default=60.0)
+    start.add_argument("--workers", type=int, default=DEFAULT_PARALLEL_WORKERS)
+    start.add_argument("--case", action="append", default=[])
+    start.add_argument("--profile")
+    start.add_argument("--tag", action="append", default=[])
+    start.add_argument("--all", dest="all_cases", action="store_true")
+    start.add_argument("--seed", type=int)
     start.add_argument("--make", default=os.environ.get("MAKE", "make"))
     start.add_argument("--qemu", default=os.environ.get("QEMU", "qemu-system-i386"))
     start.add_argument("--image", default=str(ROOT / "build" / "zephyros.img"))
