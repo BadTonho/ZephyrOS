@@ -20,6 +20,7 @@
 #include "fs/vfs_internal.h"
 #include "memory/slab.h"
 #include "process/process.h"
+#include "process/resource.h"
 #include "process/thread.h"
 
 #define HOST_COVERAGE_CAPACITY 8192U
@@ -330,6 +331,26 @@ process_t* process_get_by_pid(uint32_t pid) {
     return pid == current_process.pid ? &current_process : 0;
 }
 
+int process_resource_check_descriptors(process_t* process, uint32_t requested) {
+    (void)process;
+    (void)requested;
+    return OK;
+}
+
+int process_resource_check_pipes(process_t* process, uint32_t requested) {
+    (void)process;
+    (void)requested;
+    return OK;
+}
+
+void process_resource_note_descriptor_success(process_t* process) {
+    (void)process;
+}
+
+void process_resource_note_pipe_success(process_t* process) {
+    (void)process;
+}
+
 thread_t* thread_get_current(void) { return 0; }
 
 int ipc_current_has_pending(void) { return fake_ipc_pending ? 1 : 0; }
@@ -422,6 +443,17 @@ int storage_get_path_info(const char* id, const char* path,
     return ERR_NOT_FOUND;
 }
 
+int storage_find_volume(const char* id, storage_volume_t* out_volume) {
+    if (!id || !out_volume) return ERR_NULL;
+    if (kstrcmp(id, "system") != 0) return ERR_NOT_FOUND;
+    kmemset(out_volume, 0, sizeof(*out_volume));
+    set_text(out_volume->id, sizeof(out_volume->id), "system");
+    out_volume->fs_type = STORAGE_FS_FAT32;
+    out_volume->mounted = 1U;
+    out_volume->generation = 1U;
+    return OK;
+}
+
 int storage_atomic_write_file(const char* id, const char* path,
                               const uint8_t* data, uint32_t size,
                               uint8_t attributes, storage_atomic_mode_t mode) {
@@ -476,6 +508,7 @@ int vfs_resolve_open_path(const char* path, uint32_t mode,
         lookup_init(result, "/readonly");
         result->type = VFS_NODE_REGULAR;
         result->size = 4U;
+        result->exists = 1U;
         result->read_only = 1U;
         return OK;
     }
@@ -767,6 +800,8 @@ int main(void) {
     uint32_t bytes;
     uint32_t ready;
     uint32_t descriptor_count;
+    uint32_t descriptor_usage;
+    uint32_t pipe_usage;
     uint32_t position;
     int32_t fd;
     int32_t pipe_fds[2];
@@ -776,6 +811,7 @@ int main(void) {
 
     kmemset(&current_process, 0, sizeof(current_process));
     current_process.pid = 42U;
+    EXPECT(process_credentials_init_native(&current_process.credentials) == OK);
     processes[0] = &current_process;
     process_count = 1U;
     coverage_active = 1U;
@@ -842,6 +878,10 @@ int main(void) {
     pipe_fds[1] = VFS_FD_INVALID;
     EXPECT(vfs_pipe(0) == ERR_NULL);
     EXPECT(vfs_pipe(pipe_fds) == OK);
+    EXPECT(vfs_get_process_resource_usage(current_process.pid,
+                                          &descriptor_usage,
+                                          &pipe_usage) == OK);
+    EXPECT(descriptor_usage == 5U && pipe_usage == 1U);
     EXPECT(vfs_write(pipe_fds[1], payload, sizeof(payload), &bytes) == OK);
     EXPECT(bytes == sizeof(payload));
     EXPECT(vfs_poll(&(pollfd_t){pipe_fds[0], POLLIN, 0U}, 1U, 0U, &ready) ==
@@ -859,6 +899,10 @@ int main(void) {
     pipe_fds[0] = VFS_FD_INVALID;
     pipe_fds[1] = VFS_FD_INVALID;
     EXPECT(vfs_pipe(pipe_fds) == OK);
+    EXPECT(vfs_get_process_resource_usage(current_process.pid,
+                                          &descriptor_usage,
+                                          &pipe_usage) == OK);
+    EXPECT(descriptor_usage == 5U && pipe_usage == 1U);
     EXPECT(vfs_read(pipe_fds[0], buffer, 1U, &bytes) == ERR_STATE);
     EXPECT(vfs_close(pipe_fds[0]) == OK);
     EXPECT(vfs_close(pipe_fds[1]) == OK);

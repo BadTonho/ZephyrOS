@@ -116,10 +116,11 @@ pacotes, serviço `PKG`, App Store local/remota, Shell e empacotador. ZPKG v1
 permanece somente para inspeção/remoção; ZPKG v2 usa header de 128 bytes,
 Ed25519 e `AUTH.DAT` na transação de três arquivos. A validação host e o build
 completo passaram. A ausência das chaves privadas externas necessárias para
-regenerar os fixtures AS5 foi registrada como `DT100-003`; por isso o
-`make q3check` permanece pendente somente no gate `confianca_as5` e os testes
-QEMU da App Store remota ficam para a quitação da dívida. Os fixtures v1 não são
-aceitos pelo runtime.
+regenerar os fixtures AS5 foi registrada como `DT100-003`; por isso o gate
+estrito `python tools/q3check.py` permanece pendente somente em
+`confianca_as5`. O alvo `make q3check` aceita explicitamente essa dívida,
+exibindo-a como `ACEITA`; os testes QEMU da App Store remota ficam para a
+quitação da dívida. Os fixtures v1 não são aceitos pelo runtime.
 
 - [x] Validar assinatura, versão, tamanho, CRC/hash, dependências e limites de
   cada pacote antes de instalar ou executar.
@@ -134,20 +135,42 @@ aceitos pelo runtime.
 
 ### SEC5 — Política mínima de recursos
 
-- [ ] Definir a tabela de capacidades para arquivos, dispositivos, rede,
+- [x] Definir a tabela de capacidades para arquivos, dispositivos, rede,
   energia e diagnósticos.
-- [ ] Definir bits de leitura, escrita e execução para o proprietário, grupo e
+- [x] Definir bits de leitura, escrita e execução para o proprietário, grupo e
   demais usuários, incluindo a política de criação e herança de arquivos.
-- [ ] Definir limites por processo para memória, descritores, processos filhos,
+- [x] Definir limites por processo para memória, descritores, processos filhos,
   filas e tamanho de argumentos.
-- [ ] Manter `/proc` somente leitura, `/sys` somente leitura e `/proc/sys`
+- [x] Manter `/proc` somente leitura, `/sys` somente leitura e `/proc/sys`
   gravável apenas pelo contexto nativo previsto no contrato.
-- [ ] Rejeitar escrita, `ioctl`, sync ou redirecionamento quando o tipo do nó
+- [x] Rejeitar escrita, `ioctl`, sync ou redirecionamento quando o tipo do nó
   ou o privilégio não permitirem a operação.
-- [ ] Diferenciar `ERR_INVALID`, `ERR_NOT_FOUND`, `ERR_UNAVAILABLE`,
+- [x] Diferenciar `ERR_INVALID`, `ERR_NOT_FOUND`, `ERR_UNAVAILABLE`,
   `ERR_OVERFLOW`, `ERR_MEM`, `ERR_STATE` e `ERR_AGAIN` sem remapeamentos
   ambíguos.
-- [ ] Registrar falhas na camada com contexto, evitando duplicação de logs.
+- [x] Registrar falhas na camada com contexto, evitando duplicação de logs.
+- [x] Persistir permissões FAT32 em `ZPERM.DAT` versionado, com CRC32,
+  registros ordenados, limite de 128 entradas, defaults de migração e bloqueio
+  seguro para corrupção, truncamento, duplicatas e falta de capacidade.
+- [x] Integrar criação, remoção, renomeação, staging e diagnósticos aos
+  metadados, preservando FAT12 somente leitura sem sidecar.
+- [x] Acrescentar credenciais append-only aos processos e snapshots e expor
+  quotas, UID, GID, capacidades e modos efetivos sem ponteiros privados.
+
+Implementação SEC5 concluída nas camadas de processo, IPC, VFS, Storage,
+procfs, Shell, Makefile e testes host. O caso `host:storage:permissions` está
+`AUTOMATED` e passou junto com as demais suítes diretamente afetadas; o
+catálogo foi sincronizado, renderizado e validado. `make clean`, `make` e
+`make q3check` passaram, com `DT100-003` exibida como dívida aceita em
+`confianca_as5`; o gate estrito continua distinguindo essa ocorrência. Não há
+nova falha SEC5. Bootloader, Stage 2, ABI ring3 e syscalls não foram alterados.
+
+Os testes QEMU diretamente relacionados também passaram após a correção de um
+backup transacional grande demais na pilha do Shell: TST4 storage/VFS, TST5
+Shell, aplicativos, processos, storage e update-recovery, além dos perfis TST6
+baseline e mínimo e dos estresses de aplicativos e storage. A execução remota
+da App Store continua pendente exclusivamente por `DT100-003`. SEC5 está
+encerrada; a pendência não é uma falha nova desta etapa.
 
 ### SEC6 — Validação adversarial
 

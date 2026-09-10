@@ -13,6 +13,7 @@
 #include "memory/paging.h"
 #include "memory/slab.h"
 #include "process/process.h"
+#include "process/credentials.h"
 #include "process/resource.h"
 
 #define HOST_COVERAGE_CAPACITY 8192U
@@ -159,6 +160,7 @@ static void host_snapshot_from_process(const process_t* process,
     output->faulted = process->faulted;
     output->user_mode = process->context.user_mode;
     output->vma_count = process->vma_count;
+    output->credentials = process->credentials;
     host_copy_text(output->user_launch.raw_args,
                    sizeof(output->user_launch.raw_args),
                    process->user_launch.raw_args);
@@ -262,6 +264,27 @@ void kfree(void* pointer) {
 
 process_t* process_get_current(void) { return current_process; }
 
+int vfs_get_process_resource_usage(uint32_t pid, uint32_t* descriptors,
+                                   uint32_t* pipes) {
+    if (!descriptors || !pipes) return ERR_NULL;
+    if (!host_process_by_pid(pid)) return ERR_NOT_FOUND;
+    *descriptors = 3U;
+    *pipes = 0U;
+    return OK;
+}
+
+uint32_t process_get_child_count(uint32_t parent_pid) {
+    (void)parent_pid;
+    return 0U;
+}
+
+int ipc_get_pending_count_for_pid(uint32_t pid, uint32_t* out_count) {
+    if (!out_count) return ERR_NULL;
+    if (!host_process_by_pid(pid)) return ERR_NOT_FOUND;
+    *out_count = 0U;
+    return OK;
+}
+
 int process_is_user(const process_t* process) {
     return process && process->context.user_mode;
 }
@@ -321,6 +344,7 @@ process_t* process_create(const char* name, void (*entry_point)()) {
     temporary_process.pid = HOST_PROCESS_COUNT;
     temporary_process.event_generation = next_generation++;
     temporary_process.state = PROCESS_STATE_READY;
+    process_credentials_init_user(&temporary_process.credentials);
     host_copy_text(temporary_process.name, sizeof(temporary_process.name), name);
     temporary_active = 1U;
     if (entry_point) {
@@ -481,6 +505,11 @@ void vfs_mount_release(uint32_t slot, uint32_t generation) {
 static void host_init_processes(void) {
     for (uint32_t index = 0U; index < HOST_PROCESS_COUNT; index++) {
         kmemset(&base_processes[index], 0, sizeof(base_processes[index]));
+        if (index == 0U) {
+            process_credentials_init_native(&base_processes[index].credentials);
+        } else {
+            process_credentials_init_user(&base_processes[index].credentials);
+        }
         base_processes[index].pid = index;
         base_processes[index].event_generation = 10U + index;
         base_processes[index].state = index == 0U ? PROCESS_STATE_RUNNING :

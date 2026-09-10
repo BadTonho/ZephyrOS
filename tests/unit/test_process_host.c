@@ -395,6 +395,22 @@ int vfs_fd_table_release(vfs_fd_table_t* table) {
     return OK;
 }
 
+int vfs_get_process_resource_usage(uint32_t pid, uint32_t* descriptors,
+                                   uint32_t* pipes) {
+    (void)pid;
+    if (!descriptors || !pipes) return ERR_NULL;
+    *descriptors = 3U;
+    *pipes = 0U;
+    return OK;
+}
+
+int ipc_get_pending_count_for_pid(uint32_t pid, uint32_t* pending) {
+    (void)pid;
+    if (!pending) return ERR_NULL;
+    *pending = 0U;
+    return OK;
+}
+
 void process_context_switch(process_context_t* previous,
                              process_context_t* next) {
     (void)previous;
@@ -433,6 +449,11 @@ static void install_fixture(uint32_t slot, process_t* process, uint32_t pid,
     process->state = state;
     process->context.user_mode = user_mode;
     process->event_generation = pid + 100U;
+    if (user_mode) {
+        process_credentials_init_user(&process->credentials);
+    } else {
+        process_credentials_init_native(&process->credentials);
+    }
     strncpy(process->name, user_mode ? "user-fixture" : "kernel-fixture",
             sizeof(process->name) - 1U);
     processes[slot] = process;
@@ -582,6 +603,7 @@ static int test_scheduler_and_snapshots(void) {
     install_fixture(0U, &fixture, 0U, PROCESS_STATE_RUNNING, 0U);
     install_fixture(1U, &user_fixture, PROCESS_FIXTURE_USER_PID,
                     PROCESS_STATE_READY, 1U);
+    if (process_get_child_count(0U) != 1U) return 11;
     user_fixture.page_directory = &foreign_directory;
     user_fixture.user_code_size = 32U;
     user_fixture.user_data_size = 16U;
@@ -589,6 +611,9 @@ static int test_scheduler_and_snapshots(void) {
     if (process_snapshot_copy(PROCESS_FIXTURE_USER_PID, &snapshot) != OK ||
         snapshot.pid != PROCESS_FIXTURE_USER_PID || snapshot.user_mode != 1U ||
         snapshot.image_bytes != 48U || snapshot.resident_pages != 0U) return 2;
+    if (snapshot.credentials.uid != PROCESS_UID_USER ||
+        snapshot.credentials.gid != PROCESS_GID_USER ||
+        snapshot.credentials.capabilities != PROCESS_CAPABILITIES_USER) return 10;
     if (process_snapshot_copy(99U, &snapshot) != ERR_NOT_FOUND ||
         process_snapshot_copy(PROCESS_FIXTURE_USER_PID, NULL) != ERR_NULL) {
         return 3;

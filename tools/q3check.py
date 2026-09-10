@@ -23,6 +23,12 @@ APP_STORE_PUBLIC_PATH = "config/app-store-test-public.json"
 APP_STORE_TRUST_PATH = "src/include/core/app_remote_trust.h"
 APP_STORE_FIXTURES_PATH = "docs/fixtures/apps/store-as5"
 PACKAGER_PATH = "tools/packager.py"
+ACCEPTED_DEBT_RULES = {
+    "DT100-003": (
+        "confianca_as5",
+        "pacote AS5 sem assinatura ZPKG v2:",
+    ),
+}
 ERROR_RETURN_RE = re.compile(r"\breturn\s+(ERR_[A-Z0-9_]+)\s*;")
 ERROR_PROPAGATION_ONLY_MARKER = "Q3CHECK_ERROR_PROPAGATION_ONLY"
 FUNCTION_RE = re.compile(
@@ -362,7 +368,29 @@ def collect_results(repo: Path) -> dict[str, list[str]]:
     }
 
 
-def print_results(results: dict[str, list[str]]) -> int:
+def apply_accepted_debts(
+    results: dict[str, list[str]], debt_ids: list[str]
+) -> dict[str, list[str]]:
+    """Remove somente falhas que correspondem a dividas explicitamente aceitas."""
+    accepted: dict[str, list[str]] = {}
+    for debt_id in debt_ids:
+        rule = ACCEPTED_DEBT_RULES.get(debt_id)
+        if rule is None:
+            raise ValueError(f"divida Q3 desconhecida: {debt_id}")
+        label, marker = rule
+        remaining: list[str] = []
+        for error in results.get(label, []):
+            if marker in error:
+                accepted.setdefault(debt_id, []).append(error)
+            else:
+                remaining.append(error)
+        results[label] = remaining
+    return accepted
+
+
+def print_results(
+    results: dict[str, list[str]], accepted: dict[str, list[str]] | None = None
+) -> int:
     """Exibe o resumo compacto e retorna o codigo final do gate."""
     print("Q3Check:")
     failed = False
@@ -372,6 +400,10 @@ def print_results(results: dict[str, list[str]]) -> int:
         for error in errors:
             print(f"    {error}")
         failed = failed or bool(errors)
+    for debt_id, errors in (accepted or {}).items():
+        print(f"  {debt_id} ACEITA")
+        for error in errors:
+            print(f"    {error}")
     print(f"  resultado {'ERRO' if failed else 'OK'}")
     return 1 if failed else 0
 
@@ -474,6 +506,24 @@ def run_self_test() -> int:
         if not approved:
             print_results(results)
         passed = passed and approved
+    accepted_results = {
+        "confianca_as5": [
+            "pacote AS5 sem assinatura ZPKG v2: fixture/RMDEPA.ZPK.b64",
+            "falha AS5 que nao deve ser aceita",
+        ]
+    }
+    accepted = apply_accepted_debts(accepted_results, ["DT100-003"])
+    accepted_ok = (
+        accepted == {
+            "DT100-003": [
+                "pacote AS5 sem assinatura ZPKG v2: fixture/RMDEPA.ZPK.b64"
+            ]
+        }
+        and accepted_results["confianca_as5"]
+        == ["falha AS5 que nao deve ser aceita"]
+    )
+    print(f"selftest_divida_aceita {'OK' if accepted_ok else 'ERRO'}")
+    passed = passed and accepted_ok
     print(f"Q3Check self-test {'OK' if passed else 'ERRO'}")
     return 0 if passed else 1
 
@@ -482,11 +532,20 @@ def main() -> int:
     """Interpreta os argumentos e executa o gate solicitado."""
     parser = argparse.ArgumentParser(description="Gate leve da etapa Q3")
     parser.add_argument("--self-test", action="store_true", help="executa fixtures temporarias")
+    parser.add_argument(
+        "--accept-debt",
+        action="append",
+        choices=sorted(ACCEPTED_DEBT_RULES),
+        default=[],
+        help="aceita explicitamente uma divida tecnica ja registrada",
+    )
     arguments = parser.parse_args()
     if arguments.self_test:
         return run_self_test()
     try:
-        return print_results(collect_results(Path.cwd()))
+        results = collect_results(Path.cwd())
+        accepted = apply_accepted_debts(results, arguments.accept_debt)
+        return print_results(results, accepted)
     except RuntimeError as error:
         print(f"Q3Check: ERRO ({error})")
         return 1

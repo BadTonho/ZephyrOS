@@ -2,6 +2,7 @@
 #include "fs/fat12.h"
 #include "fs/fat32.h"
 #include "fs/storage.h"
+#include "fs/permissions.h"
 #include "core/video.h"
 #include "core/log.h"
 #include "core/errors.h"
@@ -227,9 +228,12 @@ int fs_write_file(const char* filename, const uint8_t* data, uint32_t size) {
         result = ERR_STATE;
     } else if (!fs_is_legacy_path(filename) &&
                fs_storage_path(filename, volume_id, relative_path) == OK) {
-        result = storage_write_file(volume_id, relative_path, data, size,
-                                     FS_ATTRIBUTE_ARCHIVE);
+        result = fs_permissions_prepare_path(volume_id, relative_path);
+        if (result == OK) result = storage_write_file(
+            volume_id, relative_path, data, size, FS_ATTRIBUTE_ARCHIVE);
         mutated = result == OK;
+        if (mutated) result = fs_permissions_register_path(
+            volume_id, relative_path, VFS_NODE_REGULAR);
     } else if (current_fs_type == FS_TYPE_FAT12) {
         result = fat12_write_file(fs_legacy_relative_path(filename), data, size);
         mutated = result >= 0;
@@ -263,8 +267,11 @@ int fs_delete_file(const char* filename) {
         result = ERR_STATE;
     } else if (!fs_is_legacy_path(filename) &&
                fs_storage_path(filename, volume_id, relative_path) == OK) {
-        result = storage_delete_file(volume_id, relative_path);
+        result = fs_permissions_prepare_volume(volume_id);
+        if (result == OK) result = storage_delete_file(volume_id, relative_path);
         mutated = result == OK;
+        if (mutated) result = fs_permissions_remove_path(
+            volume_id, relative_path);
     } else if (current_fs_type == FS_TYPE_FAT12) {
         result = fat12_delete_file(fs_legacy_relative_path(filename));
         mutated = result >= 0;
@@ -879,8 +886,12 @@ static int fs_write_file_at_unlocked(const char* path, const uint8_t* data,
     }
     if (!fs_is_legacy_path(path) &&
         fs_storage_path(path, volume_id, relative_path) == OK) {
-        return storage_write_file(volume_id, relative_path, data, size,
-                                  FS_ATTRIBUTE_ARCHIVE);
+        result = fs_permissions_prepare_path(volume_id, relative_path);
+        if (result == OK) result = storage_write_file(
+            volume_id, relative_path, data, size, FS_ATTRIBUTE_ARCHIVE);
+        if (result == OK) result = fs_permissions_register_path(
+            volume_id, relative_path, VFS_NODE_REGULAR);
+        return result;
     }
     if (current_fs_type == FS_TYPE_NONE) {
         LOG_WARN("FS", "Escrita por caminho sem filesystem montado");
@@ -1057,11 +1068,18 @@ int fs_create_dir_entry(const char* dir_path, const char* name, uint8_t attribut
     }
     if (!fs_is_legacy_path(dir_path) &&
         fs_storage_join(dir_path, name, volume_id, relative_path) == OK) {
-        result = (attributes & FS_DIR_DIRECTORY_ATTRIBUTE) ?
-                 storage_create_dir(volume_id, relative_path) :
-                 storage_write_file(volume_id, relative_path, 0U, 0U,
-                                    attributes);
+        result = fs_permissions_prepare_path(volume_id, relative_path);
+        if (result == OK) {
+            result = (attributes & FS_DIR_DIRECTORY_ATTRIBUTE) ?
+                     storage_create_dir(volume_id, relative_path) :
+                     storage_write_file(volume_id, relative_path, 0U, 0U,
+                                        attributes);
+        }
         mutated = result == OK;
+        if (mutated) result = fs_permissions_register_path(
+            volume_id, relative_path,
+            (attributes & FS_DIR_DIRECTORY_ATTRIBUTE) ?
+            VFS_NODE_DIRECTORY : VFS_NODE_REGULAR);
         if (mutated) fs_advance_generation_unlocked();
         spinlock_release(&fs_operation_lock);
         return result;
@@ -1148,9 +1166,12 @@ int fs_write_file_in_dir(const char* dir_path, const char* filename,
     } else if (!fs_is_legacy_path(dir_path) &&
                fs_storage_join(dir_path, filename, volume_id,
                                relative_path) == OK) {
-        result = storage_write_file(volume_id, relative_path, data, size,
-                                    FS_ATTRIBUTE_ARCHIVE);
+        result = fs_permissions_prepare_path(volume_id, relative_path);
+        if (result == OK) result = storage_write_file(
+            volume_id, relative_path, data, size, FS_ATTRIBUTE_ARCHIVE);
         mutated = result == OK;
+        if (mutated) result = fs_permissions_register_path(
+            volume_id, relative_path, VFS_NODE_REGULAR);
     } else if (current_fs_type == FS_TYPE_NONE) {
         result = ERR_NOT_FOUND;
     } else {
@@ -1195,8 +1216,12 @@ int fs_delete_file_in_dir(const char* dir_path, const char* filename) {
     }
     if (!fs_is_legacy_path(dir_path) &&
         fs_storage_join(dir_path, filename, volume_id, relative_path) == OK) {
-        result = storage_delete_file(volume_id, relative_path);
+        result = fs_permissions_prepare_volume(volume_id);
+        if (result == OK) result = storage_delete_file(
+            volume_id, relative_path);
         mutated = result == OK;
+        if (mutated) result = fs_permissions_remove_path(
+            volume_id, relative_path);
         if (mutated) fs_advance_generation_unlocked();
         spinlock_release(&fs_operation_lock);
         return result;
@@ -1237,7 +1262,11 @@ int fs_rename_file_in_dir(const char* dir_path, const char* old_name,
         result = ERR_STATE;
     } else if (!fs_is_legacy_path(dir_path) &&
                fs_storage_join(dir_path, old_name, volume_id, old_path) == OK) {
-        result = storage_rename_file(volume_id, old_path, new_name);
+        result = fs_permissions_prepare_volume(volume_id);
+        if (result == OK) result = storage_rename_file(
+            volume_id, old_path, new_name);
+        if (result == OK) result = fs_permissions_rename_path(
+            volume_id, old_path, new_name);
     } else {
         cluster = fs_resolve_dir_cluster(dir_path);
         if (cluster == FS_INVALID_CLUSTER) {
@@ -1309,10 +1338,13 @@ int fs_atomic_write_root(const char* filename, const uint8_t* data,
         char relative_path[FS_MAX_PATH];
         result = fs_storage_path(filename, volume_id, relative_path);
         if (result == OK) {
-            result = storage_atomic_write_file(
+            result = fs_permissions_prepare_path(volume_id, relative_path);
+            if (result == OK) result = storage_atomic_write_file(
                 volume_id, relative_path, data, size, attributes,
                 mode == FS_ATOMIC_REPLACE_ONLY ?
                 STORAGE_ATOMIC_REPLACE_ONLY : STORAGE_ATOMIC_CREATE_OR_REPLACE);
+            if (result == OK) result = fs_permissions_register_path(
+                volume_id, relative_path, VFS_NODE_REGULAR);
         }
     } else if (current_fs_type == FS_TYPE_FAT12) {
         result = fat12_atomic_write_root(
@@ -1341,7 +1373,13 @@ int fs_atomic_delete_root(const char* filename) {
         char volume_id[STORAGE_ID_SIZE];
         char relative_path[FS_MAX_PATH];
         result = fs_storage_path(filename, volume_id, relative_path);
-        if (result == OK) result = storage_delete_file(volume_id, relative_path);
+        if (result == OK) {
+            result = fs_permissions_prepare_volume(volume_id);
+            if (result == OK) result = storage_delete_file(
+                volume_id, relative_path);
+            if (result == OK) result = fs_permissions_remove_path(
+                volume_id, relative_path);
+        }
     } else if (current_fs_type == FS_TYPE_FAT12) {
         result = fat12_atomic_delete_root(fs_legacy_relative_path(filename));
     } else {
@@ -1383,10 +1421,13 @@ int fs_atomic_write_file_in_dir(const char* dir_path, const char* filename,
         char relative_path[FS_MAX_PATH];
         result = fs_storage_join(dir_path, filename, volume_id, relative_path);
         if (result == OK) {
-            result = storage_atomic_write_file(
+            result = fs_permissions_prepare_path(volume_id, relative_path);
+            if (result == OK) result = storage_atomic_write_file(
                 volume_id, relative_path, data, size, attributes,
                 mode == FS_ATOMIC_REPLACE_ONLY ?
                 STORAGE_ATOMIC_REPLACE_ONLY : STORAGE_ATOMIC_CREATE_OR_REPLACE);
+            if (result == OK) result = fs_permissions_register_path(
+                volume_id, relative_path, VFS_NODE_REGULAR);
         }
     } else if (cluster == 0xFFFFFFFFU) {
         result = ERR_NOT_FOUND;
@@ -1419,7 +1460,13 @@ int fs_atomic_delete_file_in_dir(const char* dir_path, const char* filename) {
         char volume_id[STORAGE_ID_SIZE];
         char relative_path[FS_MAX_PATH];
         result = fs_storage_join(dir_path, filename, volume_id, relative_path);
-        if (result == OK) result = storage_delete_file(volume_id, relative_path);
+        if (result == OK) {
+            result = fs_permissions_prepare_volume(volume_id);
+            if (result == OK) result = storage_delete_file(
+                volume_id, relative_path);
+            if (result == OK) result = fs_permissions_remove_path(
+                volume_id, relative_path);
+        }
     } else if (cluster == 0xFFFFFFFFU) {
         result = ERR_NOT_FOUND;
     } else if (current_fs_type == FS_TYPE_FAT12 && cluster == 0U) {

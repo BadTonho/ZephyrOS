@@ -3,6 +3,7 @@
 #include "core/spinlock.h"
 #include "core/log.h"
 #include "core/string.h"
+#include "process/resource.h"
 
 #define IPC_EFLAGS_INTERRUPT_ENABLE (1U << 9U)
 
@@ -84,8 +85,10 @@ int ipc_is_ready(void) {
 int ipc_send(uint32_t pid, ipc_msg_t* msg) {
     process_t* target;
     uint32_t next_head;
+    uint32_t pending;
     uint32_t woken = 0U;
     uint32_t flags;
+    int resource_result;
     int wake_result;
 
     if (!ipc_ready) {
@@ -116,10 +119,26 @@ int ipc_send(uint32_t pid, ipc_msg_t* msg) {
         return 0;
     }
 
+    if (target->msg_head >= target->msg_tail) {
+        pending = target->msg_head - target->msg_tail;
+    } else {
+        pending = IPC_MSG_QUEUE_SIZE - target->msg_tail + target->msg_head;
+    }
+    resource_result = target->context.user_mode ?
+        process_resource_check_ipc_pending(target, pending, 1U) : OK;
+    if (resource_result != OK) {
+        ipc_stats.failed++;
+        spinlock_release(&ipc_lock);
+        ipc_irq_restore(flags);
+        LOG_WARN("IPC", "Quota de mensagens rejeitou envio");
+        return 0;
+    }
     next_head = (target->msg_head + 1) % IPC_MSG_QUEUE_SIZE;
     if (next_head == target->msg_tail) {
         ipc_stats.failed++;
         ipc_stats.queue_full++;
+        process_resource_record_failure(
+            target, PROCESS_RESOURCE_FAILURE_IPC_PENDING, ERR_OVERFLOW, 1U);
         spinlock_release(&ipc_lock);
         ipc_irq_restore(flags);
         LOG_WARN("IPC", "Fila de mensagens cheia");
@@ -207,6 +226,7 @@ int ipc_wait(uint32_t timeout_ticks, wait_reason_t* out_reason) {
         return ERR_STATE;
     }
     pid = current->pid;
+    context.pid = pid;
     context.observed_generation = current->ipc_wait_generation;
     context.observed_identity_generation = current->event_generation;
     result = wait_event_timeout(&current->ipc_wait_channel,
@@ -267,6 +287,31 @@ uint32_t ipc_get_pending_count(void) {
     }
     spinlock_release(&ipc_lock);
     return pending;
+}
+
+int ipc_get_pending_count_for_pid(uint32_t pid, uint32_t* pending) {
+    process_t* process;
+
+    if (!pending) {
+        LOG_ERROR("IPC", "Destino de contagem pendente ausente");
+        return ERR_NULL;
+    }
+    *pending = 0U;
+    if (!ipc_ready) return OK;
+    process = process_get_by_pid(pid);
+    if (!process) {
+        LOG_WARN("IPC", "Processo ausente ao consultar fila");
+        return ERR_NOT_FOUND;
+    }
+    spinlock_acquire(&ipc_lock);
+    if (process->msg_head >= process->msg_tail) {
+        *pending = process->msg_head - process->msg_tail;
+    } else {
+        *pending = IPC_MSG_QUEUE_SIZE - process->msg_tail +
+                   process->msg_head;
+    }
+    spinlock_release(&ipc_lock);
+    return OK;
 }
 
 static int process_focus_target_is_valid(process_t* target) {

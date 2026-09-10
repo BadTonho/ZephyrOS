@@ -10,6 +10,7 @@
 #include "fs/fat12.h"
 #include "fs/fat32.h"
 #include "fs/fs.h"
+#include "fs/permissions.h"
 #include "fs/storage.h"
 
 #define HOST_COVERAGE_CAPACITY 8192U
@@ -34,6 +35,40 @@ static fat12_fs_t fake_fat12;
 static fat32_fs_t fake_fat32;
 static uint8_t fake_fat12_enabled;
 static const uint8_t fake_file_data[] = "hello from storage";
+
+int fs_permissions_prepare_volume(const char* volume_id) {
+    return volume_id ? OK : ERR_NULL;
+}
+
+int fs_permissions_prepare_path(const char* volume_id,
+                                const char* relative_path) {
+    return volume_id && relative_path ? OK : ERR_NULL;
+}
+
+int fs_permissions_register_path(const char* volume_id,
+                                 const char* relative_path,
+                                 vfs_node_type_t type) {
+    (void)volume_id;
+    (void)relative_path;
+    (void)type;
+    return OK;
+}
+
+int fs_permissions_remove_path(const char* volume_id,
+                               const char* relative_path) {
+    (void)volume_id;
+    (void)relative_path;
+    return OK;
+}
+
+int fs_permissions_rename_path(const char* volume_id,
+                               const char* relative_path,
+                               const char* new_name) {
+    (void)volume_id;
+    (void)relative_path;
+    (void)new_name;
+    return OK;
+}
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {

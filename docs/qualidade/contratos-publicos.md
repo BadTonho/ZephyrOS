@@ -157,6 +157,7 @@ permissão por UID/GID no `open` continua reservada à SEC5.
 | `src/include/fs/fs.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/storage.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/vfs.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
+| `src/include/fs/permissions.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/vfs_internal.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/wav.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/memory/compress.h` | `docs/06-memoria/memoria.md` |
@@ -164,6 +165,7 @@ permissão por UID/GID no `open` continua reservada à SEC5.
 | `src/include/memory/slab.h` | `docs/06-memoria/memoria.md` |
 | `src/include/memory/vma.h` | `docs/06-memoria/memoria.md` |
 | `src/include/process/process.h` | `docs/07-processos/processos.md` |
+| `src/include/process/credentials.h` | `docs/07-processos/processos.md` |
 | `src/include/process/resource.h` | `docs/07-processos/processos.md` |
 | `src/include/process/signal.h` | `docs/07-processos/processos.md` |
 | `src/include/process/thread.h` | `docs/07-processos/processos.md` |
@@ -1223,3 +1225,36 @@ O PWR4 foi confirmado funcionalmente pelo usuario no QEMU. `poweroff` e
 `shutdown -h now` encerraram o sistema, e `shutdown -r now` reiniciou com
 retorno ao Shell. Nao houve alteracao em App API, syscalls, layouts binarios,
 `taskmanager.h`, `boot.asm` ou `stage2.asm`.
+
+## SEC5 - Politica minima de recursos
+
+Processos ring0 recebem UID/GID 0 e a mascara completa de capacidades.
+Processos ring3 recebem UID/GID 1000 e a mascara ordinaria fixa; a credencial e
+herdada pelos filhos e nao existe transicao publica para root. Os campos
+`credentials` foram acrescentados ao final de `process_t` e
+`process_snapshot_t`, preservando o prefixo dos layouts existentes.
+
+O VFS usa UID, GID, modo POSIX minimo e tipo do no. A decisao seleciona
+proprietario, grupo ou outros; somente UID 0 ignora bits de modo. Diretorios
+exigem execucao para travessia, leitura para listagem e escrita mais execucao
+para criacao. `open`, I/O, `fsync`, `ioctl`, `chdir`, sync e redirecionamento
+revalidam o acesso no ponto de efeito. `/proc` e `/sys` sao somente leitura
+para ring3; `/proc/sys` e alteravel apenas pelo contexto nativo.
+
+Volumes FAT32 gravaveis persistem os registros ordenados de permissao em
+`ZPERM.DAT`, com cabecalho versionado, tamanho fixo, CRC32 e limite de 128
+registros. Ausencia usa defaults de migracao; corrupcao, duplicata,
+truncamento ou ordem invalida retorna `ERR_STATE`, e exceder a capacidade
+retorna `ERR_OVERFLOW`. FAT12 permanece somente leitura e usa defaults
+sinteticos. A criacao, remocao e renomeacao preparam o sidecar antes do efeito
+e atualizam seu registro depois da operacao. A comparacao de caminhos do
+sidecar e dos nomes especiais de pacotes segue a regra ASCII sem diferenciar
+maiusculas/minusculas usada pelo FAT32.
+
+Os limites adicionais por processo sao 32 descritores, 8 filhos, 32 mensagens
+pendentes e 4 pipes. Snapshots e `/proc/<pid>/status` expoem somente contadores,
+UID/GID, capacidades e modos efetivos; nenhum ponteiro ou estado privado e
+publicado. Os erros permanecem nos codigos canonicos de `errors.h`.
+
+SEC5 nao cria syscall, nao altera a App API, a ABI ring3, a numeracao de
+syscalls, o bootloader ou o Stage 2.

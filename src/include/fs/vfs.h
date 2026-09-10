@@ -122,6 +122,11 @@ typedef struct {
     char volume_id[STORAGE_ID_SIZE];
     char relative_path[VFS_MAX_PATH];
     vfs_mount_kind_t mount_kind;
+    uint32_t uid;
+    uint32_t gid;
+    uint16_t mode;
+    uint8_t permission_present;
+    uint8_t exists;
 } vfs_lookup_result_t;
 
 typedef struct {
@@ -164,6 +169,9 @@ typedef struct {
     uint32_t offset;
     uint32_t size;
     char path[VFS_MAX_PATH];
+    uint32_t uid;
+    uint32_t gid;
+    uint16_t permission_mode;
 } vfs_descriptor_info_t;
 
 typedef struct {
@@ -237,6 +245,8 @@ int vfs_copy_mounts(vfs_mount_info_t* output, uint32_t capacity,
 int vfs_get_status(vfs_status_t* status);
 int vfs_copy_descriptors(vfs_descriptor_info_t* output,
                          uint32_t capacity, uint32_t* out_count);
+int vfs_get_process_resource_usage(uint32_t pid, uint32_t* descriptors,
+                                   uint32_t* pipes);
 int vfs_validate_state(void);
 int vfs_self_test(vfs_test_result_t* result);
 

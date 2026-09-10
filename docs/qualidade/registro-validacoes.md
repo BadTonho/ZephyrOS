@@ -6940,10 +6940,57 @@ desconhecidos ou ambiguos. A sincronizacao atual registra 6.820 superficies,
   compilador configurado em `Makefile.local`. O gerador `sign-store-as5` também
   foi ajustado e testado para produzir `.b64`, atualizar os hashes publicados
   e gerar um perfil assinado auditável.
-  O `make q3check` executou todos
-  os gates anteriores, mas permanece `FAIL` somente porque os fixtures AS5
-  existentes ainda são v1 e aguardam a chave privada externa correspondente
-  para regeneração; a auditoria/runtime os recusam como pacotes instaláveis.
+  O `make q3check` executou todos os gates e terminou `OK`, exibindo a
+  ocorrência como `DT100-003 ACEITA`; o gate estrito permanece `FAIL` somente
+  porque os fixtures AS5 existentes ainda são v1 e aguardam a chave privada
+  externa correspondente para regeneração. A auditoria/runtime os recusam
+  como pacotes instaláveis.
   Por decisão do usuário, a SEC4 foi encerrada com essa limitação aceita como
-  dívida técnica `DT100-003`; QEMU permanece pendente para a quitação dessa
-  dívida.
+dívida técnica `DT100-003`; QEMU permanece pendente para a quitação dessa
+dívida.
+
+- SEC5 — política mínima de recursos — implementação e validação essencial
+  concluídas em 2026-09-10 (America/Sao_Paulo). Foram adicionadas credenciais
+  fixas ring0/ring3, capacidades ordinárias, herança de identidade, quotas de
+  descritores, filhos, mensagens e pipes, além da observabilidade em snapshots,
+  procfs, `vfs status` e `proccheck`.
+
+  O VFS agora aplica UID/GID, modo POSIX mínimo, travessia e capacidades em
+  abertura, I/O, `fsync`, `ioctl`, `chdir`, sync e redirecionamento. Volumes
+  FAT32 graváveis usam `ZPERM.DAT` versionado, com CRC32, registros ordenados,
+  defaults de migração, limite de 128 entradas e preflight de capacidade antes
+  da mutação. FAT12 permanece somente leitura e sem sidecar.
+
+  Passaram `host:storage:permissions`, `host:process:runtime`,
+  `host:process:resources`, `host:process:ipc`, `host:storage:vfs-path`,
+  `host:storage:fs`, `host:storage:vfs`, devfs, procfs, sysfs, App API, App
+  Files, App Loader, App Catalog, pacote, App Store, pipeline e comandos VFS,
+  comandos de pacotes/aplicativos/storage, App builtin e diagnósticos do Shell.
+  O catálogo foi sincronizado, renderizado e validado. `make clean` e `make`
+  passaram; `make q3check` passou exibindo `DT100-003` como dívida técnica aceita
+  em `confianca_as5`. O gate estrito continua `FAIL` somente por essa dívida da
+  SEC4. Nenhuma nova falha foi classificada.
+  Bootloader, Stage 2, ABI ring3 e syscalls não foram alterados.
+
+  Na validação QEMU inicial, `qemu:tst5:apps` revelou corrupção do canário do
+  Shell ao abrir o Explorer. A causa foi identificada como o backup local
+  completo da tabela de permissões nos rollbacks de registro, remoção e
+  renomeação, maior que a pilha de 4 KiB do processo. Os backups passaram a
+  usar heap com liberação em todos os caminhos; a proteção transacional foi
+  preservada.
+
+  Após `make q3check`, `make clean` e `make`, passaram os testes host afetados
+  e os cenários QEMU `qemu:tst4:storage-vfs` (`qemu-20260910T154036Z-27604`),
+  `qemu:tst5:shell` (`qemu-20260910T154112Z-8952`),
+  `qemu:tst5:apps` (`qemu-20260910T153921Z-15000`),
+  `qemu:tst5:processes` (`qemu-20260910T154138Z-23696`),
+  `qemu:tst5:storage` (`qemu-20260910T154203Z-6176`),
+  `qemu:tst5:update-recovery` (`qemu-20260910T154229Z-26856`),
+  `qemu:tst6:matrix:baseline` (`qemu-20260910T154347Z-26560`),
+  `qemu:tst6:matrix:minimal` (`qemu-20260910T154411Z-30856`),
+  `qemu:tst6:stress:apps` (`qemu-20260910T154435Z-26992`) e
+  `qemu:tst6:stress:storage` (`qemu-20260910T154512Z-29256`).
+  A execução QEMU da App Store remota permanece pendente somente por
+  `DT100-003`, pois os fixtures AS5 ainda não possuem assinatura v2 válida.
+  Estado SEC5: `PASS`; fechamento do Roadmap 19 continua dependente da dívida
+  aceita da SEC4 e da SEC6.

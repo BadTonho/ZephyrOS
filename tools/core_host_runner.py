@@ -75,6 +75,14 @@ FILE_INDEX_RESULT_DIR = ROOT / "build" / "test-results" / "file-index-host"
 FILE_INDEX_BINARY = ROOT / "build" / "tests" / "test_file_index_host.exe"
 FS_RESULT_DIR = ROOT / "build" / "test-results" / "fs-host"
 FS_BINARY = ROOT / "build" / "tests" / "test_fs_host.exe"
+PERMISSIONS_RESULT_DIR = ROOT / "build" / "test-results" / "permissions-host"
+PERMISSIONS_BINARY = ROOT / "build" / "tests" / "test_permissions_host.exe"
+PERMISSIONS_SOURCE_FILES = (
+    ROOT / "tests" / "unit" / "test_permissions_host.c",
+    ROOT / "src" / "fs" / "permissions.c",
+    ROOT / "src" / "process" / "credentials.c",
+    ROOT / "src" / "core" / "string.c",
+)
 STORAGE_RESULT_DIR = ROOT / "build" / "test-results" / "storage-host"
 STORAGE_BINARY = ROOT / "build" / "tests" / "test_storage_host.exe"
 STORAGE_FAT32_RESULT_DIR = ROOT / "build" / "test-results" / "storage-fat32-host"
@@ -396,6 +404,7 @@ PROCESS_BINARY = ROOT / "build" / "tests" / "test_process_host.exe"
 PROCESS_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_process_host.c",
     ROOT / "src" / "process" / "process.c",
+    ROOT / "src" / "process" / "credentials.c",
     ROOT / "src" / "process" / "resource.c",
     ROOT / "src" / "core" / "service_supervisor.c",
     ROOT / "src" / "core" / "recovery.c",
@@ -435,6 +444,8 @@ POWER_SOURCE_FILES = (
 VFS_PATH_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_vfs_path_host.c",
     ROOT / "src" / "fs" / "vfs_path.c",
+    ROOT / "src" / "fs" / "permissions.c",
+    ROOT / "src" / "process" / "credentials.c",
     ROOT / "src" / "core" / "string.c",
 )
 FILE_INDEX_SOURCE_FILES = (
@@ -476,6 +487,8 @@ FAT32_SOURCE_FILES = (
 VFS_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_vfs_host.c",
     ROOT / "src" / "fs" / "vfs.c",
+    ROOT / "src" / "fs" / "permissions.c",
+    ROOT / "src" / "process" / "credentials.c",
     ROOT / "src" / "core" / "string.c",
 )
 SLAB_SOURCE_FILES = (
@@ -677,6 +690,7 @@ PROCFS_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_procfs_host.c",
     ROOT / "src" / "fs" / "procfs.c",
     ROOT / "src" / "process" / "resource.c",
+    ROOT / "src" / "process" / "credentials.c",
     ROOT / "src" / "core" / "string.c",
 )
 SYSFS_RESULT_DIR = ROOT / "build" / "test-results" / "sysfs-host"
@@ -1071,6 +1085,9 @@ def case_configuration(case_id: str) -> tuple[Path, Path, tuple[Path, ...], str]
                 FILE_INDEX_SOURCE_FILES, "file-index-host")
     if case_id == "host:storage:fs":
         return FS_RESULT_DIR, FS_BINARY, FS_SOURCE_FILES, "fs-host"
+    if case_id == "host:storage:permissions":
+        return (PERMISSIONS_RESULT_DIR, PERMISSIONS_BINARY,
+                PERMISSIONS_SOURCE_FILES, "permissions-host")
     if case_id == "host:storage:storage":
         return STORAGE_RESULT_DIR, STORAGE_BINARY, STORAGE_SOURCE_FILES, "storage-host"
     if case_id == "host:storage:storage-fat32":
@@ -1519,6 +1536,7 @@ def parse_arguments() -> argparse.Namespace:
                                  "host:core:input",
                                  "host:core:power", "host:storage:vfs-path",
                                  "host:storage:file-index", "host:storage:fs",
+                                 "host:storage:permissions",
                                  "host:storage:storage", "host:storage:storage-fat32",
                                  "host:storage:block",
                                  "host:storage:fat12", "host:storage:fat32",

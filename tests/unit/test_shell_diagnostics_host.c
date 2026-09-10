@@ -47,6 +47,7 @@
 #include "memory/paging.h"
 #include "memory/slab.h"
 #include "process/process.h"
+#include "process/resource.h"
 #include "process/signal.h"
 #include "drivers/usb_hid.h"
 #include "drivers/usb_msc.h"
@@ -277,6 +278,7 @@ static uint32_t fixture_user_area_count;
 static int fixture_process_lookup_result;
 static int fixture_process_is_user_result;
 static int fixture_process_vma_copy_result;
+static int fixture_process_resource_snapshot_result;
 static memory_heap_stats_t fixture_memcheck_heap_stats;
 static memory_pmm_stats_t fixture_memcheck_pmm_stats;
 static memory_detailed_stats_t fixture_memcheck_detailed_stats;
@@ -538,7 +540,8 @@ static int fixture_vfs_get_file(const char* path, fixture_vfs_file_t* file) {
     } else if (kstrcmp(path, "/proc/cmdline") == 0) {
         file->content = "cmdline test\n";
     } else if (kstrcmp(path, "/proc/1/status") == 0) {
-        file->content = "pid 1\nname init\nstate RUNNING\n";
+        file->content = "pid 1\nname init\nstate RUNNING\n"
+                        "uid 0\ngid 0\ncapabilities 4294967295\n";
     } else if (kstrcmp(path, "/proc/1/cmdline") == 0) {
         file->content = "cmdline init\n";
     } else if (kstrcmp(path, "/proc/1/maps") == 0) {
@@ -817,6 +820,7 @@ static void fixture_reset(void) {
     fixture_process_lookup_result = OK;
     fixture_process_is_user_result = 1;
     fixture_process_vma_copy_result = OK;
+    fixture_process_resource_snapshot_result = OK;
     fixture_memcheck_detailed_result = OK;
     fixture_memcheck_slab_validate_result = OK;
     fixture_memcheck_allocations = 0U;
@@ -1539,6 +1543,9 @@ static void fixture_reset(void) {
     copy_text(fixture_user_process.name, sizeof(fixture_user_process.name),
               "user-fixture");
     fixture_user_process.state = PROCESS_STATE_READY;
+    fixture_user_process.credentials.uid = PROCESS_UID_USER;
+    fixture_user_process.credentials.gid = PROCESS_GID_USER;
+    fixture_user_process.credentials.capabilities = PROCESS_CAPABILITIES_USER;
     fixture_user_areas[0].start_addr = USER_CODE_BASE;
     fixture_user_areas[0].end_addr = USER_CODE_BASE + PAGE_SIZE;
     fixture_user_areas[0].flags = VM_READ | VM_EXEC;
@@ -2973,6 +2980,34 @@ process_t* process_get_by_pid(uint32_t pid) {
     return &fixture_user_process;
 }
 
+int process_resource_snapshot_copy(uint32_t pid, uint32_t generation,
+                                   process_resource_snapshot_t* output) {
+    if (!output) return ERR_NULL;
+    if (fixture_process_resource_snapshot_result != OK) {
+        return fixture_process_resource_snapshot_result;
+    }
+    if (pid != fixture_user_process.pid ||
+        generation != fixture_user_process.event_generation) {
+        return ERR_NOT_FOUND;
+    }
+    kmemset(output, 0, sizeof(*output));
+    output->pid = pid;
+    output->generation = generation;
+    output->descriptors = 4U;
+    output->descriptor_peak = 5U;
+    output->descriptor_limit = PROCESS_RESOURCE_MAX_DESCRIPTORS;
+    output->children = 2U;
+    output->child_peak = 3U;
+    output->child_limit = PROCESS_RESOURCE_MAX_CHILDREN;
+    output->ipc_pending = 1U;
+    output->ipc_pending_peak = 2U;
+    output->ipc_pending_limit = PROCESS_RESOURCE_MAX_IPC_PENDING;
+    output->pipes = 1U;
+    output->pipe_peak = 1U;
+    output->pipe_limit = PROCESS_RESOURCE_MAX_PIPES;
+    return OK;
+}
+
 int process_is_user(const process_t* proc) {
     return proc == &fixture_user_process && fixture_process_is_user_result;
 }
@@ -3517,7 +3552,7 @@ static int test_vfs(void) {
     failures += expect_contains("open/read/write/seek/close/falhas: 10/11/12/13/14/1\n");
     failures += expect_contains("montagens: 2/7  lookups/chdir: 15/2  ioctl: 3\n");
     failures += expect_contains("Descritores do processo atual:");
-    failures += expect_contains("fd=3 tipo=FILE modo=1 offset=7 path=/etc/config");
+    failures += expect_contains("fd=3 tipo=FILE modo=1 perm=0 offset=7 path=/etc/config");
     fixture_reset();
     fixture_vfs_status.initialized = 0U;
     shell_dispatch_cmd_vfs("");

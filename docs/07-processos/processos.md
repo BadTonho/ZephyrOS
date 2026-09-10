@@ -752,6 +752,26 @@ O AS3 acrescenta `IPC_APP_OPEN_APP_STORE` ao fim da mesma enumeracao. O pedido
 abre ou focaliza a instancia unica da App Store e nao transporta caminho de
 pacote, credencial ou argumento de ZAPP.
 
+## SEC5 - Credenciais e quotas
+
+Cada processo publica uma credencial efetiva fixa. O Idle e os processos
+nativos usam UID/GID 0 e todas as capacidades; imagens ring3 usam UID/GID 1000
+e a mascara ordinaria. A criacao de filhos conserva a identidade do criador e
+nao ha API para solicitar UID root. `process_t` e `process_snapshot_t` recebem
+esses campos somente ao final, mantendo o prefixo existente.
+
+O controlador `process_resource` mantem limites, picos, ultimo erro e
+contadores de descritores, filhos, mensagens IPC pendentes e pipes. Os limites
+novos sao 32, 8, 32 e 4, respectivamente, somados aos limites existentes de
+VMAs, paginas, memoria anonima e argumentos. Falhas de quota retornam
+`ERR_OVERFLOW` e ficam visiveis no snapshot, no procfs e no `proccheck`.
+
+As capacidades nao sao configuraveis por aplicativos: leitura, escrita e
+execucao de arquivos, dispositivos basicos, audio, diagnostico somente
+leitura e IPC formam a mascara ring3. Bloco, rede, energia, sincronizacao
+global, diagnostico de escrita e administracao de pacotes permanecem restritos
+ao contexto nativo.
+
 ### Integração
 
 - **Mouse**: envia eventos de clique/movimento ao processo com foco

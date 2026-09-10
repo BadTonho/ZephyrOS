@@ -7736,6 +7736,24 @@
         "status": "AUTOMATED"
       },
       "evidence": "make test-guitest-host PASS com 23 funcoes reais de src/shell/guitest_app.c observadas em cenas Classic e Modern, entradas de mouse e teclado, limites de layout e indisponibilidade de VESA"
+    },
+    {
+      "id": "permissions-host-dynamic",
+      "domain": "storage-permissions",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:storage:permissions"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/permissions-host/coverage.json",
+      "coverage_sources": [
+        "src/fs/permissions.c",
+        "src/process/credentials.c"
+      ],
+      "include_public_apis": true,
+      "evidence": "make test-permissions-host PASS com credenciais fixas, capacidades, permissoes POSIX, ZPERM.DAT, defaults, limites e erros canonicos"
     }
   ]
 }

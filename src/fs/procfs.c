@@ -907,6 +907,13 @@ static int procfs_render_process_status(const process_snapshot_t* process,
         buffer, capacity, length, "user",
         process->user_mode ? "ring3" : "kernel");
     if (result == OK) result = procfs_append_line_decimal(
+        buffer, capacity, length, "uid", process->credentials.uid);
+    if (result == OK) result = procfs_append_line_decimal(
+        buffer, capacity, length, "gid", process->credentials.gid);
+    if (result == OK) result = procfs_append_line_decimal(
+        buffer, capacity, length, "capabilities",
+        process->credentials.capabilities);
+    if (result == OK) result = procfs_append_line_decimal(
         buffer, capacity, length, "exit_code", process->exit_code);
     if (result == OK) result = procfs_append_line_decimal(
         buffer, capacity, length, "faulted", process->faulted);
@@ -946,6 +953,27 @@ static int procfs_render_process_status(const process_snapshot_t* process,
     if (result == OK && resources) result = procfs_append_line_decimal(
         buffer, capacity, length, "resource_last_error",
         resources->last_error);
+    if (result == OK && resources) result = procfs_append_line_decimal(
+        buffer, capacity, length, "resource_descriptors",
+        resources->descriptors);
+    if (result == OK && resources) result = procfs_append_line_decimal(
+        buffer, capacity, length, "resource_descriptor_limit",
+        resources->descriptor_limit);
+    if (result == OK && resources) result = procfs_append_line_decimal(
+        buffer, capacity, length, "resource_children", resources->children);
+    if (result == OK && resources) result = procfs_append_line_decimal(
+        buffer, capacity, length, "resource_child_limit",
+        resources->child_limit);
+    if (result == OK && resources) result = procfs_append_line_decimal(
+        buffer, capacity, length, "resource_ipc_pending",
+        resources->ipc_pending);
+    if (result == OK && resources) result = procfs_append_line_decimal(
+        buffer, capacity, length, "resource_ipc_pending_limit",
+        resources->ipc_pending_limit);
+    if (result == OK && resources) result = procfs_append_line_decimal(
+        buffer, capacity, length, "resource_pipes", resources->pipes);
+    if (result == OK && resources) result = procfs_append_line_decimal(
+        buffer, capacity, length, "resource_pipe_limit", resources->pipe_limit);
     return result;
 }
 
@@ -1061,7 +1089,8 @@ static int procfs_write_allowed(void) {
         LOG_ERROR("PROCFS", "Processo atual ausente na escrita procfs");
         return ERR_STATE;
     }
-    if (process_is_user(process)) {
+    if (!process_credentials_has(&process->credentials,
+                                 PROCESS_CAPABILITY_DIAGNOSTIC_WRITE)) {
         LOG_WARN("PROCFS", "Escrita procfs recusada para processo ring3");
         return ERR_UNAVAILABLE;
     }

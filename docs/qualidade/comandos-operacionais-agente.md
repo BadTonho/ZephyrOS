@@ -26,6 +26,10 @@ make clean && make
 make run
 ```
 
+Enquanto `DT100-003` estiver aceita, `make q3check` passa a ocorrência AS5
+explicitamente aceita e a exibe como `ACEITA`. Para executar o gate estrito,
+use `make q3check Q3CHECK_ARGS=` ou `python tools/q3check.py` sem argumentos.
+
 O agente nao executa `make`, build, testes ou QEMU neste projeto. Depois que o
 usuario confirmar esses gates para a mesma versao do codigo, eles nao devem ser
 reapresentados como testes funcionais pendentes da fase.
@@ -60,6 +64,7 @@ make test-network-manager-host
 make test-vfs-path-host
 make test-file-index-host
 make test-fs-host
+make test-permissions-host
 make test-storage-host
 make test-block-host
 make test-fat12-host
@@ -177,6 +182,13 @@ O caso `test-fs-host` valida a interface unificada com fixtures FAT12/FAT32 e
 storage, cobrindo paths legacy e de volume, cursores, leitura por faixa,
 mutacoes, operacoes atomicas, streaming, geracao e erros canonicos. O relatorio
 fica em `build/test-results/fs-host/`.
+
+O caso `test-permissions-host` valida credenciais fixas, capacidades, modos
+POSIX, travessia, dispositivos, procfs/sysfs e o sidecar `ZPERM.DAT`, incluindo
+CRC32, ordem, truncamento, defaults de migracao e o limite de 128 registros.
+Tambem cobre o preflight que impede alterar o volume quando a tabela de
+permissoes ja esta cheia. O relatorio fica em
+`build/test-results/permissions-host/`.
 
 O caso `test-storage-host` valida o backend de armazenamento com uma imagem
 FAT12 estatica, cobrindo MBR/BPB, inventario, montagem, aliases, cursores,

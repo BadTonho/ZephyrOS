@@ -1194,3 +1194,30 @@ if (wav_load(data, size, &wav) == 0) {
     wav_free(&wav);
 }
 ```
+
+## SEC5 - Permissoes minimas no VFS
+
+Volumes FAT32 gravaveis mantem metadados POSIX minimos no sidecar interno
+`ZPERM.DAT`. O formato possui cabecalho versionado, CRC32, registros de
+tamanho fixo ordenados por caminho relativo e limite de 128 entradas. O
+sidecar e reservado ao kernel e nao aparece em listagens normais.
+Comparacoes de nomes FAT usadas pela politica ignoram maiusculas/minusculas,
+impedindo que variacoes de caixa escapem do bloqueio do sidecar ou dos modos
+especiais de pacotes.
+
+Sem sidecar, a migracao usa `root:root` com `0644` para arquivos e `0755` para
+diretorios. Registros novos usam o dono efetivo com `0664` e `0775`; pacotes
+instalados recebem `APPS/<ID>` `0755`, `APP.ZAP` `0555`, `META.DAT` e `AUTH.DAT`
+`0444`. FAT12 continua somente leitura e usa defaults sinteticos.
+
+O VFS exige execucao nos diretorios para travessia, leitura para listagem e
+escrita mais execucao para criacao. A decisao de proprietario, grupo ou outros
+e repetida em abertura, leitura, escrita, `fsync`, `ioctl`, `chdir`, sync e
+redirecionamento. Metadado ausente e migravel; corrupcao, duplicata,
+truncamento ou ordem invalida bloqueia a operacao com `ERR_STATE`, enquanto a
+capacidade excedida retorna `ERR_OVERFLOW` antes da mutacao.
+
+Dispositivos comuns exigem a capacidade basica; speaker exige audio; `/dev/hda`
+e reservado ao contexto nativo. `/proc` e `/sys` sao somente leitura para
+ring3 e `/proc/sys` somente pode ser alterado por processos nativos. Nao foram
+criados `chmod`, `chown`, `setuid`, ACL ou syscall nova.

@@ -7,6 +7,7 @@
 #include "core/wait.h"
 #include "drivers/serial.h"
 #include "process/process.h"
+#include "process/resource.h"
 
 #define HOST_COVERAGE_CAPACITY 4096U
 #define HOST_COVERAGE_LINE_SIZE 32U
@@ -27,6 +28,11 @@ static uint32_t wake_calls;
 static uint32_t poll_calls;
 static uint32_t wait_condition_calls;
 static uint8_t mutate_identity_generation;
+static uint32_t resource_failure_calls;
+static process_resource_failure_t resource_last_failure;
+static uint32_t resource_last_error;
+static uint32_t resource_last_requested;
+static process_t* resource_last_process;
 
 process_t* processes[MAX_PROCESSES];
 uint32_t process_count;
@@ -117,6 +123,25 @@ process_t* process_get_current(void) {
     return ipc_current;
 }
 
+void process_resource_record_failure(struct process* process,
+                                     process_resource_failure_t failure,
+                                     uint32_t error, uint32_t requested) {
+    resource_failure_calls++;
+    resource_last_process = process;
+    resource_last_failure = failure;
+    resource_last_error = error;
+    resource_last_requested = requested;
+}
+
+int process_resource_check_ipc_pending(struct process* process,
+                                       uint32_t current,
+                                       uint32_t requested) {
+    (void)process;
+    (void)current;
+    (void)requested;
+    return OK;
+}
+
 int wake_up(wait_queue_head_t* queue, uint32_t* out_woken) {
     if (!queue || !out_woken) return ERR_NULL;
     wake_calls++;
@@ -183,6 +208,11 @@ static void fixture_reset(void) {
     poll_calls = 0U;
     wait_condition_calls = 0U;
     mutate_identity_generation = 0U;
+    resource_failure_calls = 0U;
+    resource_last_failure = PROCESS_RESOURCE_FAILURE_NONE;
+    resource_last_error = OK;
+    resource_last_requested = 0U;
+    resource_last_process = 0;
 }
 
 static ipc_msg_t valid_message(uint32_t value) {
@@ -203,7 +233,10 @@ static int check_preinitialization(void) {
     if (ipc_receive(&message) != 0) return 3;
     if (ipc_wait(1U, &reason) != ERR_STATE) return 4;
     if (reason != WAIT_REASON_NONE) return 5;
-    if (process_set_focus(IPC_FIXTURE_TARGET_PID) != ERR_STATE) return 6;
+    {
+        int focus_result = process_set_focus(IPC_FIXTURE_TARGET_PID);
+        if (focus_result != ERR_STATE) return 6;
+    }
     if (process_set_focus_fallback(IPC_FIXTURE_TARGET_PID) != ERR_STATE) return 7;
     if (process_restore_focus() != ERR_STATE) return 8;
     return 0;
@@ -250,14 +283,25 @@ static int check_send_receive(void) {
     if (ipc_send(IPC_FIXTURE_TARGET_PID, &sent) != 1) return 1;
     if (wake_calls != 1U || poll_calls != 1U) return 2;
     if (ipc_get_pending_count() != 1U) return 3;
+    {
+        uint32_t pending = 0U;
+
+        if (ipc_get_pending_count_for_pid(IPC_FIXTURE_TARGET_PID,
+                                          &pending) != OK || pending != 1U) {
+            return 4;
+        }
+        if (ipc_get_pending_count_for_pid(999U, &pending) != ERR_NOT_FOUND) {
+            return 5;
+        }
+    }
     if (ipc_current_has_pending() != 0) return 4;
     ipc_current = &ipc_target;
-    if (ipc_current_has_pending() != 1) return 5;
-    if (ipc_receive(&received) != 1) return 6;
+    if (ipc_current_has_pending() != 1) return 6;
+    if (ipc_receive(&received) != 1) return 7;
     if (received.type != sent.type || received.data1 != sent.data1 ||
-        received.data2 != sent.data2) return 7;
-    if (ipc_receive(&received) != 0) return 8;
-    if (ipc_get_pending_count() != 0U) return 9;
+        received.data2 != sent.data2) return 8;
+    if (ipc_receive(&received) != 0) return 9;
+    if (ipc_get_pending_count() != 0U) return 10;
     ipc_current = &ipc_sender;
     return 0;
 }
@@ -278,9 +322,14 @@ static int check_queue_limit(void) {
     if (after.failed != before.failed + 1U) return 4;
     if (after.queue_full != before.queue_full + 1U) return 5;
     if (ipc_get_pending_count() != IPC_MSG_QUEUE_SIZE - 1U) return 6;
+    if (resource_failure_calls != 1U || resource_last_process != &ipc_target ||
+        resource_last_failure != PROCESS_RESOURCE_FAILURE_IPC_PENDING ||
+        resource_last_error != ERR_OVERFLOW || resource_last_requested != 1U) {
+        return 7;
+    }
     ipc_target.msg_head = 0U;
     ipc_target.msg_tail = 0U;
-    if (ipc_get_pending_count() != 0U) return 7;
+    if (ipc_get_pending_count() != 0U) return 8;
     return 0;
 }
 

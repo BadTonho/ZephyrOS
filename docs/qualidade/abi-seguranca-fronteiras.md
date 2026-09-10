@@ -80,7 +80,8 @@ Processos ring 3 não possuem acesso direto a:
 As capacidades que já existem pela App API continuam limitadas aos handles,
 buffers, sinais, IPC, VFS e operações explicitamente publicados por seus
 contratos. Esta lista descreve a fronteira; a revalidação efetiva e a política
-de permissão serão implementadas nas SEC2 e SEC5.
+de permissão está implementada na SEC5 e foi validada pela bateria host
+diretamente afetada.
 
 ## Modelo mínimo de identidade
 
@@ -93,8 +94,8 @@ Regras do modelo:
 
 - cada processo possui uma credencial efetiva e uma credencial herdada na
   criação; a herança não transforma um aplicativo ring 3 em serviço ring 0;
-- filhos herdam UID, GID primário e grupos do criador, salvo uma transição
-  explícita e autorizada que será definida em etapa posterior;
+- filhos herdam UID, GID primário e a máscara fixa de capacidades do criador;
+  não existe transição pública para root;
 - grupos são inicialmente uma lista fixa associada à credencial, sem contas
   persistentes, login, troca de usuário ou ACL completa;
 - ring 0 é uma fronteira de privilégio de execução, não um UID que possa ser
@@ -102,7 +103,7 @@ Regras do modelo:
 - nenhuma credencial, grupo ou ponteiro privado é exposto em snapshots que não
   precisem dessa informação;
 - a aplicação efetiva de bits de leitura, escrita, execução e capacidades por
-  recurso pertence à SEC5.
+  recurso pertence ao VFS e revalida o contexto no ponto de efeito.
 
 ## Estado da implementação
 
@@ -110,8 +111,8 @@ Esta SEC1 congela o contrato documental e não adiciona campos a `process_t`,
 não cria syscall, não altera a App API e não implementa ainda enforcement de
 UID/GID ou permissões. A SEC2 deverá revisar validação de entradas e syscalls;
 SEC3 deverá revisar ciclo de vida e identidade; SEC4 deverá revisar confiança
-de pacotes; SEC5 deverá aplicar capacidades e permissões; SEC6 deverá executar
-a matriz adversarial completa.
+de pacotes; SEC5 aplica capacidades, permissões e quotas mínimas; SEC6 deverá
+executar a matriz adversarial completa.
 
 ## Validação pendente
 
@@ -119,3 +120,22 @@ Nenhum build, teste host-only, QEMU, TST7 ou matriz negativa foi executado
 para esta etapa. O fechamento do Roadmap 19 deve validar, no mínimo, ponteiros
 inválidos, tamanhos extremos, handles obsoletos, caminhos e pacotes inválidos,
 falhas de recurso, limpeza de callbacks e perfis de hardware ausente.
+
+## Estado SEC5
+
+A implementação da SEC5 adiciona credenciais append-only a processos e
+snapshots, capacidades fixas, autorização POSIX mínima no VFS, `ZPERM.DAT` em
+FAT32 gravável, defaults de migração, modos de pacotes e quotas adicionais.
+Procfs, Shell e diagnósticos expõem apenas snapshots sem ponteiros ou estado
+privado. Os testes host diretamente afetados passaram, assim como `make clean`,
+`make` e `make q3check`, que exibe `DT100-003` como dívida aceita em
+`confianca_as5`. O gate estrito continua distinguindo essa ocorrência, sem nova
+falha SEC5.
+
+Os cenários QEMU de storage/VFS, Shell, aplicativos, processos,
+update-recovery, baseline, mínimo e estresses de aplicativos/storage passaram
+após a correção do backup transacional de permissões para heap. O cenário
+remoto da App Store continua pendente apenas por `DT100-003`.
+
+Bootloader, Stage 2, ABI ring3 e numeração de syscalls permaneceram
+inalterados.

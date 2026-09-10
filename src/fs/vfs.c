@@ -5,6 +5,7 @@
 #include "fs/devfs.h"
 #include "fs/procfs.h"
 #include "fs/sysfs.h"
+#include "fs/permissions.h"
 #include "core/app_api.h"
 #include "core/errors.h"
 #include "core/log.h"
@@ -14,6 +15,7 @@
 #include "core/wait.h"
 #include "memory/slab.h"
 #include "process/process.h"
+#include "process/resource.h"
 #include "process/thread.h"
 
 #define VFS_TEST_DATA_SIZE 8U
@@ -203,6 +205,43 @@ static int vfs_poll_default(file_t* file, uint32_t events,
 static int vfs_mode_valid(uint32_t mode) {
     return mode == VFS_MODE_READ || mode == VFS_MODE_WRITE ||
            mode == VFS_MODE_READ_WRITE;
+}
+
+static uint32_t vfs_permission_access_for_mode(uint32_t mode) {
+    if (mode == VFS_MODE_READ) return FS_PERMISSION_ACCESS_READ;
+    if (mode == VFS_MODE_WRITE) return FS_PERMISSION_ACCESS_WRITE;
+    return FS_PERMISSION_ACCESS_READ | FS_PERMISSION_ACCESS_WRITE;
+}
+
+static int vfs_check_file_permission(const file_t* file, uint32_t access) {
+    process_credentials_t credentials;
+    vfs_file_context_t* context;
+    int result;
+
+    if (!file || !file->vnode) {
+        LOG_ERROR("FS", "Arquivo sem vnode na verificacao de permissao");
+        return ERR_NULL;
+    }
+    if (file->vnode->type == VFS_NODE_PIPE ||
+        file->vnode->type == VFS_NODE_STDIN ||
+        file->vnode->type == VFS_NODE_STDOUT ||
+        file->vnode->type == VFS_NODE_STDERR ||
+        file->vnode->type == VFS_NODE_TEST ||
+        file->vnode->type == VFS_NODE_SOCKET) return OK;
+    if (file->slot >= VFS_MAX_OPEN_FILES) {
+        LOG_ERROR("FS", "Slot de arquivo invalido na verificacao de permissao");
+        return ERR_STATE;
+    }
+    context = &vfs_file_contexts[file->slot];
+    result = process_credentials_current(&credentials);
+    if (result != OK) {
+        LOG_WARN("FS", "Credencial indisponivel para arquivo VFS");
+        return result;
+    }
+    result = fs_permissions_check_lookup(&credentials, &context->lookup,
+                                         access);
+    if (result != OK) LOG_WARN("FS", "Permissao VFS recusada");
+    return result;
 }
 
 static int vfs_initialize_stdio_nodes(void) {
@@ -943,6 +982,8 @@ static int vfs_regular_read(file_t* file, void* buffer, uint32_t size,
     if (!file || !file->vnode || !bytes_read) return ERR_NULL;
     *bytes_read = 0U;
     if (!(file->mode & VFS_MODE_READ)) return ERR_UNAVAILABLE;
+    result = vfs_check_file_permission(file, FS_PERMISSION_ACCESS_READ);
+    if (result != OK) return result;
     context = (vfs_file_context_t*)file->vnode->private_data;
     if (!context || vfs_mount_validate_reference(
             context->lookup.mount_slot,
@@ -965,17 +1006,29 @@ static int vfs_regular_write(file_t* file, const void* buffer, uint32_t size,
     if (!file || !file->vnode || !bytes_written) return ERR_NULL;
     *bytes_written = 0U;
     if (!(file->mode & VFS_MODE_WRITE)) return ERR_UNAVAILABLE;
+    result = vfs_check_file_permission(file, FS_PERMISSION_ACCESS_WRITE);
+    if (result != OK) return result;
     context = (vfs_file_context_t*)file->vnode->private_data;
     if (!context || vfs_mount_validate_reference(
             context->lookup.mount_slot,
             context->lookup.mount_generation) != OK) return ERR_STATE;
     if (context->lookup.fs_type != STORAGE_FS_FAT32 ||
         context->lookup.read_only) return ERR_UNAVAILABLE;
+    result = fs_permissions_prepare_path(context->lookup.volume_id,
+                                          context->lookup.relative_path);
+    if (result != OK) return result;
     result = storage_write_file(context->lookup.volume_id,
                                 context->lookup.relative_path,
                                 (const uint8_t*)buffer, size,
                                 FS_ATTRIBUTE_ARCHIVE);
     if (result != OK) return result;
+    if (!context->lookup.exists) {
+        result = fs_permissions_register_path(
+            context->lookup.volume_id, context->lookup.relative_path,
+            VFS_NODE_REGULAR);
+        if (result != OK) return result;
+        context->lookup.permission_present = 1U;
+    }
     file->vnode->size = size;
     file->offset = 0U;
     *bytes_written = size;
@@ -996,6 +1049,7 @@ static int vfs_regular_close(file_t* file) {
 
 static int vfs_regular_sync(file_t* file) {
     vfs_file_context_t* context;
+    int result;
 
     if (!file || !file->vnode) {
         LOG_ERROR("FS", "Arquivo nulo no fsync VFS");
@@ -1008,6 +1062,8 @@ static int vfs_regular_sync(file_t* file) {
         LOG_ERROR("FS", "Montagem invalida no fsync VFS");
         return ERR_STATE;
     }
+    result = vfs_check_file_permission(file, FS_PERMISSION_ACCESS_SYNC);
+    if (result != OK) return result;
     return storage_sync_volume(context->lookup.volume_id);
 }
 
@@ -1124,6 +1180,14 @@ int vfs_init(void) {
     }
     if (vfs_path_init() != OK) {
         LOG_ERROR("FS", "Falha ao inicializar caminhos VFS");
+        kmem_cache_destroy(vfs_file_cache);
+        kmem_cache_destroy(vfs_vnode_cache);
+        vfs_file_cache = 0;
+        vfs_vnode_cache = 0;
+        return ERR_STATE;
+    }
+    if (fs_permissions_init() != OK) {
+        LOG_ERROR("FS", "Falha ao inicializar politica de permissoes");
         kmem_cache_destroy(vfs_file_cache);
         kmem_cache_destroy(vfs_vnode_cache);
         vfs_file_cache = 0;
@@ -1313,6 +1377,7 @@ int vfs_open(const char* path, uint32_t mode, int32_t* fd_out) {
     file_t* file = 0;
     vnode_t* vnode = 0;
     vfs_file_context_t* context;
+    process_credentials_t credentials;
     uint32_t length;
     int fd;
     int result;
@@ -1345,6 +1410,12 @@ int vfs_open(const char* path, uint32_t mode, int32_t* fd_out) {
     }
     result = vfs_get_current_table(&table);
     if (result != OK) return result;
+    {
+        process_t* current = process_get_current();
+
+        result = process_resource_check_descriptors(current, 1U);
+        if (result != OK) return result;
+    }
     fd = vfs_find_free_fd(table);
     if (fd == VFS_FD_INVALID) {
         LOG_WARN("FS", "Tabela de descritores do processo cheia");
@@ -1360,6 +1431,29 @@ int vfs_open(const char* path, uint32_t mode, int32_t* fd_out) {
         vfs_metrics.failures++;
         spinlock_release(&vfs_lock);
         LOG_ERROR("FS", "Falha ao resolver caminho na abertura VFS");
+        return result;
+    }
+    result = process_credentials_current(&credentials);
+    if (result != OK) {
+        vfs_release_file(file);
+        return result;
+    }
+    if (!context->lookup.exists &&
+        context->lookup.mount_kind == VFS_MOUNT_STORAGE) {
+        result = fs_permissions_check_create(&credentials, &context->lookup);
+        if (result == OK) {
+            context->lookup.uid = credentials.uid;
+            context->lookup.gid = credentials.gid;
+            context->lookup.mode = FS_PERMISSION_FILE_DEFAULT;
+        }
+    } else {
+        result = fs_permissions_check_lookup(
+            &credentials, &context->lookup,
+            vfs_permission_access_for_mode(mode));
+    }
+    if (result != OK) {
+        vfs_release_file(file);
+        LOG_WARN_CODE("FS", result, "Permissao recusada na abertura VFS");
         return result;
     }
     if (context->lookup.type == VFS_NODE_DIRECTORY) {
@@ -1425,6 +1519,7 @@ int vfs_open(const char* path, uint32_t mode, int32_t* fd_out) {
     table->entries[fd] = file;
     vfs_metrics.opens++;
     spinlock_release(&vfs_lock);
+    process_resource_note_descriptor_success(process_get_current());
     *fd_out = fd;
     return OK;
 }
@@ -1458,6 +1553,14 @@ int vfs_pipe(int32_t fds[2]) {
     }
     result = vfs_get_current_table(&table);
     if (result != OK) return result;
+    {
+        process_t* current = process_get_current();
+
+        result = process_resource_check_descriptors(current, 2U);
+        if (result != OK) return result;
+        result = process_resource_check_pipes(current, 1U);
+        if (result != OK) return result;
+    }
     result = vfs_find_free_fd_pair(table, &read_fd, &write_fd);
     if (result != OK) {
         LOG_WARN("FS", "Tabela sem dois descritores para pipe");
@@ -1524,6 +1627,8 @@ int vfs_pipe(int32_t fds[2]) {
     table->entries[write_fd] = write_file;
     vfs_metrics.opens += 2U;
     spinlock_release(&vfs_lock);
+    process_resource_note_descriptor_success(process_get_current());
+    process_resource_note_pipe_success(process_get_current());
     fds[0] = read_fd;
     fds[1] = write_fd;
     return OK;
@@ -1541,6 +1646,7 @@ int vfs_write_redirect(const char* path, const uint8_t* data, uint32_t size,
     uint8_t attributes = FS_ATTRIBUTE_ARCHIVE;
     uint8_t is_directory = 0U;
     uint8_t mount_acquired = 0U;
+    process_credentials_t credentials;
     int result;
 
     if (!vfs_ready) {
@@ -1568,6 +1674,13 @@ int vfs_write_redirect(const char* path, const uint8_t* data, uint32_t size,
         LOG_ERROR("FS", "Destino invalido no redirecionamento VFS");
         return result;
     }
+    result = process_credentials_current(&credentials);
+    if (result != OK) return result;
+    result = lookup.exists ?
+        fs_permissions_check_lookup(&credentials, &lookup,
+                                    FS_PERMISSION_ACCESS_WRITE) :
+        fs_permissions_check_create(&credentials, &lookup);
+    if (result != OK) return result;
     if (lookup.type == VFS_NODE_DIRECTORY) {
         LOG_ERROR("FS", "Destino e diretorio no redirecionamento VFS");
         return ERR_INVALID;
@@ -1622,11 +1735,21 @@ int vfs_write_redirect(const char* path, const uint8_t* data, uint32_t size,
             offset += read_size;
         }
     }
+    if (!lookup.exists) {
+        result = fs_permissions_prepare_path(lookup.volume_id,
+                                              lookup.relative_path);
+        if (result != OK) goto cleanup;
+    }
     if (size > 0U) kmemcpy(file_data + existing_size, data, size);
     result = storage_atomic_write_file(lookup.volume_id,
                                        lookup.relative_path, file_data,
                                        total_size, attributes,
                                        STORAGE_ATOMIC_CREATE_OR_REPLACE);
+    if (result == OK && !lookup.exists) {
+        result = fs_permissions_register_path(lookup.volume_id,
+                                              lookup.relative_path,
+                                              VFS_NODE_REGULAR);
+    }
     if (result == OK) {
         spinlock_acquire(&vfs_lock);
         vfs_metrics.writes++;
@@ -1669,8 +1792,15 @@ int vfs_read(int32_t fd, void* buffer, uint32_t size,
     }
     result = vfs_begin_operation(fd, &file);
     if (result != OK) return result;
-    if (!(file->mode & VFS_MODE_READ)) result = ERR_UNAVAILABLE;
-    else result = file->vnode->operations->read(file, buffer, size, bytes_read);
+    if (!(file->mode & VFS_MODE_READ)) {
+        result = ERR_UNAVAILABLE;
+    } else {
+        result = vfs_check_file_permission(file, FS_PERMISSION_ACCESS_READ);
+        if (result == OK) {
+            result = file->vnode->operations->read(file, buffer, size,
+                                                   bytes_read);
+        }
+    }
     vfs_end_operation(file);
     spinlock_acquire(&vfs_lock);
     if (result == OK) {
@@ -1707,9 +1837,15 @@ int vfs_write(int32_t fd, const void* buffer, uint32_t size,
     }
     result = vfs_begin_operation(fd, &file);
     if (result != OK) return result;
-    if (!(file->mode & VFS_MODE_WRITE)) result = ERR_UNAVAILABLE;
-    else result = file->vnode->operations->write(file, buffer, size,
-                                                  bytes_written);
+    if (!(file->mode & VFS_MODE_WRITE)) {
+        result = ERR_UNAVAILABLE;
+    } else {
+        result = vfs_check_file_permission(file, FS_PERMISSION_ACCESS_WRITE);
+        if (result == OK) {
+            result = file->vnode->operations->write(file, buffer, size,
+                                                    bytes_written);
+        }
+    }
     vfs_end_operation(file);
     spinlock_acquire(&vfs_lock);
     if (result == OK) {
@@ -1907,6 +2043,11 @@ int vfs_fsync(int32_t fd) {
     }
     result = vfs_begin_operation(fd, &file);
     if (result != OK) return result;
+    result = vfs_check_file_permission(file, FS_PERMISSION_ACCESS_SYNC);
+    if (result != OK) {
+        vfs_end_operation(file);
+        return result;
+    }
     if (!file->vnode->operations->sync) {
         result = ERR_UNAVAILABLE;
     } else {
@@ -1921,6 +2062,7 @@ int vfs_fsync(int32_t fd) {
 }
 
 int vfs_sync(void) {
+    process_credentials_t credentials;
     int result;
 
     if (!vfs_ready) {
@@ -1929,6 +2071,13 @@ int vfs_sync(void) {
     }
     if (vfs_power_quiescing) {
         LOG_WARN("FS", "Sync VFS normal recusado durante quiescencia");
+        return ERR_UNAVAILABLE;
+    }
+    result = process_credentials_current(&credentials);
+    if (result != OK) return result;
+    if (!process_credentials_has(&credentials,
+                                 PROCESS_CAPABILITY_GLOBAL_SYNC)) {
+        LOG_WARN("FS", "Sync global recusado sem capacidade administrativa");
         return ERR_UNAVAILABLE;
     }
     result = storage_sync_all();
@@ -1986,7 +2135,10 @@ int vfs_ioctl(int32_t fd, uint32_t request, void* argument) {
     result = vfs_begin_operation(fd, &file);
 
     if (result != OK) return result;
-    result = file->vnode->operations->ioctl(file, request, argument);
+    result = vfs_check_file_permission(file, FS_PERMISSION_ACCESS_IOCTL);
+    if (result == OK) {
+        result = file->vnode->operations->ioctl(file, request, argument);
+    }
     vfs_end_operation(file);
     spinlock_acquire(&vfs_lock);
     if (result == OK) {
@@ -2076,10 +2228,82 @@ int vfs_copy_descriptors(vfs_descriptor_info_t* output,
         output[count].size = file->vnode->size;
         vfs_copy_text(output[count].path, VFS_MAX_PATH,
                       file->vnode->path);
+        if (fd >= VFS_FD_FIRST_FILE && file->slot < VFS_MAX_OPEN_FILES) {
+            output[count].uid = vfs_file_contexts[file->slot].lookup.uid;
+            output[count].gid = vfs_file_contexts[file->slot].lookup.gid;
+            output[count].permission_mode =
+                vfs_file_contexts[file->slot].lookup.mode;
+        } else if (fd == VFS_FD_STDIN) {
+            output[count].uid = PROCESS_UID_ROOT;
+            output[count].gid = PROCESS_GID_ROOT;
+            output[count].permission_mode = 0444U;
+        } else if (fd == VFS_FD_STDOUT || fd == VFS_FD_STDERR) {
+            output[count].uid = PROCESS_UID_ROOT;
+            output[count].gid = PROCESS_GID_ROOT;
+            output[count].permission_mode = 0222U;
+        }
         count++;
     }
     spinlock_release(&vfs_lock);
     *out_count = count;
+    return OK;
+}
+
+int vfs_get_process_resource_usage(uint32_t pid, uint32_t* descriptors,
+                                   uint32_t* pipes) {
+    process_t* process;
+    pipe_t* seen_pipes[VFS_MAX_FDS];
+    uint32_t seen_count = 0U;
+
+    if (!descriptors || !pipes) {
+        LOG_ERROR("FS", "Saida ausente ao consultar recursos VFS");
+        return ERR_NULL;
+    }
+    *descriptors = 0U;
+    *pipes = 0U;
+    kmemset(seen_pipes, 0, sizeof(seen_pipes));
+    process = process_get_by_pid(pid);
+    if (!process || !process->fd_table.initialized) {
+        LOG_WARN("FS", "Processo sem tabela VFS");
+        return ERR_NOT_FOUND;
+    }
+    spinlock_acquire(&vfs_lock);
+    for (uint32_t fd = 0U; fd < VFS_MAX_FDS; fd++) {
+        file_t* file = process->fd_table.entries[fd];
+
+        if (!file) continue;
+        (*descriptors)++;
+        if (fd >= VFS_FD_FIRST_FILE && file->vnode &&
+            file->vnode->type == VFS_NODE_PIPE) {
+            pipe_t* pipe;
+            uint8_t known = 0U;
+
+            if (file->slot >= VFS_MAX_OPEN_FILES) {
+                spinlock_release(&vfs_lock);
+                return ERR_STATE;
+            }
+            pipe = vfs_file_contexts[file->slot].pipe;
+            if (!pipe) {
+                spinlock_release(&vfs_lock);
+                return ERR_STATE;
+            }
+            for (uint32_t index = 0U; index < seen_count; index++) {
+                if (seen_pipes[index] == pipe) {
+                    known = 1U;
+                    break;
+                }
+            }
+            if (!known) {
+                if (seen_count >= VFS_MAX_FDS) {
+                    spinlock_release(&vfs_lock);
+                    return ERR_OVERFLOW;
+                }
+                seen_pipes[seen_count++] = pipe;
+                (*pipes)++;
+            }
+        }
+    }
+    spinlock_release(&vfs_lock);
     return OK;
 }
 
@@ -2089,6 +2313,7 @@ int vfs_open_socket(void* private_data, const file_operations_t* operations,
     file_t* file = 0;
     vnode_t* vnode = 0;
     uint32_t length;
+    process_credentials_t credentials;
     int fd;
     int result;
 
@@ -2120,6 +2345,14 @@ int vfs_open_socket(void* private_data, const file_operations_t* operations,
     }
     result = vfs_get_current_table(&table);
     if (result != OK) return result;
+    result = process_credentials_current(&credentials);
+    if (result != OK) return result;
+    if (!process_credentials_has(&credentials, PROCESS_CAPABILITY_NETWORK)) {
+        LOG_WARN("FS", "Socket recusado sem capacidade de rede");
+        return ERR_UNAVAILABLE;
+    }
+    result = process_resource_check_descriptors(process_get_current(), 1U);
+    if (result != OK) return result;
     fd = vfs_find_free_fd(table);
     if (fd == VFS_FD_INVALID) {
         LOG_WARN("FS", "Tabela de descritores cheia para socket VFS");
@@ -2150,6 +2383,7 @@ int vfs_open_socket(void* private_data, const file_operations_t* operations,
     table->entries[fd] = file;
     vfs_metrics.opens++;
     spinlock_release(&vfs_lock);
+    process_resource_note_descriptor_success(process_get_current());
     *fd_out = fd;
     return OK;
 }
@@ -2166,7 +2400,8 @@ int vfs_validate_state(void) {
         LOG_ERROR("FS", "Canal global de poll VFS indisponivel");
         return ERR_STATE;
     }
-    if (kmem_cache_validate() != OK || vfs_path_validate_state() != OK) {
+    if (kmem_cache_validate() != OK || vfs_path_validate_state() != OK ||
+        fs_permissions_validate() != OK) {
         LOG_ERROR("FS", "Invariantes dos objetos VFS invalidas");
         return ERR_STATE;
     }

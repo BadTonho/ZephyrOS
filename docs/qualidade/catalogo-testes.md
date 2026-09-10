@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **7470**
-- Casos de teste: **174**
+- Superfícies ativas: **7546**
+- Casos de teste: **175**
 - Superfícies aposentadas: **59**
 
 | Tipo | Quantidade |
 |---|---:|
-| `api_function` | 1616 |
+| `api_function` | 1645 |
 | `asm_entry` | 101 |
-| `c_function` | 5633 |
+| `c_function` | 5680 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7464 |
+| `COVERED` | 7540 |
 | `MANUAL` | 0 |
 | `PENDING` | 6 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 174 |
+| `AUTOMATED` | 175 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -41,12 +41,12 @@
 | `desktop` | 40 |
 | `drivers` | 932 |
 | `filemanager` | 93 |
-| `fs` | 957 |
+| `fs` | 1002 |
 | `gui` | 30 |
 | `icons` | 18 |
 | `kernel` | 60 |
 | `memory` | 202 |
-| `process` | 301 |
+| `process` | 332 |
 | `settings` | 57 |
 | `shell` | 1092 |
 | `taskbar` | 47 |
@@ -212,7 +212,7 @@
 | `api:src/include/apps/shell_runtime.h:shell_packages_host_test_contracts` | `src/include/apps/shell_runtime.h` | `shell_packages_host_test_contracts` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_finish_command` | `src/include/apps/shell_runtime.h` | `shell_runtime_finish_command` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key` | `src/include/apps/shell_runtime.h` | `shell_runtime_handle_terminal_key` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible` | `src/include/apps/shell_runtime.h` | `shell_runtime_is_hosted_visible` | `apps` | `COVERED` | 4 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible` | `src/include/apps/shell_runtime.h` | `shell_runtime_is_hosted_visible` | `apps` | `COVERED` | 3 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager` | `src/include/apps/shell_runtime.h` | `shell_runtime_prepare_filemanager` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_reset_input` | `src/include/apps/shell_runtime.h` | `shell_runtime_reset_input` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal` | `src/include/apps/shell_runtime.h` | `shell_runtime_resume_terminal` | `apps` | `COVERED` | 7 |
@@ -659,7 +659,7 @@
 | `api:src/include/core/spinlock.h:spinlock_release` | `src/include/core/spinlock.h` | `spinlock_release` | `core` | `COVERED` | 1 |
 | `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 56 |
 | `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 62 |
-| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 52 |
+| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 53 |
 | `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 54 |
 | `api:src/include/core/syscall.h:syscall_enable_user_mode` | `src/include/core/syscall.h` | `syscall_enable_user_mode` | `core` | `COVERED` | 2 |
 | `api:src/include/core/syscall.h:syscall_handler` | `src/include/core/syscall.h` | `syscall_handler` | `core` | `COVERED` | 2 |
@@ -1246,6 +1246,19 @@
 | `api:src/include/fs/fs.h:fs_write_file` | `src/include/fs/fs.h` | `fs_write_file` | `fs` | `COVERED` | 6 |
 | `api:src/include/fs/fs.h:fs_write_file_at` | `src/include/fs/fs.h` | `fs_write_file_at` | `fs` | `COVERED` | 6 |
 | `api:src/include/fs/fs.h:fs_write_file_in_dir` | `src/include/fs/fs.h` | `fs_write_file_in_dir` | `fs` | `COVERED` | 6 |
+| `api:src/include/fs/permissions.h:fs_permission_access_name` | `src/include/fs/permissions.h` | `fs_permission_access_name` | `fs` | `COVERED` | 1 |
+| `api:src/include/fs/permissions.h:fs_permissions_apply_lookup` | `src/include/fs/permissions.h` | `fs_permissions_apply_lookup` | `fs` | `COVERED` | 1 |
+| `api:src/include/fs/permissions.h:fs_permissions_check_create` | `src/include/fs/permissions.h` | `fs_permissions_check_create` | `fs` | `COVERED` | 1 |
+| `api:src/include/fs/permissions.h:fs_permissions_check_lookup` | `src/include/fs/permissions.h` | `fs_permissions_check_lookup` | `fs` | `COVERED` | 1 |
+| `api:src/include/fs/permissions.h:fs_permissions_check_traversal` | `src/include/fs/permissions.h` | `fs_permissions_check_traversal` | `fs` | `COVERED` | 1 |
+| `api:src/include/fs/permissions.h:fs_permissions_init` | `src/include/fs/permissions.h` | `fs_permissions_init` | `fs` | `COVERED` | 1 |
+| `api:src/include/fs/permissions.h:fs_permissions_path_compare` | `src/include/fs/permissions.h` | `fs_permissions_path_compare` | `fs` | `COVERED` | 1 |
+| `api:src/include/fs/permissions.h:fs_permissions_prepare_path` | `src/include/fs/permissions.h` | `fs_permissions_prepare_path` | `fs` | `COVERED` | 1 |
+| `api:src/include/fs/permissions.h:fs_permissions_prepare_volume` | `src/include/fs/permissions.h` | `fs_permissions_prepare_volume` | `fs` | `COVERED` | 1 |
+| `api:src/include/fs/permissions.h:fs_permissions_register_path` | `src/include/fs/permissions.h` | `fs_permissions_register_path` | `fs` | `COVERED` | 1 |
+| `api:src/include/fs/permissions.h:fs_permissions_remove_path` | `src/include/fs/permissions.h` | `fs_permissions_remove_path` | `fs` | `COVERED` | 1 |
+| `api:src/include/fs/permissions.h:fs_permissions_rename_path` | `src/include/fs/permissions.h` | `fs_permissions_rename_path` | `fs` | `COVERED` | 1 |
+| `api:src/include/fs/permissions.h:fs_permissions_validate` | `src/include/fs/permissions.h` | `fs_permissions_validate` | `fs` | `COVERED` | 1 |
 | `api:src/include/fs/procfs.h:procfs_init` | `src/include/fs/procfs.h` | `procfs_init` | `fs` | `COVERED` | 4 |
 | `api:src/include/fs/procfs.h:procfs_is_ready` | `src/include/fs/procfs.h` | `procfs_is_ready` | `fs` | `COVERED` | 4 |
 | `api:src/include/fs/procfs.h:procfs_list` | `src/include/fs/procfs.h` | `procfs_list` | `fs` | `COVERED` | 4 |
@@ -1320,6 +1333,7 @@
 | `api:src/include/fs/vfs.h:vfs_fd_table_init` | `src/include/fs/vfs.h` | `vfs_fd_table_init` | `fs` | `COVERED` | 8 |
 | `api:src/include/fs/vfs.h:vfs_fd_table_release` | `src/include/fs/vfs.h` | `vfs_fd_table_release` | `fs` | `COVERED` | 8 |
 | `api:src/include/fs/vfs.h:vfs_fsync` | `src/include/fs/vfs.h` | `vfs_fsync` | `fs` | `COVERED` | 8 |
+| `api:src/include/fs/vfs.h:vfs_get_process_resource_usage` | `src/include/fs/vfs.h` | `vfs_get_process_resource_usage` | `fs` | `COVERED` | 8 |
 | `api:src/include/fs/vfs.h:vfs_get_status` | `src/include/fs/vfs.h` | `vfs_get_status` | `fs` | `COVERED` | 8 |
 | `api:src/include/fs/vfs.h:vfs_getcwd` | `src/include/fs/vfs.h` | `vfs_getcwd` | `fs` | `COVERED` | 6 |
 | `api:src/include/fs/vfs.h:vfs_init` | `src/include/fs/vfs.h` | `vfs_init` | `fs` | `COVERED` | 8 |
@@ -1409,8 +1423,16 @@
 | `api:src/include/memory/vma.h:process_vma_munmap` | `src/include/memory/vma.h` | `process_vma_munmap` | `memory` | `COVERED` | 2 |
 | `api:src/include/memory/vma.h:process_vma_register_image` | `src/include/memory/vma.h` | `process_vma_register_image` | `memory` | `COVERED` | 2 |
 | `api:src/include/memory/vma.h:process_vma_release` | `src/include/memory/vma.h` | `process_vma_release` | `memory` | `COVERED` | 2 |
+| `api:src/include/process/credentials.h:process_capability_name` | `src/include/process/credentials.h` | `process_capability_name` | `process` | `COVERED` | 1 |
+| `api:src/include/process/credentials.h:process_credentials_copy` | `src/include/process/credentials.h` | `process_credentials_copy` | `process` | `COVERED` | 1 |
+| `api:src/include/process/credentials.h:process_credentials_current` | `src/include/process/credentials.h` | `process_credentials_current` | `process` | `COVERED` | 1 |
+| `api:src/include/process/credentials.h:process_credentials_has` | `src/include/process/credentials.h` | `process_credentials_has` | `process` | `COVERED` | 1 |
+| `api:src/include/process/credentials.h:process_credentials_init_native` | `src/include/process/credentials.h` | `process_credentials_init_native` | `process` | `COVERED` | 1 |
+| `api:src/include/process/credentials.h:process_credentials_init_user` | `src/include/process/credentials.h` | `process_credentials_init_user` | `process` | `COVERED` | 1 |
+| `api:src/include/process/credentials.h:process_credentials_validate` | `src/include/process/credentials.h` | `process_credentials_validate` | `process` | `COVERED` | 1 |
 | `api:src/include/process/process.h:ipc_current_has_pending` | `src/include/process/process.h` | `ipc_current_has_pending` | `process` | `COVERED` | 5 |
 | `api:src/include/process/process.h:ipc_get_pending_count` | `src/include/process/process.h` | `ipc_get_pending_count` | `process` | `COVERED` | 5 |
+| `api:src/include/process/process.h:ipc_get_pending_count_for_pid` | `src/include/process/process.h` | `ipc_get_pending_count_for_pid` | `process` | `COVERED` | 5 |
 | `api:src/include/process/process.h:ipc_get_stats` | `src/include/process/process.h` | `ipc_get_stats` | `process` | `COVERED` | 5 |
 | `api:src/include/process/process.h:ipc_init` | `src/include/process/process.h` | `ipc_init` | `process` | `COVERED` | 5 |
 | `api:src/include/process/process.h:ipc_is_ready` | `src/include/process/process.h` | `ipc_is_ready` | `process` | `COVERED` | 5 |
@@ -1422,7 +1444,7 @@
 | `api:src/include/process/process.h:process_bootstrap_idle` | `src/include/process/process.h` | `process_bootstrap_idle` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_cancel_focused_user` | `src/include/process/process.h` | `process_cancel_focused_user` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_cancel_user` | `src/include/process/process.h` | `process_cancel_user` | `process` | `COVERED` | 8 |
-| `api:src/include/process/process.h:process_cancel_user_generation` | `src/include/process/process.h` | `process_cancel_user_generation` | `process` | `COVERED` | 7 |
+| `api:src/include/process/process.h:process_cancel_user_generation` | `src/include/process/process.h` | `process_cancel_user_generation` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_cancel_user_test` | `src/include/process/process.h` | `process_cancel_user_test` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_cancel_wait` | `src/include/process/process.h` | `process_cancel_wait` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_context_switch` | `src/include/process/process.h` | `process_context_switch` | `process` | `COVERED` | 1 |
@@ -1437,6 +1459,7 @@
 | `api:src/include/process/process.h:process_exit_current` | `src/include/process/process.h` | `process_exit_current` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_finish_user_termination` | `src/include/process/process.h` | `process_finish_user_termination` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_get_by_pid` | `src/include/process/process.h` | `process_get_by_pid` | `process` | `COVERED` | 8 |
+| `api:src/include/process/process.h:process_get_child_count` | `src/include/process/process.h` | `process_get_child_count` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_get_count` | `src/include/process/process.h` | `process_get_count` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_get_current` | `src/include/process/process.h` | `process_get_current` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_get_current_pid` | `src/include/process/process.h` | `process_get_current_pid` | `process` | `COVERED` | 8 |
@@ -1467,7 +1490,7 @@
 | `api:src/include/process/process.h:process_start_user` | `src/include/process/process.h` | `process_start_user` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_take_user_test_result` | `src/include/process/process.h` | `process_take_user_test_result` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_terminate_user_signal` | `src/include/process/process.h` | `process_terminate_user_signal` | `process` | `COVERED` | 8 |
-| `api:src/include/process/process.h:process_terminate_user_signal_generation` | `src/include/process/process.h` | `process_terminate_user_signal_generation` | `process` | `COVERED` | 7 |
+| `api:src/include/process/process.h:process_terminate_user_signal_generation` | `src/include/process/process.h` | `process_terminate_user_signal_generation` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_unblock` | `src/include/process/process.h` | `process_unblock` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:process_user_enter` | `src/include/process/process.h` | `process_user_enter` | `process` | `COVERED` | 1 |
 | `api:src/include/process/process.h:process_user_termination_enter` | `src/include/process/process.h` | `process_user_termination_enter` | `process` | `COVERED` | 1 |
@@ -1481,12 +1504,18 @@
 | `api:src/include/process/process.h:scheduler_tick` | `src/include/process/process.h` | `scheduler_tick` | `process` | `COVERED` | 8 |
 | `api:src/include/process/process.h:scheduler_validate_invariants` | `src/include/process/process.h` | `scheduler_validate_invariants` | `process` | `COVERED` | 8 |
 | `api:src/include/process/resource.h:process_resource_attach` | `src/include/process/resource.h` | `process_resource_attach` | `process` | `COVERED` | 1 |
+| `api:src/include/process/resource.h:process_resource_check_children` | `src/include/process/resource.h` | `process_resource_check_children` | `process` | `COVERED` | 1 |
+| `api:src/include/process/resource.h:process_resource_check_descriptors` | `src/include/process/resource.h` | `process_resource_check_descriptors` | `process` | `COVERED` | 1 |
+| `api:src/include/process/resource.h:process_resource_check_ipc_pending` | `src/include/process/resource.h` | `process_resource_check_ipc_pending` | `process` | `COVERED` | 1 |
 | `api:src/include/process/resource.h:process_resource_check_page` | `src/include/process/resource.h` | `process_resource_check_page` | `process` | `COVERED` | 1 |
+| `api:src/include/process/resource.h:process_resource_check_pipes` | `src/include/process/resource.h` | `process_resource_check_pipes` | `process` | `COVERED` | 1 |
 | `api:src/include/process/resource.h:process_resource_check_vma` | `src/include/process/resource.h` | `process_resource_check_vma` | `process` | `COVERED` | 1 |
 | `api:src/include/process/resource.h:process_resource_check_vma_split` | `src/include/process/resource.h` | `process_resource_check_vma_split` | `process` | `COVERED` | 1 |
 | `api:src/include/process/resource.h:process_resource_detach` | `src/include/process/resource.h` | `process_resource_detach` | `process` | `COVERED` | 1 |
 | `api:src/include/process/resource.h:process_resource_init` | `src/include/process/resource.h` | `process_resource_init` | `process` | `COVERED` | 1 |
+| `api:src/include/process/resource.h:process_resource_note_descriptor_success` | `src/include/process/resource.h` | `process_resource_note_descriptor_success` | `process` | `COVERED` | 1 |
 | `api:src/include/process/resource.h:process_resource_note_page_success` | `src/include/process/resource.h` | `process_resource_note_page_success` | `process` | `COVERED` | 1 |
+| `api:src/include/process/resource.h:process_resource_note_pipe_success` | `src/include/process/resource.h` | `process_resource_note_pipe_success` | `process` | `COVERED` | 1 |
 | `api:src/include/process/resource.h:process_resource_note_vma_success` | `src/include/process/resource.h` | `process_resource_note_vma_success` | `process` | `COVERED` | 1 |
 | `api:src/include/process/resource.h:process_resource_record_failure` | `src/include/process/resource.h` | `process_resource_record_failure` | `process` | `COVERED` | 1 |
 | `api:src/include/process/resource.h:process_resource_snapshot_copy` | `src/include/process/resource.h` | `process_resource_snapshot_copy` | `process` | `COVERED` | 1 |
@@ -3219,7 +3248,7 @@
 | `c:src/core/socket.c:socket_wake` | `src/core/socket.c` | `socket_wake` | `core` | `COVERED` | 3 |
 | `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 56 |
 | `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 62 |
-| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 52 |
+| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 53 |
 | `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 54 |
 | `c:src/core/syscall.c:syscall_copy_user_string` | `src/core/syscall.c` | `syscall_copy_user_string` | `core` | `COVERED` | 1 |
 | `c:src/core/syscall.c:syscall_dispatch` | `src/core/syscall.c` | `syscall_dispatch` | `core` | `COVERED` | 2 |
@@ -5305,6 +5334,34 @@
 | `c:src/fs/fs.c:fs_write_file_at_unlocked` | `src/fs/fs.c` | `fs_write_file_at_unlocked` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fs.c:fs_write_file_in_dir` | `src/fs/fs.c` | `fs_write_file_in_dir` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fs.c:fs_write_file_in_dir_unlocked` | `src/fs/fs.c` | `fs_write_file_in_dir_unlocked` | `fs` | `COVERED` | 1 |
+| `c:src/fs/permissions.c:fs_permission_access_name` | `src/fs/permissions.c` | `fs_permission_access_name` | `fs` | `COVERED` | 1 |
+| `c:src/fs/permissions.c:fs_permissions_apply_lookup` | `src/fs/permissions.c` | `fs_permissions_apply_lookup` | `fs` | `COVERED` | 1 |
+| `c:src/fs/permissions.c:fs_permissions_check_create` | `src/fs/permissions.c` | `fs_permissions_check_create` | `fs` | `COVERED` | 1 |
+| `c:src/fs/permissions.c:fs_permissions_check_lookup` | `src/fs/permissions.c` | `fs_permissions_check_lookup` | `fs` | `COVERED` | 1 |
+| `c:src/fs/permissions.c:fs_permissions_check_traversal` | `src/fs/permissions.c` | `fs_permissions_check_traversal` | `fs` | `COVERED` | 1 |
+| `c:src/fs/permissions.c:fs_permissions_init` | `src/fs/permissions.c` | `fs_permissions_init` | `fs` | `COVERED` | 1 |
+| `c:src/fs/permissions.c:fs_permissions_path_compare` | `src/fs/permissions.c` | `fs_permissions_path_compare` | `fs` | `COVERED` | 1 |
+| `c:src/fs/permissions.c:fs_permissions_prepare_path` | `src/fs/permissions.c` | `fs_permissions_prepare_path` | `fs` | `COVERED` | 1 |
+| `c:src/fs/permissions.c:fs_permissions_prepare_volume` | `src/fs/permissions.c` | `fs_permissions_prepare_volume` | `fs` | `COVERED` | 1 |
+| `c:src/fs/permissions.c:fs_permissions_register_path` | `src/fs/permissions.c` | `fs_permissions_register_path` | `fs` | `COVERED` | 1 |
+| `c:src/fs/permissions.c:fs_permissions_remove_path` | `src/fs/permissions.c` | `fs_permissions_remove_path` | `fs` | `COVERED` | 1 |
+| `c:src/fs/permissions.c:fs_permissions_rename_path` | `src/fs/permissions.c` | `fs_permissions_rename_path` | `fs` | `COVERED` | 1 |
+| `c:src/fs/permissions.c:fs_permissions_validate` | `src/fs/permissions.c` | `fs_permissions_validate` | `fs` | `COVERED` | 1 |
+| `c:src/fs/permissions.c:permission_bits_allow` | `src/fs/permissions.c` | `permission_bits_allow` | `fs` | `COVERED` | 1 |
+| `c:src/fs/permissions.c:permission_crc32` | `src/fs/permissions.c` | `permission_crc32` | `fs` | `COVERED` | 1 |
+| `c:src/fs/permissions.c:permission_default_mode` | `src/fs/permissions.c` | `permission_default_mode` | `fs` | `COVERED` | 1 |
+| `c:src/fs/permissions.c:permission_get_storage` | `src/fs/permissions.c` | `permission_get_storage` | `fs` | `COVERED` | 1 |
+| `c:src/fs/permissions.c:permission_insert` | `src/fs/permissions.c` | `permission_insert` | `fs` | `COVERED` | 1 |
+| `c:src/fs/permissions.c:permission_new_mode` | `src/fs/permissions.c` | `permission_new_mode` | `fs` | `COVERED` | 1 |
+| `c:src/fs/permissions.c:permission_path_valid` | `src/fs/permissions.c` | `permission_path_valid` | `fs` | `COVERED` | 1 |
+| `c:src/fs/permissions.c:permission_persist` | `src/fs/permissions.c` | `permission_persist` | `fs` | `COVERED` | 1 |
+| `c:src/fs/permissions.c:permission_read_u16` | `src/fs/permissions.c` | `permission_read_u16` | `fs` | `COVERED` | 1 |
+| `c:src/fs/permissions.c:permission_read_u32` | `src/fs/permissions.c` | `permission_read_u32` | `fs` | `COVERED` | 1 |
+| `c:src/fs/permissions.c:permission_record_find` | `src/fs/permissions.c` | `permission_record_find` | `fs` | `COVERED` | 1 |
+| `c:src/fs/permissions.c:permission_serialize` | `src/fs/permissions.c` | `permission_serialize` | `fs` | `COVERED` | 1 |
+| `c:src/fs/permissions.c:permission_volume_slot` | `src/fs/permissions.c` | `permission_volume_slot` | `fs` | `COVERED` | 1 |
+| `c:src/fs/permissions.c:permission_write_u16` | `src/fs/permissions.c` | `permission_write_u16` | `fs` | `COVERED` | 1 |
+| `c:src/fs/permissions.c:permission_write_u32` | `src/fs/permissions.c` | `permission_write_u32` | `fs` | `COVERED` | 1 |
 | `c:src/fs/procfs.c:procfs_append_char` | `src/fs/procfs.c` | `procfs_append_char` | `fs` | `COVERED` | 4 |
 | `c:src/fs/procfs.c:procfs_append_decimal` | `src/fs/procfs.c` | `procfs_append_decimal` | `fs` | `COVERED` | 4 |
 | `c:src/fs/procfs.c:procfs_append_hex` | `src/fs/procfs.c` | `procfs_append_hex` | `fs` | `COVERED` | 1 |
@@ -5555,6 +5612,7 @@
 | `c:src/fs/sysfs.c:sysfs_write` | `src/fs/sysfs.c` | `sysfs_write` | `fs` | `COVERED` | 1 |
 | `c:src/fs/vfs.c:vfs_allocate_file` | `src/fs/vfs.c` | `vfs_allocate_file` | `fs` | `COVERED` | 5 |
 | `c:src/fs/vfs.c:vfs_begin_operation` | `src/fs/vfs.c` | `vfs_begin_operation` | `fs` | `COVERED` | 4 |
+| `c:src/fs/vfs.c:vfs_check_file_permission` | `src/fs/vfs.c` | `vfs_check_file_permission` | `fs` | `COVERED` | 1 |
 | `c:src/fs/vfs.c:vfs_close` | `src/fs/vfs.c` | `vfs_close` | `fs` | `COVERED` | 5 |
 | `c:src/fs/vfs.c:vfs_close_owner` | `src/fs/vfs.c` | `vfs_close_owner` | `fs` | `COVERED` | 1 |
 | `c:src/fs/vfs.c:vfs_copy_descriptors` | `src/fs/vfs.c` | `vfs_copy_descriptors` | `fs` | `COVERED` | 3 |
@@ -5566,6 +5624,7 @@
 | `c:src/fs/vfs.c:vfs_find_free_fd_pair` | `src/fs/vfs.c` | `vfs_find_free_fd_pair` | `fs` | `COVERED` | 3 |
 | `c:src/fs/vfs.c:vfs_fsync` | `src/fs/vfs.c` | `vfs_fsync` | `fs` | `COVERED` | 3 |
 | `c:src/fs/vfs.c:vfs_get_current_table` | `src/fs/vfs.c` | `vfs_get_current_table` | `fs` | `COVERED` | 5 |
+| `c:src/fs/vfs.c:vfs_get_process_resource_usage` | `src/fs/vfs.c` | `vfs_get_process_resource_usage` | `fs` | `COVERED` | 1 |
 | `c:src/fs/vfs.c:vfs_get_status` | `src/fs/vfs.c` | `vfs_get_status` | `fs` | `COVERED` | 3 |
 | `c:src/fs/vfs.c:vfs_init` | `src/fs/vfs.c` | `vfs_init` | `fs` | `COVERED` | 1 |
 | `c:src/fs/vfs.c:vfs_initialize_stdio_nodes` | `src/fs/vfs.c` | `vfs_initialize_stdio_nodes` | `fs` | `COVERED` | 3 |
@@ -5575,6 +5634,7 @@
 | `c:src/fs/vfs.c:vfs_mode_valid` | `src/fs/vfs.c` | `vfs_mode_valid` | `fs` | `COVERED` | 5 |
 | `c:src/fs/vfs.c:vfs_open` | `src/fs/vfs.c` | `vfs_open` | `fs` | `COVERED` | 4 |
 | `c:src/fs/vfs.c:vfs_open_socket` | `src/fs/vfs.c` | `vfs_open_socket` | `fs` | `COVERED` | 2 |
+| `c:src/fs/vfs.c:vfs_permission_access_for_mode` | `src/fs/vfs.c` | `vfs_permission_access_for_mode` | `fs` | `COVERED` | 1 |
 | `c:src/fs/vfs.c:vfs_pipe` | `src/fs/vfs.c` | `vfs_pipe` | `fs` | `COVERED` | 3 |
 | `c:src/fs/vfs.c:vfs_pipe_allocate` | `src/fs/vfs.c` | `vfs_pipe_allocate` | `fs` | `COVERED` | 3 |
 | `c:src/fs/vfs.c:vfs_pipe_close` | `src/fs/vfs.c` | `vfs_pipe_close` | `fs` | `COVERED` | 3 |
@@ -5934,8 +5994,16 @@
 | `c:src/memory/vma.c:process_vma_release` | `src/memory/vma.c` | `process_vma_release` | `memory` | `COVERED` | 2 |
 | `c:src/memory/vma.c:process_vma_unmap_pages` | `src/memory/vma.c` | `process_vma_unmap_pages` | `memory` | `COVERED` | 2 |
 | `c:src/memory/vma.c:process_vma_validate_length` | `src/memory/vma.c` | `process_vma_validate_length` | `memory` | `COVERED` | 2 |
+| `c:src/process/credentials.c:process_capability_name` | `src/process/credentials.c` | `process_capability_name` | `process` | `COVERED` | 1 |
+| `c:src/process/credentials.c:process_credentials_copy` | `src/process/credentials.c` | `process_credentials_copy` | `process` | `COVERED` | 1 |
+| `c:src/process/credentials.c:process_credentials_current` | `src/process/credentials.c` | `process_credentials_current` | `process` | `COVERED` | 1 |
+| `c:src/process/credentials.c:process_credentials_has` | `src/process/credentials.c` | `process_credentials_has` | `process` | `COVERED` | 1 |
+| `c:src/process/credentials.c:process_credentials_init_native` | `src/process/credentials.c` | `process_credentials_init_native` | `process` | `COVERED` | 1 |
+| `c:src/process/credentials.c:process_credentials_init_user` | `src/process/credentials.c` | `process_credentials_init_user` | `process` | `COVERED` | 1 |
+| `c:src/process/credentials.c:process_credentials_validate` | `src/process/credentials.c` | `process_credentials_validate` | `process` | `COVERED` | 1 |
 | `c:src/process/ipc.c:ipc_current_has_pending` | `src/process/ipc.c` | `ipc_current_has_pending` | `process` | `COVERED` | 2 |
 | `c:src/process/ipc.c:ipc_get_pending_count` | `src/process/ipc.c` | `ipc_get_pending_count` | `process` | `COVERED` | 2 |
+| `c:src/process/ipc.c:ipc_get_pending_count_for_pid` | `src/process/ipc.c` | `ipc_get_pending_count_for_pid` | `process` | `COVERED` | 1 |
 | `c:src/process/ipc.c:ipc_get_stats` | `src/process/ipc.c` | `ipc_get_stats` | `process` | `COVERED` | 1 |
 | `c:src/process/ipc.c:ipc_init` | `src/process/ipc.c` | `ipc_init` | `process` | `COVERED` | 1 |
 | `c:src/process/ipc.c:ipc_irq_restore` | `src/process/ipc.c` | `ipc_irq_restore` | `process` | `COVERED` | 1 |
@@ -5956,7 +6024,7 @@
 | `c:src/process/process.c:process_bootstrap_idle` | `src/process/process.c` | `process_bootstrap_idle` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:process_cancel_focused_user` | `src/process/process.c` | `process_cancel_focused_user` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_cancel_user` | `src/process/process.c` | `process_cancel_user` | `process` | `COVERED` | 1 |
-| `c:src/process/process.c:process_cancel_user_generation` | `src/process/process.c` | `process_cancel_user_generation` | `process` | `PENDING` | 0 |
+| `c:src/process/process.c:process_cancel_user_generation` | `src/process/process.c` | `process_cancel_user_generation` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_cancel_user_test` | `src/process/process.c` | `process_cancel_user_test` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_cancel_wait` | `src/process/process.c` | `process_cancel_wait` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_copy_wait_text` | `src/process/process.c` | `process_copy_wait_text` | `process` | `COVERED` | 1 |
@@ -5974,6 +6042,7 @@
 | `c:src/process/process.c:process_exit_current` | `src/process/process.c` | `process_exit_current` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_finish_user_termination` | `src/process/process.c` | `process_finish_user_termination` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_get_by_pid` | `src/process/process.c` | `process_get_by_pid` | `process` | `COVERED` | 2 |
+| `c:src/process/process.c:process_get_child_count` | `src/process/process.c` | `process_get_child_count` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_get_count` | `src/process/process.c` | `process_get_count` | `process` | `COVERED` | 3 |
 | `c:src/process/process.c:process_get_current` | `src/process/process.c` | `process_get_current` | `process` | `COVERED` | 2 |
 | `c:src/process/process.c:process_get_current_pid` | `src/process/process.c` | `process_get_current_pid` | `process` | `COVERED` | 7 |
@@ -6034,7 +6103,7 @@
 | `c:src/process/process.c:process_switch_after_termination` | `src/process/process.c` | `process_switch_after_termination` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_take_user_test_result` | `src/process/process.c` | `process_take_user_test_result` | `process` | `COVERED` | 4 |
 | `c:src/process/process.c:process_terminate_user_signal` | `src/process/process.c` | `process_terminate_user_signal` | `process` | `COVERED` | 1 |
-| `c:src/process/process.c:process_terminate_user_signal_generation` | `src/process/process.c` | `process_terminate_user_signal_generation` | `process` | `PENDING` | 0 |
+| `c:src/process/process.c:process_terminate_user_signal_generation` | `src/process/process.c` | `process_terminate_user_signal_generation` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_unblock` | `src/process/process.c` | `process_unblock` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_user_build_code` | `src/process/process.c` | `process_user_build_code` | `process` | `COVERED` | 1 |
 | `c:src/process/process.c:process_user_emit_mov` | `src/process/process.c` | `process_user_emit_mov` | `process` | `COVERED` | 1 |
@@ -6066,17 +6135,24 @@
 | `c:src/process/process.c:scheduler_validate_states` | `src/process/process.c` | `scheduler_validate_states` | `process` | `COVERED` | 3 |
 | `c:src/process/process.c:scheduler_yield_internal` | `src/process/process.c` | `scheduler_yield_internal` | `process` | `COVERED` | 4 |
 | `c:src/process/resource.c:process_resource_attach` | `src/process/resource.c` | `process_resource_attach` | `process` | `COVERED` | 1 |
+| `c:src/process/resource.c:process_resource_check_children` | `src/process/resource.c` | `process_resource_check_children` | `process` | `COVERED` | 1 |
+| `c:src/process/resource.c:process_resource_check_descriptors` | `src/process/resource.c` | `process_resource_check_descriptors` | `process` | `COVERED` | 1 |
+| `c:src/process/resource.c:process_resource_check_ipc_pending` | `src/process/resource.c` | `process_resource_check_ipc_pending` | `process` | `COVERED` | 1 |
 | `c:src/process/resource.c:process_resource_check_page` | `src/process/resource.c` | `process_resource_check_page` | `process` | `COVERED` | 1 |
+| `c:src/process/resource.c:process_resource_check_pipes` | `src/process/resource.c` | `process_resource_check_pipes` | `process` | `COVERED` | 1 |
 | `c:src/process/resource.c:process_resource_check_vma` | `src/process/resource.c` | `process_resource_check_vma` | `process` | `COVERED` | 1 |
 | `c:src/process/resource.c:process_resource_check_vma_split` | `src/process/resource.c` | `process_resource_check_vma_split` | `process` | `COVERED` | 1 |
 | `c:src/process/resource.c:process_resource_detach` | `src/process/resource.c` | `process_resource_detach` | `process` | `COVERED` | 1 |
 | `c:src/process/resource.c:process_resource_init` | `src/process/resource.c` | `process_resource_init` | `process` | `COVERED` | 1 |
+| `c:src/process/resource.c:process_resource_note_descriptor_success` | `src/process/resource.c` | `process_resource_note_descriptor_success` | `process` | `PENDING` | 0 |
 | `c:src/process/resource.c:process_resource_note_page_success` | `src/process/resource.c` | `process_resource_note_page_success` | `process` | `COVERED` | 1 |
+| `c:src/process/resource.c:process_resource_note_pipe_success` | `src/process/resource.c` | `process_resource_note_pipe_success` | `process` | `PENDING` | 0 |
 | `c:src/process/resource.c:process_resource_note_vma_success` | `src/process/resource.c` | `process_resource_note_vma_success` | `process` | `COVERED` | 1 |
 | `c:src/process/resource.c:process_resource_record_failure` | `src/process/resource.c` | `process_resource_record_failure` | `process` | `COVERED` | 1 |
 | `c:src/process/resource.c:process_resource_snapshot_copy` | `src/process/resource.c` | `process_resource_snapshot_copy` | `process` | `COVERED` | 1 |
 | `c:src/process/resource.c:process_resource_validate_all` | `src/process/resource.c` | `process_resource_validate_all` | `process` | `COVERED` | 1 |
 | `c:src/process/resource.c:resource_area_is_dynamic` | `src/process/resource.c` | `resource_area_is_dynamic` | `process` | `COVERED` | 1 |
+| `c:src/process/resource.c:resource_check_quota` | `src/process/resource.c` | `resource_check_quota` | `process` | `COVERED` | 1 |
 | `c:src/process/resource.c:resource_current_pages` | `src/process/resource.c` | `resource_current_pages` | `process` | `COVERED` | 1 |
 | `c:src/process/resource.c:resource_dynamic_usage` | `src/process/resource.c` | `resource_dynamic_usage` | `process` | `COVERED` | 1 |
 | `c:src/process/resource.c:resource_fill_usage` | `src/process/resource.c` | `resource_fill_usage` | `process` | `COVERED` | 1 |
@@ -7671,6 +7747,7 @@
 | `host:storage:fat32` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar FAT32 sobre imagem estatica grande o suficiente para a classificacao FAT32 | leitura, paths, metadados, criacao, escrita, remocao e classificacao de clusters preservam a fixture | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente imagem FAT32 estatica e heap estatico do processo host | fixture encerrada e processo host finalizado com manifesto, logs e cobertura preservados |
 | `host:storage:file-index` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar indexacao cooperativa, pesquisa, cancelamento, stale/missing e recuperacao de corrupcao com cursores estaticos | rebuild, publicacao, pesquisa e limpeza restauram a tabela e classificam resultados indisponiveis sem vazamento | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabelas e cursores estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:storage:fs` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar paths FAT32 de storage e legacy, cursores, operacoes atomicas, streaming e limites | a interface unificada preserva o contrato de leitura, escrita, cursor, streaming, erros e geracao sem hardware real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente fixtures estaticos de FAT32, storage e ATA no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:storage:permissions` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar identidades ring0/ring3, capacidades, defaults, decisoes proprietario/grupo/outros, travessia, dispositivos, procfs/sysfs, parser CRC32 do ZPERM.DAT, ordem, truncamento, limite de 128 registros, preflight de quota e limpeza de credenciais | credenciais fixas, permissoes e quotas retornam codigos canonicos, bloqueiam acessos incompativeis, preservam FAT12 sem sidecar e rejeitam metadados inconsistentes sem truncamento | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente buffers estaticos de volume, cache de permissoes e processos da fixture host | cache, sidecar falso, processos e credenciais restaurados; manifestos, logs e cobertura preservados |
 | `host:storage:procfs` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar procfs real com VFS, processos, snapshots e controles de log estaticos | listagem, lookup, leitura, mapas, controles, permissoes, seeks, poll, ioctl, sync, indisponibilidade e invariantes preservam o contrato sem kernel ou hardware real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estruturas procfs, processos falsos e buffers estaticos do processo host | descritores fechados, snapshots liberados, processos falsos destruidos e manifesto, logs e cobertura preservados |
 | `host:storage:storage` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar inventario, MBR/BPB, montagem FAT12, cursores, leitura, espaco livre e rejeicao de mutacoes | o backend identifica e monta a particao, le fixtures sem hardware real e preserva o armazenamento somente-leitura | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente imagem FAT12 estatica e provider de bloco falso no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:storage:storage-fat32` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar storage FAT32 com validacao de metadados, cadeias, escrita, remocao LFN e escritor transacional | operacoes FAT32 validas preservam dados e cadeias, corrupcoes retornam erros canonicos e transacoes concluidas ou abortadas deixam a fixture consistente | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente imagem FAT32 estatica e provider de bloco falso no processo host | cadeias, entradas temporarias e escritor transacional encerrados; manifesto, logs e cobertura preservados |
@@ -7736,8 +7813,8 @@
 - `c:src/core/kernel_tests_blackbox.c:blackbox_marker`
 - `c:src/kernel/kernel.c:kernel_host_test_should_wake_shell_for_event`
 - `c:src/kernel/kernel.c:kernel_should_wake_shell_for_event`
-- `c:src/process/process.c:process_cancel_user_generation`
-- `c:src/process/process.c:process_terminate_user_signal_generation`
+- `c:src/process/resource.c:process_resource_note_descriptor_success`
+- `c:src/process/resource.c:process_resource_note_pipe_success`
 - `c:src/process/signal.c:process_signal_send_generation`
 
 ## Aposentadas

@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "core/errors.h"
@@ -10,6 +11,7 @@
 #include "fs/procfs.h"
 #include "fs/storage.h"
 #include "fs/sysfs.h"
+#include "fs/permissions.h"
 #include "fs/vfs_internal.h"
 #include "process/process.h"
 
@@ -122,6 +124,31 @@ process_t* process_get_current(void) {
     return &fake_current;
 }
 
+void* kmalloc(uint32_t size) { return size ? malloc(size) : 0; }
+
+void kfree(void* pointer) { free(pointer); }
+
+int storage_read_file_range(const char* id, const char* path,
+                            uint32_t offset, uint8_t* buffer,
+                            uint32_t max_size, uint32_t* out_read) {
+    (void)offset;
+    (void)buffer;
+    (void)max_size;
+    if (!id || !path || !out_read) return ERR_NULL;
+    *out_read = 0U;
+    return ERR_NOT_FOUND;
+}
+
+int storage_atomic_write_file(const char* id, const char* path,
+                              const uint8_t* data, uint32_t size,
+                              uint8_t attributes, storage_atomic_mode_t mode) {
+    if (!id || !path || (size && !data)) return ERR_NULL;
+    (void)attributes;
+    if (mode != STORAGE_ATOMIC_CREATE_OR_REPLACE &&
+        mode != STORAGE_ATOMIC_REPLACE_ONLY) return ERR_INVALID;
+    return OK;
+}
+
 int vfs_power_is_quiescing(void) {
     return fake_quiescing;
 }
@@ -216,7 +243,8 @@ int storage_get_path_info(const char* id, const char* path, uint32_t* out_size,
     *out_size = 0U;
     *out_attributes = 0U;
     *out_directory = 0U;
-    if (!path[0] || strcmp(path, ".") == 0 || strcmp(path, "dir") == 0) {
+    if (!path[0] || strcmp(path, ".") == 0 || strcmp(path, "dir") == 0 ||
+        strcmp(path, "etc") == 0) {
         *out_directory = 1U;
         return OK;
     }
@@ -364,6 +392,7 @@ int main(void) {
 
     coverage_active = 1U;
     memset(&fake_current, 0, sizeof(fake_current));
+    EXPECT(process_credentials_init_native(&fake_current.credentials) == OK);
     fake_current.fd_table.initialized = 1U;
     set_text(fake_current.fd_table.cwd, sizeof(fake_current.fd_table.cwd), "/mnt");
     processes[0] = &fake_current;
@@ -372,6 +401,7 @@ int main(void) {
     EXPECT(vfs_path_validate_state() == ERR_STATE);
     EXPECT(vfs_refresh_mounts() == ERR_STATE);
     EXPECT(vfs_path_init() == OK);
+    EXPECT(fs_permissions_init() == OK);
     EXPECT(vfs_path_validate_state() == ERR_NOT_FOUND);
 
     setup_storage();

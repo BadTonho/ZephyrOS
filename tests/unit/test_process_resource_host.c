@@ -92,6 +92,27 @@ int paging_get_user_page_count(page_directory_t* directory,
     return OK;
 }
 
+int vfs_get_process_resource_usage(uint32_t pid, uint32_t* descriptors,
+                                   uint32_t* pipes) {
+    (void)pid;
+    if (!descriptors || !pipes) return ERR_NULL;
+    *descriptors = 3U;
+    *pipes = 0U;
+    return OK;
+}
+
+uint32_t process_get_child_count(uint32_t parent_pid) {
+    (void)parent_pid;
+    return 0U;
+}
+
+int ipc_get_pending_count_for_pid(uint32_t pid, uint32_t* pending) {
+    (void)pid;
+    if (!pending) return ERR_NULL;
+    *pending = 0U;
+    return OK;
+}
+
 static int expect_true(int condition, const char* expression) {
     if (condition) return OK;
     fprintf(stderr, "process-resource-host: falhou: %s\n", expression);
@@ -141,6 +162,35 @@ int main(void) {
     EXPECT(snapshot.argument_count == 2U);
     EXPECT(snapshot.argument_bytes == 5U);
     EXPECT(snapshot.image_bytes == 2U * PAGE_SIZE);
+    EXPECT(snapshot.descriptors == 3U);
+    EXPECT(snapshot.descriptor_limit == PROCESS_RESOURCE_MAX_DESCRIPTORS);
+    EXPECT(snapshot.children == 0U);
+    EXPECT(snapshot.child_limit == PROCESS_RESOURCE_MAX_CHILDREN);
+    EXPECT(snapshot.ipc_pending == 0U);
+    EXPECT(snapshot.ipc_pending_limit == PROCESS_RESOURCE_MAX_IPC_PENDING);
+    EXPECT(snapshot.pipes == 0U);
+    EXPECT(snapshot.pipe_limit == PROCESS_RESOURCE_MAX_PIPES);
+    EXPECT(process_resource_check_descriptors(
+               &process, PROCESS_RESOURCE_MAX_DESCRIPTORS - 3U) == OK);
+    EXPECT(process_resource_check_descriptors(
+               &process, PROCESS_RESOURCE_MAX_DESCRIPTORS) == ERR_OVERFLOW);
+    EXPECT(snapshot.last_failure == PROCESS_RESOURCE_FAILURE_NONE);
+    EXPECT(process_resource_check_children(
+               &process, PROCESS_RESOURCE_MAX_CHILDREN) == OK);
+    EXPECT(process_resource_check_children(
+               &process, PROCESS_RESOURCE_MAX_CHILDREN + 1U) == ERR_OVERFLOW);
+    EXPECT(process_resource_check_pipes(&process,
+                                       PROCESS_RESOURCE_MAX_PIPES) == OK);
+    EXPECT(process_resource_check_pipes(
+               &process, PROCESS_RESOURCE_MAX_PIPES + 1U) == ERR_OVERFLOW);
+    EXPECT(process_resource_check_ipc_pending(
+               &process, PROCESS_RESOURCE_MAX_IPC_PENDING - 1U, 1U) == OK);
+    EXPECT(process_resource_check_ipc_pending(
+               &process, PROCESS_RESOURCE_MAX_IPC_PENDING, 1U) == ERR_OVERFLOW);
+    EXPECT(process_resource_snapshot_copy(process.pid,
+                                          process.event_generation,
+                                          &snapshot) == OK);
+    EXPECT(snapshot.last_failure == PROCESS_RESOURCE_FAILURE_IPC_PENDING);
     result = process_resource_check_vma_split(&process);
     EXPECT(result == OK);
 
@@ -202,7 +252,7 @@ int main(void) {
     EXPECT(snapshot.resident_peak_pages ==
            PROCESS_RESOURCE_MAX_RESIDENT_PAGES - 1U);
     EXPECT(snapshot.last_failure == PROCESS_RESOURCE_FAILURE_RESIDENT_PAGES);
-    EXPECT(snapshot.allocation_failures == 4U);
+    EXPECT(snapshot.allocation_failures == 8U);
 
     result = process_resource_snapshot_copy(process.pid,
                                             process.event_generation + 1U,

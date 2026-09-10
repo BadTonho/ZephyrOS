@@ -2,6 +2,7 @@
 #include "fs/devfs.h"
 #include "fs/procfs.h"
 #include "fs/sysfs.h"
+#include "fs/permissions.h"
 #include "core/errors.h"
 #include "core/log.h"
 #include "core/spinlock.h"
@@ -477,6 +478,7 @@ static int vfs_resolve_canonical(const char* canonical, uint32_t mode,
 
     if (vfs_path_equal(canonical, "/mnt")) {
         result->type = VFS_NODE_DIRECTORY;
+        result->exists = 1U;
         return OK;
     }
     spinlock_acquire(&vfs_mount_lock);
@@ -499,17 +501,24 @@ static int vfs_resolve_canonical(const char* canonical, uint32_t mode,
         return vfs_path_fail(ERR_NOT_FOUND, "Montagem para caminho ausente");
     }
     if (result->mount_kind == VFS_MOUNT_DEVFS) {
-        return devfs_lookup(canonical, result);
+        int result_code = devfs_lookup(canonical, result);
+        if (result_code == OK) result->exists = 1U;
+        return result_code;
     }
     if (result->mount_kind == VFS_MOUNT_PROCFS) {
-        return procfs_lookup(canonical, result);
+        int result_code = procfs_lookup(canonical, result);
+        if (result_code == OK) result->exists = 1U;
+        return result_code;
     }
     if (result->mount_kind == VFS_MOUNT_SYSFS) {
-        return sysfs_lookup(canonical, result);
+        int result_code = sysfs_lookup(canonical, result);
+        if (result_code == OK) result->exists = 1U;
+        return result_code;
     }
     mount_length = kstrlen(result->mount_point);
     if (vfs_path_equal(canonical, result->mount_point)) {
         result->type = VFS_NODE_DIRECTORY;
+        result->exists = 1U;
         return OK;
     }
     if (mount_length == 1U) mount_length = 0U;
@@ -523,6 +532,7 @@ static int vfs_resolve_canonical(const char* canonical, uint32_t mode,
                                          &is_directory);
     if (query_result == OK) {
         result->type = is_directory ? VFS_NODE_DIRECTORY : VFS_NODE_REGULAR;
+        result->exists = 1U;
         return OK;
     }
     if (query_result == ERR_NOT_FOUND && mode == VFS_MODE_WRITE) {
@@ -534,6 +544,7 @@ static int vfs_resolve_canonical(const char* canonical, uint32_t mode,
 
 int vfs_resolve_open_path(const char* path, uint32_t mode,
                           vfs_lookup_result_t* result) {
+    process_credentials_t credentials;
     int status;
 
     if (!path || !result) {
@@ -545,7 +556,13 @@ int vfs_resolve_open_path(const char* path, uint32_t mode,
     spinlock_acquire(&vfs_mount_lock);
     vfs_lookup_count++;
     spinlock_release(&vfs_mount_lock);
-    return vfs_resolve_canonical(result->canonical_path, mode, result);
+    status = vfs_resolve_canonical(result->canonical_path, mode, result);
+    if (status != OK) return status;
+    status = fs_permissions_apply_lookup(result);
+    if (status != OK) return status;
+    status = process_credentials_current(&credentials);
+    if (status != OK) return status;
+    return fs_permissions_check_traversal(&credentials, result);
 }
 
 int vfs_lookup(const char* path, vfs_lookup_result_t* result) {
@@ -639,6 +656,8 @@ static int vfs_resolve_directory(const char* path, char* canonical,
 
 int vfs_chdir(const char* path) {
     process_t* current;
+    vfs_lookup_result_t lookup;
+    process_credentials_t credentials;
     char canonical[VFS_MAX_PATH];
     uint32_t mount_slot;
     uint32_t mount_generation;
@@ -654,6 +673,14 @@ int vfs_chdir(const char* path) {
     }
     current = process_get_current();
     if (!current || !current->fd_table.initialized) return ERR_STATE;
+    result = vfs_lookup(path, &lookup);
+    if (result != OK) return result;
+    if (lookup.type != VFS_NODE_DIRECTORY) return ERR_INVALID;
+    result = process_credentials_current(&credentials);
+    if (result != OK) return result;
+    result = fs_permissions_check_lookup(&credentials, &lookup,
+                                         FS_PERMISSION_ACCESS_EXECUTE);
+    if (result != OK) return result;
     result = vfs_resolve_directory(path, canonical, &mount_slot,
                                    &mount_generation);
     if (result != OK) return result;
@@ -790,6 +817,16 @@ int vfs_list_dir(const char* path, vfs_dir_entry_t* entries,
         return vfs_path_fail(ERR_INVALID,
                              "Listagem VFS recebeu no que nao e diretorio");
     }
+    {
+        process_credentials_t credentials;
+
+        result = process_credentials_current(&credentials);
+        if (result != OK) return result;
+        result = fs_permissions_check_lookup(
+            &credentials, &lookup,
+            FS_PERMISSION_ACCESS_LIST | FS_PERMISSION_ACCESS_EXECUTE);
+        if (result != OK) return result;
+    }
     if (vfs_path_equal(lookup.canonical_path, "/dev")) {
         return devfs_list(entries, capacity, out_count);
     }
@@ -812,6 +849,10 @@ int vfs_list_dir(const char* path, vfs_dir_entry_t* entries,
                                               &found, &done);
         if (result != OK) return result;
         if (!found) continue;
+        if (fs_permissions_path_compare(
+                storage_entry.name, FS_PERMISSION_SIDECAR_NAME) == 0) {
+            continue;
+        }
         if (count >= capacity) {
             return vfs_path_fail(ERR_OVERFLOW,
                                  "Diretorio excedeu capacidade de listagem");

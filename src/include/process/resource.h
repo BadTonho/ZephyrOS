@@ -13,6 +13,10 @@ struct process;
 #define PROCESS_RESOURCE_MAX_ARGUMENTS APP_LAUNCH_MAX_ARGS
 #define PROCESS_RESOURCE_MAX_ARGUMENT_BYTES APP_LAUNCH_MAX_RAW_LENGTH
 #define PROCESS_RESOURCE_USER_STACK_BYTES (USER_STACK_TOP - USER_STACK_BASE)
+#define PROCESS_RESOURCE_MAX_DESCRIPTORS 32U
+#define PROCESS_RESOURCE_MAX_CHILDREN 8U
+#define PROCESS_RESOURCE_MAX_IPC_PENDING 32U
+#define PROCESS_RESOURCE_MAX_PIPES 4U
 
 typedef enum {
     PROCESS_RESOURCE_FAILURE_NONE = 0,
@@ -22,7 +26,11 @@ typedef enum {
     PROCESS_RESOURCE_FAILURE_ARGUMENTS,
     PROCESS_RESOURCE_FAILURE_STACK,
     PROCESS_RESOURCE_FAILURE_IMAGE,
-    PROCESS_RESOURCE_FAILURE_OOM
+    PROCESS_RESOURCE_FAILURE_OOM,
+    PROCESS_RESOURCE_FAILURE_DESCRIPTORS,
+    PROCESS_RESOURCE_FAILURE_CHILDREN,
+    PROCESS_RESOURCE_FAILURE_IPC_PENDING,
+    PROCESS_RESOURCE_FAILURE_PIPES
 } process_resource_failure_t;
 
 typedef struct {
@@ -48,6 +56,18 @@ typedef struct {
     process_resource_failure_t last_failure;
     uint32_t last_error;
     uint32_t last_requested;
+    uint32_t descriptors;
+    uint32_t descriptor_peak;
+    uint32_t descriptor_limit;
+    uint32_t children;
+    uint32_t child_peak;
+    uint32_t child_limit;
+    uint32_t ipc_pending;
+    uint32_t ipc_pending_peak;
+    uint32_t ipc_pending_limit;
+    uint32_t pipes;
+    uint32_t pipe_peak;
+    uint32_t pipe_limit;
 } process_resource_snapshot_t;
 
 typedef struct {
@@ -64,6 +84,17 @@ int process_resource_check_vma_split(struct process* process);
 int process_resource_check_page(struct process* process);
 void process_resource_note_vma_success(struct process* process);
 void process_resource_note_page_success(struct process* process);
+int process_resource_check_descriptors(struct process* process,
+                                       uint32_t requested);
+int process_resource_check_children(struct process* process,
+                                    uint32_t requested);
+int process_resource_check_pipes(struct process* process,
+                                 uint32_t requested);
+int process_resource_check_ipc_pending(struct process* process,
+                                       uint32_t current,
+                                       uint32_t requested);
+void process_resource_note_descriptor_success(struct process* process);
+void process_resource_note_pipe_success(struct process* process);
 void process_resource_record_failure(struct process* process,
                                      process_resource_failure_t failure,
                                      uint32_t error, uint32_t requested);

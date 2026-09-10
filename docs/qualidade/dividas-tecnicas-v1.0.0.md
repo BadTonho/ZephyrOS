@@ -50,17 +50,20 @@ fixtures AS5 não estão disponíveis neste ciclo.
 ### Impacto conhecido
 
 Os fixtures AS5 legados permanecem bloqueados pelo auditor e pelo runtime. O
-`make q3check` não pode ser aprovado no gate `confianca_as5`, e a matriz QEMU
-específica da App Store remota permanece sem execução. A proteção de produção
-continua ativa: pacote sem assinatura ZPKG v2 não é instalável nem executável.
+`python tools/q3check.py` sem argumentos continua reprovando o gate
+`confianca_as5`; o alvo `make q3check` usa a aceitação explícita de `DT100-003`,
+exibe a ocorrência como `ACEITA` e mantém a proteção de produção ativa. A
+matriz QEMU específica da App Store remota permanece sem execução; pacote sem
+assinatura ZPKG v2 não é instalável nem executável.
 
 ### Critério de quitação
 
 Disponibilizar externamente uma chave privada ZPKG correspondente a
 `app_package_trust.h` e uma chave privada AS5 correspondente a
 `config/app-store-test-public.json`; regenerar os perfis `seed` e `update`,
-auditar hashes e assinaturas, obter `make q3check` em `OK` e executar a matriz
-QEMU remota correspondente. Nenhuma chave privada deverá entrar no repositório.
+auditar hashes e assinaturas, obter `python tools/q3check.py` estrito em `OK`,
+remover `DT100-003` de `Q3CHECK_ARGS` e executar a matriz QEMU remota
+correspondente. Nenhuma chave privada deverá entrar no repositório.
 
 ### Referência de validação
 

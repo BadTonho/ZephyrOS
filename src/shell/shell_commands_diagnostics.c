@@ -16,6 +16,7 @@
 #include "core/tls.h"
 #include "core/wait.h"
 #include "process/process.h"
+#include "process/resource.h"
 #include "process/signal.h"
 #include "drivers/ata.h"
 #include "drivers/idt.h"
@@ -3167,6 +3168,15 @@ static int cmd_proccheck(void) {
                 cmd_proccheck_read(path, "pid") == OK) passed++;
             else result = ERR_STATE;
             total++;
+            if (cmd_proccheck_read(path, "uid") == OK) passed++;
+            else result = ERR_STATE;
+            total++;
+            if (cmd_proccheck_read(path, "gid") == OK) passed++;
+            else result = ERR_STATE;
+            total++;
+            if (cmd_proccheck_read(path, "capabilities") == OK) passed++;
+            else result = ERR_STATE;
+            total++;
             if (cmd_proccheck_pid_path(path, sizeof(path), pid, "/cmdline") == OK &&
                 cmd_proccheck_read(path, "cmdline") == OK) passed++;
             else result = ERR_STATE;
@@ -5029,6 +5039,46 @@ static void cmd_vfs_status(void) {
     shell_command_print_num(status.devices_active);
     video_print("/", 0x08);
     shell_command_print_num(status.device_capacity);
+    {
+        process_t* process = process_get_current();
+
+        if (process) {
+            video_print("\n  identidade uid/gid/capacidades: ", 0x07);
+            shell_command_print_num(process->credentials.uid);
+            video_print("/", 0x08);
+            shell_command_print_num(process->credentials.gid);
+            video_print("/", 0x08);
+            shell_command_print_num(process->credentials.capabilities);
+            {
+                process_resource_snapshot_t resources;
+
+                if (process_resource_snapshot_copy(
+                        process->pid, process->event_generation,
+                        &resources) == OK) {
+                    video_print("\n  quotas fd/filhos/ipc/pipes: ", 0x07);
+                    shell_command_print_num(resources.descriptors);
+                    video_print("/", 0x08);
+                    shell_command_print_num(resources.descriptor_limit);
+                    video_print(" ", 0x08);
+                    shell_command_print_num(resources.children);
+                    video_print("/", 0x08);
+                    shell_command_print_num(resources.child_limit);
+                    video_print(" ", 0x08);
+                    shell_command_print_num(resources.ipc_pending);
+                    video_print("/", 0x08);
+                    shell_command_print_num(resources.ipc_pending_limit);
+                    video_print(" ", 0x08);
+                    shell_command_print_num(resources.pipes);
+                    video_print("/", 0x08);
+                    shell_command_print_num(resources.pipe_limit);
+                    video_print("\n  ultimo bloqueio: falha=", 0x07);
+                    shell_command_print_num((uint32_t)resources.last_failure);
+                    video_print(" erro=", 0x08);
+                    shell_command_print_num((uint32_t)resources.last_error);
+                }
+            }
+        }
+    }
     video_print("\nDescritores do processo atual:\n", 0x0B);
     for (uint32_t index = 0U; index < count; index++) {
         video_print("  fd=", 0x07);
@@ -5038,6 +5088,9 @@ static void cmd_vfs_status(void) {
                     0x0B);
         video_print(" modo=", 0x08);
         shell_command_print_num(shell_vfs_descriptors[index].mode);
+        video_print(" perm=", 0x08);
+        shell_command_print_num(
+            shell_vfs_descriptors[index].permission_mode);
         video_print(" offset=", 0x08);
         shell_command_print_num(shell_vfs_descriptors[index].offset);
         video_print(" path=", 0x08);

@@ -697,6 +697,12 @@ void process_bootstrap_idle(void) {
     }
     processes[0] = proc;
     kmemset(proc, 0, sizeof(process_t));
+    if (process_credentials_init_native(&proc->credentials) != OK) {
+        LOG_ERROR("PROC", "Falha ao inicializar credenciais do Idle");
+        processes[0] = 0;
+        kmem_cache_free(process_cache, proc);
+        return;
+    }
     proc->pid = 0;
     proc->event_generation = process_next_identity_generation();
     
@@ -859,6 +865,11 @@ static process_t* process_create_internal(const char* name,
         LOG_ERROR("PROC", "Criacao de processo antes do bootstrap do Idle");
         return 0;
     }
+    if (current_process && process_is_user(current_process) &&
+        process_resource_check_children(current_process, 1U) != OK) {
+        LOG_WARN("PROC", "Quota de filhos rejeitou novo processo");
+        return 0;
+    }
 
     for (int i = 1; i < MAX_PROCESSES; i++) {
         if (!processes[i]) {
@@ -874,6 +885,11 @@ static process_t* process_create_internal(const char* name,
     }
 
     kmemset(proc, 0, sizeof(process_t));
+    if (process_credentials_init_native(&proc->credentials) != OK) {
+        LOG_ERROR("PROC", "Falha ao inicializar credenciais nativas");
+        process_discard_new_process(proc);
+        return 0;
+    }
 
     int i = 0;
     while (name[i] && i < PROCESS_NAME_LENGTH - 1) {
@@ -1454,6 +1470,11 @@ static int process_user_initialize(process_t* proc, page_directory_t* dir,
         return ERR_NULL;
     }
     kmemset(proc, 0, sizeof(process_t));
+    if (process_credentials_init_user(&proc->credentials) != OK) {
+        LOG_ERROR("PROC", "Falha ao inicializar credenciais ring3");
+        process_discard_new_process(proc);
+        return ERR_STATE;
+    }
     proc->pid = process_allocate_pid();
     if (!proc->pid) {
         LOG_ERROR("PROC", "Falha ao reservar PID do processo ring 3");
@@ -1555,6 +1576,10 @@ static int process_create_user_image_internal(const char* name,
     if (process_power_quiescing) {
         LOG_WARN("PROC", "Criacao ring3 recusada durante quiescencia");
         return ERR_UNAVAILABLE;
+    }
+    if (current_process && process_is_user(current_process)) {
+        result = process_resource_check_children(current_process, 1U);
+        if (result != OK) return result;
     }
     if (!process_available || !process_cache) {
         LOG_ERROR("PROC", "Cache de processos indisponivel para ring 3");
@@ -1682,6 +1707,21 @@ uint32_t process_get_user_count(void) {
     uint32_t count = 0;
     for (int i = 0; i < MAX_PROCESSES; i++) {
         if (processes[i] && processes[i]->context.user_mode) count++;
+    }
+    return count;
+}
+
+uint32_t process_get_child_count(uint32_t parent_pid) {
+    uint32_t count = 0U;
+
+    for (uint32_t index = 0U; index < MAX_PROCESSES; index++) {
+        process_t* process = processes[index];
+
+        if (!process || process->state == PROCESS_STATE_UNUSED ||
+            process->state == PROCESS_STATE_ZOMBIE) continue;
+        if (process->pid != parent_pid && process->parent_pid == parent_pid) {
+            count++;
+        }
     }
     return count;
 }
@@ -2235,6 +2275,7 @@ static int process_snapshot_fill_locked(const process_t* proc,
     output->user_mode = proc->context.user_mode;
     output->vma_count = proc->vma_count;
     output->user_launch = proc->user_launch;
+    output->credentials = proc->credentials;
 
     if (proc->context.user_mode) {
         result = paging_get_user_page_count(proc->page_directory,

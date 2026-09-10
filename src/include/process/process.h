@@ -9,6 +9,7 @@
 #include "memory/slab.h"
 #include "drivers/idt.h"
 #include "process/signal.h"
+#include "process/credentials.h"
 #include "fs/vfs.h"
 
 #define MAX_PROCESSES 64
@@ -158,6 +159,7 @@ typedef struct process {
     uint32_t user_data_size;
     app_launch_info_t user_launch;
     uint32_t event_generation;
+    process_credentials_t credentials;
 } process_t;
 
 typedef struct {
@@ -177,6 +179,7 @@ typedef struct {
     uint32_t user_mode;
     uint32_t vma_count;
     app_launch_info_t user_launch;
+    process_credentials_t credentials;
 } process_snapshot_t;
 
 typedef struct {
@@ -249,6 +252,7 @@ uint32_t process_get_current_pid(void);
 uint32_t process_get_event_generation(void);
 uint32_t process_get_state_count(process_state_t state);
 uint32_t process_get_user_count(void);
+uint32_t process_get_child_count(uint32_t parent_pid);
 uint32_t process_get_user_fault_count(void);
 int process_get_last_user_fault(process_user_fault_summary_t* summary);
 int process_is_user(const process_t* proc);
@@ -298,6 +302,7 @@ int scheduler_validate_invariants(scheduler_validation_t* validation);
 
 int ipc_send(uint32_t pid, ipc_msg_t* msg);
 int ipc_receive(ipc_msg_t* msg);
+int ipc_get_pending_count_for_pid(uint32_t pid, uint32_t* pending);
 int ipc_current_has_pending(void);
 int ipc_wait(uint32_t timeout_ticks, wait_reason_t* out_reason);
 void ipc_get_stats(ipc_stats_t* stats);

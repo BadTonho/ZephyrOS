@@ -12,6 +12,10 @@ typedef struct {
     uint32_t generation;
     uint32_t resident_peak_pages;
     uint32_t anonymous_peak_bytes;
+    uint32_t descriptor_peak;
+    uint32_t child_peak;
+    uint32_t ipc_pending_peak;
+    uint32_t pipe_peak;
     uint32_t allocation_failures;
     process_resource_failure_t last_failure;
     uint32_t last_error;
@@ -138,6 +142,8 @@ static int resource_image_bytes(const process_t* process,
 
 static int resource_fill_usage(const process_t* process,
                                process_resource_snapshot_t* output) {
+    uint32_t descriptors;
+    uint32_t pipes;
     int result;
 
     result = resource_dynamic_usage(process, &output->anonymous_bytes,
@@ -152,6 +158,15 @@ static int resource_fill_usage(const process_t* process,
     output->user_stack_bytes = process->context.user_mode ?
                                PROCESS_RESOURCE_USER_STACK_BYTES : 0U;
     output->kernel_stack_bytes = process->kernel_stack_size;
+    result = vfs_get_process_resource_usage(process->pid, &descriptors,
+                                            &pipes);
+    if (result != OK) return result;
+    output->descriptors = descriptors;
+    output->children = process_get_child_count(process->pid);
+    result = ipc_get_pending_count_for_pid(process->pid,
+                                           &output->ipc_pending);
+    if (result != OK) return result;
+    output->pipes = pipes;
     return OK;
 }
 
@@ -172,7 +187,11 @@ static int resource_validate_initial(const process_t* process) {
         process->kernel_stack_size > PROCESS_KERNEL_STACK_MAX_SIZE ||
         snapshot.user_stack_bytes != PROCESS_RESOURCE_USER_STACK_BYTES ||
         process->user_code_size > PAGE_SIZE ||
-        process->user_data_size > PAGE_SIZE) {
+        process->user_data_size > PAGE_SIZE ||
+        snapshot.descriptors > PROCESS_RESOURCE_MAX_DESCRIPTORS ||
+        snapshot.children > PROCESS_RESOURCE_MAX_CHILDREN ||
+        snapshot.ipc_pending > PROCESS_RESOURCE_MAX_IPC_PENDING ||
+        snapshot.pipes > PROCESS_RESOURCE_MAX_PIPES) {
         LOG_ERROR("PROC_RES", "Limite inicial de processo excedido");
         return ERR_OVERFLOW;
     }
@@ -195,6 +214,18 @@ static void resource_update_peaks(process_resource_entry_t* entry) {
     }
     if (snapshot.anonymous_bytes > entry->anonymous_peak_bytes) {
         entry->anonymous_peak_bytes = snapshot.anonymous_bytes;
+    }
+    if (snapshot.descriptors > entry->descriptor_peak) {
+        entry->descriptor_peak = snapshot.descriptors;
+    }
+    if (snapshot.children > entry->child_peak) {
+        entry->child_peak = snapshot.children;
+    }
+    if (snapshot.ipc_pending > entry->ipc_pending_peak) {
+        entry->ipc_pending_peak = snapshot.ipc_pending;
+    }
+    if (snapshot.pipes > entry->pipe_peak) {
+        entry->pipe_peak = snapshot.pipes;
     }
 }
 
@@ -349,6 +380,78 @@ void process_resource_note_page_success(struct process* process) {
     resource_update_peaks(resource_find_process(process));
 }
 
+static int resource_check_quota(process_t* process, uint32_t current,
+                                uint32_t requested, uint32_t limit,
+                                process_resource_failure_t failure) {
+    if (!process || !resource_find_process(process)) {
+        LOG_ERROR("PROC", "Processo sem registro de recursos");
+        return ERR_STATE;
+    }
+    if (!process->context.user_mode) return OK;
+    if (requested > limit || current > limit - requested) {
+        LOG_WARN("PROC", "Quota de processo excedida");
+        process_resource_record_failure(process, failure, ERR_OVERFLOW,
+                                        requested);
+        return ERR_OVERFLOW;
+    }
+    return OK;
+}
+
+int process_resource_check_descriptors(struct process* process,
+                                       uint32_t requested) {
+    uint32_t descriptors;
+    uint32_t pipes;
+    int result;
+
+    result = vfs_get_process_resource_usage(process ? process->pid : 0U,
+                                            &descriptors, &pipes);
+    if (result != OK) return result;
+    return resource_check_quota(process, descriptors, requested,
+                                PROCESS_RESOURCE_MAX_DESCRIPTORS,
+                                PROCESS_RESOURCE_FAILURE_DESCRIPTORS);
+}
+
+int process_resource_check_children(struct process* process,
+                                    uint32_t requested) {
+    if (!process) {
+        LOG_ERROR("PROC", "Processo ausente na quota de filhos");
+        return ERR_NULL;
+    }
+    return resource_check_quota(process, process_get_child_count(process->pid),
+                                requested, PROCESS_RESOURCE_MAX_CHILDREN,
+                                PROCESS_RESOURCE_FAILURE_CHILDREN);
+}
+
+int process_resource_check_pipes(struct process* process,
+                                 uint32_t requested) {
+    uint32_t descriptors;
+    uint32_t pipes;
+    int result;
+
+    result = vfs_get_process_resource_usage(process ? process->pid : 0U,
+                                            &descriptors, &pipes);
+    if (result != OK) return result;
+    return resource_check_quota(process, pipes, requested,
+                                PROCESS_RESOURCE_MAX_PIPES,
+                                PROCESS_RESOURCE_FAILURE_PIPES);
+}
+
+int process_resource_check_ipc_pending(struct process* process,
+                                       uint32_t current,
+                                       uint32_t requested) {
+    return resource_check_quota(process, current, requested,
+                                PROCESS_RESOURCE_MAX_IPC_PENDING,
+                                PROCESS_RESOURCE_FAILURE_IPC_PENDING);
+}
+
+void process_resource_note_descriptor_success(struct process* process) {
+    resource_update_peaks(resource_find_process(process));
+}
+
+void process_resource_note_pipe_success(struct process* process) {
+    resource_update_peaks(resource_find_process(process));
+}
+
 int process_resource_snapshot_copy(uint32_t pid, uint32_t generation,
                                    process_resource_snapshot_t* output) {
     process_resource_entry_t* entry;
@@ -374,6 +477,14 @@ int process_resource_snapshot_copy(uint32_t pid, uint32_t generation,
     output->dynamic_vma_limit = PROCESS_RESOURCE_MAX_DYNAMIC_VMAS;
     output->argument_count_limit = PROCESS_RESOURCE_MAX_ARGUMENTS;
     output->argument_bytes_limit = PROCESS_RESOURCE_MAX_ARGUMENT_BYTES;
+    output->descriptor_peak = entry->descriptor_peak;
+    output->child_peak = entry->child_peak;
+    output->ipc_pending_peak = entry->ipc_pending_peak;
+    output->pipe_peak = entry->pipe_peak;
+    output->descriptor_limit = PROCESS_RESOURCE_MAX_DESCRIPTORS;
+    output->child_limit = PROCESS_RESOURCE_MAX_CHILDREN;
+    output->ipc_pending_limit = PROCESS_RESOURCE_MAX_IPC_PENDING;
+    output->pipe_limit = PROCESS_RESOURCE_MAX_PIPES;
     output->allocation_failures = entry->allocation_failures;
     output->last_failure = entry->last_failure;
     output->last_error = entry->last_error;
@@ -409,7 +520,11 @@ int process_resource_validate_all(process_resource_validation_t* validation) {
               snapshot.anonymous_bytes > snapshot.anonymous_limit_bytes ||
               snapshot.dynamic_vmas > snapshot.dynamic_vma_limit ||
               snapshot.argument_count > snapshot.argument_count_limit ||
-              snapshot.argument_bytes > snapshot.argument_bytes_limit))) {
+              snapshot.argument_bytes > snapshot.argument_bytes_limit ||
+              snapshot.descriptors > snapshot.descriptor_limit ||
+              snapshot.children > snapshot.child_limit ||
+              snapshot.ipc_pending > snapshot.ipc_pending_limit ||
+              snapshot.pipes > snapshot.pipe_limit))) {
             validation->invalid++;
             continue;
         }
