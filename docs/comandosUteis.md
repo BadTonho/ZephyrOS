@@ -5,6 +5,9 @@ git push origin <tag>
 Teste continuo
 make test-tst7-continuous-parallel QEMU_PARALLEL_WORKERS=6
 
+# STO2 — sync, flush e transacoes host-only
+make test-sto2-host
+
 git pull
 git ls-files --error-unmatch tools/tst7_continuous_runner.py
 make test-tst7-continuous-parallel QEMU_PARALLEL_WORKERS=6

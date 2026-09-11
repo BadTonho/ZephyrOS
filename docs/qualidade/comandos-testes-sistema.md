@@ -66,6 +66,18 @@ make test-sto1-host
 O alvo agregado executa Block, cache, FAT12, FAT32, FS e Storage com as
 fixtures host-only diretamente afetadas pelo STO1.
 
+## STO2 — sync, flush e transações
+
+```text
+make test-sto2-host
+```
+
+O agregado executa as fixtures de Block/cache, FAT12, FAT32, FS, Storage,
+energia e VFS. Ele verifica a ordem dados → FAT → diretório → flush, sync
+repetido, deadlines, durabilidade degradada, publicação de substituições,
+rename, delete, streaming e limpeza de temporários. Journaling persistente e
+recuperação após reboot ficam para STO6–STO7.
+
 ## TST2 — protocolo e executor QEMU
 
 Testes host-only:

@@ -56,6 +56,17 @@
 #define STORAGE_DIR_SIZE_OFFSET 28U
 #define STORAGE_SLOT_WRITER_METADATA_INTERVAL 64U
 
+typedef enum {
+    STORAGE_TRANSACTION_IDLE = 0,
+    STORAGE_TRANSACTION_PREPARE,
+    STORAGE_TRANSACTION_DATA_SYNCED,
+    STORAGE_TRANSACTION_FAT_SYNCED,
+    STORAGE_TRANSACTION_DIRECTORY_SYNCED,
+    STORAGE_TRANSACTION_COMMITTED,
+    STORAGE_TRANSACTION_CLEANUP,
+    STORAGE_TRANSACTION_RECOVERABLE
+} storage_transaction_phase_t;
+
 typedef struct {
     uint8_t active;
     uint8_t volume_index;
@@ -118,6 +129,8 @@ static uint8_t storage_mounted_count;
 static uint8_t storage_initialized;
 static int storage_last_error;
 static uint32_t storage_refresh_epoch;
+static uint8_t storage_sync_active;
+static storage_transaction_phase_t storage_transaction_phase;
 static spinlock_t storage_registry_lock;
 static spinlock_t storage_operation_lock;
 static storage_long_dir_entry_t storage_long_cursor_entries[
@@ -158,6 +171,15 @@ static int storage_cluster_is_end(const storage_mount_t* mount,
                                   uint32_t cluster);
 static int storage_cluster_is_bad(const storage_mount_t* mount,
                                   uint32_t cluster);
+static int storage_sync_barrier(storage_volume_t* volume,
+                                storage_transaction_phase_t phase);
+static int storage_find_free_fat32_cluster(
+    const storage_volume_t* volume, const storage_mount_t* mount,
+    const uint32_t* selected, uint32_t selected_count,
+    uint32_t* out_cluster);
+static int storage_replace_temporary_unlocked(const char* id,
+                                              const char* temporary_path,
+                                              const char* target_path);
 
 static uint16_t storage_read_u16(const uint8_t* data) {
     return (uint16_t)data[0] | ((uint16_t)data[1] << 8);
@@ -864,12 +886,16 @@ int storage_init(void) {
     kmemset(storage_disks, 0, sizeof(storage_disks));
     kmemset(storage_volumes, 0, sizeof(storage_volumes));
     kmemset(storage_mounts, 0, sizeof(storage_mounts));
+    kmemset(&storage_slot_writer_state, 0,
+            sizeof(storage_slot_writer_state));
     kmemset(storage_fat32_allocation_hint, 0,
             sizeof(storage_fat32_allocation_hint));
     storage_disk_count = 0;
     storage_volume_count = 0;
     storage_mounted_count = 0;
     storage_last_error = OK;
+    storage_sync_active = 0U;
+    storage_transaction_phase = STORAGE_TRANSACTION_IDLE;
     storage_initialized = 0;
     storage_boot_disk_id(boot_disk_id, sizeof(boot_disk_id));
     block_result = block_get_count(&block_count);
@@ -984,8 +1010,30 @@ int storage_refresh(void) {
     return result;
 }
 
+static int storage_sync_barrier(storage_volume_t* volume,
+                                storage_transaction_phase_t phase) {
+    int result;
+
+    if (!volume) {
+        LOG_ERROR("FS", "Volume nulo na barreira de durabilidade");
+        return ERR_NULL;
+    }
+    storage_transaction_phase = phase;
+    result = block_cache_sync_device(volume->disk_id);
+    if (result != OK) {
+        volume->last_error = result;
+        storage_last_error = result;
+        storage_transaction_phase = STORAGE_TRANSACTION_RECOVERABLE;
+        storage_log_volume(LOG_LEVEL_ERROR, volume->id,
+                           "barreira de durabilidade falhou");
+        return result;
+    }
+    return OK;
+}
+
 int storage_sync_volume(const char* id) {
     storage_volume_t volume;
+    int index;
     int result;
 
     if (!id) {
@@ -996,27 +1044,46 @@ int storage_sync_volume(const char* id) {
         LOG_ERROR("FS", "Sincronizacao de volume antes da inicializacao");
         return ERR_STATE;
     }
+    if (storage_sync_active) {
+        LOG_WARN("FS", "Sincronizacao concorrente de volume recusada");
+        return ERR_STATE;
+    }
     result = storage_find_volume(id, &volume);
     if (result != OK) {
         LOG_ERROR("FS", "Volume nao encontrado na sincronizacao");
         return result;
     }
+    storage_sync_active = 1U;
     result = block_cache_sync_device(volume.disk_id);
-    if (result != OK) LOG_ERROR("FS", "Sync do volume falhou");
+    storage_sync_active = 0U;
+    if (result != OK) {
+        index = storage_volume_index(id);
+        if (index >= 0) storage_volumes[index].last_error = result;
+        storage_last_error = result;
+        LOG_ERROR("FS", "Sync do volume falhou");
+    }
     return result;
 }
 
 int storage_sync_all_until(uint32_t deadline_tick) {
+    int result;
+
     if (!storage_initialized) {
         LOG_ERROR("FS", "Sincronizacao global antes da inicializacao");
         return ERR_STATE;
     }
-    {
-        int result = block_cache_sync_all_until(deadline_tick);
-
-        if (result != OK) LOG_ERROR("FS", "Sync global de storage falhou");
-        return result;
+    if (storage_sync_active) {
+        LOG_WARN("FS", "Sincronizacao global concorrente recusada");
+        return ERR_STATE;
     }
+    storage_sync_active = 1U;
+    result = block_cache_sync_all_until(deadline_tick);
+    storage_sync_active = 0U;
+    if (result != OK) {
+        storage_last_error = result;
+        LOG_ERROR("FS", "Sync global de storage falhou");
+    }
+    return result;
 }
 
 int storage_sync_all(void) {
@@ -1169,6 +1236,97 @@ static int storage_write_fat32_entry(const storage_volume_t* volume,
         if (result != OK) return result;
     }
     return OK;
+}
+
+static int storage_fat32_cluster_selected(const uint32_t* selected,
+                                          uint32_t selected_count,
+                                          uint32_t cluster) {
+    if (!selected && selected_count) return 0;
+    for (uint32_t index = 0U; index < selected_count; index++) {
+        if (selected[index] == cluster) return 1;
+    }
+    return 0;
+}
+
+static int storage_find_free_fat32_cluster(
+    const storage_volume_t* volume, const storage_mount_t* mount,
+    const uint32_t* selected, uint32_t selected_count,
+    uint32_t* out_cluster) {
+    int volume_index;
+    uint32_t start;
+    uint32_t first;
+    uint32_t last;
+
+    if (!volume || !mount || !out_cluster ||
+        (selected_count && !selected)) {
+        LOG_ERROR("FS", "Argumento invalido na busca de cluster FAT32");
+        return ERR_NULL;
+    }
+    if (mount->fs_type != STORAGE_FS_FAT32 ||
+        mount->total_clusters > 0xFFFFFFFFU - STORAGE_FIRST_DATA_CLUSTER) {
+        return ERR_INVALID;
+    }
+    volume_index = storage_volume_index(volume->id);
+    start = volume_index >= 0 && storage_fat32_allocation_hint[volume_index] ?
+            storage_fat32_allocation_hint[volume_index] : mount->root_cluster;
+    if (start < STORAGE_FIRST_DATA_CLUSTER ||
+        start >= mount->total_clusters + STORAGE_FIRST_DATA_CLUSTER) {
+        start = STORAGE_FIRST_DATA_CLUSTER;
+    }
+    for (uint32_t pass = 0U; pass < 2U; pass++) {
+        first = pass ? STORAGE_FIRST_DATA_CLUSTER : start;
+        last = pass ? start :
+            mount->total_clusters + STORAGE_FIRST_DATA_CLUSTER;
+        for (uint32_t cluster = first; cluster < last; cluster++) {
+            uint32_t value;
+            int result;
+
+            if (storage_fat32_cluster_selected(selected, selected_count,
+                                                cluster)) continue;
+            result = storage_read_fat32_entry(volume, mount, cluster, &value);
+            if (result != OK) return result;
+            if (value == STORAGE_FAT32_FREE) {
+                *out_cluster = cluster;
+                return OK;
+            }
+        }
+    }
+    storage_log_volume(LOG_LEVEL_ERROR, volume->id,
+                       "espaco insuficiente na FAT32");
+    return ERR_OVERFLOW;
+}
+
+static int storage_select_fat32_clusters(const storage_volume_t* volume,
+                                         const storage_mount_t* mount,
+                                         uint32_t* clusters,
+                                         uint32_t count) {
+    if (!clusters && count) {
+        LOG_ERROR("FS", "Tabela nula na selecao de clusters FAT32");
+        return ERR_NULL;
+    }
+    for (uint32_t index = 0U; index < count; index++) {
+        int result = storage_find_free_fat32_cluster(
+            volume, mount, clusters, index, &clusters[index]);
+        if (result != OK) return result;
+    }
+    return OK;
+}
+
+static int storage_release_selected_fat32_clusters(
+    const storage_volume_t* volume, const storage_mount_t* mount,
+    const uint32_t* clusters, uint32_t count) {
+    int first_error = OK;
+
+    if (!volume || !mount || (!clusters && count)) {
+        LOG_ERROR("FS", "Argumento invalido na liberacao de clusters FAT32");
+        return ERR_NULL;
+    }
+    for (uint32_t index = 0U; index < count; index++) {
+        int result = storage_write_fat32_entry(
+            volume, mount, clusters[index], STORAGE_FAT32_FREE);
+        if (result != OK && first_error == OK) first_error = result;
+    }
+    return first_error;
 }
 
 static int storage_allocate_fat32_cluster(const storage_volume_t* volume,
@@ -2466,6 +2624,25 @@ static int storage_mark_directory_entries_deleted(
     return storage_write_directory_entry(volume, source->entry_offset, entry);
 }
 
+static int storage_clear_directory_slots(const storage_volume_t* volume,
+                                         uint32_t slot_start,
+                                         uint32_t slot_count) {
+    uint8_t entry[STORAGE_DIR_ENTRY_SIZE];
+    int first_error = OK;
+
+    if (!volume || !slot_count) {
+        LOG_ERROR("FS", "Argumento invalido na limpeza de slots FAT32");
+        return ERR_NULL;
+    }
+    kmemset(entry, 0xE5, sizeof(entry));
+    for (uint32_t index = 0U; index < slot_count; index++) {
+        int result = storage_write_directory_entry(
+            volume, slot_start + index * STORAGE_DIR_ENTRY_SIZE, entry);
+        if (result != OK && first_error == OK) first_error = result;
+    }
+    return first_error;
+}
+
 static int storage_get_mounted_fat32(const char* id,
                                      storage_volume_t** out_volume,
                                      storage_mount_t** out_mount,
@@ -2548,13 +2725,17 @@ static int storage_write_fat32_file_unlocked(const char* id, const char* path,
     char filename[STORAGE_LONG_NAME_SIZE];
     uint32_t directory_cluster;
     uint8_t fixed_root;
-    uint32_t slot_start;
+    uint32_t slot_start = 0U;
     uint32_t cluster_bytes;
-    uint32_t needed;
+    uint32_t needed = 0U;
     uint32_t first_cluster = 0U;
-    uint32_t previous_cluster = 0U;
-    uint32_t orphan_cluster = 0U;
+    uint32_t cluster_count = 0U;
+    uint32_t* clusters = 0;
     uint8_t alias[11];
+    uint8_t published = 0U;
+    uint8_t slots_written = 0U;
+    uint32_t required_slots = 0U;
+    uint8_t replacing = 0U;
     int index;
     int result;
 
@@ -2572,7 +2753,7 @@ static int storage_write_fat32_file_unlocked(const char* id, const char* path,
     if (result != OK) return result;
     result = storage_find_entry_long(volume, mount, directory_cluster,
                                      fixed_root, filename, &old_entry);
-    uint8_t replacing = result == OK ? 1U : 0U;
+    replacing = result == OK ? 1U : 0U;
     if (result != OK && result != ERR_NOT_FOUND) return result;
     if (replacing && (old_entry.attributes & STORAGE_ATTR_DIRECTORY)) {
         return ERR_INVALID;
@@ -2593,24 +2774,34 @@ static int storage_write_fat32_file_unlocked(const char* id, const char* path,
     }
     needed = size ? (size + cluster_bytes - 1U) / cluster_bytes : 0U;
     if (attributes & STORAGE_ATTR_DIRECTORY) needed = 1U;
-    for (uint32_t count = 0; count < needed; count++) {
-        uint32_t cluster;
-        result = storage_allocate_fat32_cluster(volume, mount, &cluster);
-        if (result != OK) goto rollback_clusters;
-        orphan_cluster = cluster;
-        if (!first_cluster) first_cluster = cluster;
-        if (previous_cluster) {
-            result = storage_write_fat32_entry(volume, mount,
-                                               previous_cluster, cluster);
-            if (result != OK) goto rollback_clusters;
+    if (needed > STORAGE_MAX_CHAIN_STEPS) {
+        result = ERR_OVERFLOW;
+        goto rollback_clusters;
+    }
+    if (needed) {
+        uint32_t bytes;
+
+        if (storage_mul_u32(needed, sizeof(uint32_t), &bytes) != OK) {
+            result = ERR_OVERFLOW;
+            goto rollback_clusters;
         }
-        orphan_cluster = 0U;
-        previous_cluster = cluster;
+        clusters = (uint32_t*)kmalloc(bytes);
+        if (!clusters) {
+            result = ERR_MEM;
+            goto rollback_clusters;
+        }
+        result = storage_select_fat32_clusters(volume, mount, clusters, needed);
+        if (result != OK) goto rollback_clusters;
+        cluster_count = needed;
+        first_cluster = clusters[0];
+    }
+    storage_transaction_phase = STORAGE_TRANSACTION_PREPARE;
+    for (uint32_t count = 0U; count < needed; count++) {
         if (!(attributes & STORAGE_ATTR_DIRECTORY)) {
             uint32_t offset = count * cluster_bytes;
             uint32_t amount = size - offset;
             if (amount > cluster_bytes) amount = cluster_bytes;
-            result = storage_write_cluster(volume, mount, cluster,
+            result = storage_write_cluster(volume, mount, clusters[count],
                                            data + offset, amount);
             if (result != OK) goto rollback_clusters;
         } else {
@@ -2618,41 +2809,66 @@ static int storage_write_fat32_file_unlocked(const char* id, const char* path,
             kmemset(empty, 0, sizeof(empty));
             for (uint32_t sector = 0; sector < mount->sectors_per_cluster;
                  sector++) {
-                result = storage_write_relative(
-                    volume, mount->data_start +
-                    (cluster - STORAGE_FIRST_DATA_CLUSTER) *
-                    mount->sectors_per_cluster + sector, empty);
+                uint32_t relative_lba;
+
+                if (storage_mul_u32(
+                        clusters[count] - STORAGE_FIRST_DATA_CLUSTER,
+                        mount->sectors_per_cluster, &relative_lba) != OK ||
+                    storage_add_u32(mount->data_start, relative_lba,
+                                    &relative_lba) != OK ||
+                    storage_add_u32(relative_lba, sector, &relative_lba) != OK) {
+                    result = ERR_OVERFLOW;
+                    goto rollback_clusters;
+                }
+                result = storage_write_relative(volume, relative_lba, empty);
                 if (result != OK) goto rollback_clusters;
             }
         }
     }
     if (attributes & STORAGE_ATTR_DIRECTORY) {
-        /* O marcador de diretorio vazio fica consistente antes da entrada. */
         uint8_t dot[STORAGE_DIR_ENTRY_SIZE];
         uint8_t dot_dot[STORAGE_DIR_ENTRY_SIZE];
         uint32_t parent_cluster = fixed_root ? mount->root_cluster :
                                   directory_cluster;
+        uint32_t directory_lba;
 
         storage_build_directory_marker(dot, ".          ", first_cluster);
+        if (storage_mul_u32(first_cluster - STORAGE_FIRST_DATA_CLUSTER,
+                            mount->sectors_per_cluster, &directory_lba) != OK ||
+            storage_add_u32(mount->data_start, directory_lba,
+                            &directory_lba) != OK ||
+            storage_add_u32(volume->start_lba, directory_lba,
+                            &directory_lba) != OK) {
+            result = ERR_OVERFLOW;
+            goto rollback_clusters;
+        }
         result = storage_write_directory_entry(
-            volume, (volume->start_lba + mount->data_start +
-                     (first_cluster - STORAGE_FIRST_DATA_CLUSTER) *
-                     mount->sectors_per_cluster) * STORAGE_SECTOR_SIZE, dot);
+            volume, directory_lba * STORAGE_SECTOR_SIZE, dot);
         if (result != OK) goto rollback_clusters;
         storage_build_directory_marker(dot_dot, "..         ", parent_cluster);
         result = storage_write_directory_entry(
-            volume, (volume->start_lba + mount->data_start +
-                     (first_cluster - STORAGE_FIRST_DATA_CLUSTER) *
-                     mount->sectors_per_cluster) * STORAGE_SECTOR_SIZE +
+            volume, directory_lba * STORAGE_SECTOR_SIZE +
                     STORAGE_DIR_ENTRY_SIZE, dot_dot);
         if (result != OK) goto rollback_clusters;
     }
+    result = storage_sync_barrier(volume, STORAGE_TRANSACTION_DATA_SYNCED);
+    if (result != OK) goto rollback_clusters;
+    for (uint32_t count = 0U; count < needed; count++) {
+        uint32_t next = count + 1U < needed ? clusters[count + 1U] :
+                        STORAGE_FAT32_END;
+
+        result = storage_write_fat32_entry(volume, mount, clusters[count],
+                                           next);
+        if (result != OK) goto rollback_clusters;
+    }
+    result = storage_sync_barrier(volume, STORAGE_TRANSACTION_FAT_SYNCED);
+    if (result != OK) goto rollback_clusters;
     uint16_t units[STORAGE_LONG_NAME_SIZE];
     uint32_t unit_count;
     result = storage_utf8_to_utf16(filename, units, STORAGE_LONG_NAME_SIZE,
                                    &unit_count);
     if (result != OK) goto rollback_clusters;
-    uint32_t required_slots = (unit_count + 12U) / 13U + 1U;
+    required_slots = (unit_count + 12U) / 13U + 1U;
     result = storage_find_free_directory_slots(
         volume, mount, directory_cluster, required_slots, &slot_start);
     if (result == OK) {
@@ -2660,29 +2876,69 @@ static int storage_write_fat32_file_unlocked(const char* id, const char* path,
         result = storage_publish_fat32_entry(
             volume, 0, slot_start, filename, alias, first_cluster,
             size, attributes, required_slots);
-    }
-    if (result == OK && replacing) {
-        result = storage_mark_directory_entries_deleted(volume, &old_entry);
+        if (result == OK) slots_written = 1U;
     }
     if (result != OK) goto rollback_clusters;
+    result = storage_sync_barrier(volume,
+                                  STORAGE_TRANSACTION_DIRECTORY_SYNCED);
+    if (result != OK) goto rollback_clusters;
+    published = 1U;
+    storage_transaction_phase = STORAGE_TRANSACTION_COMMITTED;
+    if (replacing) {
+        result = storage_mark_directory_entries_deleted(volume, &old_entry);
+        if (result != OK) {
+            storage_transaction_phase = STORAGE_TRANSACTION_RECOVERABLE;
+            if (clusters) kfree(clusters);
+            LOG_ERROR("FS", "Versao nova publicada; limpeza da entrada antiga falhou");
+            return result;
+        }
+        result = storage_sync_barrier(volume,
+                                      STORAGE_TRANSACTION_DIRECTORY_SYNCED);
+        if (result != OK) {
+            storage_transaction_phase = STORAGE_TRANSACTION_RECOVERABLE;
+            if (clusters) kfree(clusters);
+            return result;
+        }
+    }
     if (replacing && old_entry.first_cluster &&
         old_entry.first_cluster != first_cluster) {
         result = storage_release_fat32_chain(volume, mount,
                                               old_entry.first_cluster);
         if (result != OK) {
+            storage_transaction_phase = STORAGE_TRANSACTION_RECOVERABLE;
             storage_log_volume(LOG_LEVEL_ERROR, volume->id,
                                "arquivo publicado, mas cadeia antiga nao foi liberada");
+            if (clusters) kfree(clusters);
+            return result;
+        }
+        result = storage_sync_barrier(volume, STORAGE_TRANSACTION_FAT_SYNCED);
+        if (result != OK) {
+            storage_transaction_phase = STORAGE_TRANSACTION_RECOVERABLE;
+            if (clusters) kfree(clusters);
             return result;
         }
     }
+    if (index >= 0 && cluster_count) {
+        storage_fat32_allocation_hint[index] =
+            clusters[cluster_count - 1U] + 1U <
+            mount->total_clusters + STORAGE_FIRST_DATA_CLUSTER ?
+            clusters[cluster_count - 1U] + 1U : STORAGE_FIRST_DATA_CLUSTER;
+    }
+    storage_transaction_phase = STORAGE_TRANSACTION_CLEANUP;
+    if (clusters) kfree(clusters);
     return OK;
 
 rollback_clusters:
-    if (first_cluster) storage_release_fat32_chain(volume, mount, first_cluster);
-    if (orphan_cluster && orphan_cluster != first_cluster) {
-        storage_write_fat32_entry(volume, mount, orphan_cluster,
-                                  STORAGE_FAT32_FREE);
+    if (!published && clusters) {
+        storage_release_selected_fat32_clusters(volume, mount, clusters,
+                                                cluster_count);
+        storage_sync_barrier(volume, STORAGE_TRANSACTION_FAT_SYNCED);
+        if (slots_written) {
+            storage_clear_directory_slots(volume, slot_start, required_slots);
+        }
     }
+    if (clusters) kfree(clusters);
+    storage_transaction_phase = STORAGE_TRANSACTION_CLEANUP;
     storage_log_volume(LOG_LEVEL_ERROR, volume->id,
                        "transacao de escrita FAT32 revertida");
     return result;
@@ -3699,9 +3955,17 @@ int storage_delete_file(const char* id, const char* path) {
             result = ERR_INVALID;
         } else {
             result = storage_mark_directory_entries_deleted(volume, &entry);
+            if (result == OK) {
+                result = storage_sync_barrier(
+                    volume, STORAGE_TRANSACTION_DIRECTORY_SYNCED);
+            }
             if (result == OK && entry.first_cluster) {
                 result = storage_release_fat32_chain(volume, mount,
                                                      entry.first_cluster);
+                if (result == OK) {
+                    result = storage_sync_barrier(
+                        volume, STORAGE_TRANSACTION_FAT_SYNCED);
+                }
             }
         }
     }
@@ -3782,11 +4046,121 @@ int storage_rename_file(const char* id, const char* path,
             old_entry.attributes, required);
     }
     if (result == OK) {
+        result = storage_sync_barrier(
+            volume, STORAGE_TRANSACTION_DIRECTORY_SYNCED);
+    }
+    if (result == OK) {
         result = storage_mark_directory_entries_deleted(volume, &old_entry);
+    }
+    if (result == OK) {
+        result = storage_sync_barrier(
+            volume, STORAGE_TRANSACTION_DIRECTORY_SYNCED);
     }
 rename_done:
     spinlock_release(&storage_operation_lock);
     if (result != OK) LOG_ERROR("FS", "Renomeacao FAT32 falhou");
+    return result;
+}
+
+static int storage_replace_temporary_unlocked(const char* id,
+                                              const char* temporary_path,
+                                              const char* target_path) {
+    storage_volume_t* volume;
+    storage_mount_t* mount;
+    storage_long_raw_entry_t temporary_entry;
+    storage_long_raw_entry_t old_entry;
+    char directory[STORAGE_MAX_PATH];
+    char target_name[STORAGE_LONG_NAME_SIZE];
+    uint8_t fixed_root;
+    uint8_t target_exists = 0U;
+    uint8_t alias[11];
+    uint16_t units[STORAGE_LONG_NAME_SIZE];
+    uint32_t unit_count;
+    uint32_t slot_start = 0U;
+    uint32_t required_slots;
+    uint32_t directory_cluster;
+    int index;
+    int result;
+
+    if (!id || !temporary_path || !target_path) {
+        LOG_ERROR("FS", "Argumento nulo na substituicao temporaria FAT32");
+        return ERR_NULL;
+    }
+    result = storage_get_mounted_fat32(id, &volume, &mount, &index);
+    if (result != OK) return result;
+    (void)index;
+    result = storage_split_file_path(target_path, directory, target_name);
+    if (result != OK || directory[0]) return ERR_INVALID;
+    result = storage_find_file_long(volume, mount, temporary_path,
+                                    &temporary_entry, &directory_cluster,
+                                    &fixed_root);
+    if (result != OK) return result;
+    result = storage_find_file_long(volume, mount, target_path, &old_entry,
+                                    &directory_cluster, &fixed_root);
+    if (result == OK) {
+        target_exists = 1U;
+        result = storage_name_to_fat(old_entry.short_name, alias);
+    } else if (result == ERR_NOT_FOUND) {
+        result = storage_generate_alias(volume, mount, mount->root_cluster, 0U,
+                                        target_name, alias);
+    }
+    if (result != OK) return result;
+    result = storage_utf8_to_utf16(target_name, units, STORAGE_LONG_NAME_SIZE,
+                                   &unit_count);
+    if (result != OK) return result;
+    required_slots = (unit_count + 12U) / 13U + 1U;
+    result = storage_find_free_directory_slots(
+        volume, mount, mount->root_cluster, required_slots, &slot_start);
+    if (result != OK) return result;
+    result = storage_publish_fat32_entry(
+        volume, 0, slot_start, target_name, alias,
+        temporary_entry.first_cluster, temporary_entry.size,
+        temporary_entry.attributes, required_slots);
+    if (result != OK) return result;
+    result = storage_sync_barrier(volume,
+                                  STORAGE_TRANSACTION_DIRECTORY_SYNCED);
+    if (result != OK) {
+        storage_clear_directory_slots(volume, slot_start, required_slots);
+        return result;
+    }
+    storage_transaction_phase = STORAGE_TRANSACTION_COMMITTED;
+    if (target_exists) {
+        result = storage_mark_directory_entries_deleted(volume, &old_entry);
+        if (result != OK) {
+            storage_transaction_phase = STORAGE_TRANSACTION_RECOVERABLE;
+            return result;
+        }
+        result = storage_sync_barrier(volume,
+                                      STORAGE_TRANSACTION_DIRECTORY_SYNCED);
+        if (result != OK) {
+            storage_transaction_phase = STORAGE_TRANSACTION_RECOVERABLE;
+            return result;
+        }
+        if (old_entry.first_cluster &&
+            old_entry.first_cluster != temporary_entry.first_cluster) {
+            result = storage_release_fat32_chain(volume, mount,
+                                                 old_entry.first_cluster);
+            if (result != OK) {
+                storage_transaction_phase = STORAGE_TRANSACTION_RECOVERABLE;
+                return result;
+            }
+            result = storage_sync_barrier(volume,
+                                          STORAGE_TRANSACTION_FAT_SYNCED);
+            if (result != OK) {
+                storage_transaction_phase = STORAGE_TRANSACTION_RECOVERABLE;
+                return result;
+            }
+        }
+    }
+    result = storage_mark_directory_entries_deleted(volume, &temporary_entry);
+    if (result != OK) {
+        storage_transaction_phase = STORAGE_TRANSACTION_RECOVERABLE;
+        return result;
+    }
+    result = storage_sync_barrier(volume,
+                                  STORAGE_TRANSACTION_DIRECTORY_SYNCED);
+    storage_transaction_phase = result == OK ? STORAGE_TRANSACTION_CLEANUP :
+                                               STORAGE_TRANSACTION_RECOVERABLE;
     return result;
 }
 
@@ -3831,7 +4205,10 @@ static int storage_slot_writer_flush_locked(void) {
     storage_volume_t* volume;
     storage_mount_t* mount;
     uint32_t cluster;
-    uint8_t linked = 0U;
+    uint32_t previous_cluster;
+    uint32_t flushed_size;
+    uint32_t previous_flushed_size;
+    uint32_t previous_first_cluster;
     int result;
 
     if (!state->active || !state->buffered_size ||
@@ -3844,50 +4221,87 @@ static int storage_slot_writer_flush_locked(void) {
         LOG_ERROR("FS", "Montagem FAT32 ausente para slot");
         return ERR_UNAVAILABLE;
     }
-    result = storage_allocate_fat32_cluster(volume, mount, &cluster);
+    result = storage_find_free_fat32_cluster(volume, mount, 0, 0U,
+                                             &cluster);
     if (result != OK) {
         LOG_ERROR("FS", "Falha ao reservar cluster para slot");
         return result;
     }
-    if (state->last_cluster) {
-        result = storage_write_fat32_entry(volume, mount,
-                                           state->last_cluster, cluster);
-        if (result == OK) linked = 1U;
-    } else {
-        state->first_cluster = cluster;
-        result = storage_slot_writer_update_entry_locked(
-            state, state->flushed_size);
-        if (result != OK) {
-            storage_write_fat32_entry(volume, mount, cluster,
-                                      STORAGE_FAT32_FREE);
-            state->first_cluster = 0U;
-            LOG_ERROR("FS", "Falha ao publicar primeiro cluster de slot");
-            return result;
-        }
+    previous_cluster = state->last_cluster;
+    previous_flushed_size = state->flushed_size;
+    previous_first_cluster = state->first_cluster;
+    result = storage_write_cluster(volume, mount, cluster,
+                                   state->buffer, state->buffered_size);
+    if (result != OK) {
+        LOG_ERROR("FS", "Falha ao gravar cluster de slot");
+        return result;
     }
-    if (result != OK && !linked) {
+    result = storage_sync_barrier(volume, STORAGE_TRANSACTION_DATA_SYNCED);
+    if (result != OK) return result;
+    if (previous_cluster) {
+        result = storage_write_fat32_entry(volume, mount,
+                                           previous_cluster, cluster);
+    } else {
+        result = OK;
+    }
+    if (result == OK) {
+        result = storage_write_fat32_entry(volume, mount, cluster,
+                                           STORAGE_FAT32_END);
+    }
+    if (result != OK) {
+        if (previous_cluster) {
+            storage_write_fat32_entry(volume, mount, previous_cluster,
+                                      STORAGE_FAT32_END);
+        }
         storage_write_fat32_entry(volume, mount, cluster,
                                   STORAGE_FAT32_FREE);
         LOG_ERROR("FS", "Falha ao encadear cluster de slot");
         return result;
     }
-    if (result == OK) {
-        result = storage_write_cluster(volume, mount, cluster,
-                                       state->buffer, state->buffered_size);
-    }
+    result = storage_sync_barrier(volume, STORAGE_TRANSACTION_FAT_SYNCED);
     if (result != OK) {
-        LOG_ERROR("FS", "Falha ao gravar cluster de slot");
+        if (previous_cluster) {
+            storage_write_fat32_entry(volume, mount, previous_cluster,
+                                      STORAGE_FAT32_END);
+        }
+        storage_write_fat32_entry(volume, mount, cluster,
+                                  STORAGE_FAT32_FREE);
         return result;
     }
-    state->last_cluster = cluster;
-    state->flushed_size += state->buffered_size;
+    flushed_size = state->flushed_size + state->buffered_size;
+    if (flushed_size < state->flushed_size) {
+        return ERR_OVERFLOW;
+    }
+    if (state->last_cluster) {
+        state->last_cluster = cluster;
+    } else {
+        state->first_cluster = cluster;
+    }
+    state->flushed_size = flushed_size;
     state->buffered_size = 0U;
     result = OK;
-    if (state->cluster_bytes &&
+    if (previous_cluster == 0U || (state->cluster_bytes &&
         ((state->flushed_size / state->cluster_bytes) %
-         STORAGE_SLOT_WRITER_METADATA_INTERVAL) == 0U) {
+         STORAGE_SLOT_WRITER_METADATA_INTERVAL) == 0U)) {
         result = storage_slot_writer_update_entry_locked(
             state, state->flushed_size);
+        if (result == OK) {
+            result = storage_sync_barrier(
+                volume, STORAGE_TRANSACTION_DIRECTORY_SYNCED);
+        }
+    }
+    if (result == OK) state->last_cluster = cluster;
+    if (result != OK) {
+        if (previous_cluster) {
+            storage_write_fat32_entry(volume, mount, previous_cluster,
+                                      STORAGE_FAT32_END);
+        }
+        storage_write_fat32_entry(volume, mount, cluster,
+                                  STORAGE_FAT32_FREE);
+        state->first_cluster = previous_first_cluster;
+        state->last_cluster = previous_cluster;
+        state->flushed_size = previous_flushed_size;
+        state->buffered_size = 0U;
     }
     if (result != OK) LOG_ERROR("FS", "Falha ao atualizar tamanho de slot");
     return result;
@@ -3905,6 +4319,7 @@ int storage_transaction_writer_begin(const char* id, const char* path,
     uint32_t entry_offset;
     uint32_t cluster_bytes;
     uint8_t entry[STORAGE_DIR_ENTRY_SIZE];
+    uint8_t entry_created = 0U;
     int index;
     int result;
 
@@ -3971,6 +4386,11 @@ int storage_transaction_writer_begin(const char* id, const char* path,
                       STORAGE_MAX_PATH, temporary_path);
     storage_slot_writer_build_entry(&storage_slot_writer_state, entry, 0U);
     result = storage_write_directory_entry(volume, entry_offset, entry);
+    if (result == OK) {
+        entry_created = 1U;
+        result = storage_sync_barrier(volume,
+                                      STORAGE_TRANSACTION_DIRECTORY_SYNCED);
+    }
     if (result != OK) goto slot_writer_begin_cleanup;
     spinlock_release(&storage_operation_lock);
     return OK;
@@ -3980,7 +4400,16 @@ slot_writer_begin_cleanup:
             sizeof(storage_slot_writer_state));
 slot_writer_begin_done:
     spinlock_release(&storage_operation_lock);
-    if (result != OK) LOG_ERROR("FS", "Inicio do escritor de slot falhou");
+    if (result != OK) {
+        if (entry_created) {
+            int cleanup_result = storage_delete_file(id, temporary_path);
+
+            if (cleanup_result != OK && cleanup_result != ERR_NOT_FOUND) {
+                LOG_ERROR("FS", "Limpeza da entrada temporaria falhou");
+            }
+        }
+        LOG_ERROR("FS", "Inicio do escritor de slot falhou");
+    }
     return result;
 }
 
@@ -4044,6 +4473,13 @@ int storage_transaction_writer_finish(void) {
             &storage_slot_writer_state,
             storage_slot_writer_state.expected_size);
     }
+    if (result == OK) {
+        storage_volume_t* volume =
+            storage_slot_writer_state.volume_index < storage_volume_count ?
+            &storage_volumes[storage_slot_writer_state.volume_index] : 0;
+        result = storage_sync_barrier(
+            volume, STORAGE_TRANSACTION_DIRECTORY_SYNCED);
+    }
     storage_copy_text(volume_id, sizeof(volume_id),
                       storage_slot_writer_state.volume_id);
     storage_copy_text(target_path, sizeof(target_path),
@@ -4054,15 +4490,18 @@ int storage_transaction_writer_finish(void) {
             sizeof(storage_slot_writer_state));
     spinlock_release(&storage_operation_lock);
     if (result != OK) {
+        int cleanup_result = storage_delete_file(volume_id, temp_path);
+
         LOG_ERROR("FS", "Finalizacao do slot falhou antes da publicacao");
+        if (cleanup_result != OK && cleanup_result != ERR_NOT_FOUND) {
+            LOG_ERROR("FS", "Limpeza do slot temporario falhou");
+        }
         return result;
     }
-    result = storage_delete_file(volume_id, target_path);
-    if (result != OK && result != ERR_NOT_FOUND) {
-        LOG_ERROR("FS", "Falha ao substituir slot anterior");
-        return result;
-    }
-    result = storage_rename_file(volume_id, temp_path, target_path);
+    spinlock_acquire(&storage_operation_lock);
+    result = storage_replace_temporary_unlocked(volume_id, temp_path,
+                                                target_path);
+    spinlock_release(&storage_operation_lock);
     if (result != OK) LOG_ERROR("FS", "Falha ao publicar slot FAT32");
     return result;
 }

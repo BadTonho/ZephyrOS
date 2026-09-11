@@ -436,6 +436,15 @@ observaveis. O FAT12 cheio nao e formatado automaticamente durante a
 inicializacao; a compatibilidade legada de retorno `-1` das APIs FAT diretas
 continua preservada.
 
+No STO2, nenhuma assinatura publica ou ABI foi alterada. A implementacao
+interna ordena transacoes como dados, FAT, diretorios e limpeza, e usa as APIs
+existentes de sync/flush. `storage_sync_volume()` e `storage_sync_all()` sao
+seguros quando repetidos, recusam concorrencia e publicam o primeiro erro de
+writeback/deadline; dispositivos sem `FLUSH` mantem `OK` com durabilidade
+`DEGRADED`. O cache preserva entradas sujas para retry, e o escritor
+transacional publica substituicoes somente depois da nova versao estar
+sincronizada.
+
 Desde a EP3, `src/include/fs/fs.h` e `src/include/fs/storage.h` expoem cursores
 retomaveis de diretorio, incluindo cluster nas entradas. `fs.h` tambem expoe a
 geracao monotona do volume de boot e renomeacao FAT12 8.3 na propria entrada

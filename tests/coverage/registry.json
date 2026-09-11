@@ -22,9 +22,21 @@
         "qemu:tst5:sec6-diagnostics",
         "qemu:tst6:sec6:no-vesa"
       ],
-      "reused_tags": ["fault", "matrix", "recovery"],
-      "profiles": ["baseline", "no-vesa"],
-      "statuses": ["PASS", "FAIL", "BLOCKED", "STOPPED"],
+      "reused_tags": [
+        "fault",
+        "matrix",
+        "recovery"
+      ],
+      "profiles": [
+        "baseline",
+        "no-vesa"
+      ],
+      "statuses": [
+        "PASS",
+        "FAIL",
+        "BLOCKED",
+        "STOPPED"
+      ],
       "artifact_schema": "zephyros-qemu-parallel-result-v1"
     }
   },
@@ -311,7 +323,7 @@
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-block-host PASS com autotestes de BIO e cache, limites, overflow de transferencias, cancelamento, failpoints, eviction, writeback, sync e restauracao do inventario no relatorio instrumentado; evidencia STO1"
+      "evidence": "make test-block-host PASS com BIO/cache, writeback e sync repetido, barreiras de durabilidade, falhas retryaveis e estado limpo; evidencia STO2"
     },
     {
       "id": "core-contracts-dynamic-host",
@@ -666,50 +678,182 @@
         "interaction": {
           "mode": "qmp-keyboard",
           "steps": [
-            {"op": "key", "key": "meta_l"},
-            {"op": "key", "key": "down"},
-            {"op": "key", "key": "enter"},
-            {"op": "wait", "seconds": 1},
-            {"op": "text", "text": "clear"},
-            {"op": "key", "key": "enter"},
-            {"op": "wait", "seconds": 1},
-            {"op": "text", "text": "kmetrics reset"},
-            {"op": "key", "key": "enter"},
-            {"op": "wait", "seconds": 1},
-            {"op": "text", "text": "schedcheck"},
-            {"op": "key", "key": "enter"},
-            {"op": "wait", "seconds": 1},
-            {"op": "text", "text": "memcheck"},
-            {"op": "key", "key": "enter"},
-            {"op": "wait", "seconds": 1},
-            {"op": "text", "text": "health summary"},
-            {"op": "key", "key": "enter"},
-            {"op": "wait", "seconds": 1},
-            {"op": "text", "text": "health check"},
-            {"op": "key", "key": "enter"},
-            {"op": "wait", "seconds": 1},
-            {"op": "text", "text": "irqstat check"},
-            {"op": "key", "key": "enter"},
-            {"op": "wait", "seconds": 1},
-            {"op": "text", "text": "wait check"},
-            {"op": "key", "key": "enter"},
-            {"op": "wait", "seconds": 1},
-            {"op": "text", "text": "workq check"},
-            {"op": "key", "key": "enter"},
-            {"op": "wait", "seconds": 1},
-            {"op": "text", "text": "regcheck full"},
-            {"op": "key", "key": "enter"},
-            {"op": "wait", "seconds": 10},
-            {"op": "key", "key": "f11"},
-            {"op": "wait", "seconds": 10},
-            {"op": "text", "text": "kmetrics"},
-            {"op": "key", "key": "enter"},
-            {"op": "wait", "seconds": 2},
-            {"op": "text", "text": "procs"},
-            {"op": "key", "key": "enter"},
-            {"op": "wait", "seconds": 2},
-            {"op": "text", "text": "echo krn6-diagnostics"},
-            {"op": "key", "key": "enter"}
+            {
+              "op": "key",
+              "key": "meta_l"
+            },
+            {
+              "op": "key",
+              "key": "down"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 1
+            },
+            {
+              "op": "text",
+              "text": "clear"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 1
+            },
+            {
+              "op": "text",
+              "text": "kmetrics reset"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 1
+            },
+            {
+              "op": "text",
+              "text": "schedcheck"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 1
+            },
+            {
+              "op": "text",
+              "text": "memcheck"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 1
+            },
+            {
+              "op": "text",
+              "text": "health summary"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 1
+            },
+            {
+              "op": "text",
+              "text": "health check"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 1
+            },
+            {
+              "op": "text",
+              "text": "irqstat check"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 1
+            },
+            {
+              "op": "text",
+              "text": "wait check"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 1
+            },
+            {
+              "op": "text",
+              "text": "workq check"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 1
+            },
+            {
+              "op": "text",
+              "text": "regcheck full"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 10
+            },
+            {
+              "op": "key",
+              "key": "f11"
+            },
+            {
+              "op": "wait",
+              "seconds": 10
+            },
+            {
+              "op": "text",
+              "text": "kmetrics"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 2
+            },
+            {
+              "op": "text",
+              "text": "procs"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 2
+            },
+            {
+              "op": "text",
+              "text": "echo krn6-diagnostics"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            }
           ],
           "post_action": {
             "type": "none",
@@ -1016,7 +1160,7 @@
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-fat12-host PASS com imagem FAT12 estatica, leitura, paths, metadados, clusters invalidos, operacoes atomicas, streaming, cancelamento, diretorio raiz cheio sem formatacao e erros canonicos no relatorio instrumentado; evidencia STO1"
+      "evidence": "make test-fat12-host PASS com ordem copy-on-write, falhas de flush, cancelamento e retorno legado sem residuos; evidencia STO2"
     },
     {
       "id": "fat32-host-dynamic",
@@ -1034,7 +1178,7 @@
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-fat32-host PASS com imagem FAT32 compacta, classificacao e rejeicao de clusters invalidos, leitura, paths, metadados, criacao, escrita e remocao em fixture estatica no relatorio instrumentado; evidencia STO1"
+      "evidence": "make test-fat32-host PASS com ordem de dados/FAT/diretorio, cadeias e falhas sem mutacao parcial; evidencia STO2"
     },
     {
       "id": "fault-memory-qemu-tst6-dynamic",
@@ -1159,7 +1303,7 @@
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-fs-host PASS com fixture FAT32, paths legacy e storage, cursores com limites de cluster/LBA, operacoes atomicas, streaming e erros canonicos no relatorio instrumentado; evidencia STO1"
+      "evidence": "make test-fs-host PASS com operacoes atomicas, streaming, abortamento, sync e erros canonicos; evidencia STO2"
     },
     {
       "id": "devfs-host-dynamic",
@@ -3094,7 +3238,7 @@
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-power-host PASS com ACPI indisponivel e disponivel, quiescencia, falhas de sync, falha de S5, limpeza, reboot com triple fault controlado, halt terminal controlado, ausencia de metodo de reboot e estados publicados no relatorio instrumentado"
+      "evidence": "make test-power-host PASS com sync unico, deadlines, falhas de durabilidade e desmontagem sem sync duplicado; evidencia STO2"
     },
     {
       "id": "process-ipc-host-dynamic",
@@ -4369,7 +4513,7 @@
         "status": "AUTOMATED",
         "surface_ids": []
       },
-        "evidence": "make test-shell-diagnostics-host PASS com pwd, cd, mouse, log, timer, clock, irqstat, wait, wqinfo, workq, tls, vfs, mount, devcheck, devices, device-info, device-scan, usb, acpi, power, kill, sigtest, proccheck, health, health summary, health check, slabinfo, slabtest, cpu usage, pagefault, vmamap, schedcheck e kmetrics; a fixture chama diretamente os dispatchers, shell_introspection.c real e um VFS estatico para /proc e /sys, cobrindo devices -v, device-info por sysfs, health e seus caminhos validos, negativos, indisponiveis e de limite"
+      "evidence": "make test-shell-diagnostics-host PASS com pwd, cd, mouse, log, timer, clock, irqstat, wait, wqinfo, workq, tls, vfs, mount, devcheck, devices, device-info, device-scan, usb, acpi, power, kill, sigtest, proccheck, health, health summary, health check, slabinfo, slabtest, cpu usage, pagefault, vmamap, schedcheck e kmetrics; a fixture chama diretamente os dispatchers, shell_introspection.c real e um VFS estatico para /proc e /sys, cobrindo devices -v, device-info por sysfs, health e seus caminhos validos, negativos, indisponiveis e de limite"
     },
     {
       "id": "shell-commands-vfs-host-dynamic",
@@ -5222,7 +5366,7 @@
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-storage-host PASS com imagem FAT12 estatica, MBR/BPB, inventario, limites de volume, mount, cursores, leitura, espaco livre, rejeicao somente-leitura e limpeza no relatorio instrumentado; evidencia STO1"
+      "evidence": "make test-storage-host PASS com sync vazio/repetido, deadline, refresh e desmontagem apos sync; evidencia STO2"
     },
     {
       "id": "storage-fat32-host-dynamic",
@@ -5240,7 +5384,7 @@
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-storage-fat32-host PASS com imagem FAT32 estatica gravavel, validacao de metadados, limites e cadeias, escrita de dois clusters, remocao LFN e escritor transacional com abort; evidencia STO1",
+      "evidence": "make test-storage-fat32-host PASS com selecao COW, barreiras dados/FAT/diretorio, replace, rename, delete, finish/abort e limpeza de temporarios; evidencia STO2",
       "case_definition": {
         "id": "host:storage:storage-fat32",
         "scenario": "Contrato host-only do backend de storage FAT32 com imagem estatica gravavel",
@@ -5605,7 +5749,7 @@
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-vfs-host PASS com tabelas de descritores, arquivos, pipes, poll/select, dispositivo, socket, quiescencia e validacao de invariantes em fixture host-only instrumentada; KRN5.1 tambem cobriu fechamento de endpoints, EOF/HUP, wakeups e rollback de release"
+      "evidence": "make test-vfs-host PASS com sync, quiescencia, descritores e limpeza de I/O; evidencia STO2"
     },
     {
       "id": "vfs-path-host-dynamic",
@@ -5623,7 +5767,7 @@
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-vfs-path-host PASS com aliases, normalizacao, mounts virtuais, cwd, listagens, referencias, limites e quiescencia sobre backends estaticos no relatorio instrumentado"
+      "evidence": "make test-vfs-path-host PASS com unmount apos sync, mounts, cwd e referencias sem sync duplicado; evidencia STO2"
     },
     {
       "id": "vma-host-dynamic",
@@ -7658,7 +7802,7 @@
         ],
         "status": "AUTOMATED"
       },
-  "evidence": "make test-shell-commands-apps-host PASS com cobertura dinamica real das 30 superficies C de aplicativos, display, editor, icones, cenas e player, incluindo argumentos invalidos e estados indisponiveis"
+      "evidence": "make test-shell-commands-apps-host PASS com cobertura dinamica real das 30 superficies C de aplicativos, display, editor, icones, cenas e player, incluindo argumentos invalidos e estados indisponiveis"
     },
     {
       "id": "wm-host-dynamic",

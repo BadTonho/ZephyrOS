@@ -66,6 +66,7 @@ make test-file-index-host
 make test-fs-host
 make test-permissions-host
 make test-sto1-host
+make test-sto2-host
 make test-storage-host
 make test-block-host
 make test-fat12-host
@@ -188,6 +189,12 @@ O alvo agregado `test-sto1-host` executa os casos host-only de Block, cache,
 FAT12, FAT32, FS e Storage. Ele e a validacao essencial do STO1 para limites,
 overflow, clusters e cadeias invalidas, falhas de dispositivo, consistencia de
 cache/filas, cursores e ausencia de formatacao automatica de FAT12 cheio.
+
+O alvo agregado `test-sto2-host` acrescenta as fixtures de energia e VFS e
+valida sync vazio/repetido, deadlines, durabilidade `READY`/`DEGRADED`/`ERROR`,
+barreiras ordenadas, substituicao, rename, exclusao, streaming, abortamento e
+limpeza sem residuos. A matriz QEMU e a recuperacao apos reboot permanecem
+reservadas ao STO6–STO7.
 
 O caso `test-permissions-host` valida credenciais fixas, capacidades, modos
 POSIX, travessia, dispositivos, procfs/sysfs e o sidecar `ZPERM.DAT`, incluindo

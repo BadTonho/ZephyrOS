@@ -187,6 +187,24 @@ particoes logicas e hot-plug ficam fora desta etapa. Journaling e filesystem
 nativo permanecem posteriores. Na EP9.4B, os componentes operacionais
 autenticados usam o FAT32, enquanto bootstrap e recuperacao permanecem fixos.
 
+### Invariantes STO2 — sync e transacoes
+
+As transacoes FAT32 seguem as fases internas `PREPARE`, `DATA_SYNCED`,
+`FAT_SYNCED`, `DIRECTORY_SYNCED`, `COMMITTED` e `CLEANUP`. Clusters novos sao
+selecionados antes da primeira mutacao, os dados sao sincronizados antes da
+FAT, e a entrada de diretorio e publicada por ultimo. Substituicoes mantem a
+entrada antiga ate a nova estar confirmada; `rename` publica o destino antes
+de remover a origem; exclusoes ocultam a entrada antes de liberar a cadeia.
+
+`storage_sync_volume()` e `storage_sync_all_until()` sao idempotentes,
+recusam concorrencia e preservam entradas sujas quando writeback, flush ou
+deadline falham. Um dispositivo sem `FLUSH` retorna `OK` com durabilidade
+`DEGRADED`; erro fisico ou timeout retorna o primeiro erro canonico. O cache
+continua responsavel por manter o writeback retryavel. O escritor
+`storage_transaction_writer_*` limpa buffers, cadeias e entradas temporarias
+em abortamento ou erro, e o destino nao fica parcialmente publicado antes do
+commit.
+
 ### Escritor transacional de imagem
 
 `storage_transaction_writer_begin/write/finish/abort` grava arquivos grandes

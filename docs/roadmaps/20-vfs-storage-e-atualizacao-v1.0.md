@@ -2,7 +2,7 @@
 
 ## Estado
 
-STO1 concluido; as demais fases permanecem planejadas. Esta frente torna o caminho FAT12/FAT32, Block Layer, buffer cache,
+STO1 e STO2 concluidos; as demais fases permanecem planejadas. Esta frente torna o caminho FAT12/FAT32, Block Layer, buffer cache,
 VFS e Storage previsível diante de erro de I/O, cancelamento, reinicialização e
 falha de energia. Não substitui os formatos existentes nem cria um filesystem
 novo para a versão 1.0.0.
@@ -69,20 +69,30 @@ permanecem nas fases STO2–STO7.
 
 ### STO2 — Sync, flush e transações
 
-- [ ] Definir a ordem de writeback de dados, FAT, diretórios, metadados e
+- [x] Definir a ordem de writeback de dados, FAT, diretórios, metadados e
   estruturas do cache.
-- [ ] Garantir que `storage_sync_all()` seja idempotente e que cada operação de
+- [x] Garantir que `storage_sync_all()` seja idempotente e que cada operação de
   encerramento faça sync apenas uma vez.
-- [ ] Definir estado sujo, em andamento, concluído, abortado e recuperável para
+- [x] Definir estado sujo, em andamento, concluído, abortado e recuperável para
   operações compostas.
-- [ ] Preservar a versão anterior quando preflight, capacidade, escrita ou
+- [x] Preservar a versão anterior quando preflight, capacidade, escrita ou
   confirmação falharem.
-- [ ] Definir a diferença entre escrita aceita, `sync`, `flush`, durabilidade
+- [x] Definir a diferença entre escrita aceita, `sync`, `flush`, durabilidade
   confirmada e recuperação após queda de energia.
-- [ ] Garantir que `rename` e substituição de metadados não deixem uma entrada
+- [x] Garantir que `rename` e substituição de metadados não deixem uma entrada
   parcialmente publicada após uma falha.
-- [ ] Testar timeout, erro ATA, erro USB MSC, cancelamento e reinicialização no
+- [x] Testar timeout, erro ATA, erro USB MSC, cancelamento e reinicialização no
   meio de cada fase.
+
+A implementação STO2 formaliza as fases internas de transação, reserva clusters
+FAT32 antes da mutação persistente e aplica barreiras entre dados, FAT e
+diretórios. `storage_sync_volume()` e `storage_sync_all_until()` preservam o
+primeiro erro, recusam sync concorrente e mantêm a semântica de durabilidade
+degradada para dispositivos sem `FLUSH`. O escritor `ZSTG.ZSY` publica o
+destino somente depois do conteúdo e da entrada temporária estarem
+sincronizados; falhas pós-commit permanecem diagnosticáveis como recuperáveis.
+O agregado host-only é `make test-sto2-host`; journal persistente e recuperação
+após reboot continuam reservados ao STO6–STO7.
 
 ### STO3 — VFS e ciclo de vida dos volumes
 

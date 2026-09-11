@@ -28,6 +28,7 @@
 #define HOST_FAT32_BAD 0x0FFFFFF7U
 #define HOST_COVERAGE_CAPACITY 8192U
 #define HOST_COVERAGE_LINE_SIZE 32U
+#define HOST_WRITE_EVENT_CAPACITY 128U
 
 static uint8_t disk_image[HOST_SECTOR_COUNT][STORAGE_SECTOR_SIZE];
 static uint8_t host_allocation[STORAGE_SLOT_WRITE_BUFFER_SIZE];
@@ -36,7 +37,10 @@ static uint32_t coverage_count;
 static uint8_t coverage_active;
 static uint32_t fake_read_ops;
 static uint32_t fake_write_ops;
+static uint32_t fake_sync_calls;
 static uint32_t fake_log_count;
+static char fake_write_events[HOST_WRITE_EVENT_CAPACITY];
+static uint32_t fake_write_event_count;
 static block_device_t fake_block;
 static ata_device_t fake_ata;
 
@@ -222,7 +226,9 @@ static void setup_disk(void) {
     fake_ata.present = 1;
     fake_read_ops = 0U;
     fake_write_ops = 0U;
+    fake_sync_calls = 0U;
     fake_log_count = 0U;
+    fake_write_event_count = 0U;
     coverage_count = 0U;
 }
 
@@ -258,7 +264,11 @@ uint8_t fs_get_type(void) { return FS_TYPE_NONE; }
 ata_device_t* ata_get_device(void) { return &fake_ata; }
 
 int block_cache_clear(void) { return OK; }
-int block_cache_sync_device(const char* id) { return id ? OK : ERR_NULL; }
+int block_cache_sync_device(const char* id) {
+    if (!id) return ERR_NULL;
+    fake_sync_calls++;
+    return OK;
+}
 int block_cache_sync_all_until(uint32_t deadline_tick) {
     return deadline_tick ? OK : ERR_TIMEOUT;
 }
@@ -307,6 +317,20 @@ int block_write(const char* id, uint32_t lba, uint8_t count,
     if (strcmp(id, fake_block.id) != 0 || lba >= HOST_SECTOR_COUNT ||
         count > HOST_SECTOR_COUNT - lba) return ERR_DISK;
     memcpy(disk_image[lba], buffer, (uint32_t)count * STORAGE_SECTOR_SIZE);
+    for (uint32_t sector = 0U; sector < count; sector++) {
+        uint32_t current_lba = lba + sector;
+        char event = 'D';
+
+        if (current_lba >= HOST_PARTITION_START + HOST_RESERVED_SECTORS &&
+            current_lba < HOST_PARTITION_START + HOST_DATA_START) {
+            event = 'F';
+        } else if (current_lba == cluster_lba(HOST_ROOT_CLUSTER)) {
+            event = 'R';
+        }
+        if (fake_write_event_count < HOST_WRITE_EVENT_CAPACITY) {
+            fake_write_events[fake_write_event_count++] = event;
+        }
+    }
     fake_write_ops += count;
     return OK;
 }
@@ -370,6 +394,48 @@ int main(void) {
     EXPECT(bytes_read == 4U && memcmp(buffer, payload, 4U) == 0);
     EXPECT(storage_delete_file("ata0p1", "HELLO.TXT") == OK);
 
+    EXPECT(storage_write_file("ata0p1", "REPLACE.TXT", payload, 4U,
+                               0x20U) == OK);
+    EXPECT(storage_write_file("ata0p1", "REPLACE.TXT", payload,
+                               sizeof(payload), 0x20U) == OK);
+    EXPECT(storage_get_file_info("ata0p1", "REPLACE.TXT", &size,
+                                 &attributes) == OK);
+    EXPECT(size == sizeof(payload));
+    EXPECT(storage_rename_file("ata0p1", "REPLACE.TXT", "RENAMED.TXT") == OK);
+    EXPECT(storage_get_file_info("ata0p1", "REPLACE.TXT", &size,
+                                 &attributes) == ERR_NOT_FOUND);
+    EXPECT(storage_get_file_info("ata0p1", "RENAMED.TXT", &size,
+                                 &attributes) == OK);
+    EXPECT(storage_delete_file("ata0p1", "RENAMED.TXT") == OK);
+
+    fake_write_event_count = 0U;
+    EXPECT(storage_write_file("ata0p1", "ORDER.TXT", payload, 4U,
+                              0x20U) == OK);
+    {
+        uint32_t data_index = HOST_WRITE_EVENT_CAPACITY;
+        uint32_t fat_index = HOST_WRITE_EVENT_CAPACITY;
+        uint32_t directory_index = HOST_WRITE_EVENT_CAPACITY;
+
+        for (uint32_t event = 0U; event < fake_write_event_count; event++) {
+            if (fake_write_events[event] == 'D' &&
+                data_index == HOST_WRITE_EVENT_CAPACITY) {
+                data_index = event;
+            }
+            if (fake_write_events[event] == 'F' &&
+                data_index != HOST_WRITE_EVENT_CAPACITY &&
+                fat_index == HOST_WRITE_EVENT_CAPACITY) {
+                fat_index = event;
+            }
+            if (fake_write_events[event] == 'R' &&
+                fat_index != HOST_WRITE_EVENT_CAPACITY) {
+                directory_index = event;
+                break;
+            }
+        }
+        EXPECT(data_index < fat_index && fat_index < directory_index);
+    }
+    EXPECT(storage_delete_file("ata0p1", "ORDER.TXT") == OK);
+
     EXPECT(storage_transaction_writer_begin("ata0p1", "TARGET.TXT",
                                              "TEMP.TMP", sizeof(payload),
                                              0x20U) == OK);
@@ -407,6 +473,7 @@ int main(void) {
                                  &attributes) == ERR_NOT_FOUND);
     EXPECT(storage_check("ata0p1") == OK);
     EXPECT(fake_read_ops > 0U && fake_write_ops > 0U);
+    EXPECT(fake_sync_calls > 8U);
     EXPECT(fake_log_count > 0U);
 
     coverage_active = 0U;

@@ -7130,3 +7130,30 @@ dívida.
   renderizada validada. Nenhum bootloader, Stage 2, ABI, syscall ou formato
   FAT12/FAT32 foi alterado. A matriz QEMU, transacoes e recuperacao ficam
   para STO2-STO7.
+
+- STO2 - sync, flush e transacoes - implementacao e validacao essencial
+  concluidas em 2026-09-11 (America/Sao_Paulo). O Storage passou a publicar
+  fases internas PREPARE, DATA_SYNCED, FAT_SYNCED, DIRECTORY_SYNCED,
+  COMMITTED e CLEANUP, com barreiras ordenadas para dados, FAT, diretorios e
+  flush fisico quando disponivel. A sincronizacao concorrente e rejeitada,
+  chamadas repetidas permanecem seguras e erros de writeback/flush deixam as
+  entradas sujas retryaveis; dispositivos sem FLUSH publicam durabilidade
+  degradada sem mascarar o resultado da operacao.
+
+  Escritas FAT32 e o escritor temporario passaram a reservar clusters antes da
+  mutacao persistente, publicar dados e FAT antes do diretorio e preservar a
+  versao anterior ate o commit. Rename, substituicao, exclusao, abortamento e
+  limpeza de temporarios foram cobertos sem alterar as APIs publicas, ABI,
+  syscalls, bootloader, Stage 2 ou formatos FAT12/FAT32.
+
+  Passaram `make q3check` (com `DT100-003` aceita), `make clean`, `make`,
+  `make test-sto2-host` e `make catalog-test`. O agregado host-only executou
+  9 casos com `Core host: PASS`; o catalogo valido registra 7.575 superficies
+  e 180 casos, com a visao renderizada atualizada. Journal persistente,
+  recuperacao apos reboot e a matriz QEMU permanecem reservados ao STO6-STO7.
+
+  Reteste final apos reforcar a limpeza de slots e do escritor temporario:
+  `make q3check`, `make clean`, `make`, `make test-sto2-host` e
+  `make catalog-test` passaram novamente. O teste FAT32 tambem comprovou a
+  ordem observavel dados -> FAT -> diretorio; nao foram introduzidas novas
+  falhas alem de `DT100-003`.

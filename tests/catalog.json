@@ -120672,9 +120672,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage-fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_add_volume",
@@ -120758,11 +120761,10 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:storage:storage-fat32",
         "qemu:tst5:apps"
       ],
       "tags": [],
-      "coverage_mode": "direct"
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/fs/storage.c:storage_append_text",
@@ -121045,6 +121047,24 @@
       ],
       "tags": [],
       "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/fs/storage.c:storage_clear_directory_slots",
+      "kind": "c_function",
+      "source": "src/fs/storage.c",
+      "symbol": "storage_clear_directory_slots",
+      "linkage": "static",
+      "owner": "fs",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/fs/storage.c:storage_cluster_is_bad",
@@ -121387,6 +121407,24 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/fs/storage.c:storage_fat32_cluster_selected",
+      "kind": "c_function",
+      "source": "src/fs/storage.c",
+      "symbol": "storage_fat32_cluster_selected",
+      "linkage": "static",
+      "owner": "fs",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
       "id": "c:src/fs/storage.c:storage_find_disk",
       "kind": "c_function",
       "source": "src/fs/storage.c",
@@ -121498,6 +121536,24 @@
       ],
       "tags": [],
       "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/fs/storage.c:storage_find_free_fat32_cluster",
+      "kind": "c_function",
+      "source": "src/fs/storage.c",
+      "symbol": "storage_find_free_fat32_cluster",
+      "linkage": "static",
+      "owner": "fs",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/fs/storage.c:storage_find_long_visitor",
@@ -122300,9 +122356,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage-fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_name_to_fat",
@@ -122736,9 +122795,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage-fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_release_fat32_chain",
@@ -122762,6 +122824,24 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/fs/storage.c:storage_release_selected_fat32_clusters",
+      "kind": "c_function",
+      "source": "src/fs/storage.c",
+      "symbol": "storage_release_selected_fat32_clusters",
+      "linkage": "static",
+      "owner": "fs",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
       "id": "c:src/fs/storage.c:storage_rename_file",
       "kind": "c_function",
       "source": "src/fs/storage.c",
@@ -122782,6 +122862,24 @@
       ],
       "tags": [],
       "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/fs/storage.c:storage_replace_temporary_unlocked",
+      "kind": "c_function",
+      "source": "src/fs/storage.c",
+      "symbol": "storage_replace_temporary_unlocked",
+      "linkage": "static",
+      "owner": "fs",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/fs/storage.c:storage_resolve_directory",
@@ -122830,6 +122928,24 @@
       ],
       "tags": [],
       "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/fs/storage.c:storage_select_fat32_clusters",
+      "kind": "c_function",
+      "source": "src/fs/storage.c",
+      "symbol": "storage_select_fat32_clusters",
+      "linkage": "static",
+      "owner": "fs",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/fs/storage.c:storage_slot_writer_abort",
@@ -123175,6 +123291,24 @@
       ],
       "tags": [],
       "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/fs/storage.c:storage_sync_barrier",
+      "kind": "c_function",
+      "source": "src/fs/storage.c",
+      "symbol": "storage_sync_barrier",
+      "linkage": "static",
+      "owner": "fs",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/fs/storage.c:storage_sync_volume",
@@ -170516,7 +170650,8 @@
         "host",
         "core",
         "power",
-        "negative"
+        "negative",
+        "sto2"
       ]
     },
     {
@@ -178965,7 +179100,8 @@
         "block",
         "cache",
         "negative",
-        "sto1"
+        "sto1",
+        "sto2"
       ]
     },
     {
@@ -179196,7 +179332,8 @@
         "storage",
         "fat12",
         "negative",
-        "sto1"
+        "sto1",
+        "sto2"
       ]
     },
     {
@@ -179278,7 +179415,8 @@
         "host",
         "storage",
         "fat32",
-        "negative"
+        "negative",
+        "sto2"
       ]
     },
     {
@@ -179492,7 +179630,8 @@
         "storage",
         "fs",
         "negative",
-        "sto1"
+        "sto1",
+        "sto2"
       ]
     },
     {
@@ -179863,7 +180002,8 @@
         "block",
         "fat12",
         "negative",
-        "sto1"
+        "sto1",
+        "sto2"
       ]
     },
     {
@@ -179947,10 +180087,10 @@
         "c:src/core/string.c:kstrcmp",
         "c:src/core/string.c:kstrlen",
         "c:src/fs/storage.c:storage_add_disk",
+        "c:src/fs/storage.c:storage_add_u32",
         "c:src/fs/storage.c:storage_add_volume",
         "c:src/fs/storage.c:storage_alias_is_used",
         "c:src/fs/storage.c:storage_alias_visitor",
-        "c:src/fs/storage.c:storage_allocate_fat32_cluster",
         "c:src/fs/storage.c:storage_append_text",
         "c:src/fs/storage.c:storage_atomic_write_file",
         "c:src/fs/storage.c:storage_auto_mount_system",
@@ -179996,6 +180136,7 @@
         "c:src/fs/storage.c:storage_mark_volume_error",
         "c:src/fs/storage.c:storage_mount",
         "c:src/fs/storage.c:storage_mount_for_volume",
+        "c:src/fs/storage.c:storage_mul_u32",
         "c:src/fs/storage.c:storage_name_to_fat",
         "c:src/fs/storage.c:storage_next_cluster",
         "c:src/fs/storage.c:storage_next_component",
@@ -180013,6 +180154,7 @@
         "c:src/fs/storage.c:storage_read_u32",
         "c:src/fs/storage.c:storage_refresh",
         "c:src/fs/storage.c:storage_register_raw",
+        "c:src/fs/storage.c:storage_relative_range",
         "c:src/fs/storage.c:storage_release_fat32_chain",
         "c:src/fs/storage.c:storage_rename_file",
         "c:src/fs/storage.c:storage_resolve_directory",
@@ -180282,7 +180424,8 @@
         "host",
         "storage",
         "vfs",
-        "negative"
+        "negative",
+        "sto2"
       ]
     },
     {
@@ -180375,7 +180518,8 @@
         "host",
         "storage",
         "vfs",
-        "negative"
+        "negative",
+        "sto2"
       ]
     },
     {
