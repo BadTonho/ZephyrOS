@@ -977,7 +977,10 @@ EP9.1.
 
 ## EP9.2A: matriz do recovery loader
 
-Depois de gerar a matriz, os casos de boot devem ser iniciados um por vez:
+Depois de gerar a matriz, os casos de boot devem ser iniciados um por vez. A
+geracao (`system-slots-matrix`) e a execucao (`run-system-slots-matrix`) sao
+etapas separadas: a execucao reutiliza a imagem existente e nao solicita a
+chave privada novamente.
 
 ```text
 make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix\BOOT_ACTIVE_VALID.img

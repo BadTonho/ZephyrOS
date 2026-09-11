@@ -1441,12 +1441,12 @@ system-slots-matrix: system-slots-fixtures tools\system_slots_matrix.py tools\pa
 	@if not exist "$(SYSTEM_SLOTS_MATRIX_DIR)" mkdir "$(SYSTEM_SLOTS_MATRIX_DIR)"
 	python tools\system_slots_matrix.py --base-image $(SYSTEM_SLOTS_FIXTURE_IMAGE) --baseline $(SYSTEM_SLOTS_BASELINE_DIR)\valid.zsys --candidate $(SYSTEM_FIXTURES_DIR)\valid.zsys --bad-signature $(SYSTEM_FIXTURES_DIR)\tampered-signature.zsys --bad-image-hash $(SYSTEM_FIXTURES_DIR)\hash-divergent-image.zsys --bad-component-hash $(SYSTEM_FIXTURES_DIR)\hash-divergent-component.zsys --output-dir $(SYSTEM_SLOTS_MATRIX_DIR) --fat32-start-lba $(FAT32_START_LBA)
 
-run-system-slots-matrix: system-slots-matrix
+run-system-slots-matrix:
 	@if "$(SYSTEM_SLOTS_MATRIX_IMAGE)"=="" (echo SYSTEM_SLOTS_MATRIX_IMAGE nao configurada & exit /b 2)
 	@if not exist "$(SYSTEM_SLOTS_MATRIX_IMAGE)" (echo Imagem de matriz nao encontrada: $(SYSTEM_SLOTS_MATRIX_IMAGE) & exit /b 2)
 	$(QEMU) $(QEMU_CPU_ARGS) -drive file=$(SYSTEM_SLOTS_MATRIX_IMAGE),format=raw,if=none,id=systemslotsmatrix -device ide-hd,drive=systemslotsmatrix,bootindex=1 $(QEMU_NET_ARGS)
 
-run-system-update-matrix: system-slots-matrix
+run-system-update-matrix:
 	@if not exist "$(SYSTEM_UPDATE_MATRIX_IMAGE)" (echo Imagem guiada EP9.3 nao encontrada: $(SYSTEM_UPDATE_MATRIX_IMAGE) & exit /b 2)
 	$(QEMU) $(QEMU_CPU_ARGS) -snapshot -monitor stdio -drive file=$(SYSTEM_UPDATE_MATRIX_IMAGE),format=raw,if=none,id=systemupdatematrix -device ide-hd,drive=systemupdatematrix,bootindex=1 $(QEMU_NET_ARGS)
 

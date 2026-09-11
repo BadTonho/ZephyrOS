@@ -114,7 +114,9 @@ make run-system-update-matrix
 O agregado host-only cobre ZUPD, ZSYS, runtime, transporte remoto, slots,
 Updater, Shell, estado e a politica estatica de confianca. As matrizes QEMU
 validam staging, slot inativo, confirmacao, rollback e recuperacao; devem ser
-executadas depois de `make q3check` e `make clean` seguido de `make`.
+geradas depois de `make q3check` e `make clean` seguido de `make`. Depois da
+geracao, os alvos `run-system-slots-matrix` e `run-system-update-matrix`
+reutilizam as imagens existentes e nao pedem a chave privada novamente.
 
 ## STO6 - recuperacao transacional
 
