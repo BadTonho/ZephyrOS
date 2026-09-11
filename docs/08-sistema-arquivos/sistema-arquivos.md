@@ -1092,6 +1092,25 @@ diretorios automaticamente e volumes auxiliares nao podem hospedar essa
 hierarquia. O caminho de energia usa `storage_unmount_after_sync()` depois do
 sync unico, sem repetir a sincronizacao durante a desmontagem.
 
+## STO4 - Verificacao de consistencia
+
+`storage_check(const char*)` permanece a interface publica do diagnostico. A
+implementacao aceita volumes FAT12 e FAT32 montados e executa somente leituras
+fisicas, sem criar, invalidar ou sincronizar entradas do Block Cache. Antes da
+varredura, o MBR e o BPB sao conferidos; em seguida sao comparadas as copias da
+FAT, validados os marcadores reservados, cadeias, tamanhos, ownership,
+diretorios, aliases 8.3, LFNs e duplicidades.
+
+Ciclos, cadeias truncadas, clusters reservados ou invalidos, nomes quebrados,
+duplicidades e metadados incompativeis retornam `ERR_INVALID`. Falhas de
+leitura retornam `ERR_DISK`; falta de memoria e overflow preservam os codigos
+canonicos correspondentes. Clusters orfaos e divergencias nao essenciais do
+FSInfo sao avisos sem reparo. O Shell exibe estruturas verificadas, erros,
+avisos e clusters livres em `storage check <id>`.
+
+Os contadores sao transportados ao Shell por `storage_internal.h`, que nao faz
+parte da ABI publica e nao acrescenta syscall ou formato de filesystem.
+
 ## Pipes anonimos e redirecionamento VFS4
 
 `vfs_pipe()` cria dois descritores no processo atual: `fds[0]` somente para

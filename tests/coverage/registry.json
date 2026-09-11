@@ -4077,7 +4077,7 @@
         "status": "AUTOMATED",
         "surface_ids": []
       },
-      "evidence": "make test-shell-commands-storage-host PASS com bloco, cache, sync, storage, index, search e job; a fixture cobre diretamente os dispatchers e caminhos validos, negativos e de limite usando doubles estaticos"
+      "evidence": "make test-shell-commands-storage-host PASS com storage check generico, contadores FAT12/FAT32, bloco, cache, sync, storage, index, search e job; a fixture cobre diretamente os dispatchers e caminhos validos, negativos e de limite usando doubles estaticos; evidencia STO4"
     },
     {
       "id": "shell-commands-packages-host-dynamic",
@@ -5366,7 +5366,7 @@
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-storage-host PASS com sync vazio/repetido, deadline, refresh e desmontagem apos sync; evidencia STO2"
+      "evidence": "make test-storage-host PASS com storage check FAT12 somente leitura, MBR/BPB, cadeias, ownership e ausencia de escrita, alem de sync vazio/repetido, deadline, refresh e desmontagem apos sync; evidencia STO2 e STO4"
     },
     {
       "id": "storage-fat32-host-dynamic",
@@ -5384,7 +5384,7 @@
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-storage-fat32-host PASS com selecao COW, barreiras dados/FAT/diretorio, replace, rename, delete, finish/abort e limpeza de temporarios; evidencia STO2",
+      "evidence": "make test-storage-fat32-host PASS com storage check FAT32 fisico, FATs redundantes, FSInfo, cadeias, orfaos e ausencia de escrita, alem de selecao COW, barreiras dados/FAT/diretorio, replace, rename, delete, finish/abort e limpeza de temporarios; evidencia STO2 e STO4",
       "case_definition": {
         "id": "host:storage:storage-fat32",
         "scenario": "Contrato host-only do backend de storage FAT32 com imagem estatica gravavel",
@@ -5414,7 +5414,8 @@
           "storage",
           "fat32",
           "negative",
-          "transaction"
+          "transaction",
+          "sto4"
         ]
       }
     },

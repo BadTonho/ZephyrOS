@@ -4,24 +4,24 @@
 
 ## Resumo
 
-- Superfícies ativas: **7588**
+- Superfícies ativas: **7609**
 - Casos de teste: **180**
-- Superfícies aposentadas: **59**
+- Superfícies aposentadas: **60**
 
 | Tipo | Quantidade |
 |---|---:|
-| `api_function` | 1650 |
+| `api_function` | 1651 |
 | `asm_entry` | 101 |
-| `c_function` | 5717 |
+| `c_function` | 5737 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7560 |
+| `COVERED` | 7567 |
 | `MANUAL` | 0 |
-| `PENDING` | 28 |
+| `PENDING` | 42 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -41,7 +41,7 @@
 | `desktop` | 40 |
 | `drivers` | 932 |
 | `filemanager` | 93 |
-| `fs` | 1033 |
+| `fs` | 1054 |
 | `gui` | 30 |
 | `icons` | 18 |
 | `kernel` | 60 |
@@ -1316,6 +1316,7 @@
 | `api:src/include/fs/storage.h:storage_unmount_after_sync` | `src/include/fs/storage.h` | `storage_unmount_after_sync` | `fs` | `COVERED` | 7 |
 | `api:src/include/fs/storage.h:storage_volume_state_name` | `src/include/fs/storage.h` | `storage_volume_state_name` | `fs` | `COVERED` | 7 |
 | `api:src/include/fs/storage.h:storage_write_file` | `src/include/fs/storage.h` | `storage_write_file` | `fs` | `COVERED` | 7 |
+| `api:src/include/fs/storage_internal.h:storage_check_get_last_report` | `src/include/fs/storage_internal.h` | `storage_check_get_last_report` | `fs` | `COVERED` | 7 |
 | `api:src/include/fs/sysfs.h:sysfs_init` | `src/include/fs/sysfs.h` | `sysfs_init` | `fs` | `COVERED` | 3 |
 | `api:src/include/fs/sysfs.h:sysfs_is_ready` | `src/include/fs/sysfs.h` | `sysfs_is_ready` | `fs` | `COVERED` | 3 |
 | `api:src/include/fs/sysfs.h:sysfs_list` | `src/include/fs/sysfs.h` | `sysfs_list` | `fs` | `COVERED` | 3 |
@@ -5458,12 +5459,32 @@
 | `c:src/fs/storage.c:storage_build_lfn_entry` | `src/fs/storage.c` | `storage_build_lfn_entry` | `fs` | `COVERED` | 2 |
 | `c:src/fs/storage.c:storage_build_volume_id` | `src/fs/storage.c` | `storage_build_volume_id` | `fs` | `COVERED` | 2 |
 | `c:src/fs/storage.c:storage_check` | `src/fs/storage.c` | `storage_check` | `fs` | `COVERED` | 2 |
-| `c:src/fs/storage.c:storage_check_chain` | `src/fs/storage.c` | `storage_check_chain` | `fs` | `COVERED` | 1 |
-| `c:src/fs/storage.c:storage_check_directory_visitor` | `src/fs/storage.c` | `storage_check_directory_visitor` | `fs` | `COVERED` | 1 |
-| `c:src/fs/storage.c:storage_check_metadata` | `src/fs/storage.c` | `storage_check_metadata` | `fs` | `COVERED` | 1 |
+| `c:src/fs/storage.c:storage_check_chain` | `src/fs/storage.c` | `storage_check_chain` | `fs` | `COVERED` | 2 |
+| `c:src/fs/storage.c:storage_check_cluster_valid` | `src/fs/storage.c` | `storage_check_cluster_valid` | `fs` | `PENDING` | 0 |
+| `c:src/fs/storage.c:storage_check_compare` | `src/fs/storage.c` | `storage_check_compare` | `fs` | `PENDING` | 0 |
+| `c:src/fs/storage.c:storage_check_directory_visitor` | `src/fs/storage.c` | `storage_check_directory_visitor` | `fs` | `COVERED` | 2 |
+| `c:src/fs/storage.c:storage_check_duplicate_names` | `src/fs/storage.c` | `storage_check_duplicate_names` | `fs` | `PENDING` | 0 |
+| `c:src/fs/storage.c:storage_check_duplicate_visitor` | `src/fs/storage.c` | `storage_check_duplicate_visitor` | `fs` | `PENDING` | 0 |
+| `c:src/fs/storage.c:storage_check_get_last_report` | `src/fs/storage.c` | `storage_check_get_last_report` | `fs` | `PENDING` | 0 |
+| `c:src/fs/storage.c:storage_check_mark_cluster` | `src/fs/storage.c` | `storage_check_mark_cluster` | `fs` | `PENDING` | 0 |
+| `c:src/fs/storage.c:storage_check_name_valid` | `src/fs/storage.c` | `storage_check_name_valid` | `fs` | `PENDING` | 0 |
+| `c:src/fs/storage.c:storage_check_next_cluster` | `src/fs/storage.c` | `storage_check_next_cluster` | `fs` | `PENDING` | 0 |
+| `c:src/fs/storage.c:storage_check_orphans` | `src/fs/storage.c` | `storage_check_orphans` | `fs` | `PENDING` | 0 |
+| `c:src/fs/storage.c:storage_check_publish_report` | `src/fs/storage.c` | `storage_check_publish_report` | `fs` | `PENDING` | 0 |
+| `c:src/fs/storage.c:storage_check_read_disk` | `src/fs/storage.c` | `storage_check_read_disk` | `fs` | `PENDING` | 0 |
+| `c:src/fs/storage.c:storage_check_read_fat_bytes` | `src/fs/storage.c` | `storage_check_read_fat_bytes` | `fs` | `PENDING` | 0 |
+| `c:src/fs/storage.c:storage_check_read_fat_entry` | `src/fs/storage.c` | `storage_check_read_fat_entry` | `fs` | `PENDING` | 0 |
+| `c:src/fs/storage.c:storage_check_read_relative` | `src/fs/storage.c` | `storage_check_read_relative` | `fs` | `PENDING` | 0 |
+| `c:src/fs/storage.c:storage_check_record_error` | `src/fs/storage.c` | `storage_check_record_error` | `fs` | `PENDING` | 0 |
+| `c:src/fs/storage.c:storage_check_record_structure` | `src/fs/storage.c` | `storage_check_record_structure` | `fs` | `PENDING` | 0 |
+| `c:src/fs/storage.c:storage_check_record_warning` | `src/fs/storage.c` | `storage_check_record_warning` | `fs` | `PENDING` | 0 |
+| `c:src/fs/storage.c:storage_check_validate_bpb` | `src/fs/storage.c` | `storage_check_validate_bpb` | `fs` | `PENDING` | 0 |
+| `c:src/fs/storage.c:storage_check_validate_fat` | `src/fs/storage.c` | `storage_check_validate_fat` | `fs` | `PENDING` | 0 |
+| `c:src/fs/storage.c:storage_check_validate_mbr` | `src/fs/storage.c` | `storage_check_validate_mbr` | `fs` | `PENDING` | 0 |
+| `c:src/fs/storage.c:storage_check_walk_directory` | `src/fs/storage.c` | `storage_check_walk_directory` | `fs` | `PENDING` | 0 |
 | `c:src/fs/storage.c:storage_clear_directory_slots` | `src/fs/storage.c` | `storage_clear_directory_slots` | `fs` | `PENDING` | 0 |
-| `c:src/fs/storage.c:storage_cluster_is_bad` | `src/fs/storage.c` | `storage_cluster_is_bad` | `fs` | `COVERED` | 2 |
-| `c:src/fs/storage.c:storage_cluster_is_end` | `src/fs/storage.c` | `storage_cluster_is_end` | `fs` | `COVERED` | 2 |
+| `c:src/fs/storage.c:storage_cluster_is_bad` | `src/fs/storage.c` | `storage_cluster_is_bad` | `fs` | `COVERED` | 3 |
+| `c:src/fs/storage.c:storage_cluster_is_end` | `src/fs/storage.c` | `storage_cluster_is_end` | `fs` | `COVERED` | 3 |
 | `c:src/fs/storage.c:storage_configure_fat_type` | `src/fs/storage.c` | `storage_configure_fat_type` | `fs` | `COVERED` | 2 |
 | `c:src/fs/storage.c:storage_copy_label` | `src/fs/storage.c` | `storage_copy_label` | `fs` | `COVERED` | 2 |
 | `c:src/fs/storage.c:storage_copy_text` | `src/fs/storage.c` | `storage_copy_text` | `fs` | `COVERED` | 6 |
@@ -5664,12 +5685,12 @@
 | `c:src/fs/vfs.c:vfs_initialize_stdio_nodes` | `src/fs/vfs.c` | `vfs_initialize_stdio_nodes` | `fs` | `COVERED` | 3 |
 | `c:src/fs/vfs.c:vfs_ioctl` | `src/fs/vfs.c` | `vfs_ioctl` | `fs` | `COVERED` | 3 |
 | `c:src/fs/vfs.c:vfs_is_ready` | `src/fs/vfs.c` | `vfs_is_ready` | `fs` | `COVERED` | 3 |
-| `c:src/fs/vfs.c:vfs_lifecycle_begin_transition` | `src/fs/vfs.c` | `vfs_lifecycle_begin_transition` | `fs` | `PENDING` | 0 |
+| `c:src/fs/vfs.c:vfs_lifecycle_begin_transition` | `src/fs/vfs.c` | `vfs_lifecycle_begin_transition` | `fs` | `COVERED` | 1 |
 | `c:src/fs/vfs.c:vfs_lifecycle_block_error` | `src/fs/vfs.c` | `vfs_lifecycle_block_error` | `fs` | `PENDING` | 0 |
-| `c:src/fs/vfs.c:vfs_lifecycle_end_transition` | `src/fs/vfs.c` | `vfs_lifecycle_end_transition` | `fs` | `PENDING` | 0 |
-| `c:src/fs/vfs.c:vfs_lifecycle_enter_normal` | `src/fs/vfs.c` | `vfs_lifecycle_enter_normal` | `fs` | `PENDING` | 0 |
-| `c:src/fs/vfs.c:vfs_lifecycle_is_blocked` | `src/fs/vfs.c` | `vfs_lifecycle_is_blocked` | `fs` | `PENDING` | 0 |
-| `c:src/fs/vfs.c:vfs_lifecycle_leave_normal` | `src/fs/vfs.c` | `vfs_lifecycle_leave_normal` | `fs` | `PENDING` | 0 |
+| `c:src/fs/vfs.c:vfs_lifecycle_end_transition` | `src/fs/vfs.c` | `vfs_lifecycle_end_transition` | `fs` | `COVERED` | 1 |
+| `c:src/fs/vfs.c:vfs_lifecycle_enter_normal` | `src/fs/vfs.c` | `vfs_lifecycle_enter_normal` | `fs` | `COVERED` | 1 |
+| `c:src/fs/vfs.c:vfs_lifecycle_is_blocked` | `src/fs/vfs.c` | `vfs_lifecycle_is_blocked` | `fs` | `COVERED` | 1 |
+| `c:src/fs/vfs.c:vfs_lifecycle_leave_normal` | `src/fs/vfs.c` | `vfs_lifecycle_leave_normal` | `fs` | `COVERED` | 1 |
 | `c:src/fs/vfs.c:vfs_lseek` | `src/fs/vfs.c` | `vfs_lseek` | `fs` | `COVERED` | 3 |
 | `c:src/fs/vfs.c:vfs_mode_valid` | `src/fs/vfs.c` | `vfs_mode_valid` | `fs` | `COVERED` | 5 |
 | `c:src/fs/vfs.c:vfs_open` | `src/fs/vfs.c` | `vfs_open` | `fs` | `COVERED` | 4 |
@@ -5750,7 +5771,7 @@
 | `c:src/fs/vfs_path.c:vfs_mount_acquire` | `src/fs/vfs_path.c` | `vfs_mount_acquire` | `fs` | `COVERED` | 4 |
 | `c:src/fs/vfs_path.c:vfs_mount_cwd_references` | `src/fs/vfs_path.c` | `vfs_mount_cwd_references` | `fs` | `COVERED` | 2 |
 | `c:src/fs/vfs_path.c:vfs_mount_fill` | `src/fs/vfs_path.c` | `vfs_mount_fill` | `fs` | `COVERED` | 1 |
-| `c:src/fs/vfs_path.c:vfs_mount_next_generation` | `src/fs/vfs_path.c` | `vfs_mount_next_generation` | `fs` | `PENDING` | 0 |
+| `c:src/fs/vfs_path.c:vfs_mount_next_generation` | `src/fs/vfs_path.c` | `vfs_mount_next_generation` | `fs` | `COVERED` | 1 |
 | `c:src/fs/vfs_path.c:vfs_mount_release` | `src/fs/vfs_path.c` | `vfs_mount_release` | `fs` | `COVERED` | 4 |
 | `c:src/fs/vfs_path.c:vfs_mount_validate_reference` | `src/fs/vfs_path.c` | `vfs_mount_validate_reference` | `fs` | `COVERED` | 3 |
 | `c:src/fs/vfs_path.c:vfs_mount_volume` | `src/fs/vfs_path.c` | `vfs_mount_volume` | `fs` | `COVERED` | 1 |
@@ -5766,7 +5787,7 @@
 | `c:src/fs/vfs_path.c:vfs_power_unmount_storage_until` | `src/fs/vfs_path.c` | `vfs_power_unmount_storage_until` | `fs` | `COVERED` | 1 |
 | `c:src/fs/vfs_path.c:vfs_procfs_mount_fill` | `src/fs/vfs_path.c` | `vfs_procfs_mount_fill` | `fs` | `COVERED` | 1 |
 | `c:src/fs/vfs_path.c:vfs_refresh_mounts` | `src/fs/vfs_path.c` | `vfs_refresh_mounts` | `fs` | `COVERED` | 1 |
-| `c:src/fs/vfs_path.c:vfs_refresh_mounts_internal` | `src/fs/vfs_path.c` | `vfs_refresh_mounts_internal` | `fs` | `PENDING` | 0 |
+| `c:src/fs/vfs_path.c:vfs_refresh_mounts_internal` | `src/fs/vfs_path.c` | `vfs_refresh_mounts_internal` | `fs` | `COVERED` | 1 |
 | `c:src/fs/vfs_path.c:vfs_resolve_canonical` | `src/fs/vfs_path.c` | `vfs_resolve_canonical` | `fs` | `COVERED` | 5 |
 | `c:src/fs/vfs_path.c:vfs_resolve_directory` | `src/fs/vfs_path.c` | `vfs_resolve_directory` | `fs` | `COVERED` | 3 |
 | `c:src/fs/vfs_path.c:vfs_resolve_open_path` | `src/fs/vfs_path.c` | `vfs_resolve_open_path` | `fs` | `COVERED` | 5 |
@@ -7870,16 +7891,30 @@
 - `c:src/core/kernel_tests_blackbox.c:blackbox_reset_sec6_observation`
 - `c:src/core/kernel_tests_blackbox.c:blackbox_validate_sec6_output`
 - `c:src/fs/fat32.c:cluster_to_lba`
+- `c:src/fs/storage.c:storage_check_cluster_valid`
+- `c:src/fs/storage.c:storage_check_compare`
+- `c:src/fs/storage.c:storage_check_duplicate_names`
+- `c:src/fs/storage.c:storage_check_duplicate_visitor`
+- `c:src/fs/storage.c:storage_check_get_last_report`
+- `c:src/fs/storage.c:storage_check_mark_cluster`
+- `c:src/fs/storage.c:storage_check_name_valid`
+- `c:src/fs/storage.c:storage_check_next_cluster`
+- `c:src/fs/storage.c:storage_check_orphans`
+- `c:src/fs/storage.c:storage_check_publish_report`
+- `c:src/fs/storage.c:storage_check_read_disk`
+- `c:src/fs/storage.c:storage_check_read_fat_bytes`
+- `c:src/fs/storage.c:storage_check_read_fat_entry`
+- `c:src/fs/storage.c:storage_check_read_relative`
+- `c:src/fs/storage.c:storage_check_record_error`
+- `c:src/fs/storage.c:storage_check_record_structure`
+- `c:src/fs/storage.c:storage_check_record_warning`
+- `c:src/fs/storage.c:storage_check_validate_bpb`
+- `c:src/fs/storage.c:storage_check_validate_fat`
+- `c:src/fs/storage.c:storage_check_validate_mbr`
+- `c:src/fs/storage.c:storage_check_walk_directory`
 - `c:src/fs/storage.c:storage_clear_directory_slots`
 - `c:src/fs/storage.c:storage_release_selected_fat32_clusters`
-- `c:src/fs/vfs.c:vfs_lifecycle_begin_transition`
 - `c:src/fs/vfs.c:vfs_lifecycle_block_error`
-- `c:src/fs/vfs.c:vfs_lifecycle_end_transition`
-- `c:src/fs/vfs.c:vfs_lifecycle_enter_normal`
-- `c:src/fs/vfs.c:vfs_lifecycle_is_blocked`
-- `c:src/fs/vfs.c:vfs_lifecycle_leave_normal`
-- `c:src/fs/vfs_path.c:vfs_mount_next_generation`
-- `c:src/fs/vfs_path.c:vfs_refresh_mounts_internal`
 - `c:src/kernel/kernel.c:kernel_host_test_should_wake_shell_for_event`
 - `c:src/kernel/kernel.c:kernel_should_wake_shell_for_event`
 - `c:src/process/resource.c:process_resource_note_descriptor_success`
@@ -7912,6 +7947,7 @@
 - `c:src/fs/fat12.c:strncmp` — surface ausente na fonte atual; confirmar remocao ou renomeacao
 - `c:src/fs/fat12.c:to_upper` — surface ausente na fonte atual; confirmar remocao ou renomeacao
 - `c:src/fs/fat32.c:strncmp` — surface ausente na fonte atual; confirmar remocao ou renomeacao
+- `c:src/fs/storage.c:storage_check_metadata` — surface ausente na fonte atual; confirmar remocao ou renomeacao
 - `c:src/shell/shell.c:shell_test_redraw_after_overlay_close` — surface ausente na fonte atual; confirmar remocao ou renomeacao
 - `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_mode_name` — surface ausente na fonte atual; confirmar remocao ou renomeacao
 - `c:src/shell/shell_commands_diagnostics.c:cmd_acpi_s5_name` — surface ausente na fonte atual; confirmar remocao ou renomeacao

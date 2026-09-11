@@ -68,6 +68,7 @@ make test-permissions-host
 make test-sto1-host
 make test-sto2-host
 make test-sto3-host
+make test-sto4-host
 make test-storage-host
 make test-block-host
 make test-fat12-host
@@ -904,12 +905,16 @@ update system verify system:/CMPHASH.ZSYS
 Somente `system:/VALID.ZSYS` deve ser aceito; os demais devem ser recusados
 sem alterar imagem, cache, FAT12 legado ou estado persistente.
 
-Para o diagnostico somente leitura do volume FAT32, primeiro copie o ID exato
+Para o diagnostico somente leitura do volume FAT12 ou FAT32, primeiro copie o ID exato
 mostrado por `storage list` e execute:
 
 ```text
-storage check <id-exato-do-volume-fat32>
+storage check <id-exato-do-volume>
 ```
+
+O comando nao repara o volume. Ele publica estruturas verificadas, erros,
+avisos e clusters livres; `ERR_INVALID` indica inconsistência estrutural e
+`ERR_DISK` indica falha de leitura.
 
 ## EP9.1: matriz de recuperacao dos slots
 

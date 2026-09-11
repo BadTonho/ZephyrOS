@@ -8,6 +8,7 @@
 #include "fs/block.h"
 #include "fs/block_cache.h"
 #include "fs/storage.h"
+#include "fs/storage_internal.h"
 #include "fs/vfs.h"
 #include "fs/file_index.h"
 #include "core/memory.h"
@@ -763,9 +764,36 @@ static void cmd_storage(const char* args) {
         return;
     }
     if (kstrcmp(action, "check") == 0) {
+        storage_check_report_t report;
+        storage_volume_t volume;
+        const char* fs_name = "Storage";
+
         result = storage_check(id);
-        if (result == OK) video_print("Volume FAT32 consistente.\n", 0x0A);
-        else video_print("Erro: verificacao FAT32 recusada.\n", 0x0C);
+        if (storage_find_volume(id, &volume) == OK) {
+            fs_name = storage_fs_name(volume.fs_type);
+        }
+        kmemset(&report, 0, sizeof(report));
+        storage_check_get_last_report(&report);
+        if (result == OK) {
+            video_print("Volume ", 0x0A);
+            video_print(fs_name, 0x0A);
+            video_print(" consistente.\n", 0x0A);
+        } else {
+            video_print("Erro: verificacao ", 0x0C);
+            video_print(fs_name, 0x0C);
+            video_print(" recusada (codigo ", 0x0C);
+            shell_command_print_num((uint32_t)result);
+            video_print(").\n", 0x0C);
+        }
+        video_print("Verificadas: ", 0x07);
+        shell_command_print_num(report.structures_verified);
+        video_print(" | erros: ", 0x07);
+        shell_command_print_num(report.errors);
+        video_print(" | avisos: ", 0x07);
+        shell_command_print_num(report.warnings);
+        video_print(" | livres: ", 0x07);
+        shell_command_print_num(report.free_clusters);
+        video_print("\n", 0x07);
         return;
     }
     if (kstrcmp(action, "mount") == 0) result = vfs_mount_volume(id);

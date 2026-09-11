@@ -11,6 +11,7 @@
 #include "fs/block_cache.h"
 #include "fs/fs.h"
 #include "fs/storage.h"
+#include "fs/storage_internal.h"
 
 #define HOST_SECTOR_COUNT 5000U
 #define HOST_PARTITION_START 1U
@@ -311,6 +312,20 @@ int block_read(const char* id, uint32_t lba, uint8_t count, uint8_t* buffer) {
     return OK;
 }
 
+int block_submit_physical_sync(bio_request_t* request) {
+    int result;
+
+    if (!request) return ERR_NULL;
+    result = block_read(request->device_id, request->lba,
+                        (uint8_t)request->sector_count,
+                        (uint8_t*)request->buffer);
+    request->completed_sectors = result == OK ? request->sector_count : 0U;
+    request->status = result;
+    request->state = result == OK ? BLOCK_REQUEST_COMPLETED :
+                                    BLOCK_REQUEST_ERROR;
+    return result;
+}
+
 int block_write(const char* id, uint32_t lba, uint8_t count,
                 const uint8_t* buffer) {
     if (!id || !buffer || !count) return ERR_NULL;
@@ -349,6 +364,7 @@ int main(void) {
     uint32_t bytes_read;
     uint32_t size;
     uint8_t attributes;
+    storage_check_report_t report;
 
     setup_disk();
     coverage_active = 1U;
@@ -364,12 +380,17 @@ int main(void) {
     EXPECT(storage_find_volume("ata0p1", &volume) == OK);
     EXPECT(volume.read_only == 0U && volume.mounted == 1U);
 
+    fake_write_ops = 0U;
     EXPECT(storage_check("ata0p1") == OK);
+    EXPECT(storage_check_get_last_report(&report) == OK);
+    EXPECT(report.errors == 0U && report.files_verified >= 2U &&
+           report.directories_verified >= 2U && report.warnings >= 1U);
+    EXPECT(fake_write_ops == 0U);
     disk_image[HOST_PARTITION_START + 6U][100U] ^= 1U;
     EXPECT(storage_check("ata0p1") == ERR_INVALID);
     disk_image[HOST_PARTITION_START + 6U][100U] ^= 1U;
     set_fat(HOST_NESTED_CLUSTER, HOST_FAT32_BAD);
-    EXPECT(storage_check("ata0p1") == ERR_DISK);
+    EXPECT(storage_check("ata0p1") == ERR_INVALID);
     set_fat(HOST_NESTED_CLUSTER, HOST_FAT32_END);
     EXPECT(storage_check("ata0p1") == OK);
 

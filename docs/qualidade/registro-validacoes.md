@@ -7,6 +7,29 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## 2026-09-11 - STO4: verificacao de consistencia
+
+- Implementacao: `storage_check()` passou a verificar FAT12 e FAT32 somente
+  por leituras fisicas, sem cache, incluindo MBR, BPB, FATs redundantes,
+  entradas reservadas, cadeias, ciclos, tamanhos, ownership, LFNs,
+  duplicidades, clusters orfaos e divergencia nao essencial de FSInfo.
+- Integracao: o Shell agora exibe o tipo generico do volume e os contadores
+  de estruturas, erros, avisos e clusters livres. O bridge fica restrito a
+  `src/include/fs/storage_internal.h`; `storage.h`, ABI, syscalls,
+  bootloader e Stage 2 permanecem inalterados. `Makefile` e `Makefile.linux`
+  expoem `make test-sto4-host`.
+- Evidencia: `make q3check` terminou com resultado `OK`, mantendo `DT100-003`
+  aceita e reportada separadamente; `make clean` e `make` terminaram com
+  sucesso. `make test-sto4-host` passou nos casos FS, Storage FAT12, Storage
+  FAT32 e comandos de Storage. `make catalog-test` passou com 20 testes
+  unitarios, catalogo valido (7.609 superficies e 180 casos) e visao
+  renderizada valida. As fixtures confirmam ausencia de escrita durante a
+  verificacao e preservacao dos codigos canonicos.
+- Limites: a matriz QEMU, reparo automatico e recuperacao apos reboot ficam
+  reservados a STO5-STO7. `DT100-003` continua reportada separadamente.
+- Estado: STO4 `PASS` na validacao essencial host-only; a matriz QEMU, reparo
+  automatico e recuperacao apos reboot ficam reservados a STO5-STO7.
+
 ## 2026-09-11 - STO3: VFS e ciclo de vida dos volumes
 
 - Implementacao: o VFS passou a usar um gate interno para transicoes,

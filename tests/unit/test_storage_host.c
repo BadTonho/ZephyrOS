@@ -11,6 +11,7 @@
 #include "fs/block_cache.h"
 #include "fs/fs.h"
 #include "fs/storage.h"
+#include "fs/storage_internal.h"
 
 #define HOST_SECTOR_COUNT 1000U
 #define HOST_COVERAGE_CAPACITY 8192U
@@ -172,6 +173,9 @@ static void setup_disk(void) {
     disk_image[HOST_FAT_START][5] = 0xFFU;
     disk_image[HOST_FAT_START][6] = 0xFFU;
     disk_image[HOST_FAT_START][7] = 0x0FU;
+    disk_image[HOST_FAT_START][0] = 0xF8U;
+    disk_image[HOST_FAT_START][1] = 0xFFU;
+    disk_image[HOST_FAT_START][2] = 0xFFU;
 
     write_directory_entry(root, 0U, "HELLO", "TXT", 0x20U,
                           HOST_FILE_CLUSTER, 5U);
@@ -298,6 +302,20 @@ int block_read(const char* id, uint32_t lba, uint8_t count, uint8_t* buffer) {
     return OK;
 }
 
+int block_submit_physical_sync(bio_request_t* request) {
+    int result;
+
+    if (!request) return ERR_NULL;
+    result = block_read(request->device_id, request->lba,
+                        (uint8_t)request->sector_count,
+                        (uint8_t*)request->buffer);
+    request->completed_sectors = result == OK ? request->sector_count : 0U;
+    request->status = result;
+    request->state = result == OK ? BLOCK_REQUEST_COMPLETED :
+                                    BLOCK_REQUEST_ERROR;
+    return result;
+}
+
 int block_write(const char* id, uint32_t lba, uint8_t count,
                 const uint8_t* buffer) {
     if (!id || !buffer || !count) return ERR_NULL;
@@ -337,6 +355,7 @@ int main(void) {
     uint8_t found;
     uint8_t done;
     uint8_t buffer[16];
+    storage_check_report_t report;
 
     setup_disk();
     coverage_active = 1U;
@@ -458,7 +477,11 @@ int main(void) {
     EXPECT(storage_get_free_space("missing", &free_sectors,
                                   &free_clusters) == ERR_NOT_FOUND);
     EXPECT(storage_get_free_space(0, &free_sectors, &free_clusters) == ERR_NULL);
-    EXPECT(storage_check("ata0p1") == ERR_UNAVAILABLE);
+    EXPECT(storage_check("ata0p1") == OK);
+    EXPECT(storage_check_get_last_report(&report) == OK);
+    EXPECT(report.errors == 0U && report.files_verified >= 2U &&
+           report.directories_verified >= 1U);
+    EXPECT(fake_write_ops == 0U);
     EXPECT(storage_check(0) == ERR_NULL);
 
     EXPECT(storage_write_file("ata0p1", "NEW.TXT", buffer, 2U, 0U) ==

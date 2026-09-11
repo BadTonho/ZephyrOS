@@ -156,6 +156,7 @@ permissão por UID/GID no `open` continua reservada à SEC5.
 | `src/include/fs/file_index.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/fs.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/storage.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
+| `src/include/fs/storage_internal.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/vfs.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/permissions.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
 | `src/include/fs/vfs_internal.h` | `docs/08-sistema-arquivos/sistema-arquivos.md` |
@@ -534,6 +535,14 @@ disponiveis. As geracoes de montagem agora sao monotônicas no namespace VFS e
 nao dependem da enumeracao do Storage; referencias antigas retornam `ERR_STATE`
 e volumes ausentes retornam `ERR_UNAVAILABLE`. A tabela de mounts continua
 atômica e as montagens pinned permanecem protegidas.
+
+No STO4, `storage_check(const char*)` mantem exatamente a mesma assinatura e
+os mesmos codigos canonicos. O verificador de consistencia FAT12/FAT32 usa
+leitura fisica sem cache e nao publica reparo, escrita ou novo estado na ABI.
+`storage_check_report_t` e `storage_check_get_last_report()` vivem em
+`storage_internal.h` para a ponte interna com o Shell; nao sao API de
+aplicativos, syscall ou contrato de formato. O Shell apresenta os contadores
+de estruturas, erros, avisos e clusters livres depois de `storage check <id>`.
 
 Desde a MM1, `slab.h` publica o ciclo de vida de caches de objetos fixos,
 consultas de estatisticas, verificacao de posse, validacao global e autoteste.

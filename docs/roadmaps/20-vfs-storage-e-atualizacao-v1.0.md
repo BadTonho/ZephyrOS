@@ -2,7 +2,7 @@
 
 ## Estado
 
-STO1, STO2 e STO3 concluidos; as demais fases permanecem planejadas. Esta frente torna o caminho FAT12/FAT32, Block Layer, buffer cache,
+STO1, STO2, STO3 e STO4 concluidos; as demais fases permanecem planejadas. Esta frente torna o caminho FAT12/FAT32, Block Layer, buffer cache,
 VFS e Storage previsível diante de erro de I/O, cancelamento, reinicialização e
 falha de energia. Não substitui os formatos existentes nem cria um filesystem
 novo para a versão 1.0.0.
@@ -122,16 +122,26 @@ reservada às fases posteriores.
 
 ### STO4 — Verificação de consistência
 
-- [ ] Criar diagnóstico somente leitura para BPB, FAT, diretórios, cadeias,
+- [x] Criar diagnóstico somente leitura para BPB, FAT, diretórios, cadeias,
   tamanhos, clusters livres e duplicidades.
-- [ ] Detectar ciclo, cluster reservado, arquivo truncado, tamanho impossível,
+- [x] Detectar ciclo, cluster reservado, arquivo truncado, tamanho impossível,
   nome inválido, diretório inconsistente e setores fora do volume.
-- [ ] Publicar contagem de erros, avisos e estruturas verificadas com retorno
+- [x] Publicar contagem de erros, avisos e estruturas verificadas com retorno
   canônico.
-- [ ] Garantir que a verificação não altere FAT, diretórios, timestamps,
+- [x] Garantir que a verificação não altere FAT, diretórios, timestamps,
   cache, processos ou hardware.
-- [ ] Adicionar fixtures pequenas, grandes, vazias, corrompidas e de volume
+- [x] Adicionar fixtures pequenas, grandes, vazias, corrompidas e de volume
   ausente.
+
+STO4 foi implementado como uma verificação somente leitura comum a FAT12 e
+FAT32. O caminho valida novamente o MBR e o BPB, compara todas as cópias da
+FAT, verifica entradas reservadas, cadeias, ciclos, tamanhos, ownership,
+duplicidades e LFNs, e publica órfãos e divergências não essenciais como
+avisos. As leituras usam BIO físico sem criar ou invalidar entradas do cache.
+`storage_check()` preserva a assinatura pública; os contadores chegam ao Shell
+por um bridge interno e aparecem em `storage check <id>` para FAT12 e FAT32.
+O agregado host-only é `make test-sto4-host`; a matriz QEMU, reparo e
+recuperação permanecem para STO5–STO7.
 
 ### STO5 — Atualização do sistema
 

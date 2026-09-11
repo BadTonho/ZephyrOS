@@ -1,6 +1,7 @@
 #include "fs/storage.h"
 #include "fs/block_cache.h"
 #include "fs/fs.h"
+#include "fs/storage_internal.h"
 #include "drivers/ata.h"
 #include "core/errors.h"
 #include "core/log.h"
@@ -131,6 +132,7 @@ static int storage_last_error;
 static uint32_t storage_refresh_epoch;
 static uint8_t storage_sync_active;
 static storage_transaction_phase_t storage_transaction_phase;
+static storage_check_report_t storage_check_report;
 static spinlock_t storage_registry_lock;
 static spinlock_t storage_operation_lock;
 static storage_long_dir_entry_t storage_long_cursor_entries[
@@ -894,6 +896,7 @@ int storage_init(void) {
     storage_volume_count = 0;
     storage_mounted_count = 0;
     storage_last_error = OK;
+    kmemset(&storage_check_report, 0, sizeof(storage_check_report));
     storage_sync_active = 0U;
     storage_transaction_phase = STORAGE_TRANSACTION_IDLE;
     storage_initialized = 0;
@@ -3704,198 +3707,823 @@ int storage_find_system_volume(storage_volume_t* out_volume) {
     return storage_initialized ? ERR_NOT_FOUND : ERR_STATE;
 }
 
+typedef struct storage_check_context storage_check_context_t;
+
 typedef struct {
+    storage_check_context_t* check;
+    uint32_t current_offset;
+    char current_short[STORAGE_NAME_SIZE];
+    char current_name[STORAGE_LONG_NAME_SIZE];
+    uint8_t duplicate;
+} storage_check_duplicate_context_t;
+
+typedef struct {
+    storage_check_context_t* check;
+    uint32_t directory_cluster;
+    uint32_t parent_cluster;
+    uint8_t fixed_root;
+    uint32_t depth;
+} storage_check_directory_context_t;
+
+struct storage_check_context {
     const storage_volume_t* volume;
     const storage_mount_t* mount;
-    uint32_t depth;
-} storage_check_context_t;
+    storage_check_report_t report;
+    uint8_t* ownership;
+    uint32_t ownership_bytes;
+};
 
 static int storage_buffers_equal(const uint8_t* left, const uint8_t* right,
                                  uint32_t size) {
     if (!left || !right) return 0;
-    for (uint32_t index = 0; index < size; index++) {
+    for (uint32_t index = 0U; index < size; index++) {
         if (left[index] != right[index]) return 0;
     }
     return 1;
 }
 
-static int storage_check_chain(const storage_volume_t* volume,
-                               const storage_mount_t* mount,
-                               uint32_t first_cluster, uint32_t size) {
-    uint32_t cluster_bytes;
-    uint32_t required_clusters = 0U;
-    uint32_t cluster;
+static int storage_check_record_error(storage_check_context_t* check,
+                                      int error) {
+    if (!check || error == OK) return error;
+    check->report.errors++;
+    if (check->report.last_error == OK) check->report.last_error = error;
+    return error;
+}
 
-    if (!volume || !mount) {
-        LOG_ERROR("FS", "Contexto nulo na verificacao de cadeia FAT32");
+static void storage_check_record_warning(storage_check_context_t* check) {
+    if (check) check->report.warnings++;
+}
+
+static void storage_check_record_structure(storage_check_context_t* check) {
+    if (check) check->report.structures_verified++;
+}
+
+static int storage_check_read_disk(const char* id, uint32_t lba,
+                                   uint8_t* buffer) {
+    block_device_t device;
+    bio_request_t request;
+    int result;
+
+    if (!id || !buffer) {
+        LOG_ERROR("FS", "Leitura fisica de disco com argumento invalido");
         return ERR_NULL;
     }
-    if (!first_cluster) return size ? ERR_INVALID : OK;
-    cluster_bytes = mount->sectors_per_cluster * STORAGE_SECTOR_SIZE;
-    if (size) {
-        required_clusters = size / cluster_bytes;
-        if (size % cluster_bytes) required_clusters++;
-    }
-    cluster = first_cluster;
-    for (uint32_t step = 0; step < STORAGE_MAX_CHAIN_STEPS; step++) {
-        uint32_t next;
+    result = block_find(id, &device);
+    if (result != OK) return result == ERR_NOT_FOUND ? ERR_DISK : result;
+    if (device.sector_size != STORAGE_SECTOR_SIZE ||
+        lba >= device.sector_count) return ERR_DISK;
+    kmemset(&request, 0, sizeof(request));
+    request.device_id = id;
+    request.lba = lba;
+    request.sector_count = 1U;
+    request.buffer = buffer;
+    request.buffer_bytes = STORAGE_SECTOR_SIZE;
+    request.operation = BLOCK_OPERATION_READ;
+    result = block_submit_physical_sync(&request);
+    if (result != OK) return result;
+    return request.completed_sectors == request.sector_count ? OK : ERR_DISK;
+}
 
-        if (cluster < STORAGE_FIRST_DATA_CLUSTER ||
-            cluster >= mount->total_clusters + STORAGE_FIRST_DATA_CLUSTER) {
-            LOG_ERROR("FS", "Cadeia FAT32 aponta para cluster invalido");
+static int storage_check_read_relative(const storage_volume_t* volume,
+                                       uint32_t relative_lba,
+                                       uint8_t* buffer) {
+    uint32_t absolute_lba;
+    bio_request_t request;
+    int result;
+
+    if (!volume || !buffer) {
+        LOG_ERROR("FS", "Leitura fisica de volume com argumento invalido");
+        return ERR_NULL;
+    }
+    result = storage_relative_range(volume, relative_lba, 1U,
+                                    &absolute_lba);
+    if (result != OK) return result;
+    kmemset(&request, 0, sizeof(request));
+    request.device_id = volume->disk_id;
+    request.lba = absolute_lba;
+    request.sector_count = 1U;
+    request.buffer = buffer;
+    request.buffer_bytes = STORAGE_SECTOR_SIZE;
+    request.operation = BLOCK_OPERATION_READ;
+    result = block_submit_physical_sync(&request);
+    if (result != OK) return result;
+    return request.completed_sectors == request.sector_count ? OK : ERR_DISK;
+}
+
+static int storage_check_read_fat_bytes(const storage_check_context_t* check,
+                                        uint32_t offset, uint8_t* output,
+                                        uint32_t size) {
+    uint8_t sector[STORAGE_SECTOR_SIZE];
+    uint32_t copied = 0U;
+    uint32_t fat_bytes;
+    int result;
+
+    if (!check || !output) {
+        LOG_ERROR("FS", "Leitura fisica da FAT com argumento invalido");
+        return ERR_NULL;
+    }
+    if (!size) return OK;
+    if (storage_mul_u32(check->mount->sectors_per_fat,
+                        STORAGE_SECTOR_SIZE, &fat_bytes) != OK ||
+        offset > fat_bytes || size > fat_bytes - offset) return ERR_INVALID;
+    if (offset > 0xFFFFFFFFU - (size - 1U)) return ERR_OVERFLOW;
+    while (copied < size) {
+        uint32_t current = offset + copied;
+        uint32_t sector_index = current / STORAGE_SECTOR_SIZE;
+        uint32_t sector_offset = current % STORAGE_SECTOR_SIZE;
+        uint32_t amount = STORAGE_SECTOR_SIZE - sector_offset;
+
+        if (sector_index >= check->mount->sectors_per_fat ||
+            check->mount->fat_start > 0xFFFFFFFFU - sector_index) {
             return ERR_INVALID;
         }
-        if (storage_next_cluster(volume, mount, cluster, &next) != OK) {
-            LOG_ERROR("FS", "Falha ao ler cadeia FAT32");
-            return ERR_DISK;
+        if (amount > size - copied) amount = size - copied;
+        result = storage_check_read_relative(
+            check->volume, check->mount->fat_start + sector_index, sector);
+        if (result != OK) return result;
+        kmemcpy(output + copied, sector + sector_offset, amount);
+        copied += amount;
+    }
+    return OK;
+}
+
+static int storage_check_read_fat_entry(const storage_check_context_t* check,
+                                        uint32_t cluster, uint32_t* value) {
+    uint8_t bytes[4];
+    uint32_t offset;
+    int result;
+
+    if (!check || !value) {
+        LOG_ERROR("FS", "Entrada FAT sem contexto de verificacao");
+        return ERR_NULL;
+    }
+    if (cluster > check->mount->total_clusters + 1U) {
+        LOG_WARN("FS", "Entrada FAT fora da capacidade na verificacao");
+        return ERR_INVALID;
+    }
+    if (check->mount->fs_type == STORAGE_FS_FAT12) {
+        if (cluster > 0xFFFFFFFFU - cluster / 2U) return ERR_OVERFLOW;
+        offset = cluster + cluster / 2U;
+        result = storage_check_read_fat_bytes(check, offset, bytes, 2U);
+        if (result != OK) return result;
+        *value = cluster & 1U ? storage_read_u16(bytes) >> 4 :
+                                storage_read_u16(bytes) & 0x0FFFU;
+        return OK;
+    }
+    if (cluster > 0xFFFFFFFFU / STORAGE_FAT32_ENTRY_SIZE) {
+        return ERR_OVERFLOW;
+    }
+    offset = cluster * STORAGE_FAT32_ENTRY_SIZE;
+    result = storage_check_read_fat_bytes(check, offset, bytes,
+                                          STORAGE_FAT32_ENTRY_SIZE);
+    if (result == OK) *value = storage_read_u32(bytes) & 0x0FFFFFFFU;
+    return result;
+}
+
+static int storage_check_next_cluster(const storage_check_context_t* check,
+                                      uint32_t cluster, uint32_t* next) {
+    if (!check || !next) {
+        LOG_ERROR("FS", "Proximo cluster sem contexto de verificacao");
+        return ERR_NULL;
+    }
+    if (cluster < STORAGE_FIRST_DATA_CLUSTER ||
+        cluster > check->mount->total_clusters + 1U) {
+        LOG_WARN("FS", "Cluster invalido na cadeia de verificacao");
+        return ERR_INVALID;
+    }
+    return storage_check_read_fat_entry(check, cluster, next);
+}
+
+static int storage_check_cluster_valid(const storage_check_context_t* check,
+                                       uint32_t cluster) {
+    if (!check || cluster < STORAGE_FIRST_DATA_CLUSTER ||
+        check->mount->total_clusters >
+            0xFFFFFFFFU - STORAGE_FIRST_DATA_CLUSTER ||
+        cluster >= check->mount->total_clusters + STORAGE_FIRST_DATA_CLUSTER) {
+        LOG_WARN("FS", "Cluster fora do volume durante a verificacao");
+        return ERR_INVALID;
+    }
+    return OK;
+}
+
+static int storage_check_mark_cluster(storage_check_context_t* check,
+                                      uint32_t cluster) {
+    uint32_t index;
+    uint8_t mask;
+    int result;
+
+    result = storage_check_cluster_valid(check, cluster);
+    if (result != OK) return storage_check_record_error(check, result);
+    index = cluster - STORAGE_FIRST_DATA_CLUSTER;
+    mask = (uint8_t)(1U << (index & 7U));
+    if (check->ownership[index / 8U] & mask) {
+        return storage_check_record_error(check, ERR_INVALID);
+    }
+    check->ownership[index / 8U] |= mask;
+    check->report.referenced_clusters++;
+    return OK;
+}
+
+static int storage_check_chain(storage_check_context_t* check,
+                               uint32_t first_cluster, uint32_t size,
+                               uint8_t directory) {
+    uint32_t cluster_bytes;
+    uint32_t required = 0U;
+    uint32_t cluster;
+
+    if (!check) return ERR_NULL;
+    if (storage_mul_u32(check->mount->sectors_per_cluster,
+                        STORAGE_SECTOR_SIZE, &cluster_bytes) != OK) {
+        return storage_check_record_error(check, ERR_OVERFLOW);
+    }
+    if (size) {
+        required = size / cluster_bytes;
+        if (size % cluster_bytes) required++;
+    }
+    if (!first_cluster) {
+        if (size || directory) {
+            return storage_check_record_error(check, ERR_INVALID);
         }
-        if (storage_cluster_is_bad(mount, next)) {
-            LOG_ERROR("FS", "Cadeia FAT32 aponta para cluster ruim");
-            return ERR_DISK;
-        }
-        if (storage_cluster_is_end(mount, next)) {
-            if (required_clusters && step + 1U < required_clusters) {
-                LOG_ERROR("FS", "Cadeia FAT32 menor que o arquivo");
-                return ERR_INVALID;
+        return OK;
+    }
+    if (!directory && !size) {
+        return storage_check_record_error(check, ERR_INVALID);
+    }
+    cluster = first_cluster;
+    for (uint32_t step = 0U; step < check->mount->total_clusters; step++) {
+        uint32_t next;
+        int result = storage_check_mark_cluster(check, cluster);
+
+        if (result != OK) return result;
+        result = storage_check_next_cluster(check, cluster, &next);
+        if (result != OK) return storage_check_record_error(check, result);
+        storage_check_record_structure(check);
+        if (storage_cluster_is_end(check->mount, next)) {
+            if (required && step + 1U < required) {
+                return storage_check_record_error(check, ERR_INVALID);
             }
             return OK;
         }
+        if (next == 0U || storage_cluster_is_bad(check->mount, next) ||
+            storage_check_cluster_valid(check, next) != OK) {
+            return storage_check_record_error(check, ERR_INVALID);
+        }
+        if (required && step + 1U >= required) {
+            return storage_check_record_error(check, ERR_INVALID);
+        }
         cluster = next;
     }
-    LOG_ERROR("FS", "Cadeia FAT32 excedeu o limite de passos");
+    return storage_check_record_error(check, ERR_OVERFLOW);
+}
+
+static int storage_check_compare(const char* left, const char* right) {
+    return storage_text_equal(left, right);
+}
+
+static int storage_check_name_valid(const storage_long_raw_entry_t* entry) {
+    if (!entry || !entry->short_name[0] || !entry->name[0]) {
+        LOG_WARN("FS", "Nome de diretorio invalido na verificacao");
+        return ERR_INVALID;
+    }
+    for (uint32_t index = 0U; entry->short_name[index]; index++) {
+        uint8_t value = (uint8_t)entry->short_name[index];
+        if (value < 0x20U || value == '/' || value == '\\' || value == ':') {
+            LOG_WARN("FS", "Alias 8.3 invalido na verificacao");
+            return ERR_INVALID;
+        }
+    }
+    for (uint32_t index = 0U; entry->name[index]; index++) {
+        uint8_t value = (uint8_t)entry->name[index];
+        if (value < 0x20U || value == '/' || value == '\\' || value == ':') {
+            LOG_WARN("FS", "Nome longo invalido na verificacao");
+            return ERR_INVALID;
+        }
+    }
+    return OK;
+}
+
+static int storage_check_duplicate_visitor(
+    const storage_long_raw_entry_t* entry, void* context) {
+    storage_check_duplicate_context_t* duplicate =
+        (storage_check_duplicate_context_t*)context;
+
+    if (!entry || !duplicate || !duplicate->check) {
+        LOG_ERROR("FS", "Contexto de duplicidade invalido");
+        return ERR_NULL;
+    }
+    if (entry->entry_offset < duplicate->current_offset &&
+        (storage_check_compare(entry->short_name, duplicate->current_short) ||
+         storage_check_compare(entry->name, duplicate->current_name))) {
+        duplicate->duplicate = 1U;
+    }
+    return OK;
+}
+
+static int storage_check_walk_directory(
+    storage_check_context_t* check, uint32_t cluster, uint8_t fixed_root,
+    storage_long_entry_visitor_t visitor, void* context) {
+    uint8_t sector[STORAGE_SECTOR_SIZE];
+    storage_lfn_state_t lfn;
+    int end = 0;
+
+    if (!check || !visitor) {
+        LOG_ERROR("FS", "Leitor de diretorio sem contexto");
+        return ERR_NULL;
+    }
+    storage_lfn_reset(&lfn);
+    if (fixed_root) {
+        for (uint32_t index = 0U; index < check->mount->root_sectors; index++) {
+            int result = storage_check_read_relative(
+                check->volume, check->mount->root_start + index, sector);
+            if (result != OK) return result;
+            result = storage_visit_long_sector(
+                check->mount, sector,
+                (check->volume->start_lba + check->mount->root_start + index) *
+                    STORAGE_SECTOR_SIZE,
+                &lfn, visitor, context, &end);
+            if (result != OK) return result;
+            if (end) break;
+        }
+        return lfn.active ? ERR_INVALID : OK;
+    }
+    for (uint32_t step = 0U; step < check->mount->total_clusters; step++) {
+        uint32_t cluster_offset;
+        uint32_t relative_lba;
+        uint32_t next;
+        int result;
+
+        if (storage_check_cluster_valid(check, cluster) != OK) return ERR_INVALID;
+        if (storage_mul_u32(cluster - STORAGE_FIRST_DATA_CLUSTER,
+                            check->mount->sectors_per_cluster,
+                            &cluster_offset) != OK ||
+            storage_add_u32(check->mount->data_start, cluster_offset,
+                            &relative_lba) != OK) return ERR_OVERFLOW;
+        for (uint32_t sector_index = 0U;
+             sector_index < check->mount->sectors_per_cluster; sector_index++) {
+            uint32_t current_lba;
+
+            if (storage_add_u32(relative_lba, sector_index, &current_lba) != OK) {
+                return ERR_OVERFLOW;
+            }
+            result = storage_check_read_relative(check->volume, current_lba,
+                                                 sector);
+            if (result != OK) return result;
+            result = storage_visit_long_sector(
+                check->mount, sector,
+                (check->volume->start_lba + current_lba) * STORAGE_SECTOR_SIZE,
+                &lfn, visitor, context, &end);
+            if (result != OK) return result;
+            if (end) break;
+        }
+        if (end) return lfn.active ? ERR_INVALID : OK;
+        result = storage_check_next_cluster(check, cluster, &next);
+        if (result != OK) return result;
+        if (storage_cluster_is_end(check->mount, next)) {
+            return lfn.active ? ERR_INVALID : OK;
+        }
+        if (next == 0U || storage_cluster_is_bad(check->mount, next) ||
+            storage_check_cluster_valid(check, next) != OK) return ERR_INVALID;
+        cluster = next;
+    }
     return ERR_OVERFLOW;
+}
+
+static int storage_check_duplicate_names(
+    storage_check_directory_context_t* directory,
+    const storage_long_raw_entry_t* current) {
+    storage_check_duplicate_context_t duplicate;
+    int result;
+
+    if (!directory || !current) {
+        LOG_ERROR("FS", "Busca de duplicidade sem entrada");
+        return ERR_NULL;
+    }
+    duplicate.check = directory->check;
+    duplicate.current_offset = current->entry_offset;
+    storage_copy_text(duplicate.current_short, STORAGE_NAME_SIZE,
+                      current->short_name);
+    storage_copy_text(duplicate.current_name, STORAGE_LONG_NAME_SIZE,
+                      current->name);
+    duplicate.duplicate = 0U;
+    result = storage_check_walk_directory(
+        directory->check, directory->directory_cluster, directory->fixed_root,
+        storage_check_duplicate_visitor, &duplicate);
+    if (result != OK) return result;
+    return duplicate.duplicate ? ERR_INVALID : OK;
 }
 
 static int storage_check_directory_visitor(
     const storage_long_raw_entry_t* entry, void* context) {
-    storage_check_context_t* check = (storage_check_context_t*)context;
-    storage_check_context_t child;
-    int chain_result;
+    storage_check_directory_context_t* directory =
+        (storage_check_directory_context_t*)context;
+    storage_check_context_t* check;
+    uint8_t is_directory;
+    int result;
 
-    if (!entry || !check || !check->volume || !check->mount) {
-        LOG_ERROR("FS", "Contexto invalido na verificacao de diretorio");
-        return ERR_NULL;
+    if (!entry || !directory || !directory->check) return ERR_NULL;
+    check = directory->check;
+    result = storage_check_name_valid(entry);
+    if (result != OK) return storage_check_record_error(check, result);
+    result = storage_check_duplicate_names(directory, entry);
+    if (result != OK) return storage_check_record_error(check, result);
+    storage_check_record_structure(check);
+    is_directory = (entry->attributes & STORAGE_ATTR_DIRECTORY) != 0U;
+    if (!is_directory) {
+        if (entry->first_cluster || entry->size) {
+            result = storage_check_chain(check, entry->first_cluster,
+                                         entry->size, 0U);
+            if (result != OK) return result;
+        }
+        check->report.files_verified++;
+        return OK;
     }
-    chain_result = storage_check_chain(check->volume, check->mount,
-                                       entry->first_cluster, entry->size);
-    if (chain_result != OK) {
-        LOG_ERROR("FS", "Cadeia de entrada FAT32 inconsistente");
-        return chain_result;
+    if (storage_check_compare(entry->name, ".")) {
+        if (entry->first_cluster != directory->directory_cluster) {
+            return storage_check_record_error(check, ERR_INVALID);
+        }
+        return OK;
     }
-    if (!(entry->attributes & STORAGE_ATTR_DIRECTORY) ||
-        (entry->name[0] == '.' &&
-         (entry->name[1] == '\0' ||
-          (entry->name[1] == '.' && entry->name[2] == '\0')))) return OK;
+    if (storage_check_compare(entry->name, "..")) {
+        if (entry->first_cluster != directory->parent_cluster &&
+            !(directory->fixed_root && entry->first_cluster == 0U)) {
+            return storage_check_record_error(check, ERR_INVALID);
+        }
+        return OK;
+    }
     if (entry->first_cluster < STORAGE_FIRST_DATA_CLUSTER) {
-        LOG_ERROR("FS", "Diretorio FAT32 sem cluster valido");
-        return ERR_INVALID;
+        return storage_check_record_error(check, ERR_INVALID);
     }
-    if (check->depth >= STORAGE_MAX_CHAIN_STEPS) {
-        LOG_ERROR("FS", "Profundidade de diretorios FAT32 excedida");
-        return ERR_OVERFLOW;
+    result = storage_check_chain(check, entry->first_cluster, 0U, 1U);
+    if (result != OK) return result;
+    check->report.directories_verified++;
+    if (directory->depth >= check->mount->total_clusters) {
+        return storage_check_record_error(check, ERR_OVERFLOW);
     }
-    child = *check;
-    child.depth++;
-    return storage_walk_directory_long(
-        check->volume, check->mount, entry->first_cluster, 0,
-        storage_check_directory_visitor, &child);
+    {
+        storage_check_directory_context_t child = *directory;
+        child.directory_cluster = entry->first_cluster;
+        child.parent_cluster = directory->directory_cluster;
+        child.fixed_root = 0U;
+        child.depth++;
+        return storage_check_walk_directory(
+            check, entry->first_cluster, 0U,
+            storage_check_directory_visitor, &child);
+    }
 }
 
-static int storage_check_metadata(const storage_volume_t* volume,
-                                  const storage_mount_t* mount) {
+static int storage_check_validate_mbr(storage_check_context_t* check) {
+    uint8_t sector[STORAGE_SECTOR_SIZE];
+    uint32_t starts[STORAGE_MBR_ENTRY_COUNT];
+    uint32_t counts[STORAGE_MBR_ENTRY_COUNT];
+    uint8_t active[STORAGE_MBR_ENTRY_COUNT];
+    block_device_t device;
+    int selected = 0;
+    int result;
+
+    if (check->volume->layout != STORAGE_LAYOUT_MBR) return OK;
+    result = block_find(check->volume->disk_id, &device);
+    if (result != OK) return storage_check_record_error(
+        check, result == ERR_NOT_FOUND ? ERR_DISK : result);
+    result = storage_check_read_disk(check->volume->disk_id, 0U, sector);
+    if (result != OK) return storage_check_record_error(check, result);
+    if (sector[STORAGE_MBR_SIGNATURE_OFFSET] != 0x55U ||
+        sector[STORAGE_MBR_SIGNATURE_OFFSET + 1U] != 0xAAU) {
+        return storage_check_record_error(check, ERR_INVALID);
+    }
+    kmemset(active, 0, sizeof(active));
+    for (uint32_t index = 0U; index < STORAGE_MBR_ENTRY_COUNT; index++) {
+        const uint8_t* entry = sector + STORAGE_MBR_TABLE_OFFSET +
+                               index * STORAGE_MBR_ENTRY_SIZE;
+        uint8_t type = entry[STORAGE_MBR_TYPE_OFFSET];
+        uint32_t start = storage_read_u32(entry + STORAGE_MBR_START_LBA_OFFSET);
+        uint32_t count = storage_read_u32(
+            entry + STORAGE_MBR_SECTOR_COUNT_OFFSET);
+        uint32_t end;
+
+        if (!type && !start && !count &&
+            entry[STORAGE_MBR_BOOT_FLAG_OFFSET] == 0U) continue;
+        if (!type || (entry[STORAGE_MBR_BOOT_FLAG_OFFSET] != 0U &&
+                      entry[STORAGE_MBR_BOOT_FLAG_OFFSET] !=
+                          STORAGE_MBR_BOOTABLE_FLAG) || !start || !count ||
+            start >= device.sector_count ||
+            storage_add_u32(start, count, &end) != OK ||
+            end > device.sector_count) {
+            return storage_check_record_error(check, ERR_INVALID);
+        }
+        starts[index] = start;
+        counts[index] = count;
+        active[index] = 1U;
+        if (index + 1U == check->volume->partition_index) {
+            if (start != check->volume->start_lba ||
+                count != check->volume->sector_count ||
+                type != check->volume->partition_type) {
+                return storage_check_record_error(check, ERR_INVALID);
+            }
+            selected = 1;
+        }
+        storage_check_record_structure(check);
+    }
+    if (!selected) return storage_check_record_error(check, ERR_INVALID);
+    for (uint32_t left = 0U; left < STORAGE_MBR_ENTRY_COUNT; left++) {
+        if (!active[left]) continue;
+        for (uint32_t right = left + 1U;
+             right < STORAGE_MBR_ENTRY_COUNT; right++) {
+            uint32_t left_end;
+            if (!active[right]) continue;
+            left_end = starts[left] + counts[left];
+            if (starts[left] < starts[right] + counts[right] &&
+                starts[right] < left_end) {
+                return storage_check_record_error(check, ERR_INVALID);
+            }
+        }
+    }
+    return OK;
+}
+
+static int storage_check_validate_bpb(storage_check_context_t* check,
+                                      uint32_t* fsinfo_hint) {
     uint8_t boot[STORAGE_SECTOR_SIZE];
     uint8_t backup_boot[STORAGE_SECTOR_SIZE];
     uint8_t fsinfo[STORAGE_SECTOR_SIZE];
     uint8_t backup_fsinfo[STORAGE_SECTOR_SIZE];
-    uint16_t fsinfo_sector;
-    uint16_t backup_sector;
+    storage_volume_t candidate;
+    storage_mount_t probe;
+    uint32_t data_sectors;
+    uint32_t data_end;
+    int result;
 
-    if (storage_read_relative(volume, 0, 1, boot) != OK) {
-        return ERR_DISK;
+    result = storage_check_read_relative(check->volume, 0U, boot);
+    if (result != OK) return storage_check_record_error(check, result);
+    candidate = *check->volume;
+    result = storage_parse_bpb(&candidate, boot, &probe);
+    if (result != OK) return storage_check_record_error(check, result);
+    if (probe.fs_type != check->mount->fs_type ||
+        probe.total_sectors != check->mount->total_sectors ||
+        probe.fat_start != check->mount->fat_start ||
+        probe.sectors_per_fat != check->mount->sectors_per_fat ||
+        probe.data_start != check->mount->data_start ||
+        probe.total_clusters != check->mount->total_clusters ||
+        probe.sectors_per_cluster != check->mount->sectors_per_cluster) {
+        return storage_check_record_error(check, ERR_INVALID);
     }
-    fsinfo_sector = storage_read_u16(boot + 48U);
-    backup_sector = storage_read_u16(boot + 50U);
-    if (!fsinfo_sector || !backup_sector ||
-        fsinfo_sector >= mount->total_sectors ||
-        backup_sector >= mount->total_sectors ||
-        storage_read_relative(volume, backup_sector, 1, backup_boot) != OK ||
-        storage_read_relative(volume, fsinfo_sector, 1, fsinfo) != OK ||
-        storage_read_relative(volume, backup_sector + 1U, 1,
-                              backup_fsinfo) != OK) {
-        return ERR_DISK;
+    if (storage_mul_u32(probe.total_clusters, probe.sectors_per_cluster,
+                        &data_sectors) != OK ||
+        storage_add_u32(probe.data_start, data_sectors, &data_end) != OK ||
+        data_end > probe.total_sectors) {
+        return storage_check_record_error(check, ERR_INVALID);
     }
-    if (!storage_buffers_equal(boot, backup_boot, STORAGE_SECTOR_SIZE) ||
-        !storage_buffers_equal(fsinfo, backup_fsinfo, STORAGE_SECTOR_SIZE) ||
-        storage_read_u32(fsinfo) != 0x41615252U ||
-        storage_read_u32(fsinfo + 484U) != 0x61417272U ||
-        storage_read_u32(fsinfo + 508U) != 0xAA550000U) {
-        LOG_ERROR("FS", "BPB, backup ou FSInfo FAT32 divergente");
-        return ERR_INVALID;
+    storage_check_record_structure(check);
+    if (probe.fs_type != STORAGE_FS_FAT32) return OK;
+    {
+        uint16_t fsinfo_sector = storage_read_u16(boot + 48U);
+        uint16_t backup_sector = storage_read_u16(boot + 50U);
+
+        if (!fsinfo_sector || !backup_sector ||
+            fsinfo_sector >= probe.total_sectors ||
+            backup_sector >= probe.total_sectors ||
+            backup_sector + 1U >= probe.total_sectors) {
+            return storage_check_record_error(check, ERR_INVALID);
+        }
+        result = storage_check_read_relative(check->volume, backup_sector,
+                                             backup_boot);
+        if (result != OK) return storage_check_record_error(check, result);
+        result = storage_check_read_relative(check->volume, fsinfo_sector,
+                                             fsinfo);
+        if (result != OK) return storage_check_record_error(check, result);
+        result = storage_check_read_relative(check->volume, backup_sector + 1U,
+                                             backup_fsinfo);
+        if (result != OK) return storage_check_record_error(check, result);
+        if (!storage_buffers_equal(boot, backup_boot, STORAGE_SECTOR_SIZE) ||
+            storage_read_u32(fsinfo) != 0x41615252U ||
+            storage_read_u32(fsinfo + 484U) != 0x61417272U ||
+            storage_read_u32(fsinfo + 508U) != 0xAA550000U ||
+            storage_read_u32(backup_fsinfo) != 0x41615252U ||
+            storage_read_u32(backup_fsinfo + 484U) != 0x61417272U ||
+            storage_read_u32(backup_fsinfo + 508U) != 0xAA550000U) {
+            return storage_check_record_error(check, ERR_INVALID);
+        }
+        if (!storage_buffers_equal(fsinfo, backup_fsinfo,
+                                   STORAGE_SECTOR_SIZE)) {
+            storage_check_record_warning(check);
+        }
+        if (fsinfo_hint) *fsinfo_hint = storage_read_u32(fsinfo + 488U);
+        storage_check_record_structure(check);
     }
-    (void)mount;
+    return OK;
+}
+
+static int storage_check_validate_fat(storage_check_context_t* check) {
+    uint8_t first[STORAGE_SECTOR_SIZE];
+    uint8_t other[STORAGE_SECTOR_SIZE];
+    uint32_t cluster_limit;
+    uint32_t value;
+    int result;
+
+    if (check->mount->fat_count > STORAGE_MAX_FAT_COPIES) {
+        return storage_check_record_error(check, ERR_INVALID);
+    }
+    for (uint32_t sector = 0U; sector < check->mount->sectors_per_fat;
+         sector++) {
+        for (uint32_t copy = 0U; copy < check->mount->fat_count; copy++) {
+            uint32_t offset;
+            uint32_t lba;
+
+            if (storage_mul_u32(copy, check->mount->sectors_per_fat,
+                                &offset) != OK ||
+                storage_add_u32(check->mount->fat_start, offset, &lba) != OK ||
+                storage_add_u32(lba, sector, &lba) != OK) {
+                return storage_check_record_error(check, ERR_OVERFLOW);
+            }
+            result = storage_check_read_relative(
+                check->volume, lba, copy ? other : first);
+            if (result != OK) return storage_check_record_error(check, result);
+            if (copy && !storage_buffers_equal(first, other,
+                                               STORAGE_SECTOR_SIZE)) {
+                return storage_check_record_error(check, ERR_INVALID);
+            }
+            storage_check_record_structure(check);
+        }
+    }
+    result = storage_check_read_fat_entry(check, 0U, &value);
+    if (result != OK) return storage_check_record_error(check, result);
+    if (!storage_cluster_is_end(check->mount, value)) {
+        return storage_check_record_error(check, ERR_INVALID);
+    }
+    result = storage_check_read_fat_entry(check, 1U, &value);
+    if (result != OK) return storage_check_record_error(check, result);
+    if (!storage_cluster_is_end(check->mount, value)) {
+        return storage_check_record_error(check, ERR_INVALID);
+    }
+    if (check->mount->total_clusters >
+        0xFFFFFFFFU - STORAGE_FIRST_DATA_CLUSTER) {
+        return storage_check_record_error(check, ERR_OVERFLOW);
+    }
+    cluster_limit = check->mount->total_clusters + STORAGE_FIRST_DATA_CLUSTER;
+    for (uint32_t cluster = STORAGE_FIRST_DATA_CLUSTER;
+         cluster < cluster_limit; cluster++) {
+        result = storage_check_read_fat_entry(check, cluster, &value);
+        if (result != OK) return storage_check_record_error(check, result);
+        if (value == 0U) {
+            check->report.free_clusters++;
+        } else if (!storage_cluster_is_end(check->mount, value) &&
+                   !storage_cluster_is_bad(check->mount, value) &&
+                   storage_check_cluster_valid(check, value) != OK) {
+            return storage_check_record_error(check, ERR_INVALID);
+        }
+        storage_check_record_structure(check);
+    }
+    return OK;
+}
+
+static int storage_check_orphans(storage_check_context_t* check) {
+    uint32_t cluster_limit;
+
+    if (check->mount->total_clusters >
+        0xFFFFFFFFU - STORAGE_FIRST_DATA_CLUSTER) {
+        return storage_check_record_error(check, ERR_OVERFLOW);
+    }
+    cluster_limit = check->mount->total_clusters + STORAGE_FIRST_DATA_CLUSTER;
+    for (uint32_t cluster = STORAGE_FIRST_DATA_CLUSTER;
+         cluster < cluster_limit; cluster++) {
+        uint32_t value;
+        int result = storage_check_read_fat_entry(check, cluster, &value);
+        if (result != OK) return storage_check_record_error(check, result);
+        if (value != 0U && !storage_cluster_is_bad(check->mount, value) &&
+            !(check->ownership[(cluster - STORAGE_FIRST_DATA_CLUSTER) / 8U] &
+              (uint8_t)(1U << ((cluster - STORAGE_FIRST_DATA_CLUSTER) & 7U)))) {
+            storage_check_record_warning(check);
+        }
+    }
+    return OK;
+}
+
+static void storage_check_publish_report(const storage_check_report_t* report) {
+    if (!report) return;
+    storage_check_report = *report;
+}
+
+int storage_check_get_last_report(storage_check_report_t* out_report) {
+    if (!out_report) {
+        LOG_ERROR("FS", "Relatorio de verificacao sem destino");
+        return ERR_NULL;
+    }
+    *out_report = storage_check_report;
     return OK;
 }
 
 int storage_check(const char* id) {
+    storage_check_context_t check;
     storage_volume_t* volume;
     storage_mount_t* mount;
-    uint8_t first[STORAGE_SECTOR_SIZE];
-    uint8_t second[STORAGE_SECTOR_SIZE];
-    storage_check_context_t check_context;
+    uint32_t fsinfo_hint = 0xFFFFFFFFU;
+    uint32_t ownership_bits;
     int index;
-    int result;
+    int result = OK;
 
+    kmemset(&check, 0, sizeof(check));
     if (!id) {
+        check.report.last_error = ERR_NULL;
+        check.report.errors = 1U;
+        storage_check_publish_report(&check.report);
         LOG_ERROR("FS", "ID nulo na verificacao de volume");
         return ERR_NULL;
     }
     spinlock_acquire(&storage_operation_lock);
     index = storage_initialized ? storage_volume_index(id) : -1;
     if (index < 0 || !storage_volumes[index].mounted) {
+        result = index < 0 ? ERR_NOT_FOUND : ERR_STATE;
+        check.report.last_error = result;
+        check.report.errors = 1U;
+        storage_check_publish_report(&check.report);
         spinlock_release(&storage_operation_lock);
         LOG_ERROR("FS", "Volume nao encontrado ou desmontado na verificacao");
-        return index < 0 ? ERR_NOT_FOUND : ERR_STATE;
+        return result;
     }
     volume = &storage_volumes[index];
     mount = storage_mount_for_volume((uint8_t)index);
-    if (!mount || mount->fs_type != STORAGE_FS_FAT32) {
+    if (!mount || (mount->fs_type != STORAGE_FS_FAT12 &&
+                   mount->fs_type != STORAGE_FS_FAT32)) {
+        result = ERR_UNAVAILABLE;
+        check.report.last_error = result;
+        check.report.errors = 1U;
+        storage_check_publish_report(&check.report);
         spinlock_release(&storage_operation_lock);
-        LOG_ERROR("FS", "Verificacao exige volume FAT32 montado");
-        return ERR_UNAVAILABLE;
+        LOG_ERROR("FS", "Filesystem sem verificador de consistencia");
+        return result;
     }
-    result = storage_check_metadata(volume, mount);
-    for (uint32_t sector = 0; sector < mount->sectors_per_fat; sector++) {
-        if (result != OK) break;
-        result = storage_read_relative(volume, mount->fat_start + sector, 1,
-                                       first);
-        if (result != OK) break;
-        result = storage_read_relative(
-            volume, mount->fat_start + mount->sectors_per_fat + sector, 1,
-            second);
-        if (result != OK) break;
-        for (uint32_t byte = 0; byte < STORAGE_SECTOR_SIZE; byte++) {
-            if (first[byte] != second[byte]) {
-                result = ERR_INVALID;
-                break;
-            }
-        }
-        if (result != OK) break;
+    check.volume = volume;
+    check.mount = mount;
+    if (mount->total_clusters > 0xFFFFFFFFU - STORAGE_FIRST_DATA_CLUSTER) {
+        result = storage_check_record_error(&check, ERR_OVERFLOW);
+        goto storage_check_finish;
     }
-    if (result == OK) {
-        check_context.volume = volume;
-        check_context.mount = mount;
-        check_context.depth = 0U;
-        result = storage_walk_directory_long(
-            volume, mount, mount->root_cluster, 0,
-            storage_check_directory_visitor, &check_context);
+    ownership_bits = mount->total_clusters + 7U;
+    if (ownership_bits < mount->total_clusters) {
+        result = storage_check_record_error(&check, ERR_OVERFLOW);
+        goto storage_check_finish;
     }
+    check.ownership_bytes = ownership_bits / 8U;
+    check.ownership = (uint8_t*)kmalloc(check.ownership_bytes);
+    if (!check.ownership) {
+        result = storage_check_record_error(&check, ERR_MEM);
+        goto storage_check_finish;
+    }
+    result = storage_check_validate_mbr(&check);
+    if (result != OK) goto storage_check_finish;
+    result = storage_check_validate_bpb(&check, &fsinfo_hint);
+    if (result != OK) goto storage_check_finish;
+    result = storage_check_validate_fat(&check);
+    if (result != OK) goto storage_check_finish;
+    if (mount->fs_type == STORAGE_FS_FAT12) {
+        storage_check_directory_context_t directory;
+
+        check.report.directories_verified = 1U;
+        kmemset(&directory, 0, sizeof(directory));
+        directory.check = &check;
+        directory.fixed_root = 1U;
+        result = storage_check_walk_directory(
+            &check, 0U, 1U, storage_check_directory_visitor, &directory);
+    } else {
+        storage_check_directory_context_t directory;
+
+        result = storage_check_chain(&check, mount->root_cluster, 0U, 1U);
+        if (result != OK) goto storage_check_finish;
+        check.report.directories_verified = 1U;
+        kmemset(&directory, 0, sizeof(directory));
+        directory.check = &check;
+        directory.directory_cluster = mount->root_cluster;
+        directory.parent_cluster = mount->root_cluster;
+        result = storage_check_walk_directory(
+            &check, mount->root_cluster, 0U,
+            storage_check_directory_visitor, &directory);
+    }
+    if (result != OK) {
+        result = storage_check_record_error(&check, result);
+        goto storage_check_finish;
+    }
+    result = storage_check_orphans(&check);
+    if (result == OK && fsinfo_hint != 0xFFFFFFFFU &&
+        fsinfo_hint != check.report.free_clusters) {
+        storage_check_record_warning(&check);
+    }
+
+storage_check_finish:
+    if (check.ownership) kfree(check.ownership);
+    if (result == OK && check.report.errors) result = check.report.last_error;
+    if (result != OK && check.report.last_error == OK) {
+        result = storage_check_record_error(&check, result);
+    }
+    storage_check_publish_report(&check.report);
     spinlock_release(&storage_operation_lock);
     if (result != OK) {
         storage_log_volume(LOG_LEVEL_ERROR, id,
-                           "verificacao FAT32 encontrou inconsistencias");
+                           "verificacao de consistencia encontrou erro");
         return result;
     }
-    storage_log_volume(LOG_LEVEL_INFO, id, "verificacao FAT32 concluida");
+    storage_log_volume(LOG_LEVEL_INFO, id,
+                       check.report.warnings ?
+                       "verificacao concluida com avisos" :
+                       "verificacao de consistencia concluida");
     return OK;
 }
 

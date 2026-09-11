@@ -11,6 +11,7 @@
 #include "fs/block_cache.h"
 #include "fs/file_index.h"
 #include "fs/storage.h"
+#include "fs/storage_internal.h"
 #include "fs/vfs.h"
 
 void shell_dispatch_cmd_index(const char* arguments);
@@ -50,6 +51,7 @@ static int fixture_storage_find_disk_result;
 static int fixture_storage_find_volume_result;
 static int fixture_storage_system_volume_result;
 static int fixture_storage_check_result;
+static storage_check_report_t fixture_storage_check_report;
 static int fixture_mount_result;
 static int fixture_unmount_result;
 static storage_status_t fixture_storage_status;
@@ -130,6 +132,8 @@ static void fixture_reset(void) {
     fixture_storage_find_volume_result = ERR_NOT_FOUND;
     fixture_storage_system_volume_result = ERR_NOT_FOUND;
     fixture_storage_check_result = ERR_UNAVAILABLE;
+    kmemset(&fixture_storage_check_report, 0,
+            sizeof(fixture_storage_check_report));
     fixture_mount_result = ERR_UNAVAILABLE;
     fixture_unmount_result = ERR_UNAVAILABLE;
     fixture_index_rebuild_result = ERR_UNAVAILABLE;
@@ -338,6 +342,12 @@ int storage_find_system_volume(storage_volume_t* out_volume) {
 int storage_check(const char* id) {
     (void)id;
     return fixture_storage_check_result;
+}
+
+int storage_check_get_last_report(storage_check_report_t* out_report) {
+    if (!out_report) return ERR_NULL;
+    *out_report = fixture_storage_check_report;
+    return OK;
 }
 
 const char* storage_fs_name(storage_fs_type_t type) {
@@ -746,32 +756,37 @@ static int check_storage_commands(void) {
     if (expect_contains("catalogo=0x30")) return 19;
 
     fixture_storage_check_result = OK;
+    fixture_storage_check_report.structures_verified = 12U;
+    fixture_storage_check_report.free_clusters = 34U;
     output_reset();
     shell_dispatch_cmd_storage("check SYS0");
-    if (expect_text("Volume FAT32 consistente.\n")) return 20;
+    if (expect_contains("Volume FAT32 consistente.")) return 20;
+    if (expect_contains("Verificadas: 12 | erros: 0 | avisos: 0 | livres: 34")) return 21;
     fixture_storage_check_result = ERR_DISK;
+    fixture_storage_check_report.errors = 1U;
+    fixture_storage_check_report.last_error = ERR_DISK;
     output_reset();
     shell_dispatch_cmd_storage("check SYS0");
-    if (expect_text("Erro: verificacao FAT32 recusada.\n")) return 21;
+    if (expect_contains("Erro: verificacao FAT32 recusada (codigo 3).")) return 22;
 
     fixture_mount_result = OK;
     output_reset();
     shell_dispatch_cmd_storage("mount SYS0");
-    if (expect_text("Volume montado somente-leitura em RAM.\n")) return 22;
+    if (expect_text("Volume montado somente-leitura em RAM.\n")) return 23;
     fixture_unmount_result = ERR_STATE;
     output_reset();
     shell_dispatch_cmd_storage("unmount SYS0");
-    if (expect_text("Erro: operacao storage recusada (codigo 7).\n")) return 23;
+    if (expect_text("Erro: operacao storage recusada (codigo 7).\n")) return 24;
 
     output_reset();
     shell_dispatch_cmd_storage("unknown SYS0");
-    if (expect_contains("Uso: storage list")) return 24;
-    output_reset();
-    shell_dispatch_cmd_storage("check");
     if (expect_contains("Uso: storage list")) return 25;
     output_reset();
-    shell_dispatch_cmd_storage("info SYS0 extra");
+    shell_dispatch_cmd_storage("check");
     if (expect_contains("Uso: storage list")) return 26;
+    output_reset();
+    shell_dispatch_cmd_storage("info SYS0 extra");
+    if (expect_contains("Uso: storage list")) return 27;
     output_reset();
     shell_dispatch_cmd_storage("storage list");
     if (expect_contains("Uso: storage list")) return 27;

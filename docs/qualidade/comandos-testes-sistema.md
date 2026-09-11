@@ -89,7 +89,18 @@ gate de transição, diagnósticos durante bloqueio, refresh atômico, rollback,
 desmontagem ocupada, gerações de montagem, perda de dispositivo, aliases
 diagnosticáveis e preservação dos pseudo-filesystems.
 
-## TST2 — protocolo e executor QEMU
+## STO4 - verificacao de consistencia
+
+```text
+make test-sto4-host
+```
+
+O agregado cobre o diagnostico somente leitura de FAT12 e FAT32, MBR/BPB,
+copias da FAT, cadeias, tamanhos, LFNs, duplicidades, clusters orfaos e
+divergencias de FSInfo. Os fixtures confirmam que `storage check <id>` nao
+escreve no volume nem altera o Block Cache.
+
+## TST2 - protocolo e executor QEMU
 
 Testes host-only:
 
