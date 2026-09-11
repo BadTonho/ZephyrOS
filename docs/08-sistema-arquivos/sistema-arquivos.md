@@ -1068,6 +1068,30 @@ Falhas anteriores ao commit liberam os gates quando possivel; nenhuma API de
 VFS, Storage ou App API nova altera layouts binarios ou permite escrita em
 pseudo-filesystems.
 
+## STO3 - Ciclo de vida dos volumes VFS
+
+O namespace VFS possui um gate interno para refresh, montagem, desmontagem e
+quiescencia. Enquanto uma transicao esta ativa, novas operacoes normais sao
+recusadas com erro de estado; fechamento, liberacao de recursos e consultas
+read-only de status, snapshots e validacao continuam disponiveis. O refresh
+constroi e valida uma tabela fora do estado publicado e somente a troca depois
+de concluir todas as verificacoes. Falhas preservam a tabela anterior.
+
+As geracoes de montagem sao mantidas pelo proprio VFS, independentemente da
+enumeracao do Storage. Uma troca de identidade em um slot incrementa a
+geracao, portanto referencias antigas nao podem ser reutilizadas. Montagens
+`/`, `/dev`, `/proc` e `/sys` sao pinned. Um volume Storage ocupado por arquivo
+aberto, operacao ativa ou CWD nao pode ser desmontado; a operacao retorna
+`ERR_STATE`. Quando um dispositivo desaparece, aliases sem referencias sao
+removidos. Com handles ou CWD ativos, o alias permanece somente para
+diagnostico e novas operacoes no Storage falham ate a liberacao das referencias.
+
+`/etc`, `/var` e `/home` pertencem ao volume raiz persistente. `/run` e `/tmp`
+sao hierarquia temporaria no mesmo volume. Refresh e montagem nao criam esses
+diretorios automaticamente e volumes auxiliares nao podem hospedar essa
+hierarquia. O caminho de energia usa `storage_unmount_after_sync()` depois do
+sync unico, sem repetir a sincronizacao durante a desmontagem.
+
 ## Pipes anonimos e redirecionamento VFS4
 
 `vfs_pipe()` cria dois descritores no processo atual: `fds[0]` somente para

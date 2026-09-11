@@ -2,7 +2,7 @@
 
 ## Estado
 
-STO1 e STO2 concluidos; as demais fases permanecem planejadas. Esta frente torna o caminho FAT12/FAT32, Block Layer, buffer cache,
+STO1, STO2 e STO3 concluidos; as demais fases permanecem planejadas. Esta frente torna o caminho FAT12/FAT32, Block Layer, buffer cache,
 VFS e Storage previsível diante de erro de I/O, cancelamento, reinicialização e
 falha de energia. Não substitui os formatos existentes nem cria um filesystem
 novo para a versão 1.0.0.
@@ -96,18 +96,29 @@ após reboot continuam reservados ao STO6–STO7.
 
 ### STO3 — VFS e ciclo de vida dos volumes
 
-- [ ] Bloquear novas operações normais durante sync/desmontagem sem bloquear
+- [x] Bloquear novas operações normais durante sync/desmontagem sem bloquear
   diagnósticos necessários para explicar a falha.
-- [ ] Rejeitar desmontagem de volume com arquivo aberto, operação ativa ou CWD
+- [x] Rejeitar desmontagem de volume com arquivo aberto, operação ativa ou CWD
   apontando para ele.
-- [ ] Desmontar apenas volumes não-pinned e preservar `/`, `/dev`, `/proc` e
+- [x] Desmontar apenas volumes não-pinned e preservar `/`, `/dev`, `/proc` e
   `/sys` conforme seus contratos.
-- [ ] Confirmar que handles, CWD, caches, filas e referências ao volume sejam
+- [x] Confirmar que handles, CWD, caches, filas e referências ao volume sejam
   invalidados ou transferidos sem uso após liberação.
-- [ ] Definir a hierarquia mínima persistente e temporária (`/etc`, `/var`,
+- [x] Definir a hierarquia mínima persistente e temporária (`/etc`, `/var`,
   `/run`, `/home` e `/tmp`) e quais volumes podem hospedá-la.
-- [ ] Repetir mount/unmount, perda de dispositivo e ausência de Storage sem
+- [x] Repetir mount/unmount, perda de dispositivo e ausência de Storage sem
   referências residuais.
+
+STO3 foi implementado com um gate interno de ciclo de vida, refresh atômico e
+gerações monotônicas próprias do namespace VFS. Operações normais são recusadas
+durante transições, enquanto fechamento, liberação e diagnósticos de snapshot
+permanecem disponíveis. Montagens pinned, arquivos abertos, CWDs ativos e
+operações em andamento impedem desmontagens inseguras; perda de Storage remove
+aliases sem referências e conserva aliases diagnosticáveis enquanto houver
+referências. A hierarquia `/etc`, `/var` e `/home` permanece no volume raiz,
+com `/run` e `/tmp` temporários, sem criação automática durante refresh.
+O agregado host-only é `make test-sto3-host`; a matriz QEMU completa permanece
+reservada às fases posteriores.
 
 ### STO4 — Verificação de consistência
 

@@ -78,6 +78,17 @@ repetido, deadlines, durabilidade degradada, publicação de substituições,
 rename, delete, streaming e limpeza de temporários. Journaling persistente e
 recuperação após reboot ficam para STO6–STO7.
 
+## STO3 — VFS e ciclo de vida dos volumes
+
+```text
+make test-sto3-host
+```
+
+O agregado executa FS, Storage, energia, processo e VFS/path. Ele verifica o
+gate de transição, diagnósticos durante bloqueio, refresh atômico, rollback,
+desmontagem ocupada, gerações de montagem, perda de dispositivo, aliases
+diagnosticáveis e preservação dos pseudo-filesystems.
+
 ## TST2 — protocolo e executor QEMU
 
 Testes host-only:

@@ -30982,6 +30982,146 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "api:src/include/fs/vfs_internal.h:vfs_lifecycle_begin_transition",
+      "kind": "api_function",
+      "source": "src/include/fs/vfs_internal.h",
+      "symbol": "vfs_lifecycle_begin_transition",
+      "linkage": "public",
+      "owner": "fs",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:vfs",
+        "qemu:tst4:storage-vfs",
+        "qemu:tst5:apps",
+        "qemu:tst5:shell",
+        "qemu:tst5:storage",
+        "qemu:tst6:stress:kernel",
+        "qemu:tst6:stress:network",
+        "qemu:tst6:stress:storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "api:src/include/fs/vfs_internal.h:vfs_lifecycle_end_transition",
+      "kind": "api_function",
+      "source": "src/include/fs/vfs_internal.h",
+      "symbol": "vfs_lifecycle_end_transition",
+      "linkage": "public",
+      "owner": "fs",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:vfs",
+        "qemu:tst4:storage-vfs",
+        "qemu:tst5:apps",
+        "qemu:tst5:shell",
+        "qemu:tst5:storage",
+        "qemu:tst6:stress:kernel",
+        "qemu:tst6:stress:network",
+        "qemu:tst6:stress:storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "api:src/include/fs/vfs_internal.h:vfs_lifecycle_enter_normal",
+      "kind": "api_function",
+      "source": "src/include/fs/vfs_internal.h",
+      "symbol": "vfs_lifecycle_enter_normal",
+      "linkage": "public",
+      "owner": "fs",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:vfs",
+        "qemu:tst4:storage-vfs",
+        "qemu:tst5:apps",
+        "qemu:tst5:shell",
+        "qemu:tst5:storage",
+        "qemu:tst6:stress:kernel",
+        "qemu:tst6:stress:network",
+        "qemu:tst6:stress:storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "api:src/include/fs/vfs_internal.h:vfs_lifecycle_is_blocked",
+      "kind": "api_function",
+      "source": "src/include/fs/vfs_internal.h",
+      "symbol": "vfs_lifecycle_is_blocked",
+      "linkage": "public",
+      "owner": "fs",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:vfs",
+        "qemu:tst4:storage-vfs",
+        "qemu:tst5:apps",
+        "qemu:tst5:shell",
+        "qemu:tst5:storage",
+        "qemu:tst6:stress:kernel",
+        "qemu:tst6:stress:network",
+        "qemu:tst6:stress:storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
+      "id": "api:src/include/fs/vfs_internal.h:vfs_lifecycle_leave_normal",
+      "kind": "api_function",
+      "source": "src/include/fs/vfs_internal.h",
+      "symbol": "vfs_lifecycle_leave_normal",
+      "linkage": "public",
+      "owner": "fs",
+      "layer": "public-header",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:vfs",
+        "qemu:tst4:storage-vfs",
+        "qemu:tst5:apps",
+        "qemu:tst5:shell",
+        "qemu:tst5:storage",
+        "qemu:tst6:stress:kernel",
+        "qemu:tst6:stress:network",
+        "qemu:tst6:stress:storage"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "api:src/include/fs/vfs_internal.h:vfs_mount_acquire",
       "kind": "api_function",
       "source": "src/include/fs/vfs_internal.h",
@@ -111775,9 +111915,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:block"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/block.c:block_rate",
@@ -112238,9 +112381,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:block"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/block.c:block_unregister",
@@ -114843,9 +114989,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:fat12"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/fat12.c:fat12_cluster_valid",
@@ -114861,9 +115010,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:fat12"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/fat12.c:fat12_create_dir_entry",
@@ -115825,9 +115977,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:fat12"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/fat12.c:fat12_validate_bpb",
@@ -115966,9 +116121,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/fat32.c:fat32_cluster_valid",
@@ -115984,9 +116142,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/fat32.c:fat32_create_dir_entry",
@@ -116065,9 +116226,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/fat32.c:fat32_find_free_cluster",
@@ -120674,6 +120838,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:storage",
         "host:storage:storage-fat32"
       ],
       "tags": [],
@@ -121420,9 +121585,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage-fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_find_disk",
@@ -121551,9 +121719,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage-fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_find_long_visitor",
@@ -122358,6 +122529,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:storage",
         "host:storage:storage-fat32"
       ],
       "tags": [],
@@ -122797,6 +122969,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:storage",
         "host:storage:storage-fat32"
       ],
       "tags": [],
@@ -122877,9 +123050,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage-fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_resolve_directory",
@@ -122943,9 +123119,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage-fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_slot_writer_abort",
@@ -123306,9 +123485,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:storage:storage-fat32"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/storage.c:storage_sync_volume",
@@ -125587,6 +125769,114 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/fs/vfs.c:vfs_lifecycle_begin_transition",
+      "kind": "c_function",
+      "source": "src/fs/vfs.c",
+      "symbol": "vfs_lifecycle_begin_transition",
+      "linkage": "external",
+      "owner": "fs",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "c:src/fs/vfs.c:vfs_lifecycle_block_error",
+      "kind": "c_function",
+      "source": "src/fs/vfs.c",
+      "symbol": "vfs_lifecycle_block_error",
+      "linkage": "static",
+      "owner": "fs",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "c:src/fs/vfs.c:vfs_lifecycle_end_transition",
+      "kind": "c_function",
+      "source": "src/fs/vfs.c",
+      "symbol": "vfs_lifecycle_end_transition",
+      "linkage": "external",
+      "owner": "fs",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "c:src/fs/vfs.c:vfs_lifecycle_enter_normal",
+      "kind": "c_function",
+      "source": "src/fs/vfs.c",
+      "symbol": "vfs_lifecycle_enter_normal",
+      "linkage": "external",
+      "owner": "fs",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "c:src/fs/vfs.c:vfs_lifecycle_is_blocked",
+      "kind": "c_function",
+      "source": "src/fs/vfs.c",
+      "symbol": "vfs_lifecycle_is_blocked",
+      "linkage": "external",
+      "owner": "fs",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "c:src/fs/vfs.c:vfs_lifecycle_leave_normal",
+      "kind": "c_function",
+      "source": "src/fs/vfs.c",
+      "symbol": "vfs_lifecycle_leave_normal",
+      "linkage": "external",
+      "owner": "fs",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
       "id": "c:src/fs/vfs.c:vfs_lseek",
       "kind": "c_function",
       "source": "src/fs/vfs.c",
@@ -127161,11 +127451,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:vfs-path",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/vfs_path.c:vfs_find_mount_for_path_unlocked",
@@ -127377,6 +127668,24 @@
       ],
       "tags": [],
       "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/fs/vfs_path.c:vfs_mount_next_generation",
+      "kind": "c_function",
+      "source": "src/fs/vfs_path.c",
+      "symbol": "vfs_mount_next_generation",
+      "linkage": "static",
+      "owner": "fs",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/fs/vfs_path.c:vfs_mount_release",
@@ -127730,6 +128039,24 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/fs/vfs_path.c:vfs_refresh_mounts_internal",
+      "kind": "c_function",
+      "source": "src/fs/vfs_path.c",
+      "symbol": "vfs_refresh_mounts_internal",
+      "linkage": "static",
+      "owner": "fs",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
       "id": "c:src/fs/vfs_path.c:vfs_resolve_canonical",
       "kind": "c_function",
       "source": "src/fs/vfs_path.c",
@@ -127839,11 +128166,12 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:storage:vfs-path",
         "qemu:tst4:storage-vfs",
         "qemu:tst6:stress:storage"
       ],
       "tags": [],
-      "coverage_mode": "integration"
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/fs/wav.c:memcmp",
@@ -170651,7 +170979,8 @@
         "core",
         "power",
         "negative",
-        "sto2"
+        "sto2",
+        "sto3"
       ]
     },
     {
@@ -176644,7 +176973,8 @@
         "snapshots",
         "limits",
         "recovery",
-        "coverage"
+        "coverage",
+        "sto3"
       ],
       "status": "AUTOMATED"
     },
@@ -179009,6 +179339,7 @@
         "c:src/fs/block.c:block_init",
         "c:src/fs/block.c:block_queue_enqueue",
         "c:src/fs/block.c:block_queue_remove_locked",
+        "c:src/fs/block.c:block_range_valid",
         "c:src/fs/block.c:block_rate",
         "c:src/fs/block.c:block_read",
         "c:src/fs/block.c:block_read_backend",
@@ -179028,6 +179359,7 @@
         "c:src/fs/block.c:block_text_equal",
         "c:src/fs/block.c:block_text_terminated",
         "c:src/fs/block.c:block_text_valid",
+        "c:src/fs/block.c:block_transfer_bytes",
         "c:src/fs/block.c:block_unregister",
         "c:src/fs/block.c:block_validate_bio",
         "c:src/fs/block.c:block_validate_state",
@@ -179276,6 +179608,8 @@
         "c:src/fs/fat12.c:fat12_atomic_delete_root",
         "c:src/fs/fat12.c:fat12_atomic_write_file_in_dir",
         "c:src/fs/fat12.c:fat12_atomic_write_root",
+        "c:src/fs/fat12.c:fat12_cluster_lba",
+        "c:src/fs/fat12.c:fat12_cluster_valid",
         "c:src/fs/fat12.c:fat12_create_dir_entry",
         "c:src/fs/fat12.c:fat12_delete_file",
         "c:src/fs/fat12.c:fat12_delete_file_in_dir",
@@ -179321,6 +179655,7 @@
         "c:src/fs/fat12.c:fat12_stream_is_active",
         "c:src/fs/fat12.c:fat12_stream_write_root",
         "c:src/fs/fat12.c:fat12_strncmp",
+        "c:src/fs/fat12.c:fat12_total_clusters",
         "c:src/fs/fat12.c:fat12_validate_bpb",
         "c:src/fs/fat12.c:fat12_write_atomic_clusters",
         "c:src/fs/fat12.c:fat12_write_dir_cluster",
@@ -179380,9 +179715,12 @@
         "api:src/include/fs/fat32.h:fat32_write_file_in_dir",
         "c:src/core/string.c:kmemcpy",
         "c:src/core/string.c:kmemset",
+        "c:src/fs/fat32.c:fat32_cluster_lba",
+        "c:src/fs/fat32.c:fat32_cluster_valid",
         "c:src/fs/fat32.c:fat32_create_dir_entry",
         "c:src/fs/fat32.c:fat32_delete_file",
         "c:src/fs/fat32.c:fat32_delete_file_in_dir",
+        "c:src/fs/fat32.c:fat32_fat_offset",
         "c:src/fs/fat32.c:fat32_find_free_cluster",
         "c:src/fs/fat32.c:fat32_find_in_dir",
         "c:src/fs/fat32.c:fat32_find_path_entry",
@@ -179898,6 +180236,7 @@
         "c:src/core/string.c:kmemset",
         "c:src/core/string.c:kstrlen",
         "c:src/fs/storage.c:storage_add_disk",
+        "c:src/fs/storage.c:storage_add_u32",
         "c:src/fs/storage.c:storage_add_volume",
         "c:src/fs/storage.c:storage_append_text",
         "c:src/fs/storage.c:storage_atomic_write_file",
@@ -179950,6 +180289,7 @@
         "c:src/fs/storage.c:storage_mark_overlaps",
         "c:src/fs/storage.c:storage_mount",
         "c:src/fs/storage.c:storage_mount_for_volume",
+        "c:src/fs/storage.c:storage_mul_u32",
         "c:src/fs/storage.c:storage_name_to_fat",
         "c:src/fs/storage.c:storage_next_cluster",
         "c:src/fs/storage.c:storage_next_component",
@@ -179966,6 +180306,7 @@
         "c:src/fs/storage.c:storage_refresh",
         "c:src/fs/storage.c:storage_refresh_disk",
         "c:src/fs/storage.c:storage_register_raw",
+        "c:src/fs/storage.c:storage_relative_range",
         "c:src/fs/storage.c:storage_rename_file",
         "c:src/fs/storage.c:storage_resolve_directory",
         "c:src/fs/storage.c:storage_scan_mbr",
@@ -180109,10 +180450,12 @@
         "c:src/fs/storage.c:storage_copy_label",
         "c:src/fs/storage.c:storage_copy_text",
         "c:src/fs/storage.c:storage_delete_file",
+        "c:src/fs/storage.c:storage_fat32_cluster_selected",
         "c:src/fs/storage.c:storage_find_entry_long",
         "c:src/fs/storage.c:storage_find_file",
         "c:src/fs/storage.c:storage_find_file_long",
         "c:src/fs/storage.c:storage_find_free_directory_slots",
+        "c:src/fs/storage.c:storage_find_free_fat32_cluster",
         "c:src/fs/storage.c:storage_find_long_visitor",
         "c:src/fs/storage.c:storage_find_volume",
         "c:src/fs/storage.c:storage_free_mount",
@@ -180157,8 +180500,10 @@
         "c:src/fs/storage.c:storage_relative_range",
         "c:src/fs/storage.c:storage_release_fat32_chain",
         "c:src/fs/storage.c:storage_rename_file",
+        "c:src/fs/storage.c:storage_replace_temporary_unlocked",
         "c:src/fs/storage.c:storage_resolve_directory",
         "c:src/fs/storage.c:storage_scan_mbr",
+        "c:src/fs/storage.c:storage_select_fat32_clusters",
         "c:src/fs/storage.c:storage_slot_writer_abort",
         "c:src/fs/storage.c:storage_slot_writer_begin",
         "c:src/fs/storage.c:storage_slot_writer_build_entry",
@@ -180170,6 +180515,7 @@
         "c:src/fs/storage.c:storage_split_file_path",
         "c:src/fs/storage.c:storage_sync_all",
         "c:src/fs/storage.c:storage_sync_all_until",
+        "c:src/fs/storage.c:storage_sync_barrier",
         "c:src/fs/storage.c:storage_text_equal",
         "c:src/fs/storage.c:storage_transaction_writer_abort",
         "c:src/fs/storage.c:storage_transaction_writer_begin",
@@ -180340,6 +180686,11 @@
         "api:src/include/fs/vfs.h:vfs_validate_state",
         "api:src/include/fs/vfs.h:vfs_write",
         "api:src/include/fs/vfs.h:vfs_write_redirect",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_begin_transition",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_end_transition",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_enter_normal",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_is_blocked",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_leave_normal",
         "api:src/include/fs/vfs_internal.h:vfs_open_socket",
         "api:src/include/fs/vfs_internal.h:vfs_stream_poll",
         "api:src/include/fs/vfs_internal.h:vfs_stream_read",
@@ -180425,7 +180776,8 @@
         "storage",
         "vfs",
         "negative",
-        "sto2"
+        "sto2",
+        "sto3"
       ]
     },
     {
@@ -180485,6 +180837,7 @@
         "c:src/fs/vfs_path.c:vfs_dir_add_virtual",
         "c:src/fs/vfs_path.c:vfs_dir_name_equal",
         "c:src/fs/vfs_path.c:vfs_fd_table_inherit_cwd",
+        "c:src/fs/vfs_path.c:vfs_find_mount_by_volume_unlocked",
         "c:src/fs/vfs_path.c:vfs_find_mount_for_path_unlocked",
         "c:src/fs/vfs_path.c:vfs_getcwd",
         "c:src/fs/vfs_path.c:vfs_legacy_prefix",
@@ -180512,14 +180865,16 @@
         "c:src/fs/vfs_path.c:vfs_resolve_canonical",
         "c:src/fs/vfs_path.c:vfs_resolve_directory",
         "c:src/fs/vfs_path.c:vfs_resolve_open_path",
-        "c:src/fs/vfs_path.c:vfs_sysfs_mount_fill"
+        "c:src/fs/vfs_path.c:vfs_sysfs_mount_fill",
+        "c:src/fs/vfs_path.c:vfs_unmount_volume"
       ],
       "tags": [
         "host",
         "storage",
         "vfs",
         "negative",
-        "sto2"
+        "sto2",
+        "sto3"
       ]
     },
     {
@@ -183587,6 +183942,11 @@
         "api:src/include/fs/vfs.h:vfs_validate_state",
         "api:src/include/fs/vfs.h:vfs_write",
         "api:src/include/fs/vfs.h:vfs_write_redirect",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_begin_transition",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_end_transition",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_enter_normal",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_is_blocked",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_leave_normal",
         "api:src/include/fs/vfs_internal.h:vfs_mount_acquire",
         "api:src/include/fs/vfs_internal.h:vfs_mount_release",
         "api:src/include/fs/vfs_internal.h:vfs_mount_validate_reference",
@@ -184473,6 +184833,11 @@
         "api:src/include/fs/vfs.h:vfs_validate_state",
         "api:src/include/fs/vfs.h:vfs_write",
         "api:src/include/fs/vfs.h:vfs_write_redirect",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_begin_transition",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_end_transition",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_enter_normal",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_is_blocked",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_leave_normal",
         "api:src/include/fs/vfs_internal.h:vfs_mount_acquire",
         "api:src/include/fs/vfs_internal.h:vfs_mount_release",
         "api:src/include/fs/vfs_internal.h:vfs_mount_validate_reference",
@@ -187517,6 +187882,11 @@
         "api:src/include/fs/vfs.h:vfs_validate_state",
         "api:src/include/fs/vfs.h:vfs_write",
         "api:src/include/fs/vfs.h:vfs_write_redirect",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_begin_transition",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_end_transition",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_enter_normal",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_is_blocked",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_leave_normal",
         "api:src/include/fs/vfs_internal.h:vfs_open_socket",
         "api:src/include/fs/vfs_internal.h:vfs_stream_poll",
         "api:src/include/fs/vfs_internal.h:vfs_stream_read",
@@ -188209,6 +188579,11 @@
         "api:src/include/fs/vfs.h:vfs_validate_state",
         "api:src/include/fs/vfs.h:vfs_write",
         "api:src/include/fs/vfs.h:vfs_write_redirect",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_begin_transition",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_end_transition",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_enter_normal",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_is_blocked",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_leave_normal",
         "api:src/include/fs/vfs_internal.h:vfs_mount_acquire",
         "api:src/include/fs/vfs_internal.h:vfs_mount_release",
         "api:src/include/fs/vfs_internal.h:vfs_mount_validate_reference",
@@ -190313,6 +190688,11 @@
         "api:src/include/fs/vfs.h:vfs_validate_state",
         "api:src/include/fs/vfs.h:vfs_write",
         "api:src/include/fs/vfs.h:vfs_write_redirect",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_begin_transition",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_end_transition",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_enter_normal",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_is_blocked",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_leave_normal",
         "api:src/include/fs/vfs_internal.h:vfs_open_socket",
         "api:src/include/fs/vfs_internal.h:vfs_stream_poll",
         "api:src/include/fs/vfs_internal.h:vfs_stream_read",
@@ -190901,6 +191281,11 @@
         "api:src/include/fs/vfs.h:vfs_validate_state",
         "api:src/include/fs/vfs.h:vfs_write",
         "api:src/include/fs/vfs.h:vfs_write_redirect",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_begin_transition",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_end_transition",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_enter_normal",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_is_blocked",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_leave_normal",
         "api:src/include/fs/vfs_internal.h:vfs_mount_acquire",
         "api:src/include/fs/vfs_internal.h:vfs_mount_release",
         "api:src/include/fs/vfs_internal.h:vfs_mount_validate_reference",
@@ -191607,6 +191992,11 @@
         "api:src/include/fs/vfs.h:vfs_validate_state",
         "api:src/include/fs/vfs.h:vfs_write",
         "api:src/include/fs/vfs.h:vfs_write_redirect",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_begin_transition",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_end_transition",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_enter_normal",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_is_blocked",
+        "api:src/include/fs/vfs_internal.h:vfs_lifecycle_leave_normal",
         "api:src/include/fs/vfs_internal.h:vfs_mount_acquire",
         "api:src/include/fs/vfs_internal.h:vfs_mount_release",
         "api:src/include/fs/vfs_internal.h:vfs_mount_validate_reference",

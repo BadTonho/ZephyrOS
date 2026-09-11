@@ -67,6 +67,7 @@ make test-fs-host
 make test-permissions-host
 make test-sto1-host
 make test-sto2-host
+make test-sto3-host
 make test-storage-host
 make test-block-host
 make test-fat12-host
@@ -195,6 +196,12 @@ valida sync vazio/repetido, deadlines, durabilidade `READY`/`DEGRADED`/`ERROR`,
 barreiras ordenadas, substituicao, rename, exclusao, streaming, abortamento e
 limpeza sem residuos. A matriz QEMU e a recuperacao apos reboot permanecem
 reservadas ao STO6–STO7.
+
+O alvo agregado `test-sto3-host` executa FS, Storage, energia, processo e
+VFS/path. Ele valida o gate interno de ciclo de vida, refresh atomico,
+rollback de montagem, desmontagem ocupada, geracoes monotônicas, perda de
+dispositivo e preservacao de `/`, `/dev`, `/proc` e `/sys` sem referencias
+residuais.
 
 O caso `test-permissions-host` valida credenciais fixas, capacidades, modos
 POSIX, travessia, dispositivos, procfs/sysfs e o sidecar `ZPERM.DAT`, incluindo

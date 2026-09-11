@@ -828,6 +828,18 @@ int main(void) {
            OK);
     EXPECT(kstrcmp(inherited.cwd, "/") == 0);
 
+    EXPECT(!vfs_lifecycle_is_blocked());
+    EXPECT(vfs_lifecycle_begin_transition(0U) == OK);
+    EXPECT(vfs_lifecycle_is_blocked());
+    EXPECT(vfs_open("fixture", VFS_MODE_READ, &fd) == ERR_UNAVAILABLE);
+    EXPECT(vfs_get_status(&status) == OK);
+    EXPECT(vfs_lifecycle_begin_transition(0U) == ERR_STATE);
+    vfs_lifecycle_end_transition();
+    EXPECT(!vfs_lifecycle_is_blocked());
+    EXPECT(vfs_lifecycle_enter_normal() == OK);
+    EXPECT(vfs_lifecycle_begin_transition(0U) == ERR_STATE);
+    vfs_lifecycle_leave_normal();
+
     EXPECT(vfs_open(0, VFS_MODE_READ, &fd) == ERR_NULL);
     EXPECT(vfs_open("fixture", 0U, &fd) == ERR_INVALID);
     EXPECT(vfs_open("/directory", VFS_MODE_READ, &fd) == ERR_INVALID);

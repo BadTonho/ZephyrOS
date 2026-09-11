@@ -5,6 +5,11 @@
 #include "fs/vfs.h"
 
 int vfs_path_init(void);
+int vfs_lifecycle_enter_normal(void);
+void vfs_lifecycle_leave_normal(void);
+int vfs_lifecycle_begin_transition(uint8_t allow_quiescing);
+void vfs_lifecycle_end_transition(void);
+int vfs_lifecycle_is_blocked(void);
 int vfs_resolve_open_path(const char* path, uint32_t mode,
                           vfs_lookup_result_t* result);
 int vfs_mount_acquire(uint32_t slot, uint32_t generation);

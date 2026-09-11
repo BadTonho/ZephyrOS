@@ -526,6 +526,15 @@ Pacotes 0.3 a 0.8 permanecem aceitos. `shell_pipeline.h` publica o bridge
 interno de I/O, `grep` e o autoteste `pipetest`, sem alterar as assinaturas de
 `shell.h`.
 
+No STO3, nenhuma API publica, syscall, ABI ring3 ou layout de `vfs.h` foi
+alterado. O gate de ciclo de vida e seus helpers sao internos a `vfs_internal.h`.
+Durante refresh, montagem, desmontagem ou quiescencia, novas operacoes normais
+sao bloqueadas, enquanto fechamento, liberacao e diagnosticos read-only seguem
+disponiveis. As geracoes de montagem agora sao monotônicas no namespace VFS e
+nao dependem da enumeracao do Storage; referencias antigas retornam `ERR_STATE`
+e volumes ausentes retornam `ERR_UNAVAILABLE`. A tabela de mounts continua
+atômica e as montagens pinned permanecem protegidas.
+
 Desde a MM1, `slab.h` publica o ciclo de vida de caches de objetos fixos,
 consultas de estatisticas, verificacao de posse, validacao global e autoteste.
 `kmem_cache_destroy()` retorna erro quando o cache e invalido ou ainda possui

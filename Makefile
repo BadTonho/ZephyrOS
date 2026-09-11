@@ -1896,6 +1896,8 @@ test-sto1-host: test-block-host test-fat12-host test-fat32-host test-fs-host tes
 
 test-sto2-host: test-block-host test-fat12-host test-fat32-host test-fs-host test-storage-host test-storage-fat32-host test-power-host test-vfs-host test-vfs-path-host
 
+test-sto3-host: test-fs-host test-storage-host test-storage-fat32-host test-power-host test-process-host test-vfs-host test-vfs-path-host
+
 test-vfs-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_vfs_host.c tests\catalog.json src\fs\vfs.c src\fs\permissions.c src\process\credentials.c src\include\fs\vfs.h src\include\fs\permissions.h src\include\process\credentials.h src\include\process\resource.h
 	python tools\core_host_runner.py --case host:storage:vfs --cc "$(HOST_CC)"
 
@@ -2248,7 +2250,7 @@ clean:
 .PHONY: kernel-elf
 .PHONY: test-assembly-qemu test-assembly-trace-qemu test-assembly-boot-trace-qemu test-assembly-recovery-trace-qemu
 .PHONY: test-qemu-parallel test-qemu-soak-parallel test-sec6-host test-sec6-qemu test-sec6
-.PHONY: test-sto1-host test-sto2-host
+.PHONY: test-sto1-host test-sto2-host test-sto3-host
 .PHONY: test-tst4-qemu-paging-vma test-tst4-qemu-execution test-tst4-qemu-storage-vfs test-tst4-qemu-network test-tst4-qemu-platform
 .PHONY: test-tst5-host test-tst5-qemu-shell test-tst5-qemu-input test-tst5-qemu-apps test-tst5-qemu-processes test-tst5-qemu-storage test-tst5-qemu-network test-tst5-qemu-update-recovery test-tst5-qemu-reboot test-tst5-qemu-poweroff
 .PHONY: test-krn6-qemu-diagnostics

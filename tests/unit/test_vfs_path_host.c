@@ -35,6 +35,9 @@ static uint32_t fake_log_count;
 static uint32_t fake_cursor_index;
 static int fake_mount_result = OK;
 static int fake_unmount_result = OK;
+static uint8_t fake_refresh_probe;
+static int fake_refresh_probe_result;
+static vfs_lookup_result_t fake_refresh_probe_lookup;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -153,6 +156,37 @@ int vfs_power_is_quiescing(void) {
     return fake_quiescing;
 }
 
+static uint8_t fake_lifecycle_transition;
+static uint32_t fake_lifecycle_operations;
+
+int vfs_lifecycle_is_blocked(void) {
+    return fake_quiescing || fake_lifecycle_transition;
+}
+
+int vfs_lifecycle_enter_normal(void) {
+    if (fake_quiescing) return ERR_UNAVAILABLE;
+    if (fake_lifecycle_transition) return ERR_STATE;
+    fake_lifecycle_operations++;
+    return OK;
+}
+
+void vfs_lifecycle_leave_normal(void) {
+    if (fake_lifecycle_operations) fake_lifecycle_operations--;
+}
+
+int vfs_lifecycle_begin_transition(uint8_t allow_quiescing) {
+    if (fake_lifecycle_transition ||
+        (fake_quiescing && !allow_quiescing) ||
+        fake_lifecycle_operations) return fake_quiescing && !allow_quiescing ?
+            ERR_UNAVAILABLE : ERR_STATE;
+    fake_lifecycle_transition = 1U;
+    return OK;
+}
+
+void vfs_lifecycle_end_transition(void) {
+    fake_lifecycle_transition = 0U;
+}
+
 static void fill_volume(uint8_t index, const char* id, uint8_t boot,
                         storage_volume_role_t role, uint32_t generation) {
     storage_volume_t* volume = &fake_volumes[index];
@@ -175,6 +209,10 @@ static void fill_volume(uint8_t index, const char* id, uint8_t boot,
 
 int storage_get_status(storage_status_t* out_status) {
     if (!out_status) return ERR_NULL;
+    if (fake_refresh_probe) {
+        fake_refresh_probe = 0U;
+        fake_refresh_probe_result = vfs_lookup("/", &fake_refresh_probe_lookup);
+    }
     *out_status = fake_storage_status;
     return OK;
 }
@@ -239,7 +277,9 @@ int storage_get_path_info(const char* id, const char* path, uint32_t* out_size,
         return ERR_NULL;
     }
     if (strcmp(id, "system") != 0 && strcmp(id, "data") != 0 &&
-        strcmp(id, "boot") != 0) return ERR_NOT_FOUND;
+        strcmp(id, "boot") != 0 && strcmp(id, "newdata") != 0) {
+        return ERR_NOT_FOUND;
+    }
     *out_size = 0U;
     *out_attributes = 0U;
     *out_directory = 0U;
@@ -389,6 +429,11 @@ int main(void) {
     uint32_t lookups;
     uint32_t chdirs;
     uint32_t unmounted;
+    uint32_t old_data_slot = VFS_MAX_MOUNTS;
+    uint32_t old_data_generation = 0U;
+    uint32_t new_data_slot = VFS_MAX_MOUNTS;
+    uint32_t new_data_generation = 0U;
+    uint32_t before_loss_count = 0U;
 
     coverage_active = 1U;
     memset(&fake_current, 0, sizeof(fake_current));
@@ -457,8 +502,20 @@ int main(void) {
 
     EXPECT(vfs_mount_volume("data") == OK);
 
+    EXPECT(vfs_unmount_volume("system") == ERR_STATE);
+    EXPECT(vfs_unmount_volume("boot") == ERR_STATE);
+    EXPECT(vfs_unmount_volume("devfs") == ERR_STATE);
+
     EXPECT(vfs_copy_mounts(mounts, VFS_MAX_MOUNTS, &count) == OK);
     EXPECT(count == 6U);
+    for (uint32_t index = 0U; index < count; index++) {
+        if (strcmp(mounts[index].volume_id, "data") == 0) {
+            old_data_slot = mounts[index].slot;
+            old_data_generation = mounts[index].generation;
+        }
+    }
+    EXPECT(old_data_slot < VFS_MAX_MOUNTS);
+    EXPECT(old_data_generation != 0U);
     EXPECT(vfs_copy_mounts(mounts, 1U, &count) == ERR_OVERFLOW);
     EXPECT(vfs_mount_acquire(VFS_MAX_MOUNTS, 1U) == ERR_INVALID);
     EXPECT(vfs_mount_acquire(VFS_MAX_STORAGE_MOUNTS, 1U) == OK);
@@ -475,6 +532,20 @@ int main(void) {
     EXPECT(vfs_fd_table_inherit_cwd(&inherited, 0) == OK);
     EXPECT(strcmp(inherited.cwd, "/") == 0);
 
+    fake_lifecycle_operations = 1U;
+    EXPECT(vfs_refresh_mounts() == ERR_STATE);
+    fake_lifecycle_operations = 0U;
+    fake_lifecycle_transition = 1U;
+    EXPECT(vfs_copy_mounts(mounts, VFS_MAX_MOUNTS, &count) == OK);
+    EXPECT(vfs_lookup("/", &lookup) == ERR_STATE);
+    fake_lifecycle_transition = 0U;
+
+    fake_refresh_probe = 1U;
+    EXPECT(vfs_refresh_mounts() == OK);
+    EXPECT(fake_refresh_probe_result == ERR_STATE);
+
+    EXPECT(vfs_chdir("/mnt/data/dir") == OK);
+    EXPECT(vfs_unmount_volume("data") == ERR_STATE);
     EXPECT(vfs_chdir("/") == OK);
     EXPECT(vfs_power_unmount_storage_until(fake_ticks - 1U, &unmounted) == ERR_TIMEOUT);
     EXPECT(vfs_power_unmount_storage_until(fake_ticks + 100U, 0) == ERR_NULL);
@@ -482,6 +553,39 @@ int main(void) {
     EXPECT(vfs_power_unmount_storage_until(fake_ticks + 100U, &unmounted) == OK);
     EXPECT(unmounted == 1U);
     EXPECT(vfs_path_validate_state() == OK);
+
+    set_text(fake_volumes[2].id, sizeof(fake_volumes[2].id), "newdata");
+    fake_volumes[2].mounted = 1U;
+    fake_volumes[2].state = STORAGE_VOLUME_MOUNTED;
+    fake_storage_status.initialized = 1U;
+    fake_storage_status.mounted_count = 3U;
+    fake_storage_status.volume_count = 3U;
+    EXPECT(vfs_refresh_mounts() == OK);
+    EXPECT(vfs_copy_mounts(mounts, VFS_MAX_MOUNTS, &count) == OK);
+    for (uint32_t index = 0U; index < count; index++) {
+        if (strcmp(mounts[index].volume_id, "newdata") == 0) {
+            new_data_slot = mounts[index].slot;
+            new_data_generation = mounts[index].generation;
+        }
+    }
+    EXPECT(new_data_slot == old_data_slot);
+    EXPECT(new_data_generation != old_data_generation);
+    EXPECT(vfs_mount_validate_reference(old_data_slot,
+                                        old_data_generation) == ERR_STATE);
+    EXPECT(vfs_mount_acquire(new_data_slot, new_data_generation) == OK);
+    EXPECT(vfs_unmount_volume("newdata") == ERR_STATE);
+    vfs_mount_release(new_data_slot, new_data_generation);
+    EXPECT(vfs_unmount_volume("newdata") == OK);
+    EXPECT(vfs_copy_mounts(mounts, VFS_MAX_MOUNTS, &before_loss_count) == OK);
+
+    fake_volumes[0].mounted = 0U;
+    fake_volumes[1].mounted = 0U;
+    fake_storage_status.initialized = 0U;
+    fake_storage_status.mounted_count = 0U;
+    EXPECT(vfs_refresh_mounts() == ERR_STATE);
+    EXPECT(vfs_copy_mounts(mounts, VFS_MAX_MOUNTS, &count) == OK);
+    EXPECT(count == before_loss_count);
+    EXPECT(vfs_path_validate_state() == ERR_STATE);
 
     fake_quiescing = 1U;
     EXPECT(vfs_lookup("/", &lookup) == ERR_UNAVAILABLE);

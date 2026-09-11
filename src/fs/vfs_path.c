@@ -15,11 +15,17 @@ typedef struct {
 } vfs_mount_entry_t;
 
 static vfs_mount_entry_t vfs_mount_table[VFS_MAX_MOUNTS];
+static uint32_t vfs_mount_generations[VFS_MAX_MOUNTS];
 static spinlock_t vfs_mount_lock;
 static uint32_t vfs_lookup_count;
 static uint32_t vfs_chdir_count;
 static uint8_t vfs_path_ready;
 static uint32_t vfs_mount_cwd_references(const char* mount_point);
+
+static uint32_t vfs_mount_next_generation(uint32_t generation) {
+    generation++;
+    return generation ? generation : 1U;
+}
 
 static int vfs_path_fail(int error, const char* message) {
     LOG_WARN("FS", message);
@@ -277,7 +283,7 @@ static void vfs_mount_fill(vfs_mount_info_t* info,
     kmemset(info, 0, sizeof(*info));
     info->used = 1U;
     info->slot = slot;
-    info->generation = volume->generation ? volume->generation : 1U;
+    info->generation = 0U;
     info->pinned = volume->pinned || volume->boot ||
                    vfs_path_equal(mount_point, "/");
     info->read_only = volume->read_only;
@@ -337,12 +343,16 @@ int vfs_path_init(void) {
     LOG_INFO("FS", "Inicializando namespace de caminhos VFS");
     spinlock_init(&vfs_mount_lock);
     kmemset(vfs_mount_table, 0, sizeof(vfs_mount_table));
+    kmemset(vfs_mount_generations, 0, sizeof(vfs_mount_generations));
     vfs_devfs_mount_fill(
         &vfs_mount_table[VFS_MAX_STORAGE_MOUNTS].info);
     vfs_procfs_mount_fill(
         &vfs_mount_table[VFS_MAX_STORAGE_MOUNTS + 1U].info);
     vfs_sysfs_mount_fill(
         &vfs_mount_table[VFS_MAX_STORAGE_MOUNTS + 2U].info);
+    vfs_mount_generations[VFS_MAX_STORAGE_MOUNTS] = 1U;
+    vfs_mount_generations[VFS_MAX_STORAGE_MOUNTS + 1U] = 1U;
+    vfs_mount_generations[VFS_MAX_STORAGE_MOUNTS + 2U] = 1U;
     vfs_lookup_count = 0U;
     vfs_chdir_count = 0U;
     vfs_path_ready = 1U;
@@ -350,12 +360,13 @@ int vfs_path_init(void) {
     return OK;
 }
 
-int vfs_refresh_mounts(void) {
+static int vfs_refresh_mounts_internal(void) {
     storage_status_t storage_status;
     storage_volume_t volumes[VFS_MAX_STORAGE_MOUNTS];
     vfs_mount_info_t desired[VFS_MAX_MOUNTS];
     vfs_mount_entry_t updated[VFS_MAX_MOUNTS];
     uint8_t placed[VFS_MAX_MOUNTS];
+    uint32_t generations[VFS_MAX_MOUNTS];
     uint32_t volume_count = 0U;
     uint32_t desired_count = 0U;
     int root_index = -1;
@@ -366,11 +377,8 @@ int vfs_refresh_mounts(void) {
         return vfs_path_fail(ERR_STATE,
                              "Status Storage indisponivel no refresh VFS");
     }
-    if (!storage_status.initialized) {
-        return vfs_path_fail(ERR_STATE,
-                             "Storage nao inicializado no refresh VFS");
-    }
-    if (storage_status.mounted_count > VFS_MAX_STORAGE_MOUNTS) {
+    if (storage_status.initialized &&
+        storage_status.mounted_count > VFS_MAX_STORAGE_MOUNTS) {
         return vfs_path_fail(ERR_OVERFLOW,
                              "Montagens Storage excedem capacidade VFS");
     }
@@ -381,7 +389,8 @@ int vfs_refresh_mounts(void) {
     vfs_devfs_mount_fill(&desired[desired_count++]);
     vfs_procfs_mount_fill(&desired[desired_count++]);
     vfs_sysfs_mount_fill(&desired[desired_count++]);
-    while (volume_count < storage_status.mounted_count) {
+    while (storage_status.initialized &&
+           volume_count < storage_status.mounted_count) {
         if (storage_get_mounted_at((uint8_t)volume_count,
                                    &volumes[volume_count]) != OK) {
             return vfs_path_fail(ERR_STATE,
@@ -419,6 +428,7 @@ int vfs_refresh_mounts(void) {
                             point) != OK) return ERR_OVERFLOW;
     }
     spinlock_acquire(&vfs_mount_lock);
+    kmemcpy(generations, vfs_mount_generations, sizeof(generations));
     for (uint32_t old = 0U; old < VFS_MAX_MOUNTS; old++) {
         int match = -1;
 
@@ -433,6 +443,11 @@ int vfs_refresh_mounts(void) {
                 break;
             }
         }
+        if (match < 0 && vfs_mount_table[old].info.pinned) {
+            spinlock_release(&vfs_mount_lock);
+            LOG_ERROR("FS", "Refresh perderia montagem protegida");
+            return ERR_STATE;
+        }
         if (match < 0 &&
             (vfs_mount_table[old].info.open_files ||
              vfs_mount_cwd_references(
@@ -441,10 +456,17 @@ int vfs_refresh_mounts(void) {
             LOG_ERROR("FS", "Refresh removeria montagem VFS ocupada");
             return ERR_STATE;
         }
-        if (match < 0) continue;
+        if (match < 0) {
+            generations[old] =
+                vfs_mount_next_generation(generations[old]);
+            continue;
+        }
         desired[match].slot = old;
         desired[match].generation =
             vfs_mount_table[old].info.generation;
+        if (desired[match].generation > generations[old]) {
+            generations[old] = desired[match].generation;
+        }
         desired[match].open_files =
             vfs_mount_table[old].info.open_files;
         updated[old].info = desired[match];
@@ -455,6 +477,9 @@ int vfs_refresh_mounts(void) {
         for (uint32_t slot = 0U; slot < VFS_MAX_MOUNTS; slot++) {
             if (updated[slot].info.used) continue;
             desired[index].slot = slot;
+            desired[index].generation =
+                vfs_mount_next_generation(generations[slot]);
+            generations[slot] = desired[index].generation;
             updated[slot].info = desired[index];
             placed[index] = 1U;
             break;
@@ -465,8 +490,20 @@ int vfs_refresh_mounts(void) {
         }
     }
     kmemcpy(vfs_mount_table, updated, sizeof(vfs_mount_table));
+    kmemcpy(vfs_mount_generations, generations,
+            sizeof(vfs_mount_generations));
     spinlock_release(&vfs_mount_lock);
     return desired_count ? OK : ERR_NOT_FOUND;
+}
+
+int vfs_refresh_mounts(void) {
+    int result;
+
+    result = vfs_lifecycle_begin_transition(0U);
+    if (result != OK) return result;
+    result = vfs_refresh_mounts_internal();
+    vfs_lifecycle_end_transition();
+    return result;
 }
 
 static int vfs_resolve_canonical(const char* canonical, uint32_t mode,
@@ -550,25 +587,32 @@ int vfs_resolve_open_path(const char* path, uint32_t mode,
     if (!path || !result) {
         return vfs_path_fail(ERR_NULL, "Lookup VFS recebeu argumento nulo");
     }
+    status = vfs_lifecycle_enter_normal();
+    if (status != OK) return status;
     kmemset(result, 0, sizeof(*result));
     status = vfs_canonicalize(path, result->canonical_path);
-    if (status != OK) return status;
+    if (status != OK) goto cleanup;
     spinlock_acquire(&vfs_mount_lock);
     vfs_lookup_count++;
     spinlock_release(&vfs_mount_lock);
     status = vfs_resolve_canonical(result->canonical_path, mode, result);
-    if (status != OK) return status;
+    if (status != OK) goto cleanup;
     status = fs_permissions_apply_lookup(result);
-    if (status != OK) return status;
+    if (status != OK) goto cleanup;
     status = process_credentials_current(&credentials);
-    if (status != OK) return status;
-    return fs_permissions_check_traversal(&credentials, result);
+    if (status != OK) goto cleanup;
+    status = fs_permissions_check_traversal(&credentials, result);
+
+cleanup:
+    vfs_lifecycle_leave_normal();
+    return status;
 }
 
 int vfs_lookup(const char* path, vfs_lookup_result_t* result) {
-    if (vfs_power_is_quiescing()) {
-        return vfs_path_fail(ERR_UNAVAILABLE,
-                             "Lookup VFS recusado durante quiescencia");
+    if (vfs_lifecycle_is_blocked()) {
+        return vfs_path_fail(vfs_power_is_quiescing() ? ERR_UNAVAILABLE :
+                             ERR_STATE,
+                             "Lookup VFS recusado durante transicao");
     }
     return vfs_resolve_open_path(path, VFS_MODE_READ, result);
 }
@@ -663,49 +707,51 @@ int vfs_chdir(const char* path) {
     uint32_t mount_generation;
     int result;
 
-    if (vfs_power_is_quiescing()) {
-        return vfs_path_fail(ERR_UNAVAILABLE,
-                             "Chdir VFS recusado durante quiescencia");
-    }
     if (!path) {
         LOG_ERROR("FS", "Caminho nulo em chdir VFS");
         return ERR_NULL;
     }
     current = process_get_current();
     if (!current || !current->fd_table.initialized) return ERR_STATE;
+    result = vfs_lifecycle_enter_normal();
+    if (result != OK) return result;
     result = vfs_lookup(path, &lookup);
-    if (result != OK) return result;
-    if (lookup.type != VFS_NODE_DIRECTORY) return ERR_INVALID;
+    if (result != OK) goto cleanup;
+    if (lookup.type != VFS_NODE_DIRECTORY) {
+        result = ERR_INVALID;
+        goto cleanup;
+    }
     result = process_credentials_current(&credentials);
-    if (result != OK) return result;
+    if (result != OK) goto cleanup;
     result = fs_permissions_check_lookup(&credentials, &lookup,
                                          FS_PERMISSION_ACCESS_EXECUTE);
-    if (result != OK) return result;
+    if (result != OK) goto cleanup;
     result = vfs_resolve_directory(path, canonical, &mount_slot,
                                    &mount_generation);
-    if (result != OK) return result;
+    if (result != OK) goto cleanup;
     spinlock_acquire(&vfs_mount_lock);
     if (!vfs_path_equal(canonical, "/mnt") &&
         (mount_slot >= VFS_MAX_MOUNTS ||
          !vfs_mount_table[mount_slot].info.used ||
          vfs_mount_table[mount_slot].info.generation != mount_generation)) {
         spinlock_release(&vfs_mount_lock);
-        return ERR_STATE;
+        result = ERR_STATE;
+        goto cleanup;
     }
     vfs_path_copy(current->fd_table.cwd, VFS_MAX_PATH, canonical);
     vfs_chdir_count++;
     spinlock_release(&vfs_mount_lock);
-    return OK;
+    result = OK;
+
+cleanup:
+    vfs_lifecycle_leave_normal();
+    return result;
 }
 
 int vfs_getcwd(char* path, uint32_t capacity) {
     process_t* current;
     uint32_t length;
 
-    if (vfs_power_is_quiescing()) {
-        return vfs_path_fail(ERR_UNAVAILABLE,
-                             "Getcwd VFS recusado durante quiescencia");
-    }
     if (!path) return vfs_path_fail(ERR_NULL, "Destino de getcwd nulo");
     current = process_get_current();
     if (!current || !current->fd_table.initialized) {
@@ -799,10 +845,6 @@ int vfs_list_dir(const char* path, vfs_dir_entry_t* entries,
     uint8_t done = 0U;
     int result;
 
-    if (vfs_power_is_quiescing()) {
-        return vfs_path_fail(ERR_UNAVAILABLE,
-                             "Listagem VFS recusada durante quiescencia");
-    }
     if (!path || !entries || !out_count) {
         LOG_ERROR("FS", "Listagem VFS recebeu argumento nulo");
         return ERR_NULL;
@@ -811,51 +853,59 @@ int vfs_list_dir(const char* path, vfs_dir_entry_t* entries,
     if (!capacity || capacity > VFS_MAX_DIR_ENTRIES) {
         return vfs_path_fail(ERR_OVERFLOW, "Capacidade de listagem invalida");
     }
-    result = vfs_lookup(path, &lookup);
+    result = vfs_lifecycle_enter_normal();
     if (result != OK) return result;
+    result = vfs_lookup(path, &lookup);
+    if (result != OK) goto cleanup;
     if (lookup.type != VFS_NODE_DIRECTORY) {
-        return vfs_path_fail(ERR_INVALID,
-                             "Listagem VFS recebeu no que nao e diretorio");
+        result = vfs_path_fail(ERR_INVALID,
+                               "Listagem VFS recebeu no que nao e diretorio");
+        goto cleanup;
     }
     {
         process_credentials_t credentials;
 
         result = process_credentials_current(&credentials);
-        if (result != OK) return result;
+        if (result != OK) goto cleanup;
         result = fs_permissions_check_lookup(
             &credentials, &lookup,
             FS_PERMISSION_ACCESS_LIST | FS_PERMISSION_ACCESS_EXECUTE);
-        if (result != OK) return result;
+        if (result != OK) goto cleanup;
     }
     if (vfs_path_equal(lookup.canonical_path, "/dev")) {
-        return devfs_list(entries, capacity, out_count);
+        result = devfs_list(entries, capacity, out_count);
+        goto cleanup;
     }
     if (lookup.mount_kind == VFS_MOUNT_PROCFS) {
-        return procfs_list_path(lookup.canonical_path, entries, capacity,
-                                out_count);
+        result = procfs_list_path(lookup.canonical_path, entries, capacity,
+                                  out_count);
+        goto cleanup;
     }
     if (lookup.mount_kind == VFS_MOUNT_SYSFS) {
-        return sysfs_list_path(lookup.canonical_path, entries, capacity,
-                               out_count);
+        result = sysfs_list_path(lookup.canonical_path, entries, capacity,
+                                 out_count);
+        goto cleanup;
     }
     if (vfs_path_equal(lookup.canonical_path, "/mnt")) {
-        return vfs_list_mnt(entries, capacity, out_count);
+        result = vfs_list_mnt(entries, capacity, out_count);
+        goto cleanup;
     }
     result = storage_dir_cursor_open_long(lookup.volume_id,
                                           lookup.relative_path, &cursor);
-    if (result != OK) return result;
+    if (result != OK) goto cleanup;
     while (!done) {
         result = storage_dir_cursor_next_long(&cursor, &storage_entry,
                                               &found, &done);
-        if (result != OK) return result;
+        if (result != OK) goto cleanup;
         if (!found) continue;
         if (fs_permissions_path_compare(
                 storage_entry.name, FS_PERMISSION_SIDECAR_NAME) == 0) {
             continue;
         }
         if (count >= capacity) {
-            return vfs_path_fail(ERR_OVERFLOW,
-                                 "Diretorio excedeu capacidade de listagem");
+            result = vfs_path_fail(ERR_OVERFLOW,
+                                   "Diretorio excedeu capacidade de listagem");
+            goto cleanup;
         }
         kmemset(&entries[count], 0, sizeof(entries[count]));
         vfs_path_copy(entries[count].name, sizeof(entries[count].name),
@@ -876,10 +926,14 @@ int vfs_list_dir(const char* path, vfs_dir_entry_t* entries,
         if (result == OK) {
             result = vfs_dir_add_virtual(entries, capacity, &count, "sys");
         }
-        if (result != OK) return result;
+        if (result != OK) goto cleanup;
     }
     *out_count = count;
-    return OK;
+    result = OK;
+
+cleanup:
+    vfs_lifecycle_leave_normal();
+    return result;
 }
 
 int vfs_fd_table_inherit_cwd(vfs_fd_table_t* table,
@@ -894,6 +948,13 @@ int vfs_fd_table_inherit_cwd(vfs_fd_table_t* table,
 }
 
 int vfs_mount_acquire(uint32_t slot, uint32_t generation) {
+    vfs_mount_info_t mount;
+    storage_volume_t volume;
+    int result;
+
+    if (vfs_lifecycle_is_blocked()) {
+        return vfs_power_is_quiescing() ? ERR_UNAVAILABLE : ERR_STATE;
+    }
     if (slot >= VFS_MAX_MOUNTS) {
         return vfs_path_fail(ERR_INVALID, "Slot de montagem invalido");
     }
@@ -903,8 +964,17 @@ int vfs_mount_acquire(uint32_t slot, uint32_t generation) {
         spinlock_release(&vfs_mount_lock);
         return vfs_path_fail(ERR_STATE, "Geracao de montagem mudou");
     }
+    mount = vfs_mount_table[slot].info;
     vfs_mount_table[slot].info.open_files++;
     spinlock_release(&vfs_mount_lock);
+    if (mount.kind == VFS_MOUNT_STORAGE) {
+        result = storage_find_volume(mount.volume_id, &volume);
+        if (result != OK || !volume.mounted) {
+            vfs_mount_release(slot, generation);
+            return vfs_path_fail(ERR_UNAVAILABLE,
+                                 "Volume ausente ao adquirir montagem");
+        }
+    }
     return OK;
 }
 
@@ -920,7 +990,10 @@ void vfs_mount_release(uint32_t slot, uint32_t generation) {
 }
 
 int vfs_mount_validate_reference(uint32_t slot, uint32_t generation) {
+    vfs_mount_info_t mount;
+    storage_volume_t volume;
     int valid;
+    int result;
 
     if (slot >= VFS_MAX_MOUNTS) {
         return vfs_path_fail(ERR_INVALID, "Referencia de montagem invalida");
@@ -928,8 +1001,13 @@ int vfs_mount_validate_reference(uint32_t slot, uint32_t generation) {
     spinlock_acquire(&vfs_mount_lock);
     valid = vfs_mount_table[slot].info.used &&
             vfs_mount_table[slot].info.generation == generation;
+    if (valid) mount = vfs_mount_table[slot].info;
     spinlock_release(&vfs_mount_lock);
-    return valid ? OK : ERR_STATE;
+    if (!valid) return ERR_STATE;
+    if (mount.kind != VFS_MOUNT_STORAGE) return OK;
+    result = storage_find_volume(mount.volume_id, &volume);
+    if (result != OK || !volume.mounted) return ERR_UNAVAILABLE;
+    return OK;
 }
 
 static uint32_t vfs_mount_cwd_references(const char* mount_point) {
@@ -972,53 +1050,62 @@ int vfs_copy_mounts(vfs_mount_info_t* output, uint32_t capacity,
 int vfs_mount_volume(const char* volume_id) {
     int result;
 
-    if (vfs_power_is_quiescing()) {
-        return vfs_path_fail(ERR_UNAVAILABLE,
-                             "Montagem VFS recusada durante quiescencia");
-    }
     if (!volume_id) return ERR_NULL;
-    result = storage_mount(volume_id);
+    result = vfs_lifecycle_begin_transition(0U);
     if (result != OK) return result;
-    result = vfs_refresh_mounts();
+    result = storage_mount(volume_id);
     if (result != OK) {
-        (void)storage_unmount(volume_id);
+        vfs_lifecycle_end_transition();
+        return result;
+    }
+    result = vfs_refresh_mounts_internal();
+    if (result != OK) {
+        (void)storage_unmount_after_sync(volume_id);
         LOG_ERROR("FS", "Falha ao publicar montagem no namespace VFS");
     }
+    vfs_lifecycle_end_transition();
     return result;
 }
 
 int vfs_unmount_volume(const char* volume_id) {
     vfs_mount_info_t mount;
     storage_volume_t volume;
-    int index;
-    int result;
+    int index = -1;
+    int result = OK;
 
-    if (vfs_power_is_quiescing()) {
-        return vfs_path_fail(ERR_UNAVAILABLE,
-                             "Desmontagem VFS recusada durante quiescencia");
-    }
     if (!volume_id) return ERR_NULL;
+    result = vfs_lifecycle_begin_transition(0U);
+    if (result != OK) return result;
     spinlock_acquire(&vfs_mount_lock);
     index = vfs_find_mount_by_volume_unlocked(volume_id);
     if (index >= 0) mount = vfs_mount_table[index].info;
     spinlock_release(&vfs_mount_lock);
-    if (index < 0) return ERR_NOT_FOUND;
+    if (index < 0) {
+        result = ERR_NOT_FOUND;
+        goto cleanup;
+    }
     if (mount.pinned || mount.open_files ||
         vfs_mount_cwd_references(mount.mount_point)) {
         LOG_WARN("FS", "Desmontagem VFS recusada para volume ocupado");
-        return ERR_STATE;
+        result = ERR_STATE;
+        goto cleanup;
     }
     result = storage_find_volume(volume_id, &volume);
     if (result == ERR_NOT_FOUND || (result == OK && !volume.mounted)) {
         LOG_WARN("FS", "Alias VFS obsoleto reconciliado na desmontagem");
-        result = vfs_refresh_mounts();
-        return result == ERR_NOT_FOUND ? OK : result;
+        result = vfs_refresh_mounts_internal();
+        result = result == ERR_NOT_FOUND ? OK : result;
+        goto cleanup;
     }
-    if (result != OK) return result;
+    if (result != OK) goto cleanup;
     result = storage_unmount(volume_id);
-    if (result != OK) return result;
-    result = vfs_refresh_mounts();
-    return result == ERR_NOT_FOUND ? OK : result;
+    if (result != OK) goto cleanup;
+    result = vfs_refresh_mounts_internal();
+    result = result == ERR_NOT_FOUND ? OK : result;
+
+cleanup:
+    vfs_lifecycle_end_transition();
+    return result;
 }
 
 int vfs_power_unmount_storage_until(uint32_t deadline_tick,
@@ -1033,28 +1120,37 @@ int vfs_power_unmount_storage_until(uint32_t deadline_tick,
         return ERR_NULL;
     }
     *out_count = 0U;
-    result = vfs_copy_mounts(mounts, VFS_MAX_MOUNTS, &mount_count);
+    result = vfs_lifecycle_begin_transition(1U);
     if (result != OK) return result;
+    result = vfs_copy_mounts(mounts, VFS_MAX_MOUNTS, &mount_count);
+    if (result != OK) goto cleanup;
     for (uint32_t index = 0U; index < mount_count; index++) {
         if ((int32_t)(timer_get_ticks() - deadline_tick) >= 0) {
             LOG_WARN("FS", "Desmontagem de storage excedeu o prazo");
-            return ERR_TIMEOUT;
+            result = ERR_TIMEOUT;
+            goto cleanup;
         }
         if (mounts[index].kind != VFS_MOUNT_STORAGE || mounts[index].pinned) {
             continue;
         }
         if (mounts[index].open_files || mounts[index].cwd_references) {
             LOG_WARN("FS", "Volume de storage ocupado durante encerramento");
-            return ERR_STATE;
+            result = ERR_STATE;
+            goto cleanup;
         }
         result = storage_unmount_after_sync(mounts[index].volume_id);
-        if (result != OK) return result;
-        result = vfs_refresh_mounts();
-        if (result != OK && result != ERR_NOT_FOUND) return result;
+        if (result != OK) goto cleanup;
+        result = vfs_refresh_mounts_internal();
+        if (result != OK && result != ERR_NOT_FOUND) goto cleanup;
         unmounted++;
     }
     *out_count = unmounted;
-    return OK;
+    result = OK;
+
+cleanup:
+    *out_count = unmounted;
+    vfs_lifecycle_end_transition();
+    return result;
 }
 
 void vfs_path_get_metrics(uint32_t* capacity, uint32_t* active,
@@ -1077,6 +1173,8 @@ int vfs_path_validate_state(void) {
     uint8_t devfs_found = 0U;
     uint8_t procfs_found = 0U;
     uint8_t sysfs_found = 0U;
+    vfs_mount_info_t storage_mounts[VFS_MAX_STORAGE_MOUNTS];
+    uint32_t storage_mount_count = 0U;
     char normalized[VFS_MAX_PATH];
 
     if (!vfs_path_ready) {
@@ -1089,12 +1187,14 @@ int vfs_path_validate_state(void) {
         return vfs_path_fail(ERR_STATE,
                              "Caminho universal com volume USB invalido");
     }
+    kmemset(storage_mounts, 0, sizeof(storage_mounts));
     spinlock_acquire(&vfs_mount_lock);
     for (uint32_t index = 0U; index < VFS_MAX_MOUNTS; index++) {
         vfs_mount_info_t* info = &vfs_mount_table[index].info;
 
         if (!info->used) continue;
-        if (info->slot != index || !info->mount_point[0] ||
+        if (info->slot != index || !info->generation ||
+            !info->mount_point[0] ||
             !info->volume_id[0] || info->mount_point[0] != '/') {
             spinlock_release(&vfs_mount_lock);
             return vfs_path_fail(ERR_STATE, "Montagem VFS inconsistente");
@@ -1129,6 +1229,8 @@ int vfs_path_validate_state(void) {
                    info->fs_type == STORAGE_FS_NONE) {
             spinlock_release(&vfs_mount_lock);
             return vfs_path_fail(ERR_STATE, "Montagem Storage inconsistente");
+        } else if (storage_mount_count < VFS_MAX_STORAGE_MOUNTS) {
+            storage_mounts[storage_mount_count++] = *info;
         }
         if (vfs_path_equal(info->mount_point, "/")) root_found = 1U;
         for (uint32_t other = index + 1U; other < VFS_MAX_MOUNTS; other++) {
@@ -1162,6 +1264,16 @@ int vfs_path_validate_state(void) {
         }
     }
     spinlock_release(&vfs_mount_lock);
+    for (uint32_t index = 0U; index < storage_mount_count; index++) {
+        storage_volume_t volume;
+        int result = storage_find_volume(storage_mounts[index].volume_id,
+                                         &volume);
+
+        if (result != OK || !volume.mounted) {
+            return vfs_path_fail(ERR_STATE,
+                                 "Montagem Storage aponta para volume ausente");
+        }
+    }
     return root_found && devfs_found && procfs_found && sysfs_found ?
            OK : ERR_NOT_FOUND;
 }

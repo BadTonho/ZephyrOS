@@ -7,6 +7,28 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## 2026-09-11 - STO3: VFS e ciclo de vida dos volumes
+
+- Implementacao: o VFS passou a usar um gate interno para transicoes,
+  refresh atomico e geracoes de montagem monotônicas por slot. Fechamento,
+  liberacao e diagnosticos read-only continuam disponiveis durante bloqueios.
+  Montagens pinned, arquivos abertos, CWDs ativos e operacoes em andamento
+  impedem desmontagem insegura; perda de Storage remove aliases sem referencias
+  e conserva aliases diagnosticaveis enquanto houver referencias.
+- Integracao: `Makefile` e `Makefile.linux` expoem `test-sto3-host`. O catalogo
+  foi sincronizado para 7.588 superficies e 180 casos, com as superficies do
+  lifecycle associadas aos casos VFS e VFS/path; a visao renderizada tambem foi
+  atualizada.
+- Evidencia: `make q3check` PASS com `DT100-003` reportada separadamente;
+  `make clean` PASS; `make` PASS; `make test-sto3-host` PASS nos casos FS,
+  Storage, Storage FAT32, energia, processo, VFS e VFS/path; `make catalog-test`
+  PASS com 20 testes unitarios, catalogo valido e visao renderizada valida.
+- Limites: nenhuma syscall, ABI, bootloader ou Stage 2 foi alterada. A matriz
+  QEMU completa e a recuperacao apos reboot permanecem reservadas as fases
+  posteriores do roadmap.
+- Estado: STO3 `PASS` na validacao essencial host-only; QEMU permanece
+  `PENDING` conforme o escopo do roadmap.
+
 ## 2026-09-10 - Compatibilidade do recovery com QEMU/SeaBIOS no Linux
 
 - Diagnóstico: no QEMU 8.2.2 do Linux, o recovery alcançava o modo protegido e

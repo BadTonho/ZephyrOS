@@ -3238,7 +3238,7 @@
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-power-host PASS com sync unico, deadlines, falhas de durabilidade e desmontagem sem sync duplicado; evidencia STO2"
+      "evidence": "make test-power-host PASS com sync unico, deadlines, falhas de durabilidade e desmontagem sem sync duplicado; evidencia STO2 e STO3"
     },
     {
       "id": "process-ipc-host-dynamic",
@@ -5749,7 +5749,7 @@
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-vfs-host PASS com sync, quiescencia, descritores e limpeza de I/O; evidencia STO2"
+      "evidence": "make test-vfs-host PASS com sync, quiescencia, descritores e limpeza de I/O; evidencia STO2 e STO3"
     },
     {
       "id": "vfs-path-host-dynamic",
@@ -5767,7 +5767,7 @@
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-vfs-path-host PASS com unmount apos sync, mounts, cwd e referencias sem sync duplicado; evidencia STO2"
+      "evidence": "make test-vfs-path-host PASS com unmount apos sync, mounts, cwd e referencias sem sync duplicado; evidencia STO2 e STO3"
     },
     {
       "id": "vma-host-dynamic",
