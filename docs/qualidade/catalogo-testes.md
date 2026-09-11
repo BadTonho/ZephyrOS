@@ -4,7 +4,7 @@
 
 ## Resumo
 
-- Superfícies ativas: **7610**
+- Superfícies ativas: **7612**
 - Casos de teste: **180**
 - Superfícies aposentadas: **60**
 
@@ -12,14 +12,14 @@
 |---|---:|
 | `api_function` | 1652 |
 | `asm_entry` | 101 |
-| `c_function` | 5737 |
+| `c_function` | 5739 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7550 |
+| `COVERED` | 7552 |
 | `MANUAL` | 0 |
 | `PENDING` | 60 |
 
@@ -37,7 +37,7 @@
 | `apps` | 172 |
 | `appstore` | 98 |
 | `boot` | 146 |
-| `core` | 2884 |
+| `core` | 2885 |
 | `desktop` | 40 |
 | `drivers` | 932 |
 | `filemanager` | 93 |
@@ -48,7 +48,7 @@
 | `memory` | 202 |
 | `process` | 332 |
 | `settings` | 57 |
-| `shell` | 1092 |
+| `shell` | 1093 |
 | `taskbar` | 47 |
 | `thread` | 36 |
 | `ui` | 149 |
@@ -3844,6 +3844,7 @@
 | `c:src/core/update_runtime.c:runtime_hash_file_range` | `src/core/update_runtime.c` | `runtime_hash_file_range` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_identifier_valid` | `src/core/update_runtime.c` | `runtime_identifier_valid` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_initial_version` | `src/core/update_runtime.c` | `runtime_initial_version` | `core` | `COVERED` | 1 |
+| `c:src/core/update_runtime.c:runtime_journal_files_match_new` | `src/core/update_runtime.c` | `runtime_journal_files_match_new` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_journal_old_state_raw_valid` | `src/core/update_runtime.c` | `runtime_journal_old_state_raw_valid` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_legacy_transaction_pending` | `src/core/update_runtime.c` | `runtime_legacy_transaction_pending` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:runtime_load_control` | `src/core/update_runtime.c` | `runtime_load_control` | `core` | `COVERED` | 1 |
@@ -6639,6 +6640,7 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_service_supervisor` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_service_supervisor` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_signals` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_signals` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_sockets` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_sockets` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_system_slots` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_system_slots` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_tls` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_tls` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_update` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update_capabilities` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_update_capabilities` | `shell` | `COVERED` | 1 |

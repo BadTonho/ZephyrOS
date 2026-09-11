@@ -116,6 +116,25 @@ Updater, Shell, estado e a politica estatica de confianca. As matrizes QEMU
 validam staging, slot inativo, confirmacao, rollback e recuperacao; devem ser
 executadas depois de `make q3check` e `make clean` seguido de `make`.
 
+## STO6 - recuperacao transacional
+
+```text
+make test-sto6-host
+make catalog-test
+make system-fixtures
+make system-slots-matrix
+make test-tst5-qemu-update-recovery
+make run-system-slots-matrix
+make run-system-update-matrix
+make test-tst6-qemu-fault-recovery
+```
+
+O agregado host-only cobre runtime, slots A/B, journals redundantes, recovery
+runtime/menu/loader, Shell, estado e diagnosticos. A matriz deve verificar
+recuperacao idempotente, estados ambiguos preservados, limite de duas
+tentativas, rollback ao slot anterior e ausencia de residuos. A validacao
+QEMU depende das fixtures assinadas e das chaves externas de distribuicao.
+
 ## TST2 - protocolo e executor QEMU
 
 Testes host-only:

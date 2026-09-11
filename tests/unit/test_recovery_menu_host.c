@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 #include "recovery_menu.h"
+#include "core/update_system_slots.h"
 
 int recovery_menu_host_test_contracts(void);
 
@@ -87,6 +88,7 @@ static recovery_menu_view_t view_fixture(void) {
     view.slot_b_state = "EMPTY";
     view.sequence = 3U;
     view.attempt_sequence = 4U;
+    view.attempt_limit = UPDATE_SYSTEM_SLOTS_BOOT_ATTEMPT_LIMIT;
     view.slot_a_major = 1U;
     view.slot_a_minor = 2U;
     view.slot_a_patch = 3U;

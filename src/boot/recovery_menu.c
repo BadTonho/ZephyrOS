@@ -1,4 +1,5 @@
 #include "recovery_menu.h"
+#include "core/update_system_slots.h"
 
 #define RECOVERY_CONSOLE_COLUMNS 80U
 #define RECOVERY_CONSOLE_ROWS 25U
@@ -264,6 +265,8 @@ static void recovery_menu_render_state(const recovery_menu_view_t* view) {
     recovery_console_print(view->reason);
     recovery_console_print("\nTENTATIVA SEQ: ");
     recovery_console_print_u32(view->attempt_sequence);
+    recovery_console_print(" / LIMITE: ");
+    recovery_console_print_u32(view->attempt_limit);
     recovery_console_print("\nSLOT A: ");
     recovery_console_print(view->slot_a_state);
     if (view->slot_a_version_available) {
@@ -424,6 +427,7 @@ int recovery_menu_host_test_contracts(void) {
     view.slot_b_state = "EMPTY";
     view.sequence = 7U;
     view.attempt_sequence = 9U;
+    view.attempt_limit = UPDATE_SYSTEM_SLOTS_BOOT_ATTEMPT_LIMIT;
     view.slot_a_major = 1U;
     view.slot_a_minor = 2U;
     view.slot_a_patch = 3U;

@@ -350,7 +350,9 @@ static int system_slots_decode_state(const uint8_t* raw,
     if (state->boot_state != UPDATE_SYSTEM_SLOTS_BOOT_NONE &&
         (state->attempt_slot >= UPDATE_SYSTEM_SLOT_COUNT ||
          state->boot_attempt_sequence == 0U ||
-         state->previous_slot >= UPDATE_SYSTEM_SLOT_COUNT)) return ERR_INVALID;
+         state->previous_slot >= UPDATE_SYSTEM_SLOT_COUNT ||
+         state->boot_attempt_sequence >
+             UPDATE_SYSTEM_SLOTS_BOOT_ATTEMPT_LIMIT)) return ERR_INVALID;
     return OK;
 }
 
@@ -835,10 +837,21 @@ static int system_slots_recover_journal_locked(void) {
                           system_slots_journal.target_slot], &actual));
         }
     } else if (system_slots_journal.phase <= SYSTEM_SLOTS_PHASE_STAGING) {
-        if (result != ERR_NOT_FOUND ||
-            (result == OK && system_slots_info_matches(
-                &system_slots_journal.target, &actual))) {
-            discard_target = 1U;
+        if (result == OK) {
+            if (!system_slots_info_matches(&system_slots_journal.target,
+                                           &actual)) {
+                LOG_ERROR("UPDATE", "Slot de staging diverge do journal");
+                return ERR_INVALID;
+            }
+            discard_target =
+                !(system_slots_state.slots[system_slots_journal.target_slot].state ==
+                      UPDATE_SYSTEM_SLOT_FILE_VALID &&
+                  system_slots_info_matches(
+                      &system_slots_state.slots[
+                          system_slots_journal.target_slot], &actual));
+        } else if (result != ERR_NOT_FOUND) {
+            LOG_ERROR("UPDATE", "Falha ao consultar slot de staging");
+            return result;
         }
         LOG_WARN("UPDATE", "Staging de slot interrompido; preservando ativo");
     } else {
@@ -914,11 +927,17 @@ int update_system_slots_init(void) {
     journal_result = system_slots_load_journal_locked();
     recovery_result = system_slots_recover_journal_locked();
     if (system_slots_journal.phase == SYSTEM_SLOTS_PHASE_NONE) {
-        int cleanup_result = system_slots_delete_staging(volume.id);
-        if (cleanup_result != OK) {
+        update_system_slot_info_t staging_info;
+        int staging_result = system_slots_file_info(
+            "system:/" UPDATE_SYSTEM_SLOT_STAGING_ALIAS, &staging_info);
+        if (staging_result == OK) {
             system_slots_state.flags |= SYSTEM_SLOTS_STATE_FLAG_RECOVERY;
-            recovery_result = ERR_DISK;
-            LOG_ERROR("UPDATE", "Staging temporario nao foi removido");
+            recovery_result = ERR_STATE;
+            LOG_WARN("UPDATE", "Staging sem journal preservado para diagnostico");
+        } else if (staging_result != ERR_NOT_FOUND) {
+            system_slots_state.flags |= SYSTEM_SLOTS_STATE_FLAG_RECOVERY;
+            recovery_result = staging_result;
+            LOG_ERROR("UPDATE", "Nao foi possivel validar staging sem journal");
         }
     }
     if (state_result != OK && state_result != ERR_NOT_FOUND) {
@@ -1669,6 +1688,18 @@ int update_system_slots_host_test_contracts(void) {
         decoded_state.sequence != state.sequence) {
         return 110;
     }
+    state.boot_state = UPDATE_SYSTEM_SLOTS_BOOT_FAILED;
+    state.attempt_slot = 1U;
+    state.boot_attempt_sequence =
+        UPDATE_SYSTEM_SLOTS_BOOT_ATTEMPT_LIMIT + 1U;
+    if (system_slots_encode_state(&state, raw) != OK ||
+        system_slots_decode_state(raw, &decoded_state) != ERR_INVALID) {
+        return 1101;
+    }
+    state.boot_state = UPDATE_SYSTEM_SLOTS_BOOT_NONE;
+    state.attempt_slot = UPDATE_SYSTEM_SLOT_NONE;
+    state.boot_attempt_sequence = 0U;
+    if (system_slots_encode_state(&state, raw) != OK) return 1102;
     raw[0] = 'X';
     if (system_slots_decode_state(raw, &decoded_state) != ERR_INVALID) {
         return 111;

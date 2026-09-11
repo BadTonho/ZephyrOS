@@ -730,7 +730,9 @@ static int recovery_load_state(const recovery_fat32_t* fs, const char name[RECOV
             ((boot_state == UPDATE_SYSTEM_SLOTS_BOOT_NONE &&
               attempt == UPDATE_SYSTEM_SLOT_NONE && recovery_u32(state->raw + 20U) == 0U) ||
              (boot_state != UPDATE_SYSTEM_SLOTS_BOOT_NONE && attempt < 2U &&
-              state->raw[15U] < 2U && recovery_u32(state->raw + 20U) != 0U));
+              state->raw[15U] < 2U && recovery_u32(state->raw + 20U) != 0U &&
+              recovery_u32(state->raw + 20U) <=
+                  UPDATE_SYSTEM_SLOTS_BOOT_ATTEMPT_LIMIT));
     }
     return state->valid;
 }
@@ -769,7 +771,7 @@ static int recovery_publish_attempt(const recovery_fat32_t* fs,
     uint32_t attempt_sequence;
     if (!selected || !target || !target_name || !verified_out || slot >= 2U ||
         selected->sequence == 0xFFFFFFFFU ||
-        selected->attempt_sequence == 0xFFFFFFFFU ||
+        selected->attempt_sequence >= UPDATE_SYSTEM_SLOTS_BOOT_ATTEMPT_LIMIT ||
         target->file.cluster < 2U) return 0;
     for (uint32_t index = 0U; index < sizeof(raw); index++) raw[index] = selected->raw[index];
     recovery_state_write_u16(raw + 4U, 2U);
@@ -1460,6 +1462,7 @@ static void recovery_build_menu_view(recovery_boot_context_t* context,
     view->slot_a_state = recovery_slot_state_name(context, 0U);
     view->slot_b_state = recovery_slot_state_name(context, 1U);
     view->failure_menu = context->automatic_timeout;
+    view->attempt_limit = UPDATE_SYSTEM_SLOTS_BOOT_ATTEMPT_LIMIT;
     if (!state) return;
     view->sequence = state->sequence;
     view->attempt_sequence = state->attempt_sequence;
@@ -1481,7 +1484,7 @@ static void recovery_build_menu_view(recovery_boot_context_t* context,
         state->boot_state == UPDATE_SYSTEM_SLOTS_BOOT_FAILED &&
         state->attempt < 2U && state->attempt != state->active &&
         state->sequence != 0xFFFFFFFFU &&
-        state->attempt_sequence != 0xFFFFFFFFU &&
+        state->attempt_sequence < UPDATE_SYSTEM_SLOTS_BOOT_ATTEMPT_LIMIT &&
         context->controls.alternate_control &&
         recovery_slot_available(&context->fs, state, state->attempt);
 }
@@ -1597,7 +1600,8 @@ static void recovery_prepare_failure_menu(recovery_boot_context_t* context,
 static int recovery_state_sequence_safe(const recovery_state_t* state) {
     if (!state || state->sequence == 0xFFFFFFFFU) return 0;
     return state->boot_state == UPDATE_SYSTEM_SLOTS_BOOT_NONE ||
-           state->attempt_sequence != 0xFFFFFFFFU;
+           (state->attempt_sequence != 0xFFFFFFFFU &&
+            state->attempt_sequence <= UPDATE_SYSTEM_SLOTS_BOOT_ATTEMPT_LIMIT);
 }
 
 void recovery_loader_main(uint32_t mmap, uint32_t vesa) {
@@ -1672,7 +1676,19 @@ void recovery_loader_main(uint32_t mmap, uint32_t vesa) {
         return;
     }
     if (state->boot_state == UPDATE_SYSTEM_SLOTS_BOOT_FAILED) {
-        context.diagnostic = "CANDIDATO PRESERVADO";
+        if (state->attempt_sequence >=
+                UPDATE_SYSTEM_SLOTS_BOOT_ATTEMPT_LIMIT) {
+            context.diagnostic = "LIMITE ATINGIDO; RETORNO AO ANTERIOR";
+            context.reason = (update_system_slots_reason_t)state->reason;
+            if (state->previous != UPDATE_SYSTEM_SLOT_NONE &&
+                state->previous != state->attempt &&
+                recovery_slot_available(&context.fs, state, state->previous) &&
+                recovery_boot_previous(&context)) {
+                return;
+            }
+        } else {
+            context.diagnostic = "CANDIDATO PRESERVADO";
+        }
         context.reason = (update_system_slots_reason_t)state->reason;
         recovery_prepare_failure_menu(&context, voluntary);
         return;
@@ -1872,6 +1888,9 @@ int recovery_loader_host_test_contracts(void) {
     recovery_slot_state_name(0, 0U);
     recovery_menu_slot_version(0, 0U, 0, 0, 0);
     recovery_build_menu_view(&context, 0, &view);
+    if (view.attempt_limit != UPDATE_SYSTEM_SLOTS_BOOT_ATTEMPT_LIMIT) {
+        return 132;
+    }
     recovery_restrict_legacy(&context, "HOST", UPDATE_SYSTEM_SLOTS_REASON_IO);
     context.controls.selected = &state;
     recovery_boot_previous(&context);
@@ -1881,6 +1900,12 @@ int recovery_loader_host_test_contracts(void) {
     recovery_prepare_failure_menu(&context, 0);
     recovery_state_sequence_safe(0);
     recovery_state_sequence_safe(&state);
+    state.sequence = 1U;
+    state.boot_state = UPDATE_SYSTEM_SLOTS_BOOT_FAILED;
+    state.attempt_sequence = UPDATE_SYSTEM_SLOTS_BOOT_ATTEMPT_LIMIT + 1U;
+    if (recovery_state_sequence_safe(&state)) return 130;
+    state.attempt_sequence = UPDATE_SYSTEM_SLOTS_BOOT_ATTEMPT_LIMIT;
+    if (!recovery_state_sequence_safe(&state)) return 131;
     recovery_loader_main(0U, 0U);
     return 0;
 }

@@ -187,6 +187,21 @@ rede/TLS, escrita, sync, cancelamento e reinicio preservam a versao ativa.
 HTTP nao e usado nesse caminho de producao, exceto em fixtures locais
 explicitamente configuradas.
 
+## STO6 - recuperacao transacional
+
+A recuperacao valida estado e journal redundantes por sequencia antes de
+alterar qualquer slot. Fases `PREPARED`/`STAGING` somente removem staging com
+alvo comprovadamente igual ao journal; staging sem evidencia e preservado e
+publicado como recuperacao pendente. Estados `VERIFIED` e `COMMITTED` so sao
+republicados quando slot, hash, tamanho, versao e arquivos correspondem ao
+registro persistido.
+
+O limite contratual e `UPDATE_SYSTEM_SLOTS_BOOT_ATTEMPT_LIMIT = 2`: uma
+tentativa inicial e uma repeticao manual. Depois de duas falhas, o retry e
+bloqueado e o recovery tenta o slot anterior validado. `health`, `update
+status` e `update system slots` exibem estado, motivo, sequencia, tentativa,
+limite e recuperacao pendente; estados ambiguos permanecem fail-closed.
+
 ## Referencias
 
 - [Contrato ZUPD v1](contrato-zupd-v1.md)

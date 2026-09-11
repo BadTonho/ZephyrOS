@@ -69,6 +69,8 @@ make test-sto1-host
 make test-sto2-host
 make test-sto3-host
 make test-sto4-host
+make test-sto5-host
+make test-sto6-host
 make test-storage-host
 make test-block-host
 make test-fat12-host
@@ -2091,6 +2093,28 @@ make system-slots-matrix
 make test-tst5-qemu-update-recovery
 make run-system-slots-matrix
 make run-system-update-matrix
+```
+
+## STO6 agregado host-only
+
+O agregado executa os contratos de runtime, slots A/B, journals, recovery
+runtime/menu/loader, Shell, estado e diagnosticos:
+
+```text
+make test-sto6-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+Depois dos gates de build, a validacao funcional usa as fixtures e matrizes
+abaixo. O recovery e fail-closed: journal ambiguo ou staging sem evidencia
+permanece preservado para diagnostico.
+
+```text
+make system-fixtures
+make system-slots-matrix
+make test-tst5-qemu-update-recovery
+make run-system-slots-matrix
+make run-system-update-matrix
+make test-tst6-qemu-fault-recovery
 ```
 
 ## Spinlock host-only

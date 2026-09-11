@@ -32,6 +32,7 @@
 #include "core/workqueue.h"
 #include "core/memory.h"
 #include "core/update.h"
+#include "core/update_system_slots.h"
 #include "core/update_remote.h"
 #include "apps/shell_runtime.h"
 #include "drivers/idt.h"
@@ -2761,6 +2762,32 @@ int update_remote_get_status(update_remote_status_t* status) {
     if (!status) return ERR_NULL;
     *status = fixture_update_remote_status;
     return OK;
+}
+
+int update_system_slots_get_status(update_system_slots_status_t* status) {
+    if (!status) return ERR_NULL;
+    kmemset(status, 0, sizeof(*status));
+    status->state = UPDATE_SYSTEM_SLOTS_STATE_READY;
+    status->active_slot = 0U;
+    status->pending_slot = UPDATE_SYSTEM_SLOT_NONE;
+    status->previous_slot = 0U;
+    status->attempt_slot = UPDATE_SYSTEM_SLOT_NONE;
+    return OK;
+}
+
+const char* update_system_slots_state_name(update_system_slots_state_t state) {
+    if (state == UPDATE_SYSTEM_SLOTS_STATE_READY) return "READY";
+    if (state == UPDATE_SYSTEM_SLOTS_STATE_DEGRADED) return "DEGRADED";
+    if (state == UPDATE_SYSTEM_SLOTS_STATE_RECOVERY_PENDING) {
+        return "RECOVERY_PENDING";
+    }
+    return "EMPTY";
+}
+
+const char* update_system_slots_reason_name(
+    update_system_slots_reason_t reason) {
+    if (reason == UPDATE_SYSTEM_SLOTS_REASON_NONE) return "NONE";
+    return "RECOVERY";
 }
 
 const char* update_remote_reason_name(update_remote_reason_t reason) {

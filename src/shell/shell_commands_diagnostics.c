@@ -74,6 +74,7 @@
 #include "core/app_package.h"
 #include "core/app_remote.h"
 #include "core/update.h"
+#include "core/update_system_slots.h"
 #include "core/update_remote.h"
 #include "core/update_remote_config.h"
 #include "core/syscall.h"
@@ -1074,6 +1075,30 @@ static void cmd_health_check_update_remote(int* issue_count) {
         shell_diagnostics_health_state_color(state), detail, issue_count);
 }
 
+static void cmd_health_check_system_slots(int* issue_count) {
+    update_system_slots_status_t status;
+    recovery_state_t state;
+    const char* detail;
+    int result;
+
+    if (!issue_count) return;
+    result = update_system_slots_get_status(&status);
+    if (result != OK) {
+        LOG_ERROR_CODE("SHELL", result,
+                       "Falha ao consultar slots ZSYS no health check");
+        cmd_health_check_print_query_failure(
+            "Update/slots", result, issue_count);
+        return;
+    }
+    if (status.state == UPDATE_SYSTEM_SLOTS_STATE_READY) return;
+    state = RECOVERY_STATE_DEGRADED;
+    detail = status.recovery_pending ? "recuperacao pendente" :
+             update_system_slots_reason_name(status.last_boot_reason);
+    cmd_health_check_print_named_state(
+        "Update/slots", update_system_slots_state_name(status.state),
+        shell_diagnostics_health_state_color(state), detail, issue_count);
+}
+
 static void cmd_health_check_update(int* issue_count) {
     const recovery_component_t* component;
     update_capabilities_t capabilities;
@@ -1111,6 +1136,7 @@ static void cmd_health_check_update(int* issue_count) {
             &capabilities, &status, status_ready, issue_count);
     }
     cmd_health_check_update_remote(issue_count);
+    cmd_health_check_system_slots(issue_count);
 }
 
 static void cmd_health_check_app_store(int* issue_count) {

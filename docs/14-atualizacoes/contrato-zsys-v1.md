@@ -130,15 +130,19 @@ duas cópias inválidas deixam o serviço `DEGRADED`, sem reparo silencioso.
 Sem estado válido, os campos públicos de slot ativo, pendente, anterior e em
 tentativa usam o sentinela `NONE`; nenhum índice de slot pode ser inferido de
 uma estrutura zerada.
-Interrupções preservam o slot ativo. Staging incompleto é descartado quando
-o journal ainda está em `PREPARED`/`STAGING`; um staging verificado pode ser
-republicado como slot pendente durante a recuperação.
+Interrupções preservam o slot ativo. Staging incompleto só é descartado quando
+o journal está em `PREPARED`/`STAGING` e o arquivo coincide integralmente com
+o alvo registrado; staging sem journal, com erro de leitura ou com divergência
+é preservado para diagnóstico e mantém a recuperação pendente. Um staging
+verificado pode ser republicado como slot pendente durante a recuperação.
 
 O ciclo de atualizacao usa as fases `EMPTY`, `STAGING`, `VERIFIED`, `PENDING`,
 `BOOT_ATTEMPT` e `GOOD`, com `ROLLBACK` quando o limite de tentativas e
-atingido. O controle persiste slot anterior, candidato, sequencia, limite e
-motivo da falha. A limpeza de `ZSTG.ZSY` ocorre somente depois da confirmacao;
-falhas anteriores deixam a versao ativa intacta.
+atingido. O limite contratual total e de duas tentativas: a inicial e uma
+unica repeticao manual. Apos a segunda falha, novo retry e bloqueado e o
+recovery tenta o slot anterior validado. O controle persiste slot anterior,
+candidato, sequencia, limite e motivo da falha. A limpeza de `ZSTG.ZSY` ocorre
+somente depois da confirmacao; falhas anteriores deixam a versao ativa intacta.
 
 O escritor FAT32 de slots usa buffer fixo de 64 KiB e grava clusters em chunks;
 nenhuma operação aloca a imagem de até 8 MiB inteira. O arquivo temporário é

@@ -23,6 +23,7 @@ typedef struct {
     const char* slot_b_state;
     uint32_t sequence;
     uint32_t attempt_sequence;
+    uint32_t attempt_limit;
     uint16_t slot_a_major;
     uint16_t slot_a_minor;
     uint16_t slot_a_patch;

@@ -1902,6 +1902,8 @@ test-sto4-host: test-fs-host test-storage-host test-storage-fat32-host test-shel
 
 test-sto5-host: test-update-host test-update-runtime-host test-update-remote-runtime-host test-update-remote-host test-update-system-slots-host test-update-remote-system-host test-update-remote-github-host test-update-remote-release-host test-update-system-host test-shell-commands-packages-host test-shell-diagnostics-host test-updater-host test-state-host
 
+test-sto6-host: test-update-host test-update-runtime-host test-update-system-slots-host test-shell-commands-packages-host test-shell-diagnostics-host test-updater-host test-state-host test-recovery-runtime-host test-recovery-menu-host test-recovery-loader-host
+
 test-vfs-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_vfs_host.c tests\catalog.json src\fs\vfs.c src\fs\permissions.c src\process\credentials.c src\include\fs\vfs.h src\include\fs\permissions.h src\include\process\credentials.h src\include\process\resource.h
 	python tools\core_host_runner.py --case host:storage:vfs --cc "$(HOST_CC)"
 
@@ -2096,7 +2098,7 @@ test-filemanager-host: tools\core_host_runner.py tools\coverage_collector.py tes
 test-taskmanager-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_taskmanager_host.c tests\catalog.json src\shell\taskmanager.c src\shell\shell_introspection.c src\core\string.c src\include\apps\taskmanager.h src\include\apps\taskmanager_test.h src\include\apps\shell.h src\include\apps\shell_command_utils.h src\include\apps\shell_introspection.h src\include\apps\shell_runtime.h src\include\core\errors.h src\include\core\keyboard.h src\include\core\log.h src\include\core\memory.h src\include\core\panic.h src\include\core\power.h src\include\core\recovery.h src\include\core\string.h src\include\core\timer.h src\include\core\video.h src\include\drivers\ata.h src\include\drivers\font.h src\include\drivers\vesa.h src\include\fs\vfs.h src\include\process\process.h src\include\process\signal.h src\include\process\thread.h src\include\ui\desktop.h src\include\ui\display.h src\include\ui\filemanager.h src\include\ui\gui.h src\include\ui\settings.h src\include\ui\taskbar.h src\include\ui\wm.h
 	python tools\core_host_runner.py --case host:shell:taskmanager --cc "$(HOST_CC)"
 
-test-shell-diagnostics-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_shell_diagnostics_host.c tests\catalog.json src\shell\shell_commands_diagnostics.c src\shell\shell_diagnostics_helpers.c src\shell\shell_command_utils.c src\shell\shell_introspection.c src\core\string.c src\include\apps\shell_diagnostics_helpers.h src\include\apps\shell_command_utils.h src\include\apps\shell_introspection.h src\include\apps\shell_runtime.h src\include\core\errors.h src\include\core\keyboard.h src\include\core\log.h src\include\core\memory.h src\include\core\string.h src\include\core\video.h src\include\core\device_manager.h src\include\core\input.h src\include\core\network_manager.h src\include\core\power.h src\include\core\recovery.h src\include\core\usb_manager.h src\include\core\wifi_manager.h src\include\drivers\acpi.h src\include\drivers\mouse.h src\include\drivers\pci.h src\include\drivers\usb_hid.h src\include\drivers\usb_msc.h src\include\drivers\vesa.h src\include\fs\devfs.h src\include\fs\file_index.h src\include\fs\procfs.h src\include\fs\vfs.h src\include\memory\paging.h src\include\memory\slab.h src\include\process\process.h
+test-shell-diagnostics-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_shell_diagnostics_host.c tests\catalog.json src\shell\shell_commands_diagnostics.c src\shell\shell_diagnostics_helpers.c src\shell\shell_command_utils.c src\shell\shell_introspection.c src\core\string.c src\include\apps\shell_diagnostics_helpers.h src\include\apps\shell_command_utils.h src\include\apps\shell_introspection.h src\include\apps\shell_runtime.h src\include\core\errors.h src\include\core\keyboard.h src\include\core\log.h src\include\core\memory.h src\include\core\string.h src\include\core\video.h src\include\core\device_manager.h src\include\core\input.h src\include\core\network_manager.h src\include\core\power.h src\include\core\recovery.h src\include\core\update_system_slots.h src\include\core\usb_manager.h src\include\core\wifi_manager.h src\include\drivers\acpi.h src\include\drivers\mouse.h src\include\drivers\pci.h src\include\drivers\usb_hid.h src\include\drivers\usb_msc.h src\include\drivers\vesa.h src\include\fs\devfs.h src\include\fs\file_index.h src\include\fs\procfs.h src\include\fs\vfs.h src\include\memory\paging.h src\include\memory\slab.h src\include\process\process.h
 	python tools\core_host_runner.py --case host:shell:diagnostics --cc "$(HOST_CC)"
 test-shell-diagnostics-host: src\core\service_supervisor.c src\include\core\service_supervisor.h
 
@@ -2115,7 +2117,7 @@ test-shell-commands-vfs-host: tools\core_host_runner.py tools\coverage_collector
 test-recovery-runtime-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_recovery_runtime_host.c tests\catalog.json src\boot\recovery_runtime.c src\include\core\log.h src\include\core\string.h
 	python tools/core_host_runner.py --case host:boot:recovery-runtime --cc "$(HOST_CC)"
 
-test-recovery-menu-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_recovery_menu_host.c tests\catalog.json src\boot\recovery_menu.c src\boot\recovery_menu.h
+test-recovery-menu-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_recovery_menu_host.c tests\catalog.json src\boot\recovery_menu.c src\boot\recovery_menu.h src\include\core\update_system_slots.h
 	python tools/core_host_runner.py --case host:boot:recovery-menu --cc "$(HOST_CC)"
 
 test-recovery-loader-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_recovery_loader_host.c tests\catalog.json tests\unit\host_include\recovery_layout.h src\boot\recovery_loader.c src\boot\recovery_chain.h src\boot\recovery_menu.h src\include\core\crypto.h src\include\core\update_system.h src\include\core\update_system_slots.h src\include\core\update_trust.h
@@ -2254,7 +2256,7 @@ clean:
 .PHONY: kernel-elf
 .PHONY: test-assembly-qemu test-assembly-trace-qemu test-assembly-boot-trace-qemu test-assembly-recovery-trace-qemu
 .PHONY: test-qemu-parallel test-qemu-soak-parallel test-sec6-host test-sec6-qemu test-sec6
-.PHONY: test-sto1-host test-sto2-host test-sto3-host test-sto4-host test-sto5-host
+.PHONY: test-sto1-host test-sto2-host test-sto3-host test-sto4-host test-sto5-host test-sto6-host
 .PHONY: test-tst4-qemu-paging-vma test-tst4-qemu-execution test-tst4-qemu-storage-vfs test-tst4-qemu-network test-tst4-qemu-platform
 .PHONY: test-tst5-host test-tst5-qemu-shell test-tst5-qemu-input test-tst5-qemu-apps test-tst5-qemu-processes test-tst5-qemu-storage test-tst5-qemu-network test-tst5-qemu-update-recovery test-tst5-qemu-reboot test-tst5-qemu-poweroff
 .PHONY: test-krn6-qemu-diagnostics

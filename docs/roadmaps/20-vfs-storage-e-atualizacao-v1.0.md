@@ -2,8 +2,9 @@
 
 ## Estado
 
-STO1, STO2, STO3, STO4 e a implementação STO5 concluídos; a validação
-funcional QEMU do STO5 e as fases STO6/STO7 permanecem pendentes. Esta frente torna o caminho FAT12/FAT32, Block Layer, buffer cache,
+STO1, STO2, STO3, STO4, STO5 e a implementação/validação host-only do STO6
+concluídos; a validação funcional QEMU do STO5/STO6 e a fase STO7 permanecem
+pendentes. Esta frente torna o caminho FAT12/FAT32, Block Layer, buffer cache,
 VFS e Storage previsível diante de erro de I/O, cancelamento, reinicialização e
 falha de energia. Não substitui os formatos existentes nem cria um filesystem
 novo para a versão 1.0.0.
@@ -184,17 +185,26 @@ atualização, reboot e rollback permanece `PENDING` para execução funcional.
 
 ### STO6 — Recuperação
 
-- [ ] Definir como estados temporários são identificados após boot, falha ou
+- [x] Definir como estados temporários são identificados após boot, falha ou
   cancelamento.
-- [ ] Recuperar somente operações com evidência suficiente; nunca inventar
+- [x] Recuperar somente operações com evidência suficiente; nunca inventar
   metadados nem sobrescrever dados sem autorização explícita.
-- [ ] Preservar journal/registro de atualização existente e separar sua
+- [x] Preservar journal/registro de atualização existente e separar sua
   recuperação da consistência FAT geral.
-- [ ] Garantir rollback limpo para transações do Updater e operações normais do
+- [x] Garantir rollback limpo para transações do Updater e operações normais do
   Storage.
-- [ ] Recuperar uma atualização que morreu entre staging, ativação, primeiro
+- [x] Recuperar uma atualização que morreu entre staging, ativação, primeiro
   boot e confirmação de estado saudável.
-- [ ] Expor motivo e limite da recuperação em `health` e diagnósticos.
+- [x] Expor motivo e limite da recuperação em `health` e diagnósticos.
+
+A implementação STO6 agora valida o estado redundante e os journals antes de
+qualquer limpeza, preserva staging órfão sem journal comprovante, verifica os
+arquivos do runtime antes de publicar um commit e limita a política de boot a
+duas tentativas totais. Após o limite, o recovery tenta retornar ao slot
+anterior validado; divergências permanecem em recuperação pendente. Passaram
+`make q3check`, `make clean`, `make`, `make test-sto6-host` e
+`make catalog-test`; a matriz QEMU de recuperação permanece `PENDING` para
+execução funcional.
 
 ### STO7 — Matriz de falhas
 

@@ -85842,6 +85842,29 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/core/update_runtime.c:runtime_journal_files_match_new",
+      "kind": "c_function",
+      "source": "src/core/update_runtime.c",
+      "symbol": "runtime_journal_files_match_new",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:core:update-runtime"
+      ],
+      "tags": [
+        "sto6"
+      ],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "c:src/core/update_runtime.c:runtime_journal_old_state_raw_valid",
       "kind": "c_function",
       "source": "src/core/update_runtime.c",
@@ -146962,6 +146985,29 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_system_slots",
+      "kind": "c_function",
+      "source": "src/shell/shell_commands_diagnostics.c",
+      "symbol": "cmd_health_check_system_slots",
+      "linkage": "static",
+      "owner": "shell",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:diagnostics"
+      ],
+      "tags": [
+        "sto6"
+      ],
+      "coverage_mode": "direct"
+    },
+    {
       "id": "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_tls",
       "kind": "c_function",
       "source": "src/shell/shell_commands_diagnostics.c",
@@ -169442,7 +169488,8 @@
         "slots",
         "hash",
         "handoff",
-        "coverage"
+        "coverage",
+        "sto6"
       ],
       "status": "AUTOMATED"
     },
@@ -169497,7 +169544,8 @@
         "menu",
         "console",
         "limits",
-        "coverage"
+        "coverage",
+        "sto6"
       ],
       "status": "AUTOMATED"
     },
@@ -169538,7 +169586,8 @@
         "freestanding",
         "strings",
         "limits",
-        "coverage"
+        "coverage",
+        "sto6"
       ]
     },
     {
@@ -169987,8 +170036,7 @@
         "c:src/core/string.c:kmemset",
         "c:src/core/string.c:kstrcmp",
         "c:src/core/string.c:kstrlen"
-      ],
-      "tags": []
+      ]
     },
     {
       "id": "host:core:app-loader",
@@ -172802,6 +172850,15 @@
       "effects": "somente buffers estaticos no processo host",
       "cleanup": "buffers locais descartados; manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
+      "tags": [
+        "host",
+        "update-runtime",
+        "format",
+        "negative",
+        "corruption",
+        "sto5",
+        "sto6"
+      ],
       "surface_ids": [
         "api:src/include/core/string.h:kmemcpy",
         "api:src/include/core/string.h:kmemset",
@@ -172859,6 +172916,7 @@
         "c:src/core/update_runtime.c:runtime_hash_file_range",
         "c:src/core/update_runtime.c:runtime_identifier_valid",
         "c:src/core/update_runtime.c:runtime_initial_version",
+        "c:src/core/update_runtime.c:runtime_journal_files_match_new",
         "c:src/core/update_runtime.c:runtime_journal_old_state_raw_valid",
         "c:src/core/update_runtime.c:runtime_legacy_transaction_pending",
         "c:src/core/update_runtime.c:runtime_load_control",
@@ -172929,14 +172987,6 @@
         "c:src/core/update_runtime.c:update_runtime_test_fail_after",
         "c:src/core/update_runtime.c:update_runtime_verify_file",
         "c:src/core/update_runtime.c:update_runtime_verify_file_for_manifest"
-      ],
-      "tags": [
-        "host",
-        "update-runtime",
-        "format",
-        "negative",
-        "corruption",
-        "sto5"
       ]
     },
     {
@@ -173082,7 +173132,8 @@
         "journal",
         "recovery",
         "negative",
-        "sto5"
+        "sto5",
+        "sto6"
       ]
     },
     {
@@ -178380,6 +178431,13 @@
       "effects": "somente buffers estaticos de saida e doubles locais de VFS, mouse, log, timer, RTC, clock, IRQ, IDT, wait, workqueue, TLS, devfs, device manager, USB, HID, MSC e SLAB; sem armazenamento real",
       "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
       "status": "AUTOMATED",
+      "tags": [
+        "host",
+        "shell",
+        "diagnostics",
+        "sto5",
+        "sto6"
+      ],
       "surface_ids": [
         "api:src/include/apps/shell_runtime.h:shell_core_migrated_builtin_is_ready",
         "api:src/include/apps/shell_runtime.h:shell_diagnostics_print_usb_fixture_report",
@@ -178421,6 +178479,7 @@
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_service_supervisor",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_signals",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_sockets",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_system_slots",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_tls",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update",
         "c:src/shell/shell_commands_diagnostics.c:cmd_health_check_update_capabilities",
@@ -178574,12 +178633,6 @@
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_workq",
         "c:src/shell/shell_commands_diagnostics.c:shell_dispatch_cmd_wqinfo",
         "c:src/shell/shell_commands_diagnostics.c:shell_kmetrics_take_snapshot"
-      ],
-      "tags": [
-        "host",
-        "shell",
-        "diagnostics",
-        "sto5"
       ]
     },
     {
@@ -189361,7 +189414,8 @@
         "smoke",
         "tst5",
         "update",
-        "recovery"
+        "recovery",
+        "sto6"
       ],
       "interaction": {
         "mode": "qmp-keyboard",

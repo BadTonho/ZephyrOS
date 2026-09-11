@@ -7225,3 +7225,16 @@ dívida.
   `make catalog-test` passaram novamente. O teste FAT32 tambem comprovou a
   ordem observavel dados -> FAT -> diretorio; nao foram introduzidas novas
   falhas alem de `DT100-003`.
+
+- STO6 - recuperacao transacional - implementacao e validacao host-only
+  concluidas em 2026-09-11 (America/Sao_Paulo). O contrato agora limita as
+  tentativas de boot a duas, valida sequencias e estados fora do limite,
+  preserva staging sem journal comprovante, exige correspondencia dos arquivos
+  do runtime antes de publicar commit e tenta o slot anterior validado apos a
+  segunda falha. `health`, `update status` e `update system slots` passaram a
+  expor o limite e o estado de recuperacao.
+
+  Passaram `make q3check`, `make clean`, `make`, `make test-sto6-host` e
+  `make catalog-test`; o agregado executou 10 casos host com `Core host: PASS`.
+  A matriz QEMU de recuperacao permanece `PENDING` para validacao funcional.
+  A divida `DT100-003` continua separada.

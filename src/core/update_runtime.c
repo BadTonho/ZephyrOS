@@ -1634,6 +1634,28 @@ static int runtime_clear_stage(uint8_t slot) {
     return result;
 }
 
+static int runtime_journal_files_match_new(void) {
+    runtime_file_state_t actual[UPDATE_RUNTIME_MAX_ENTRIES];
+
+    if (runtime_journal.entry_count > UPDATE_RUNTIME_MAX_ENTRIES) {
+        LOG_ERROR("UPDATE", "Journal runtime possui contagem invalida");
+        return ERR_STATE;
+    }
+    if (runtime_refresh_current_files(actual) != OK) return ERR_DISK;
+    for (uint32_t index = 0U; index < runtime_journal.entry_count; index++) {
+        const runtime_plan_entry_t* entry = &runtime_journal.entries[index];
+        if (entry->catalog_index >=
+                sizeof(runtime_catalog) / sizeof(runtime_catalog[0]) ||
+            entry->catalog_index >= UPDATE_RUNTIME_MAX_ENTRIES ||
+            !runtime_states_equal(&actual[entry->catalog_index],
+                                  &entry->new_state)) {
+            LOG_ERROR("UPDATE", "Arquivos runtime divergem do journal comprometido");
+            return ERR_STATE;
+        }
+    }
+    return OK;
+}
+
 static int runtime_write_target_from_stage(uint8_t slot, uint8_t catalog_index,
                                            const runtime_file_state_t* expected) {
     char alias[UPDATE_RUNTIME_CACHE_ALIAS_SIZE];
@@ -1672,6 +1694,11 @@ static int runtime_restore_old_entry(const runtime_plan_entry_t* entry,
     result = runtime_read_file_state(runtime_catalog[entry->catalog_index],
                                      &current);
     if (result != OK) return result;
+    if (!runtime_states_equal(&current, &entry->old_state) &&
+        !runtime_states_equal(&current, &entry->new_state)) {
+        LOG_ERROR("UPDATE", "Arquivo runtime sem estado comprovado para rollback");
+        return ERR_STATE;
+    }
     if (runtime_states_equal(&current, &entry->old_state)) return OK;
     if (!entry->old_state.present) {
         return runtime_delete_root(runtime_catalog[entry->catalog_index]);
@@ -1708,6 +1735,11 @@ static int runtime_restore_new_entry(const runtime_plan_entry_t* entry,
     result = runtime_read_file_state(runtime_catalog[entry->catalog_index],
                                      &current);
     if (result != OK) return result;
+    if (!runtime_states_equal(&current, &entry->old_state) &&
+        !runtime_states_equal(&current, &entry->new_state)) {
+        LOG_ERROR("UPDATE", "Arquivo runtime sem estado comprovado para commit");
+        return ERR_STATE;
+    }
     if (runtime_states_equal(&current, &entry->new_state)) return OK;
     if (!entry->new_state.present) {
         return runtime_delete_root(runtime_catalog[entry->catalog_index]);
@@ -1743,6 +1775,8 @@ static int runtime_commit_state_from_journal(void) {
     runtime_state_t next = runtime_state;
     runtime_state_t previous = runtime_state;
     int previous_slot = runtime_state_slot;
+
+    if (runtime_journal_files_match_new() != OK) return ERR_STATE;
 
     next.installed_version = runtime_journal.target_version;
     next.installed_epoch = runtime_journal.target_epoch;
@@ -2468,6 +2502,10 @@ static int update_runtime_host_check_state_records(void) {
     if (decoded_journal.entries[0].catalog_index != 0U) {
         return 206;
     }
+    runtime_journal = journal;
+    if (runtime_journal_files_match_new() != ERR_STATE) return 207;
+    runtime_journal.entry_count = 0U;
+    if (runtime_journal_files_match_new() != OK) return 208;
     return OK;
 }
 

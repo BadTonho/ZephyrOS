@@ -46,6 +46,7 @@ PHASE_VERIFIED = 3
 PHASE_COMMITTED = 4
 BOOT_ATTEMPTED = 1
 BOOT_FAILED = 2
+BOOT_ATTEMPT_LIMIT = 2
 REASON_BOOT_FAILED = 13
 STATE_A = "ZSI0.STA"
 STATE_B = "ZSI1.STA"
@@ -177,6 +178,14 @@ def failed_candidate_state(active: bytes, candidate: bytes) -> bytes:
     raw[17] = BOOT_FAILED
     struct.pack_into("<H", raw, 18, REASON_BOOT_FAILED)
     struct.pack_into("<I", raw, 20, 1)
+    raw[CONTROL_HASH_OFFSET:] = hashlib.sha256(raw[:CONTROL_HASH_OFFSET]).digest()
+    return bytes(raw)
+
+
+def failed_candidate_after_retry_state(active: bytes, candidate: bytes) -> bytes:
+    raw = bytearray(failed_candidate_state(active, candidate))
+    struct.pack_into("<I", raw, 8, 5)
+    struct.pack_into("<I", raw, 20, BOOT_ATTEMPT_LIMIT)
     raw[CONTROL_HASH_OFFSET:] = hashlib.sha256(raw[:CONTROL_HASH_OFFSET]).digest()
     return bytes(raw)
 
@@ -389,6 +398,11 @@ def main() -> int:
         candidate=candidate, target=True)
     add("MENU_FAILED_VALID", "Menu: retry B disponivel; confirmacao promove B",
         state_a=failed_candidate, state_b=interrupted,
+        candidate=candidate, target=True)
+    failed_after_retry = failed_candidate_after_retry_state(active, candidate)
+    add("BOOT_ATTEMPT_LIMIT",
+        "BOOT_FAILED seq 2; retorno automatico ao slot A validado",
+        state_a=failed_after_retry, state_b=failed_after_retry,
         candidate=candidate, target=True)
     add("MENU_RETRY_NO_CONTROL",
         "Menu: retry B desabilitado; controle alternado sem 512 bytes",

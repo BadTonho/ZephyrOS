@@ -1337,6 +1337,8 @@ static void cmd_update_system_slots(void) {
                 0x07);
     video_print(" tentativa_seq=", 0x08);
     shell_command_print_num(status->boot_attempt_sequence);
+    video_print(" limite=", 0x08);
+    shell_command_print_num(UPDATE_SYSTEM_SLOTS_BOOT_ATTEMPT_LIMIT);
     video_print(" journal=", 0x08);
     video_print(status->journal_pending ? "pending" : "clean", 0x07);
     video_print(" phase=", 0x08);
