@@ -31,6 +31,42 @@ uma etapa.
 | `DT100-001` | ACEITA | SYNC1 | Roadmap 23 / PERF2 | v1.0.0 |
 | `DT100-002` | ACEITA | SYNC3 / R4 | Roadmap 23 / PERF3 | v1.0.0 |
 | `DT100-003` | ACEITA | SEC4 | Roadmap 19 / SEC4 | v1.0.0 |
+| `DT100-004` | ACEITA | STO6 | Roadmap 20 / STO6 | v1.0.0 |
+
+## DT100-004 - Matriz QEMU completa de recuperação STO6
+
+- **Estado:** `ACEITA`.
+- **Aceita em:** 2026-09-11 (America/Sao_Paulo).
+- **Origem:** STO6 - Recuperação transacional.
+- **Responsável:** [Roadmap 20 - STO6](../roadmaps/20-vfs-storage-e-atualizacao-v1.0.md#sto6--recuperação).
+- **Versão limite:** v1.0.0.
+
+### Motivo da aceitação
+
+A implementação, os testes host-only, os gates de build, TST5, TST6 e a
+geração da matriz `system-slots-matrix` foram concluídos. A fixture
+`BOOT_ACTIVE_VALID` foi validada no QEMU, incluindo F8 e renderização do menu.
+Os demais casos da matriz completa não serão executados nesta etapa para
+permitir o avanço ao STO7.
+
+### Impacto conhecido
+
+Os estados específicos das fixtures restantes não possuem confirmação QEMU
+individual nesta revisão. Isso não altera o comportamento fail-closed nem
+oculta falhas: a matriz permanece disponível em `build/system-slots-matrix`
+para reprodução posterior.
+
+### Critério de quitação
+
+Executar todas as imagens da matriz com os estados esperados, registrar os
+resultados e confirmar ausência de processos QEMU residuais, sem solicitar ou
+versionar chaves privadas adicionais.
+
+### Referência de validação
+
+O aceite e a evidência reproduzível estão registrados em
+[`registro-validacoes.md`](registro-validacoes.md), no registro STO6 de
+2026-09-11.
 
 ## DT100-003 - Chaves externas dos fixtures AS5/ZPKG
 

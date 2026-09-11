@@ -40,6 +40,7 @@ BIOS_GATEWAY_OPERATION_WRITE equ 1
 BIOS_GATEWAY_OPERATION_KEY equ 2
 BIOS_TICKS_PER_DAY equ 0x1800B0
 BIOS_WAIT_FOREVER equ 0xFFFFFFFF
+BIOS_BDA_OFFSET equ 0x0400
 BIOS_KEYBOARD_HEAD equ 0x041A
 BIOS_KEYBOARD_TAIL equ 0x041C
 BIOS_KEYBOARD_BUFFER equ 0x041E
@@ -904,7 +905,10 @@ bios_gateway_real:
 
 .key_poll:
     mov si, [BIOS_KEYBOARD_HEAD]
-    cmp si, [BIOS_KEYBOARD_TAIL]
+    add si, BIOS_BDA_OFFSET
+    mov di, [BIOS_KEYBOARD_TAIL]
+    add di, BIOS_BDA_OFFSET
+    cmp si, di
     jne .key_ready
     cmp dword [BIOS_GATEWAY_TIMEOUT], 0
     je .key_timeout
@@ -927,12 +931,14 @@ bios_gateway_real:
 
 .key_ready:
     mov si, [BIOS_KEYBOARD_HEAD]
+    add si, BIOS_BDA_OFFSET
     mov ax, [si]
     add si, 2
     cmp si, BIOS_KEYBOARD_BUFFER_END
     jb .key_store_head
     mov si, BIOS_KEYBOARD_BUFFER
 .key_store_head:
+    sub si, BIOS_BDA_OFFSET
     mov [BIOS_KEYBOARD_HEAD], si
     mov [BIOS_GATEWAY_KEY_RESULT], ax
 .key_timeout:

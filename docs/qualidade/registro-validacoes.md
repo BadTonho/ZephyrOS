@@ -7238,3 +7238,43 @@ dívida.
   `make catalog-test`; o agregado executou 10 casos host com `Core host: PASS`.
   A matriz QEMU de recuperacao permanece `PENDING` para validacao funcional.
   A divida `DT100-003` continua separada.
+
+- Recovery loader - janela de F8 ampliada em 2026-09-11
+  (America/Sao_Paulo). A janela inicial para solicitar o menu passou de dois
+  para dez segundos, mantendo o timeout do menu de falha e o caminho
+  automatico inalterados. O teste host confirmou o timeout de 183 ticks. A
+  primeira verificacao QEMU mostrou que F8 permanecia pendente no buffer da
+  BIOS; a causa foi uma conversao ausente do offset BDA no Stage 2. A
+  correcao foi aplicada em `src/boot/stage2.asm`; a validacao final esta
+  registrada abaixo.
+
+- Reteste QEMU STO5/STO6 em 2026-09-11 (America/Sao_Paulo). `make
+  test-tst5-qemu-update-recovery` e `make test-tst6-qemu-fault-recovery`
+  terminaram com `QEMU test: PASS`; os artefatos foram preservados em
+  `build/test-results/` e nenhum processo QEMU ficou ativo.
+  A matriz `system-slots-matrix` foi posteriormente gerada em
+  `build/system-slots-matrix`, com 27 imagens; nenhuma nova alteracao na chave
+  privada foi necessaria neste ciclo.
+
+- Correcao do teclado do Stage 2 validada em 2026-09-11
+  (America/Sao_Paulo). O Stage 2 passou a normalizar os offsets do buffer BDA
+  antes de comparar, ler e publicar o ponteiro da BIOS. Com a imagem recem-
+  compilada, `sendkey f8` no QEMU abriu o menu de recuperacao; o teste host de
+  assembly cobre a regressao e o processo QEMU foi encerrado sem residuo.
+
+- Reteste apos a correcao do Stage 2 em 2026-09-11 (America/Sao_Paulo). Os
+  casos `qemu:tst5:update-recovery` e `qemu:tst6:fault:recovery` passaram na
+  imagem nova, com artefatos em `build/test-results/` nos runs
+  `qemu-20260911T210700Z-32696` e `qemu-20260911T210733Z-28716`.
+  `make catalog-test` tambem passou, validando 7612 superficies e 180 casos.
+
+- Fixture `BOOT_ACTIVE_VALID` da matriz validada em 2026-09-11
+  (America/Sao_Paulo). O fluxo QEMU exibiu a janela inicial, aceitou F8 e
+  renderizou o menu com `MENU SOLICITADO`; a execucao terminou sem processo
+  QEMU residual.
+
+- Aceite `DT100-004` em 2026-09-11 (America/Sao_Paulo). A matriz STO6 foi
+  regenerada com 27 imagens e permanece preservada para reproducao. A fixture
+  `BOOT_ACTIVE_VALID` passou no QEMU; os demais casos individuais ficam para
+  validacao posterior, permitindo o inicio do STO7 sem esconder essa
+  cobertura pendente.

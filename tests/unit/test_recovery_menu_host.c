@@ -9,6 +9,7 @@ int recovery_menu_host_test_contracts(void);
 #define HOST_COVERAGE_CAPACITY 256U
 #define HOST_COVERAGE_LINE_SIZE 32U
 #define HOST_KEY_CAPACITY 16U
+#define EXPECTED_RECOVERY_F8_TICKS 183U
 
 static uintptr_t coverage_addresses[HOST_COVERAGE_CAPACITY];
 static uint32_t coverage_count;
@@ -16,6 +17,7 @@ static uint8_t coverage_active;
 static uint16_t host_keys[HOST_KEY_CAPACITY];
 static uint32_t host_key_count;
 static uint32_t host_key_index;
+static uint32_t host_last_timeout_ticks;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -61,7 +63,7 @@ static void __attribute__((no_instrument_function)) coverage_emit(int result) {
 }
 
 uint16_t recovery_bios_wait_key(uint32_t timeout_ticks) {
-    (void)timeout_ticks;
+    host_last_timeout_ticks = timeout_ticks;
     if (host_key_index >= host_key_count) return 0U;
     return host_keys[host_key_index++];
 }
@@ -122,8 +124,10 @@ static int test_public_contracts(void) {
     recovery_console_print_u32(4294967295U);
     set_keys(f8, 1U);
     if (!recovery_menu_wait_f8()) return 1;
+    if (host_last_timeout_ticks != EXPECTED_RECOVERY_F8_TICKS) return 11;
     set_keys(non_f8, 1U);
     if (recovery_menu_wait_f8()) return 2;
+    if (host_last_timeout_ticks != EXPECTED_RECOVERY_F8_TICKS) return 12;
     set_keys(select_continue, 3U);
     if (recovery_menu_run(&view) != RECOVERY_MENU_ACTION_CONTINUE) return 3;
     view.failure_menu = 1U;

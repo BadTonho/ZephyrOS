@@ -1029,8 +1029,8 @@ make run-system-slots-matrix SYSTEM_SLOTS_MATRIX_IMAGE=build\system-slots-matrix
 make run-recovery-menu-vga
 ```
 
-Em `BOOT_ACTIVE_VALID`, deixar a janela de dois segundos expirar deve iniciar
-A; F8 abre o menu sem timeout e Esc continua A sem escrita. Em
+Em `BOOT_ACTIVE_VALID`, deixar a janela inicial de dez segundos expirar deve
+iniciar A; F8 abre o menu sem timeout e Esc continua A sem escrita. Em
 `MENU_PREVIOUS_VALID`, escolha o anterior one-shot, confirme que
 `update system slots` ainda mostra B como ativo e reinicie sem F8 para voltar
 a B. Em `MENU_FAILED_VALID`, deixe primeiro os dez segundos expirarem para

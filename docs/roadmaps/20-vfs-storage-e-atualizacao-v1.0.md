@@ -2,9 +2,10 @@
 
 ## Estado
 
-STO1, STO2, STO3, STO4, STO5 e a implementação/validação host-only do STO6
-concluídos; a validação funcional QEMU do STO5/STO6 e a fase STO7 permanecem
-pendentes. Esta frente torna o caminho FAT12/FAT32, Block Layer, buffer cache,
+STO1, STO2, STO3, STO4, STO5 e a implementação/validação essencial do STO6
+concluídos; a matriz QEMU completa restante do STO6 está aceita como a dívida
+[`DT100-004`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-004---matriz-qemu-completa-de-recuperacao-sto6),
+permitindo avançar para o STO7. Esta frente torna o caminho FAT12/FAT32, Block Layer, buffer cache,
 VFS e Storage previsível diante de erro de I/O, cancelamento, reinicialização e
 falha de energia. Não substitui os formatos existentes nem cria um filesystem
 novo para a versão 1.0.0.
@@ -203,8 +204,13 @@ arquivos do runtime antes de publicar um commit e limita a política de boot a
 duas tentativas totais. Após o limite, o recovery tenta retornar ao slot
 anterior validado; divergências permanecem em recuperação pendente. Passaram
 `make q3check`, `make clean`, `make`, `make test-sto6-host` e
-`make catalog-test`; a matriz QEMU de recuperação permanece `PENDING` para
-execução funcional.
+`make catalog-test`; a matriz QEMU de recuperação foi regenerada com 27
+imagens, e a execução dos casos restantes foi aceita em `DT100-004`. A
+validação encontrou e corrigiu no Stage 2 a conversão
+do offset do buffer de teclado da BIOS, sem alterar `boot.asm`, ABI, syscalls,
+layout público ou formatos FAT; o F8 foi confirmado no QEMU com a imagem
+recém-compilada e com a fixture `BOOT_ACTIVE_VALID` da matriz regenerada. A
+execução dos demais casos fica registrada em `DT100-004`.
 
 ### STO7 — Matriz de falhas
 
