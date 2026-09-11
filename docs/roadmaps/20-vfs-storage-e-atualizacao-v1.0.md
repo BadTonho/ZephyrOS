@@ -2,7 +2,8 @@
 
 ## Estado
 
-STO1, STO2, STO3 e STO4 concluidos; as demais fases permanecem planejadas. Esta frente torna o caminho FAT12/FAT32, Block Layer, buffer cache,
+STO1, STO2, STO3, STO4 e a implementação STO5 concluídos; a validação
+funcional QEMU do STO5 e as fases STO6/STO7 permanecem pendentes. Esta frente torna o caminho FAT12/FAT32, Block Layer, buffer cache,
 VFS e Storage previsível diante de erro de I/O, cancelamento, reinicialização e
 falha de energia. Não substitui os formatos existentes nem cria um filesystem
 novo para a versão 1.0.0.
@@ -141,37 +142,45 @@ avisos. As leituras usam BIO físico sem criar ou invalidar entradas do cache.
 `storage_check()` preserva a assinatura pública; os contadores chegam ao Shell
 por um bridge interno e aparecem em `storage check <id>` para FAT12 e FAT32.
 O agregado host-only é `make test-sto4-host`; a matriz QEMU, reparo e
-recuperação permanecem para STO5–STO7.
+recuperação permanecem para STO6–STO7.
 
 ### STO5 — Atualização do sistema
 
-- [ ] Consultar manifesto remoto autenticado por HTTPS ou pelo transporte
+- [x] Consultar manifesto remoto autenticado por HTTPS ou pelo transporte
   remoto já validado pelo projeto.
-- [ ] Validar assinatura, hash, tamanho, versão, arquitetura, compatibilidade,
+- [x] Validar assinatura, hash, tamanho, versão, arquitetura, compatibilidade,
   dependências e política de downgrade antes de escrever no destino.
-- [ ] Baixar kernel, arquivos de sistema e componentes autorizados para uma
+- [x] Baixar kernel, arquivos de sistema e componentes autorizados para uma
   área de staging sem sobrescrever a versão em execução.
-- [ ] Verificar espaço, integridade do Storage, energia disponível e capacidade
+- [x] Verificar espaço, integridade do Storage, energia disponível e capacidade
   de recuperação antes do commit.
-- [ ] Manter slots A/B ou mecanismo equivalente com versão ativa e candidata
+- [x] Manter slots A/B ou mecanismo equivalente com versão ativa e candidata
   fisicamente separadas.
-- [ ] Registrar tentativa de boot, estado `pending`, confirmação `good`,
+- [x] Registrar tentativa de boot, estado `pending`, confirmação `good`,
   limite de tentativas e rollback automático para a versão anterior.
-- [ ] Ativar a versão nova de forma transacional, preservando bootloader e
+- [x] Ativar a versão nova de forma transacional, preservando bootloader e
   layout da imagem, somente após a gravação integral e a validação local.
-- [ ] Validar compatibilidade mínima entre kernel, recovery, bootloader,
+- [x] Validar compatibilidade mínima entre kernel, recovery, bootloader,
   filesystem e componentes do artefato.
-- [ ] Recuperar interrupções por falha de rede, falta de espaço,
+- [x] Recuperar interrupções por falha de rede, falta de espaço,
   reinicialização, queda de energia ou erro de escrita.
-- [ ] Publicar estado, progresso, versão candidata, erro e resultado no Shell,
+- [x] Publicar estado, progresso, versão candidata, erro e resultado no Shell,
   Settings e diagnósticos por um contrato de estado, mantendo o prompt
   utilizável.
-- [ ] Manter fallback para atualização local/offline quando o servidor remoto
+- [x] Manter fallback para atualização local/offline quando o servidor remoto
   estiver indisponível.
-- [ ] Rejeitar manifestos, imagens e componentes não assinados, truncados,
+- [x] Rejeitar manifestos, imagens e componentes não assinados, truncados,
   incompatíveis ou fora da política de atualização.
-- [ ] Definir rotação, revogação e expiração da confiança usada para validar
+- [x] Definir rotação, revogação e expiração da confiança usada para validar
   futuras atualizações, sem aceitar chave remota arbitrária.
+
+STO5 foi implementado sobre os caminhos existentes de ZUPD, ZSYS, runtime,
+transporte remoto, staging e slots A/B. A política de confiança agora inclui
+janela de `target_epoch` e revogação estática, sem versionar chaves privadas;
+ZSYS remoto exige HTTPS, e o slot ativo só é substituído após a confirmação
+da candidata. O agregado `make test-sto5-host`, `q3check`, build completo,
+`catalog-test` e os testes Python do updater passaram. A matriz QEMU de
+atualização, reboot e rollback permanece `PENDING` para execução funcional.
 
 ### STO6 — Recuperação
 

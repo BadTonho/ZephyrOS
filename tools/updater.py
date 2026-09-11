@@ -240,6 +240,10 @@ SYSTEM_HEADER_SIGNATURE_SIZE_OFFSET = SYSTEM_HEADER_SIGNATURE_OFFSET + SYSTEM_SI
 SYSTEM_HEADER_SIGNATURE_OFFSET_FIELD = SYSTEM_HEADER_SIGNATURE_SIZE_OFFSET + 4
 SYSTEM_HEADER_RESERVED_OFFSET = SYSTEM_HEADER_SIGNATURE_OFFSET_FIELD + 4
 
+TRUST_VALID_FROM_EPOCH = 0
+TRUST_VALID_UNTIL_EPOCH = 0xFFFFFFFE
+TRUST_REVOKED_KEY_IDS = (bytes.fromhex("a5" * 16),)
+
 REASON_NONE = "NONE"
 REASON_FORMAT = "FORMAT"
 REASON_SIZE = "SIZE"
@@ -311,6 +315,9 @@ class PublicKeyInfo:
 
     public_key: bytes
     key_id: bytes
+    valid_from_epoch: int = TRUST_VALID_FROM_EPOCH
+    valid_until_epoch: int = TRUST_VALID_UNTIL_EPOCH
+    revoked_key_ids: tuple[bytes, ...] = TRUST_REVOKED_KEY_IDS
 
 
 @dataclass(frozen=True)
@@ -707,6 +714,16 @@ def public_key_info(public_key: bytes) -> PublicKeyInfo:
     return PublicKeyInfo(public_key, hashlib.sha256(public_key).digest()[:16])
 
 
+def trusted_key_allowed(info: PublicKeyInfo, key_id: bytes,
+                        target_epoch: int) -> bool:
+    """Aplica a raiz estatica, revogacao e janela temporal da release."""
+    return (
+        key_id == info.key_id
+        and key_id not in info.revoked_key_ids
+        and info.valid_from_epoch <= target_epoch <= info.valid_until_epoch
+    )
+
+
 def public_json(info: PublicKeyInfo) -> str:
     """Serializa a raiz publica em formato estavel e sem dados privados."""
     data = {
@@ -714,6 +731,9 @@ def public_json(info: PublicKeyInfo) -> str:
         "algorithm": "Ed25519",
         "public_key_hex": info.public_key.hex(),
         "key_id_hex": info.key_id.hex(),
+        "valid_from_epoch": info.valid_from_epoch,
+        "valid_until_epoch": info.valid_until_epoch,
+        "revoked_key_ids": [item.hex() for item in info.revoked_key_ids],
     }
     return json.dumps(data, indent=2, sort_keys=False) + "\n"
 
@@ -729,6 +749,9 @@ def load_public_json(path: Path) -> PublicKeyInfo:
         "algorithm",
         "public_key_hex",
         "key_id_hex",
+        "valid_from_epoch",
+        "valid_until_epoch",
+        "revoked_key_ids",
     ):
         raise UpdateError("arquivo de chave publica possui campos invalidos")
     if data["format"] != "zephyros-ed25519-public-v1" or data["algorithm"] != "Ed25519":
@@ -741,7 +764,21 @@ def load_public_json(path: Path) -> PublicKeyInfo:
     info = public_key_info(public_key)
     if len(declared_key_id) != 16 or declared_key_id != info.key_id:
         raise UpdateError("key_id da chave publica diverge do SHA-256")
-    return info
+    valid_from = data["valid_from_epoch"]
+    valid_until = data["valid_until_epoch"]
+    revoked = data["revoked_key_ids"]
+    if (not isinstance(valid_from, int) or not isinstance(valid_until, int) or
+            not 0 <= valid_from <= valid_until <= 0xFFFFFFFF or
+            not isinstance(revoked, list)):
+        raise UpdateError("politica de confianca invalida")
+    try:
+        revoked_ids = tuple(bytes.fromhex(item) for item in revoked)
+    except (TypeError, ValueError) as error:
+        raise UpdateError("lista de revogacao invalida") from error
+    if any(len(item) != 16 for item in revoked_ids):
+        raise UpdateError("key_id revogado invalido")
+    return PublicKeyInfo(public_key, info.key_id, valid_from, valid_until,
+                         revoked_ids)
 
 
 def load_private_key(path: Path, password: bytes) -> Any:
@@ -1212,7 +1249,8 @@ def verify_artifact(
         ]
         if hashlib.sha256(payload).digest() != entry.payload_sha256:
             reject(REASON_HASH, f"SHA-256 divergente para {entry.path}")
-    if header["key_id"] != trusted_key.key_id:
+    if not trusted_key_allowed(trusted_key, header["key_id"],
+                               header["target_epoch"]):
         reject(REASON_UNKNOWN_KEY, "key_id nao corresponde a raiz confiavel")
     ed25519, _, invalid_signature = crypto_modules()
     public_key = ed25519.Ed25519PublicKey.from_public_bytes(trusted_key.public_key)
@@ -1374,7 +1412,7 @@ def parse_runtime_manifest(
         or not 1 <= package_size <= RUNTIME_PACKAGE_MAX_SIZE
     ):
         reject(REASON_FORMAT, "cabecalho ZUM2 invalido")
-    if data[68:84] != trusted_key.key_id:
+    if not trusted_key_allowed(trusted_key, data[68:84], target_epoch):
         reject(REASON_UNKNOWN_KEY, "key_id do ZUM2 nao corresponde a raiz")
     ed25519, _, invalid_signature = crypto_modules()
     public_key = ed25519.Ed25519PublicKey.from_public_bytes(
@@ -1531,9 +1569,10 @@ def parse_runtime_package(
         or base_reserved != bytes(2)
         or any(data[84:RUNTIME_PACKAGE_HEADER_SIZE])
         or not 1 <= entry_count <= RUNTIME_MAX_ENTRIES
-        or key_id != trusted_key.key_id
+        or not trusted_key_allowed(trusted_key, key_id, target_epoch)
     ):
-        reject(REASON_FORMAT if key_id == trusted_key.key_id else REASON_UNKNOWN_KEY,
+        reject(REASON_FORMAT if trusted_key_allowed(
+                   trusted_key, key_id, target_epoch) else REASON_UNKNOWN_KEY,
                "cabecalho ZUPD v2 invalido")
     table_end = RUNTIME_PACKAGE_HEADER_SIZE + entry_count * RUNTIME_PACKAGE_ENTRY_SIZE
     if (
@@ -2365,7 +2404,11 @@ def system_parse_header(raw: bytes, trusted: PublicKeyInfo) -> tuple[SystemPacka
     unsigned = bytearray(raw[:SYSTEM_HEADER_SIZE])
     unsigned[SYSTEM_HEADER_SIGNATURE_OFFSET : SYSTEM_HEADER_SIGNATURE_OFFSET + SYSTEM_SIGNATURE_SIZE] = bytes(SYSTEM_SIGNATURE_SIZE)
     signature = raw[SYSTEM_HEADER_SIGNATURE_OFFSET : SYSTEM_HEADER_SIGNATURE_OFFSET + SYSTEM_SIGNATURE_SIZE]
-    if raw[SYSTEM_HEADER_KEY_ID_OFFSET : SYSTEM_HEADER_KEY_ID_OFFSET + SYSTEM_KEY_ID_SIZE] != trusted.key_id:
+    if not trusted_key_allowed(
+        trusted,
+        raw[SYSTEM_HEADER_KEY_ID_OFFSET : SYSTEM_HEADER_KEY_ID_OFFSET + SYSTEM_KEY_ID_SIZE],
+        target.epoch,
+    ):
         raise Rejection(REASON_UNKNOWN_KEY, "key id ZSYS desconhecido")
     return package, bytes(unsigned) + signature
 
@@ -2893,12 +2936,41 @@ def render_trust_header(info: PublicKeyInfo) -> str:
         "/* Gerado por tools/updater.py; contem apenas material publico. */\n"
         f'#define UPDATE_TRUST_PUBLIC_KEY_HEX "{info.public_key.hex()}"\n'
         f'#define UPDATE_TRUST_KEY_ID_HEX "{info.key_id.hex()}"\n\n'
+        f'#define UPDATE_TRUST_VALID_FROM_EPOCH {info.valid_from_epoch}U\n'
+        f'#define UPDATE_TRUST_VALID_UNTIL_EPOCH {info.valid_until_epoch}U\n'
+        f'#define UPDATE_TRUST_REVOKED_KEY_COUNT {len(info.revoked_key_ids)}U\n\n'
         "static const uint8_t UPDATE_TRUST_PUBLIC_KEY[32] = {\n"
         f"    {c_bytes(info.public_key)}\n"
         "};\n\n"
         "static const uint8_t UPDATE_TRUST_KEY_ID[16] = {\n"
         f"    {c_bytes(info.key_id)}\n"
         "};\n\n"
+        "static const uint8_t UPDATE_TRUST_REVOKED_KEY_IDS["
+        f"{len(info.revoked_key_ids)}U][16] = {{\n"
+        + "".join(f"    {{{c_bytes(item)}}},\n" for item in info.revoked_key_ids)
+        + "};\n\n"
+        "static inline uint8_t update_trust_key_allowed(\n"
+        "    const uint8_t* key_id, uint32_t target_epoch) {\n"
+        "    uint8_t different;\n"
+        "    if (!key_id || target_epoch > UPDATE_TRUST_VALID_UNTIL_EPOCH) return 0U;\n"
+        "#if UPDATE_TRUST_VALID_FROM_EPOCH != 0U\n"
+        "    if (target_epoch < UPDATE_TRUST_VALID_FROM_EPOCH) return 0U;\n"
+        "#endif\n"
+        "    different = 0U;\n"
+        "    for (uint32_t index = 0U; index < 16U; index++) {\n"
+        "        different |= (uint8_t)(key_id[index] ^ UPDATE_TRUST_KEY_ID[index]);\n"
+        "    }\n"
+        "    if (different) return 0U;\n"
+        "    for (uint32_t key = 0U; key < UPDATE_TRUST_REVOKED_KEY_COUNT; key++) {\n"
+        "        different = 0U;\n"
+        "        for (uint32_t index = 0U; index < 16U; index++) {\n"
+        "            different |= (uint8_t)(key_id[index] ^\n"
+        "                UPDATE_TRUST_REVOKED_KEY_IDS[key][index]);\n"
+        "        }\n"
+        "        if (!different) return 0U;\n"
+        "    }\n"
+        "    return 1U;\n"
+        "}\n\n"
         "#endif\n"
     )
 
@@ -4009,7 +4081,8 @@ def parse_remote_manifest(data: bytes, trusted: PublicKeyInfo) -> RemoteManifest
         or struct.unpack_from("<I", data, 88)[0] != 0
     ):
         raise UpdateError("cabecalho remoto invalido")
-    if data[72:88] != trusted.key_id:
+    if not trusted_key_allowed(trusted, data[72:88],
+                               struct.unpack_from("<I", data, 32)[0]):
         raise UpdateError("key_id remoto desconhecido")
     ed25519, _, invalid_signature = crypto_modules()
     try:

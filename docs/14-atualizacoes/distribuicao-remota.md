@@ -498,6 +498,25 @@ revalida o cache e publica somente um slot pendente; ativacao exige o comando
 `reboot`. F12/Esc cancela a operacao corrente preservando o cache anteriormente
 confirmado.
 
+## STO5 - atualizacao segura do sistema
+
+O caminho de producao para ZSYS exige HTTPS/TLS verificado. HTTP permanece
+disponivel somente para fixtures locais explicitamente configuradas; ele nao e
+aceito pelo fluxo remoto de producao. O catalogo autenticado, o hash publicado
+e a assinatura individual do ZSYS precisam coincidir antes do staging.
+
+O preflight valida arquitetura i386, versao base, epoch, anti-downgrade,
+componentes, offsets, dependencias, schema/boot ABI, espaco, integridade do
+Storage, energia e capacidade de rollback. A imagem candidata e gravada apenas
+no slot inativo. A versao ativa permanece preservada ate a confirmacao
+`GOOD`; falha de rede, TLS, escrita, sync, cancelamento ou reboot durante o
+staging limpa ou recupera o estado sem substituir a versao em execucao.
+
+Chaves ativas, validade e revogacao vem do material publico compilado. Um
+manifesto remoto nunca pode introduzir uma chave nem relaxar a politica. O
+estado de slots publica `PENDING`, `BOOT_ATTEMPT`, `GOOD` ou `ROLLBACK`, alem do
+slot anterior, candidato, tentativa, limite e motivo.
+
 ## Limites de seguranca
 
 Ed25519 e SHA-256 protegem autenticidade e integridade mesmo sobre HTTP.

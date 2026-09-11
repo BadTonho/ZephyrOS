@@ -2072,6 +2072,27 @@ em `PASS`, com `unknown_addresses=[]` e `ambiguous_symbols=[]`. Depois da
 execucao real, sincronize o catalogo, renderize a visao e valide com
 `make catalog-test`.
 
+## STO5 agregado host-only
+
+O alvo abaixo executa em conjunto os casos de ZUPD, runtime, transporte remoto,
+ZSYS, slots, Shell, diagnosticos, Updater e estado. Ele nao usa rede, disco
+real, reboot ou chave privada:
+
+```text
+make test-sto5-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+```
+
+Para a validacao funcional, gere as fixtures e execute as matrizes somente
+depois dos gates de build:
+
+```text
+make system-fixtures
+make system-slots-matrix
+make test-tst5-qemu-update-recovery
+make run-system-slots-matrix
+make run-system-update-matrix
+```
+
 ## Spinlock host-only
 
 O alvo `test-spinlock-host` executa uma fixture nativa que inicializa, adquire

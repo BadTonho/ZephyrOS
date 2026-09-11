@@ -123,7 +123,10 @@ O separador de dominio possui 19 bytes:
 
 O campo `key_id` seleciona uma chave publica confiavel por comparacao exata.
 A chave publica nao e transportada pelo artefato. O kernel nunca recebe nem
-armazena a chave privada.
+armazena a chave privada. Alem da identidade, a raiz estatica aplica a janela
+de validade do `target_epoch` e rejeita IDs presentes na lista de revogacao.
+O manifesto remoto nao pode acrescentar chaves, alterar a janela ou remover
+uma revogacao.
 
 Os fixtures imutaveis da U1 usam somente chaves publicas TEST ONLY dos vetores
 do RFC 8032. Na U2, o mantenedor provisionou offline a unica raiz de release
@@ -132,12 +135,15 @@ header derivado `src/include/core/update_trust.h`; seed, senha e chave privada
 nao sao versionadas.
 
 A sincronizacao e conferida por `tools/updater.py check-trust`. O `key_id` da
-raiz de release e `d4926d816d8373a412e7458cc9f14379`.
+raiz de release e `dfecfa35485fde8ad61707947e5ae85b`. A politica publica
+versionada em `config/update-release-public.json` contem a chave ativa, os
+limites de epoch e os IDs revogados; `src/include/core/update_trust.h` e o
+material compilado equivalente.
 
-O v1 possui uma unica chave de release e nao permite rotacao ou revogacao
-automatica. Se essa chave for comprometida, a recuperacao exige uma nova
-imagem confiavel instalada manualmente, com nova chave publica e epoch
-incrementado.
+O v1 nao possui rotacao dinamica. A lista de revogacao e estatica e somente
+append-only entre imagens confiaveis. Se a chave ativa for comprometida, a
+recuperacao exige uma nova imagem confiavel instalada manualmente, com nova
+chave publica e epoch incrementado.
 
 ## Ordem de validacao
 

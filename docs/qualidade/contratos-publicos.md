@@ -295,7 +295,10 @@ controlado e nao executam radio.
 Desde a U2, `src/include/core/crypto.h` define SHA-2 incremental, verificacao
 Ed25519 e autotestes; `src/include/core/update.h` fixa motivos, metadados e
 capacidades do verificador ZUPD somente-leitura; e `update_trust.h` contem
-somente a raiz publica derivada. `version.h` centraliza `0.1.0`, epoch `0` e o
+somente a raiz publica derivada, a janela estatica de `target_epoch` e a lista
+de chaves revogadas. `update_trust_key_allowed()` e um helper inline usado
+pelos verificadores de ZUPD, ZUM e ZSYS; ele nao cria syscall nem altera ABI.
+`version.h` centraliza `0.1.0`, epoch `0` e o
 texto de exibicao. Os contratos permanecem em
 `docs/14-atualizacoes/contrato-zupd-v1.md` e `docs/04-kernel/kernel.md`.
 

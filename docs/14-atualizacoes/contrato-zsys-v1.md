@@ -80,6 +80,12 @@ assinado; eles não substituem a autoridade do envelope. A identidade também
 deve coincidir: release_id e release_tag do ZSYS precisam corresponder ao
 descritor e ao tag selecionado.
 
+Antes de qualquer escrita, o preflight tambem aplica a politica estatica de
+`src/include/core/update_trust.h`: o `key_id` precisa ser conhecido, nao
+revogado e estar dentro da janela de `target_epoch`. A politica publica e
+versionada em `config/update-release-public.json`; o manifesto remoto nao pode
+alterar a chave, a validade ou a lista de revogacao.
+
 ## Compatibilidade EP9.0A
 
 - supported_from: lista de versões/epochs aceitos; a imagem atual é a primeira
@@ -127,6 +133,12 @@ uma estrutura zerada.
 Interrupções preservam o slot ativo. Staging incompleto é descartado quando
 o journal ainda está em `PREPARED`/`STAGING`; um staging verificado pode ser
 republicado como slot pendente durante a recuperação.
+
+O ciclo de atualizacao usa as fases `EMPTY`, `STAGING`, `VERIFIED`, `PENDING`,
+`BOOT_ATTEMPT` e `GOOD`, com `ROLLBACK` quando o limite de tentativas e
+atingido. O controle persiste slot anterior, candidato, sequencia, limite e
+motivo da falha. A limpeza de `ZSTG.ZSY` ocorre somente depois da confirmacao;
+falhas anteriores deixam a versao ativa intacta.
 
 O escritor FAT32 de slots usa buffer fixo de 64 KiB e grava clusters em chunks;
 nenhuma operação aloca a imagem de até 8 MiB inteira. O arquivo temporário é

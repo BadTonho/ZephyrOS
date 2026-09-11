@@ -469,11 +469,13 @@ static int update_system_remote_begin(update_system_remote_stream_t* stream) {
             UPDATE_SYSTEM_SIGNATURE_OFFSET ||
         any_nonzero(raw + UPDATE_SYSTEM_RESERVED_OFFSET,
                     UPDATE_SYSTEM_HEADER_SIZE - UPDATE_SYSTEM_RESERVED_OFFSET) ||
-        !crypto_equal(raw + UPDATE_SYSTEM_KEY_ID_OFFSET,
-                      UPDATE_TRUST_KEY_ID, UPDATE_SYSTEM_KEY_ID_SIZE)) {
+        !update_trust_key_allowed(
+            raw + UPDATE_SYSTEM_KEY_ID_OFFSET,
+            update_system_read_u32(raw, UPDATE_SYSTEM_TARGET_EPOCH_OFFSET))) {
         return update_system_reject(
-            !crypto_equal(raw + UPDATE_SYSTEM_KEY_ID_OFFSET,
-                          UPDATE_TRUST_KEY_ID, UPDATE_SYSTEM_KEY_ID_SIZE) ?
+            !update_trust_key_allowed(
+                raw + UPDATE_SYSTEM_KEY_ID_OFFSET,
+                update_system_read_u32(raw, UPDATE_SYSTEM_TARGET_EPOCH_OFFSET)) ?
             UPDATE_SYSTEM_REASON_UNKNOWN_KEY : UPDATE_SYSTEM_REASON_FORMAT,
             ERR_INVALID, "Identidade ou assinatura remota ZSYS invalida",
             &stream->result);
@@ -822,6 +824,7 @@ int update_system_transfer_tag(
         return ERR_INVALID;
     }
     result = update_system_remote_http_options(options, &http_options);
+    http_options.require_https = 1U;
     if (result == OK) result = http_get_start_ex(
         update_system_remote_release.descriptor.url, &http_options);
     if (result == OK) result = update_system_remote_wait_http(
@@ -901,6 +904,7 @@ int update_system_transfer_tag(
     }
     if (result == OK) result = update_system_remote_http_options(
         options, &http_options);
+    http_options.require_https = 1U;
     if (result == OK) result = http_get_stream_start_ex(
         update_system_remote_release.system.url,
         update_system_remote_release.system.size, update_system_remote_sink,
@@ -1070,8 +1074,10 @@ static int update_system_verify_file_internal(
                                     "Assinatura ou reservado ZSYS invalido",
                                     result_out);
     }
-    if (!crypto_equal(update_system_header + UPDATE_SYSTEM_KEY_ID_OFFSET,
-                      UPDATE_TRUST_KEY_ID, UPDATE_SYSTEM_KEY_ID_SIZE)) {
+    if (!update_trust_key_allowed(
+            update_system_header + UPDATE_SYSTEM_KEY_ID_OFFSET,
+            update_system_read_u32(
+                update_system_header, UPDATE_SYSTEM_TARGET_EPOCH_OFFSET))) {
         return update_system_reject(UPDATE_SYSTEM_REASON_UNKNOWN_KEY,
                                     ERR_INVALID, "Key id ZSYS desconhecido",
                                     result_out);

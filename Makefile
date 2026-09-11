@@ -872,7 +872,7 @@ $(RECOVERY_CRYPTO_ED25519_OBJ): $(CRYPTO_ED25519_C)
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(RECOVERY_CFLAGS) -c $< -o $@
 
-$(UPDATE_OBJ): $(UPDATE_C)
+$(UPDATE_OBJ): $(UPDATE_C) src/include/core/update_trust.h
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -888,7 +888,7 @@ $(UPDATE_REMOTE_SYSTEM_OBJ): $(UPDATE_REMOTE_SYSTEM_C) src/include/core/update_r
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(UPDATE_REMOTE_OBJ): $(UPDATE_REMOTE_C) src/include/core/update_remote.h src/include/core/update_remote_config.h
+$(UPDATE_REMOTE_OBJ): $(UPDATE_REMOTE_C) src/include/core/update_remote.h src/include/core/update_remote_config.h src/include/core/update_trust.h
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -904,7 +904,7 @@ $(UPDATE_RUNTIME_OBJ): $(UPDATE_RUNTIME_C) src/include/core/update_runtime.h src
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
-$(UPDATE_REMOTE_RUNTIME_OBJ): $(UPDATE_REMOTE_RUNTIME_C) src/include/core/update_remote_runtime.h src/include/core/update_runtime.h src/include/core/update_remote_github.h src/include/core/update_remote_config.h src/include/core/http.h
+$(UPDATE_REMOTE_RUNTIME_OBJ): $(UPDATE_REMOTE_RUNTIME_C) src/include/core/update_remote_runtime.h src/include/core/update_runtime.h src/include/core/update_remote_github.h src/include/core/update_remote_config.h src/include/core/http.h src/include/core/update_trust.h
 	@if not exist $(BUILD_DIR) mkdir $(BUILD_DIR)
 	$(GCC) $(CFLAGS) -c $< -o $@
 
@@ -1779,16 +1779,16 @@ test-scheduling-host: tools\core_host_runner.py tools\coverage_collector.py test
 test-package-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_package_host.c tests\catalog.json src\core\app_package.c src\include\core\app_package.h src\include\core\app_package_trust.h src\core\crypto.c
 	python tools\core_host_runner.py --case host:core:app-package --cc "$(HOST_CC)"
 
-test-update-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_update_host.c src\core\update.c src\core\update_host.h src\core\crypto.c tests\catalog.json
+test-update-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_update_host.c src\core\update.c src\core\update_host.h src\core\crypto.c src\include\core\update_trust.h tests\catalog.json
 	python tools\core_host_runner.py --case host:core:update --cc "$(HOST_CC)"
 
-test-update-runtime-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_update_runtime_host.c tests\catalog.json src\core\update_runtime.c src\core\update_runtime_host.h src\core\string.c
+test-update-runtime-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_update_runtime_host.c tests\catalog.json src\core\update_runtime.c src\core\update_runtime_host.h src\core\string.c src\include\core\update_trust.h
 	python tools\core_host_runner.py --case host:core:update-runtime --cc "$(HOST_CC)"
 
 test-update-remote-runtime-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_update_remote_runtime_host.c tests\catalog.json src\core\update_remote_runtime.c src\core\update_remote_runtime_host.h src\core\string.c
 	python tools\core_host_runner.py --case host:core:update-remote-runtime --cc "$(HOST_CC)"
 
-test-update-remote-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_update_remote_host.c tests\catalog.json src\core\update_remote.c src\core\update_remote_host.h src\core\string.c
+test-update-remote-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_update_remote_host.c tests\catalog.json src\core\update_remote.c src\core\update_remote_host.h src\core\string.c src\include\core\update_trust.h
 	python tools\core_host_runner.py --case host:core:update-remote --cc "$(HOST_CC)"
 
 test-app-remote-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_app_remote_host.c tests\catalog.json src\core\app_remote.c src\include\core\app_remote.h src\include\core\app_remote_config.h src\include\core\app_remote_trust.h src\include\core\app_package.h src\include\core\app_package_trust.h src\core\string.c
@@ -1806,7 +1806,7 @@ test-update-remote-github-host: tools\core_host_runner.py tools\coverage_collect
 test-update-remote-release-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_update_remote_release_host.c tests\catalog.json src\core\update_remote_release.c src\core\update_remote_release_host.h src\core\string.c
 	python tools\core_host_runner.py --case host:core:update-remote-release --cc "$(HOST_CC)"
 
-test-update-system-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_update_system_host.c tests\catalog.json src\core\update_system.c src\core\update_system_host.h src\core\string.c
+test-update-system-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_update_system_host.c tests\catalog.json src\core\update_system.c src\core\update_system_host.h src\core\string.c src\include\core\update_trust.h
 	python tools\core_host_runner.py --case host:core:update-system --cc "$(HOST_CC)"
 
 test-state-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_core_state_host.c tests\catalog.json src\core\recovery.c src\core\power_notifier.c
@@ -1899,6 +1899,8 @@ test-sto2-host: test-block-host test-fat12-host test-fat32-host test-fs-host tes
 test-sto3-host: test-fs-host test-storage-host test-storage-fat32-host test-power-host test-process-host test-vfs-host test-vfs-path-host
 
 test-sto4-host: test-fs-host test-storage-host test-storage-fat32-host test-shell-commands-storage-host
+
+test-sto5-host: test-update-host test-update-runtime-host test-update-remote-runtime-host test-update-remote-host test-update-system-slots-host test-update-remote-system-host test-update-remote-github-host test-update-remote-release-host test-update-system-host test-shell-commands-packages-host test-shell-diagnostics-host test-updater-host test-state-host
 
 test-vfs-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_vfs_host.c tests\catalog.json src\fs\vfs.c src\fs\permissions.c src\process\credentials.c src\include\fs\vfs.h src\include\fs\permissions.h src\include\process\credentials.h src\include\process\resource.h
 	python tools\core_host_runner.py --case host:storage:vfs --cc "$(HOST_CC)"
@@ -2252,7 +2254,7 @@ clean:
 .PHONY: kernel-elf
 .PHONY: test-assembly-qemu test-assembly-trace-qemu test-assembly-boot-trace-qemu test-assembly-recovery-trace-qemu
 .PHONY: test-qemu-parallel test-qemu-soak-parallel test-sec6-host test-sec6-qemu test-sec6
-.PHONY: test-sto1-host test-sto2-host test-sto3-host test-sto4-host
+.PHONY: test-sto1-host test-sto2-host test-sto3-host test-sto4-host test-sto5-host
 .PHONY: test-tst4-qemu-paging-vma test-tst4-qemu-execution test-tst4-qemu-storage-vfs test-tst4-qemu-network test-tst4-qemu-platform
 .PHONY: test-tst5-host test-tst5-qemu-shell test-tst5-qemu-input test-tst5-qemu-apps test-tst5-qemu-processes test-tst5-qemu-storage test-tst5-qemu-network test-tst5-qemu-update-recovery test-tst5-qemu-reboot test-tst5-qemu-poweroff
 .PHONY: test-krn6-qemu-diagnostics

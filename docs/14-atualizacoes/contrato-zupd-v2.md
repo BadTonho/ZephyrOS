@@ -119,6 +119,11 @@ de empacotamento; a aplicação de um pacote armazenado usa o `ZUM2` do mesmo
 cache para autorizar qualquer base declarada. Assim, o pacote completo não é
 uma cadeia de deltas e pode ser aplicado diretamente a cada base suportada.
 
+O `key_id` do manifesto e do pacote e aceito somente quando a politica
+estatica em `src/include/core/update_trust.h` o reconhece, nao o revoga e
+considera o `target_epoch` valido. O transporte nao pode acrescentar chaves ou
+alterar essa politica; a chave privada permanece fora do repositorio.
+
 ### Cache e transação
 
 O cache remoto v2 é independente do U5 v1:

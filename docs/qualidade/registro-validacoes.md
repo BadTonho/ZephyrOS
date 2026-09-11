@@ -7,6 +7,29 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## 2026-09-11 - STO5: atualizacao segura do sistema
+
+- Implementacao: os verificadores ZUPD, runtime, ZUM e ZSYS passaram a usar a
+  politica estatica de `update_trust_key_allowed()`, com chave ativa, janela de
+  `target_epoch` e lista de revogacao. O fluxo remoto de ZSYS exige HTTPS;
+  HTTP fica restrito a fixtures locais explicitas. O staging continua no slot
+  inativo, preserva o slot ativo ate `GOOD` e mantem os estados de tentativa e
+  rollback existentes. Nenhuma syscall, ABI, FAT, bootloader ou Stage 2 foi
+  alterado.
+- Integracao: `Makefile` e `Makefile.linux` expoem `make test-sto5-host` com
+  update, runtime, remoto, ZSYS, slots, Shell, diagnosticos, Updater e estado.
+  O catalogo e a visao renderizada associam os casos afetados a `sto5` e a
+  superficie `update_trust_key_allowed` ao teste real de ZSYS.
+- Evidencia: `check-trust`, `make q3check`, `make clean`, `make`,
+  `make test-sto5-host`, `make catalog-test` e `python -m unittest
+  tests/unit/test_updater.py` passaram. O agregado executou 13 casos host-only;
+  o catalogo validou 7.610 superficies e 180 casos; o teste Python executou
+  12 testes. `DT100-003` permanece aceita e reportada separadamente.
+- Limites: a matriz QEMU de fixtures, reboot, confirmacao e rollback funcional
+  permanece `PENDING` para execucao posterior; nenhuma falha foi ocultada.
+- Estado: STO5 `PASS` na implementacao e validacao essencial host-only; QEMU
+  funcional `PENDING`.
+
 ## 2026-09-11 - STO4: verificacao de consistencia
 
 - Implementacao: `storage_check()` passou a verificar FAT12 e FAT32 somente

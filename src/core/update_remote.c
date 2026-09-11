@@ -312,7 +312,8 @@ static int update_remote_parse_manifest(
         LOG_ERROR("UPDATE", "Layout do manifesto remoto invalido");
         return ERR_INVALID;
     }
-    if (!crypto_equal(raw + 72U, UPDATE_TRUST_KEY_ID, 16U)) {
+    if (!update_trust_key_allowed(raw + 72U,
+                                  update_remote_read_u32(raw + 32U))) {
         *reason_out = UPDATE_REMOTE_REASON_UNKNOWN_KEY;
         LOG_ERROR("UPDATE", "Manifesto remoto usa chave desconhecida");
         return ERR_INVALID;

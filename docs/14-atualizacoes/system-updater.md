@@ -173,6 +173,20 @@ O header interno `src/include/ui/updater_test.h` publica somente o contrato
 ordenação, formatação, seleção, tags ZSYS, hit-test e estados remotos sem
 serviços externos, disco, rede ou hardware.
 
+## STO5 - estado da atualizacao do sistema
+
+Na aba `Sistema`, o Updater exibe a versao ativa e candidata, o slot A/B, a
+sequencia, a tentativa de boot, o limite, o motivo e a recuperacao pendente.
+O fluxo persistido e `EMPTY` -> `STAGING` -> `VERIFIED` -> `PENDING` ->
+`BOOT_ATTEMPT` -> `GOOD`, ou `ROLLBACK` quando a confirmacao falha.
+
+O preflight valida assinatura, `key_id`, janela de epoch, hash, tamanho,
+arquitetura, compatibilidade e espaco antes de gravar. O candidato sempre vai
+para o slot inativo e a limpeza do staging so ocorre apos `GOOD`; erros de
+rede/TLS, escrita, sync, cancelamento e reinicio preservam a versao ativa.
+HTTP nao e usado nesse caminho de producao, exceto em fixtures locais
+explicitamente configuradas.
+
 ## Referencias
 
 - [Contrato ZUPD v1](contrato-zupd-v1.md)

@@ -2,5 +2,10 @@
   "format": "zephyros-ed25519-public-v1",
   "algorithm": "Ed25519",
   "public_key_hex": "3dd0697e7a167218300dfe96f100d562caa760b804818d2dabf09c10b1daeecd",
-  "key_id_hex": "dfecfa35485fde8ad61707947e5ae85b"
+  "key_id_hex": "dfecfa35485fde8ad61707947e5ae85b",
+  "valid_from_epoch": 0,
+  "valid_until_epoch": 4294967294,
+  "revoked_key_ids": [
+    "a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5"
+  ]
 }

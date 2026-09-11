@@ -210,6 +210,15 @@ class UpdaterTrustTests(unittest.TestCase):
             with self.assertRaises(updater.UpdateError):
                 updater.load_public_json(path)
 
+    def test_static_trust_policy_rejects_revoked_and_expired_keys(self):
+        info = updater.public_key_info(bytes(range(32)))
+        self.assertTrue(updater.trusted_key_allowed(
+            info, info.key_id, info.valid_from_epoch))
+        self.assertFalse(updater.trusted_key_allowed(
+            info, updater.TRUST_REVOKED_KEY_IDS[0], info.valid_from_epoch))
+        self.assertFalse(updater.trusted_key_allowed(
+            info, info.key_id, info.valid_until_epoch + 1))
+
 
 class UpdaterRollbackTests(unittest.TestCase):
     def test_redundant_state_selects_newest_and_falls_back_after_corruption(self):

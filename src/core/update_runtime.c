@@ -951,8 +951,7 @@ int update_runtime_parse_manifest(const uint8_t* raw, uint32_t size,
         LOG_ERROR("UPDATE", "Cabecalho ZUM2 invalido");
         return ERR_INVALID;
     }
-    if (!crypto_equal(raw + 68U, UPDATE_TRUST_KEY_ID,
-                      UPDATE_RUNTIME_KEY_ID_SIZE)) {
+    if (!update_trust_key_allowed(raw + 68U, runtime_read_u32(raw + 22U))) {
         *reason_out = UPDATE_RUNTIME_REASON_UNKNOWN_KEY;
         LOG_ERROR("UPDATE", "ZUM2 usa chave desconhecida");
         return ERR_INVALID;
@@ -1171,8 +1170,9 @@ static int runtime_parse_package_header(const char* path,
         runtime_read_u16(header + RUNTIME_PACKAGE_ENTRY_COUNT) == 0U ||
         runtime_read_u16(header + RUNTIME_PACKAGE_ENTRY_COUNT) >
             UPDATE_RUNTIME_MAX_ENTRIES ||
-            !crypto_equal(header + RUNTIME_PACKAGE_KEY_ID,
-                      UPDATE_TRUST_KEY_ID, UPDATE_RUNTIME_KEY_ID_SIZE)) {
+            !update_trust_key_allowed(
+                header + RUNTIME_PACKAGE_KEY_ID,
+                runtime_read_u32(header + RUNTIME_PACKAGE_TARGET_EPOCH))) {
         return ERR_INVALID;
     }
     for (uint32_t reserved = 84U; reserved < UPDATE_RUNTIME_PACKAGE_HEADER_SIZE;

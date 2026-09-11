@@ -434,6 +434,13 @@ int main(void) {
     };
     int result;
 
+    if (!update_trust_key_allowed(UPDATE_TRUST_KEY_ID, 0U) ||
+        update_trust_key_allowed(UPDATE_TRUST_REVOKED_KEY_IDS[0], 0U) ||
+        update_trust_key_allowed(UPDATE_TRUST_KEY_ID,
+                                 UPDATE_TRUST_VALID_UNTIL_EPOCH + 1U) ||
+        update_trust_key_allowed(NULL, 0U)) {
+        return ERR_STATE;
+    }
     host_prepare_release();
     coverage_active = 1U;
     result = update_system_host_test_contracts();

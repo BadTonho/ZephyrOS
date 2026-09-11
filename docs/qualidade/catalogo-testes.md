@@ -4,13 +4,13 @@
 
 ## Resumo
 
-- Superfícies ativas: **7609**
+- Superfícies ativas: **7610**
 - Casos de teste: **180**
 - Superfícies aposentadas: **60**
 
 | Tipo | Quantidade |
 |---|---:|
-| `api_function` | 1651 |
+| `api_function` | 1652 |
 | `asm_entry` | 101 |
 | `c_function` | 5737 |
 | `shell_command` | 95 |
@@ -19,9 +19,9 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7567 |
+| `COVERED` | 7550 |
 | `MANUAL` | 0 |
-| `PENDING` | 42 |
+| `PENDING` | 60 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -37,7 +37,7 @@
 | `apps` | 172 |
 | `appstore` | 98 |
 | `boot` | 146 |
-| `core` | 2883 |
+| `core` | 2884 |
 | `desktop` | 40 |
 | `drivers` | 932 |
 | `filemanager` | 93 |
@@ -657,10 +657,10 @@
 | `api:src/include/core/spinlock.h:spinlock_acquire` | `src/include/core/spinlock.h` | `spinlock_acquire` | `core` | `COVERED` | 1 |
 | `api:src/include/core/spinlock.h:spinlock_init` | `src/include/core/spinlock.h` | `spinlock_init` | `core` | `COVERED` | 1 |
 | `api:src/include/core/spinlock.h:spinlock_release` | `src/include/core/spinlock.h` | `spinlock_release` | `core` | `COVERED` | 1 |
-| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 56 |
-| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 62 |
-| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 53 |
-| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 54 |
+| `api:src/include/core/string.h:kmemcpy` | `src/include/core/string.h` | `kmemcpy` | `core` | `COVERED` | 55 |
+| `api:src/include/core/string.h:kmemset` | `src/include/core/string.h` | `kmemset` | `core` | `COVERED` | 61 |
+| `api:src/include/core/string.h:kstrcmp` | `src/include/core/string.h` | `kstrcmp` | `core` | `COVERED` | 52 |
+| `api:src/include/core/string.h:kstrlen` | `src/include/core/string.h` | `kstrlen` | `core` | `COVERED` | 53 |
 | `api:src/include/core/syscall.h:syscall_enable_user_mode` | `src/include/core/syscall.h` | `syscall_enable_user_mode` | `core` | `COVERED` | 2 |
 | `api:src/include/core/syscall.h:syscall_handler` | `src/include/core/syscall.h` | `syscall_handler` | `core` | `COVERED` | 2 |
 | `api:src/include/core/syscall.h:syscall_init` | `src/include/core/syscall.h` | `syscall_init` | `core` | `COVERED` | 2 |
@@ -796,13 +796,13 @@
 | `api:src/include/core/update_runtime.h:update_runtime_test_fail_after` | `src/include/core/update_runtime.h` | `update_runtime_test_fail_after` | `core` | `COVERED` | 2 |
 | `api:src/include/core/update_runtime.h:update_runtime_verify_file` | `src/include/core/update_runtime.h` | `update_runtime_verify_file` | `core` | `COVERED` | 2 |
 | `api:src/include/core/update_runtime.h:update_runtime_verify_file_for_manifest` | `src/include/core/update_runtime.h` | `update_runtime_verify_file_for_manifest` | `core` | `COVERED` | 2 |
-| `api:src/include/core/update_system.h:update_system_check_tag` | `src/include/core/update_system.h` | `update_system_check_tag` | `core` | `COVERED` | 1 |
-| `api:src/include/core/update_system.h:update_system_init` | `src/include/core/update_system.h` | `update_system_init` | `core` | `COVERED` | 1 |
-| `api:src/include/core/update_system.h:update_system_is_ready` | `src/include/core/update_system.h` | `update_system_is_ready` | `core` | `COVERED` | 1 |
-| `api:src/include/core/update_system.h:update_system_reason_name` | `src/include/core/update_system.h` | `update_system_reason_name` | `core` | `COVERED` | 1 |
-| `api:src/include/core/update_system.h:update_system_transfer_tag` | `src/include/core/update_system.h` | `update_system_transfer_tag` | `core` | `COVERED` | 1 |
-| `api:src/include/core/update_system.h:update_system_verify_file` | `src/include/core/update_system.h` | `update_system_verify_file` | `core` | `COVERED` | 1 |
-| `api:src/include/core/update_system.h:update_system_verify_file_for_slot` | `src/include/core/update_system.h` | `update_system_verify_file_for_slot` | `core` | `COVERED` | 1 |
+| `api:src/include/core/update_system.h:update_system_check_tag` | `src/include/core/update_system.h` | `update_system_check_tag` | `core` | `PENDING` | 0 |
+| `api:src/include/core/update_system.h:update_system_init` | `src/include/core/update_system.h` | `update_system_init` | `core` | `PENDING` | 0 |
+| `api:src/include/core/update_system.h:update_system_is_ready` | `src/include/core/update_system.h` | `update_system_is_ready` | `core` | `PENDING` | 0 |
+| `api:src/include/core/update_system.h:update_system_reason_name` | `src/include/core/update_system.h` | `update_system_reason_name` | `core` | `PENDING` | 0 |
+| `api:src/include/core/update_system.h:update_system_transfer_tag` | `src/include/core/update_system.h` | `update_system_transfer_tag` | `core` | `PENDING` | 0 |
+| `api:src/include/core/update_system.h:update_system_verify_file` | `src/include/core/update_system.h` | `update_system_verify_file` | `core` | `PENDING` | 0 |
+| `api:src/include/core/update_system.h:update_system_verify_file_for_slot` | `src/include/core/update_system.h` | `update_system_verify_file_for_slot` | `core` | `PENDING` | 0 |
 | `api:src/include/core/update_system_slots.h:update_system_slot_file_state_name` | `src/include/core/update_system_slots.h` | `update_system_slot_file_state_name` | `core` | `COVERED` | 1 |
 | `api:src/include/core/update_system_slots.h:update_system_slots_boot_confirm` | `src/include/core/update_system_slots.h` | `update_system_slots_boot_confirm` | `core` | `COVERED` | 1 |
 | `api:src/include/core/update_system_slots.h:update_system_slots_boot_state_name` | `src/include/core/update_system_slots.h` | `update_system_slots_boot_state_name` | `core` | `COVERED` | 1 |
@@ -815,6 +815,7 @@
 | `api:src/include/core/update_system_slots.h:update_system_slots_reboot_preflight` | `src/include/core/update_system_slots.h` | `update_system_slots_reboot_preflight` | `core` | `COVERED` | 1 |
 | `api:src/include/core/update_system_slots.h:update_system_slots_stage_file` | `src/include/core/update_system_slots.h` | `update_system_slots_stage_file` | `core` | `COVERED` | 1 |
 | `api:src/include/core/update_system_slots.h:update_system_slots_state_name` | `src/include/core/update_system_slots.h` | `update_system_slots_state_name` | `core` | `COVERED` | 1 |
+| `api:src/include/core/update_trust.h:update_trust_key_allowed` | `src/include/core/update_trust.h` | `update_trust_key_allowed` | `core` | `COVERED` | 1 |
 | `api:src/include/core/usb_manager.h:usb_manager_find` | `src/include/core/usb_manager.h` | `usb_manager_find` | `core` | `COVERED` | 4 |
 | `api:src/include/core/usb_manager.h:usb_manager_find_device` | `src/include/core/usb_manager.h` | `usb_manager_find_device` | `core` | `COVERED` | 4 |
 | `api:src/include/core/usb_manager.h:usb_manager_format_device_text` | `src/include/core/usb_manager.h` | `usb_manager_format_device_text` | `core` | `COVERED` | 4 |
@@ -3263,10 +3264,10 @@
 | `c:src/core/socket.c:socket_wait_local` | `src/core/socket.c` | `socket_wait_local` | `core` | `COVERED` | 1 |
 | `c:src/core/socket.c:socket_wait_owner` | `src/core/socket.c` | `socket_wait_owner` | `core` | `COVERED` | 3 |
 | `c:src/core/socket.c:socket_wake` | `src/core/socket.c` | `socket_wake` | `core` | `COVERED` | 3 |
-| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 56 |
-| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 62 |
-| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 53 |
-| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 54 |
+| `c:src/core/string.c:kmemcpy` | `src/core/string.c` | `kmemcpy` | `core` | `COVERED` | 55 |
+| `c:src/core/string.c:kmemset` | `src/core/string.c` | `kmemset` | `core` | `COVERED` | 61 |
+| `c:src/core/string.c:kstrcmp` | `src/core/string.c` | `kstrcmp` | `core` | `COVERED` | 52 |
+| `c:src/core/string.c:kstrlen` | `src/core/string.c` | `kstrlen` | `core` | `COVERED` | 53 |
 | `c:src/core/syscall.c:syscall_copy_user_string` | `src/core/syscall.c` | `syscall_copy_user_string` | `core` | `COVERED` | 1 |
 | `c:src/core/syscall.c:syscall_dispatch` | `src/core/syscall.c` | `syscall_dispatch` | `core` | `COVERED` | 2 |
 | `c:src/core/syscall.c:syscall_dispatch_user` | `src/core/syscall.c` | `syscall_dispatch_user` | `core` | `COVERED` | 2 |
@@ -3913,38 +3914,38 @@
 | `c:src/core/update_runtime.c:update_runtime_test_fail_after` | `src/core/update_runtime.c` | `update_runtime_test_fail_after` | `core` | `COVERED` | 2 |
 | `c:src/core/update_runtime.c:update_runtime_verify_file` | `src/core/update_runtime.c` | `update_runtime_verify_file` | `core` | `COVERED` | 1 |
 | `c:src/core/update_runtime.c:update_runtime_verify_file_for_manifest` | `src/core/update_runtime.c` | `update_runtime_verify_file_for_manifest` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:any_nonzero` | `src/core/update_system.c` | `any_nonzero` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_base_equal` | `src/core/update_system.c` | `update_system_base_equal` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_check_tag` | `src/core/update_system.c` | `update_system_check_tag` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_copy_fixed_text` | `src/core/update_system.c` | `update_system_copy_fixed_text` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_hash_range` | `src/core/update_system.c` | `update_system_hash_range` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_hex_digit` | `src/core/update_system.c` | `update_system_hex_digit` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_host_test_contracts` | `src/core/update_system.c` | `update_system_host_test_contracts` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_init` | `src/core/update_system.c` | `update_system_init` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_is_ready` | `src/core/update_system.c` | `update_system_is_ready` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_read_base` | `src/core/update_system.c` | `update_system_read_base` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_read_u16` | `src/core/update_system.c` | `update_system_read_u16` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_read_u32` | `src/core/update_system.c` | `update_system_read_u32` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_reason_name` | `src/core/update_system.c` | `update_system_reason_name` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_reject` | `src/core/update_system.c` | `update_system_reject` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_remote_begin` | `src/core/update_system.c` | `update_system_remote_begin` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_remote_compatible` | `src/core/update_system.c` | `update_system_remote_compatible` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_remote_contains` | `src/core/update_system.c` | `update_system_remote_contains` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_remote_copy_text` | `src/core/update_system.c` | `update_system_remote_copy_text` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_remote_decimal` | `src/core/update_system.c` | `update_system_remote_decimal` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_remote_descriptor_matches` | `src/core/update_system.c` | `update_system_remote_descriptor_matches` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_remote_finish` | `src/core/update_system.c` | `update_system_remote_finish` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_remote_http_options` | `src/core/update_system.c` | `update_system_remote_http_options` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_remote_payload` | `src/core/update_system.c` | `update_system_remote_payload` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_remote_sink` | `src/core/update_system.c` | `update_system_remote_sink` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_remote_wait_http` | `src/core/update_system.c` | `update_system_remote_wait_http` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_transfer_tag` | `src/core/update_system.c` | `update_system_transfer_tag` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_validate_components` | `src/core/update_system.c` | `update_system_validate_components` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_verify_file` | `src/core/update_system.c` | `update_system_verify_file` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_verify_file_for_slot` | `src/core/update_system.c` | `update_system_verify_file_for_slot` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_verify_file_internal` | `src/core/update_system.c` | `update_system_verify_file_internal` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_verify_signature` | `src/core/update_system.c` | `update_system_verify_signature` | `core` | `COVERED` | 1 |
-| `c:src/core/update_system.c:update_system_version_compare` | `src/core/update_system.c` | `update_system_version_compare` | `core` | `COVERED` | 1 |
+| `c:src/core/update_system.c:any_nonzero` | `src/core/update_system.c` | `any_nonzero` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_base_equal` | `src/core/update_system.c` | `update_system_base_equal` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_check_tag` | `src/core/update_system.c` | `update_system_check_tag` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_copy_fixed_text` | `src/core/update_system.c` | `update_system_copy_fixed_text` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_hash_range` | `src/core/update_system.c` | `update_system_hash_range` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_hex_digit` | `src/core/update_system.c` | `update_system_hex_digit` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_host_test_contracts` | `src/core/update_system.c` | `update_system_host_test_contracts` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_init` | `src/core/update_system.c` | `update_system_init` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_is_ready` | `src/core/update_system.c` | `update_system_is_ready` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_read_base` | `src/core/update_system.c` | `update_system_read_base` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_read_u16` | `src/core/update_system.c` | `update_system_read_u16` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_read_u32` | `src/core/update_system.c` | `update_system_read_u32` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_reason_name` | `src/core/update_system.c` | `update_system_reason_name` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_reject` | `src/core/update_system.c` | `update_system_reject` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_remote_begin` | `src/core/update_system.c` | `update_system_remote_begin` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_remote_compatible` | `src/core/update_system.c` | `update_system_remote_compatible` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_remote_contains` | `src/core/update_system.c` | `update_system_remote_contains` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_remote_copy_text` | `src/core/update_system.c` | `update_system_remote_copy_text` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_remote_decimal` | `src/core/update_system.c` | `update_system_remote_decimal` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_remote_descriptor_matches` | `src/core/update_system.c` | `update_system_remote_descriptor_matches` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_remote_finish` | `src/core/update_system.c` | `update_system_remote_finish` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_remote_http_options` | `src/core/update_system.c` | `update_system_remote_http_options` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_remote_payload` | `src/core/update_system.c` | `update_system_remote_payload` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_remote_sink` | `src/core/update_system.c` | `update_system_remote_sink` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_remote_wait_http` | `src/core/update_system.c` | `update_system_remote_wait_http` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_transfer_tag` | `src/core/update_system.c` | `update_system_transfer_tag` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_validate_components` | `src/core/update_system.c` | `update_system_validate_components` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_verify_file` | `src/core/update_system.c` | `update_system_verify_file` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_verify_file_for_slot` | `src/core/update_system.c` | `update_system_verify_file_for_slot` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_verify_file_internal` | `src/core/update_system.c` | `update_system_verify_file_internal` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_verify_signature` | `src/core/update_system.c` | `update_system_verify_signature` | `core` | `PENDING` | 0 |
+| `c:src/core/update_system.c:update_system_version_compare` | `src/core/update_system.c` | `update_system_version_compare` | `core` | `PENDING` | 0 |
 | `c:src/core/update_system_slots.c:system_slots_bytes_equal` | `src/core/update_system_slots.c` | `system_slots_bytes_equal` | `core` | `COVERED` | 1 |
 | `c:src/core/update_system_slots.c:system_slots_bytes_zero` | `src/core/update_system_slots.c` | `system_slots_bytes_zero` | `core` | `COVERED` | 1 |
 | `c:src/core/update_system_slots.c:system_slots_cancelled` | `src/core/update_system_slots.c` | `system_slots_cancelled` | `core` | `COVERED` | 1 |
@@ -5460,28 +5461,28 @@
 | `c:src/fs/storage.c:storage_build_volume_id` | `src/fs/storage.c` | `storage_build_volume_id` | `fs` | `COVERED` | 2 |
 | `c:src/fs/storage.c:storage_check` | `src/fs/storage.c` | `storage_check` | `fs` | `COVERED` | 2 |
 | `c:src/fs/storage.c:storage_check_chain` | `src/fs/storage.c` | `storage_check_chain` | `fs` | `COVERED` | 2 |
-| `c:src/fs/storage.c:storage_check_cluster_valid` | `src/fs/storage.c` | `storage_check_cluster_valid` | `fs` | `PENDING` | 0 |
-| `c:src/fs/storage.c:storage_check_compare` | `src/fs/storage.c` | `storage_check_compare` | `fs` | `PENDING` | 0 |
+| `c:src/fs/storage.c:storage_check_cluster_valid` | `src/fs/storage.c` | `storage_check_cluster_valid` | `fs` | `COVERED` | 2 |
+| `c:src/fs/storage.c:storage_check_compare` | `src/fs/storage.c` | `storage_check_compare` | `fs` | `COVERED` | 2 |
 | `c:src/fs/storage.c:storage_check_directory_visitor` | `src/fs/storage.c` | `storage_check_directory_visitor` | `fs` | `COVERED` | 2 |
-| `c:src/fs/storage.c:storage_check_duplicate_names` | `src/fs/storage.c` | `storage_check_duplicate_names` | `fs` | `PENDING` | 0 |
-| `c:src/fs/storage.c:storage_check_duplicate_visitor` | `src/fs/storage.c` | `storage_check_duplicate_visitor` | `fs` | `PENDING` | 0 |
-| `c:src/fs/storage.c:storage_check_get_last_report` | `src/fs/storage.c` | `storage_check_get_last_report` | `fs` | `PENDING` | 0 |
-| `c:src/fs/storage.c:storage_check_mark_cluster` | `src/fs/storage.c` | `storage_check_mark_cluster` | `fs` | `PENDING` | 0 |
-| `c:src/fs/storage.c:storage_check_name_valid` | `src/fs/storage.c` | `storage_check_name_valid` | `fs` | `PENDING` | 0 |
-| `c:src/fs/storage.c:storage_check_next_cluster` | `src/fs/storage.c` | `storage_check_next_cluster` | `fs` | `PENDING` | 0 |
-| `c:src/fs/storage.c:storage_check_orphans` | `src/fs/storage.c` | `storage_check_orphans` | `fs` | `PENDING` | 0 |
-| `c:src/fs/storage.c:storage_check_publish_report` | `src/fs/storage.c` | `storage_check_publish_report` | `fs` | `PENDING` | 0 |
-| `c:src/fs/storage.c:storage_check_read_disk` | `src/fs/storage.c` | `storage_check_read_disk` | `fs` | `PENDING` | 0 |
-| `c:src/fs/storage.c:storage_check_read_fat_bytes` | `src/fs/storage.c` | `storage_check_read_fat_bytes` | `fs` | `PENDING` | 0 |
-| `c:src/fs/storage.c:storage_check_read_fat_entry` | `src/fs/storage.c` | `storage_check_read_fat_entry` | `fs` | `PENDING` | 0 |
-| `c:src/fs/storage.c:storage_check_read_relative` | `src/fs/storage.c` | `storage_check_read_relative` | `fs` | `PENDING` | 0 |
-| `c:src/fs/storage.c:storage_check_record_error` | `src/fs/storage.c` | `storage_check_record_error` | `fs` | `PENDING` | 0 |
-| `c:src/fs/storage.c:storage_check_record_structure` | `src/fs/storage.c` | `storage_check_record_structure` | `fs` | `PENDING` | 0 |
-| `c:src/fs/storage.c:storage_check_record_warning` | `src/fs/storage.c` | `storage_check_record_warning` | `fs` | `PENDING` | 0 |
-| `c:src/fs/storage.c:storage_check_validate_bpb` | `src/fs/storage.c` | `storage_check_validate_bpb` | `fs` | `PENDING` | 0 |
-| `c:src/fs/storage.c:storage_check_validate_fat` | `src/fs/storage.c` | `storage_check_validate_fat` | `fs` | `PENDING` | 0 |
-| `c:src/fs/storage.c:storage_check_validate_mbr` | `src/fs/storage.c` | `storage_check_validate_mbr` | `fs` | `PENDING` | 0 |
-| `c:src/fs/storage.c:storage_check_walk_directory` | `src/fs/storage.c` | `storage_check_walk_directory` | `fs` | `PENDING` | 0 |
+| `c:src/fs/storage.c:storage_check_duplicate_names` | `src/fs/storage.c` | `storage_check_duplicate_names` | `fs` | `COVERED` | 2 |
+| `c:src/fs/storage.c:storage_check_duplicate_visitor` | `src/fs/storage.c` | `storage_check_duplicate_visitor` | `fs` | `COVERED` | 2 |
+| `c:src/fs/storage.c:storage_check_get_last_report` | `src/fs/storage.c` | `storage_check_get_last_report` | `fs` | `COVERED` | 2 |
+| `c:src/fs/storage.c:storage_check_mark_cluster` | `src/fs/storage.c` | `storage_check_mark_cluster` | `fs` | `COVERED` | 2 |
+| `c:src/fs/storage.c:storage_check_name_valid` | `src/fs/storage.c` | `storage_check_name_valid` | `fs` | `COVERED` | 2 |
+| `c:src/fs/storage.c:storage_check_next_cluster` | `src/fs/storage.c` | `storage_check_next_cluster` | `fs` | `COVERED` | 2 |
+| `c:src/fs/storage.c:storage_check_orphans` | `src/fs/storage.c` | `storage_check_orphans` | `fs` | `COVERED` | 2 |
+| `c:src/fs/storage.c:storage_check_publish_report` | `src/fs/storage.c` | `storage_check_publish_report` | `fs` | `COVERED` | 2 |
+| `c:src/fs/storage.c:storage_check_read_disk` | `src/fs/storage.c` | `storage_check_read_disk` | `fs` | `COVERED` | 2 |
+| `c:src/fs/storage.c:storage_check_read_fat_bytes` | `src/fs/storage.c` | `storage_check_read_fat_bytes` | `fs` | `COVERED` | 2 |
+| `c:src/fs/storage.c:storage_check_read_fat_entry` | `src/fs/storage.c` | `storage_check_read_fat_entry` | `fs` | `COVERED` | 2 |
+| `c:src/fs/storage.c:storage_check_read_relative` | `src/fs/storage.c` | `storage_check_read_relative` | `fs` | `COVERED` | 2 |
+| `c:src/fs/storage.c:storage_check_record_error` | `src/fs/storage.c` | `storage_check_record_error` | `fs` | `COVERED` | 1 |
+| `c:src/fs/storage.c:storage_check_record_structure` | `src/fs/storage.c` | `storage_check_record_structure` | `fs` | `COVERED` | 2 |
+| `c:src/fs/storage.c:storage_check_record_warning` | `src/fs/storage.c` | `storage_check_record_warning` | `fs` | `COVERED` | 1 |
+| `c:src/fs/storage.c:storage_check_validate_bpb` | `src/fs/storage.c` | `storage_check_validate_bpb` | `fs` | `COVERED` | 2 |
+| `c:src/fs/storage.c:storage_check_validate_fat` | `src/fs/storage.c` | `storage_check_validate_fat` | `fs` | `COVERED` | 2 |
+| `c:src/fs/storage.c:storage_check_validate_mbr` | `src/fs/storage.c` | `storage_check_validate_mbr` | `fs` | `COVERED` | 2 |
+| `c:src/fs/storage.c:storage_check_walk_directory` | `src/fs/storage.c` | `storage_check_walk_directory` | `fs` | `COVERED` | 2 |
 | `c:src/fs/storage.c:storage_clear_directory_slots` | `src/fs/storage.c` | `storage_clear_directory_slots` | `fs` | `PENDING` | 0 |
 | `c:src/fs/storage.c:storage_cluster_is_bad` | `src/fs/storage.c` | `storage_cluster_is_bad` | `fs` | `COVERED` | 3 |
 | `c:src/fs/storage.c:storage_cluster_is_end` | `src/fs/storage.c` | `storage_cluster_is_end` | `fs` | `COVERED` | 3 |
@@ -7878,6 +7879,13 @@
 
 ## Superfícies sem caso associado
 
+- `api:src/include/core/update_system.h:update_system_check_tag`
+- `api:src/include/core/update_system.h:update_system_init`
+- `api:src/include/core/update_system.h:update_system_is_ready`
+- `api:src/include/core/update_system.h:update_system_reason_name`
+- `api:src/include/core/update_system.h:update_system_transfer_tag`
+- `api:src/include/core/update_system.h:update_system_verify_file`
+- `api:src/include/core/update_system.h:update_system_verify_file_for_slot`
 - `c:src/boot/recovery_loader.c:recovery_ata_read_sector`
 - `c:src/boot/recovery_loader.c:recovery_ata_wait`
 - `c:src/boot/recovery_loader.c:recovery_ata_write_sector`
@@ -7890,28 +7898,39 @@
 - `c:src/core/kernel_tests_blackbox.c:blackbox_requires_prompt`
 - `c:src/core/kernel_tests_blackbox.c:blackbox_reset_sec6_observation`
 - `c:src/core/kernel_tests_blackbox.c:blackbox_validate_sec6_output`
+- `c:src/core/update_system.c:any_nonzero`
+- `c:src/core/update_system.c:update_system_base_equal`
+- `c:src/core/update_system.c:update_system_check_tag`
+- `c:src/core/update_system.c:update_system_copy_fixed_text`
+- `c:src/core/update_system.c:update_system_hash_range`
+- `c:src/core/update_system.c:update_system_hex_digit`
+- `c:src/core/update_system.c:update_system_host_test_contracts`
+- `c:src/core/update_system.c:update_system_init`
+- `c:src/core/update_system.c:update_system_is_ready`
+- `c:src/core/update_system.c:update_system_read_base`
+- `c:src/core/update_system.c:update_system_read_u16`
+- `c:src/core/update_system.c:update_system_read_u32`
+- `c:src/core/update_system.c:update_system_reason_name`
+- `c:src/core/update_system.c:update_system_reject`
+- `c:src/core/update_system.c:update_system_remote_begin`
+- `c:src/core/update_system.c:update_system_remote_compatible`
+- `c:src/core/update_system.c:update_system_remote_contains`
+- `c:src/core/update_system.c:update_system_remote_copy_text`
+- `c:src/core/update_system.c:update_system_remote_decimal`
+- `c:src/core/update_system.c:update_system_remote_descriptor_matches`
+- `c:src/core/update_system.c:update_system_remote_finish`
+- `c:src/core/update_system.c:update_system_remote_http_options`
+- `c:src/core/update_system.c:update_system_remote_payload`
+- `c:src/core/update_system.c:update_system_remote_sink`
+- `c:src/core/update_system.c:update_system_remote_wait_http`
+- `c:src/core/update_system.c:update_system_transfer_tag`
+- `c:src/core/update_system.c:update_system_validate_components`
+- `c:src/core/update_system.c:update_system_verify_file`
+- `c:src/core/update_system.c:update_system_verify_file_for_slot`
+- `c:src/core/update_system.c:update_system_verify_file_internal`
+- `c:src/core/update_system.c:update_system_verify_signature`
+- `c:src/core/update_system.c:update_system_version_compare`
 - `c:src/fs/fat32.c:cluster_to_lba`
-- `c:src/fs/storage.c:storage_check_cluster_valid`
-- `c:src/fs/storage.c:storage_check_compare`
-- `c:src/fs/storage.c:storage_check_duplicate_names`
-- `c:src/fs/storage.c:storage_check_duplicate_visitor`
-- `c:src/fs/storage.c:storage_check_get_last_report`
-- `c:src/fs/storage.c:storage_check_mark_cluster`
-- `c:src/fs/storage.c:storage_check_name_valid`
-- `c:src/fs/storage.c:storage_check_next_cluster`
-- `c:src/fs/storage.c:storage_check_orphans`
-- `c:src/fs/storage.c:storage_check_publish_report`
-- `c:src/fs/storage.c:storage_check_read_disk`
-- `c:src/fs/storage.c:storage_check_read_fat_bytes`
-- `c:src/fs/storage.c:storage_check_read_fat_entry`
-- `c:src/fs/storage.c:storage_check_read_relative`
-- `c:src/fs/storage.c:storage_check_record_error`
-- `c:src/fs/storage.c:storage_check_record_structure`
-- `c:src/fs/storage.c:storage_check_record_warning`
-- `c:src/fs/storage.c:storage_check_validate_bpb`
-- `c:src/fs/storage.c:storage_check_validate_fat`
-- `c:src/fs/storage.c:storage_check_validate_mbr`
-- `c:src/fs/storage.c:storage_check_walk_directory`
 - `c:src/fs/storage.c:storage_clear_directory_slots`
 - `c:src/fs/storage.c:storage_release_selected_fat32_clusters`
 - `c:src/fs/vfs.c:vfs_lifecycle_block_error`

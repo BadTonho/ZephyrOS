@@ -1697,8 +1697,8 @@ static int update_verify_loaded(const char* path,
     int result = update_hash_content(path, workspace, output);
 
     if (result != OK) return result;
-    if (!crypto_equal(workspace->parsed.key_id, UPDATE_TRUST_KEY_ID,
-                      sizeof(workspace->parsed.key_id))) {
+    if (!update_trust_key_allowed(workspace->parsed.key_id,
+                                  workspace->parsed.target_epoch)) {
         return update_reject(output, ZUPD_REASON_UNKNOWN_KEY,
                              "key_id ZUPD desconhecido");
     }

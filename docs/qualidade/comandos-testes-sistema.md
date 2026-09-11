@@ -100,6 +100,22 @@ copias da FAT, cadeias, tamanhos, LFNs, duplicidades, clusters orfaos e
 divergencias de FSInfo. Os fixtures confirmam que `storage check <id>` nao
 escreve no volume nem altera o Block Cache.
 
+## STO5 - atualizacao segura do sistema
+
+```text
+make test-sto5-host
+make system-fixtures
+make system-slots-matrix
+make test-tst5-qemu-update-recovery
+make run-system-slots-matrix
+make run-system-update-matrix
+```
+
+O agregado host-only cobre ZUPD, ZSYS, runtime, transporte remoto, slots,
+Updater, Shell, estado e a politica estatica de confianca. As matrizes QEMU
+validam staging, slot inativo, confirmacao, rollback e recuperacao; devem ser
+executadas depois de `make q3check` e `make clean` seguido de `make`.
+
 ## TST2 - protocolo e executor QEMU
 
 Testes host-only:

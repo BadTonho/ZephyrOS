@@ -45,8 +45,12 @@ python tools/updater.py check-trust --public config/update-release-public.json -
 
 Perder a chave privada ou sua senha impede novos releases sob a raiz atual.
 Comprometimento da chave exige uma nova imagem confiavel instalada manualmente,
-com nova chave publica e epoch incrementado. O ZUPD v1 nao possui rotacao ou
-revogacao automatica.
+com nova chave publica e epoch incrementado. O JSON publico tambem fixa
+`valid_from_epoch`, `valid_until_epoch` e `revoked_key_ids`; o header gerado
+aplica essa politica estatica antes de aceitar qualquer manifesto, pacote ou
+imagem. O manifesto remoto nao pode adicionar chaves, ampliar a janela de
+validade ou remover uma revogacao. Nao ha chave privada no repositorio nem
+rotacao dinamica.
 
 ## Manifesto e build
 
