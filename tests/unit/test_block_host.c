@@ -286,6 +286,7 @@ int main(void) {
     bio_request_t asynchronous_request;
     uint32_t device_count;
     uint8_t buffer[BLOCK_SECTOR_SIZE];
+    uint8_t cache_buffer[2U * BLOCK_CACHE_BLOCK_SIZE];
     uint8_t partial_payload[2] = {0xA5U, 0x5AU};
 
     prepare_fixture();
@@ -308,6 +309,12 @@ int main(void) {
     EXPECT(block_stats.queue_depth == 0U);
     EXPECT(block_read("ata0", 0U, 1U, buffer) == OK);
     EXPECT(block_write("ata0", 0U, 1U, buffer) == OK);
+    EXPECT(block_read("ata0", 0xFFFFFFFFU, 1U, buffer) == ERR_DISK);
+    EXPECT(block_cache_read(&device, 0xFFFFFFFFU, 2U, cache_buffer,
+                            sizeof(cache_buffer), nested_read_backend) == ERR_DISK);
+    EXPECT(block_cache_write(&device, 0U, 0U, buffer,
+                             0xFFFFFFFFU) == ERR_OVERFLOW);
+    EXPECT(block_validate_state() == OK);
     memset(&asynchronous_request, 0, sizeof(asynchronous_request));
     asynchronous_request.device_id = "ata0";
     asynchronous_request.lba = 2U;

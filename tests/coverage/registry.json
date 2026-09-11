@@ -311,7 +311,7 @@
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-block-host PASS com autotestes de BIO e cache, limites, cancelamento, failpoints, eviction, writeback, sync e restauracao do inventario no relatorio instrumentado"
+      "evidence": "make test-block-host PASS com autotestes de BIO e cache, limites, overflow de transferencias, cancelamento, failpoints, eviction, writeback, sync e restauracao do inventario no relatorio instrumentado; evidencia STO1"
     },
     {
       "id": "core-contracts-dynamic-host",
@@ -1016,7 +1016,7 @@
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-fat12-host PASS com imagem FAT12 estatica, leitura, paths, metadados, operacoes atomicas, streaming, cancelamento e erros canonicos no relatorio instrumentado"
+      "evidence": "make test-fat12-host PASS com imagem FAT12 estatica, leitura, paths, metadados, clusters invalidos, operacoes atomicas, streaming, cancelamento, diretorio raiz cheio sem formatacao e erros canonicos no relatorio instrumentado; evidencia STO1"
     },
     {
       "id": "fat32-host-dynamic",
@@ -1034,7 +1034,7 @@
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-fat32-host PASS com imagem FAT32 compacta, classificacao de clusters, leitura, paths, metadados, criacao, escrita e remocao em fixture estatica no relatorio instrumentado"
+      "evidence": "make test-fat32-host PASS com imagem FAT32 compacta, classificacao e rejeicao de clusters invalidos, leitura, paths, metadados, criacao, escrita e remocao em fixture estatica no relatorio instrumentado; evidencia STO1"
     },
     {
       "id": "fault-memory-qemu-tst6-dynamic",
@@ -1159,7 +1159,7 @@
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-fs-host PASS com fixture FAT32, paths legacy e storage, cursores, operacoes atomicas, streaming e erros canonicos no relatorio instrumentado"
+      "evidence": "make test-fs-host PASS com fixture FAT32, paths legacy e storage, cursores com limites de cluster/LBA, operacoes atomicas, streaming e erros canonicos no relatorio instrumentado; evidencia STO1"
     },
     {
       "id": "devfs-host-dynamic",
@@ -5222,7 +5222,7 @@
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-storage-host PASS com imagem FAT12 estatica, MBR/BPB, inventario, mount, cursores, leitura, espaco livre, rejeicao somente-leitura e limpeza no relatorio instrumentado"
+      "evidence": "make test-storage-host PASS com imagem FAT12 estatica, MBR/BPB, inventario, limites de volume, mount, cursores, leitura, espaco livre, rejeicao somente-leitura e limpeza no relatorio instrumentado; evidencia STO1"
     },
     {
       "id": "storage-fat32-host-dynamic",
@@ -5240,7 +5240,7 @@
         "src/core/string.c"
       ],
       "include_public_apis": true,
-      "evidence": "make test-storage-fat32-host PASS com imagem FAT32 estatica gravavel, validacao de metadados e cadeias, escrita de dois clusters, remocao LFN e escritor transacional com abort",
+      "evidence": "make test-storage-fat32-host PASS com imagem FAT32 estatica gravavel, validacao de metadados, limites e cadeias, escrita de dois clusters, remocao LFN e escritor transacional com abort; evidencia STO1",
       "case_definition": {
         "id": "host:storage:storage-fat32",
         "scenario": "Contrato host-only do backend de storage FAT32 com imagem estatica gravavel",

@@ -279,6 +279,12 @@ int main(void) {
     EXPECT(fat32_resolve_path("missing") == 0U);
     EXPECT(fat32_read_file_at("HELLO.TXT", buffer, sizeof(buffer)) == 5);
     EXPECT(memcmp(buffer, "hello", 5U) == 0);
+    write_u16(disk_image[cluster_lba(HOST_ROOT_CLUSTER)], 20U, 0x0FFFU);
+    write_u16(disk_image[cluster_lba(HOST_ROOT_CLUSTER)], 26U, 0xFFF7U);
+    EXPECT(fat32_read_file_at("HELLO.TXT", buffer, sizeof(buffer)) == -1);
+    write_u16(disk_image[cluster_lba(HOST_ROOT_CLUSTER)], 20U, 0U);
+    write_u16(disk_image[cluster_lba(HOST_ROOT_CLUSTER)], 26U,
+              HOST_FILE_CLUSTER);
     EXPECT(fat32_read_file_at("DIR/NEST.TXT", buffer, sizeof(buffer)) == 4);
     EXPECT(memcmp(buffer, "nest", 4U) == 0);
     EXPECT(fat32_read_file_range_at("DIR/NEST.TXT", 1U, buffer, 2U) == 2);

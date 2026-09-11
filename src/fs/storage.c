@@ -286,6 +286,58 @@ static storage_mount_t* storage_free_mount(void) {
     return 0;
 }
 
+static int storage_add_u32(uint32_t left, uint32_t right,
+                           uint32_t* out_value) {
+    if (!out_value) {
+        LOG_ERROR("FS", "Destino nulo na soma segura");
+        return ERR_NULL;
+    }
+    if (left > 0xFFFFFFFFU - right) {
+        LOG_WARN("FS", "Overflow na soma de Storage");
+        return ERR_OVERFLOW;
+    }
+    *out_value = left + right;
+    return OK;
+}
+
+static int storage_mul_u32(uint32_t left, uint32_t right,
+                           uint32_t* out_value) {
+    if (!out_value) {
+        LOG_ERROR("FS", "Destino nulo na multiplicacao segura");
+        return ERR_NULL;
+    }
+    if (left && right > 0xFFFFFFFFU / left) {
+        LOG_WARN("FS", "Overflow na multiplicacao de Storage");
+        return ERR_OVERFLOW;
+    }
+    *out_value = left * right;
+    return OK;
+}
+
+static int storage_relative_range(const storage_volume_t* volume,
+                                  uint32_t relative_lba, uint8_t count,
+                                  uint32_t* out_absolute_lba) {
+    uint32_t last_relative;
+
+    if (!volume || !out_absolute_lba || !count) {
+        LOG_ERROR("FS", "Argumento nulo no intervalo de Storage");
+        return ERR_NULL;
+    }
+    if (!volume->sector_count || relative_lba >= volume->sector_count ||
+        count > volume->sector_count - relative_lba) {
+        LOG_WARN("FS", "Intervalo de Storage fora do volume");
+        return ERR_DISK;
+    }
+    last_relative = relative_lba + (uint32_t)count - 1U;
+    if (volume->start_lba > 0xFFFFFFFFU - relative_lba ||
+        volume->start_lba > 0xFFFFFFFFU - last_relative) {
+        LOG_WARN("FS", "Overflow no LBA absoluto de Storage");
+        return ERR_OVERFLOW;
+    }
+    *out_absolute_lba = volume->start_lba + relative_lba;
+    return OK;
+}
+
 static int storage_read_relative(const storage_volume_t* volume,
                                  uint32_t relative_lba, uint8_t count,
                                  uint8_t* buffer) {
@@ -295,18 +347,17 @@ static int storage_read_relative(const storage_volume_t* volume,
         LOG_ERROR("FS", "Leitura de volume com argumento invalido");
         return ERR_NULL;
     }
-    if (relative_lba >= volume->sector_count ||
-        count > volume->sector_count - relative_lba) {
-        storage_log_volume(LOG_LEVEL_ERROR, volume->id,
-                           "leitura fora dos limites");
-        return ERR_DISK;
+    {
+        int range_result = storage_relative_range(volume, relative_lba, count,
+                                                  &absolute_lba);
+        if (range_result != OK) {
+            storage_log_volume(LOG_LEVEL_ERROR, volume->id,
+                               range_result == ERR_OVERFLOW ?
+                               "overflow no endereco de leitura" :
+                               "leitura fora dos limites");
+            return range_result;
+        }
     }
-    if (volume->start_lba > 0xFFFFFFFFU - relative_lba) {
-        storage_log_volume(LOG_LEVEL_ERROR, volume->id,
-                           "overflow no endereco de leitura");
-        return ERR_OVERFLOW;
-    }
-    absolute_lba = volume->start_lba + relative_lba;
     return block_read(volume->disk_id, absolute_lba, count, buffer);
 }
 
@@ -329,9 +380,20 @@ static int storage_configure_fat_type(storage_volume_t* volume,
         return ERR_NULL;
     }
     if (clusters < STORAGE_FAT12_MAX_CLUSTERS) {
-        uint32_t fat_bytes = sectors_per_fat * STORAGE_SECTOR_SIZE;
-        uint32_t required = ((clusters + STORAGE_FIRST_DATA_CLUSTER) * 3U +
-                             1U) / 2U;
+        uint32_t fat_bytes;
+        uint32_t cluster_entries;
+        uint32_t required_numerator;
+        uint32_t required;
+
+        if (storage_mul_u32(sectors_per_fat, STORAGE_SECTOR_SIZE,
+                            &fat_bytes) != OK ||
+            storage_add_u32(clusters, STORAGE_FIRST_DATA_CLUSTER,
+                            &cluster_entries) != OK ||
+            storage_mul_u32(cluster_entries, 3U, &required_numerator) != OK ||
+            storage_add_u32(required_numerator, 1U, &required_numerator) != OK) {
+            return ERR_OVERFLOW;
+        }
+        required = required_numerator / 2U;
 
         if (!root_entries ||
             storage_read_u16(sector + STORAGE_BPB_SECTORS_PER_FAT16) == 0 ||
@@ -345,17 +407,18 @@ static int storage_configure_fat_type(storage_volume_t* volume,
     uint32_t root_cluster = storage_read_u32(
         sector + STORAGE_BPB_ROOT_CLUSTER);
     uint32_t fat_entries;
+    uint32_t cluster_entries;
 
-    if (sectors_per_fat >
-        0xFFFFFFFFU / (STORAGE_SECTOR_SIZE /
-                       STORAGE_FAT32_ENTRY_SIZE)) return ERR_OVERFLOW;
-    fat_entries = sectors_per_fat *
-                  (STORAGE_SECTOR_SIZE / STORAGE_FAT32_ENTRY_SIZE);
+    if (storage_add_u32(clusters, STORAGE_FIRST_DATA_CLUSTER,
+                        &cluster_entries) != OK) return ERR_OVERFLOW;
+
+    if (storage_mul_u32(sectors_per_fat,
+                        STORAGE_SECTOR_SIZE / STORAGE_FAT32_ENTRY_SIZE,
+                        &fat_entries) != OK) return ERR_OVERFLOW;
     if (root_entries ||
         storage_read_u16(sector + STORAGE_BPB_SECTORS_PER_FAT16) != 0 ||
         root_cluster < STORAGE_FIRST_DATA_CLUSTER ||
-        root_cluster >= clusters + STORAGE_FIRST_DATA_CLUSTER ||
-        fat_entries < clusters + STORAGE_FIRST_DATA_CLUSTER) {
+        root_cluster >= cluster_entries || fat_entries < cluster_entries) {
         return ERR_INVALID;
     }
     mount->fs_type = STORAGE_FS_FAT32;
@@ -411,12 +474,26 @@ static int storage_parse_bpb(storage_volume_t* volume, const uint8_t* sector,
         !total_sectors || total_sectors > volume->sector_count) {
         return ERR_INVALID;
     }
-    root_sectors = ((uint32_t)root_entries * STORAGE_DIR_ENTRY_SIZE +
-                    STORAGE_SECTOR_SIZE - 1U) / STORAGE_SECTOR_SIZE;
-    if (sectors_per_fat > (0xFFFFFFFFU - reserved - root_sectors) / fat_count) {
+    if (storage_mul_u32(root_entries, STORAGE_DIR_ENTRY_SIZE, &root_sectors)
+            != OK ||
+        storage_add_u32(root_sectors, STORAGE_SECTOR_SIZE - 1U,
+                        &root_sectors) != OK) {
         return ERR_OVERFLOW;
     }
-    data_start = reserved + fat_count * sectors_per_fat + root_sectors;
+    root_sectors /= STORAGE_SECTOR_SIZE;
+    {
+        uint32_t fat_area;
+        uint32_t root_start;
+
+        if (storage_mul_u32(fat_count, sectors_per_fat, &fat_area) != OK ||
+            storage_add_u32(reserved, fat_area, &root_start) != OK ||
+            storage_add_u32(root_start, root_sectors, &data_start) != OK) {
+            return ERR_OVERFLOW;
+        }
+        if (root_start >= total_sectors || data_start > total_sectors) {
+            return ERR_INVALID;
+        }
+    }
     if (data_start >= total_sectors) return ERR_INVALID;
     clusters = (total_sectors - data_start) / sectors_per_cluster;
     if (!clusters) return ERR_INVALID;
@@ -453,10 +530,18 @@ static int storage_probe_volume(storage_volume_t* volume,
     if (result != OK) return result;
     result = storage_parse_bpb(volume, sector, mount);
     if (result != OK) return result;
-    root_lba = mount->fs_type == STORAGE_FS_FAT12 ? mount->root_start :
-               mount->data_start +
-               (mount->root_cluster - STORAGE_FIRST_DATA_CLUSTER) *
-               mount->sectors_per_cluster;
+    if (mount->fs_type == STORAGE_FS_FAT12) {
+        root_lba = mount->root_start;
+    } else {
+        uint32_t cluster_offset;
+        if (mount->root_cluster < STORAGE_FIRST_DATA_CLUSTER ||
+            storage_mul_u32(mount->root_cluster - STORAGE_FIRST_DATA_CLUSTER,
+                            mount->sectors_per_cluster,
+                            &cluster_offset) != OK ||
+            storage_add_u32(mount->data_start, cluster_offset, &root_lba) != OK) {
+            return ERR_INVALID;
+        }
+    }
     return storage_read_relative(volume, root_lba, 1, sector);
 }
 
@@ -545,18 +630,29 @@ static void storage_mark_overlaps(uint8_t first_index) {
     kmemset(overlaps, 0, sizeof(overlaps));
     for (uint8_t left = first_index; left < storage_volume_count; left++) {
         storage_volume_t* a = &storage_volumes[left];
+        uint32_t a_end;
 
         if (a->layout != STORAGE_LAYOUT_MBR ||
             a->state == STORAGE_VOLUME_INVALID) continue;
+        if (storage_add_u32(a->start_lba, a->sector_count, &a_end) != OK) {
+            storage_mark_volume_error(a, ERR_OVERFLOW,
+                                      STORAGE_VOLUME_INVALID,
+                                      "fim de particao excede o limite");
+            continue;
+        }
         for (uint8_t right = left + 1U; right < storage_volume_count; right++) {
             storage_volume_t* b = &storage_volumes[right];
-            uint32_t a_end = a->start_lba + a->sector_count;
             uint32_t b_end;
 
              if (!storage_text_equal(b->disk_id, a->disk_id) ||
                 b->layout != STORAGE_LAYOUT_MBR ||
                 b->state == STORAGE_VOLUME_INVALID) continue;
-            b_end = b->start_lba + b->sector_count;
+            if (storage_add_u32(b->start_lba, b->sector_count, &b_end) != OK) {
+                storage_mark_volume_error(b, ERR_OVERFLOW,
+                                          STORAGE_VOLUME_INVALID,
+                                          "fim de particao excede o limite");
+                continue;
+            }
             if (a->start_lba < b_end && b->start_lba < a_end) {
                 overlaps[left - first_index] = 1;
                 overlaps[right - first_index] = 1;
@@ -934,6 +1030,20 @@ static int storage_read_fat_bytes(const storage_volume_t* volume,
     uint8_t sector[STORAGE_SECTOR_SIZE];
     uint32_t copied = 0;
 
+    if (!volume || !mount || !output) return ERR_NULL;
+    if (!size) return OK;
+    if (offset > 0xFFFFFFFFU - (size - 1U)) return ERR_OVERFLOW;
+    {
+        uint32_t fat_bytes;
+        if (storage_mul_u32(mount->sectors_per_fat, STORAGE_SECTOR_SIZE,
+                            &fat_bytes) != OK ||
+            offset > fat_bytes || size > fat_bytes - offset) {
+            storage_log_volume(LOG_LEVEL_ERROR, volume->id,
+                               "faixa fora da FAT");
+            return ERR_DISK;
+        }
+    }
+
     while (copied < size) {
         uint32_t current = offset + copied;
         uint32_t sector_index = current / STORAGE_SECTOR_SIZE;
@@ -948,6 +1058,9 @@ static int storage_read_fat_bytes(const storage_volume_t* volume,
             return ERR_DISK;
         }
         if (amount > size - copied) amount = size - copied;
+        if (mount->fat_start > 0xFFFFFFFFU - sector_index) {
+            return ERR_OVERFLOW;
+        }
         result = storage_read_relative(volume, mount->fat_start + sector_index,
                                        1, sector);
         if (result != OK) return result;
@@ -966,19 +1079,20 @@ static int storage_write_relative(const storage_volume_t* volume,
         LOG_ERROR("FS", "Argumento invalido na escrita de volume");
         return ERR_NULL;
     }
-    if (volume->read_only || relative_lba >= volume->sector_count) {
+    if (volume->read_only || !volume->sector_count ||
+        relative_lba >= volume->sector_count) {
         storage_log_volume(LOG_LEVEL_ERROR, volume->id,
                            volume->read_only ?
                            "volume somente-leitura" :
                            "escrita fora dos limites");
         return volume->read_only ? ERR_UNAVAILABLE : ERR_DISK;
     }
-    if (volume->start_lba > 0xFFFFFFFFU - relative_lba) {
+    if (storage_relative_range(volume, relative_lba, 1U,
+                               &absolute_lba) != OK) {
         storage_log_volume(LOG_LEVEL_ERROR, volume->id,
                            "overflow no endereco de escrita");
         return ERR_OVERFLOW;
     }
-    absolute_lba = volume->start_lba + relative_lba;
     return block_write(volume->disk_id, absolute_lba, 1, buffer);
 }
 
@@ -994,8 +1108,12 @@ static int storage_read_fat32_entry(const storage_volume_t* volume,
     }
     if (mount->fs_type != STORAGE_FS_FAT32 ||
         cluster < STORAGE_FIRST_DATA_CLUSTER ||
+        mount->total_clusters > 0xFFFFFFFFU - STORAGE_FIRST_DATA_CLUSTER ||
         cluster >= mount->total_clusters + STORAGE_FIRST_DATA_CLUSTER) {
         return ERR_INVALID;
+    }
+    if (cluster > 0xFFFFFFFFU / STORAGE_FAT32_ENTRY_SIZE) {
+        return ERR_OVERFLOW;
     }
     result = storage_read_fat_bytes(volume, mount,
                                     cluster * STORAGE_FAT32_ENTRY_SIZE,
@@ -1016,16 +1134,29 @@ static int storage_write_fat32_entry(const storage_volume_t* volume,
     }
     if (mount->fs_type != STORAGE_FS_FAT32 || volume->read_only ||
         cluster < STORAGE_FIRST_DATA_CLUSTER ||
+        mount->total_clusters > 0xFFFFFFFFU - STORAGE_FIRST_DATA_CLUSTER ||
         cluster >= mount->total_clusters + STORAGE_FIRST_DATA_CLUSTER) {
         storage_log_volume(LOG_LEVEL_ERROR, volume->id,
                            "entrada FAT32 nao pode ser escrita");
         return volume->read_only ? ERR_UNAVAILABLE : ERR_INVALID;
     }
+    if (cluster > 0xFFFFFFFFU / STORAGE_FAT32_ENTRY_SIZE) {
+        return ERR_OVERFLOW;
+    }
     offset = cluster * STORAGE_FAT32_ENTRY_SIZE;
     for (uint8_t copy = 0; copy < mount->fat_count; copy++) {
+        uint32_t fat_copy_offset;
+        uint32_t fat_sector;
+
+        if (storage_mul_u32(copy, mount->sectors_per_fat,
+                            &fat_copy_offset) != OK ||
+            storage_add_u32(mount->fat_start, fat_copy_offset, &fat_sector) != OK ||
+            storage_add_u32(fat_sector, offset / STORAGE_SECTOR_SIZE,
+                            &fat_sector) != OK) {
+            return ERR_OVERFLOW;
+        }
         int result = storage_read_relative(
-            volume, mount->fat_start + copy * mount->sectors_per_fat +
-                offset / STORAGE_SECTOR_SIZE, 1, sector);
+            volume, fat_sector, 1, sector);
         if (result != OK) return result;
         uint32_t sector_offset = offset % STORAGE_SECTOR_SIZE;
         uint32_t old = storage_read_u32(sector + sector_offset);
@@ -1034,9 +1165,7 @@ static int storage_write_fat32_entry(const storage_volume_t* volume,
         sector[sector_offset + 1U] = (uint8_t)(next >> 8);
         sector[sector_offset + 2U] = (uint8_t)(next >> 16);
         sector[sector_offset + 3U] = (uint8_t)(next >> 24);
-        result = storage_write_relative(
-            volume, mount->fat_start + copy * mount->sectors_per_fat +
-                offset / STORAGE_SECTOR_SIZE, sector);
+        result = storage_write_relative(volume, fat_sector, sector);
         if (result != OK) return result;
     }
     return OK;
@@ -1054,6 +1183,9 @@ static int storage_allocate_fat32_cluster(const storage_volume_t* volume,
         return ERR_NULL;
     }
     volume_index = storage_volume_index(volume->id);
+    if (mount->total_clusters > 0xFFFFFFFFU - STORAGE_FIRST_DATA_CLUSTER) {
+        return ERR_OVERFLOW;
+    }
     start = volume_index >= 0 &&
             storage_fat32_allocation_hint[volume_index] ?
             storage_fat32_allocation_hint[volume_index] : mount->root_cluster;
@@ -1063,7 +1195,8 @@ static int storage_allocate_fat32_cluster(const storage_volume_t* volume,
     }
     for (uint32_t pass = 0; pass < 2U; pass++) {
         uint32_t first = pass ? STORAGE_FIRST_DATA_CLUSTER : start;
-        uint32_t last = pass ? start : mount->total_clusters + STORAGE_FIRST_DATA_CLUSTER;
+        uint32_t last = pass ? start :
+            mount->total_clusters + STORAGE_FIRST_DATA_CLUSTER;
         for (uint32_t cluster = first; cluster < last && count; cluster++, count--) {
             uint32_t value;
             int result = storage_read_fat32_entry(volume, mount, cluster, &value);
@@ -1122,8 +1255,20 @@ static int storage_write_cluster(const storage_volume_t* volume,
         LOG_ERROR("FS", "Argumento invalido na escrita de cluster");
         return ERR_NULL;
     }
-    base = mount->data_start + (cluster - STORAGE_FIRST_DATA_CLUSTER) *
-           mount->sectors_per_cluster;
+    if (cluster < STORAGE_FIRST_DATA_CLUSTER ||
+        mount->total_clusters > 0xFFFFFFFFU - STORAGE_FIRST_DATA_CLUSTER ||
+        cluster >= mount->total_clusters + STORAGE_FIRST_DATA_CLUSTER) {
+        return ERR_INVALID;
+    }
+    {
+        uint32_t cluster_offset;
+        if (storage_mul_u32(cluster - STORAGE_FIRST_DATA_CLUSTER,
+                            mount->sectors_per_cluster,
+                            &cluster_offset) != OK ||
+            storage_add_u32(mount->data_start, cluster_offset, &base) != OK) {
+            return ERR_OVERFLOW;
+        }
+    }
     for (uint32_t index = 0; index < mount->sectors_per_cluster; index++) {
         kmemset(sector, 0, sizeof(sector));
         if (index * STORAGE_SECTOR_SIZE < size) {
@@ -1131,7 +1276,13 @@ static int storage_write_cluster(const storage_volume_t* volume,
             if (amount > STORAGE_SECTOR_SIZE) amount = STORAGE_SECTOR_SIZE;
             kmemcpy(sector, data + index * STORAGE_SECTOR_SIZE, amount);
         }
-        int result = storage_write_relative(volume, base + index, sector);
+        uint32_t relative_lba;
+        int result;
+
+        if (storage_add_u32(base, index, &relative_lba) != OK) {
+            return ERR_OVERFLOW;
+        }
+        result = storage_write_relative(volume, relative_lba, sector);
         if (result != OK) return result;
     }
     return OK;
@@ -1157,11 +1308,12 @@ static int storage_next_cluster(const storage_volume_t* volume,
     uint32_t offset;
     int result;
 
-    if (!out_next) {
+    if (!volume || !mount || !out_next) {
         LOG_ERROR("FS", "Destino nulo ao percorrer cadeia FAT");
         return ERR_NULL;
     }
     if (cluster < STORAGE_FIRST_DATA_CLUSTER ||
+        mount->total_clusters > 0xFFFFFFFFU - STORAGE_FIRST_DATA_CLUSTER ||
         cluster >= mount->total_clusters + STORAGE_FIRST_DATA_CLUSTER) {
         return ERR_INVALID;
     }
@@ -1221,6 +1373,10 @@ int storage_get_free_space(const char* id, uint32_t* out_free_sectors,
     if (result == OK && !mount) result = ERR_STATE;
     if (result == OK && mount->fs_type != STORAGE_FS_FAT12 &&
         mount->fs_type != STORAGE_FS_FAT32) result = ERR_UNAVAILABLE;
+    if (result == OK &&
+        mount->total_clusters > 0xFFFFFFFFU - STORAGE_FIRST_DATA_CLUSTER) {
+        result = ERR_OVERFLOW;
+    }
     if (result == OK) {
         for (uint32_t cluster = STORAGE_FIRST_DATA_CLUSTER;
              cluster < mount->total_clusters + STORAGE_FIRST_DATA_CLUSTER;

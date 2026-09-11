@@ -1892,6 +1892,8 @@ test-fat12-host: tools\core_host_runner.py tools\coverage_collector.py tests\uni
 test-fat32-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_fat32_host.c tests\catalog.json src\fs\fat32.c src\include\fs\fat32.h
 	python tools\core_host_runner.py --case host:storage:fat32 --cc "$(HOST_CC)"
 
+test-sto1-host: test-block-host test-fat12-host test-fat32-host test-fs-host test-storage-host test-storage-fat32-host
+
 test-vfs-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_vfs_host.c tests\catalog.json src\fs\vfs.c src\fs\permissions.c src\process\credentials.c src\include\fs\vfs.h src\include\fs\permissions.h src\include\process\credentials.h src\include\process\resource.h
 	python tools\core_host_runner.py --case host:storage:vfs --cc "$(HOST_CC)"
 

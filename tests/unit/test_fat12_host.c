@@ -265,6 +265,10 @@ int main(void) {
     char name[13];
     uint32_t size;
     uint8_t attributes;
+    uint8_t fat_before[512];
+    uint8_t root_before[512];
+    uint32_t reads_before;
+    uint16_t saved_cluster;
 
     setup_disk();
     coverage_active = 1U;
@@ -284,6 +288,12 @@ int main(void) {
 
     EXPECT(fat12_read_file("HELLO.TXT", buffer, sizeof(buffer)) == 5);
     EXPECT(memcmp(buffer, "hello", 5U) == 0);
+    saved_cluster = filesystem->root_dir[0].cluster_low;
+    filesystem->root_dir[0].cluster_low = FAT12_CLUSTER_BAD;
+    reads_before = fake_read_ops;
+    EXPECT(fat12_read_file("HELLO.TXT", buffer, sizeof(buffer)) == -1);
+    EXPECT(fake_read_ops == reads_before);
+    filesystem->root_dir[0].cluster_low = saved_cluster;
     EXPECT(fat12_read_file("HELLO.TXT", buffer, 2U) == 2);
     EXPECT(fat12_read_file_at("DIR/NEST.TXT", buffer, sizeof(buffer)) == 4);
     EXPECT(memcmp(buffer, "nest", 4U) == 0);
@@ -358,6 +368,23 @@ int main(void) {
     EXPECT(fake_write_ops > 0U);
     EXPECT(fake_video_calls > 0U);
     EXPECT(fake_log_count > 0U);
+
+    setup_disk();
+    for (uint32_t index = 3U; index < 16U; index++) {
+        char name[9] = "FILL0000";
+        name[4] = (char)('0' + (index / 10U));
+        name[5] = (char)('0' + (index % 10U));
+        write_entry(disk_image[HOST_ROOT_SECTOR], index, name, "TXT",
+                    0x20U, 0U, 0U);
+    }
+    memcpy(fat_before, disk_image[HOST_FAT_SECTOR], sizeof(fat_before));
+    memcpy(root_before, disk_image[HOST_ROOT_SECTOR], sizeof(root_before));
+    EXPECT(fat12_init() == OK);
+    EXPECT(fake_write_ops == 0U);
+    EXPECT(memcmp(fat_before, disk_image[HOST_FAT_SECTOR], sizeof(fat_before)) ==
+           0);
+    EXPECT(memcmp(root_before, disk_image[HOST_ROOT_SECTOR], sizeof(root_before)) ==
+           0);
     coverage_active = 0U;
     coverage_emit(0);
     puts("fat12-host: PASS");

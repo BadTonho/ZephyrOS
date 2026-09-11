@@ -7113,3 +7113,20 @@ dívida.
   `session-20260910T185300Z-696`, com 18/18 casos, quatro workers, zero grupos
   de falha e nenhum processo QEMU residual. Os artefatos estão em
   `.tst7-results/continuous/session-20260910T185300Z-696/`.
+
+- STO1 - inventario e reforco dos invariantes de Storage - implementacao e
+  validacao essencial concluidas em 2026-09-11 (America/Sao_Paulo). Block
+  Layer, block-cache, Storage, FAT12, FAT32 e cursores FS passaram a validar
+  limites de LBA/cluster, tamanhos, buffers, FAT, BPB, MBR, particoes,
+  cadeias e conversoes sem overflow silencioso. Falhas de dispositivo e
+  metadados invalidos preservam o estado e os erros canonicos; o FAT12 com
+  diretorio raiz cheio nao sofre formatacao automatica.
+
+  A cobertura host-only foi estendida para BIOs invalidos, clusters fora do
+  volume e falhas sem residuos, e o Makefile recebeu o agregado
+  `make test-sto1-host`. Passaram `make q3check` (com `DT100-003` aceita),
+  `make clean`, `make`, `make test-sto1-host` e `make catalog-test`. O
+  catalogo sincronizado registra 7.568 superficies e 180 casos, com a visao
+  renderizada validada. Nenhum bootloader, Stage 2, ABI, syscall ou formato
+  FAT12/FAT32 foi alterado. A matriz QEMU, transacoes e recuperacao ficam
+  para STO2-STO7.

@@ -2,7 +2,7 @@
 
 ## Estado
 
-Planejado. Esta frente torna o caminho FAT12/FAT32, Block Layer, buffer cache,
+STO1 concluido; as demais fases permanecem planejadas. Esta frente torna o caminho FAT12/FAT32, Block Layer, buffer cache,
 VFS e Storage previsível diante de erro de I/O, cancelamento, reinicialização e
 falha de energia. Não substitui os formatos existentes nem cria um filesystem
 novo para a versão 1.0.0.
@@ -47,18 +47,25 @@ swap e recuperação automática destrutiva ficam fora desta frente.
 
 ### STO1 — Inventário de invariantes
 
-- [ ] Documentar geometria, limites e ownership de cada camada: setor, bloco,
+- [x] Documentar geometria, limites e ownership de cada camada: setor, bloco,
   cluster, buffer, requisição, fila, cache e volume.
-- [ ] Validar conversões LBA/cluster, tamanhos de arquivo, capacidade,
+- [x] Validar conversões LBA/cluster, tamanhos de arquivo, capacidade,
   contagens e endereços sem overflow.
-- [ ] Rejeitar FAT, diretório, cadeia ou entrada que apontem para regiões fora
+- [x] Rejeitar FAT, diretório, cadeia ou entrada que apontem para regiões fora
   do volume ou para estruturas incompatíveis.
-- [ ] Confirmar que um erro de dispositivo nunca é publicado como escrita
+- [x] Confirmar que um erro de dispositivo nunca é publicado como escrita
   concluída.
-- [ ] Integrar contadores de erro e último erro ao diagnóstico sem logging em
+- [x] Integrar contadores de erro e último erro ao diagnóstico sem logging em
   cada setor.
-- [ ] Manter uma separação explícita entre superblock/volume, inode/entrada,
+- [x] Manter uma separação explícita entre superblock/volume, inode/entrada,
   descritor aberto, cache e dispositivo físico.
+
+STO1 foi implementado com validação de intervalos e aritmética protegida no
+Block Layer, cache, Storage, FAT12, FAT32 e cursores da interface unificada.
+As fixtures host-only cobrem BIOs inválidos, clusters fora do volume, cadeias
+incompatíveis, falhas de leitura e a preservação de um FAT12 com diretório raiz
+cheio sem formatação automática. A validação QEMU, transações e recuperação
+permanecem nas fases STO2–STO7.
 
 ### STO2 — Sync, flush e transações
 

@@ -65,6 +65,7 @@ make test-vfs-path-host
 make test-file-index-host
 make test-fs-host
 make test-permissions-host
+make test-sto1-host
 make test-storage-host
 make test-block-host
 make test-fat12-host
@@ -182,6 +183,11 @@ O caso `test-fs-host` valida a interface unificada com fixtures FAT12/FAT32 e
 storage, cobrindo paths legacy e de volume, cursores, leitura por faixa,
 mutacoes, operacoes atomicas, streaming, geracao e erros canonicos. O relatorio
 fica em `build/test-results/fs-host/`.
+
+O alvo agregado `test-sto1-host` executa os casos host-only de Block, cache,
+FAT12, FAT32, FS e Storage. Ele e a validacao essencial do STO1 para limites,
+overflow, clusters e cadeias invalidas, falhas de dispositivo, consistencia de
+cache/filas, cursores e ausencia de formatacao automatica de FAT12 cheio.
 
 O caso `test-permissions-host` valida credenciais fixas, capacidades, modos
 POSIX, travessia, dispositivos, procfs/sysfs e o sidecar `ZPERM.DAT`, incluindo

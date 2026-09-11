@@ -4,7 +4,7 @@
 
 ## Resumo
 
-- Superfícies ativas: **7550**
+- Superfícies ativas: **7568**
 - Casos de teste: **180**
 - Superfícies aposentadas: **59**
 
@@ -12,16 +12,16 @@
 |---|---:|
 | `api_function` | 1645 |
 | `asm_entry` | 101 |
-| `c_function` | 5684 |
+| `c_function` | 5702 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7540 |
+| `COVERED` | 7539 |
 | `MANUAL` | 0 |
-| `PENDING` | 10 |
+| `PENDING` | 29 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -36,12 +36,12 @@
 |---|---:|
 | `apps` | 172 |
 | `appstore` | 98 |
-| `boot` | 139 |
+| `boot` | 146 |
 | `core` | 2883 |
 | `desktop` | 40 |
 | `drivers` | 932 |
 | `filemanager` | 93 |
-| `fs` | 1002 |
+| `fs` | 1013 |
 | `gui` | 30 |
 | `icons` | 18 |
 | `kernel` | 60 |
@@ -1915,6 +1915,9 @@
 | `c:src/appstore/appstore.c:appstore_worker_run` | `src/appstore/appstore.c` | `appstore_worker_run` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_worker_update` | `src/appstore/appstore.c` | `appstore_worker_update` | `appstore` | `COVERED` | 1 |
 | `c:src/appstore/appstore.c:appstore_worker_verify` | `src/appstore/appstore.c` | `appstore_worker_verify` | `appstore` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_ata_read_sector` | `src/boot/recovery_loader.c` | `recovery_ata_read_sector` | `boot` | `PENDING` | 0 |
+| `c:src/boot/recovery_loader.c:recovery_ata_wait` | `src/boot/recovery_loader.c` | `recovery_ata_wait` | `boot` | `PENDING` | 0 |
+| `c:src/boot/recovery_loader.c:recovery_ata_write_sector` | `src/boot/recovery_loader.c` | `recovery_ata_write_sector` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_loader.c:recovery_boot_kernel` | `src/boot/recovery_loader.c` | `recovery_boot_kernel` | `boot` | `COVERED` | 1 |
 | `c:src/boot/recovery_loader.c:recovery_boot_legacy` | `src/boot/recovery_loader.c` | `recovery_boot_legacy` | `boot` | `COVERED` | 1 |
 | `c:src/boot/recovery_loader.c:recovery_boot_prepared` | `src/boot/recovery_loader.c` | `recovery_boot_prepared` | `boot` | `COVERED` | 1 |
@@ -1940,6 +1943,8 @@
 | `c:src/boot/recovery_loader.c:recovery_header_policy_valid` | `src/boot/recovery_loader.c` | `recovery_header_policy_valid` | `boot` | `COVERED` | 1 |
 | `c:src/boot/recovery_loader.c:recovery_host_address` | `src/boot/recovery_loader.c` | `recovery_host_address` | `boot` | `COVERED` | 1 |
 | `c:src/boot/recovery_loader.c:recovery_identifier_valid` | `src/boot/recovery_loader.c` | `recovery_identifier_valid` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_in16` | `src/boot/recovery_loader.c` | `recovery_in16` | `boot` | `PENDING` | 0 |
+| `c:src/boot/recovery_loader.c:recovery_in8` | `src/boot/recovery_loader.c` | `recovery_in8` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_loader.c:recovery_journal_status` | `src/boot/recovery_loader.c` | `recovery_journal_status` | `boot` | `COVERED` | 1 |
 | `c:src/boot/recovery_loader.c:recovery_load_component` | `src/boot/recovery_loader.c` | `recovery_load_component` | `boot` | `COVERED` | 1 |
 | `c:src/boot/recovery_loader.c:recovery_load_package` | `src/boot/recovery_loader.c` | `recovery_load_package` | `boot` | `COVERED` | 1 |
@@ -1951,6 +1956,8 @@
 | `c:src/boot/recovery_loader.c:recovery_menu_slot_version` | `src/boot/recovery_loader.c` | `recovery_menu_slot_version` | `boot` | `COVERED` | 1 |
 | `c:src/boot/recovery_loader.c:recovery_message` | `src/boot/recovery_loader.c` | `recovery_message` | `boot` | `COVERED` | 1 |
 | `c:src/boot/recovery_loader.c:recovery_next_cluster` | `src/boot/recovery_loader.c` | `recovery_next_cluster` | `boot` | `COVERED` | 1 |
+| `c:src/boot/recovery_loader.c:recovery_out16` | `src/boot/recovery_loader.c` | `recovery_out16` | `boot` | `PENDING` | 0 |
+| `c:src/boot/recovery_loader.c:recovery_out8` | `src/boot/recovery_loader.c` | `recovery_out8` | `boot` | `PENDING` | 0 |
 | `c:src/boot/recovery_loader.c:recovery_prepare_failure_menu` | `src/boot/recovery_loader.c` | `recovery_prepare_failure_menu` | `boot` | `COVERED` | 1 |
 | `c:src/boot/recovery_loader.c:recovery_prepare_slot` | `src/boot/recovery_loader.c` | `recovery_prepare_slot` | `boot` | `COVERED` | 1 |
 | `c:src/boot/recovery_loader.c:recovery_publish_attempt` | `src/boot/recovery_loader.c` | `recovery_publish_attempt` | `boot` | `COVERED` | 1 |
@@ -5029,6 +5036,7 @@
 | `c:src/fs/block.c:block_init` | `src/fs/block.c` | `block_init` | `fs` | `COVERED` | 1 |
 | `c:src/fs/block.c:block_queue_enqueue` | `src/fs/block.c` | `block_queue_enqueue` | `fs` | `COVERED` | 4 |
 | `c:src/fs/block.c:block_queue_remove_locked` | `src/fs/block.c` | `block_queue_remove_locked` | `fs` | `COVERED` | 4 |
+| `c:src/fs/block.c:block_range_valid` | `src/fs/block.c` | `block_range_valid` | `fs` | `PENDING` | 0 |
 | `c:src/fs/block.c:block_rate` | `src/fs/block.c` | `block_rate` | `fs` | `COVERED` | 3 |
 | `c:src/fs/block.c:block_read` | `src/fs/block.c` | `block_read` | `fs` | `COVERED` | 5 |
 | `c:src/fs/block.c:block_read_backend` | `src/fs/block.c` | `block_read_backend` | `fs` | `COVERED` | 4 |
@@ -5048,6 +5056,7 @@
 | `c:src/fs/block.c:block_text_equal` | `src/fs/block.c` | `block_text_equal` | `fs` | `COVERED` | 5 |
 | `c:src/fs/block.c:block_text_terminated` | `src/fs/block.c` | `block_text_terminated` | `fs` | `COVERED` | 5 |
 | `c:src/fs/block.c:block_text_valid` | `src/fs/block.c` | `block_text_valid` | `fs` | `COVERED` | 3 |
+| `c:src/fs/block.c:block_transfer_bytes` | `src/fs/block.c` | `block_transfer_bytes` | `fs` | `PENDING` | 0 |
 | `c:src/fs/block.c:block_unregister` | `src/fs/block.c` | `block_unregister` | `fs` | `COVERED` | 3 |
 | `c:src/fs/block.c:block_validate_bio` | `src/fs/block.c` | `block_validate_bio` | `fs` | `COVERED` | 4 |
 | `c:src/fs/block.c:block_validate_state` | `src/fs/block.c` | `block_validate_state` | `fs` | `COVERED` | 3 |
@@ -5161,6 +5170,8 @@
 | `c:src/fs/fat12.c:fat12_atomic_delete_root` | `src/fs/fat12.c` | `fat12_atomic_delete_root` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_atomic_write_file_in_dir` | `src/fs/fat12.c` | `fat12_atomic_write_file_in_dir` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_atomic_write_root` | `src/fs/fat12.c` | `fat12_atomic_write_root` | `fs` | `COVERED` | 1 |
+| `c:src/fs/fat12.c:fat12_cluster_lba` | `src/fs/fat12.c` | `fat12_cluster_lba` | `fs` | `PENDING` | 0 |
+| `c:src/fs/fat12.c:fat12_cluster_valid` | `src/fs/fat12.c` | `fat12_cluster_valid` | `fs` | `PENDING` | 0 |
 | `c:src/fs/fat12.c:fat12_create_dir_entry` | `src/fs/fat12.c` | `fat12_create_dir_entry` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_delete_file` | `src/fs/fat12.c` | `fat12_delete_file` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_delete_file_in_dir` | `src/fs/fat12.c` | `fat12_delete_file_in_dir` | `fs` | `COVERED` | 1 |
@@ -5206,15 +5217,19 @@
 | `c:src/fs/fat12.c:fat12_stream_is_active` | `src/fs/fat12.c` | `fat12_stream_is_active` | `fs` | `COVERED` | 2 |
 | `c:src/fs/fat12.c:fat12_stream_write_root` | `src/fs/fat12.c` | `fat12_stream_write_root` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_strncmp` | `src/fs/fat12.c` | `fat12_strncmp` | `fs` | `COVERED` | 1 |
+| `c:src/fs/fat12.c:fat12_total_clusters` | `src/fs/fat12.c` | `fat12_total_clusters` | `fs` | `PENDING` | 0 |
 | `c:src/fs/fat12.c:fat12_validate_bpb` | `src/fs/fat12.c` | `fat12_validate_bpb` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_write_atomic_clusters` | `src/fs/fat12.c` | `fat12_write_atomic_clusters` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_write_dir_cluster` | `src/fs/fat12.c` | `fat12_write_dir_cluster` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_write_file` | `src/fs/fat12.c` | `fat12_write_file` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat12.c:fat12_write_file_in_dir` | `src/fs/fat12.c` | `fat12_write_file_in_dir` | `fs` | `COVERED` | 1 |
-| `c:src/fs/fat32.c:cluster_to_lba` | `src/fs/fat32.c` | `cluster_to_lba` | `fs` | `COVERED` | 1 |
+| `c:src/fs/fat32.c:cluster_to_lba` | `src/fs/fat32.c` | `cluster_to_lba` | `fs` | `PENDING` | 0 |
+| `c:src/fs/fat32.c:fat32_cluster_lba` | `src/fs/fat32.c` | `fat32_cluster_lba` | `fs` | `PENDING` | 0 |
+| `c:src/fs/fat32.c:fat32_cluster_valid` | `src/fs/fat32.c` | `fat32_cluster_valid` | `fs` | `PENDING` | 0 |
 | `c:src/fs/fat32.c:fat32_create_dir_entry` | `src/fs/fat32.c` | `fat32_create_dir_entry` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat32.c:fat32_delete_file` | `src/fs/fat32.c` | `fat32_delete_file` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat32.c:fat32_delete_file_in_dir` | `src/fs/fat32.c` | `fat32_delete_file_in_dir` | `fs` | `COVERED` | 1 |
+| `c:src/fs/fat32.c:fat32_fat_offset` | `src/fs/fat32.c` | `fat32_fat_offset` | `fs` | `PENDING` | 0 |
 | `c:src/fs/fat32.c:fat32_find_free_cluster` | `src/fs/fat32.c` | `fat32_find_free_cluster` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat32.c:fat32_find_in_dir` | `src/fs/fat32.c` | `fat32_find_in_dir` | `fs` | `COVERED` | 1 |
 | `c:src/fs/fat32.c:fat32_find_path_entry` | `src/fs/fat32.c` | `fat32_find_path_entry` | `fs` | `COVERED` | 1 |
@@ -5423,6 +5438,7 @@
 | `c:src/fs/procfs.c:procfs_write` | `src/fs/procfs.c` | `procfs_write` | `fs` | `COVERED` | 3 |
 | `c:src/fs/procfs.c:procfs_write_allowed` | `src/fs/procfs.c` | `procfs_write_allowed` | `fs` | `COVERED` | 3 |
 | `c:src/fs/storage.c:storage_add_disk` | `src/fs/storage.c` | `storage_add_disk` | `fs` | `COVERED` | 2 |
+| `c:src/fs/storage.c:storage_add_u32` | `src/fs/storage.c` | `storage_add_u32` | `fs` | `PENDING` | 0 |
 | `c:src/fs/storage.c:storage_add_volume` | `src/fs/storage.c` | `storage_add_volume` | `fs` | `COVERED` | 2 |
 | `c:src/fs/storage.c:storage_alias_is_used` | `src/fs/storage.c` | `storage_alias_is_used` | `fs` | `COVERED` | 2 |
 | `c:src/fs/storage.c:storage_alias_visitor` | `src/fs/storage.c` | `storage_alias_visitor` | `fs` | `COVERED` | 2 |
@@ -5494,6 +5510,7 @@
 | `c:src/fs/storage.c:storage_mark_volume_error` | `src/fs/storage.c` | `storage_mark_volume_error` | `fs` | `COVERED` | 1 |
 | `c:src/fs/storage.c:storage_mount` | `src/fs/storage.c` | `storage_mount` | `fs` | `COVERED` | 2 |
 | `c:src/fs/storage.c:storage_mount_for_volume` | `src/fs/storage.c` | `storage_mount_for_volume` | `fs` | `COVERED` | 3 |
+| `c:src/fs/storage.c:storage_mul_u32` | `src/fs/storage.c` | `storage_mul_u32` | `fs` | `PENDING` | 0 |
 | `c:src/fs/storage.c:storage_name_to_fat` | `src/fs/storage.c` | `storage_name_to_fat` | `fs` | `COVERED` | 3 |
 | `c:src/fs/storage.c:storage_next_cluster` | `src/fs/storage.c` | `storage_next_cluster` | `fs` | `COVERED` | 3 |
 | `c:src/fs/storage.c:storage_next_component` | `src/fs/storage.c` | `storage_next_component` | `fs` | `COVERED` | 6 |
@@ -5512,6 +5529,7 @@
 | `c:src/fs/storage.c:storage_refresh` | `src/fs/storage.c` | `storage_refresh` | `fs` | `COVERED` | 2 |
 | `c:src/fs/storage.c:storage_refresh_disk` | `src/fs/storage.c` | `storage_refresh_disk` | `fs` | `COVERED` | 1 |
 | `c:src/fs/storage.c:storage_register_raw` | `src/fs/storage.c` | `storage_register_raw` | `fs` | `COVERED` | 2 |
+| `c:src/fs/storage.c:storage_relative_range` | `src/fs/storage.c` | `storage_relative_range` | `fs` | `PENDING` | 0 |
 | `c:src/fs/storage.c:storage_release_fat32_chain` | `src/fs/storage.c` | `storage_release_fat32_chain` | `fs` | `COVERED` | 1 |
 | `c:src/fs/storage.c:storage_rename_file` | `src/fs/storage.c` | `storage_rename_file` | `fs` | `COVERED` | 2 |
 | `c:src/fs/storage.c:storage_resolve_directory` | `src/fs/storage.c` | `storage_resolve_directory` | `fs` | `COVERED` | 6 |
@@ -7819,11 +7837,30 @@
 
 ## Superfícies sem caso associado
 
+- `c:src/boot/recovery_loader.c:recovery_ata_read_sector`
+- `c:src/boot/recovery_loader.c:recovery_ata_wait`
+- `c:src/boot/recovery_loader.c:recovery_ata_write_sector`
+- `c:src/boot/recovery_loader.c:recovery_in16`
+- `c:src/boot/recovery_loader.c:recovery_in8`
+- `c:src/boot/recovery_loader.c:recovery_out16`
+- `c:src/boot/recovery_loader.c:recovery_out8`
 - `c:src/core/kernel_tests_blackbox.c:blackbox_is_sec6_case`
 - `c:src/core/kernel_tests_blackbox.c:blackbox_marker`
 - `c:src/core/kernel_tests_blackbox.c:blackbox_requires_prompt`
 - `c:src/core/kernel_tests_blackbox.c:blackbox_reset_sec6_observation`
 - `c:src/core/kernel_tests_blackbox.c:blackbox_validate_sec6_output`
+- `c:src/fs/block.c:block_range_valid`
+- `c:src/fs/block.c:block_transfer_bytes`
+- `c:src/fs/fat12.c:fat12_cluster_lba`
+- `c:src/fs/fat12.c:fat12_cluster_valid`
+- `c:src/fs/fat12.c:fat12_total_clusters`
+- `c:src/fs/fat32.c:cluster_to_lba`
+- `c:src/fs/fat32.c:fat32_cluster_lba`
+- `c:src/fs/fat32.c:fat32_cluster_valid`
+- `c:src/fs/fat32.c:fat32_fat_offset`
+- `c:src/fs/storage.c:storage_add_u32`
+- `c:src/fs/storage.c:storage_mul_u32`
+- `c:src/fs/storage.c:storage_relative_range`
 - `c:src/kernel/kernel.c:kernel_host_test_should_wake_shell_for_event`
 - `c:src/kernel/kernel.c:kernel_should_wake_shell_for_event`
 - `c:src/process/resource.c:process_resource_note_descriptor_success`

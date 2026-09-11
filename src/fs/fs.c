@@ -470,14 +470,27 @@ static int fs_cursor_is_dot(const char* name) {
 static int fs_cursor_next_fat12(uint32_t cluster, uint32_t* out_next) {
     fat12_fs_t* fat = fat12_get_fs();
     uint32_t offset;
+    uint32_t total_sectors;
+    uint32_t total_clusters;
     uint16_t value;
 
     if (!out_next || !fat || !fat->fat) {
         LOG_ERROR("FS", "FAT12 indisponivel para cursor");
         return ERR_NULL;
     }
+    total_sectors = fat->bpb.total_sectors ? fat->bpb.total_sectors :
+                    fat->bpb.large_sector_count;
+    if (!fat->initialized || !fat->bpb.sectors_per_cluster ||
+        total_sectors <= fat->data_start) return ERR_STATE;
+    total_clusters = (total_sectors - fat->data_start) /
+                     fat->bpb.sectors_per_cluster;
+    if (cluster < FS_FIRST_DATA_CLUSTER ||
+        total_clusters > 0xFFFFFFFFU - FS_FIRST_DATA_CLUSTER ||
+        cluster >= total_clusters + FS_FIRST_DATA_CLUSTER) return ERR_INVALID;
+    if (cluster > 0xFFFFFFFFU / 3U) return ERR_OVERFLOW;
     offset = cluster + cluster / 2U;
-    if (offset + 1U >= fat->bpb.sectors_per_fat * fat->bpb.bytes_per_sector) {
+    if (offset > (uint32_t)fat->bpb.sectors_per_fat *
+                 fat->bpb.bytes_per_sector - 2U) {
         return ERR_OVERFLOW;
     }
     value = fs_read_u16((const uint8_t*)fat->fat + offset);
@@ -497,10 +510,15 @@ static int fs_cursor_next_fat32(uint32_t cluster, uint32_t* out_next) {
         LOG_ERROR("FS", "FAT32 indisponivel para cursor");
         return ERR_NULL;
     }
+    if (!fat->initialized || cluster < FS_FIRST_DATA_CLUSTER ||
+        fat->total_clusters > 0xFFFFFFFFU - FS_FIRST_DATA_CLUSTER ||
+        cluster >= fat->total_clusters + FS_FIRST_DATA_CLUSTER ||
+        cluster > 0xFFFFFFFFU / FS_FAT32_ENTRY_SIZE) return ERR_INVALID;
     offset = cluster * FS_FAT32_ENTRY_SIZE;
     sector_index = offset / FS_DIR_SECTOR_SIZE;
     entry_offset = offset % FS_DIR_SECTOR_SIZE;
     if (sector_index >= fat->bpb.sectors_per_fat ||
+        fat->fat_start > 0xFFFFFFFFU - sector_index ||
         ata_read_sectors(fat->fat_start + sector_index, 1, sector) != 0) {
         return ERR_DISK;
     }
@@ -519,7 +537,8 @@ static int fs_cursor_load_sector_unlocked(fs_dir_cursor_t* cursor) {
     }
     if (cursor->fixed_root) {
         fat12_fs_t* fat = fat12_get_fs();
-        uint32_t root_bytes = fat->bpb.root_entries * FS_DIR_ENTRY_SIZE;
+        uint32_t root_bytes = (uint32_t)fat->bpb.root_entries *
+                              FS_DIR_ENTRY_SIZE;
         uint32_t root_sectors = (root_bytes + FS_DIR_SECTOR_SIZE - 1U) /
                                 FS_DIR_SECTOR_SIZE;
 
@@ -529,6 +548,7 @@ static int fs_cursor_load_sector_unlocked(fs_dir_cursor_t* cursor) {
         }
         kmemset(cursor->sector, 0, sizeof(cursor->sector));
         uint32_t copied = cursor->sector_index * FS_DIR_SECTOR_SIZE;
+        if (!fat->root_dir || copied > root_bytes) return ERR_STATE;
         uint32_t remaining = root_bytes - copied;
         uint32_t amount = remaining < FS_DIR_SECTOR_SIZE ?
                           remaining : FS_DIR_SECTOR_SIZE;
@@ -581,9 +601,19 @@ static int fs_cursor_load_sector_unlocked(fs_dir_cursor_t* cursor) {
                 total_clusters + FS_FIRST_DATA_CLUSTER) {
             return ERR_INVALID;
         }
-        lba = fat->data_start +
-              (cursor->current_cluster - FS_FIRST_DATA_CLUSTER) *
-              fat->bpb.sectors_per_cluster + cursor->sector_index;
+        if (cursor->current_cluster - FS_FIRST_DATA_CLUSTER >
+            0xFFFFFFFFU / fat->bpb.sectors_per_cluster) return ERR_OVERFLOW;
+        {
+            uint32_t cluster_offset =
+                (cursor->current_cluster - FS_FIRST_DATA_CLUSTER) *
+                fat->bpb.sectors_per_cluster;
+            if (fat->data_start > 0xFFFFFFFFU - cluster_offset) {
+                return ERR_OVERFLOW;
+            }
+            lba = fat->data_start + cluster_offset;
+        }
+        if (lba > 0xFFFFFFFFU - cursor->sector_index) return ERR_OVERFLOW;
+        lba += cursor->sector_index;
     } else {
         fat32_fs_t* fat = fat32_get_fs();
         if (cursor->current_cluster < FS_FIRST_DATA_CLUSTER ||
@@ -591,9 +621,19 @@ static int fs_cursor_load_sector_unlocked(fs_dir_cursor_t* cursor) {
                 fat->total_clusters + FS_FIRST_DATA_CLUSTER) {
             return ERR_INVALID;
         }
-        lba = fat->data_start +
-              (cursor->current_cluster - FS_FIRST_DATA_CLUSTER) *
-              fat->bpb.sectors_per_cluster + cursor->sector_index;
+        if (cursor->current_cluster - FS_FIRST_DATA_CLUSTER >
+            0xFFFFFFFFU / fat->bpb.sectors_per_cluster) return ERR_OVERFLOW;
+        {
+            uint32_t cluster_offset =
+                (cursor->current_cluster - FS_FIRST_DATA_CLUSTER) *
+                fat->bpb.sectors_per_cluster;
+            if (fat->data_start > 0xFFFFFFFFU - cluster_offset) {
+                return ERR_OVERFLOW;
+            }
+            lba = fat->data_start + cluster_offset;
+        }
+        if (lba > 0xFFFFFFFFU - cursor->sector_index) return ERR_OVERFLOW;
+        lba += cursor->sector_index;
     }
     if (ata_read_sectors(lba, 1, cursor->sector) != 0) return ERR_DISK;
     cursor->sector_loaded = 1;

@@ -332,6 +332,7 @@ static uint32_t block_cache_reserve_run_locked(const char* device_id,
     uint32_t reserved = 0U;
 
     while (reserved < max_count && reserved < BLOCK_CACHE_CAPACITY) {
+        if (reserved > 0xFFFFFFFFU - lba) break;
         uint32_t current_lba = lba + reserved;
         uint32_t index = block_cache_find_locked(device_id, current_lba,
                                                  BLOCK_CACHE_BLOCK_SIZE);
@@ -841,6 +842,10 @@ static int block_cache_validate_write_device(const block_device_t* device,
     if (lba >= device->sector_count || sectors > device->sector_count - lba) {
         LOG_ERROR("BLKCACHE", "LBA fora dos limites na escrita do cache");
         return ERR_DISK;
+    }
+    if (sectors > device->max_transfer_sectors) {
+        LOG_ERROR("BLKCACHE", "Transferencia excede o limite do dispositivo");
+        return ERR_OVERFLOW;
     }
     *out_sectors = sectors;
     return OK;

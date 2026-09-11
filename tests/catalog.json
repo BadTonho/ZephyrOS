@@ -43687,6 +43687,60 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/boot/recovery_loader.c:recovery_ata_read_sector",
+      "kind": "c_function",
+      "source": "src/boot/recovery_loader.c",
+      "symbol": "recovery_ata_read_sector",
+      "linkage": "static",
+      "owner": "boot",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "c:src/boot/recovery_loader.c:recovery_ata_wait",
+      "kind": "c_function",
+      "source": "src/boot/recovery_loader.c",
+      "symbol": "recovery_ata_wait",
+      "linkage": "static",
+      "owner": "boot",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "c:src/boot/recovery_loader.c:recovery_ata_write_sector",
+      "kind": "c_function",
+      "source": "src/boot/recovery_loader.c",
+      "symbol": "recovery_ata_write_sector",
+      "linkage": "static",
+      "owner": "boot",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
       "id": "c:src/boot/recovery_loader.c:recovery_boot_kernel",
       "kind": "c_function",
       "source": "src/boot/recovery_loader.c",
@@ -44212,6 +44266,42 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/boot/recovery_loader.c:recovery_in16",
+      "kind": "c_function",
+      "source": "src/boot/recovery_loader.c",
+      "symbol": "recovery_in16",
+      "linkage": "static",
+      "owner": "boot",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "c:src/boot/recovery_loader.c:recovery_in8",
+      "kind": "c_function",
+      "source": "src/boot/recovery_loader.c",
+      "symbol": "recovery_in8",
+      "linkage": "static",
+      "owner": "boot",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
       "id": "c:src/boot/recovery_loader.c:recovery_journal_status",
       "kind": "c_function",
       "source": "src/boot/recovery_loader.c",
@@ -44441,6 +44531,42 @@
       ],
       "tags": [],
       "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/boot/recovery_loader.c:recovery_out16",
+      "kind": "c_function",
+      "source": "src/boot/recovery_loader.c",
+      "symbol": "recovery_out16",
+      "linkage": "static",
+      "owner": "boot",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "c:src/boot/recovery_loader.c:recovery_out8",
+      "kind": "c_function",
+      "source": "src/boot/recovery_loader.c",
+      "symbol": "recovery_out8",
+      "linkage": "static",
+      "owner": "boot",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/boot/recovery_loader.c:recovery_prepare_failure_menu",
@@ -111636,6 +111762,24 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/fs/block.c:block_range_valid",
+      "kind": "c_function",
+      "source": "src/fs/block.c",
+      "symbol": "block_range_valid",
+      "linkage": "static",
+      "owner": "fs",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
       "id": "c:src/fs/block.c:block_rate",
       "kind": "c_function",
       "source": "src/fs/block.c",
@@ -112079,6 +112223,24 @@
       ],
       "tags": [],
       "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/fs/block.c:block_transfer_bytes",
+      "kind": "c_function",
+      "source": "src/fs/block.c",
+      "symbol": "block_transfer_bytes",
+      "linkage": "static",
+      "owner": "fs",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/fs/block.c:block_unregister",
@@ -114668,6 +114830,42 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/fs/fat12.c:fat12_cluster_lba",
+      "kind": "c_function",
+      "source": "src/fs/fat12.c",
+      "symbol": "fat12_cluster_lba",
+      "linkage": "static",
+      "owner": "fs",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "c:src/fs/fat12.c:fat12_cluster_valid",
+      "kind": "c_function",
+      "source": "src/fs/fat12.c",
+      "symbol": "fat12_cluster_valid",
+      "linkage": "static",
+      "owner": "fs",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
       "id": "c:src/fs/fat12.c:fat12_create_dir_entry",
       "kind": "c_function",
       "source": "src/fs/fat12.c",
@@ -115614,6 +115812,24 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/fs/fat12.c:fat12_total_clusters",
+      "kind": "c_function",
+      "source": "src/fs/fat12.c",
+      "symbol": "fat12_total_clusters",
+      "linkage": "static",
+      "owner": "fs",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
       "id": "c:src/fs/fat12.c:fat12_validate_bpb",
       "kind": "c_function",
       "source": "src/fs/fat12.c",
@@ -115732,12 +115948,45 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "COVERED",
-      "case_ids": [
-        "host:storage:fat32"
-      ],
-      "tags": [],
-      "coverage_mode": "direct"
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "c:src/fs/fat32.c:fat32_cluster_lba",
+      "kind": "c_function",
+      "source": "src/fs/fat32.c",
+      "symbol": "fat32_cluster_lba",
+      "linkage": "static",
+      "owner": "fs",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "c:src/fs/fat32.c:fat32_cluster_valid",
+      "kind": "c_function",
+      "source": "src/fs/fat32.c",
+      "symbol": "fat32_cluster_valid",
+      "linkage": "static",
+      "owner": "fs",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/fs/fat32.c:fat32_create_dir_entry",
@@ -115801,6 +116050,24 @@
       ],
       "tags": [],
       "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/fs/fat32.c:fat32_fat_offset",
+      "kind": "c_function",
+      "source": "src/fs/fat32.c",
+      "symbol": "fat32_fat_offset",
+      "linkage": "static",
+      "owner": "fs",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/fs/fat32.c:fat32_find_free_cluster",
@@ -120392,6 +120659,24 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/fs/storage.c:storage_add_u32",
+      "kind": "c_function",
+      "source": "src/fs/storage.c",
+      "symbol": "storage_add_u32",
+      "linkage": "static",
+      "owner": "fs",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
       "id": "c:src/fs/storage.c:storage_add_volume",
       "kind": "c_function",
       "source": "src/fs/storage.c",
@@ -122002,6 +122287,24 @@
       "coverage_mode": "direct"
     },
     {
+      "id": "c:src/fs/storage.c:storage_mul_u32",
+      "kind": "c_function",
+      "source": "src/fs/storage.c",
+      "symbol": "storage_mul_u32",
+      "linkage": "static",
+      "owner": "fs",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
       "id": "c:src/fs/storage.c:storage_name_to_fat",
       "kind": "c_function",
       "source": "src/fs/storage.c",
@@ -122418,6 +122721,24 @@
       ],
       "tags": [],
       "coverage_mode": "direct"
+    },
+    {
+      "id": "c:src/fs/storage.c:storage_relative_range",
+      "kind": "c_function",
+      "source": "src/fs/storage.c",
+      "symbol": "storage_relative_range",
+      "linkage": "static",
+      "owner": "fs",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
     },
     {
       "id": "c:src/fs/storage.c:storage_release_fat32_chain",
@@ -178643,7 +178964,8 @@
         "storage",
         "block",
         "cache",
-        "negative"
+        "negative",
+        "sto1"
       ]
     },
     {
@@ -178873,7 +179195,8 @@
         "host",
         "storage",
         "fat12",
-        "negative"
+        "negative",
+        "sto1"
       ]
     },
     {
@@ -178920,7 +179243,6 @@
         "api:src/include/fs/fat32.h:fat32_write_file_in_dir",
         "c:src/core/string.c:kmemcpy",
         "c:src/core/string.c:kmemset",
-        "c:src/fs/fat32.c:cluster_to_lba",
         "c:src/fs/fat32.c:fat32_create_dir_entry",
         "c:src/fs/fat32.c:fat32_delete_file",
         "c:src/fs/fat32.c:fat32_delete_file_in_dir",
@@ -179048,7 +179370,8 @@
         "host",
         "storage",
         "file-index",
-        "negative"
+        "negative",
+        "sto1"
       ]
     },
     {
@@ -179168,7 +179491,8 @@
         "host",
         "storage",
         "fs",
-        "negative"
+        "negative",
+        "sto1"
       ]
     },
     {
@@ -179538,7 +179862,8 @@
         "storage",
         "block",
         "fat12",
-        "negative"
+        "negative",
+        "sto1"
       ]
     },
     {

@@ -427,6 +427,15 @@ de status Storage. Os contratos canonicos ficam em
 `docs/05-drivers/drivers.md`, `docs/08-sistema-arquivos/sistema-arquivos.md`,
 `docs/04-kernel/kernel.md` e `docs/12-desktop/desktop.md`.
 
+No STO1, esse contrato preserva as APIs existentes e reforca as pre-condicoes
+de Block, cache, Storage, FAT12, FAT32 e cursores: intervalos de setor, cluster
+e tamanho sao validados antes do I/O, estruturas fora do volume retornam os
+erros canonicos (`ERR_INVALID`, `ERR_DISK`, `ERR_OVERFLOW`, `ERR_MEM`,
+`ERR_STATE` ou `ERR_UNAVAILABLE`) e `last_error`/estatisticas permanecem
+observaveis. O FAT12 cheio nao e formatado automaticamente durante a
+inicializacao; a compatibilidade legada de retorno `-1` das APIs FAT diretas
+continua preservada.
+
 Desde a EP3, `src/include/fs/fs.h` e `src/include/fs/storage.h` expoem cursores
 retomaveis de diretorio, incluindo cluster nas entradas. `fs.h` tambem expoe a
 geracao monotona do volume de boot e renomeacao FAT12 8.3 na propria entrada

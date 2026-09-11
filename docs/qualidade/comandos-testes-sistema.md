@@ -57,6 +57,15 @@ de fixtures devem ser executados antes dos testes que dependem de suas
 imagens. `package-test` e `update-test` executam os self-tests das ferramentas
 de empacotamento e atualizacao.
 
+## STO1 — invariantes de Storage
+
+```text
+make test-sto1-host
+```
+
+O alvo agregado executa Block, cache, FAT12, FAT32, FS e Storage com as
+fixtures host-only diretamente afetadas pelo STO1.
+
 ## TST2 — protocolo e executor QEMU
 
 Testes host-only:

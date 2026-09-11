@@ -8,6 +8,47 @@
 static fat12_fs_t fs;
 static uint8_t boot_sector[512];
 
+static uint32_t fat12_total_clusters(void) {
+    uint32_t total_sectors;
+
+    if (!fs.bpb.sectors_per_cluster) return 0U;
+    total_sectors = fs.bpb.total_sectors ? fs.bpb.total_sectors :
+                    fs.bpb.large_sector_count;
+    if (total_sectors <= fs.data_start) return 0U;
+    return (total_sectors - fs.data_start) / fs.bpb.sectors_per_cluster;
+}
+
+static int fat12_cluster_valid(uint32_t cluster) {
+    uint32_t total_clusters = fat12_total_clusters();
+
+    return cluster >= 2U && total_clusters <= 0xFFFFFFFFU - 2U &&
+           cluster < total_clusters + 2U;
+}
+
+static int fat12_cluster_lba(uint32_t cluster, uint32_t* out_lba) {
+    uint32_t offset;
+
+    if (!out_lba) {
+        LOG_ERROR("FAT12", "Destino nulo ao calcular LBA de cluster");
+        return ERR_NULL;
+    }
+    if (!fat12_cluster_valid(cluster)) {
+        LOG_WARN("FAT12", "Cluster fora da area de dados");
+        return ERR_INVALID;
+    }
+    if (cluster - 2U > 0xFFFFFFFFU / fs.bpb.sectors_per_cluster) {
+        LOG_WARN("FAT12", "Overflow no deslocamento de cluster");
+        return ERR_OVERFLOW;
+    }
+    offset = (cluster - 2U) * fs.bpb.sectors_per_cluster;
+    if (fs.data_start > 0xFFFFFFFFU - offset) {
+        LOG_WARN("FAT12", "Overflow no LBA de dados");
+        return ERR_OVERFLOW;
+    }
+    *out_lba = fs.data_start + offset;
+    return OK;
+}
+
 static void fat12_release(void) {
     if (fs.fat) { kfree(fs.fat); fs.fat = 0; }
     if (fs.root_dir) { kfree(fs.root_dir); fs.root_dir = 0; }
@@ -38,16 +79,18 @@ static int fat12_validate_bpb(void) {
         return ERR_INVALID;
     }
 
-    uint32_t root_sectors = (fs.bpb.root_entries * 32 + 511) / 512;
-    uint32_t data_start = fs.bpb.reserved_sectors +
-        fs.bpb.num_fats * fs.bpb.sectors_per_fat + root_sectors;
+    uint32_t root_bytes = (uint32_t)fs.bpb.root_entries * 32U;
+    uint32_t root_sectors = (root_bytes + 511U) / 512U;
+    uint32_t fat_area = (uint32_t)fs.bpb.num_fats *
+                        fs.bpb.sectors_per_fat;
+    uint32_t data_start = fs.bpb.reserved_sectors + fat_area + root_sectors;
     if (data_start >= total_sectors) return ERR_INVALID;
 
     uint32_t clusters = (total_sectors - data_start) / fs.bpb.sectors_per_cluster;
     if (clusters >= 4085) return ERR_NOT_FOUND;
     if (clusters < 1) return ERR_INVALID;
 
-    uint32_t required_fat_bytes = ((clusters + 2) * 3 + 1) / 2;
+    uint32_t required_fat_bytes = ((clusters + 2U) * 3U + 1U) / 2U;
     if ((uint32_t)fs.bpb.sectors_per_fat * 512 < required_fat_bytes) return ERR_INVALID;
     return OK;
 }
@@ -99,7 +142,9 @@ int fat12_init(void) {
 
     fs.fat_start = fs.bpb.reserved_sectors;
     fs.root_start = fs.fat_start + (fs.bpb.num_fats * fs.bpb.sectors_per_fat);
-    fs.data_start = fs.root_start + ((fs.bpb.root_entries * 32 + fs.bpb.bytes_per_sector - 1) / fs.bpb.bytes_per_sector);
+    fs.data_start = fs.root_start + (((uint32_t)fs.bpb.root_entries * 32U +
+                                      fs.bpb.bytes_per_sector - 1U) /
+                                     fs.bpb.bytes_per_sector);
 
     uint32_t fat_size = fs.bpb.sectors_per_fat * fs.bpb.bytes_per_sector;
     fs.fat = (uint16_t*)kmalloc(fat_size);
@@ -141,36 +186,23 @@ int fat12_init(void) {
         kmemcpy((uint8_t*)fs.root_dir + copied, sector, copy_size);
     }
 
-    int has_free = 0;
-    for (uint32_t i = 0; i < fs.bpb.root_entries; i++) {
-        if (fs.root_dir[i].name[0] == 0x00 ||
-            (uint8_t)fs.root_dir[i].name[0] == 0xE5U) {
-            has_free = 1;
-            break;
-        }
-    }
-
-    if (!has_free) {
-        LOG_INFO("FAT12", "Sistema de arquivos sem formatacao detectado. Formatando...");
-        kmemset(fs.root_dir, 0, root_size);
-        for (uint32_t i = 0; i < root_sectors; i++) {
-            ata_write_sectors(fs.root_start + i, 1, (uint8_t*)fs.root_dir + i * 512);
-        }
-        kmemset(fs.fat, 0, fat_size);
-        for (int i = 0; i < fs.bpb.sectors_per_fat; i++) {
-            ata_write_sectors(fs.fat_start + i, 1, (uint8_t*)fs.fat + i * 512);
-        }
-    }
-
     fs.initialized = 1;
     LOG_INFO("FAT12", "Sistema FAT12 inicializado");
     return OK;
 }
 
 static uint16_t fat12_get_cluster(uint16_t cluster) {
-    uint32_t offset = cluster + (cluster / 2);
+    uint32_t offset;
     uint16_t* fat = fs.fat;
-    uint16_t value = *(uint16_t*)((uint8_t*)fat + offset);
+    uint16_t value;
+
+    if (!fat || !fat12_cluster_valid(cluster)) return FAT12_CLUSTER_BAD;
+    offset = cluster + (cluster / 2U);
+    if (offset + 1U >= (uint32_t)fs.bpb.sectors_per_fat *
+                         fs.bpb.bytes_per_sector) {
+        return FAT12_CLUSTER_BAD;
+    }
+    value = *(uint16_t*)((uint8_t*)fat + offset);
     if (cluster & 1) {
         value >>= 4;
     } else {
@@ -180,16 +212,13 @@ static uint16_t fat12_get_cluster(uint16_t cluster) {
 }
 
 uint32_t fat12_get_free_clusters(void) {
-    uint32_t total_sectors;
     uint32_t total_clusters;
     uint32_t free_clusters = 0;
 
     if (!fs.initialized) return 0;
-    total_sectors = fs.bpb.total_sectors ? fs.bpb.total_sectors :
-                    fs.bpb.large_sector_count;
-    total_clusters = (total_sectors - fs.data_start) /
-                     fs.bpb.sectors_per_cluster;
-    for (uint32_t cluster = 2; cluster < total_clusters + 2U; cluster++) {
+    total_clusters = fat12_total_clusters();
+    if (total_clusters == 0U) return 0U;
+    for (uint32_t cluster = 2U; cluster < total_clusters + 2U; cluster++) {
         if (fat12_get_cluster((uint16_t)cluster) == FAT12_CLUSTER_FREE) {
             free_clusters++;
         }
@@ -198,9 +227,15 @@ uint32_t fat12_get_free_clusters(void) {
 }
 
 static void fat12_set_cluster(uint16_t cluster, uint16_t value) {
-    uint32_t offset = cluster + (cluster / 2);
+    uint32_t offset;
     uint16_t* fat = fs.fat;
-    uint16_t old = *(uint16_t*)((uint8_t*)fat + offset);
+    uint16_t old;
+
+    if (!fat || !fat12_cluster_valid(cluster)) return;
+    offset = cluster + (cluster / 2U);
+    if (offset + 1U >= (uint32_t)fs.bpb.sectors_per_fat *
+                         fs.bpb.bytes_per_sector) return;
+    old = *(uint16_t*)((uint8_t*)fat + offset);
     if (cluster & 1) {
         old = (old & 0x000F) | (value << 4);
     } else {
@@ -433,15 +468,19 @@ static uint16_t fat12_find_free_cluster(void) {
 int fat12_read_file(const char* filename, uint8_t* buffer, uint32_t max_size) {
     fat12_dir_entry_t* entry = fat12_find_entry(filename);
     if (!entry) return -1;
+    if (max_size && !buffer) return -1;
 
     uint32_t bytes_read = 0;
     uint16_t cluster = entry->cluster_low;
     uint32_t file_size = entry->file_size;
     uint32_t chain_steps = 0;
 
-    while (cluster < 0xFF8 && cluster != 0 && bytes_read < max_size &&
+    if (file_size && !fat12_cluster_valid(cluster)) return -1;
+
+    while (fat12_cluster_valid(cluster) && bytes_read < max_size &&
            chain_steps++ < FAT12_CHAIN_LIMIT) {
-        uint32_t data_lba = fs.data_start + (cluster - 2) * fs.bpb.sectors_per_cluster;
+        uint32_t data_lba;
+        if (fat12_cluster_lba(cluster, &data_lba) != OK) return -1;
 
         for (int s = 0; s < fs.bpb.sectors_per_cluster; s++) {
             uint8_t sector[512];
@@ -450,10 +489,11 @@ int fat12_read_file(const char* filename, uint8_t* buffer, uint32_t max_size) {
             }
 
             uint32_t to_copy = fs.bpb.bytes_per_sector;
-            if (bytes_read + to_copy > file_size) {
+            if (bytes_read > file_size) return -1;
+            if (to_copy > file_size - bytes_read) {
                 to_copy = file_size - bytes_read;
             }
-            if (bytes_read + to_copy > max_size) {
+            if (to_copy > max_size - bytes_read) {
                 to_copy = max_size - bytes_read;
             }
 
@@ -722,9 +762,13 @@ static fat12_dir_entry_t* fat12_read_dir_cluster(uint16_t cluster, fat12_dir_ent
     uint16_t c = cluster;
     uint32_t chain_steps = 0;
 
-    while (c >= 2 && c < 0xFF8 && entry_idx < max_entries &&
+    while (fat12_cluster_valid(c) && entry_idx < max_entries &&
            chain_steps++ < FAT12_CHAIN_LIMIT) {
-        uint32_t data_lba = fs.data_start + (c - 2) * fs.bpb.sectors_per_cluster;
+        uint32_t data_lba;
+        if (fat12_cluster_lba(c, &data_lba) != OK) {
+            kfree(cluster_buf);
+            return 0;
+        }
 
         for (int s = 0; s < fs.bpb.sectors_per_cluster; s++) {
             if (ata_read_sectors(data_lba + s, 1, cluster_buf + s * fs.bpb.bytes_per_sector) != 0) {
@@ -772,8 +816,12 @@ static fat12_dir_entry_t* fat12_find_in_dir(uint16_t dir_cluster, const char* fa
     uint32_t chain_steps = 0;
     static fat12_dir_entry_t found;
 
-    while (c >= 2 && c < 0xFF8 && chain_steps++ < FAT12_CHAIN_LIMIT) {
-        uint32_t data_lba = fs.data_start + (c - 2) * fs.bpb.sectors_per_cluster;
+    while (fat12_cluster_valid(c) && chain_steps++ < FAT12_CHAIN_LIMIT) {
+        uint32_t data_lba;
+        if (fat12_cluster_lba(c, &data_lba) != OK) {
+            kfree(cluster_buf);
+            return 0;
+        }
 
         for (int s = 0; s < fs.bpb.sectors_per_cluster; s++) {
             if (ata_read_sectors(data_lba + s, 1, cluster_buf + s * fs.bpb.bytes_per_sector) != 0) {
@@ -1036,18 +1084,18 @@ static int fat12_read_entry_range(fat12_dir_entry_t* entry, uint32_t offset,
     if (cluster_size == 0) return -1;
 
     cluster = entry->cluster_low;
+    if (entry->file_size && !fat12_cluster_valid(cluster)) return -1;
     skip_bytes = offset;
-    while (skip_bytes >= cluster_size && cluster >= 2 &&
-           cluster < FAT12_CLUSTER_RESERVED &&
+    while (skip_bytes >= cluster_size && fat12_cluster_valid(cluster) &&
            chain_steps++ < FAT12_CHAIN_LIMIT) {
         skip_bytes -= cluster_size;
         cluster = fat12_get_cluster(cluster);
     }
 
-    while (cluster >= 2 && cluster < FAT12_CLUSTER_RESERVED &&
+    while (fat12_cluster_valid(cluster) &&
            bytes_read < wanted && chain_steps++ < FAT12_CHAIN_LIMIT) {
-        uint32_t data_lba = fs.data_start +
-            (cluster - 2) * fs.bpb.sectors_per_cluster;
+        uint32_t data_lba;
+        if (fat12_cluster_lba(cluster, &data_lba) != OK) return -1;
 
         for (uint32_t sector_index = 0;
              sector_index < fs.bpb.sectors_per_cluster && bytes_read < wanted;
@@ -1722,10 +1770,13 @@ static int fat12_find_dir_slot(uint16_t dir_cluster, const char encoded[11],
         return ERR_MEM;
     }
     cluster = dir_cluster;
-    while (cluster >= 2U && cluster < FAT12_CLUSTER_END &&
+    while (fat12_cluster_valid(cluster) &&
            steps++ < FAT12_CHAIN_LIMIT) {
-        uint32_t lba = fs.data_start +
-                       (cluster - 2U) * fs.bpb.sectors_per_cluster;
+        uint32_t lba;
+        if (fat12_cluster_lba(cluster, &lba) != OK) {
+            kfree(buffer);
+            return ERR_INVALID;
+        }
         uint32_t entries = cluster_size / sizeof(fat12_dir_entry_t);
 
         for (uint32_t sector = 0; sector < fs.bpb.sectors_per_cluster;
@@ -1780,8 +1831,10 @@ static int fat12_find_dir_slot(uint16_t dir_cluster, const char encoded[11],
 }
 
 static int fat12_write_dir_cluster(uint16_t cluster, const uint8_t* buffer) {
-    uint32_t lba = fs.data_start +
-                   (cluster - 2U) * fs.bpb.sectors_per_cluster;
+    uint32_t lba;
+
+    if (!buffer) return ERR_NULL;
+    if (fat12_cluster_lba(cluster, &lba) != OK) return ERR_INVALID;
 
     for (uint32_t sector = 0; sector < fs.bpb.sectors_per_cluster;
          sector++) {

@@ -67,6 +67,25 @@ static void block_copy_text(char* destination, uint32_t capacity,
                             const char* source);
 static int block_text_equal(const char* left, const char* right);
 
+static int block_range_valid(uint32_t lba, uint32_t count,
+                             uint32_t sector_count) {
+    return count != 0U && lba < sector_count &&
+           count <= sector_count - lba;
+}
+
+static int block_transfer_bytes(uint32_t sector_count, uint32_t* out_bytes) {
+    if (!out_bytes) {
+        LOG_ERROR("BLOCK", "Destino nulo ao calcular transferencia");
+        return ERR_NULL;
+    }
+    if (!sector_count || sector_count > 0xFFFFFFFFU / BLOCK_SECTOR_SIZE) {
+        LOG_WARN("BLOCK", "Tamanho de transferencia excede o limite");
+        return ERR_OVERFLOW;
+    }
+    *out_bytes = sector_count * BLOCK_SECTOR_SIZE;
+    return OK;
+}
+
 static void block_failpoint_clear(void) {
     kmemset(&block_failpoint, 0, sizeof(block_failpoint));
 }
@@ -232,17 +251,16 @@ static int block_validate_bio(const block_device_t* device,
         LOG_ERROR("BLK", "Quantidade de setores excede o limite do dispositivo");
         return ERR_OVERFLOW;
     }
-    if (bio->sector_count > 0xFFFFFFFFU / device->sector_size) {
+    if (block_transfer_bytes(bio->sector_count, &transfer_bytes) != OK) {
         LOG_ERROR("BLK", "Tamanho de buffer excede o limite de bloco");
         return ERR_OVERFLOW;
     }
-    transfer_bytes = bio->sector_count * device->sector_size;
     if (bio->buffer_bytes < transfer_bytes) {
         LOG_ERROR("BLK", "Buffer de BIO menor que a transferencia");
         return ERR_INVALID;
     }
-    if (bio->lba >= device->sector_count ||
-        bio->sector_count > device->sector_count - bio->lba) {
+    if (!block_range_valid(bio->lba, bio->sector_count,
+                           device->sector_count)) {
         LOG_ERROR("BLK", "LBA de BIO fora dos limites");
         return ERR_DISK;
     }
@@ -415,8 +433,10 @@ static int block_can_merge(const block_queue_entry_t* left,
         left_bio->sector_count > 0xFFFFFFFFU / BLOCK_SECTOR_SIZE) {
         return 0;
     }
-    if (left_bio->lba + left_bio->sector_count != right_bio->lba) return 0;
+    if (left_bio->sector_count > 0xFFFFFFFFU - left_bio->lba ||
+        left_bio->lba + left_bio->sector_count != right_bio->lba) return 0;
     left_bytes = left_bio->sector_count * BLOCK_SECTOR_SIZE;
+    if (left_bytes > left_bio->buffer_bytes || !right_bio->buffer) return 0;
     if ((uint8_t*)left_bio->buffer + left_bytes != right_bio->buffer) {
         return 0;
     }
@@ -430,11 +450,34 @@ static int block_can_merge(const block_queue_entry_t* left,
 
 static int block_driver_submit(block_device_t* device,
                                block_request_t* request) {
+    uint32_t transfer_bytes;
     int result;
 
     if (!device || !request) {
         LOG_ERROR("BLK", "Dispositivo ou requisicao fisica nulos");
         return ERR_NULL;
+    }
+    if ((request->flags & ~BLOCK_BIO_FLAGS_SUPPORTED) != 0U ||
+        request->operation > BLOCK_OPERATION_FLUSH) {
+        LOG_ERROR("BLK", "Requisicao fisica invalida antes do driver");
+        return ERR_INVALID;
+    }
+    if (request->operation == BLOCK_OPERATION_FLUSH) {
+        if (request->lba || request->sector_count || request->buffer ||
+            request->buffer_bytes || request->flags != 0U ||
+            !(device->capabilities & BLOCK_DEVICE_CAP_FLUSH)) {
+            LOG_ERROR("BLK", "Requisicao de flush invalida antes do driver");
+            return ERR_INVALID;
+        }
+    } else {
+        if (block_transfer_bytes(request->sector_count, &transfer_bytes) != OK ||
+            !request->buffer || request->buffer_bytes < transfer_bytes ||
+            request->sector_count > device->max_transfer_sectors ||
+            !block_range_valid(request->lba, request->sector_count,
+                               device->sector_count)) {
+            LOG_ERROR("BLK", "Transferencia invalida antes do driver");
+            return ERR_INVALID;
+        }
     }
     request->status = ERR_STATE;
     request->completed_sectors = 0U;

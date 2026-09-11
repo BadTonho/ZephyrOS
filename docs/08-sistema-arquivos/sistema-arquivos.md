@@ -162,6 +162,22 @@ limite da particao. A montagem automatica aceita exatamente um FAT32 com label
 `ZEPHYROS`; volumes ambiguos nao sao montados. FAT16 e formatos desconhecidos
 retornam `ERR_UNAVAILABLE`.
 
+### Invariantes STO1
+
+Block Layer e Storage validam LBA relativo e absoluto, quantidade de setores,
+tamanho de buffer, capacidade do volume e conversoes de cluster antes de
+chamar o driver. BPB, MBR, FAT, area de dados e cadeias sao rejeitados quando
+apontam para fora do volume, sobrepoem particoes, formam ciclos ou excedem a
+capacidade. Falhas preservam `last_error`, contadores e o estado publicado;
+uma operacao de dispositivo nunca e marcada como concluida sem confirmar os
+setores transferidos.
+
+FAT12 continua somente leitura no caminho Storage e nao e formatado durante a
+inicializacao. Um diretorio raiz cheio e um volume valido para inspecao, e a
+ausencia de uma entrada livre retorna o limite previsto pela API. O cache,
+filas, buffers e cursores devem terminar sem referencias residuais quando uma
+validacao ou leitura falha.
+
 O backend FAT32 usa buffers setoriais fixos, clusters de 4 setores na imagem
 hibrida de 256 MiB, nomes longos LFN em UTF-16LE,
 aliases 8.3, comparacao ASCII sem diferenciar maiusculas/minusculas e
