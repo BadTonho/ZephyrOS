@@ -184818,6 +184818,7 @@
         "c:src/fs/vfs_path.c:vfs_unmount_volume"
       ],
       "tags": [
+        "sto7",
         "qemu",
         "smoke",
         "tst4",
@@ -186256,6 +186257,7 @@
         "c:src/wm/wm.c:wm_set_active"
       ],
       "tags": [
+        "sto7",
         "qemu",
         "smoke",
         "tst5",
@@ -187145,6 +187147,7 @@
       "status": "AUTOMATED",
       "surface_ids": [],
       "tags": [
+        "sto7",
         "qemu",
         "smoke",
         "tst5",
@@ -187558,6 +187561,7 @@
         "c:src/thread/thread.c:thread_yield"
       ],
       "tags": [
+        "sto7",
         "qemu",
         "smoke",
         "tst5",
@@ -187634,6 +187638,7 @@
       "status": "AUTOMATED",
       "surface_ids": [],
       "tags": [
+        "sto7",
         "qemu",
         "smoke",
         "tst5",
@@ -188737,6 +188742,7 @@
         "c:src/wm/wm.c:wm_set_active"
       ],
       "tags": [
+        "sto7",
         "qemu",
         "smoke",
         "tst5",
@@ -189182,6 +189188,7 @@
         "c:src/shell/shell_pipeline.c:shell_pipeline_write"
       ],
       "tags": [
+        "sto7",
         "qemu",
         "smoke",
         "tst5",
@@ -189410,6 +189417,7 @@
         "c:src/updater/updater.c:updater_is_open"
       ],
       "tags": [
+        "sto7",
         "qemu",
         "smoke",
         "tst5",
@@ -189486,6 +189494,7 @@
       "status": "AUTOMATED",
       "surface_ids": [],
       "tags": [
+        "sto7",
         "qemu",
         "tst6",
         "fault",
@@ -189519,6 +189528,7 @@
       "status": "AUTOMATED",
       "surface_ids": [],
       "tags": [
+        "sto7",
         "qemu",
         "tst6",
         "fault",
@@ -189655,6 +189665,7 @@
         "c:src/memory/slab.c:slab_validate_slab"
       ],
       "tags": [
+        "sto7",
         "qemu",
         "tst6",
         "fault",
@@ -189692,6 +189703,7 @@
       "status": "AUTOMATED",
       "surface_ids": [],
       "tags": [
+        "sto7",
         "qemu",
         "tst6",
         "fault",
@@ -189811,6 +189823,7 @@
       "status": "AUTOMATED",
       "surface_ids": [],
       "tags": [
+        "sto7",
         "qemu",
         "tst6",
         "fault",
@@ -189844,6 +189857,7 @@
       "status": "AUTOMATED",
       "surface_ids": [],
       "tags": [
+        "sto7",
         "qemu",
         "tst6",
         "fault",
@@ -189970,6 +189984,7 @@
         "c:src/core/update_runtime.c:update_runtime_test_fail_after"
       ],
       "tags": [
+        "sto7",
         "qemu",
         "tst6",
         "fault",
@@ -190006,6 +190021,7 @@
       "status": "AUTOMATED",
       "surface_ids": [],
       "tags": [
+        "sto7",
         "qemu",
         "tst6",
         "matrix",
@@ -190686,6 +190702,7 @@
         "c:src/thread/thread.c:thread_scheduler_tick"
       ],
       "tags": [
+        "sto7",
         "qemu",
         "tst6",
         "matrix",
@@ -190722,6 +190739,7 @@
       "status": "AUTOMATED",
       "surface_ids": [],
       "tags": [
+        "sto7",
         "qemu",
         "tst6",
         "matrix",
@@ -190756,6 +190774,7 @@
       "status": "AUTOMATED",
       "surface_ids": [],
       "tags": [
+        "sto7",
         "qemu",
         "tst6",
         "matrix",
@@ -190792,6 +190811,7 @@
       "status": "AUTOMATED",
       "surface_ids": [],
       "tags": [
+        "sto7",
         "qemu",
         "tst6",
         "matrix",
@@ -190829,6 +190849,7 @@
       "status": "AUTOMATED",
       "surface_ids": [],
       "tags": [
+        "sto7",
         "qemu",
         "tst6",
         "matrix",
@@ -190925,6 +190946,7 @@
         "c:src/drivers/usb_hid.c:usb_hid_validate_state"
       ],
       "tags": [
+        "sto7",
         "qemu",
         "tst6",
         "matrix",
@@ -190963,6 +190985,7 @@
       "status": "AUTOMATED",
       "surface_ids": [],
       "tags": [
+        "sto7",
         "qemu",
         "tst6",
         "matrix",
@@ -190998,6 +191021,7 @@
       "cleanup": "sessao QEMU encerrada e artefatos preservados",
       "surface_ids": [],
       "tags": [
+        "sto7",
         "qemu",
         "sec6",
         "adversarial",
@@ -191034,6 +191058,7 @@
       "status": "AUTOMATED",
       "surface_ids": [],
       "tags": [
+        "sto7",
         "qemu",
         "tst6",
         "stress",
@@ -191490,6 +191515,7 @@
         "c:src/thread/thread.c:thread_yield"
       ],
       "tags": [
+        "sto7",
         "qemu",
         "tst6",
         "stress",
@@ -192178,6 +192204,7 @@
         "c:src/thread/thread.c:thread_scheduler_tick"
       ],
       "tags": [
+        "sto7",
         "qemu",
         "tst6",
         "stress",
@@ -193040,6 +193067,7 @@
         "c:src/thread/thread.c:thread_scheduler_tick"
       ],
       "tags": [
+        "sto7",
         "qemu",
         "tst6",
         "stress",

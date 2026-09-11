@@ -137,6 +137,29 @@ recuperacao idempotente, estados ambiguos preservados, limite de duas
 tentativas, rollback ao slot anterior e ausencia de residuos. A validacao
 QEMU depende das fixtures assinadas e das chaves externas de distribuicao.
 
+## STO7 - matriz adversarial final
+
+```text
+make test-sto7-host
+make catalog-test
+make test-sto7-qemu STO7_QEMU_WORKERS=4 STO7_QEMU_SEED=7007
+```
+
+O agregado reutiliza os casos TST4, TST5 e TST6 marcados com `sto7`, sem
+duplicar IDs. A matriz cobre Storage/VFS, FAT12/FAT32, USB MSC, falhas de
+recursos, cancelamento, reboot, poweroff, atualização, rollback e recuperação.
+O runner paralelo grava os artefatos em `build/test-results/sto7/`.
+
+No Ryzen 5 3600, seis workers podem ser usados após a validação inicial:
+
+```text
+make test-sto7-qemu STO7_QEMU_WORKERS=6 STO7_QEMU_SEED=7007
+```
+
+O alvo não gera fixtures assinadas. Se uma fixture externa ausente exigir
+chave privada, a execução deve ser interrompida e a chave fornecida pelo
+operador; nenhuma fixture insegura será criada como substituição.
+
 ## TST2 - protocolo e executor QEMU
 
 Testes host-only:

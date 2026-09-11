@@ -19,6 +19,12 @@
       "case_id": "qemu:tst6:fault:recovery",
       "condition": "failpoint one-shot retorna erro esperado e a operacao posterior passa",
       "origin": "docs/qualidade/registro-validacoes.md:TST6 recovery"
+    },
+    {
+      "id": "sto7-adversarial-storage",
+      "case_id": "qemu:tst6:stress:storage",
+      "condition": "matriz adversarial de Storage e VFS termina sem estado residual",
+      "origin": "docs/roadmaps/20-vfs-storage-e-atualizacao-v1.0.md:STO7"
     }
   ]
 }

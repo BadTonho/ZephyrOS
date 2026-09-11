@@ -2120,6 +2120,29 @@ make run-system-update-matrix
 make test-tst6-qemu-fault-recovery
 ```
 
+## STO7 - matriz adversarial final
+
+O STO7 reutiliza casos QEMU existentes de TST4, TST5 e TST6 por meio da tag
+`sto7`. A execução paralela usa snapshots independentes, seed determinística,
+artefatos exclusivos e encerra processos descendentes em timeout:
+
+```text
+make test-sto7-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+make catalog-test
+make test-sto7-qemu STO7_QEMU_WORKERS=4 STO7_QEMU_SEED=7007
+```
+
+Para o Ryzen 5 3600:
+
+```text
+make test-sto7-qemu STO7_QEMU_WORKERS=6 STO7_QEMU_SEED=7007
+```
+
+Os resultados ficam em `build/test-results/sto7/`. O alvo não executa
+`system-fixtures` nem pede chave privada. Caso um caso já existente fique
+bloqueado por fixture assinada ausente, preserve o diagnóstico e solicite a
+chave externa ao operador.
+
 ## Spinlock host-only
 
 O alvo `test-spinlock-host` executa uma fixture nativa que inicializa, adquire

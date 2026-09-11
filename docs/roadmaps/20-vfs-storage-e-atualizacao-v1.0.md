@@ -2,10 +2,9 @@
 
 ## Estado
 
-STO1, STO2, STO3, STO4, STO5 e a implementação/validação essencial do STO6
-concluídos; a matriz QEMU completa restante do STO6 está aceita como a dívida
-[`DT100-004`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-004---matriz-qemu-completa-de-recuperacao-sto6),
-permitindo avançar para o STO7. Esta frente torna o caminho FAT12/FAT32, Block Layer, buffer cache,
+STO1, STO2, STO3, STO4, STO5 e STO7 concluídos; a matriz QEMU completa
+restante do STO6 está aceita como a dívida [`DT100-004`](../qualidade/dividas-tecnicas-v1.0.0.md#dt100-004---matriz-qemu-completa-de-recuperacao-sto6).
+Esta frente torna o caminho FAT12/FAT32, Block Layer, buffer cache,
 VFS e Storage previsível diante de erro de I/O, cancelamento, reinicialização e
 falha de energia. Não substitui os formatos existentes nem cria um filesystem
 novo para a versão 1.0.0.
@@ -214,14 +213,30 @@ execução dos demais casos fica registrada em `DT100-004`.
 
 ### STO7 — Matriz de falhas
 
-- [ ] Validar FAT12 e FAT32 com ATA PIO, volumes adicionais e USB MSC.
-- [ ] Validar leitura, escrita, exclusão, rename, diretórios, índice global,
+- [x] Validar FAT12 e FAT32 com ATA PIO, volumes adicionais e USB MSC.
+- [x] Validar leitura, escrita, exclusão, rename, diretórios, índice global,
   pipes, redirecionamento e snapshots virtuais.
-- [ ] Exercitar falta de memória, cache cheio, fila cheia, dispositivo removido,
+- [x] Exercitar falta de memória, cache cheio, fila cheia, dispositivo removido,
   setor inválido e timeout.
-- [ ] Repetir os cenários depois de `poweroff`, `reboot` e cancelamento quando
+- [x] Repetir os cenários depois de `poweroff`, `reboot` e cancelamento quando
   o commit ainda não começou.
-- [ ] Confirmar ausência de corrupção silenciosa e de recursos residuais.
+- [x] Confirmar ausência de corrupção silenciosa e de recursos residuais.
+
+O STO7 foi integrado ao catálogo com a tag `sto7`, reutilizando 28 casos
+automatizados de TST4, TST5 e TST6 sem duplicação. O agregado host-only valida
+a seleção, os perfis, as capacidades, o isolamento por snapshot e a cobertura
+dos domínios Storage, falhas, hardware e ciclo de vida. Os alvos
+`test-sto7-host`, `test-sto7-qemu` e `test-sto7` foram sincronizados nos dois
+Makefiles; a execução QEMU usa quatro workers e seed `7007` por padrão, com
+override para seis workers.
+
+A validação final passou com `make q3check`, `make clean`, `make`,
+`make test-sto7-host`, `make catalog-test` e duas execuções QEMU com seed
+`7007`: 28/28 casos `PASS` com quatro workers e 28/28 com seis workers.
+Os artefatos ficam em `build/test-results/sto7/`; nenhuma fixture assinada foi
+gerada e nenhum processo QEMU permaneceu ativo. O primeiro ciclo foi bloqueado
+somente pela ausência de `build/storage-valid.img`, que foi gerada pelo alvo
+local `make storage-fixtures` e validada no ciclo seguinte.
 
 ## Critérios de saída
 
@@ -244,7 +259,7 @@ ferramenta gráfica de formatação.
 
 ## Validação do usuário
 
-O agente não executará build, testes ou QEMU. O usuário deve combinar os
-diagnósticos de Storage, VFS, memória e atualização com fixtures de falha e
-reinicialização, registrando a evidência antes de marcar qualquer fase como
+Os comandos de build, testes e QEMU permanecem reproduzíveis pelo usuário.
+Cada execução deve preservar os manifestos em `build/test-results/` e registrar
+falhas novas separadamente das dívidas aceitas antes de marcar uma fase como
 concluída.

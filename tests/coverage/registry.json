@@ -38,6 +38,68 @@
         "STOPPED"
       ],
       "artifact_schema": "zephyros-qemu-parallel-result-v1"
+    },
+    "sto7_adversarial": {
+      "case_ids": [
+        "qemu:tst4:storage-vfs",
+        "qemu:tst5:apps",
+        "qemu:tst5:poweroff",
+        "qemu:tst5:processes",
+        "qemu:tst5:reboot",
+        "qemu:tst5:shell",
+        "qemu:tst5:storage",
+        "qemu:tst5:update-recovery",
+        "qemu:tst6:fault:block",
+        "qemu:tst6:fault:block-cache",
+        "qemu:tst6:fault:memory",
+        "qemu:tst6:fault:network",
+        "qemu:tst6:fault:process",
+        "qemu:tst6:fault:recovery",
+        "qemu:tst6:fault:update",
+        "qemu:tst6:matrix:audio",
+        "qemu:tst6:matrix:baseline",
+        "qemu:tst6:matrix:display",
+        "qemu:tst6:matrix:minimal",
+        "qemu:tst6:matrix:network",
+        "qemu:tst6:matrix:pci",
+        "qemu:tst6:matrix:usb-hid",
+        "qemu:tst6:matrix:usb-storage",
+        "qemu:tst6:sec6:no-vesa",
+        "qemu:tst6:stress:apps",
+        "qemu:tst6:stress:kernel",
+        "qemu:tst6:stress:network",
+        "qemu:tst6:stress:storage"
+      ],
+      "reused_tags": [
+        "tst4",
+        "tst5",
+        "tst6",
+        "fault",
+        "matrix",
+        "stress",
+        "storage",
+        "recovery"
+      ],
+      "profiles": [
+        "baseline",
+        "minimal",
+        "network",
+        "usb-hid",
+        "usb-storage",
+        "audio",
+        "display",
+        "pci",
+        "no-vesa"
+      ],
+      "workers_default": 4,
+      "seed_default": 7007,
+      "statuses": [
+        "PASS",
+        "FAIL",
+        "BLOCKED",
+        "STOPPED"
+      ],
+      "artifact_schema": "zephyros-qemu-parallel-result-v1"
     }
   },
   "entries": [

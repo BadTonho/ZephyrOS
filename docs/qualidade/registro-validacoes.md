@@ -7,6 +7,28 @@ real. Os roadmaps mantêm apenas o estado e o link para a entrada correspondente
 Não registrar chaves privadas, senhas, tokens, caminhos pessoais ou outros
 segredos.
 
+## 2026-09-11 - STO7: matriz adversarial final
+
+- Implementação: a tag `sto7` foi adicionada a 28 casos QEMU automatizados de
+  TST4, TST5 e TST6, sem duplicar IDs. `Makefile` e `Makefile.linux` passaram a
+  expor `test-sto7-host`, `test-sto7-qemu` e `test-sto7`, com quatro workers e
+  seed `7007` por padrão e override para seis workers. O teste host-only valida
+  seleção, isolamento por snapshot, perfis, capacidades, seeds e representantes
+  de Storage, falhas, hardware e ciclo de vida.
+- Evidência: passaram `make q3check`, `make clean`, `make`,
+  `make test-sto7-host` e `make catalog-test` (7.612 superfícies e 180 casos).
+  A execução QEMU com quatro workers passou 28/28 no run
+  `qpp-20260911T222140Z-2964`; a execução com seis workers passou 28/28 no run
+  `qpp-20260911T222826Z-29404`, ambos com seed `7007`. Nenhum processo QEMU
+  ficou residual.
+- Pré-condição: o primeiro ciclo registrou `BLOCKED` somente porque
+  `build/storage-valid.img` não existia após `make clean`. A fixture foi gerada
+  por `make storage-fixtures` sem chave privada, e o ciclo seguinte passou sem
+  falhas. Nenhuma fixture assinada foi regenerada; `DT100-003` e `DT100-004`
+  continuam separadas.
+- Estado: STO7 `PASS`; a matriz QEMU completa restante do STO6 continua aceita
+  como `DT100-004`.
+
 ## 2026-09-11 - STO5: atualizacao segura do sistema
 
 - Implementacao: os verificadores ZUPD, runtime, ZUM e ZSYS passaram a usar a

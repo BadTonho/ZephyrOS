@@ -41,6 +41,8 @@ QEMU_PARALLEL_ARGS ?= --profile smoke
 QEMU_PARALLEL_SOAK_ARGS ?=
 SEC6_QEMU_WORKERS ?= 4
 SEC6_QEMU_SEED ?= 606
+STO7_QEMU_WORKERS ?= 4
+STO7_QEMU_SEED ?= 7007
 COVERAGE_BUILD_DIR ?= build-coverage
 ASSEMBLY_RUN_ID ?= tst7-assembly-1
 ASSEMBLY_TRACE_RUN_ID ?= tst7-assembly-trace-1
@@ -1559,6 +1561,12 @@ test-sec6-qemu: $(OS_IMG) tools\qemu_parallel_runner.py tools\qemu_test_runner.p
 
 test-sec6: test-sec6-host test-sec6-qemu
 
+test-sto7-qemu: $(OS_IMG) tools\qemu_parallel_runner.py tools\qemu_test_runner.py tests\catalog.json
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	python tools\qemu_parallel_runner.py parallel --workers "$(STO7_QEMU_WORKERS)" --seed "$(STO7_QEMU_SEED)" --image "$(OS_IMG)" --catalog tests\catalog.json --results "$(BUILD_DIR)\test-results\sto7" --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --tag sto7
+
+test-sto7: test-sto7-host test-sto7-qemu
+
 test-qemu-soak-parallel: $(OS_IMG) tools\qemu_parallel_runner.py tools\qemu_test_runner.py tests\catalog.json
 	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
 	python tools\qemu_parallel_runner.py soak --workers "$(QEMU_PARALLEL_WORKERS)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" $(QEMU_PARALLEL_SOAK_ARGS)
@@ -1903,6 +1911,9 @@ test-sto4-host: test-fs-host test-storage-host test-storage-fat32-host test-shel
 test-sto5-host: test-update-host test-update-runtime-host test-update-remote-runtime-host test-update-remote-host test-update-system-slots-host test-update-remote-system-host test-update-remote-github-host test-update-remote-release-host test-update-system-host test-shell-commands-packages-host test-shell-diagnostics-host test-updater-host test-state-host
 
 test-sto6-host: test-update-host test-update-runtime-host test-update-system-slots-host test-shell-commands-packages-host test-shell-diagnostics-host test-updater-host test-state-host test-recovery-runtime-host test-recovery-menu-host test-recovery-loader-host
+
+test-sto7-host: test-sto1-host test-sto2-host test-sto3-host test-sto4-host test-sto5-host test-sto6-host tools\qemu_parallel_runner.py tools\qemu_test_runner.py tests\unit\test_sto7_matrix.py tests\catalog.json tests\coverage\registry.json
+	python -m unittest tests.unit.test_sto7_matrix
 
 test-vfs-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_vfs_host.c tests\catalog.json src\fs\vfs.c src\fs\permissions.c src\process\credentials.c src\include\fs\vfs.h src\include\fs\permissions.h src\include\process\credentials.h src\include\process\resource.h
 	python tools\core_host_runner.py --case host:storage:vfs --cc "$(HOST_CC)"
@@ -2256,7 +2267,7 @@ clean:
 .PHONY: kernel-elf
 .PHONY: test-assembly-qemu test-assembly-trace-qemu test-assembly-boot-trace-qemu test-assembly-recovery-trace-qemu
 .PHONY: test-qemu-parallel test-qemu-soak-parallel test-sec6-host test-sec6-qemu test-sec6
-.PHONY: test-sto1-host test-sto2-host test-sto3-host test-sto4-host test-sto5-host test-sto6-host
+.PHONY: test-sto1-host test-sto2-host test-sto3-host test-sto4-host test-sto5-host test-sto6-host test-sto7-host test-sto7-qemu test-sto7
 .PHONY: test-tst4-qemu-paging-vma test-tst4-qemu-execution test-tst4-qemu-storage-vfs test-tst4-qemu-network test-tst4-qemu-platform
 .PHONY: test-tst5-host test-tst5-qemu-shell test-tst5-qemu-input test-tst5-qemu-apps test-tst5-qemu-processes test-tst5-qemu-storage test-tst5-qemu-network test-tst5-qemu-update-recovery test-tst5-qemu-reboot test-tst5-qemu-poweroff
 .PHONY: test-krn6-qemu-diagnostics
