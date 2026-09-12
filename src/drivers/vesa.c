@@ -12,6 +12,8 @@ extern uint32_t* vesa_host_framebuffer(uint32_t address);
 #endif
 
 #define VESA_METRICS_MAX_VALUE 0xFFFFFFFFU
+#define VESA_BYTES_PER_PIXEL_24 3U
+#define VESA_BYTES_PER_PIXEL_32 4U
 
 static vesa_mode_t current_mode;
 static uint8_t* backbuffer = NULL;
@@ -27,6 +29,11 @@ static uint32_t clip_x;
 static uint32_t clip_y;
 static uint32_t clip_width;
 static uint32_t clip_height;
+
+static uint32_t vesa_bytes_per_pixel(uint32_t bpp) {
+    return bpp == VESA_BPP_24 ? VESA_BYTES_PER_PIXEL_24 :
+           bpp == VESA_BPP_32 ? VESA_BYTES_PER_PIXEL_32 : 0U;
+}
 
 static int vesa_point_in_clip(uint32_t x, uint32_t y) {
     if (!clip_enabled) return 1;
@@ -177,9 +184,22 @@ void vesa_init(uint32_t boot_info_addr) {
         return;
     }
 
+    uint32_t bytes_per_pixel = vesa_bytes_per_pixel(boot->bpp);
+    uint32_t minimum_pitch;
+
     if (!boot->framebuffer_addr || !boot->width || !boot->height ||
-        !boot->pitch || (boot->bpp != 24 && boot->bpp != 32)) {
+        !boot->pitch || !bytes_per_pixel) {
         LOG_ERROR("VESA", "Parametros de framebuffer invalidos");
+        return;
+    }
+    if (boot->width > VESA_METRICS_MAX_VALUE / bytes_per_pixel) {
+        LOG_ERROR("VESA", "Largura de framebuffer excede o limite");
+        return;
+    }
+    minimum_pitch = boot->width * bytes_per_pixel;
+    if (boot->pitch < minimum_pitch ||
+        boot->height > VESA_METRICS_MAX_VALUE / boot->pitch) {
+        LOG_ERROR("VESA", "Geometria de framebuffer invalida");
         return;
     }
 
@@ -236,6 +256,12 @@ void vesa_disable(void) {
         backbuffer = NULL;
     }
     vesa_reset_clip_rect();
+    frame_depth = 0U;
+    frame_dirty = 0U;
+    dirty_x = 0U;
+    dirty_y = 0U;
+    dirty_width = 0U;
+    dirty_height = 0U;
     current_mode.initialized = 0;
     LOG_WARN("VESA", "VESA desabilitado; usando fallback VGA");
 }
@@ -258,7 +284,14 @@ static void vesa_copy_region(uint32_t x, uint32_t y, uint32_t w, uint32_t h) {
     if (w > current_mode.width - x) w = current_mode.width - x;
     if (h > current_mode.height - y) h = current_mode.height - y;
 
-    bytes_per_pixel = current_mode.bpp == VESA_BPP_24 ? 3 : 4;
+    bytes_per_pixel = vesa_bytes_per_pixel(current_mode.bpp);
+    if (!bytes_per_pixel || w > VESA_METRICS_MAX_VALUE / bytes_per_pixel ||
+        h > VESA_METRICS_MAX_VALUE / (w * bytes_per_pixel) ||
+        y > VESA_METRICS_MAX_VALUE / current_mode.pitch ||
+        x > VESA_METRICS_MAX_VALUE / bytes_per_pixel) {
+        LOG_ERROR("VESA", "Regiao de apresentacao excede o limite");
+        return;
+    }
     row_bytes = w * bytes_per_pixel;
     copy_bytes = row_bytes * h;
     source = backbuffer + y * current_mode.pitch + x * bytes_per_pixel;
@@ -577,6 +610,7 @@ void vesa_fill_circle(int cx, int cy, int r, vesa_color_t color) {
 }
 
 void vesa_draw_bitmap(int x, int y, const uint8_t* bitmap, uint32_t w, uint32_t h, vesa_color_t color) {
+    if (!bitmap || !w || !h || w > VESA_METRICS_MAX_VALUE / h) return;
     for (uint32_t row = 0; row < h; row++) {
         for (uint32_t col = 0; col < w; col++) {
             uint32_t byte_idx = (row * w + col) / 8;
@@ -607,6 +641,8 @@ void vesa_draw_char(int x, int y, char c, vesa_color_t color, uint32_t scale) {
 
 void vesa_draw_string(int x, int y, const char* str, vesa_color_t color, uint32_t scale) {
     uint32_t offset = 0;
+
+    if (!str) return;
     while (*str) {
         vesa_draw_char(x + offset, y, *str, color, scale);
         offset += FONT_WIDTH * scale;

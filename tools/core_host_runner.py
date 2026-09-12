@@ -892,6 +892,7 @@ KERNEL_BINARY = ROOT / "build" / "tests" / "test_kernel_host.exe"
 KERNEL_SOURCE_FILES = (
     ROOT / "tests" / "unit" / "test_kernel_host.c",
     ROOT / "src" / "kernel" / "kernel.c",
+    ROOT / "src" / "drivers" / "driver_lifecycle.c",
     ROOT / "src" / "core" / "service_supervisor.c",
 )
 PCI_RESULT_DIR = ROOT / "build" / "test-results" / "pci-host"

@@ -10,6 +10,10 @@ static ac97_device_t ac97_dev;
 static ac97_stream_t output_stream;
 static uint8_t ac97_playing = 0;
 
+#define AC97_SAMPLE_RATE_MIN 8000U
+#define AC97_SAMPLE_RATE_MAX 48000U
+#define AC97_CHANNELS_MAX 2U
+
 #ifdef ZEPHYROS_HOST_TEST
 extern void ac97_host_outb(uint16_t port, uint8_t value);
 extern uint8_t ac97_host_inb(uint16_t port);
@@ -115,6 +119,7 @@ static uint32_t ac97_get_sample_rate(void) {
 
 void ac97_init(void) {
     LOG_INFO("AC97", "Inicializando controlador de audio");
+    ac97_stop();
     ac97_dev.initialized = 0;
 
     pci_device_t* pci = pci_get_device(0x04, 0x01);
@@ -125,6 +130,10 @@ void ac97_init(void) {
 
     ac97_dev.io_base = pci->bar0 & 0xFFFE;
     ac97_dev.ctrl_base = pci->bar1 & 0xFFFE;
+    if (!ac97_dev.io_base || !ac97_dev.ctrl_base) {
+        LOG_ERROR("AC97", "Barramentos I/O do AC97 invalidos");
+        return;
+    }
     ac97_dev.irq = pci->irq;
     ac97_dev.slot = pci->device;
     ac97_dev.codec_type = 0;
@@ -160,6 +169,7 @@ void ac97_init(void) {
 
     if (idt_register_handler(ac97_dev.irq, (isr_handler_t)ac97_handler) != OK) {
         LOG_ERROR("AC97", "Falha ao registrar IRQ de audio");
+        ac97_stop();
         ac97_dev.initialized = 0;
         return;
     }
@@ -171,13 +181,19 @@ void ac97_play(const uint8_t* data, uint32_t size, uint32_t sample_rate, uint8_t
     uint32_t sample_count;
     uint32_t allocation_size;
 
-    (void)channels;
     if (!ac97_dev.initialized) {
         LOG_WARN("AC97", "Reproducao solicitada sem dispositivo inicializado");
         return;
     }
     if (!data || size == 0) {
         LOG_ERROR("AC97", "Buffer de audio invalido");
+        return;
+    }
+
+    if (sample_rate < AC97_SAMPLE_RATE_MIN ||
+        sample_rate > AC97_SAMPLE_RATE_MAX || !channels ||
+        channels > AC97_CHANNELS_MAX || (bits != 8U && bits != 16U)) {
+        LOG_ERROR("AC97", "Formato de audio invalido");
         return;
     }
 
@@ -221,13 +237,12 @@ void ac97_play(const uint8_t* data, uint32_t size, uint32_t sample_rate, uint8_t
 }
 
 void ac97_stop(void) {
-    if (!ac97_dev.initialized) return;
-
     ac97_playing = 0;
-
-    uint16_t cr = inw(ac97_dev.io_base + AC97_PO_REG_PCR);
-    cr &= ~AC97_PO_DMA_EN;
-    outw(ac97_dev.io_base + AC97_PO_REG_PCR, cr);
+    if (ac97_dev.initialized) {
+        uint16_t cr = inw(ac97_dev.io_base + AC97_PO_REG_PCR);
+        cr &= ~AC97_PO_DMA_EN;
+        outw(ac97_dev.io_base + AC97_PO_REG_PCR, cr);
+    }
 
     if (output_stream.buffer) {
         kfree(output_stream.buffer);

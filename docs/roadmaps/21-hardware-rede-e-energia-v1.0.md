@@ -2,8 +2,9 @@
 
 ## Estado
 
-Status por etapa: HW1 CONCLUIDO; HW2 CONCLUIDO. Os sete perfis QEMU estao
-versionados, testados e reproduziveis; hardware fisico permanece `PENDING`.
+Status por etapa: HW1 CONCLUIDO; HW2 CONCLUIDO; HW3 CONCLUIDO. Os sete perfis
+QEMU estao versionados, testados e reproduziveis;
+hardware fisico permanece `PENDING`.
 
 Planejado. Esta frente define o conjunto de hardware suportado pela versão
 1.0.0 e garante que hardware ausente, parcial ou incompatível produza
@@ -91,15 +92,22 @@ workers, incluindo os diagnosticos KRN6 e SEC6. Hardware fisico permanece
 
 ### HW3 — Entrada, vídeo e áudio
 
-- [ ] Validar teclado PS/2, mouse PS/2, USB HID, VGA, VESA, backbuffer, AC97 e
+- [x] Validar teclado PS/2, mouse PS/2, USB HID, VGA, VESA, backbuffer, AC97 e
   PC Speaker nos perfis com e sem o dispositivo correspondente.
-- [ ] Confirmar preservação do Shell e de uma saída diagnóstica quando a GUI,
+- [x] Confirmar preservação do Shell e de uma saída diagnóstica quando a GUI,
   VESA, mouse ou áudio estiverem indisponíveis.
-- [ ] Medir filas, descartes, timeouts e recuperação de entrada sob carga.
-- [ ] Confirmar que desativação de áudio e vídeo seja idempotente e não afete
+- [x] Medir filas, descartes, timeouts e recuperação de entrada sob carga.
+- [x] Confirmar que desativação de áudio e vídeo seja idempotente e não afete
   o diagnóstico textual.
-- [ ] Registrar a dívida do PS/2 separadamente até que o critério do Roadmap
+- [x] Registrar a dívida do PS/2 separadamente até que o critério do Roadmap
   22 seja satisfeito.
+
+HW3 foi validado sobre o lifecycle interno: os caminhos PS/2, USB HID, VESA,
+backbuffer, AC97 e speaker validam estado, limites e limpeza sem alterar ABI,
+syscalls, headers publicos, bootloader ou Stage 2. Os 14 casos QEMU associados
+pela tag `hw3` terminaram `PASS` com quatro workers, seed `2103` e nenhum
+processo QEMU residual. Hardware fisico e a validacao PS/2 continuam
+`PENDING` sem bloquear esta etapa.
 
 ### HW4 — Storage e USB
 

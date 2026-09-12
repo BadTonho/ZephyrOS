@@ -25,6 +25,12 @@
       "case_id": "qemu:tst6:stress:storage",
       "condition": "matriz adversarial de Storage e VFS termina sem estado residual",
       "origin": "docs/roadmaps/20-vfs-storage-e-atualizacao-v1.0.md:STO7"
+    },
+    {
+      "id": "hw3-input-video-audio",
+      "case_id": "qemu:tst5:input",
+      "condition": "entrada, fallback textual e drivers opcionais preservam estado e recursos sem residuos",
+      "origin": "docs/roadmaps/21-hardware-rede-e-energia-v1.0.md:HW3"
     }
   ]
 }

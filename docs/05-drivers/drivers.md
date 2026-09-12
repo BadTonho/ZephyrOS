@@ -1176,3 +1176,23 @@ para cobrir a janela anterior ao preparo do UART; a sequência só avança após
 handshake ser aceito.
 Este contrato e interno e nao altera App API,
 syscalls, ABI, layouts, `boot.asm` ou `stage2.asm`.
+
+## HW3: entrada, video e audio
+
+Os drivers de teclado PS/2, mouse PS/2, USB HID, VGA/VESA, AC97 e PC Speaker
+usam o lifecycle interno de drivers e nao alteram headers publicos. Handlers
+de entrada rejeitam uso antes da inicializacao; filas preservam limites,
+descartes e metricas; callbacks e trabalhos diferidos somente acessam uma
+geracao ainda valida.
+
+VESA valida bpp, pitch, dimensoes e regioes antes de calcular enderecos. A
+desativacao libera o backbuffer e zera o estado de frame, permitindo fallback
+textual/serial sem acesso residual. AC97 valida taxa, canais e profundidade
+antes de alterar o stream; inicializacao repetida interrompe e libera o
+stream anterior. Speaker limita frequencia, duracao e esperas com aritmetica
+de prazo segura.
+
+O runner QEMU usa os perfis existentes `baseline`, `minimal`, `usb-hid`,
+`audio`, `display`, `no-vesa`, `no-usb` e `no-audio`. Ausencia de video, audio
+ou USB deve publicar fallback ou degradacao esperada, sem panic ou espera
+infinita. A validacao fisica de PS/2 permanece `PENDING`.

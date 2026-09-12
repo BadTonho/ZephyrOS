@@ -215,6 +215,11 @@ def validate_qemu_profile(name: str) -> None:
         raise RunnerError(f"perfil_qemu_invalido:{name}", "catalog_error", True)
 
 
+def qemu_case_profile(case: dict[str, Any]) -> str:
+    value = case.get("qemu_profile", "baseline")
+    return "baseline" if value is None else str(value)
+
+
 def validate_fixture(name: str | None) -> None:
     if name is not None and name not in QEMU_FIXTURE_NAMES:
         raise RunnerError(f"fixture_invalida:{name}", "catalog_error", True)
@@ -345,7 +350,7 @@ def validate_case_for_runner(case: dict[str, Any]) -> None:
     if not token_valid(case["guest_case"]):
         raise RunnerError(f"guest_case_invalido:{identifier}",
                           "catalog_error", True)
-    qemu_profile = case.get("qemu_profile", "baseline")
+    qemu_profile = qemu_case_profile(case)
     if not isinstance(qemu_profile, str):
         raise RunnerError(f"perfil_qemu_invalido:{identifier}",
                           "catalog_error", True)
@@ -1211,7 +1216,7 @@ def run_execution(arguments: argparse.Namespace) -> int:
         validate_qemu_profile(qemu_profile)
         available_capabilities = set(qemu_profile_capabilities(qemu_profile))
         for case in selected:
-            case_profile = case.get("qemu_profile", "baseline")
+            case_profile = qemu_case_profile(case)
             if case_profile != qemu_profile:
                 raise RunnerError(
                     f"perfil_qemu_divergente:{case['id']}:"
@@ -1248,7 +1253,7 @@ def run_execution(arguments: argparse.Namespace) -> int:
             "cases": [{
                 "id": str(case["id"]),
                 "guest_case": str(case["guest_case"]),
-                "qemu_profile": str(case.get("qemu_profile", "baseline")),
+                "qemu_profile": qemu_case_profile(case),
                 "required_capabilities": list(
                     case.get("required_capabilities", [])),
                 "interaction": case.get("interaction"),

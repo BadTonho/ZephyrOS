@@ -173,6 +173,11 @@ static void test_invalid_initialization(void) {
     EXPECT(mode->initialized == 0U);
     fake_boot.pitch = 64U * 4U;
 
+    fake_boot.pitch = 1U;
+    vesa_init(HOST_BOOT_HANDLE);
+    EXPECT(mode->initialized == 0U);
+    fake_boot.pitch = 64U * 4U;
+
     fake_boot.bpp = VESA_BPP_16;
     vesa_init(HOST_BOOT_HANDLE);
     EXPECT(mode->initialized == 0U);
@@ -218,6 +223,8 @@ static void test_32bpp_drawing(void) {
     vesa_reset_clip_rect();
 
     vesa_draw_bitmap(2, 2, bitmap, 8U, 1U, color);
+    vesa_draw_bitmap(2, 2, 0, 8U, 1U, color);
+    vesa_draw_string(0, 0, 0, color, 1U);
     EXPECT(vesa_get_pixel(2U, 2U).raw == color.raw);
     EXPECT(vesa_get_pixel(9U, 2U).raw == color.raw);
     vesa_draw_circle(16, 16, 4, color);
@@ -231,6 +238,11 @@ static void test_32bpp_drawing(void) {
     vesa_flip_region(0U, 0U, 4U, 4U);
     vesa_frame_end();
     vesa_frame_end();
+    vesa_disable();
+    vesa_frame_end();
+    vesa_init(HOST_BOOT_HANDLE);
+    EXPECT(vesa_init_backbuffer() == OK);
+    vesa_put_pixel(3U, 3U, color);
     vesa_flip();
     vesa_flip_region(1U, 1U, 2U, 2U);
     EXPECT(fake_framebuffer[3U + 3U * 64U] == color.raw);

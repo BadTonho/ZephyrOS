@@ -193,6 +193,57 @@
         "STOPPED"
       ],
       "artifact_schema": "zephyros-qemu-parallel-result-v1"
+    },
+    "hw3_input_video_audio": {
+      "case_ids": [
+        "qemu:tst5:input",
+        "qemu:tst5:shell",
+        "qemu:tst5:apps",
+        "qemu:tst5:sec6-simple",
+        "qemu:tst5:sec6-classic",
+        "qemu:tst5:krn6-diagnostics",
+        "qemu:tst6:matrix:baseline",
+        "qemu:tst6:matrix:minimal",
+        "qemu:tst6:matrix:usb-hid",
+        "qemu:tst6:matrix:audio",
+        "qemu:tst6:matrix:display",
+        "qemu:tst6:sec6:no-vesa",
+        "qemu:hw1:no-usb",
+        "qemu:hw1:no-audio"
+      ],
+      "reused_tags": [
+        "tst5",
+        "tst6",
+        "sec6",
+        "hw1"
+      ],
+      "profiles": [
+        "baseline",
+        "minimal",
+        "usb-hid",
+        "audio",
+        "display",
+        "no-vesa",
+        "no-usb",
+        "no-audio"
+      ],
+      "hardware_scope": "qemu",
+      "required_diagnostics": [
+        "health",
+        "regcheck full",
+        "devices",
+        "device-scan"
+      ],
+      "workers_default": 4,
+      "seed_default": 2103,
+      "physical_hardware_status": "PENDING",
+      "statuses": [
+        "PASS",
+        "FAIL",
+        "BLOCKED",
+        "STOPPED"
+      ],
+      "artifact_schema": "zephyros-qemu-parallel-result-v1"
     }
   },
   "entries": [
@@ -828,7 +879,9 @@
           "qemu",
           "tst5",
           "krn6",
-          "diagnostics"
+          "diagnostics",
+          "hw2",
+          "hw3"
         ],
         "interaction": {
           "mode": "qmp-keyboard",

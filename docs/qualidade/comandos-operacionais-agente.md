@@ -2189,6 +2189,26 @@ residual. Depois do ciclo padrao, seis workers podem ser testados no Ryzen 5
 make test-hw2-qemu HW2_QEMU_WORKERS=6 HW2_QEMU_SEED=2102
 ```
 
+## HW3 - entrada, video e audio robustos
+
+```text
+make test-hw3-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+make catalog-test
+make test-hw3-qemu HW3_QEMU_WORKERS=4 HW3_QEMU_SEED=2103
+```
+
+O alvo seleciona a tag `hw3` no runner paralelo, usa snapshots independentes
+e grava os resultados em `build/test-results/hw3/`. Os casos cobrem entrada
+PS/2 e USB HID, VGA/VESA, backbuffer, AC97, speaker e fallback serial. Para
+o Ryzen 5 3600, seis workers podem ser usados depois do ciclo padrao:
+
+```text
+make test-hw3-qemu HW3_QEMU_WORKERS=6 HW3_QEMU_SEED=2103
+```
+
+Hardware fisico, especialmente PS/2, continua `PENDING` ate haver evidencia
+reproduzivel; `DT100-003` e `DT100-004` permanecem separadas.
+
 ## Spinlock host-only
 
 O alvo `test-spinlock-host` executa uma fixture nativa que inicializa, adquire

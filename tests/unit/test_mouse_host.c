@@ -331,6 +331,7 @@ static int check_before_init(void) {
         status.last_error != ERR_UNAVAILABLE) return 7;
     if (mouse_get_x() != 0 || mouse_get_y() != 0 ||
         mouse_get_buttons() != 0U) return 8;
+    mouse_process_events();
     if (mouse_set_callback(mouse_callback) != 0) return 9;
     return 0;
 }

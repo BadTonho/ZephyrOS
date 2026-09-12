@@ -194,7 +194,7 @@ def select_cases(catalog: dict[str, Any], arguments: argparse.Namespace,
         try:
             qemu_test_runner.validate_case_for_runner(case)
             qemu_test_runner.validate_qemu_profile(
-                str(case.get("qemu_profile", "baseline")))
+                qemu_test_runner.qemu_case_profile(case))
         except qemu_test_runner.RunnerError as error:
             raise ParallelError(f"caso_invalido:{case.get('id')}:{error.cause}") \
                 from error
@@ -211,6 +211,7 @@ def stable_seed(master_seed: int, case_id: str, occurrence: int) -> int:
 
 def qemu_network(case: dict[str, Any]) -> str:
     identifier = str(case.get("id", ""))
+    profile = qemu_test_runner.qemu_case_profile(case)
     parameters = case.get("parameters")
     if not isinstance(parameters, dict):
         parameters = {}
@@ -218,12 +219,12 @@ def qemu_network(case: dict[str, Any]) -> str:
     if identifier == "qemu:tst4:network":
         return "user,model=e1000,restrict=on"
     if declared in {"none", "offline", False} or \
-            case.get("qemu_profile") == "no-nic":
+            profile == "no-nic":
         return "none"
     required = case.get("required_capabilities")
     if not isinstance(required, list):
         required = []
-    if case.get("qemu_profile") == "network" or \
+    if profile == "network" or \
             "network-e1000" in required or \
             declared in {"isolated", "user-isolated"}:
         return "user,model=e1000,restrict=on"
@@ -242,7 +243,7 @@ def qemu_iterations(case: dict[str, Any]) -> int:
 def case_command(case: dict[str, Any], arguments: argparse.Namespace,
                  child_run_id: str, case_results: Path,
                  case_seed: int) -> list[str]:
-    profile = str(case.get("qemu_profile", "baseline"))
+    profile = qemu_test_runner.qemu_case_profile(case)
     iterations = qemu_iterations(case)
     case_timeout = max(arguments.case_timeout,
                        float(case.get("timeout_seconds", arguments.case_timeout)))

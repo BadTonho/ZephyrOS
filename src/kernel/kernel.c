@@ -58,6 +58,7 @@
 #include "drivers/font.h"
 #include "drivers/ac97.h"
 #include "drivers/acpi.h"
+#include "drivers/usb_hid.h"
 #include "../drivers/driver_lifecycle_internal.h"
 #include "drivers/serial.h"
 #include "drivers/rtc.h"
@@ -83,6 +84,9 @@
 #define SYSTEM_PROCESS_STACK_SIZE (KERNEL_STACK_SIZE * 4U)
 #define TEST_PROTOCOL_PROCESS_STACK_SIZE (KERNEL_STACK_SIZE * 4U)
 #define SHELL_PROCESS_STACK_SIZE (KERNEL_STACK_SIZE * 4U)
+#define KERNEL_KEYBOARD_IRQ_RESOURCE 33U
+#define KERNEL_MOUSE_IRQ_RESOURCE 44U
+#define KERNEL_SPEAKER_IO_RESOURCE 0x61U
 
 static int kernel_service_fallback = 0;
 static int kernel_network_poll_enabled = 1;
@@ -99,6 +103,22 @@ static work_struct_t kernel_timer_work;
 static work_struct_t kernel_network_work;
 static work_struct_t kernel_index_work;
 
+static void kernel_publish_driver_lifecycle_resources(
+    const char* driver_id, const char* parent_id, const char* bus,
+    const char* class_name, const char* identity, uint32_t required_resources,
+    const driver_lifecycle_resource_ids_t* resource_ids,
+    uint32_t resource_flags, int init_result, uint8_t optional,
+    const char* reason) {
+    int result = driver_lifecycle_publish(
+        driver_id, parent_id, bus, class_name, identity, required_resources,
+        resource_ids, resource_flags, init_result, optional, reason);
+
+    if (result != init_result) {
+        LOG_ERROR_CODE("KERNEL", result,
+                       "Falha ao publicar lifecycle de driver");
+    }
+}
+
 static void kernel_publish_driver_lifecycle(const char* driver_id,
                                             const char* parent_id,
                                             const char* bus,
@@ -107,14 +127,9 @@ static void kernel_publish_driver_lifecycle(const char* driver_id,
                                             int init_result,
                                             uint8_t optional,
                                             const char* reason) {
-    int result = driver_lifecycle_publish(
+    kernel_publish_driver_lifecycle_resources(
         driver_id, parent_id, bus, class_name, identity, 0U, 0, 0U,
         init_result, optional, reason);
-
-    if (result != init_result) {
-        LOG_ERROR_CODE("KERNEL", result,
-                       "Falha ao publicar lifecycle de driver");
-    }
 }
 
 static int kernel_should_wake_shell_for_event(int shell_job_active,
@@ -1022,6 +1037,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     test_coverage_begin_case("qemu:tst7:kernel-main", 21U);
     test_coverage_record_address((uint32_t)(unsigned long)&kernel_main);
 #endif
+    driver_lifecycle_init();
     vesa_init(vesa_info_addr);
     font_init();
     video_init();
@@ -1029,7 +1045,6 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     serial_init();
     test_protocol_init();
     recovery_init();
-    driver_lifecycle_init();
 
     kernel_publish_driver_lifecycle("serial0", "root", "isa", "serial",
                                     "com1", OK, 1U,
@@ -1037,9 +1052,20 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     vesa_mode_t* vmode = vesa_get_mode();
     if (vmode && vmode->initialized) {
-        kernel_publish_driver_lifecycle("vesa0", "root", "pci", "display",
-                                        "vesa0", OK, 1U,
-                                        "VESA indisponivel");
+        driver_lifecycle_resource_ids_t resources = {0};
+
+#if defined(ZEPHYROS_HOST_TEST)
+        resources.mmio = vmode->framebuffer ? 1U : 0U;
+#else
+        resources.mmio = (uint32_t)(unsigned long)vmode->framebuffer;
+#endif
+        kernel_publish_driver_lifecycle_resources(
+            "vesa0", "root", "pci", "display", "vesa0",
+            DRIVER_LIFECYCLE_RESOURCE_MMIO, &resources, 0U, OK, 1U,
+            "VESA indisponivel");
+        kernel_publish_driver_lifecycle(
+            "video0", "root", "isa", "display", "vga-vesa", OK, 1U,
+            "video indisponivel");
         recovery_mark_ready(RECOVERY_COMPONENT_VESA);
         video_print("[OK] VESA framebuffer ativo\n", 0x0A);
         video_print("[OK] Modo: ", 0x07);
@@ -1078,6 +1104,9 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
         kernel_publish_driver_lifecycle("vesa0", "root", "pci", "display",
                                         "vesa0", ERR_NOT_FOUND, 1U,
                                         "VESA indisponivel");
+        kernel_publish_driver_lifecycle(
+            "video0", "root", "isa", "display", "vga", OK, 1U,
+            "video indisponivel");
         recovery_mark_degraded(RECOVERY_COMPONENT_VESA, ERR_NOT_FOUND,
                                "VESA indisponivel; fallback VGA ativo");
         video_print("[!!] VESA nao encontrado, usando VGA fallback\n", 0x0C);
@@ -1127,21 +1156,48 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     video_print("[..] Iniciando teclado...\n", 0x08);
     keyboard_init();
-    kernel_publish_driver_lifecycle("keyboard0", "input0", "ps2", "keyboard",
-                                    "keyboard", OK, 1U,
-                                    "teclado indisponivel");
-    video_print("[OK] Driver de teclado PS/2\n", 0x07);
+    {
+        driver_lifecycle_resource_ids_t resources = {0};
+        int keyboard_result = keyboard_controller_reset_available() ?
+                              OK : ERR_UNAVAILABLE;
+
+        resources.irq = KERNEL_KEYBOARD_IRQ_RESOURCE;
+        resources.callback = 1U;
+        resources.work = 1U;
+        kernel_publish_driver_lifecycle_resources(
+            "keyboard0", "input0", "ps2", "keyboard", "keyboard",
+            DRIVER_LIFECYCLE_RESOURCE_IRQ |
+            DRIVER_LIFECYCLE_RESOURCE_CALLBACK |
+            DRIVER_LIFECYCLE_RESOURCE_WORK,
+            &resources, 0U, keyboard_result, 1U, "teclado indisponivel");
+        if (keyboard_result == OK) {
+            video_print("[OK] Driver de teclado PS/2\n", 0x07);
+        } else {
+            video_print("[!!] Teclado PS/2 indisponivel\n", 0x0E);
+        }
+    }
 
     video_print("[..] Iniciando mouse...\n", 0x08);
     int mouse_result = mouse_init();
-    kernel_publish_driver_lifecycle("mouse0", "input0", "ps2", "mouse",
-                                    "mouse", mouse_result, 1U,
-                                    "mouse indisponivel");
     if (mouse_result == OK) {
         mouse_set_callback(global_mouse_handler);
+    }
+    {
+        driver_lifecycle_resource_ids_t resources = {0};
+
+        resources.irq = KERNEL_MOUSE_IRQ_RESOURCE;
+        resources.callback = 2U;
+        resources.work = 2U;
+        kernel_publish_driver_lifecycle_resources(
+            "mouse0", "input0", "ps2", "mouse", "mouse",
+            DRIVER_LIFECYCLE_RESOURCE_IRQ |
+            DRIVER_LIFECYCLE_RESOURCE_CALLBACK |
+            DRIVER_LIFECYCLE_RESOURCE_WORK,
+            &resources, 0U, mouse_result, 1U, "mouse indisponivel");
+    }
+    if (mouse_result == OK) {
         video_print("[OK] Driver de mouse PS/2\n", 0x07);
     } else {
-        mouse_set_callback(global_mouse_handler);
         LOG_ERROR("KERNEL", "Mouse PS/2 indisponivel; mantendo teclado e Shell");
         video_print("[!!] Mouse PS/2 indisponivel; usando teclado\n", 0x0E);
     }
@@ -1272,6 +1328,16 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     video_print("[OK] Paging ativo\n", 0x07);
 
     int backbuffer_result = vesa_init_backbuffer();
+    {
+        driver_lifecycle_resource_ids_t resources = {0};
+
+        resources.buffer = 1U;
+        kernel_publish_driver_lifecycle_resources(
+            "backbuffer0", "vesa0", "memory", "framebuffer", "backbuffer",
+            backbuffer_result == OK ? DRIVER_LIFECYCLE_RESOURCE_BUFFER : 0U,
+            &resources, 0U, backbuffer_result, 1U,
+            "Backbuffer indisponivel");
+    }
     if (backbuffer_result == OK) {
         recovery_mark_ready(RECOVERY_COMPONENT_BACKBUFFER);
     } else {
@@ -1441,6 +1507,15 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     video_print("[..] Iniciando PC Speaker...\n", 0x08);
     speaker_init();
+    {
+        driver_lifecycle_resource_ids_t resources = {0};
+
+        resources.io = KERNEL_SPEAKER_IO_RESOURCE;
+        kernel_publish_driver_lifecycle_resources(
+            "speaker0", "root", "isa", "audio", "pc-speaker",
+            DRIVER_LIFECYCLE_RESOURCE_IO, &resources, 0U, OK, 1U,
+            "PC Speaker indisponivel");
+    }
     video_print("[OK] PC Speaker pronto\n", 0x07);
 
     video_print("[..] Enumerando dispositivos PCI...\n", 0x08);
@@ -1481,6 +1556,30 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     } else {
         video_print("[OK] Inventario USB pronto\n", 0x07);
     }
+    {
+        uint32_t hid_count = 0U;
+        uint32_t hid_active = 0U;
+        int hid_result = usb_hid_get_count(&hid_count);
+        driver_lifecycle_resource_ids_t resources = {0};
+
+        if (hid_result == OK) {
+            for (uint32_t index = 0U; index < hid_count; index++) {
+                usb_hid_info_t info;
+
+                if (usb_hid_get_at(index, &info) == OK && info.active) {
+                    hid_active++;
+                }
+            }
+            hid_result = hid_active ? OK : ERR_NOT_FOUND;
+        }
+        resources.callback = 3U;
+        resources.work = 3U;
+        kernel_publish_driver_lifecycle_resources(
+            "usb-hid0", "usb0", "usb", "hid", "usb-hid",
+            hid_active ? DRIVER_LIFECYCLE_RESOURCE_CALLBACK |
+                        DRIVER_LIFECYCLE_RESOURCE_WORK : 0U,
+            &resources, 0U, hid_result, 1U, "USB HID indisponivel");
+    }
     if (storage_result == OK || block_result == OK) {
         int refreshed_storage = storage_refresh();
 
@@ -1502,10 +1601,20 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     video_print("[..] Iniciando AC97...\n", 0x08);
     ac97_init();
     ac97_device_t* ac97 = ac97_get_device();
-    kernel_publish_driver_lifecycle("ac97-0", "pci0", "pci", "audio",
-                                    "ac97", (ac97 && ac97->initialized) ?
-                                    OK : ERR_NOT_FOUND, 1U,
-                                    "AC97 indisponivel");
+    {
+        driver_lifecycle_resource_ids_t resources = {0};
+        int ac97_result = (ac97 && ac97->initialized) ? OK : ERR_NOT_FOUND;
+
+        if (ac97) {
+            resources.io = ac97->io_base;
+            resources.irq = ac97->irq;
+        }
+        kernel_publish_driver_lifecycle_resources(
+            "ac97-0", "pci0", "pci", "audio", "ac97",
+            ac97_result == OK ? DRIVER_LIFECYCLE_RESOURCE_IO |
+                               DRIVER_LIFECYCLE_RESOURCE_IRQ : 0U,
+            &resources, 0U, ac97_result, 1U, "AC97 indisponivel");
+    }
     if (ac97 && ac97->initialized) {
         recovery_mark_ready(RECOVERY_COMPONENT_AC97);
         video_print("[OK] AC97 pronto\n", 0x07);

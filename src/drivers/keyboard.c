@@ -485,6 +485,7 @@ void keyboard_handler(registers_t* regs) {
     uint8_t scancode;
 
     (void)regs;
+    if (!keyboard_initialized) return;
     scancode = inb(0x60);
     if (keyboard_raw_enqueue(scancode) != OK) return;
     (void)irq_deferred_schedule(&keyboard_bottom_half_work);
@@ -522,6 +523,7 @@ static void keyboard_bottom_half(void* context) {
     input_metrics_t metrics;
 
     (void)context;
+    if (!keyboard_initialized) return;
     if (input_get_metrics(&metrics) != OK ||
         metrics.key_queued >= metrics.key_capacity) return;
     if (event_budget > metrics.key_capacity - metrics.key_queued) {
@@ -561,6 +563,7 @@ void keyboard_process_events(void) {
     uint32_t dispatched = 0;
     uint32_t input_processed = 0U;
 
+    if (!keyboard_initialized) return;
     if (input_dispatch(KEYBOARD_DISPATCH_BUDGET, &input_processed) != OK) {
         LOG_WARN("KBD", "Despacho do nucleo de entrada indisponivel");
     }

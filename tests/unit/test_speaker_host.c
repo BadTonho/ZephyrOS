@@ -97,6 +97,17 @@ static int check_beep(void) {
     return output_count == 5U ? 0 : 33;
 }
 
+static int check_invalid_inputs(void) {
+    speaker_ports[SPEAKER_CONTROL_PORT] = 0xFFU;
+    output_count = 0U;
+    speaker_beep(1U, 100U);
+    speaker_beep(1193181U, 100U);
+    speaker_beep(440U, 600001U);
+    speaker_play_melody(0, 0, 1);
+    speaker_play_melody((const uint32_t[]){440U}, 0, 1);
+    return speaker_ports[SPEAKER_CONTROL_PORT] == 0xFCU ? 0 : 50;
+}
+
 static int check_melody(void) {
     static const uint32_t frequencies[] = {0U, 880U};
     static const uint32_t durations[] = {1000U, 0U};
@@ -134,6 +145,7 @@ int main(void) {
     result = check_initialization();
     if (!result) result = check_zero_frequency();
     if (!result) result = check_beep();
+    if (!result) result = check_invalid_inputs();
     if (!result) result = check_melody();
     coverage_active = 0U;
     coverage_emit(result);

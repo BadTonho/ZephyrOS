@@ -4,7 +4,7 @@
 
 ## Resumo
 
-- Superfícies ativas: **7646**
+- Superfícies ativas: **7651**
 - Casos de teste: **186**
 - Superfícies aposentadas: **60**
 
@@ -12,7 +12,7 @@
 |---|---:|
 | `api_function` | 1652 |
 | `asm_entry` | 101 |
-| `c_function` | 5773 |
+| `c_function` | 5778 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
@@ -21,7 +21,7 @@
 | `BLOCKED` | 0 |
 | `COVERED` | 7585 |
 | `MANUAL` | 0 |
-| `PENDING` | 61 |
+| `PENDING` | 66 |
 
 | Casos | Quantidade |
 |---|---:|
@@ -37,14 +37,14 @@
 | `apps` | 172 |
 | `appstore` | 98 |
 | `boot` | 146 |
-| `core` | 2885 |
+| `core` | 2886 |
 | `desktop` | 40 |
-| `drivers` | 965 |
+| `drivers` | 968 |
 | `filemanager` | 93 |
 | `fs` | 1054 |
 | `gui` | 30 |
 | `icons` | 18 |
-| `kernel` | 61 |
+| `kernel` | 62 |
 | `memory` | 202 |
 | `process` | 332 |
 | `settings` | 57 |
@@ -212,7 +212,7 @@
 | `api:src/include/apps/shell_runtime.h:shell_packages_host_test_contracts` | `src/include/apps/shell_runtime.h` | `shell_packages_host_test_contracts` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_finish_command` | `src/include/apps/shell_runtime.h` | `shell_runtime_finish_command` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key` | `src/include/apps/shell_runtime.h` | `shell_runtime_handle_terminal_key` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible` | `src/include/apps/shell_runtime.h` | `shell_runtime_is_hosted_visible` | `apps` | `COVERED` | 3 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible` | `src/include/apps/shell_runtime.h` | `shell_runtime_is_hosted_visible` | `apps` | `COVERED` | 4 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager` | `src/include/apps/shell_runtime.h` | `shell_runtime_prepare_filemanager` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_reset_input` | `src/include/apps/shell_runtime.h` | `shell_runtime_reset_input` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal` | `src/include/apps/shell_runtime.h` | `shell_runtime_resume_terminal` | `apps` | `COVERED` | 7 |
@@ -1011,16 +1011,16 @@
 | `api:src/include/drivers/mouse.h:mouse_set_callback` | `src/include/drivers/mouse.h` | `mouse_set_callback` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/mouse.h:mouse_set_primary_button` | `src/include/drivers/mouse.h` | `mouse_set_primary_button` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/mouse.h:mouse_set_speed` | `src/include/drivers/mouse.h` | `mouse_set_speed` | `drivers` | `COVERED` | 4 |
-| `api:src/include/drivers/pci.h:pci_enable_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_bus_mastering` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_io_and_bus_mastering` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_memory_and_bus_mastering` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/pci.h:pci_get_device` | `src/include/drivers/pci.h` | `pci_get_device` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/pci.h:pci_get_device_at` | `src/include/drivers/pci.h` | `pci_get_device_at` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/pci.h:pci_get_device_by_id` | `src/include/drivers/pci.h` | `pci_get_device_by_id` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/pci.h:pci_get_device_count` | `src/include/drivers/pci.h` | `pci_get_device_count` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/pci.h:pci_init` | `src/include/drivers/pci.h` | `pci_init` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/pci.h:pci_read` | `src/include/drivers/pci.h` | `pci_read` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/pci.h:pci_write` | `src/include/drivers/pci.h` | `pci_write` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_enable_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_bus_mastering` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_io_and_bus_mastering` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_memory_and_bus_mastering` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/pci.h:pci_get_device` | `src/include/drivers/pci.h` | `pci_get_device` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/pci.h:pci_get_device_at` | `src/include/drivers/pci.h` | `pci_get_device_at` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/pci.h:pci_get_device_by_id` | `src/include/drivers/pci.h` | `pci_get_device_by_id` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/pci.h:pci_get_device_count` | `src/include/drivers/pci.h` | `pci_get_device_count` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/pci.h:pci_init` | `src/include/drivers/pci.h` | `pci_init` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/pci.h:pci_read` | `src/include/drivers/pci.h` | `pci_read` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/pci.h:pci_write` | `src/include/drivers/pci.h` | `pci_write` | `drivers` | `COVERED` | 2 |
 | `api:src/include/drivers/rng.h:rng_get_bytes` | `src/include/drivers/rng.h` | `rng_get_bytes` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/rng.h:rng_get_status` | `src/include/drivers/rng.h` | `rng_get_status` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/rng.h:rng_init` | `src/include/drivers/rng.h` | `rng_init` | `drivers` | `COVERED` | 3 |
@@ -2753,6 +2753,7 @@
 | `c:src/core/input.c:input_publish_pointer` | `src/core/input.c` | `input_publish_pointer` | `core` | `COVERED` | 1 |
 | `c:src/core/input.c:input_register_key_sink` | `src/core/input.c` | `input_register_key_sink` | `core` | `COVERED` | 1 |
 | `c:src/core/input.c:input_register_pointer_sink` | `src/core/input.c` | `input_register_pointer_sink` | `core` | `COVERED` | 1 |
+| `c:src/core/input.c:input_source_valid` | `src/core/input.c` | `input_source_valid` | `core` | `PENDING` | 0 |
 | `c:src/core/input.c:input_validate_state` | `src/core/input.c` | `input_validate_state` | `core` | `COVERED` | 3 |
 | `c:src/core/ipv4.c:ipv4_address_is_unicast` | `src/core/ipv4.c` | `ipv4_address_is_unicast` | `core` | `COVERED` | 3 |
 | `c:src/core/ipv4.c:ipv4_build_packet` | `src/core/ipv4.c` | `ipv4_build_packet` | `core` | `COVERED` | 1 |
@@ -4488,12 +4489,12 @@
 | `c:src/drivers/keyboard.c:keyboard_controller_reset_available` | `src/drivers/keyboard.c` | `keyboard_controller_reset_available` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/keyboard.c:keyboard_enqueue_scancodes` | `src/drivers/keyboard.c` | `keyboard_enqueue_scancodes` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/keyboard.c:keyboard_get_metrics` | `src/drivers/keyboard.c` | `keyboard_get_metrics` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/keyboard.c:keyboard_handler` | `src/drivers/keyboard.c` | `keyboard_handler` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/keyboard.c:keyboard_handler` | `src/drivers/keyboard.c` | `keyboard_handler` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/keyboard.c:keyboard_init` | `src/drivers/keyboard.c` | `keyboard_init` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/keyboard.c:keyboard_input_sink` | `src/drivers/keyboard.c` | `keyboard_input_sink` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/keyboard.c:keyboard_irq_restore` | `src/drivers/keyboard.c` | `keyboard_irq_restore` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/keyboard.c:keyboard_irq_save` | `src/drivers/keyboard.c` | `keyboard_irq_save` | `drivers` | `COVERED` | 3 |
-| `c:src/drivers/keyboard.c:keyboard_process_events` | `src/drivers/keyboard.c` | `keyboard_process_events` | `drivers` | `COVERED` | 3 |
+| `c:src/drivers/keyboard.c:keyboard_process_events` | `src/drivers/keyboard.c` | `keyboard_process_events` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/keyboard.c:keyboard_process_raw_byte` | `src/drivers/keyboard.c` | `keyboard_process_raw_byte` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/keyboard.c:keyboard_ps2_usage` | `src/drivers/keyboard.c` | `keyboard_ps2_usage` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/keyboard.c:keyboard_raw_enqueue` | `src/drivers/keyboard.c` | `keyboard_raw_enqueue` | `drivers` | `COVERED` | 3 |
@@ -4655,9 +4656,11 @@
 | `c:src/drivers/speaker.c:inb` | `src/drivers/speaker.c` | `inb` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/speaker.c:outb` | `src/drivers/speaker.c` | `outb` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/speaker.c:speaker_beep` | `src/drivers/speaker.c` | `speaker_beep` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/speaker.c:speaker_duration_ticks` | `src/drivers/speaker.c` | `speaker_duration_ticks` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/speaker.c:speaker_init` | `src/drivers/speaker.c` | `speaker_init` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/speaker.c:speaker_off` | `src/drivers/speaker.c` | `speaker_off` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/speaker.c:speaker_play_melody` | `src/drivers/speaker.c` | `speaker_play_melody` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/speaker.c:speaker_wait` | `src/drivers/speaker.c` | `speaker_wait` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/timer.c:outb` | `src/drivers/timer.c` | `outb` | `drivers` | `COVERED` | 5 |
 | `c:src/drivers/timer.c:timer_cancel` | `src/drivers/timer.c` | `timer_cancel` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/timer.c:timer_copy_active` | `src/drivers/timer.c` | `timer_copy_active` | `drivers` | `COVERED` | 1 |
@@ -4850,6 +4853,7 @@
 | `c:src/drivers/usb_msc.c:usb_msc_validate_state` | `src/drivers/usb_msc.c` | `usb_msc_validate_state` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/vesa.c:memset_simple` | `src/drivers/vesa.c` | `memset_simple` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/vesa.c:vesa_accumulate_region` | `src/drivers/vesa.c` | `vesa_accumulate_region` | `drivers` | `COVERED` | 4 |
+| `c:src/drivers/vesa.c:vesa_bytes_per_pixel` | `src/drivers/vesa.c` | `vesa_bytes_per_pixel` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/vesa.c:vesa_clear` | `src/drivers/vesa.c` | `vesa_clear` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/vesa.c:vesa_clip_rect` | `src/drivers/vesa.c` | `vesa_clip_rect` | `drivers` | `COVERED` | 4 |
 | `c:src/drivers/vesa.c:vesa_copy_region` | `src/drivers/vesa.c` | `vesa_copy_region` | `drivers` | `COVERED` | 4 |
@@ -5919,6 +5923,7 @@
 | `c:src/kernel/kernel.c:kernel_prepare_shell` | `src/kernel/kernel.c` | `kernel_prepare_shell` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_prepare_system` | `src/kernel/kernel.c` | `kernel_prepare_system` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_publish_driver_lifecycle` | `src/kernel/kernel.c` | `kernel_publish_driver_lifecycle` | `kernel` | `PENDING` | 0 |
+| `c:src/kernel/kernel.c:kernel_publish_driver_lifecycle_resources` | `src/kernel/kernel.c` | `kernel_publish_driver_lifecycle_resources` | `kernel` | `PENDING` | 0 |
 | `c:src/kernel/kernel.c:kernel_redraw_after_menu_close` | `src/kernel/kernel.c` | `kernel_redraw_after_menu_close` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_request_shell_app` | `src/kernel/kernel.c` | `kernel_request_shell_app` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_retry_shell_request` | `src/kernel/kernel.c` | `kernel_retry_shell_request` | `kernel` | `COVERED` | 2 |
@@ -7778,6 +7783,7 @@
 | `host:drivers:font` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | inicializar o driver de fonte e consultar as dimensoes publicadas | font_init e idempotente e as dimensoes publicadas permanecem 8x16 | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente tabela estatica de fontes e processo host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:idt` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar inicializacao, gates, handlers, IRQ compartilhada, mascaras PIC, syscall e caminho de panico | IDT e PIC publicam estado coerente; handlers e IRQs respeitam limites, duplicidade, EOI e erros canonicos sem instrucoes privilegiadas reais | compilador ausente, warning, cobertura incompleta, falha de assercao, instrucao privilegiada executada ou timeout | somente tabelas IDT, estado PIC, flags, callbacks e panic longjmp no processo host | estado de IDT, PIC, handlers, ocorrencias, flags, logs e cobertura permanecem confinados ao processo host |
 | `host:drivers:keyboard` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver teclado real com controlador PS/2 e dependencias registradas simulados | scancodes, inicializacao, filtros, reset, metricas e falhas preservam o contrato sem executar CLI, STI ou I/O privilegiado no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente filas, metricas e portas estaticas do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `host:drivers:lifecycle` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar transicoes, idempotencia, ownership, IRQ compartilhada, quiescencia, cleanup e geracoes obsoletas | estados invalidos e recursos duplicados sao rejeitados, callbacks antigos falham e nenhuma posse permanece apos cleanup | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente o registro estatico interno no processo host | encerrar o processo host e preservar manifesto, logs e cobertura |
 | `host:drivers:mouse` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar inicializacao, protocolo wheel e fallback, IRQ12, filas, eventos, cursor, configuracao, limites, falhas e limpeza | eventos validos chegam ao callback, configuracoes respeitam limites e fixtures invalidas retornam erros canonicos sem I/O privilegiado | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente portas PS/2, IRQ, fila de entrada, framebuffer VESA e dispositivos falsos no processo host | estado da controladora, fila, cursor e framebuffer falso permanecem restritos ao processo; manifesto, logs e cobertura preservados |
 | `host:drivers:pci` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar leitura, escrita, varredura, inventario, multifuncao, limites e habilitacao de recursos PCI | dispositivos validos sao registrados, ausentes sao ignorados, limite retorna ERR_OVERFLOW e comandos aceitos sao publicados | compilador ausente, warning, cobertura incompleta, falha de assercao, acesso I/O real ou timeout | somente espaco de configuracao, inventario e contadores falsos no processo host; nenhum porto I/O real e acessado | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:drivers:rng` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | compilar e executar o driver RNG real com capacidades e resultados RDRAND simulados | capacidade, estado, bytes gerados, falhas de hardware e codigos de erro preservam o contrato sem executar instrucoes privilegiadas no host | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado RNG e valores de entropia estaticos do processo host | processo host encerrado e manifesto, logs e cobertura preservados |
@@ -7917,7 +7923,6 @@
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
 | `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, validar retorno com IF desabilitado, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez, o retorno preserva o EFLAGS salvo e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
-| `host:drivers:lifecycle` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar transicoes, idempotencia, ownership, IRQ compartilhada, quiescencia, cleanup e geracoes obsoletas | estados invalidos e recursos duplicados sao rejeitados, callbacks antigos falham e nenhuma posse permanece apos cleanup | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente o registro estatico interno no processo host | encerrar o processo host e preservar manifesto, logs e cobertura |
 
 ## Superfícies sem caso associado
 
@@ -7935,6 +7940,7 @@
 - `c:src/boot/recovery_loader.c:recovery_in8`
 - `c:src/boot/recovery_loader.c:recovery_out16`
 - `c:src/boot/recovery_loader.c:recovery_out8`
+- `c:src/core/input.c:input_source_valid`
 - `c:src/core/kernel_tests_blackbox.c:blackbox_is_sec6_case`
 - `c:src/core/kernel_tests_blackbox.c:blackbox_marker`
 - `c:src/core/kernel_tests_blackbox.c:blackbox_requires_prompt`
@@ -7972,12 +7978,16 @@
 - `c:src/core/update_system.c:update_system_verify_file_internal`
 - `c:src/core/update_system.c:update_system_verify_signature`
 - `c:src/core/update_system.c:update_system_version_compare`
+- `c:src/drivers/speaker.c:speaker_duration_ticks`
+- `c:src/drivers/speaker.c:speaker_wait`
+- `c:src/drivers/vesa.c:vesa_bytes_per_pixel`
 - `c:src/fs/fat32.c:cluster_to_lba`
 - `c:src/fs/storage.c:storage_clear_directory_slots`
 - `c:src/fs/storage.c:storage_release_selected_fat32_clusters`
 - `c:src/fs/vfs.c:vfs_lifecycle_block_error`
 - `c:src/kernel/kernel.c:kernel_host_test_should_wake_shell_for_event`
 - `c:src/kernel/kernel.c:kernel_publish_driver_lifecycle`
+- `c:src/kernel/kernel.c:kernel_publish_driver_lifecycle_resources`
 - `c:src/kernel/kernel.c:kernel_should_wake_shell_for_event`
 - `c:src/process/resource.c:process_resource_note_descriptor_success`
 - `c:src/process/resource.c:process_resource_note_pipe_success`

@@ -7320,3 +7320,19 @@ dívida.
   `storage-fixtures` ser incluida nos dois Makefiles.
   Hardware fisico continua `PENDING` e `DT100-003`/`DT100-004` permanecem
   separados.
+
+- HW3 - entrada, video e audio robustos - implementacao e validacao concluidas
+  em 2026-09-11 (America/Sao_Paulo). Os caminhos de teclado PS/2, mouse PS/2,
+  USB HID, VESA, backbuffer, AC97 e PC Speaker receberam validacoes de estado,
+  limites, inicializacao repetida, filas e limpeza. O kernel passou a publicar
+  o ownership desses drivers no lifecycle interno; nenhuma syscall, ABI, App
+  API, header publico, bootloader ou Stage 2 foi alterado.
+
+  Passaram `make q3check` com `DT100-003 ACEITA`, `make clean`, `make`,
+  `make test-hw3-host`, `make catalog-test` e
+  `make test-hw3-qemu HW3_QEMU_WORKERS=4 HW3_QEMU_SEED=2103`. A matriz executou
+  os 14 casos da tag `hw3` com quatro workers, snapshots independentes e
+  artefatos em `build/test-results/hw3/qpp-20260912T025055Z-24352/`; todos
+  terminaram `PASS` e nao havia processo QEMU residual. Hardware fisico e a
+  validacao PS/2 permanecem `PENDING`; as dividas `DT100-003` e `DT100-004`
+  continuam separadas.

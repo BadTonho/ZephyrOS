@@ -19,6 +19,10 @@ typedef struct {
 
 static input_service_t input_service;
 
+static int input_source_valid(input_source_t source) {
+    return source == INPUT_SOURCE_PS2 || source == INPUT_SOURCE_USB_HID;
+}
+
 static uint32_t input_irq_save(void) {
 #if defined(ZEPHYROS_HOST_TEST)
     return 0U;
@@ -133,6 +137,10 @@ int input_publish_key(const input_key_event_t* event) {
     uint32_t next;
 
     if (!event) return ERR_NULL;
+    if (!input_source_valid(event->source)) {
+        input_service.metrics.last_error = ERR_INVALID;
+        return ERR_INVALID;
+    }
     if (!input_service.metrics.initialized) return ERR_STATE;
     flags = input_irq_save();
     next = input_next(input_service.key_head, INPUT_KEY_QUEUE_CAPACITY);
@@ -158,6 +166,10 @@ int input_publish_pointer(const input_pointer_event_t* event) {
     uint32_t next;
 
     if (!event) return ERR_NULL;
+    if (!input_source_valid(event->source)) {
+        input_service.metrics.last_error = ERR_INVALID;
+        return ERR_INVALID;
+    }
     if (!input_service.metrics.initialized) return ERR_STATE;
     flags = input_irq_save();
     if (event->wheel == 0 &&

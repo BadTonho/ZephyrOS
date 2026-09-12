@@ -512,10 +512,12 @@ static void mouse_report_queue_overflow(void) {
 /* ========== Handler de interrupcao (IRQ12) ========== */
 
 static void mouse_handler(registers_t* regs) {
-    uint8_t status = inb(MOUSE_CONTROLLER_PORT);
+    uint8_t status;
     uint16_t next;
 
     (void)regs;
+    if (!driver_initialized) return;
+    status = inb(MOUSE_CONTROLLER_PORT);
     if (!(status & MOUSE_STATUS_OUTPUT_FULL)) return;
     if (!(status & MOUSE_STATUS_AUX_DATA)) return;
     next = (uint16_t)((mouse_raw_head + 1U) % MOUSE_RAW_QUEUE_SIZE);
@@ -832,7 +834,7 @@ void mouse_process_events(void) {
     uint8_t frame_open = 0U;
     uint32_t batches = 0U;
 
-    if (!input_sink_ready) return;
+    if (!driver_initialized || !input_sink_ready) return;
     mouse_bottom_half(0);
     mouse_report_queue_overflow();
     vesa_mode_t* mode = vesa_get_mode();

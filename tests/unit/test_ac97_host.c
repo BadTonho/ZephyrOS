@@ -328,6 +328,19 @@ static int check_limits_and_failures(void) {
     return 0;
 }
 
+static int check_invalid_format(void) {
+    uint8_t frame[4] = {1U, 2U, 3U, 4U};
+
+    reset_fixture();
+    ac97_init();
+    ac97_play(frame, sizeof(frame), 7999U, 2U, 16U);
+    ac97_play(frame, sizeof(frame), 48001U, 2U, 16U);
+    ac97_play(frame, sizeof(frame), 44100U, 0U, 16U);
+    ac97_play(frame, sizeof(frame), 44100U, 3U, 16U);
+    ac97_play(frame, sizeof(frame), 44100U, 2U, 24U);
+    return host_allocation_used ? 60 : 0;
+}
+
 int main(void) {
     int result = 0;
     int failures = 0;
@@ -338,6 +351,7 @@ int main(void) {
     if (!result) result = check_initialization();
     if (!result) result = check_controls_and_handler();
     if (!result) result = check_limits_and_failures();
+    if (!result) result = check_invalid_format();
     EXPECT(result == 0);
     coverage_active = 0U;
     coverage_emit(result ? ERR_STATE : OK);

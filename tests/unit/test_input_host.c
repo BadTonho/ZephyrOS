@@ -202,6 +202,20 @@ static int test_pointer_coalescing_and_bounds(void) {
     return 0;
 }
 
+static int test_invalid_sources(void) {
+    input_key_event_t key = make_key(INPUT_USAGE_A, 1U);
+    input_pointer_event_t pointer = make_pointer(1, 1, 0, 0U);
+    input_metrics_t metrics;
+
+    key.source = (input_source_t)99;
+    pointer.source = (input_source_t)99;
+    if (input_publish_key(&key) != ERR_INVALID ||
+        input_publish_pointer(&pointer) != ERR_INVALID ||
+        input_get_metrics(&metrics) != OK || metrics.last_error != ERR_INVALID ||
+        metrics.key_queued != 0U || metrics.pointer_queued != 0U) return 26;
+    return input_validate_state() == OK ? 0 : 27;
+}
+
 static int test_key_queue_limit(void) {
     input_key_event_t key = make_key(INPUT_USAGE_B, 1U);
     input_metrics_t metrics;
@@ -228,6 +242,7 @@ int main(void) {
     if (!result) result = test_uninitialized();
     if (!result) result = test_registration_and_dispatch();
     if (!result) result = test_pointer_coalescing_and_bounds();
+    if (!result) result = test_invalid_sources();
     if (!result) result = test_key_queue_limit();
     coverage_active = 0U;
     coverage_emit(result);

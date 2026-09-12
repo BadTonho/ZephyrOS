@@ -170,6 +170,8 @@ static int check_before_init(void) {
     if (keyboard_controller_reset_available() != 0U ||
         keyboard_controller_reset() != ERR_UNAVAILABLE) return 11;
     keyboard_set_focus_cancel_filter(cancel_filter);
+    keyboard_handler(0);
+    keyboard_process_events();
     if (keyboard_scancode_to_ascii(0x10U) != 'q' ||
         keyboard_scancode_to_ascii_shifted(0x10U, 1U) != 'Q' ||
         keyboard_scancode_to_ascii_shifted(0x73U, 0U) != '/' ||

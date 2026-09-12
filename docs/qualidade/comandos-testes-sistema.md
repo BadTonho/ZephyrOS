@@ -212,6 +212,22 @@ casos QEMU devem terminar em `PASS`, `BLOCKED` justificavel ou degradacao
 esperada e verificar `health`, `regcheck full`, `devices`, `device-scan` e
 `vfs status`.
 
+## HW3 - entrada, video e audio robustos
+
+O agregado host-only cobre as filas de entrada, teclado, mouse, USB HID,
+VESA, VGA, backbuffer, AC97, speaker, Shell e lifecycle dos drivers. A matriz
+QEMU reutiliza os casos marcados com `hw3`, sem criar perfis novos:
+
+```text
+make test-hw3-host
+make catalog-test
+make test-hw3-qemu HW3_QEMU_WORKERS=4 HW3_QEMU_SEED=2103
+```
+
+Os artefatos ficam em `build/test-results/hw3/`. O perfil `no-vesa` preserva
+serial/QMP; `no-usb` e `no-audio` validam ausencia e fallback. A execucao
+fisica de PS/2 permanece `PENDING` e nao e declarada como suporte.
+
 ## TST2 - protocolo e executor QEMU
 
 Testes host-only:
