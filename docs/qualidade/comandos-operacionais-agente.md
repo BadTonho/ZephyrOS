@@ -2231,6 +2231,28 @@ Os resultados devem distinguir `PASS`, degradação esperada e falha funcional;
 dispositivo ausente, timeout e remoção não podem deixar IRQ, DMA, cache,
 handles ou processos residuais.
 
+## HW5 - rede e energia
+
+```text
+make test-hw5-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+make catalog-test
+make test-hw5-qemu HW5_QEMU_WORKERS=4 HW5_QEMU_SEED=2105
+```
+
+O alvo usa a tag `hw5`, snapshots independentes e artefatos em
+`build/test-results/hw5/`. O perfil interno `network-dual` usa duas NICs E1000
+em redes privadas/restritas, sem acesso a Internet. O host-only cobre drivers,
+ACPI, RTC, energia e protocolos offline; a matriz QEMU confirma identidade
+distinta, fallback de `no-nic`/`no-acpi`, quiescencia e limpeza de recursos.
+Depois do ciclo padrao, seis workers podem ser testados no Ryzen 5 3600:
+
+```text
+make test-hw5-qemu HW5_QEMU_WORKERS=6 HW5_QEMU_SEED=2105
+```
+
+Hardware fisico continua `PENDING`; `DT100-003`, `DT100-004` e a divida fisica
+do PS/2 permanecem separadas.
+
 ## Spinlock host-only
 
 O alvo `test-spinlock-host` executa uma fixture nativa que inicializa, adquire

@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **7661**
-- Casos de teste: **187**
+- Superfícies ativas: **7663**
+- Casos de teste: **188**
 - Superfícies aposentadas: **60**
 
 | Tipo | Quantidade |
 |---|---:|
 | `api_function` | 1652 |
 | `asm_entry` | 101 |
-| `c_function` | 5788 |
+| `c_function` | 5790 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7588 |
+| `COVERED` | 7590 |
 | `MANUAL` | 0 |
 | `PENDING` | 73 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 187 |
+| `AUTOMATED` | 188 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -37,14 +37,14 @@
 | `apps` | 172 |
 | `appstore` | 98 |
 | `boot` | 146 |
-| `core` | 2887 |
+| `core` | 2888 |
 | `desktop` | 40 |
 | `drivers` | 974 |
 | `filemanager` | 93 |
 | `fs` | 1054 |
 | `gui` | 30 |
 | `icons` | 18 |
-| `kernel` | 65 |
+| `kernel` | 66 |
 | `memory` | 202 |
 | `process` | 332 |
 | `settings` | 57 |
@@ -2886,6 +2886,7 @@
 | `c:src/core/kernel_tests_tst6.c:tst6_run_matrix` | `src/core/kernel_tests_tst6.c` | `tst6_run_matrix` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests_tst6.c:tst6_run_memory` | `src/core/kernel_tests_tst6.c` | `tst6_run_memory` | `core` | `COVERED` | 2 |
 | `c:src/core/kernel_tests_tst6.c:tst6_run_network` | `src/core/kernel_tests_tst6.c` | `tst6_run_network` | `core` | `COVERED` | 1 |
+| `c:src/core/kernel_tests_tst6.c:tst6_run_network_dual` | `src/core/kernel_tests_tst6.c` | `tst6_run_network_dual` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests_tst6.c:tst6_run_platform` | `src/core/kernel_tests_tst6.c` | `tst6_run_platform` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests_tst6.c:tst6_run_storage` | `src/core/kernel_tests_tst6.c` | `tst6_run_storage` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests_tst6.c:tst6_run_stress` | `src/core/kernel_tests_tst6.c` | `tst6_run_stress` | `core` | `COVERED` | 3 |
@@ -5932,6 +5933,7 @@
 | `c:src/kernel/kernel.c:kernel_prepare_system` | `src/kernel/kernel.c` | `kernel_prepare_system` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_publish_driver_lifecycle` | `src/kernel/kernel.c` | `kernel_publish_driver_lifecycle` | `kernel` | `PENDING` | 0 |
 | `c:src/kernel/kernel.c:kernel_publish_driver_lifecycle_resources` | `src/kernel/kernel.c` | `kernel_publish_driver_lifecycle_resources` | `kernel` | `PENDING` | 0 |
+| `c:src/kernel/kernel.c:kernel_publish_network_lifecycle` | `src/kernel/kernel.c` | `kernel_publish_network_lifecycle` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_publish_usb_controller_lifecycle` | `src/kernel/kernel.c` | `kernel_publish_usb_controller_lifecycle` | `kernel` | `PENDING` | 0 |
 | `c:src/kernel/kernel.c:kernel_publish_usb_msc_lifecycle` | `src/kernel/kernel.c` | `kernel_publish_usb_msc_lifecycle` | `kernel` | `PENDING` | 0 |
 | `c:src/kernel/kernel.c:kernel_redraw_after_menu_close` | `src/kernel/kernel.c` | `kernel_redraw_after_menu_close` | `kernel` | `COVERED` | 1 |
@@ -7891,6 +7893,7 @@
 | `qemu:hw1:no-storage` | `qemu` | `hw1` | `qemu:tst6:matrix:minimal` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | QEMU fornece somente o disco usado no boot | validar armazenamento adicional ausente e boot intacto | somente o volume de boot fica visivel e o opcional retorna ERR_UNAVAILABLE | disco adicional presente, estado incoerente, timeout, protocolo ou QEMU | somente inventario de storage no snapshot | encerrar o guest sem deixar dispositivos ou imagens extras |
 | `qemu:hw1:no-usb` | `qemu` | `hw1` | `qemu:tst6:matrix:minimal` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | QEMU fornece plataforma com USB desativado | validar fallback de entrada e USB ausente | USB ausente retorna ERR_UNAVAILABLE sem panic ou fila residual | USB presente, estado incoerente, timeout, protocolo ou QEMU | somente inventario e estado de input no snapshot | encerrar o guest e liberar filas de input |
 | `qemu:hw4:usb-storage-ehci` | `qemu` | `hw4` | `qemu:tst6:usb-storage-ehci` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | fixture raw de armazenamento e controladora EHCI disponiveis | validar leitura BOT/SCSI, capacidade, provider de bloco e ausencia de escrita | leituras passam e a camada MSC permanece somente leitura sem residuos | fixture ausente, escrita, CSW invalido, timeout, protocolo ou QEMU | fixture raw somente leitura anexado ao snapshot | encerrar QEMU, desmontar o provider e preservar os artefatos |
+| `qemu:hw5:network-dual` | `qemu` | `network-dual` | `qemu:tst6:network-dual` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | imagem pronta, duas NICs E1000 QEMU e rede privada restrita | executar diagnosticos de rede e verificar as duas interfaces | duas NICs E1000 ativas, com identidades distintas, sem Internet e sem residuos | NIC ausente, identidade duplicada, estado incorreto, acesso externo, timeout ou processo residual | somente snapshots e diagnosticos de rede | encerrar QEMU e preservar serial, QMP e resultado |
 | `qemu:tst2:boot-ready` | `qemu` | `smoke` | `qemu:tst2:boot-ready` | `AUTOMATED` | 30 | 5 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e o executavel qemu-system-i386 esta disponivel | iniciar o guest em snapshot, enviar HELLO e executar o caso de boot apos READY | o guest publica READY, HEARTBEAT e PASS para o caso solicitado | PANIC, TIMEOUT, ausencia de heartbeat, erro de protocolo ou encerramento inesperado do QEMU | cria um processo QEMU e artefatos temporarios da execucao | encerrar o QEMU via QMP e preservar o relatorio, serial e logs da execucao |
 | `qemu:tst4:execution` | `qemu` | `smoke` | `qemu:tst4:execution` | `AUTOMATED` | 60 | 10 | `snapshot` | `quality` | `qemu` | processos, threads, IPC, wait e workqueue estao READY | executar um unico autoteste interno apos READY | todos os resultados estruturados passam e nenhum estado residual permanece | falha de resultado, invariante, fila, contador, timeout, protocolo ou QEMU | cria somente objetos temporarios dos self-tests existentes | cada self-test desfaz seus objetos e o harness valida as filas finais |
 | `qemu:tst4:memory-slab` | `qemu` | `smoke` | `qemu:tst4:memory-slab` | `AUTOMATED` | 30 | 5 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e paging, PMM, heap e SLAB estao READY | iniciar o guest em snapshot e enviar um unico RUN apos READY | o guest publica READY, HEARTBEAT, BEGIN e PASS, preservando o estado de memoria | falha de pre-condicao, invariante, contador, pagina, protocolo, heartbeat ou QEMU | cria um processo QEMU e recursos temporarios de memoria do autoteste | encerrar o QEMU via QMP e preservar manifesto, serial, logs e resultado |

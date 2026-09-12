@@ -237,6 +237,46 @@ static void kernel_publish_usb_msc_lifecycle(void) {
     }
 }
 
+static void kernel_publish_network_lifecycle(void) {
+    uint32_t count = 0U;
+
+    if (network_manager_get_count(&count) != OK) return;
+    for (uint32_t index = 0U; index < count; index++) {
+        network_interface_info_t info;
+        network_interface_text_t text;
+        driver_lifecycle_resource_ids_t resources = {0};
+        uint32_t required = 0U;
+        int init_result;
+
+        if (network_manager_get_interface(index, &info) != OK ||
+            network_manager_format_text(&info, &text) != OK) continue;
+        resources.irq = info.irq;
+        resources.callback = index + 1U;
+        resources.work = index + 1U;
+        if (info.model == NETWORK_ADAPTER_E1000) {
+            resources.mmio = info.bars[0] & 0xFFFFFFF0U;
+        } else {
+            resources.io = info.bars[0] & 0xFFFFFFFCU;
+        }
+        if (info.state == NETWORK_INTERFACE_ACTIVE) {
+            required = DRIVER_LIFECYCLE_RESOURCE_IRQ |
+                       DRIVER_LIFECYCLE_RESOURCE_CALLBACK |
+                       DRIVER_LIFECYCLE_RESOURCE_WORK |
+                       (info.model == NETWORK_ADAPTER_E1000 ?
+                        DRIVER_LIFECYCLE_RESOURCE_MMIO :
+                        DRIVER_LIFECYCLE_RESOURCE_IO);
+            init_result = OK;
+        } else {
+            init_result = info.driver_error ? info.driver_error :
+                ERR_UNAVAILABLE;
+        }
+        kernel_publish_driver_lifecycle_resources(
+            text.id, "pci0", "pci", "network", text.id, required,
+            &resources, DRIVER_LIFECYCLE_SHARED_IRQ, init_result, 1U,
+            "Interface de rede indisponivel");
+    }
+}
+
 static void kernel_publish_driver_lifecycle_resources(
     const char* driver_id, const char* parent_id, const char* bus,
     const char* class_name, const char* identity, uint32_t required_resources,
@@ -1364,6 +1404,9 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     video_print("[..] Ancorando relogio monotono...\n", 0x08);
     int clock_result = clock_init();
+    kernel_publish_driver_lifecycle("clock0", "rtc0", "cmos", "clock",
+                                    "clock", clock_result, 1U,
+                                    "Relogio UTC indisponivel");
     if (clock_result == OK) {
         video_print("[OK] Relogio UTC ancorado no PIT\n", 0x07);
     } else {
@@ -1796,6 +1839,7 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     video_print("[..] Criando inventario de rede...\n", 0x08);
     int network_result = network_manager_init();
+    kernel_publish_network_lifecycle();
     kernel_publish_driver_lifecycle("network0", "pci0", "pci", "network",
                                     "network", network_result, 1U,
                                     "rede indisponivel");

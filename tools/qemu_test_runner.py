@@ -73,12 +73,13 @@ REPORT_TERMINATIONS = {
 QEMU_PROFILE_NAMES = {
     "baseline", "minimal", "network", "usb-hid", "usb-storage", "audio",
     "display", "pci", "no-acpi", "no-nic", "no-usb", "no-vesa",
-    "no-audio", "no-storage", "usb-storage-ehci",
+    "no-audio", "no-storage", "usb-storage-ehci", "network-dual",
 }
 QEMU_PROFILE_CAPABILITIES = {
     "baseline": ["acpi", "pci", "vga", "network-e1000"],
     "minimal": ["pci", "vga"],
     "network": ["pci", "network-e1000"],
+    "network-dual": ["pci", "network-e1000", "network-dual"],
     "usb-hid": ["usb", "usb-hid"],
     "usb-storage": ["usb", "usb-hid", "usb-storage-readonly"],
     "usb-storage-ehci": ["usb", "usb-storage-readonly"],
@@ -96,6 +97,12 @@ QEMU_PROFILE_ARGS = {
     "baseline": [],
     "minimal": ["-machine", "pc,acpi=off"],
     "network": [],
+    "network-dual": [
+        "-netdev", "user,id=hw5net0,restrict=on",
+        "-device", "e1000,netdev=hw5net0,id=hw5nic0",
+        "-netdev", "user,id=hw5net1,restrict=on",
+        "-device", "e1000,netdev=hw5net1,id=hw5nic1",
+    ],
     "usb-hid": [
         "-device", "piix3-usb-uhci,id=tst6usb",
         "-device", "usb-kbd,bus=tst6usb.0",
@@ -625,7 +632,7 @@ class QemuSession:
             "-drive", f"file={image},format=raw,if=none,id=bootdisk",
             "-device", "ide-hd,drive=bootdisk,bus=ide.0,unit=0,bootindex=1",
         ])
-        if self.arguments.network:
+        if self.arguments.network and qemu_profile != "network-dual":
             command.extend(["-nic", self.arguments.network])
         command.extend([
             "-serial", f"tcp:127.0.0.1:{self.serial_port},server=on,wait=on",

@@ -7351,3 +7351,9 @@ dívida.
   MSC EHCI e rejeição de escrita; nenhum processo QEMU residual foi
   encontrado. Hardware físico continua `PENDING` e `DT100-003`, `DT100-004`
   e a dívida física do PS/2 permanecem separadas.
+
+- HW5 - rede e energia - implementacao e validacao concluida em 2026-09-12 (America/Sao_Paulo). O lifecycle interno passou a publicar ownership e estados para E1000/RTL8139, ACPI, energia e RTC/clock. O runner recebeu o perfil interno `network-dual`, com duas NICs E1000 em redes privadas restritas, sem acesso a Internet.
+
+  Passaram `make q3check`, `make clean`, `make`, `make test-hw5-host`, `make catalog-test` e `make test-hw5-qemu HW5_QEMU_WORKERS=4 HW5_QEMU_SEED=2105`. O agregado host executou os drivers, ACPI, energia, RTC, protocolos offline, sockets, Shell, lifecycle e a matriz HW5. A matriz QEMU final executou 12 casos de topo, todos `PASS`, nos perfis `baseline`, `network`, `network-dual`, `no-nic` e `no-acpi`, com quatro workers, seed 2105 e sem processos QEMU residuais.
+
+  O run QEMU foi `qpp-20260912T140939Z-9588`, com artefatos em `build/test-results/hw5/qpp-20260912T140939Z-9588/` e imagem SHA-256 `2cdb2054bad4eb8ce67a9bdf31da76d1f58d0662e7b0f98f2a9c1787ae893e31`. Hardware fisico continua `PENDING`; `DT100-003`, `DT100-004` e a divida fisica do PS/2 permanecem separadas.

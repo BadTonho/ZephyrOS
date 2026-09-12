@@ -2,7 +2,8 @@
 
 ## Estado
 
-Status por etapa: HW1 CONCLUIDO; HW2 CONCLUIDO; HW3 CONCLUIDO; HW4 CONCLUIDO.
+Status por etapa: HW1 CONCLUIDO; HW2 CONCLUIDO; HW3 CONCLUIDO; HW4 CONCLUIDO;
+HW5 CONCLUIDO.
 Os sete perfis base QEMU estao versionados, testados e
 reproduziveis; o perfil interno EHCI do HW4 esta coberto pelo runner;
 hardware fisico permanece `PENDING`.
@@ -132,17 +133,25 @@ continua `PENDING`.
 
 ### HW5 — Rede e energia
 
-- [ ] Validar E1000, RTL8139, ausência de NIC, múltiplas NICs e o estado
+- [x] Validar E1000, RTL8139, ausência de NIC, múltiplas NICs e o estado
   degradado de interfaces sem driver.
-- [ ] Confirmar Ethernet, ARP, IPv4, DHCP, DNS, TCP e HTTP nos perfis em que
+- [x] Confirmar Ethernet, ARP, IPv4, DHCP, DNS, TCP e HTTP nos perfis em que
   a capacidade estiver presente.
-- [ ] Validar ACPI RSDP, raiz, FADT, MADT, PM1, S5, RESET_REG e fallbacks de
+- [x] Validar ACPI RSDP, raiz, FADT, MADT, PM1, S5, RESET_REG e fallbacks de
   reboot sem escrever em capacidade não validada.
-- [ ] Exercitar `poweroff`, `reboot`, quiescência e retorno de erro antes do
+- [x] Exercitar `poweroff`, `reboot`, quiescência e retorno de erro antes do
   commit.
-- [ ] Confirmar que nenhum fallback dependa de porta privada de emulador.
-- [ ] Publicar hora monotônica e hora civil do relógio/RTC quando a fonte
+- [x] Confirmar que nenhum fallback dependa de porta privada de emulador.
+- [x] Publicar hora monotônica e hora civil do relógio/RTC quando a fonte
   estiver ausente, inválida ou ainda não sincronizada.
+
+HW5 foi concluida em 2026-09-12 com a matriz host e QEMU validada.
+E1000, RTL8139, ACPI, energia e RTC/clock publicam estados, ownership,
+fallbacks e diagnosticos; `network-dual` confirmou duas NICs E1000 distintas
+em redes privadas restritas. A matriz executou 12 casos com quatro workers,
+seed 2105, todos `PASS`, sem acesso a Internet e sem processos residuais.
+Hardware fisico continua `PENDING`; DT100-003, DT100-004 e a divida fisica
+do PS/2 permanecem separadas.
 
 ### HW6 — Diagnóstico e suporte
 

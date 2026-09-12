@@ -37,6 +37,12 @@
       "case_id": "qemu:hw4:usb-storage-ehci",
       "condition": "USB MSC EHCI permite somente leitura e remove o provider sem residuos",
       "origin": "docs/roadmaps/21-hardware-rede-e-energia-v1.0.md:HW4"
+    },
+    {
+      "id": "hw5-network-power",
+      "case_id": "qemu:hw5:network-dual",
+      "condition": "duas NICs E1000 privadas mantem identidade, lifecycle e limpeza sem depender da Internet",
+      "origin": "docs/roadmaps/21-hardware-rede-e-energia-v1.0.md:HW5"
     }
   ]
 }

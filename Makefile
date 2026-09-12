@@ -51,6 +51,8 @@ HW2_QEMU_WORKERS ?= 4
 HW2_QEMU_SEED ?= 2102
 HW4_QEMU_WORKERS ?= 4
 HW4_QEMU_SEED ?= 2104
+HW5_QEMU_WORKERS ?= 4
+HW5_QEMU_SEED ?= 2105
 COVERAGE_BUILD_DIR ?= build-coverage
 ASSEMBLY_RUN_ID ?= tst7-assembly-1
 ASSEMBLY_TRACE_RUN_ID ?= tst7-assembly-trace-1
@@ -1606,6 +1608,12 @@ test-hw4-qemu: $(OS_IMG) $(STORAGE_FIXTURES_STAMP) tools\qemu_parallel_runner.py
 
 test-hw4: test-hw4-host test-hw4-qemu
 
+test-hw5-qemu: $(OS_IMG) tools\qemu_parallel_runner.py tools\qemu_test_runner.py tests\catalog.json
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	python tools\qemu_parallel_runner.py parallel --workers "$(HW5_QEMU_WORKERS)" --seed "$(HW5_QEMU_SEED)" --image "$(OS_IMG)" --catalog tests\catalog.json --results "$(BUILD_DIR)\test-results\hw5" --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --tag hw5
+
+test-hw5: test-hw5-host test-hw5-qemu
+
 test-qemu-soak-parallel: $(OS_IMG) tools\qemu_parallel_runner.py tools\qemu_test_runner.py tests\catalog.json
 	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
 	python tools\qemu_parallel_runner.py soak --workers "$(QEMU_PARALLEL_WORKERS)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" $(QEMU_PARALLEL_SOAK_ARGS)
@@ -1969,6 +1977,9 @@ test-hw3-host: test-input-host test-keyboard-host test-mouse-host test-usb-hid-h
 test-hw4-host: test-ata-host test-uhci-host test-ehci-host test-usb-transport-host test-usb-manager-host test-usb-hid-host test-usb-msc-host test-block-host test-fat12-host test-fat32-host test-fs-host test-storage-host test-storage-fat32-host test-vfs-host test-vfs-path-host test-shell-diagnostics-host test-driver-lifecycle-host tests\unit\test_hw4_matrix.py tools\qemu_test_runner.py tools\qemu_parallel_runner.py tests\catalog.json tests\coverage\registry.json
 	python -m unittest tests.unit.test_hw4_matrix tests.unit.test_qemu_test_runner tests.unit.test_qemu_parallel_runner
 
+test-hw5-host: test-e1000-host test-rtl8139-host test-acpi-host test-power-host test-rtc-status-host test-network-manager-host test-network-host test-route-host test-ipv4-host test-udp-host test-arp-host test-icmp-host test-dns-host test-dhcp-host test-ethernet-host test-tcp-host test-http-host test-net-socket-host test-socket-runtime-host test-shell-network-checks-host test-driver-lifecycle-host test-kernel-host tests\unit\test_hw5_matrix.py tools\qemu_test_runner.py tools\qemu_parallel_runner.py tests\catalog.json tests\coverage\registry.json
+	python -m unittest tests.unit.test_hw5_matrix tests.unit.test_qemu_test_runner tests.unit.test_qemu_parallel_runner
+
 test-vfs-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_vfs_host.c tests\catalog.json src\fs\vfs.c src\fs\permissions.c src\process\credentials.c src\include\fs\vfs.h src\include\fs\permissions.h src\include\process\credentials.h src\include\process\resource.h
 	python tools\core_host_runner.py --case host:storage:vfs --cc "$(HOST_CC)"
 
@@ -2321,7 +2332,7 @@ clean:
 .PHONY: kernel-elf
 .PHONY: test-assembly-qemu test-assembly-trace-qemu test-assembly-boot-trace-qemu test-assembly-recovery-trace-qemu
 .PHONY: test-qemu-parallel test-qemu-soak-parallel test-sec6-host test-sec6-qemu test-sec6
-.PHONY: test-sto1-host test-sto2-host test-sto3-host test-sto4-host test-sto5-host test-sto6-host test-sto7-host test-sto7-qemu test-sto7 test-hw1-host test-hw1-qemu test-hw1 test-hw2-host test-hw2-qemu test-hw2 test-hw3-host test-hw3-qemu test-hw3 test-hw4-host test-hw4-qemu test-hw4 test-driver-lifecycle-host
+.PHONY: test-sto1-host test-sto2-host test-sto3-host test-sto4-host test-sto5-host test-sto6-host test-sto7-host test-sto7-qemu test-sto7 test-hw1-host test-hw1-qemu test-hw1 test-hw2-host test-hw2-qemu test-hw2 test-hw3-host test-hw3-qemu test-hw3 test-hw4-host test-hw4-qemu test-hw4 test-hw5-host test-hw5-qemu test-hw5 test-driver-lifecycle-host
 .PHONY: test-tst4-qemu-paging-vma test-tst4-qemu-execution test-tst4-qemu-storage-vfs test-tst4-qemu-network test-tst4-qemu-platform
 .PHONY: test-tst5-host test-tst5-qemu-shell test-tst5-qemu-input test-tst5-qemu-apps test-tst5-qemu-processes test-tst5-qemu-storage test-tst5-qemu-network test-tst5-qemu-update-recovery test-tst5-qemu-reboot test-tst5-qemu-poweroff
 .PHONY: test-krn6-qemu-diagnostics

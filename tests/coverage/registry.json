@@ -290,6 +290,62 @@
         "STOPPED"
       ],
       "artifact_schema": "zephyros-qemu-parallel-result-v1"
+    },
+    "hw5_network_power": {
+      "case_ids": [
+        "qemu:hw1:no-acpi",
+        "qemu:hw1:no-nic",
+        "qemu:tst4:network",
+        "qemu:tst5:krn6-diagnostics",
+        "qemu:tst5:network",
+        "qemu:tst5:poweroff",
+        "qemu:tst5:reboot",
+        "qemu:tst6:fault:network",
+        "qemu:tst6:matrix:baseline",
+        "qemu:tst6:matrix:network",
+        "qemu:tst6:stress:network",
+        "qemu:hw5:network-dual"
+      ],
+      "reused_tags": [
+        "hw1",
+        "tst4",
+        "tst5",
+        "tst6",
+        "network",
+        "offline",
+        "lifecycle"
+      ],
+      "profiles": [
+        "baseline",
+        "network",
+        "network-dual",
+        "no-nic",
+        "no-acpi"
+      ],
+      "hardware_scope": "qemu",
+      "required_capabilities": [
+        "network-e1000"
+      ],
+      "required_diagnostics": [
+        "health",
+        "regcheck full",
+        "devices",
+        "device-scan",
+        "net status",
+        "power status"
+      ],
+      "workers_default": 4,
+      "seed_default": 2105,
+      "artifact_directory": "build/test-results/hw5",
+      "physical_hardware_status": "PENDING",
+      "network_policy": "offline-restricted",
+      "statuses": [
+        "PASS",
+        "FAIL",
+        "BLOCKED",
+        "STOPPED"
+      ],
+      "artifact_schema": "zephyros-qemu-parallel-result-v1"
     }
   },
   "entries": [
@@ -927,7 +983,8 @@
           "krn6",
           "diagnostics",
           "hw2",
-          "hw3"
+          "hw3",
+          "hw5"
         ],
         "interaction": {
           "mode": "qmp-keyboard",
@@ -8317,6 +8374,22 @@
         ]
       },
       "evidence": "caso QEMU deterministico para fechar a cobertura EHCI do USB MSC somente leitura"
+    },
+    {
+      "id": "hw5-network-dual-qemu",
+      "domain": "hardware-network-power",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:hw5:network-dual"
+      ],
+      "surface_ids": [
+        "c:src/core/kernel_tests_tst6.c:tst6_run_network_dual",
+        "c:src/kernel/kernel.c:kernel_publish_network_lifecycle"
+      ],
+      "include_public_apis": true,
+      "evidence": "QEMU HW5 network-dual PASS com duas NICs E1000, identidade distinta, lifecycle e limpeza sem Internet"
     }
   ]
 }

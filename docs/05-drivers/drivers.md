@@ -916,6 +916,26 @@ Link, erros e descritores RX sao tratados na `Zephyr kworker`. O callback
 `service_pending` executado pelo polling Ethernet preserva a recuperacao se o
 agendamento for rejeitado. Os protocolos continuam fora da IRQ.
 
+### HW5 - rede dual, energia e clock
+
+O `network_manager` publica cada NIC somente depois de o driver confirmar PCI,
+BAR, IRQ, DMA, filas RX/TX, MAC e callbacks. A identidade publicada combina o
+ID da interface com BDF e geracao; uma segunda E1000 nao substitui nem reinicia
+a primeira. `network_manager_refresh()`, `device-scan` e `net status` consultam
+snapshots e nao fazem novo probe.
+
+O perfil QEMU interno `network-dual` usa duas E1000 em redes privadas restritas
+e valida duas interfaces ativas, com IDs e BDFs distintos, sem depender da
+Internet. Os protocolos da matriz HW5 usam peers e fixtures offline. Falhas de
+link, RX/TX, timeout ou ausencia de NIC publicam erro ou degradacao esperada e
+liberam filas, buffers, callbacks, sockets e leases no encerramento.
+
+ACPI e o coordenador de energia mantem snapshots validados de RSDP, RSDT/XSDT,
+FADT, MADT, PM1, `_S5_` e `RESET_REG`; nenhuma porta ou registrador e escrito
+quando a capacidade correspondente nao foi confirmada. `poweroff` e `reboot`
+passam por quiescencia e sync unico, com deadline e fallback seguro. O clock
+mantem a fonte monotona mesmo quando RTC/UTC estiver indisponivel ou invalido.
+
 ## RTL8139 (`rtl8139.c`)
 
 O driver S2.8 atende ao Realtek `10EC:8139` em modo classico, sem C+. Ele usa

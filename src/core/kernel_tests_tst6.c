@@ -2,6 +2,7 @@
 
 #include "core/app_package.h"
 #include "core/log.h"
+#include "core/network_manager.h"
 #include "core/service_supervisor.h"
 #include "core/update_runtime.h"
 #include "drivers/usb_msc.h"
@@ -137,6 +138,62 @@ static int tst6_run_usb_storage_ehci(const kernel_tests_runtime_t* runtime) {
     LOG_ERROR_CODE(KERNEL_TEST_TST6_TAG, ERR_NOT_FOUND,
                    "usb-storage-ehci ready device");
     return ERR_NOT_FOUND;
+}
+
+static int tst6_run_network_dual(const kernel_tests_runtime_t* runtime) {
+    network_manager_status_t status;
+    network_interface_info_t first;
+    network_interface_info_t second;
+    network_interface_text_t first_text;
+    network_interface_text_t second_text;
+    uint32_t count = 0U;
+    int result;
+
+    (void)runtime;
+    result = network_manager_get_status(&status);
+    if (result != OK) {
+        LOG_ERROR_CODE(KERNEL_TEST_TST6_TAG, result,
+                       "network-dual: status indisponivel");
+        return result;
+    }
+    result = network_manager_get_count(&count);
+    if (result != OK) {
+        LOG_ERROR_CODE(KERNEL_TEST_TST6_TAG, result,
+                       "network-dual: contagem indisponivel");
+        return result;
+    }
+    if (count < 2U || status.active_count < 2U) {
+        LOG_ERROR_CODE(KERNEL_TEST_TST6_TAG, ERR_UNAVAILABLE,
+                       "network-dual: duas NICs nao publicadas");
+        return ERR_UNAVAILABLE;
+    }
+    result = network_manager_get_interface(0U, &first);
+    if (result == OK) result = network_manager_get_interface(1U, &second);
+    if (result == OK) {
+        result = network_manager_format_text(&first, &first_text);
+    }
+    if (result == OK) {
+        result = network_manager_format_text(&second, &second_text);
+    }
+    if (result != OK) {
+        LOG_ERROR_CODE(KERNEL_TEST_TST6_TAG, result,
+                       "network-dual: interfaces indisponiveis");
+        return result;
+    }
+    if (first.model != NETWORK_ADAPTER_E1000 ||
+        second.model != NETWORK_ADAPTER_E1000 ||
+        first.state != NETWORK_INTERFACE_ACTIVE ||
+        second.state != NETWORK_INTERFACE_ACTIVE ||
+        (first.bus == second.bus && first.device == second.device &&
+            first.function == second.function) ||
+        first_text.id[0] == '\0' || second_text.id[0] == '\0' ||
+        tst6_equals(first_text.id, tst6_length(first_text.id),
+                    second_text.id)) {
+        LOG_ERROR_CODE(KERNEL_TEST_TST6_TAG, ERR_STATE,
+                       "network-dual: identidade ou estado invalido");
+        return ERR_STATE;
+    }
+    return kernel_tests_report_phase(runtime, "network-dual", OK);
 }
 
 static int tst6_run_memory(const kernel_tests_runtime_t* runtime) {
@@ -351,6 +408,9 @@ int kernel_tests_run_tst6(const kernel_tests_runtime_t* runtime,
     if (tst6_equals(suffix, suffix_length, "usb-storage-ehci")) {
         return tst6_run_domain(runtime, "usb-storage-ehci",
                                tst6_run_usb_storage_ehci);
+    }
+    if (tst6_equals(suffix, suffix_length, "network-dual")) {
+        return tst6_run_domain(runtime, "network-dual", tst6_run_network_dual);
     }
     if (tst6_suffix(case_id, case_length, "matrix:baseline") ||
         tst6_suffix(case_id, case_length, "matrix:minimal") ||

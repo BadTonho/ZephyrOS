@@ -247,6 +247,26 @@ UHCI; `usb-storage-ehci` cobre EHCI high-speed; `no-storage` e `no-usb`
 confirmam a ausência segura do recurso. Escritas MSC são rejeitadas e a perda
 do dispositivo deve remover provider, cache, handles e aliases sem resíduos.
 
+## HW5 - rede e energia
+
+O agregado host-only cobre E1000, RTL8139, ACPI, energia, RTC/clock, protocolos
+de rede offline, sockets, Shell e lifecycle. A matriz usa somente redes privadas
+ou restritas do QEMU; nenhum caso acessa a Internet ou depende de DHCP externo.
+O perfil interno `network-dual` cria duas NICs E1000 com identidades estaveis:
+
+```text
+make test-hw5-host
+make catalog-test
+make test-hw5-qemu HW5_QEMU_WORKERS=4 HW5_QEMU_SEED=2105
+make test-hw5
+```
+
+Os artefatos ficam em `build/test-results/hw5/`. Os perfis `baseline`,
+`network`, `network-dual`, `no-nic` e `no-acpi` devem terminar em `PASS` ou
+degradacao esperada. A matriz verifica `health`, `regcheck full`, `devices`,
+`device-scan`, `net status` e `power status`, alem de limpeza de IRQ, DMA,
+buffers, filas, sockets, leases e callbacks.
+
 ## TST2 - protocolo e executor QEMU
 
 Testes host-only:

@@ -64590,6 +64590,27 @@
       "coverage_mode": "integration"
     },
     {
+      "id": "c:src/core/kernel_tests_tst6.c:tst6_run_network_dual",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_tst6.c",
+      "symbol": "tst6_run_network_dual",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:hw5:network-dual"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
       "id": "c:src/core/kernel_tests_tst6.c:tst6_run_platform",
       "kind": "c_function",
       "source": "src/core/kernel_tests_tst6.c",
@@ -131471,6 +131492,27 @@
       "tags": []
     },
     {
+      "id": "c:src/kernel/kernel.c:kernel_publish_network_lifecycle",
+      "kind": "c_function",
+      "source": "src/kernel/kernel.c",
+      "symbol": "kernel_publish_network_lifecycle",
+      "linkage": "static",
+      "owner": "kernel",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "qemu:hw5:network-dual"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
       "id": "c:src/kernel/kernel.c:kernel_publish_usb_controller_lifecycle",
       "kind": "c_function",
       "source": "src/kernel/kernel.c",
@@ -183644,7 +183686,8 @@
         "qemu",
         "hw1-profile",
         "no-acpi",
-        "hw2"
+        "hw2",
+        "hw5"
       ]
     },
     {
@@ -183721,7 +183764,8 @@
         "qemu",
         "hw1-profile",
         "no-nic",
-        "hw2"
+        "hw2",
+        "hw5"
       ]
     },
     {
@@ -183844,6 +183888,53 @@
         "storage",
         "ehci",
         "readonly"
+      ]
+    },
+    {
+      "id": "qemu:hw5:network-dual",
+      "scenario": "Matriz HW5 com duas NICs E1000 em rede privada",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "network-dual",
+      "guest_case": "qemu:tst6:network-dual",
+      "qemu_profile": "network-dual",
+      "required_capabilities": [
+        "pci",
+        "network-e1000",
+        "network-dual"
+      ],
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 60,
+      "isolation": "snapshot",
+      "parameters": {
+        "protocol": "ZTEST/1",
+        "profile": "network-dual",
+        "network": "offline",
+        "postcondition": "two-active-nics-stable",
+        "required_capabilities": [
+          "pci",
+          "network-e1000",
+          "network-dual"
+        ]
+      },
+      "preconditions": "imagem pronta, duas NICs E1000 QEMU e rede privada restrita",
+      "action": "executar diagnosticos de rede e verificar as duas interfaces",
+      "expected": "duas NICs E1000 ativas, com identidades distintas, sem Internet e sem residuos",
+      "errors": "NIC ausente, identidade duplicada, estado incorreto, acesso externo, timeout ou processo residual",
+      "effects": "somente snapshots e diagnosticos de rede",
+      "cleanup": "encerrar QEMU e preservar serial, QMP e resultado",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "c:src/core/kernel_tests_tst6.c:tst6_run_network_dual",
+        "c:src/kernel/kernel.c:kernel_publish_network_lifecycle"
+      ],
+      "tags": [
+        "hw5",
+        "qemu",
+        "network",
+        "dual-nic",
+        "offline"
       ]
     },
     {
@@ -184698,7 +184789,8 @@
         "smoke",
         "tst4",
         "network",
-        "offline"
+        "offline",
+        "hw5"
       ]
     },
     {
@@ -187963,7 +188055,8 @@
         "krn6",
         "diagnostics",
         "hw2",
-        "hw3"
+        "hw3",
+        "hw5"
       ],
       "interaction": {
         "mode": "qmp-keyboard",
@@ -188379,7 +188472,8 @@
         "smoke",
         "tst5",
         "network",
-        "offline"
+        "offline",
+        "hw5"
       ],
       "interaction": {
         "mode": "qmp-keyboard",
@@ -188466,7 +188560,8 @@
         "tst5",
         "poweroff",
         "lifecycle",
-        "hw2"
+        "hw2",
+        "hw5"
       ],
       "interaction": {
         "mode": "qmp-keyboard",
@@ -188958,7 +189053,8 @@
         "tst5",
         "reboot",
         "lifecycle",
-        "hw2"
+        "hw2",
+        "hw5"
       ],
       "interaction": {
         "mode": "qmp-keyboard",
@@ -191031,7 +191127,8 @@
         "tst6",
         "fault",
         "network",
-        "offline"
+        "offline",
+        "hw5"
       ]
     },
     {
@@ -192036,7 +192133,8 @@
         "baseline",
         "hw1",
         "hw2",
-        "hw3"
+        "hw3",
+        "hw5"
       ]
     },
     {
@@ -192152,7 +192250,8 @@
         "matrix",
         "network",
         "offline",
-        "hw2"
+        "hw2",
+        "hw5"
       ]
     },
     {
@@ -193556,7 +193655,8 @@
         "tst6",
         "stress",
         "network",
-        "offline"
+        "offline",
+        "hw5"
       ]
     },
     {
