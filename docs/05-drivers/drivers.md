@@ -833,6 +833,32 @@ usuario no QEMU; `poweroff` e `shutdown -h now` encerraram o sistema e
 
 ---
 
+## Ciclo de vida e ownership dos drivers (HW2)
+
+O kernel mantém um registro interno estático para acompanhar os drivers sem
+alterar headers públicos, ABI, syscalls ou App API. Cada identidade possui
+geração própria e relaciona pai, bus, classe, driver e recursos adquiridos.
+
+As transições de publicação seguem `UNREGISTERED -> PROBING -> RESETTING ->
+CONFIGURING -> REGISTERED -> READY`. Hardware opcional que não inicializa fica
+em `DEGRADED`; falhas de aquisição publicam `FAILED` depois da limpeza reversa.
+`QUIESCING` e `QUIESCED` drenam callbacks e trabalhos adiados antes de
+`STOPPED`. Inicialização repetida de uma identidade pronta é idempotente e não
+duplica IRQ, DMA, buffers, callbacks ou work items.
+
+O registro valida conflitos de IRQ, permite compartilhamento somente quando
+os dois owners declaram essa capacidade e invalida a geração ao falhar ou
+parar. Operações e callbacks devem confirmar estado e geração antes de usar o
+contexto do driver; callbacks não podem reter ponteiros depois de quiescência.
+DMA é associado ao owner e a limpeza libera recursos na ordem inversa da
+aquisição. O caminho de IRQ permanece limitado a confirmação, limpeza de causa,
+EOI e agendamento; polling, bloqueios, alocações e logs detalhados ficam fora
+do contexto de interrupção.
+
+A ordem coordenada por `kernel_main()` é infraestrutura básica, armazenamento,
+PCI, USB, periféricos e serviços dependentes. O snapshot interno é apenas
+diagnóstico e não publica ponteiros nem cria uma API nova.
+
 ## PCI (`pci.c`)
 
 **Peripheral Component Interconnect** - Barramento para detectar dispositivos de hardware.

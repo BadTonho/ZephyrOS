@@ -49,6 +49,20 @@ A função `kernel_main()` é o ponto de entrada em C. Ela:
 
 ### Ordem de Inicialização
 
+Desde HW2, a ordem de inicialização também publica cada driver no registro
+interno de lifecycle. A sequência observável permanece infraestrutura básica,
+armazenamento, PCI, USB, periféricos e serviços dependentes. Um driver só fica
+`READY` depois de concluir probe, reset, configuração, registro de IRQ e
+callbacks e confirmação dos recursos que possui. Falhas opcionais publicam
+`DEGRADED`; falhas intermediárias liberam os recursos adquiridos e invalidam a
+geração anterior.
+
+O registro é estático e privado ao kernel. Ele mantém identidade, relação pai,
+bus, classe, geração, recursos e último erro para diagnósticos, sem expor
+ponteiros, alterar estruturas públicas ou introduzir nova syscall. Quiescência
+remove callbacks e trabalhos adiados antes de bloquear novas operações; o
+estado `STOPPED` rejeita handles e callbacks da geração antiga.
+
 ```c
 void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     /* Video, logs, IDT, teclado, mouse e timer. */

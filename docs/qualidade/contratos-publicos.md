@@ -13,6 +13,28 @@ politica de identidade estavel. Hardware fisico permanece `PENDING` ate haver
 evidencia reproduzivel. HW1 nao altera syscall, ABI, bootloader, Stage 2 ou
 formato FAT.
 
+## HW2 - lifecycle interno e ownership
+
+HW2 adiciona somente o modulo privado
+`src/drivers/driver_lifecycle_internal.h` e sua implementacao em
+`src/drivers/driver_lifecycle.c`. O registro acompanha estado, identidade,
+geracao, owner e recursos de PCI, ATA, USB, rede, audio, video, entrada, ACPI,
+RTC, serial, speaker e timer. Os estados publicos dos drivers e os headers em
+`src/include/` permanecem inalterados.
+
+As transicoes aceitas sao `PROBING`, `RESETTING`, `CONFIGURING`, `REGISTERED`
+e `READY`, com `DEGRADED`, `QUIESCING`, `QUIESCED`, `FAILED` e `STOPPED` para
+degradacao, encerramento e falha. Recursos duplicados ou conflitantes sao
+recusados com os erros canonicos existentes; IRQ compartilhada exige a flag
+interna correspondente. Falha ou parada libera ownership, invalida a geracao
+e rejeita callbacks obsoletos. O registro e serializado pela ordem de boot e
+nao publica ponteiros ou handles novos.
+
+O contrato direto e coberto por `host:drivers:lifecycle`, que exercita
+transicoes invalidas, inicializacao repetida, conflito e limpeza de IRQ/DMA,
+quiescencia, callbacks e geracoes antigas. Hardware fisico continua
+`PENDING`.
+
 A Fase 5 acrescenta somente campos e funcoes ao fim dos contratos alterados:
 geracao de execucao no Shell Job, App Loader, pacotes e operacoes remotas,
 estado de drenagem, deadline e proximo despertar, geracao de operacao do

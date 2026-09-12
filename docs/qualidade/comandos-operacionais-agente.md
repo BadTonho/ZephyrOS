@@ -2167,6 +2167,28 @@ seis workers podem ser testados apos o ciclo padrao:
 make test-hw1-qemu HW1_QEMU_WORKERS=6 HW1_QEMU_SEED=2101
 ```
 
+## HW2 - lifecycle e ownership dos drivers
+
+O registro de lifecycle e privado ao kernel; a validacao host-only cobre
+transicoes, recursos, IRQ compartilhada, DMA, callbacks, quiescencia e
+geracoes. A matriz QEMU usa os casos associados pela tag `hw2`:
+
+```text
+make test-hw2-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+make catalog-test
+make test-hw2-qemu HW2_QEMU_WORKERS=4 HW2_QEMU_SEED=2102
+```
+
+Os resultados ficam em `build/test-results/hw2/`. O executor usa snapshots e
+diretorios individuais; ausencia de hardware deve aparecer como `DEGRADED`,
+`ERR_UNAVAILABLE` ou `BLOCKED` justificavel, sem panic, loop ou recurso
+residual. Depois do ciclo padrao, seis workers podem ser testados no Ryzen 5
+3600:
+
+```text
+make test-hw2-qemu HW2_QEMU_WORKERS=6 HW2_QEMU_SEED=2102
+```
+
 ## Spinlock host-only
 
 O alvo `test-spinlock-host` executa uma fixture nativa que inicializa, adquire

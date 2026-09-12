@@ -192,6 +192,26 @@ ser usados no Ryzen 5 3600 depois da validacao inicial. A matriz deve
 confirmar `health`, `regcheck full`, `devices` e `device-scan`, alem de
 degradacao explicita sem panic ou espera infinita.
 
+## HW2 - inicializacao e ownership dos drivers
+
+O teste host-only exercita diretamente o lifecycle interno e o ownership de
+recursos. A matriz QEMU reutiliza os casos `hw2` existentes, sem criar uma
+segunda execucao para o mesmo contrato:
+
+```text
+make test-hw2-host
+make catalog-test
+make test-hw2-qemu HW2_QEMU_WORKERS=4 HW2_QEMU_SEED=2102
+make test-hw2
+```
+
+Os artefatos ficam em `build/test-results/hw2/`. O caso host
+`host:drivers:lifecycle` valida transicoes, idempotencia, conflito de IRQ,
+DMA, limpeza reversa, callbacks apos quiescencia e geracoes obsoletas. Os
+casos QEMU devem terminar em `PASS`, `BLOCKED` justificavel ou degradacao
+esperada e verificar `health`, `regcheck full`, `devices`, `device-scan` e
+`vfs status`.
+
 ## TST2 - protocolo e executor QEMU
 
 Testes host-only:

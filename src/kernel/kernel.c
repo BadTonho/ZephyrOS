@@ -58,6 +58,7 @@
 #include "drivers/font.h"
 #include "drivers/ac97.h"
 #include "drivers/acpi.h"
+#include "../drivers/driver_lifecycle_internal.h"
 #include "drivers/serial.h"
 #include "drivers/rtc.h"
 #include "ui/taskbar.h"
@@ -97,6 +98,24 @@ static work_struct_t kernel_irq_work;
 static work_struct_t kernel_timer_work;
 static work_struct_t kernel_network_work;
 static work_struct_t kernel_index_work;
+
+static void kernel_publish_driver_lifecycle(const char* driver_id,
+                                            const char* parent_id,
+                                            const char* bus,
+                                            const char* class_name,
+                                            const char* identity,
+                                            int init_result,
+                                            uint8_t optional,
+                                            const char* reason) {
+    int result = driver_lifecycle_publish(
+        driver_id, parent_id, bus, class_name, identity, 0U, 0, 0U,
+        init_result, optional, reason);
+
+    if (result != init_result) {
+        LOG_ERROR_CODE("KERNEL", result,
+                       "Falha ao publicar lifecycle de driver");
+    }
+}
 
 static int kernel_should_wake_shell_for_event(int shell_job_active,
                                               int app_loader_active) {
@@ -1010,9 +1029,17 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     serial_init();
     test_protocol_init();
     recovery_init();
+    driver_lifecycle_init();
+
+    kernel_publish_driver_lifecycle("serial0", "root", "isa", "serial",
+                                    "com1", OK, 1U,
+                                    "serial indisponivel");
 
     vesa_mode_t* vmode = vesa_get_mode();
     if (vmode && vmode->initialized) {
+        kernel_publish_driver_lifecycle("vesa0", "root", "pci", "display",
+                                        "vesa0", OK, 1U,
+                                        "VESA indisponivel");
         recovery_mark_ready(RECOVERY_COMPONENT_VESA);
         video_print("[OK] VESA framebuffer ativo\n", 0x0A);
         video_print("[OK] Modo: ", 0x07);
@@ -1048,6 +1075,9 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
         }
         video_print(" bpp\n", 0x07);
     } else {
+        kernel_publish_driver_lifecycle("vesa0", "root", "pci", "display",
+                                        "vesa0", ERR_NOT_FOUND, 1U,
+                                        "VESA indisponivel");
         recovery_mark_degraded(RECOVERY_COMPONENT_VESA, ERR_NOT_FOUND,
                                "VESA indisponivel; fallback VGA ativo");
         video_print("[!!] VESA nao encontrado, usando VGA fallback\n", 0x0C);
@@ -1077,21 +1107,36 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     video_print("[..] Carregando interrupcoes...\n", 0x08);
     idt_init();
+    kernel_publish_driver_lifecycle("idt0", "root", "cpu", "interrupts",
+                                    "idt", OK, 0U,
+                                    "IDT indisponivel");
     video_print("[OK] IDT configurada\n", 0x07);
 
     video_print("[..] Iniciando nucleo de entrada...\n", 0x08);
     if (input_init() != OK) {
+        kernel_publish_driver_lifecycle("input0", "root", "isa", "input",
+                                        "input", ERR_STATE, 0U,
+                                        "entrada indisponivel");
         LOG_ERROR("KERNEL", "Falha ao inicializar nucleo de entrada");
         panic("INPUT: falha ao inicializar nucleo de entrada");
     }
+    kernel_publish_driver_lifecycle("input0", "root", "isa", "input",
+                                    "input", OK, 0U,
+                                    "entrada indisponivel");
     video_print("[OK] Nucleo de entrada HID/PS2\n", 0x07);
 
     video_print("[..] Iniciando teclado...\n", 0x08);
     keyboard_init();
+    kernel_publish_driver_lifecycle("keyboard0", "input0", "ps2", "keyboard",
+                                    "keyboard", OK, 1U,
+                                    "teclado indisponivel");
     video_print("[OK] Driver de teclado PS/2\n", 0x07);
 
     video_print("[..] Iniciando mouse...\n", 0x08);
     int mouse_result = mouse_init();
+    kernel_publish_driver_lifecycle("mouse0", "input0", "ps2", "mouse",
+                                    "mouse", mouse_result, 1U,
+                                    "mouse indisponivel");
     if (mouse_result == OK) {
         mouse_set_callback(global_mouse_handler);
         video_print("[OK] Driver de mouse PS/2\n", 0x07);
@@ -1103,6 +1148,9 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     video_print("[..] Iniciando timer...\n", 0x08);
     int timer_result = timer_init(50U);
+    kernel_publish_driver_lifecycle("timer0", "root", "isa", "timer",
+                                    "pit", timer_result, 0U,
+                                    "timer indisponivel");
     if (timer_result != OK) {
         LOG_ERROR_CODE("KERNEL", timer_result,
                        "Timer PIT essencial nao foi inicializado");
@@ -1114,6 +1162,8 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     video_print("[..] Validando RTC CMOS UTC...\n", 0x08);
     int rtc_result = rtc_init();
+    kernel_publish_driver_lifecycle("rtc0", "root", "cmos", "rtc", "rtc",
+                                    rtc_result, 1U, "RTC indisponivel");
     if (rtc_result == OK) {
         video_print("[OK] RTC CMOS interpretado como UTC\n", 0x07);
     } else {
@@ -1157,6 +1207,9 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     int acpi_result = acpi_init((const mmap_entry_t*)mmap_addr,
                                 memory_get_mmap_entries());
+    kernel_publish_driver_lifecycle("acpi0", "root", "firmware", "acpi",
+                                    "acpi", acpi_result, 1U,
+                                    "ACPI indisponivel");
     acpi_status_t acpi_status;
     if (acpi_get_status(&acpi_status) == OK && acpi_status.available) {
         if (acpi_result == OK) {
@@ -1266,6 +1319,9 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     video_print("[..] Detectando disco...\n", 0x08);
     int ata_result = ata_init();
+    kernel_publish_driver_lifecycle("ata0", "root", "ide", "storage", "ata",
+                                    ata_result, 1U,
+                                    "ATA indisponivel");
     int block_result;
     ata_device_t* dev = ata_get_device();
     if (ata_result == OK && dev) {
@@ -1389,6 +1445,9 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     video_print("[..] Enumerando dispositivos PCI...\n", 0x08);
     int pci_result = pci_init();
+    kernel_publish_driver_lifecycle("pci0", "root", "pci", "bus", "pci",
+                                    pci_result, 1U,
+                                    "PCI indisponivel");
     if (pci_result == OK) {
         video_print("[OK] Varredura PCI concluida\n", 0x07);
     } else if (pci_result == ERR_OVERFLOW) {
@@ -1401,6 +1460,9 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     video_print("[..] Criando inventario USB...\n", 0x08);
     int usb_result = usb_manager_init();
+    kernel_publish_driver_lifecycle("usb0", "pci0", "usb", "host-controller",
+                                    "usb", usb_result, 1U,
+                                    "USB indisponivel");
     usb_manager_status_t usb_status;
     kmemset(&usb_status, 0, sizeof(usb_status));
     if (usb_result != OK && usb_result != ERR_OVERFLOW) {
@@ -1440,6 +1502,10 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     video_print("[..] Iniciando AC97...\n", 0x08);
     ac97_init();
     ac97_device_t* ac97 = ac97_get_device();
+    kernel_publish_driver_lifecycle("ac97-0", "pci0", "pci", "audio",
+                                    "ac97", (ac97 && ac97->initialized) ?
+                                    OK : ERR_NOT_FOUND, 1U,
+                                    "AC97 indisponivel");
     if (ac97 && ac97->initialized) {
         recovery_mark_ready(RECOVERY_COMPONENT_AC97);
         video_print("[OK] AC97 pronto\n", 0x07);
@@ -1467,6 +1533,9 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     video_print("[..] Criando inventario de rede...\n", 0x08);
     int network_result = network_manager_init();
+    kernel_publish_driver_lifecycle("network0", "pci0", "pci", "network",
+                                    "network", network_result, 1U,
+                                    "rede indisponivel");
     network_manager_status_t network_status;
     if (network_result != OK && network_result != ERR_OVERFLOW) {
         LOG_ERROR("KERNEL", "Falha ao criar inventario de rede");
@@ -1523,6 +1592,9 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     video_print("[..] Iniciando diagnostico de energia...\n", 0x08);
     int power_result = power_init();
+    kernel_publish_driver_lifecycle("power0", "acpi0", "firmware", "power",
+                                    "power", power_result, 1U,
+                                    "energia indisponivel");
     if (power_result == OK) {
         recovery_mark_ready(RECOVERY_COMPONENT_POWER);
         video_print("[OK] Diagnostico de energia pronto\n", 0x07);

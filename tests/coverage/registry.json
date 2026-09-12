@@ -136,6 +136,63 @@
         "STOPPED"
       ],
       "artifact_schema": "zephyros-qemu-parallel-result-v1"
+    },
+    "hw2_driver_lifecycle": {
+      "case_ids": [
+        "host:drivers:lifecycle",
+        "qemu:tst6:matrix:baseline",
+        "qemu:tst6:matrix:pci",
+        "qemu:tst6:matrix:usb-hid",
+        "qemu:tst6:matrix:usb-storage",
+        "qemu:tst6:matrix:audio",
+        "qemu:tst6:matrix:display",
+        "qemu:tst6:matrix:network",
+        "qemu:tst6:matrix:minimal",
+        "qemu:tst6:sec6:no-vesa",
+        "qemu:hw1:no-acpi",
+        "qemu:hw1:no-nic",
+        "qemu:hw1:no-usb",
+        "qemu:hw1:no-audio",
+        "qemu:hw1:no-storage",
+        "qemu:tst5:krn6-diagnostics",
+        "qemu:tst5:poweroff",
+        "qemu:tst5:reboot",
+        "qemu:tst5:storage"
+      ],
+      "profiles": [
+        "baseline",
+        "minimal",
+        "network",
+        "usb-hid",
+        "usb-storage",
+        "audio",
+        "display",
+        "pci",
+        "no-acpi",
+        "no-nic",
+        "no-usb",
+        "no-vesa",
+        "no-audio",
+        "no-storage"
+      ],
+      "hardware_scope": "qemu",
+      "required_diagnostics": [
+        "health",
+        "regcheck full",
+        "devices",
+        "device-scan",
+        "vfs status"
+      ],
+      "workers_default": 4,
+      "seed_default": 2102,
+      "physical_hardware_status": "PENDING",
+      "statuses": [
+        "PASS",
+        "FAIL",
+        "BLOCKED",
+        "STOPPED"
+      ],
+      "artifact_schema": "zephyros-qemu-parallel-result-v1"
     }
   },
   "entries": [
@@ -8030,6 +8087,60 @@
         "status": "AUTOMATED"
       },
       "evidence": "make test-guitest-host PASS com 23 funcoes reais de src/shell/guitest_app.c observadas em cenas Classic e Modern, entradas de mouse e teclado, limites de layout e indisponibilidade de VESA"
+    },
+    {
+      "id": "driver-lifecycle-host-dynamic",
+      "domain": "drivers-lifecycle",
+      "owner": "quality",
+      "executor": "host",
+      "coverage_mode": "direct",
+      "case_ids": [
+        "host:drivers:lifecycle"
+      ],
+      "surface_selector": "coverage_report",
+      "coverage_report": "build/test-results/driver-lifecycle-host/coverage.json",
+      "coverage_sources": [
+        "src/drivers/driver_lifecycle.c"
+      ],
+      "include_public_apis": false,
+      "case_definition": {
+        "id": "host:drivers:lifecycle",
+        "scenario": "Lifecycle interno e ownership deterministico dos drivers",
+        "owner": "quality",
+        "layer": "host",
+        "executor": "host",
+        "profile": "host-only",
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 1,
+        "isolation": "fixture",
+        "parameters": {
+          "compiler": "HOST_CC",
+          "instrumentation": "-finstrument-functions",
+          "warnings": "error",
+          "hardware": "registro estatico de recursos, IRQ e callbacks"
+        },
+        "preconditions": "compilador C nativo e nm disponiveis",
+        "action": "exercitar transicoes, idempotencia, ownership, IRQ compartilhada, quiescencia, cleanup e geracoes obsoletas",
+        "expected": "estados invalidos e recursos duplicados sao rejeitados, callbacks antigos falham e nenhuma posse permanece apos cleanup",
+        "errors": "compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout",
+        "effects": "somente o registro estatico interno no processo host",
+        "cleanup": "encerrar o processo host e preservar manifesto, logs e cobertura",
+        "surface_ids": [],
+        "tags": [
+          "host",
+          "drivers",
+          "lifecycle",
+          "ownership",
+          "irq",
+          "dma",
+          "callbacks",
+          "negative",
+          "coverage",
+          "hw2"
+        ],
+        "status": "AUTOMATED"
+      },
+      "evidence": "teste host-only deterministico com cobertura dinamica do registro interno de lifecycle"
     },
     {
       "id": "permissions-host-dynamic",

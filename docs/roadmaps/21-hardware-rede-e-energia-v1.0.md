@@ -2,8 +2,8 @@
 
 ## Estado
 
-Status por etapa: HW1 CONCLUIDO. Os sete perfis QEMU estao versionados,
-testados e reproduziveis; hardware fisico permanece `PENDING`.
+Status por etapa: HW1 CONCLUIDO; HW2 CONCLUIDO. Os sete perfis QEMU estao
+versionados, testados e reproduziveis; hardware fisico permanece `PENDING`.
 
 Planejado. Esta frente define o conjunto de hardware suportado pela versão
 1.0.0 e garante que hardware ausente, parcial ou incompatível produza
@@ -56,33 +56,38 @@ dinâmico de drivers ficam fora da matriz base, salvo uma decisão explícita.
 
 ### HW1 — Catálogo de perfis
 
-- [ ] Definir perfis mínimos: QEMU padrão, sem ACPI, sem NIC, sem USB, sem
+- [x] Definir perfis mínimos: QEMU padrão, sem ACPI, sem NIC, sem USB, sem
   VESA, sem áudio e sem Storage adicional.
-- [ ] Registrar, por perfil, hardware detectado, driver ativo, capacidade,
+- [x] Registrar, por perfil, hardware detectado, driver ativo, capacidade,
   fallback, erro esperado e diagnóstico observável.
-- [ ] Separar hardware apenas inventariado de hardware com driver inicializado
+- [x] Separar hardware apenas inventariado de hardware com driver inicializado
   e validado funcionalmente.
-- [ ] Separar “não presente”, “não suportado”, “falhou ao inicializar” e
+- [x] Separar “não presente”, “não suportado”, “falhou ao inicializar” e
   “desabilitado por política”.
-- [ ] Definir quais cenários são obrigatórios para a 1.0.0 e quais dependem de
+- [x] Definir quais cenários são obrigatórios para a 1.0.0 e quais dependem de
   hardware real.
-- [ ] Manter IDs, BDFs, endereços e versões estáveis nos snapshots publicados.
+- [x] Manter IDs, BDFs, endereços e versões estáveis nos snapshots publicados.
 
 ### HW2 — Inicialização e ownership
 
-- [ ] Documentar a ordem de probe, reset, habilitação, registro e publicação
+- [x] Documentar a ordem de probe, reset, habilitação, registro e publicação
   de cada driver.
-- [ ] Definir a relação entre dispositivo pai, bus, classe e driver, além dos
+- [x] Definir a relação entre dispositivo pai, bus, classe e driver, além dos
   pontos de `probe`, `remove`, `shutdown` e quiescência.
-- [ ] Confirmar que recursos adquiridos sejam liberados ou publicados como
+- [x] Confirmar que recursos adquiridos sejam liberados ou publicados como
   degradados quando uma etapa posterior falhar.
-- [ ] Validar IRQ compartilhada, EOI, DMA de 32 bits, alinhamento, buffers e
+- [x] Validar IRQ compartilhada, EOI, DMA de 32 bits, alinhamento, buffers e
   limites de polling.
-- [ ] Rejeitar chamadas antes de READY, durante quiescência ou depois de
+- [x] Rejeitar chamadas antes de READY, durante quiescência ou depois de
   encerramento.
-- [ ] Garantir que a remoção ou falha de um dispositivo invalide handles,
+- [x] Garantir que a remoção ou falha de um dispositivo invalide handles,
   callbacks e buffers sem deixar referências para o objeto físico.
-- [ ] Evitar alocação, bloqueio e logging pesado em IRQ e hot paths.
+- [x] Evitar alocação, bloqueio e logging pesado em IRQ e hot paths.
+
+HW2 foi validado com o registro interno de lifecycle, testes host-only dos
+drivers diretamente afetados, catalogo sincronizado e 23 casos QEMU em quatro
+workers, incluindo os diagnosticos KRN6 e SEC6. Hardware fisico permanece
+`PENDING`; HW3 em diante continuam planejados.
 
 ### HW3 — Entrada, vídeo e áudio
 

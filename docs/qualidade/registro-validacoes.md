@@ -7308,3 +7308,15 @@ dívida.
   sete perfis reproduziveis e quatro processos QEMU paralelos. Os artefatos
   foram preservados em `build/test-results/hw1/`; hardware fisico continua
   `PENDING`.
+
+- HW2 - inicializacao e ownership dos drivers validado em 2026-09-11
+  (America/Sao_Paulo). `make q3check`, `make clean`, `make`,
+  `make test-hw2-host` e `make catalog-test` passaram. O lifecycle interno
+  cobriu transicoes, idempotencia, ownership de IRQ/DMA/buffers/callbacks,
+  quiescencia, limpeza reversa e invalidacao de geracoes. A matriz
+  `make test-hw2-qemu HW2_QEMU_WORKERS=4 HW2_QEMU_SEED=2102` terminou com
+  `PASS` em 23 casos, incluindo os diagnosticos KRN6 e SEC6, sem QEMU
+  residual; o caso USB-storage exigiu e passou apos a dependencia
+  `storage-fixtures` ser incluida nos dois Makefiles.
+  Hardware fisico continua `PENDING` e `DT100-003`/`DT100-004` permanecem
+  separados.

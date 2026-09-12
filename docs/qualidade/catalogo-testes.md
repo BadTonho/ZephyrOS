@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **7612**
-- Casos de teste: **185**
+- Superfícies ativas: **7646**
+- Casos de teste: **186**
 - Superfícies aposentadas: **60**
 
 | Tipo | Quantidade |
 |---|---:|
 | `api_function` | 1652 |
 | `asm_entry` | 101 |
-| `c_function` | 5739 |
+| `c_function` | 5773 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7552 |
+| `COVERED` | 7585 |
 | `MANUAL` | 0 |
-| `PENDING` | 60 |
+| `PENDING` | 61 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 185 |
+| `AUTOMATED` | 186 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -39,12 +39,12 @@
 | `boot` | 146 |
 | `core` | 2885 |
 | `desktop` | 40 |
-| `drivers` | 932 |
+| `drivers` | 965 |
 | `filemanager` | 93 |
 | `fs` | 1054 |
 | `gui` | 30 |
 | `icons` | 18 |
-| `kernel` | 60 |
+| `kernel` | 61 |
 | `memory` | 202 |
 | `process` | 332 |
 | `settings` | 57 |
@@ -1011,16 +1011,16 @@
 | `api:src/include/drivers/mouse.h:mouse_set_callback` | `src/include/drivers/mouse.h` | `mouse_set_callback` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/mouse.h:mouse_set_primary_button` | `src/include/drivers/mouse.h` | `mouse_set_primary_button` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/mouse.h:mouse_set_speed` | `src/include/drivers/mouse.h` | `mouse_set_speed` | `drivers` | `COVERED` | 4 |
-| `api:src/include/drivers/pci.h:pci_enable_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_bus_mastering` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_io_and_bus_mastering` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_memory_and_bus_mastering` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_get_device` | `src/include/drivers/pci.h` | `pci_get_device` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_get_device_at` | `src/include/drivers/pci.h` | `pci_get_device_at` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_get_device_by_id` | `src/include/drivers/pci.h` | `pci_get_device_by_id` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_get_device_count` | `src/include/drivers/pci.h` | `pci_get_device_count` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_init` | `src/include/drivers/pci.h` | `pci_init` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_read` | `src/include/drivers/pci.h` | `pci_read` | `drivers` | `COVERED` | 2 |
-| `api:src/include/drivers/pci.h:pci_write` | `src/include/drivers/pci.h` | `pci_write` | `drivers` | `COVERED` | 2 |
+| `api:src/include/drivers/pci.h:pci_enable_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_bus_mastering` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_enable_io_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_io_and_bus_mastering` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_enable_memory_and_bus_mastering` | `src/include/drivers/pci.h` | `pci_enable_memory_and_bus_mastering` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_get_device` | `src/include/drivers/pci.h` | `pci_get_device` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_get_device_at` | `src/include/drivers/pci.h` | `pci_get_device_at` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_get_device_by_id` | `src/include/drivers/pci.h` | `pci_get_device_by_id` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_get_device_count` | `src/include/drivers/pci.h` | `pci_get_device_count` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_init` | `src/include/drivers/pci.h` | `pci_init` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_read` | `src/include/drivers/pci.h` | `pci_read` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/pci.h:pci_write` | `src/include/drivers/pci.h` | `pci_write` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/rng.h:rng_get_bytes` | `src/include/drivers/rng.h` | `rng_get_bytes` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/rng.h:rng_get_status` | `src/include/drivers/rng.h` | `rng_get_status` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/rng.h:rng_init` | `src/include/drivers/rng.h` | `rng_init` | `drivers` | `COVERED` | 3 |
@@ -4332,6 +4332,39 @@
 | `c:src/drivers/ata.c:inw` | `src/drivers/ata.c` | `inw` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/ata.c:outb` | `src/drivers/ata.c` | `outb` | `drivers` | `COVERED` | 3 |
 | `c:src/drivers/ata.c:outw` | `src/drivers/ata.c` | `outw` | `drivers` | `COVERED` | 2 |
+| `c:src/drivers/driver_lifecycle.c:driver_lifecycle_acquire` | `src/drivers/driver_lifecycle.c` | `driver_lifecycle_acquire` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:driver_lifecycle_begin_configure` | `src/drivers/driver_lifecycle.c` | `driver_lifecycle_begin_configure` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:driver_lifecycle_begin_probe` | `src/drivers/driver_lifecycle.c` | `driver_lifecycle_begin_probe` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:driver_lifecycle_begin_quiesce` | `src/drivers/driver_lifecycle.c` | `driver_lifecycle_begin_quiesce` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:driver_lifecycle_begin_reset` | `src/drivers/driver_lifecycle.c` | `driver_lifecycle_begin_reset` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:driver_lifecycle_count` | `src/drivers/driver_lifecycle.c` | `driver_lifecycle_count` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:driver_lifecycle_get_state` | `src/drivers/driver_lifecycle.c` | `driver_lifecycle_get_state` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:driver_lifecycle_init` | `src/drivers/driver_lifecycle.c` | `driver_lifecycle_init` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:driver_lifecycle_mark_degraded` | `src/drivers/driver_lifecycle.c` | `driver_lifecycle_mark_degraded` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:driver_lifecycle_mark_failed` | `src/drivers/driver_lifecycle.c` | `driver_lifecycle_mark_failed` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:driver_lifecycle_mark_quiesced` | `src/drivers/driver_lifecycle.c` | `driver_lifecycle_mark_quiesced` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:driver_lifecycle_mark_ready` | `src/drivers/driver_lifecycle.c` | `driver_lifecycle_mark_ready` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:driver_lifecycle_mark_registered` | `src/drivers/driver_lifecycle.c` | `driver_lifecycle_mark_registered` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:driver_lifecycle_mark_stopped` | `src/drivers/driver_lifecycle.c` | `driver_lifecycle_mark_stopped` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:driver_lifecycle_publish` | `src/drivers/driver_lifecycle.c` | `driver_lifecycle_publish` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:driver_lifecycle_release` | `src/drivers/driver_lifecycle.c` | `driver_lifecycle_release` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:driver_lifecycle_snapshot` | `src/drivers/driver_lifecycle.c` | `driver_lifecycle_snapshot` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:driver_lifecycle_validate_callback` | `src/drivers/driver_lifecycle.c` | `driver_lifecycle_validate_callback` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:driver_lifecycle_validate_ready` | `src/drivers/driver_lifecycle.c` | `driver_lifecycle_validate_ready` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:driver_lifecycle_validate_state` | `src/drivers/driver_lifecycle.c` | `driver_lifecycle_validate_state` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:lifecycle_allocate` | `src/drivers/driver_lifecycle.c` | `lifecycle_allocate` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:lifecycle_clear_entry` | `src/drivers/driver_lifecycle.c` | `lifecycle_clear_entry` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:lifecycle_copy_text` | `src/drivers/driver_lifecycle.c` | `lifecycle_copy_text` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:lifecycle_ensure_initialized` | `src/drivers/driver_lifecycle.c` | `lifecycle_ensure_initialized` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:lifecycle_find` | `src/drivers/driver_lifecycle.c` | `lifecycle_find` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:lifecycle_find_generation` | `src/drivers/driver_lifecycle.c` | `lifecycle_find_generation` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:lifecycle_next_generation` | `src/drivers/driver_lifecycle.c` | `lifecycle_next_generation` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:lifecycle_resource_conflict` | `src/drivers/driver_lifecycle.c` | `lifecycle_resource_conflict` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:lifecycle_resource_id` | `src/drivers/driver_lifecycle.c` | `lifecycle_resource_id` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:lifecycle_set_failure` | `src/drivers/driver_lifecycle.c` | `lifecycle_set_failure` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:lifecycle_shared_irq_allowed` | `src/drivers/driver_lifecycle.c` | `lifecycle_shared_irq_allowed` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:lifecycle_text_equal` | `src/drivers/driver_lifecycle.c` | `lifecycle_text_equal` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/driver_lifecycle.c:lifecycle_transition` | `src/drivers/driver_lifecycle.c` | `lifecycle_transition` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/e1000.c:e1000_allocate_device` | `src/drivers/e1000.c` | `e1000_allocate_device` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/e1000.c:e1000_allocate_dma` | `src/drivers/e1000.c` | `e1000_allocate_dma` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/e1000.c:e1000_bottom_half` | `src/drivers/e1000.c` | `e1000_bottom_half` | `drivers` | `COVERED` | 1 |
@@ -5885,6 +5918,7 @@
 | `c:src/kernel/kernel.c:kernel_prepare_kworker` | `src/kernel/kernel.c` | `kernel_prepare_kworker` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_prepare_shell` | `src/kernel/kernel.c` | `kernel_prepare_shell` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_prepare_system` | `src/kernel/kernel.c` | `kernel_prepare_system` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_publish_driver_lifecycle` | `src/kernel/kernel.c` | `kernel_publish_driver_lifecycle` | `kernel` | `PENDING` | 0 |
 | `c:src/kernel/kernel.c:kernel_redraw_after_menu_close` | `src/kernel/kernel.c` | `kernel_redraw_after_menu_close` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_request_shell_app` | `src/kernel/kernel.c` | `kernel_request_shell_app` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_retry_shell_request` | `src/kernel/kernel.c` | `kernel_retry_shell_request` | `kernel` | `COVERED` | 2 |
@@ -7835,6 +7869,11 @@
 | `host:ui:taskbar` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar estados TUI e GUI, layouts, botoes, menus, configuracao, cliques, relogio e limites | taskbar preserva configuracao, geometria, navegacao, selecao de janelas e fallback sem hardware grafico real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente configuracao, botoes, menus e chamadas de desenho dentro da fixture host | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:ui:updater` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | validar nomes ZUP, ordenacao, formatacao, historico, cancelamento, selecao, tags ZSYS e preflight de slots | helpers preservam limites, maiusculas, estados, textos canonicos e codigos de erro | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estruturas estaticas do processo host; nenhum disco, rede, worker ou hardware real | processo host encerrado e manifesto, logs e cobertura preservados |
 | `host:ui:wm` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar janelas TUI, ciclo hospedado GUI, foco, atalhos, botoes, drag, resize, mouse, reflow, limites e estados indisponiveis | Window Manager preserva estados, foco, geometria, callbacks, limpeza e fallback sem hardware grafico real | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente estado estatico do WM e doubles de video, VESA, Desktop, Taskbar, GUI, Icons e Recovery no processo host | processo host encerrado e manifesto, logs e cobertura preservados |
+| `qemu:hw1:no-acpi` | `qemu` | `hw1` | `qemu:tst6:matrix:minimal` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | QEMU fornece PCI e VGA sem ACPI | validar boot, Shell serial e estado degradado sem ACPI | ACPI ausente retorna ERR_UNAVAILABLE sem panic ou espera infinita | ACPI presente, estado incoerente, timeout, protocolo ou QEMU | somente inventario e estado de plataforma no snapshot | encerrar o guest e preservar os artefatos |
+| `qemu:hw1:no-audio` | `qemu` | `hw1` | `qemu:tst6:matrix:minimal` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | QEMU fornece plataforma sem dispositivo AC97 | validar audio ausente e o estado degradado | audio ausente retorna ERR_UNAVAILABLE sem reservar recursos | AC97 presente, estado incoerente, timeout, protocolo ou QEMU | somente inventario de audio no snapshot | encerrar o guest e liberar estado de audio |
+| `qemu:hw1:no-nic` | `qemu` | `hw1` | `qemu:tst6:matrix:minimal` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | QEMU fornece plataforma sem interface de rede | validar inventario e fallback de rede ausente | rede ausente retorna ERR_UNAVAILABLE sem alterar outros dispositivos | NIC presente, estado incoerente, timeout, protocolo ou QEMU | somente estado de plataforma no snapshot | encerrar o guest e liberar a configuração de rede |
+| `qemu:hw1:no-storage` | `qemu` | `hw1` | `qemu:tst6:matrix:minimal` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | QEMU fornece somente o disco usado no boot | validar armazenamento adicional ausente e boot intacto | somente o volume de boot fica visivel e o opcional retorna ERR_UNAVAILABLE | disco adicional presente, estado incoerente, timeout, protocolo ou QEMU | somente inventario de storage no snapshot | encerrar o guest sem deixar dispositivos ou imagens extras |
+| `qemu:hw1:no-usb` | `qemu` | `hw1` | `qemu:tst6:matrix:minimal` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | QEMU fornece plataforma com USB desativado | validar fallback de entrada e USB ausente | USB ausente retorna ERR_UNAVAILABLE sem panic ou fila residual | USB presente, estado incoerente, timeout, protocolo ou QEMU | somente inventario e estado de input no snapshot | encerrar o guest e liberar filas de input |
 | `qemu:tst2:boot-ready` | `qemu` | `smoke` | `qemu:tst2:boot-ready` | `AUTOMATED` | 30 | 5 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e o executavel qemu-system-i386 esta disponivel | iniciar o guest em snapshot, enviar HELLO e executar o caso de boot apos READY | o guest publica READY, HEARTBEAT e PASS para o caso solicitado | PANIC, TIMEOUT, ausencia de heartbeat, erro de protocolo ou encerramento inesperado do QEMU | cria um processo QEMU e artefatos temporarios da execucao | encerrar o QEMU via QMP e preservar o relatorio, serial e logs da execucao |
 | `qemu:tst4:execution` | `qemu` | `smoke` | `qemu:tst4:execution` | `AUTOMATED` | 60 | 10 | `snapshot` | `quality` | `qemu` | processos, threads, IPC, wait e workqueue estao READY | executar um unico autoteste interno apos READY | todos os resultados estruturados passam e nenhum estado residual permanece | falha de resultado, invariante, fila, contador, timeout, protocolo ou QEMU | cria somente objetos temporarios dos self-tests existentes | cada self-test desfaz seus objetos e o harness valida as filas finais |
 | `qemu:tst4:memory-slab` | `qemu` | `smoke` | `qemu:tst4:memory-slab` | `AUTOMATED` | 30 | 5 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e paging, PMM, heap e SLAB estao READY | iniciar o guest em snapshot e enviar um unico RUN apos READY | o guest publica READY, HEARTBEAT, BEGIN e PASS, preservando o estado de memoria | falha de pre-condicao, invariante, contador, pagina, protocolo, heartbeat ou QEMU | cria um processo QEMU e recursos temporarios de memoria do autoteste | encerrar o QEMU via QMP e preservar manifesto, serial, logs e resultado |
@@ -7877,12 +7916,8 @@
 | `qemu:tst6:stress:kernel` | `qemu` | `tst6` | `qemu:tst6:stress:kernel` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | paging, heap, SLAB, processos e threads estao READY | repetir ciclos deterministas de memoria e execucao sob teto obrigatorio | invariantes estaveis permanecem iguais e a primeira falha interrompe a suite | overflow, vazamento, deadlock, timeout, protocolo ou QEMU | alocacoes e objetos temporarios de cada ciclo em snapshot | devolver paginas, destruir objetos e registrar seed e iteracao |
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
-| `qemu:hw1:no-acpi` | `qemu` | `hw1` | `qemu:tst6:matrix:minimal` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | QEMU fornece PCI e VGA sem ACPI | validar boot, Shell serial e estado degradado sem ACPI | ACPI ausente retorna ERR_UNAVAILABLE sem panic ou espera infinita | ACPI presente, estado incoerente, timeout, protocolo ou QEMU | somente inventario e estado de plataforma no snapshot | encerrar o guest e preservar os artefatos |
-| `qemu:hw1:no-nic` | `qemu` | `hw1` | `qemu:tst6:matrix:minimal` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | QEMU fornece plataforma sem interface de rede | validar inventario e fallback de rede ausente | rede ausente retorna ERR_UNAVAILABLE sem alterar outros dispositivos | NIC presente, estado incoerente, timeout, protocolo ou QEMU | somente estado de plataforma no snapshot | encerrar o guest e liberar a configuração de rede |
-| `qemu:hw1:no-usb` | `qemu` | `hw1` | `qemu:tst6:matrix:minimal` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | QEMU fornece plataforma com USB desativado | validar fallback de entrada e USB ausente | USB ausente retorna ERR_UNAVAILABLE sem panic ou fila residual | USB presente, estado incoerente, timeout, protocolo ou QEMU | somente inventario e estado de input no snapshot | encerrar o guest e liberar filas de input |
-| `qemu:hw1:no-audio` | `qemu` | `hw1` | `qemu:tst6:matrix:minimal` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | QEMU fornece plataforma sem dispositivo AC97 | validar audio ausente e o estado degradado | audio ausente retorna ERR_UNAVAILABLE sem reservar recursos | AC97 presente, estado incoerente, timeout, protocolo ou QEMU | somente inventario de audio no snapshot | encerrar o guest e liberar estado de audio |
-| `qemu:hw1:no-storage` | `qemu` | `hw1` | `qemu:tst6:matrix:minimal` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | QEMU fornece somente o disco usado no boot | validar armazenamento adicional ausente e boot intacto | somente o volume de boot fica visivel e o opcional retorna ERR_UNAVAILABLE | disco adicional presente, estado incoerente, timeout, protocolo ou QEMU | somente inventario de storage no snapshot | encerrar o guest sem deixar dispositivos ou imagens extras |
 | `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, validar retorno com IF desabilitado, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez, o retorno preserva o EFLAGS salvo e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
+| `host:drivers:lifecycle` | `host` | `host-only` | `-` | `AUTOMATED` | 120 | 1 | `fixture` | `quality` | `host` | compilador C nativo e nm disponiveis | exercitar transicoes, idempotencia, ownership, IRQ compartilhada, quiescencia, cleanup e geracoes obsoletas | estados invalidos e recursos duplicados sao rejeitados, callbacks antigos falham e nenhuma posse permanece apos cleanup | compilador ausente, warning, cobertura incompleta, falha de assercao ou timeout | somente o registro estatico interno no processo host | encerrar o processo host e preservar manifesto, logs e cobertura |
 
 ## Superfícies sem caso associado
 
@@ -7942,6 +7977,7 @@
 - `c:src/fs/storage.c:storage_release_selected_fat32_clusters`
 - `c:src/fs/vfs.c:vfs_lifecycle_block_error`
 - `c:src/kernel/kernel.c:kernel_host_test_should_wake_shell_for_event`
+- `c:src/kernel/kernel.c:kernel_publish_driver_lifecycle`
 - `c:src/kernel/kernel.c:kernel_should_wake_shell_for_event`
 - `c:src/process/resource.c:process_resource_note_descriptor_success`
 - `c:src/process/resource.c:process_resource_note_pipe_success`
