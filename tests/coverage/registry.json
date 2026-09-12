@@ -100,6 +100,42 @@
         "STOPPED"
       ],
       "artifact_schema": "zephyros-qemu-parallel-result-v1"
+    },
+    "hw1_profiles": {
+      "case_ids": [
+        "qemu:tst6:matrix:audio",
+        "qemu:tst6:matrix:baseline",
+        "qemu:tst6:matrix:display",
+        "qemu:tst6:matrix:pci",
+        "qemu:tst6:matrix:usb-hid",
+        "qemu:tst6:matrix:usb-storage",
+        "qemu:tst6:sec6:no-vesa",
+        "qemu:hw1:no-acpi",
+        "qemu:hw1:no-nic",
+        "qemu:hw1:no-usb",
+        "qemu:hw1:no-audio",
+        "qemu:hw1:no-storage"
+      ],
+      "profiles": [
+        "baseline",
+        "no-acpi",
+        "no-nic",
+        "no-usb",
+        "no-vesa",
+        "no-audio",
+        "no-storage"
+      ],
+      "hardware_scope": "qemu",
+      "physical_hardware_status": "PENDING",
+      "workers_default": 4,
+      "seed_default": 2101,
+      "statuses": [
+        "PASS",
+        "FAIL",
+        "BLOCKED",
+        "STOPPED"
+      ],
+      "artifact_schema": "zephyros-qemu-parallel-result-v1"
     }
   },
   "entries": [

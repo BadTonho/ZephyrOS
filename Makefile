@@ -43,6 +43,8 @@ SEC6_QEMU_WORKERS ?= 4
 SEC6_QEMU_SEED ?= 606
 STO7_QEMU_WORKERS ?= 4
 STO7_QEMU_SEED ?= 7007
+HW1_QEMU_WORKERS ?= 4
+HW1_QEMU_SEED ?= 2101
 COVERAGE_BUILD_DIR ?= build-coverage
 ASSEMBLY_RUN_ID ?= tst7-assembly-1
 ASSEMBLY_TRACE_RUN_ID ?= tst7-assembly-trace-1
@@ -1567,6 +1569,12 @@ test-sto7-qemu: $(OS_IMG) tools\qemu_parallel_runner.py tools\qemu_test_runner.p
 
 test-sto7: test-sto7-host test-sto7-qemu
 
+test-hw1-qemu: $(OS_IMG) $(STORAGE_FIXTURES_STAMP) tools\qemu_parallel_runner.py tools\qemu_test_runner.py config\hardware-profiles.json tests\catalog.json
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	python tools\qemu_parallel_runner.py parallel --workers "$(HW1_QEMU_WORKERS)" --seed "$(HW1_QEMU_SEED)" --image "$(OS_IMG)" --catalog tests\catalog.json --results "$(BUILD_DIR)\test-results\hw1" --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --tag hw1
+
+test-hw1: test-hw1-host test-hw1-qemu
+
 test-qemu-soak-parallel: $(OS_IMG) tools\qemu_parallel_runner.py tools\qemu_test_runner.py tests\catalog.json
 	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
 	python tools\qemu_parallel_runner.py soak --workers "$(QEMU_PARALLEL_WORKERS)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" $(QEMU_PARALLEL_SOAK_ARGS)
@@ -1914,6 +1922,9 @@ test-sto6-host: test-update-host test-update-runtime-host test-update-system-slo
 
 test-sto7-host: test-sto1-host test-sto2-host test-sto3-host test-sto4-host test-sto5-host test-sto6-host tools\qemu_parallel_runner.py tools\qemu_test_runner.py tests\unit\test_sto7_matrix.py tests\catalog.json tests\coverage\registry.json
 	python -m unittest tests.unit.test_sto7_matrix
+
+test-hw1-host: test-device-manager-host test-power-host test-usb-manager-host test-acpi-host test-pci-host test-ata-host test-uhci-host test-ehci-host test-e1000-host test-rtl8139-host test-ac97-host test-vesa-host test-video-host test-serial-host test-speaker-host test-keyboard-host tools\qemu_test_runner.py tools\qemu_parallel_runner.py tests\unit\test_hw1_profiles.py config\hardware-profiles.json tests\catalog.json
+	python -m unittest tests.unit.test_hw1_profiles tests.unit.test_qemu_test_runner tests.unit.test_qemu_parallel_runner
 
 test-vfs-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_vfs_host.c tests\catalog.json src\fs\vfs.c src\fs\permissions.c src\process\credentials.c src\include\fs\vfs.h src\include\fs\permissions.h src\include\process\credentials.h src\include\process\resource.h
 	python tools\core_host_runner.py --case host:storage:vfs --cc "$(HOST_CC)"
@@ -2267,7 +2278,7 @@ clean:
 .PHONY: kernel-elf
 .PHONY: test-assembly-qemu test-assembly-trace-qemu test-assembly-boot-trace-qemu test-assembly-recovery-trace-qemu
 .PHONY: test-qemu-parallel test-qemu-soak-parallel test-sec6-host test-sec6-qemu test-sec6
-.PHONY: test-sto1-host test-sto2-host test-sto3-host test-sto4-host test-sto5-host test-sto6-host test-sto7-host test-sto7-qemu test-sto7
+.PHONY: test-sto1-host test-sto2-host test-sto3-host test-sto4-host test-sto5-host test-sto6-host test-sto7-host test-sto7-qemu test-sto7 test-hw1-host test-hw1-qemu test-hw1
 .PHONY: test-tst4-qemu-paging-vma test-tst4-qemu-execution test-tst4-qemu-storage-vfs test-tst4-qemu-network test-tst4-qemu-platform
 .PHONY: test-tst5-host test-tst5-qemu-shell test-tst5-qemu-input test-tst5-qemu-apps test-tst5-qemu-processes test-tst5-qemu-storage test-tst5-qemu-network test-tst5-qemu-update-recovery test-tst5-qemu-reboot test-tst5-qemu-poweroff
 .PHONY: test-krn6-qemu-diagnostics

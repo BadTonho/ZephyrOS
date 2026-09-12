@@ -190025,7 +190025,8 @@
         "qemu",
         "tst6",
         "matrix",
-        "audio"
+        "audio",
+        "hw1"
       ]
     },
     {
@@ -190706,7 +190707,8 @@
         "qemu",
         "tst6",
         "matrix",
-        "baseline"
+        "baseline",
+        "hw1"
       ]
     },
     {
@@ -190743,7 +190745,8 @@
         "qemu",
         "tst6",
         "matrix",
-        "display"
+        "display",
+        "hw1"
       ]
     },
     {
@@ -190853,7 +190856,8 @@
         "qemu",
         "tst6",
         "matrix",
-        "pci"
+        "pci",
+        "hw1"
       ]
     },
     {
@@ -190951,7 +190955,8 @@
         "tst6",
         "matrix",
         "usb",
-        "hid"
+        "hid",
+        "hw1"
       ]
     },
     {
@@ -190990,7 +190995,8 @@
         "tst6",
         "matrix",
         "usb",
-        "storage"
+        "storage",
+        "hw1"
       ]
     },
     {
@@ -191027,7 +191033,8 @@
         "adversarial",
         "matrix",
         "hardware",
-        "no-vesa"
+        "no-vesa",
+        "hw1"
       ],
       "status": "AUTOMATED"
     },
@@ -193073,6 +193080,126 @@
         "stress",
         "storage"
       ]
+    },
+    {
+      "id": "qemu:hw1:no-acpi",
+      "scenario": "Perfil HW1 sem ACPI com fallback serial",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "hw1",
+      "guest_case": "qemu:tst6:matrix:minimal",
+      "qemu_profile": "no-acpi",
+      "required_capabilities": ["pci", "vga"],
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 20,
+      "isolation": "snapshot",
+      "parameters": {"protocol": "ZTEST/1", "profile": "no-acpi", "acpi": false},
+      "preconditions": "QEMU fornece PCI e VGA sem ACPI",
+      "action": "validar boot, Shell serial e estado degradado sem ACPI",
+      "expected": "ACPI ausente retorna ERR_UNAVAILABLE sem panic ou espera infinita",
+      "errors": "ACPI presente, estado incoerente, timeout, protocolo ou QEMU",
+      "effects": "somente inventario e estado de plataforma no snapshot",
+      "cleanup": "encerrar o guest e preservar os artefatos",
+      "status": "AUTOMATED",
+      "surface_ids": [],
+      "tags": ["hw1", "qemu", "hw1-profile", "no-acpi"]
+    },
+    {
+      "id": "qemu:hw1:no-nic",
+      "scenario": "Perfil HW1 sem NIC",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "hw1",
+      "guest_case": "qemu:tst6:matrix:minimal",
+      "qemu_profile": "no-nic",
+      "required_capabilities": ["acpi", "pci", "vga"],
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 20,
+      "isolation": "snapshot",
+      "parameters": {"protocol": "ZTEST/1", "profile": "no-nic", "network": "none"},
+      "preconditions": "QEMU fornece plataforma sem interface de rede",
+      "action": "validar inventario e fallback de rede ausente",
+      "expected": "rede ausente retorna ERR_UNAVAILABLE sem alterar outros dispositivos",
+      "errors": "NIC presente, estado incoerente, timeout, protocolo ou QEMU",
+      "effects": "somente estado de plataforma no snapshot",
+      "cleanup": "encerrar o guest e liberar a configuração de rede",
+      "status": "AUTOMATED",
+      "surface_ids": [],
+      "tags": ["hw1", "qemu", "hw1-profile", "no-nic"]
+    },
+    {
+      "id": "qemu:hw1:no-usb",
+      "scenario": "Perfil HW1 sem USB",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "hw1",
+      "guest_case": "qemu:tst6:matrix:minimal",
+      "qemu_profile": "no-usb",
+      "required_capabilities": ["acpi", "pci", "vga"],
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 20,
+      "isolation": "snapshot",
+      "parameters": {"protocol": "ZTEST/1", "profile": "no-usb", "usb": false},
+      "preconditions": "QEMU fornece plataforma com USB desativado",
+      "action": "validar fallback de entrada e USB ausente",
+      "expected": "USB ausente retorna ERR_UNAVAILABLE sem panic ou fila residual",
+      "errors": "USB presente, estado incoerente, timeout, protocolo ou QEMU",
+      "effects": "somente inventario e estado de input no snapshot",
+      "cleanup": "encerrar o guest e liberar filas de input",
+      "status": "AUTOMATED",
+      "surface_ids": [],
+      "tags": ["hw1", "qemu", "hw1-profile", "no-usb"]
+    },
+    {
+      "id": "qemu:hw1:no-audio",
+      "scenario": "Perfil HW1 sem audio",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "hw1",
+      "guest_case": "qemu:tst6:matrix:minimal",
+      "qemu_profile": "no-audio",
+      "required_capabilities": ["acpi", "pci", "vga"],
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 20,
+      "isolation": "snapshot",
+      "parameters": {"protocol": "ZTEST/1", "profile": "no-audio", "audio": false},
+      "preconditions": "QEMU fornece plataforma sem dispositivo AC97",
+      "action": "validar audio ausente e o estado degradado",
+      "expected": "audio ausente retorna ERR_UNAVAILABLE sem reservar recursos",
+      "errors": "AC97 presente, estado incoerente, timeout, protocolo ou QEMU",
+      "effects": "somente inventario de audio no snapshot",
+      "cleanup": "encerrar o guest e liberar estado de audio",
+      "status": "AUTOMATED",
+      "surface_ids": [],
+      "tags": ["hw1", "qemu", "hw1-profile", "no-audio"]
+    },
+    {
+      "id": "qemu:hw1:no-storage",
+      "scenario": "Perfil HW1 somente com disco de boot",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "hw1",
+      "guest_case": "qemu:tst6:matrix:minimal",
+      "qemu_profile": "no-storage",
+      "required_capabilities": ["acpi", "pci", "vga"],
+      "timeout_seconds": 120,
+      "heartbeat_timeout_seconds": 20,
+      "isolation": "snapshot",
+      "parameters": {"protocol": "ZTEST/1", "profile": "no-storage", "storage": "boot-only"},
+      "preconditions": "QEMU fornece somente o disco usado no boot",
+      "action": "validar armazenamento adicional ausente e boot intacto",
+      "expected": "somente o volume de boot fica visivel e o opcional retorna ERR_UNAVAILABLE",
+      "errors": "disco adicional presente, estado incoerente, timeout, protocolo ou QEMU",
+      "effects": "somente inventario de storage no snapshot",
+      "cleanup": "encerrar o guest sem deixar dispositivos ou imagens extras",
+      "status": "AUTOMATED",
+      "surface_ids": [],
+      "tags": ["hw1", "qemu", "hw1-profile", "no-storage"]
     },
     {
       "id": "qemu:tst7:assembly",

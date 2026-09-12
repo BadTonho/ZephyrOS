@@ -2143,6 +2143,30 @@ Os resultados ficam em `build/test-results/sto7/`. O alvo não executa
 bloqueado por fixture assinada ausente, preserve o diagnóstico e solicite a
 chave externa ao operador.
 
+## HW1 - catalogo de perfis de hardware
+
+O catalogo QEMU esta em `config/hardware-profiles.json`. Ele cobre
+`baseline`, `no-acpi`, `no-nic`, `no-usb`, `no-vesa`, `no-audio` e
+`no-storage`, com estados de presenca, estado do driver, capacidade,
+fallback, diagnosticos e politica de identidade estavel. O hardware fisico
+e mantido como `PENDING` e nao pode ser declarado suportado sem evidencia.
+
+```text
+make test-hw1-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+make catalog-test
+make test-hw1-qemu HW1_QEMU_WORKERS=4 HW1_QEMU_SEED=2101
+```
+
+O executor usa snapshots e artefatos separados em
+`build/test-results/hw1/`. O perfil `no-vesa` mantem a saida serial/QMP;
+`no-nic`, `no-usb`, `no-audio` e `no-storage` devem publicar a ausencia como
+degradacao ou `ERR_UNAVAILABLE`, sem panic ou loop. Para o Ryzen 5 3600,
+seis workers podem ser testados apos o ciclo padrao:
+
+```text
+make test-hw1-qemu HW1_QEMU_WORKERS=6 HW1_QEMU_SEED=2101
+```
+
 ## Spinlock host-only
 
 O alvo `test-spinlock-host` executa uma fixture nativa que inicializa, adquire

@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7612**
-- Casos de teste: **180**
+- Casos de teste: **185**
 - Superfícies aposentadas: **60**
 
 | Tipo | Quantidade |
@@ -25,7 +25,7 @@
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 180 |
+| `AUTOMATED` | 185 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -7877,6 +7877,11 @@
 | `qemu:tst6:stress:kernel` | `qemu` | `tst6` | `qemu:tst6:stress:kernel` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | paging, heap, SLAB, processos e threads estao READY | repetir ciclos deterministas de memoria e execucao sob teto obrigatorio | invariantes estaveis permanecem iguais e a primeira falha interrompe a suite | overflow, vazamento, deadlock, timeout, protocolo ou QEMU | alocacoes e objetos temporarios de cada ciclo em snapshot | devolver paginas, destruir objetos e registrar seed e iteracao |
 | `qemu:tst6:stress:network` | `qemu` | `tst6` | `qemu:tst6:stress:network` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | NIC E1000 isolada e pilha de rede estao READY | repetir validadores e operacoes offline com teto de iteracoes | buffers, sockets, rotas e estados retornam ao baseline em cada ciclo | conexao externa, vazamento, estado incoerente, timeout, protocolo ou QEMU | somente estruturas de rede temporarias | fechar sockets e drenar filas apos a primeira falha ou teto |
 | `qemu:tst6:stress:storage` | `qemu` | `tst6` | `qemu:tst6:stress:storage` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | storage simulado, VFS, cache e file index estao READY | repetir consultas e self-tests de armazenamento sob teto obrigatorio | filas, descritores, mounts, cache e indices nao acumulam residuos | escrita destrutiva, vazamento, cache residual, timeout, protocolo ou QEMU | backends simulados e fixtures internas em snapshot | desmontar fixtures e validar todos os estados publicados |
+| `qemu:hw1:no-acpi` | `qemu` | `hw1` | `qemu:tst6:matrix:minimal` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | QEMU fornece PCI e VGA sem ACPI | validar boot, Shell serial e estado degradado sem ACPI | ACPI ausente retorna ERR_UNAVAILABLE sem panic ou espera infinita | ACPI presente, estado incoerente, timeout, protocolo ou QEMU | somente inventario e estado de plataforma no snapshot | encerrar o guest e preservar os artefatos |
+| `qemu:hw1:no-nic` | `qemu` | `hw1` | `qemu:tst6:matrix:minimal` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | QEMU fornece plataforma sem interface de rede | validar inventario e fallback de rede ausente | rede ausente retorna ERR_UNAVAILABLE sem alterar outros dispositivos | NIC presente, estado incoerente, timeout, protocolo ou QEMU | somente estado de plataforma no snapshot | encerrar o guest e liberar a configuração de rede |
+| `qemu:hw1:no-usb` | `qemu` | `hw1` | `qemu:tst6:matrix:minimal` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | QEMU fornece plataforma com USB desativado | validar fallback de entrada e USB ausente | USB ausente retorna ERR_UNAVAILABLE sem panic ou fila residual | USB presente, estado incoerente, timeout, protocolo ou QEMU | somente inventario e estado de input no snapshot | encerrar o guest e liberar filas de input |
+| `qemu:hw1:no-audio` | `qemu` | `hw1` | `qemu:tst6:matrix:minimal` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | QEMU fornece plataforma sem dispositivo AC97 | validar audio ausente e o estado degradado | audio ausente retorna ERR_UNAVAILABLE sem reservar recursos | AC97 presente, estado incoerente, timeout, protocolo ou QEMU | somente inventario de audio no snapshot | encerrar o guest e liberar estado de audio |
+| `qemu:hw1:no-storage` | `qemu` | `hw1` | `qemu:tst6:matrix:minimal` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | QEMU fornece somente o disco usado no boot | validar armazenamento adicional ausente e boot intacto | somente o volume de boot fica visivel e o opcional retorna ERR_UNAVAILABLE | disco adicional presente, estado incoerente, timeout, protocolo ou QEMU | somente inventario de storage no snapshot | encerrar o guest sem deixar dispositivos ou imagens extras |
 | `qemu:tst7:assembly` | `qemu` | `coverage` | `qemu:tst7:assembly` | `AUTOMATED` | 120 | 15 | `snapshot` | `quality` | `qemu` | imagem de cobertura QEMU, mapa de simbolos e IDT inicializada | disparar cada vetor em fixture protegida, validar retorno com IF desabilitado, observar os stubs e restaurar handlers, IRQs e contadores | cada entrada Assembly e executada ao menos uma vez, o retorno preserva o EFLAGS salvo e o estado da IDT permanece restaurado | imagem, mapa, protocolo, vetor ausente, estado residual, cobertura incompleta ou timeout | somente handlers, IRQs, EOI e contadores temporariamente substituidos durante o RUN | restaurar handlers, IRQs compartilhadas, ocorrencias e preservar manifesto, logs e coverage.json |
 
 ## Superfícies sem caso associado

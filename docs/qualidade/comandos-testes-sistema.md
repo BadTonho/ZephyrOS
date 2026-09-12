@@ -160,6 +160,38 @@ O alvo não gera fixtures assinadas. Se uma fixture externa ausente exigir
 chave privada, a execução deve ser interrompida e a chave fornecida pelo
 operador; nenhuma fixture insegura será criada como substituição.
 
+## HW1 - catalogo de perfis de hardware
+
+O manifesto versionado em `config/hardware-profiles.json` define os sete
+perfis QEMU obrigatorios: `baseline`, `no-acpi`, `no-nic`, `no-usb`,
+`no-vesa`, `no-audio` e `no-storage`. Os perfis preservam serial/QMP,
+registram fallback e diagnosticos e usam snapshots independentes. Hardware
+fisico permanece `PENDING` ate haver evidencia reproduzivel.
+
+| Perfil | Variacao | Fallback esperado |
+|---|---|---|
+| `baseline` | ACPI, PCI, VGA e NIC E1000 | nenhum |
+| `no-acpi` | ACPI ausente | serial |
+| `no-nic` | NIC ausente | rede indisponivel |
+| `no-usb` | USB desativado | PS/2 ou serial |
+| `no-vesa` | video desativado | serial |
+| `no-audio` | AC97 ausente | sem saida de audio |
+| `no-storage` | somente disco de boot | disco de boot |
+
+```text
+make test-hw1-host
+make catalog-test
+make test-hw1-qemu HW1_QEMU_WORKERS=4 HW1_QEMU_SEED=2101
+make test-hw1
+```
+
+O alvo QEMU reutiliza os casos TST6/TST5 associados pela tag `hw1`, gera
+artefatos em `build/test-results/hw1/` e prepara as fixtures de Storage para
+o caso USB. O intervalo de workers continua sendo 1 a 64; seis workers podem
+ser usados no Ryzen 5 3600 depois da validacao inicial. A matriz deve
+confirmar `health`, `regcheck full`, `devices` e `device-scan`, alem de
+degradacao explicita sem panic ou espera infinita.
+
 ## TST2 - protocolo e executor QEMU
 
 Testes host-only:

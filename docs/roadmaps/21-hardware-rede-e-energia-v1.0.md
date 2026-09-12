@@ -2,6 +2,9 @@
 
 ## Estado
 
+Status por etapa: HW1 CONCLUIDO. Os sete perfis QEMU estao versionados,
+testados e reproduziveis; hardware fisico permanece `PENDING`.
+
 Planejado. Esta frente define o conjunto de hardware suportado pela versão
 1.0.0 e garante que hardware ausente, parcial ou incompatível produza
 capacidade degradada e diagnóstico útil, sem travar o boot.
@@ -40,6 +43,16 @@ dinâmico de drivers ficam fora da matriz base, salvo uma decisão explícita.
   energia.
 
 ## Fases
+
+### HW1 - resultado validado
+
+- [x] Perfis `baseline`, `no-acpi`, `no-nic`, `no-usb`, `no-vesa`, `no-audio`
+  e `no-storage` definidos em `config/hardware-profiles.json`.
+- [x] Runner QEMU, catalogo, registro de cobertura e Makefiles atualizados.
+- [x] Validacao host, catalogo e matriz QEMU concluida com quatro workers e
+  seed `2101`.
+- [x] Hardware fisico mantido como `PENDING`, sem declaracao de suporte sem
+  evidencia reproduzivel.
 
 ### HW1 — Catálogo de perfis
 

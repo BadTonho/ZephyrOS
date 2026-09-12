@@ -1,0 +1,156 @@
+{
+  "schema": "zephyros-hardware-profile-v1",
+  "version": 1,
+  "scope": "qemu",
+  "physical_hardware_status": "PENDING",
+  "identity_policy": {
+    "stable_fields": [
+      "device_id",
+      "bdf",
+      "io_base",
+      "mmio_base",
+      "irq",
+      "version"
+    ],
+    "source": "diagnosticos do guest e parametros do perfil QEMU",
+    "unexpected_change": "FAIL"
+  },
+  "availability_states": [
+    "ABSENT",
+    "UNSUPPORTED",
+    "FAILED",
+    "POLICY_DISABLED",
+    "INVENTORIED",
+    "INITIALIZED",
+    "VALIDATED",
+    "DEGRADED"
+  ],
+  "state_semantics": {
+    "ABSENT": "hardware nao existe no perfil",
+    "UNSUPPORTED": "hardware detectado sem driver compativel",
+    "FAILED": "driver detectado mas inicializacao falhou",
+    "POLICY_DISABLED": "hardware desativado intencionalmente pelo perfil",
+    "INVENTORIED": "hardware identificado sem validacao funcional",
+    "INITIALIZED": "driver inicializado sem validacao funcional",
+    "VALIDATED": "capacidade exercitada e confirmada",
+    "DEGRADED": "capacidade parcial com fallback publicado"
+  },
+  "driver_states": [
+    "INVENTORIED",
+    "INITIALIZED",
+    "VALIDATED",
+    "FAILED",
+    "NOT_APPLICABLE"
+  ],
+  "diagnostics": [
+    "health",
+    "regcheck full",
+    "devices",
+    "device-scan"
+  ],
+  "profiles": [
+    {
+      "id": "baseline",
+      "runner_profile": "baseline",
+      "required": true,
+      "hardware": [
+        {"id": "acpi", "availability_state": "VALIDATED", "driver_state": "VALIDATED", "capability": "acpi"},
+        {"id": "pci", "availability_state": "VALIDATED", "driver_state": "VALIDATED", "capability": "pci"},
+        {"id": "vga", "availability_state": "VALIDATED", "driver_state": "VALIDATED", "capability": "vga"},
+        {"id": "network-e1000", "availability_state": "VALIDATED", "driver_state": "VALIDATED", "capability": "network-e1000"}
+      ],
+      "fallback": "none",
+      "expected_error": "none",
+      "diagnostics": ["health", "regcheck full", "devices", "device-scan"],
+      "case_ids": ["qemu:tst6:matrix:baseline"]
+    },
+    {
+      "id": "no-acpi",
+      "runner_profile": "no-acpi",
+      "required": true,
+      "hardware": [
+        {"id": "acpi", "availability_state": "ABSENT", "driver_state": "NOT_APPLICABLE", "capability": "acpi"},
+        {"id": "pci", "availability_state": "VALIDATED", "driver_state": "VALIDATED", "capability": "pci"},
+        {"id": "vga", "availability_state": "VALIDATED", "driver_state": "VALIDATED", "capability": "vga"}
+      ],
+      "fallback": "serial",
+      "expected_error": "ERR_UNAVAILABLE",
+      "diagnostics": ["health", "regcheck full", "devices", "device-scan"],
+      "case_ids": ["qemu:hw1:no-acpi"]
+    },
+    {
+      "id": "no-nic",
+      "runner_profile": "no-nic",
+      "required": true,
+      "hardware": [
+        {"id": "acpi", "availability_state": "VALIDATED", "driver_state": "VALIDATED", "capability": "acpi"},
+        {"id": "pci", "availability_state": "VALIDATED", "driver_state": "VALIDATED", "capability": "pci"},
+        {"id": "vga", "availability_state": "VALIDATED", "driver_state": "VALIDATED", "capability": "vga"},
+        {"id": "network-e1000", "availability_state": "ABSENT", "driver_state": "NOT_APPLICABLE", "capability": "network-e1000"}
+      ],
+      "fallback": "network-unavailable",
+      "expected_error": "ERR_UNAVAILABLE",
+      "diagnostics": ["health", "regcheck full", "devices", "device-scan"],
+      "case_ids": ["qemu:hw1:no-nic"]
+    },
+    {
+      "id": "no-usb",
+      "runner_profile": "no-usb",
+      "required": true,
+      "hardware": [
+        {"id": "acpi", "availability_state": "VALIDATED", "driver_state": "VALIDATED", "capability": "acpi"},
+        {"id": "pci", "availability_state": "VALIDATED", "driver_state": "VALIDATED", "capability": "pci"},
+        {"id": "vga", "availability_state": "VALIDATED", "driver_state": "VALIDATED", "capability": "vga"},
+        {"id": "usb", "availability_state": "ABSENT", "driver_state": "NOT_APPLICABLE", "capability": "usb"}
+      ],
+      "fallback": "ps2-or-serial",
+      "expected_error": "ERR_UNAVAILABLE",
+      "diagnostics": ["health", "regcheck full", "devices", "device-scan"],
+      "case_ids": ["qemu:hw1:no-usb"]
+    },
+    {
+      "id": "no-vesa",
+      "runner_profile": "no-vesa",
+      "required": true,
+      "hardware": [
+        {"id": "acpi", "availability_state": "VALIDATED", "driver_state": "VALIDATED", "capability": "acpi"},
+        {"id": "pci", "availability_state": "VALIDATED", "driver_state": "VALIDATED", "capability": "pci"},
+        {"id": "vga", "availability_state": "POLICY_DISABLED", "driver_state": "NOT_APPLICABLE", "capability": "vga"}
+      ],
+      "fallback": "serial",
+      "expected_error": "ERR_UNAVAILABLE",
+      "diagnostics": ["health", "regcheck full", "devices", "device-scan"],
+      "case_ids": ["qemu:tst6:sec6:no-vesa"]
+    },
+    {
+      "id": "no-audio",
+      "runner_profile": "no-audio",
+      "required": true,
+      "hardware": [
+        {"id": "acpi", "availability_state": "VALIDATED", "driver_state": "VALIDATED", "capability": "acpi"},
+        {"id": "pci", "availability_state": "VALIDATED", "driver_state": "VALIDATED", "capability": "pci"},
+        {"id": "vga", "availability_state": "VALIDATED", "driver_state": "VALIDATED", "capability": "vga"},
+        {"id": "audio-ac97", "availability_state": "ABSENT", "driver_state": "NOT_APPLICABLE", "capability": "audio-ac97"}
+      ],
+      "fallback": "no-audio-output",
+      "expected_error": "ERR_UNAVAILABLE",
+      "diagnostics": ["health", "regcheck full", "devices", "device-scan"],
+      "case_ids": ["qemu:hw1:no-audio"]
+    },
+    {
+      "id": "no-storage",
+      "runner_profile": "no-storage",
+      "required": true,
+      "hardware": [
+        {"id": "acpi", "availability_state": "VALIDATED", "driver_state": "VALIDATED", "capability": "acpi"},
+        {"id": "pci", "availability_state": "VALIDATED", "driver_state": "VALIDATED", "capability": "pci"},
+        {"id": "vga", "availability_state": "VALIDATED", "driver_state": "VALIDATED", "capability": "vga"},
+        {"id": "extra-storage", "availability_state": "ABSENT", "driver_state": "NOT_APPLICABLE", "capability": "storage-extra"}
+      ],
+      "fallback": "boot-disk-only",
+      "expected_error": "ERR_UNAVAILABLE",
+      "diagnostics": ["health", "regcheck full", "devices", "device-scan"],
+      "case_ids": ["qemu:hw1:no-storage"]
+    }
+  ]
+}

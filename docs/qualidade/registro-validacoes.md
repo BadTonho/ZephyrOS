@@ -7300,3 +7300,11 @@ dívida.
   `BOOT_ACTIVE_VALID` passou no QEMU; os demais casos individuais ficam para
   validacao posterior, permitindo o inicio do STO7 sem esconder essa
   cobertura pendente.
+
+- HW1 - catalogo de perfis de hardware validado em 2026-09-11
+  (America/Sao_Paulo). `make q3check`, `make clean`, `make`,
+  `make test-hw1-host` e `make catalog-test` passaram. A matriz
+  `make test-hw1-qemu HW1_QEMU_WORKERS=4 HW1_QEMU_SEED=2101` passou com os
+  sete perfis reproduziveis e quatro processos QEMU paralelos. Os artefatos
+  foram preservados em `build/test-results/hw1/`; hardware fisico continua
+  `PENDING`.

@@ -72,7 +72,8 @@ REPORT_TERMINATIONS = {
 }
 QEMU_PROFILE_NAMES = {
     "baseline", "minimal", "network", "usb-hid", "usb-storage", "audio",
-    "display", "pci", "no-vesa",
+    "display", "pci", "no-acpi", "no-nic", "no-usb", "no-vesa",
+    "no-audio", "no-storage",
 }
 QEMU_PROFILE_CAPABILITIES = {
     "baseline": ["acpi", "pci", "vga", "network-e1000"],
@@ -84,6 +85,11 @@ QEMU_PROFILE_CAPABILITIES = {
     "display": ["pci", "vga-cirrus"],
     "pci": ["pci", "pci-extra"],
     "no-vesa": ["acpi", "pci"],
+    "no-acpi": ["pci", "vga"],
+    "no-nic": ["acpi", "pci", "vga"],
+    "no-usb": ["acpi", "pci", "vga"],
+    "no-audio": ["acpi", "pci", "vga"],
+    "no-storage": ["acpi", "pci", "vga"],
 }
 QEMU_PROFILE_ARGS = {
     "baseline": [],
@@ -105,7 +111,12 @@ QEMU_PROFILE_ARGS = {
     ],
     "display": ["-vga", "cirrus"],
     "pci": ["-device", "virtio-rng-pci,id=tst6rng"],
+    "no-acpi": ["-machine", "pc,acpi=off"],
+    "no-nic": [],
+    "no-usb": ["-machine", "pc,usb=off"],
     "no-vesa": ["-vga", "none"],
+    "no-audio": [],
+    "no-storage": [],
 }
 QEMU_COMMON_ARGS = ["-accel", "tcg,thread=single"]
 QEMU_FIXTURE_NAMES = {"readonly", "readonly-update"}

@@ -4,6 +4,15 @@ Este catalogo associa cada header em `src/include/` ao documento tecnico que
 descreve seu contrato. Quando um desses headers mudar, o `make q3check` exige
 que o documento correspondente seja atualizado no mesmo conjunto de mudancas.
 
+## HW1 - perfis de hardware
+
+`config/hardware-profiles.json` e um contrato versionado de ferramentas e
+testes, nao uma nova API do kernel. Ele define os sete perfis QEMU obrigatorios,
+estados de presenca e de driver, capacidades, fallbacks, diagnosticos e a
+politica de identidade estavel. Hardware fisico permanece `PENDING` ate haver
+evidencia reproduzivel. HW1 nao altera syscall, ABI, bootloader, Stage 2 ou
+formato FAT.
+
 A Fase 5 acrescenta somente campos e funcoes ao fim dos contratos alterados:
 geracao de execucao no Shell Job, App Loader, pacotes e operacoes remotas,
 estado de drenagem, deadline e proximo despertar, geracao de operacao do

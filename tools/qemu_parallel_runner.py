@@ -217,7 +217,8 @@ def qemu_network(case: dict[str, Any]) -> str:
     declared = parameters.get("network")
     if identifier == "qemu:tst4:network":
         return "user,model=e1000,restrict=on"
-    if declared in {"none", "offline", False}:
+    if declared in {"none", "offline", False} or \
+            case.get("qemu_profile") == "no-nic":
         return "none"
     required = case.get("required_capabilities")
     if not isinstance(required, list):
