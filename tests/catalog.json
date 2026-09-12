@@ -143017,9 +143017,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:core"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell.c:shell_prompt_reconcile",
@@ -143035,9 +143038,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:core"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell.c:shell_prompt_request",
@@ -143053,9 +143059,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:shell:core"
+      ],
+      "tags": [],
+      "coverage_mode": "direct"
     },
     {
       "id": "c:src/shell/shell.c:shell_redraw_after_overlay_close",
@@ -143620,7 +143629,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:checks"
+        "host:shell:checks",
+        "qemu:shell2:commands-diagnostics"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -146685,7 +146695,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:commands-core"
+        "host:shell:commands-core",
+        "qemu:shell2:commands-diagnostics"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -146706,7 +146717,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:commands-core"
+        "host:shell:commands-core",
+        "qemu:shell2:commands-diagnostics"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -146727,7 +146739,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:commands-core"
+        "host:shell:commands-core",
+        "qemu:shell2:commands-diagnostics"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -146769,7 +146782,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:commands-core"
+        "host:shell:commands-core",
+        "qemu:shell2:commands-diagnostics"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -146812,6 +146826,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:commands-core",
+        "qemu:shell2:commands-diagnostics",
         "qemu:tst5:storage"
       ],
       "tags": [],
@@ -146854,7 +146869,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:commands-core"
+        "host:shell:commands-core",
+        "qemu:shell2:commands-diagnostics"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -146939,6 +146955,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:commands-core",
+        "qemu:shell2:commands-diagnostics",
         "qemu:tst5:processes"
       ],
       "tags": [],
@@ -147003,6 +147020,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:commands-core",
+        "qemu:shell2:commands-diagnostics",
         "qemu:tst5:processes"
       ],
       "tags": [],
@@ -147045,7 +147063,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:commands-core"
+        "host:shell:commands-core",
+        "qemu:shell2:commands-diagnostics"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -147888,7 +147907,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:diagnostics"
+        "host:shell:diagnostics",
+        "qemu:shell2:commands-diagnostics"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -147909,7 +147929,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:diagnostics"
+        "host:shell:diagnostics",
+        "qemu:shell2:commands-diagnostics"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -147930,7 +147951,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:diagnostics"
+        "host:shell:diagnostics",
+        "qemu:shell2:commands-diagnostics"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -148014,7 +148036,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:diagnostics"
+        "host:shell:diagnostics",
+        "qemu:shell2:commands-diagnostics"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -149381,7 +149404,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:diagnostics"
+        "host:shell:diagnostics",
+        "qemu:shell2:commands-diagnostics"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -149424,6 +149448,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:diagnostics",
+        "qemu:shell2:commands-diagnostics",
         "qemu:tst5:storage"
       ],
       "tags": [],
@@ -149571,7 +149596,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:diagnostics"
+        "host:shell:diagnostics",
+        "qemu:shell2:commands-diagnostics"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -149740,7 +149766,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:diagnostics"
+        "host:shell:diagnostics",
+        "qemu:shell2:commands-diagnostics"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -158764,6 +158791,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:dispatch",
+        "qemu:shell2:commands-diagnostics",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -179816,6 +179844,9 @@
         "c:src/shell/shell.c:shell_init",
         "c:src/shell/shell.c:shell_print_prompt",
         "c:src/shell/shell.c:shell_process_command",
+        "c:src/shell/shell.c:shell_prompt_hide",
+        "c:src/shell/shell.c:shell_prompt_reconcile",
+        "c:src/shell/shell.c:shell_prompt_request",
         "c:src/shell/shell.c:shell_redraw_after_overlay_close",
         "c:src/shell/shell.c:shell_runtime_finish_command",
         "c:src/shell/shell.c:shell_runtime_handle_terminal_key",
@@ -184023,7 +184054,8 @@
         "no-acpi",
         "hw2",
         "hw5",
-        "hw6"
+        "hw6",
+        "shell2"
       ]
     },
     {
@@ -184063,7 +184095,8 @@
         "no-audio",
         "hw2",
         "hw3",
-        "hw6"
+        "hw6",
+        "shell2"
       ]
     },
     {
@@ -184103,7 +184136,8 @@
         "no-nic",
         "hw2",
         "hw5",
-        "hw6"
+        "hw6",
+        "shell2"
       ]
     },
     {
@@ -184143,7 +184177,8 @@
         "no-storage",
         "hw2",
         "hw4",
-        "hw6"
+        "hw6",
+        "shell2"
       ]
     },
     {
@@ -184184,7 +184219,8 @@
         "hw2",
         "hw3",
         "hw4",
-        "hw6"
+        "hw6",
+        "shell2"
       ]
     },
     {
@@ -184321,7 +184357,8 @@
         "qemu",
         "diagnostics",
         "repeat",
-        "lifecycle"
+        "lifecycle",
+        "shell2"
       ],
       "surface_ids": [
         "c:src/core/kernel_tests_blackbox.c:blackbox_is_hw6_case",
@@ -184776,6 +184813,283 @@
           {
             "op": "text",
             "text": "echo shell1-prompt-lifecycle"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          }
+        ],
+        "post_action": {
+          "type": "none",
+          "steps": []
+        }
+      }
+    },
+    {
+      "id": "qemu:shell2:commands-diagnostics",
+      "scenario": "Comandos basicos e diagnosticos com retorno deterministico ao prompt",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "smoke",
+      "guest_case": "qemu:tst5:shell2-commands-diagnostics",
+      "qemu_profile": "baseline",
+      "required_capabilities": [],
+      "timeout_seconds": 240,
+      "heartbeat_timeout_seconds": 20,
+      "isolation": "snapshot",
+      "parameters": {
+        "protocol": "ZTEST/1",
+        "input": "qmp-keyboard",
+        "postcondition": "prompt-recovered",
+        "diagnostics": "health,regcheck full,memcheck,schedcheck,proccheck,devices,device-info,device-scan",
+        "read_only": "diagnostics-only; mount validated separately"
+      },
+      "preconditions": "imagem pronta, Shell inicializado e teclado virtual disponivel",
+      "action": "executar comandos basicos validos e invalidos, diagnosticos, cancelamento e reentrada",
+      "expected": "mensagens e erros permanecem deterministas, diagnosticos nao reinicializam hardware e o prompt retorna uma vez",
+      "errors": "argumento invalido, hardware ausente, prompt ausente ou duplicado, estado residual, timeout ou QEMU",
+      "effects": "somente mount pode alterar o estado de volume; diagnosticos usam snapshots read-only",
+      "cleanup": "encerrar o QEMU e preservar serial, QMP e resultado",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "c:src/shell/shell_checks.c:cmd_regcheck",
+        "c:src/shell/shell_commands_core.c:cmd_cat",
+        "c:src/shell/shell_commands_core.c:cmd_clear",
+        "c:src/shell/shell_commands_core.c:cmd_echo",
+        "c:src/shell/shell_commands_core.c:cmd_help",
+        "c:src/shell/shell_commands_core.c:cmd_ls",
+        "c:src/shell/shell_commands_core.c:cmd_mem",
+        "c:src/shell/shell_commands_core.c:cmd_procs",
+        "c:src/shell/shell_commands_core.c:cmd_threads",
+        "c:src/shell/shell_commands_core.c:cmd_uptime",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_device_info",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_device_scan",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_devices",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_memcheck",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_mount",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_proccheck",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_schedcheck",
+        "c:src/shell/shell_dispatch.c:shell_dispatch_execute"
+      ],
+      "tags": [
+        "qemu",
+        "shell",
+        "shell2",
+        "commands",
+        "diagnostics",
+        "prompt",
+        "reentry",
+        "tst5"
+      ],
+      "interaction": {
+        "mode": "qmp-keyboard",
+        "steps": [
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "clear"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "help"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "echo shell2-success"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "shell2-comando-invalido"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "echo shell2-cancelado"
+          },
+          {
+            "op": "keys",
+            "keys": [
+              "ctrl",
+              "c"
+            ]
+          },
+          {
+            "op": "text",
+            "text": "mem"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "procs"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "threads"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "uptime"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "ls"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "cat README.TXT"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "mount"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "devices"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "device-info pci-00:03.0"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "device-scan"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "text",
+            "text": "health check"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "text",
+            "text": "memcheck"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "text",
+            "text": "schedcheck"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "proccheck"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "regcheck full"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 10
+          },
+          {
+            "op": "keys",
+            "keys": [
+              "f11"
+            ]
+          },
+          {
+            "op": "wait",
+            "seconds": 10
+          },
+          {
+            "op": "text",
+            "text": "echo shell2-commands-diagnostics"
           },
           {
             "op": "key",
@@ -188515,7 +188829,8 @@
         "tst5",
         "apps",
         "hw3",
-        "shell1"
+        "shell1",
+        "shell2"
       ],
       "interaction": {
         "mode": "qmp-keyboard",
@@ -188815,7 +189130,8 @@
         "tst5",
         "input",
         "hw3",
-        "shell1"
+        "shell1",
+        "shell2"
       ],
       "interaction": {
         "mode": "qmp-keyboard",
@@ -188910,7 +189226,8 @@
         "hw2",
         "hw3",
         "hw5",
-        "hw6"
+        "hw6",
+        "shell2"
       ],
       "interaction": {
         "mode": "qmp-keyboard",
@@ -189988,7 +190305,8 @@
         "classic",
         "prompt",
         "hw3",
-        "shell1"
+        "shell1",
+        "shell2"
       ],
       "status": "AUTOMATED",
       "interaction": {
@@ -190069,7 +190387,8 @@
         "fault",
         "recovery",
         "prompt",
-        "hw2"
+        "hw2",
+        "shell2"
       ],
       "status": "AUTOMATED",
       "interaction": {
@@ -190230,7 +190549,8 @@
         "simple",
         "prompt",
         "hw3",
-        "shell1"
+        "shell1",
+        "shell2"
       ],
       "status": "AUTOMATED",
       "interaction": {
@@ -191020,7 +191340,8 @@
         "tst5",
         "shell",
         "hw3",
-        "shell1"
+        "shell1",
+        "shell2"
       ],
       "interaction": {
         "mode": "qmp-keyboard",
@@ -193341,7 +193662,8 @@
         "hw1",
         "hw2",
         "hw3",
-        "hw6"
+        "hw6",
+        "shell2"
       ],
       "status": "AUTOMATED"
     },

@@ -454,6 +454,79 @@
         "STOPPED"
       ],
       "artifact_schema": "zephyros-qemu-parallel-result-v1"
+    },
+    "shell2_commands_diagnostics": {
+      "case_ids": [
+        "qemu:hw1:no-acpi",
+        "qemu:hw1:no-audio",
+        "qemu:hw1:no-nic",
+        "qemu:hw1:no-storage",
+        "qemu:hw1:no-usb",
+        "qemu:hw6:diagnostics-repeat",
+        "qemu:shell2:commands-diagnostics",
+        "qemu:tst5:apps",
+        "qemu:tst5:input",
+        "qemu:tst5:krn6-diagnostics",
+        "qemu:tst5:sec6-classic",
+        "qemu:tst5:sec6-diagnostics",
+        "qemu:tst5:sec6-simple",
+        "qemu:tst5:shell",
+        "qemu:tst6:sec6:no-vesa"
+      ],
+      "guest_cases": [
+        "qemu:tst5:shell2-commands-diagnostics"
+      ],
+      "profiles": [
+        "baseline",
+        "smoke",
+        "minimal",
+        "no-acpi",
+        "no-audio",
+        "no-nic",
+        "no-storage",
+        "no-usb",
+        "no-vesa",
+        "sec6"
+      ],
+      "tags": [
+        "shell2",
+        "shell",
+        "commands",
+        "diagnostics",
+        "reentry",
+        "hardware-fallback"
+      ],
+      "required_commands": [
+        "cat README.TXT",
+        "clear",
+        "device-info pci-00:03.0",
+        "device-scan",
+        "devices",
+        "echo shell2-success",
+        "health check",
+        "help",
+        "ls",
+        "mem",
+        "memcheck",
+        "mount",
+        "proccheck",
+        "procs",
+        "regcheck full",
+        "schedcheck",
+        "threads",
+        "uptime"
+      ],
+      "workers_default": 4,
+      "seed_default": 2202,
+      "artifact_directory": "build/test-results/shell2",
+      "network_policy": "offline-restricted",
+      "statuses": [
+        "PASS",
+        "FAIL",
+        "BLOCKED",
+        "STOPPED"
+      ],
+      "artifact_schema": "zephyros-qemu-parallel-result-v1"
     }
   },
   "entries": [
@@ -1094,7 +1167,8 @@
           "hw2",
           "hw3",
           "hw5",
-          "hw6"
+          "hw6",
+          "shell2"
         ],
         "interaction": {
           "mode": "qmp-keyboard",
@@ -8560,7 +8634,8 @@
           "qemu",
           "diagnostics",
           "repeat",
-          "lifecycle"
+          "lifecycle",
+          "shell2"
         ],
         "surface_ids": [
           "c:src/core/kernel_tests_blackbox.c:blackbox_is_hw6_case",
@@ -8898,6 +8973,316 @@
       }
     },
     {
+      "id": "shell2-commands-diagnostics-qemu",
+      "domain": "shell-interface",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:shell2:commands-diagnostics"
+      ],
+      "surface_ids": [
+        "c:src/shell/shell_dispatch.c:shell_dispatch_execute",
+        "c:src/shell/shell_commands_core.c:cmd_help",
+        "c:src/shell/shell_commands_core.c:cmd_clear",
+        "c:src/shell/shell_commands_core.c:cmd_echo",
+        "c:src/shell/shell_commands_core.c:cmd_ls",
+        "c:src/shell/shell_commands_core.c:cmd_cat",
+        "c:src/shell/shell_commands_core.c:cmd_mem",
+        "c:src/shell/shell_commands_core.c:cmd_procs",
+        "c:src/shell/shell_commands_core.c:cmd_threads",
+        "c:src/shell/shell_commands_core.c:cmd_uptime",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_health",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_devices",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_device_info",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_device_scan",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_mount",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_memcheck",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_schedcheck",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_proccheck",
+        "c:src/shell/shell_checks.c:cmd_regcheck"
+      ],
+      "include_public_apis": true,
+      "evidence": "Caso QEMU SHELL2 para comandos basicos, diagnosticos, cancelamento, hardware ausente e reentrada",
+      "case_definition": {
+        "id": "qemu:shell2:commands-diagnostics",
+        "scenario": "Comandos basicos e diagnosticos com retorno deterministico ao prompt",
+        "owner": "quality",
+        "layer": "qemu",
+        "executor": "qemu",
+        "profile": "smoke",
+        "guest_case": "qemu:tst5:shell2-commands-diagnostics",
+        "qemu_profile": "baseline",
+        "required_capabilities": [],
+        "timeout_seconds": 240,
+        "heartbeat_timeout_seconds": 20,
+        "isolation": "snapshot",
+        "parameters": {
+          "protocol": "ZTEST/1",
+          "input": "qmp-keyboard",
+          "postcondition": "prompt-recovered",
+          "diagnostics": "health,regcheck full,memcheck,schedcheck,proccheck,devices,device-info,device-scan",
+          "read_only": "diagnostics-only; mount validated separately"
+        },
+        "preconditions": "imagem pronta, Shell inicializado e teclado virtual disponivel",
+        "action": "executar comandos basicos validos e invalidos, diagnosticos, cancelamento e reentrada",
+        "expected": "mensagens e erros permanecem deterministas, diagnosticos nao reinicializam hardware e o prompt retorna uma vez",
+        "errors": "argumento invalido, hardware ausente, prompt ausente ou duplicado, estado residual, timeout ou QEMU",
+        "effects": "somente mount pode alterar o estado de volume; diagnosticos usam snapshots read-only",
+        "cleanup": "encerrar o QEMU e preservar serial, QMP e resultado",
+        "status": "AUTOMATED",
+        "surface_ids": [
+          "c:src/shell/shell_dispatch.c:shell_dispatch_execute",
+          "c:src/shell/shell_commands_core.c:cmd_help",
+          "c:src/shell/shell_commands_core.c:cmd_clear",
+          "c:src/shell/shell_commands_core.c:cmd_echo",
+          "c:src/shell/shell_commands_core.c:cmd_ls",
+          "c:src/shell/shell_commands_core.c:cmd_cat",
+          "c:src/shell/shell_commands_core.c:cmd_mem",
+          "c:src/shell/shell_commands_core.c:cmd_procs",
+          "c:src/shell/shell_commands_core.c:cmd_threads",
+          "c:src/shell/shell_commands_core.c:cmd_uptime",
+          "c:src/shell/shell_commands_diagnostics.c:cmd_health",
+          "c:src/shell/shell_commands_diagnostics.c:cmd_devices",
+          "c:src/shell/shell_commands_diagnostics.c:cmd_device_info",
+          "c:src/shell/shell_commands_diagnostics.c:cmd_device_scan",
+          "c:src/shell/shell_commands_diagnostics.c:cmd_mount",
+          "c:src/shell/shell_commands_diagnostics.c:cmd_memcheck",
+          "c:src/shell/shell_commands_diagnostics.c:cmd_schedcheck",
+          "c:src/shell/shell_commands_diagnostics.c:cmd_proccheck",
+          "c:src/shell/shell_checks.c:cmd_regcheck"
+        ],
+        "tags": [
+          "qemu",
+          "shell",
+          "shell2",
+          "commands",
+          "diagnostics",
+          "prompt",
+          "reentry",
+          "tst5"
+        ],
+        "interaction": {
+          "mode": "qmp-keyboard",
+          "steps": [
+            {
+              "op": "key",
+              "key": "meta_l"
+            },
+            {
+              "op": "key",
+              "key": "down"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "clear"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "help"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "echo shell2-success"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "shell2-comando-invalido"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "echo shell2-cancelado"
+            },
+            {
+              "op": "keys",
+              "keys": [
+                "ctrl",
+                "c"
+              ]
+            },
+            {
+              "op": "text",
+              "text": "mem"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "procs"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "threads"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "uptime"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "ls"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "cat README.TXT"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "mount"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "devices"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "device-info pci-00:03.0"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "device-scan"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 2
+            },
+            {
+              "op": "text",
+              "text": "health check"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 2
+            },
+            {
+              "op": "text",
+              "text": "memcheck"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 2
+            },
+            {
+              "op": "text",
+              "text": "schedcheck"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "proccheck"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "regcheck full"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 10
+            },
+            {
+              "op": "keys",
+              "keys": [
+                "f11"
+              ]
+            },
+            {
+              "op": "wait",
+              "seconds": 10
+            },
+            {
+              "op": "text",
+              "text": "echo shell2-commands-diagnostics"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            }
+          ],
+          "post_action": {
+            "type": "none",
+            "steps": []
+          }
+        }
+      }
+    },
+    {
       "id": "shell1-prompt-lifecycle-qemu",
       "domain": "shell-interface",
       "owner": "quality",
@@ -8956,27 +9341,93 @@
         "interaction": {
           "mode": "qmp-keyboard",
           "steps": [
-            {"op": "key", "key": "meta_l"},
-            {"op": "key", "key": "down"},
-            {"op": "key", "key": "enter"},
-            {"op": "text", "text": "echo shell1-success"},
-            {"op": "key", "key": "enter"},
-            {"op": "text", "text": "shell1-comando-invalido"},
-            {"op": "key", "key": "enter"},
-            {"op": "text", "text": "echo shell1-cancelado"},
-            {"op": "keys", "keys": ["ctrl", "c"]},
-            {"op": "text", "text": "health check"},
-            {"op": "key", "key": "enter"},
-            {"op": "wait", "seconds": 2},
-            {"op": "text", "text": "settings"},
-            {"op": "key", "key": "enter"},
-            {"op": "wait", "seconds": 1},
-            {"op": "keys", "keys": ["alt", "f4"]},
-            {"op": "wait", "seconds": 1},
-            {"op": "text", "text": "echo shell1-prompt-lifecycle"},
-            {"op": "key", "key": "enter"}
+            {
+              "op": "key",
+              "key": "meta_l"
+            },
+            {
+              "op": "key",
+              "key": "down"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "echo shell1-success"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "shell1-comando-invalido"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "echo shell1-cancelado"
+            },
+            {
+              "op": "keys",
+              "keys": [
+                "ctrl",
+                "c"
+              ]
+            },
+            {
+              "op": "text",
+              "text": "health check"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 2
+            },
+            {
+              "op": "text",
+              "text": "settings"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 1
+            },
+            {
+              "op": "keys",
+              "keys": [
+                "alt",
+                "f4"
+              ]
+            },
+            {
+              "op": "wait",
+              "seconds": 1
+            },
+            {
+              "op": "text",
+              "text": "echo shell1-prompt-lifecycle"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            }
           ],
-          "post_action": {"type": "none", "steps": []}
+          "post_action": {
+            "type": "none",
+            "steps": []
+          }
         }
       }
     }

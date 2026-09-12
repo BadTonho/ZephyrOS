@@ -498,3 +498,25 @@ as fases, a quantidade de falhas e os casos inesperados. Fixtures negativas e
 indisponibilidade real de filesystem ou loader nao sao classificadas como
 falhas. Argumentos diferentes de `compact` sao rejeitados antes de qualquer
 teste.
+
+## SHELL2: comandos basicos e diagnosticos
+
+Os comandos basicos e de diagnostico continuam registrados na tabela unica do
+dispatcher. `help`, `clear`, `echo`, `mem`, `procs`, `threads`, `uptime`, `ls`,
+`cat`, `mount`, `devices`, `device-info` e `device-scan` preservam handlers
+publicos legados e retornam ao ciclo central do prompt. `mount` e a unica
+operacao mutavel deste conjunto; os demais diagnosticos usam snapshots e nao
+reinicializam inventario, drivers, processos, volumes ou hardware.
+
+`health` publica os estados observaveis do supervisor (`STARTING`, `READY`,
+`FAILED` e `STOPPED`) por copia. `health check`, `regcheck full`, `memcheck`,
+`schedcheck` e `proccheck` mantem os codigos canonicos, cancelamento e timeouts
+existentes, com degradacao explicita quando um perfil nao possui hardware
+opcional. Repetir um diagnostico e idempotente e nao cria callbacks, locks,
+jobs ou descritores residuais.
+
+A matriz dedicada `qemu:shell2:commands-diagnostics` executa os comandos
+validos e invalidos, cancelamento, diagnosticos, reentrada e retorno unico ao
+prompt em snapshot independente. Os perfis sem ACPI, NIC, USB, audio,
+armazenamento e VESA reutilizam os casos existentes para confirmar fallback e
+degradacao sem duplicar execucoes.

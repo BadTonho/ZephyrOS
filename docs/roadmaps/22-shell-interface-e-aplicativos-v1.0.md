@@ -2,8 +2,8 @@
 
 ## Estado
 
-SHELL1 concluido e validado. As fases seguintes desta frente continuam
-planejadas.
+SHELL1 e SHELL2 concluidos e validados; as fases seguintes desta frente
+continuam planejadas.
 
 Planejado. Esta frente fecha a experiência básica de uso do ZephyrOS depois
 que kernel, segurança, Storage e hardware estiverem com contratos estáveis.
@@ -56,17 +56,17 @@ ou ferramentas de programação.
 
 ### SHELL2 — Comandos básicos e diagnóstico
 
-- [ ] Validar `help`, `clear`, `echo`, `mem`, `procs`, `threads`, `uptime`,
+- [x] Validar `help`, `clear`, `echo`, `mem`, `procs`, `threads`, `uptime`,
   `ls`, `cat`, `mount`, `devices`, `device-info` e `device-scan`.
-- [ ] Validar `health`, `regcheck full`, `memcheck`, `schedcheck` e
+- [x] Validar `health`, `regcheck full`, `memcheck`, `schedcheck` e
   `proccheck` em sucesso, erro, cancelamento e ausência de hardware.
-- [ ] Confirmar mensagens determinísticas e códigos canônicos sem logs
+- [x] Confirmar mensagens determinísticas e códigos canônicos sem logs
   duplicados.
-- [ ] Garantir que diagnósticos somente leitura não alterem inventários,
+- [x] Garantir que diagnósticos somente leitura não alterem inventários,
   processos, volumes ou hardware.
-- [ ] Exibir o estado do supervisor de serviços e permitir diagnóstico de
+- [x] Exibir o estado do supervisor de serviços e permitir diagnóstico de
   serviços `STARTING`, `READY`, `FAILED` e `STOPPED`.
-- [ ] Documentar comandos suportados, limites, fallbacks e exemplos de erro.
+- [x] Documentar comandos suportados, limites, fallbacks e exemplos de erro.
 
 ### SHELL3 — Arquivos e administração
 
@@ -174,3 +174,24 @@ A implementacao usa estado privado central (`HIDDEN`, `REQUESTED`, `VISIBLE` e
 `BLOCKED`) e geracao de renderizacao para reconciliar o prompt de forma
 idempotente. O caso dedicado `qemu:shell1:prompt-lifecycle` complementa as
 regressoes de Shell, entrada, aplicativos e SEC6 Simple/Classic.
+
+### Validacao SHELL2
+
+O conjunto deterministico da etapa e:
+
+```text
+make q3check
+make clean
+make
+make test-shell2-host
+make catalog-test
+make test-shell2-qemu SHELL2_QEMU_WORKERS=4 SHELL2_QEMU_SEED=2202
+```
+
+O caso dedicado `qemu:shell2:commands-diagnostics` cobre os comandos basicos,
+erros, cancelamento, diagnosticos, reentrada e retorno ao prompt. Os casos
+existentes de Shell, diagnosticos, SEC6 e perfis sem hardware sao reutilizados
+pela tag `shell2`, sem alterar ABI, syscalls, `shell.h` ou codigos de erro.
+
+Estado da etapa: concluida e validada. O agregado host passou, o catalogo foi
+validado e a matriz QEMU passou 15/15 casos com 4 workers e seed 2202.

@@ -548,3 +548,18 @@ funcionalidades correspondentes.
 
 Todo teste QEMU deve terminar com sucesso, falha ou bloqueio identificavel e
 preservar seus artefatos. Nenhum comando deve aguardar indefinidamente.
+
+## SHELL2 - comandos basicos e diagnosticos
+
+```text
+make test-shell2-host
+make test-shell2-qemu SHELL2_QEMU_WORKERS=4 SHELL2_QEMU_SEED=2202
+make test-shell2
+```
+
+O agregado host combina os testes dos comandos core, diagnosticos, checks,
+introspeccao, VFS, supervisor, prompt e black-box com
+`test_shell2_matrix.py`. A matriz QEMU usa a tag `shell2`, snapshots
+independentes e os casos de fallback sem hardware. O caso dedicado
+`qemu:shell2:commands-diagnostics` cobre comandos validos e invalidos,
+cancelamento, diagnosticos, `mount` separado e reentrada.

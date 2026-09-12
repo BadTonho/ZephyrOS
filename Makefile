@@ -57,6 +57,8 @@ HW6_QEMU_WORKERS ?= 4
 HW6_QEMU_SEED ?= 2106
 SHELL1_QEMU_WORKERS ?= 4
 SHELL1_QEMU_SEED ?= 2201
+SHELL2_QEMU_WORKERS ?= 4
+SHELL2_QEMU_SEED ?= 2202
 COVERAGE_BUILD_DIR ?= build-coverage
 ASSEMBLY_RUN_ID ?= tst7-assembly-1
 ASSEMBLY_TRACE_RUN_ID ?= tst7-assembly-trace-1
@@ -1630,6 +1632,12 @@ test-shell1-qemu: $(OS_IMG) tools\qemu_parallel_runner.py tools\qemu_test_runner
 
 test-shell1: test-shell1-host test-shell1-qemu
 
+test-shell2-qemu: $(OS_IMG) tools\qemu_parallel_runner.py tools\qemu_test_runner.py tests\catalog.json
+	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
+	python tools\qemu_parallel_runner.py parallel --workers "$(SHELL2_QEMU_WORKERS)" --seed "$(SHELL2_QEMU_SEED)" --image "$(OS_IMG)" --catalog tests\catalog.json --results "$(BUILD_DIR)\test-results\shell2" --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" --tag shell2
+
+test-shell2: test-shell2-host test-shell2-qemu
+
 test-qemu-soak-parallel: $(OS_IMG) tools\qemu_parallel_runner.py tools\qemu_test_runner.py tests\catalog.json
 	@if not exist "$(OS_IMG)" (echo Imagem ausente: $(OS_IMG) & exit /b 2)
 	python tools\qemu_parallel_runner.py soak --workers "$(QEMU_PARALLEL_WORKERS)" --image "$(OS_IMG)" --catalog tests\catalog.json --qemu $(QEMU) --cpu "$(QEMU_TEST_CPU)" $(QEMU_PARALLEL_SOAK_ARGS)
@@ -2004,6 +2012,10 @@ test-shell1-host: test-shell-core-host test-shell-input-host test-shell-hosted-h
 	python -m unittest tests.unit.test_shell1_matrix tests.unit.test_qemu_test_runner tests.unit.test_qemu_parallel_runner
 	$(MAKE_TOOL) test-shell-core-host test-shell-input-host test-shell-hosted-host test-shell-job-host test-shell-dispatch-host test-blackbox-host
 
+test-shell2-host: test-shell-core-host test-shell-commands-core-host test-shell-diagnostics-host test-shell-checks-host test-shell-introspection-host test-shell-commands-vfs-host test-shell-input-host test-shell-hosted-host test-shell-job-host test-shell-dispatch-host test-service-supervisor-host test-blackbox-host tools\qemu_test_runner.py tools\qemu_parallel_runner.py tests\unit\test_shell2_matrix.py tests\unit\test_kernel_tests_blackbox_host.c tests\catalog.json tests\coverage\registry.json
+	python -m unittest tests.unit.test_shell2_matrix tests.unit.test_qemu_test_runner tests.unit.test_qemu_parallel_runner
+	$(MAKE_TOOL) test-shell-core-host test-shell-commands-core-host test-shell-diagnostics-host test-shell-checks-host test-shell-introspection-host test-shell-commands-vfs-host test-shell-input-host test-shell-hosted-host test-shell-job-host test-shell-dispatch-host test-service-supervisor-host test-blackbox-host
+
 test-vfs-host: tools\core_host_runner.py tools\coverage_collector.py tests\unit\test_vfs_host.c tests\catalog.json src\fs\vfs.c src\fs\permissions.c src\process\credentials.c src\include\fs\vfs.h src\include\fs\permissions.h src\include\process\credentials.h src\include\process\resource.h
 	python tools\core_host_runner.py --case host:storage:vfs --cc "$(HOST_CC)"
 
@@ -2356,7 +2368,7 @@ clean:
 .PHONY: kernel-elf
 .PHONY: test-assembly-qemu test-assembly-trace-qemu test-assembly-boot-trace-qemu test-assembly-recovery-trace-qemu
 .PHONY: test-qemu-parallel test-qemu-soak-parallel test-sec6-host test-sec6-qemu test-sec6
-.PHONY: test-sto1-host test-sto2-host test-sto3-host test-sto4-host test-sto5-host test-sto6-host test-sto7-host test-sto7-qemu test-sto7 test-hw1-host test-hw1-qemu test-hw1 test-hw2-host test-hw2-qemu test-hw2 test-hw3-host test-hw3-qemu test-hw3 test-hw4-host test-hw4-qemu test-hw4 test-hw5-host test-hw5-qemu test-hw5 test-hw6-host test-hw6-qemu test-hw6 test-shell1-host test-shell1-qemu test-shell1 test-driver-lifecycle-host
+.PHONY: test-sto1-host test-sto2-host test-sto3-host test-sto4-host test-sto5-host test-sto6-host test-sto7-host test-sto7-qemu test-sto7 test-hw1-host test-hw1-qemu test-hw1 test-hw2-host test-hw2-qemu test-hw2 test-hw3-host test-hw3-qemu test-hw3 test-hw4-host test-hw4-qemu test-hw4 test-hw5-host test-hw5-qemu test-hw5 test-hw6-host test-hw6-qemu test-hw6 test-shell1-host test-shell1-qemu test-shell1 test-shell2-host test-shell2-qemu test-shell2 test-driver-lifecycle-host
 .PHONY: test-tst4-qemu-paging-vma test-tst4-qemu-execution test-tst4-qemu-storage-vfs test-tst4-qemu-network test-tst4-qemu-platform
 .PHONY: test-tst5-host test-tst5-qemu-shell test-tst5-qemu-input test-tst5-qemu-apps test-tst5-qemu-processes test-tst5-qemu-storage test-tst5-qemu-network test-tst5-qemu-update-recovery test-tst5-qemu-reboot test-tst5-qemu-poweroff
 .PHONY: test-krn6-qemu-diagnostics

@@ -7400,3 +7400,24 @@ dívida.
   permanecem separadas.
 
   Estado: SHELL1 `PASS`.
+
+- SHELL2 - comandos basicos e diagnostico - implementacao registrada em
+  2026-09-12 (America/Sao_Paulo). O caso dedicado
+  `qemu:shell2:commands-diagnostics` foi adicionado ao observer black-box,
+  com comandos validos e invalidos, cancelamento, diagnosticos, `mount`
+  separado e reentrada. A selecao `shell2` reutiliza Shell, diagnosticos,
+  SEC6, HW6 e perfis sem hardware em snapshots independentes.
+
+  O host diretamente afetado passou: comandos core, diagnosticos, checks,
+  introspeccao, supervisor, VFS, black-box e a matriz do orquestrador. Os
+  gates `make q3check`, `make clean`, `make`, `make test-shell2-host` e
+  `make catalog-test` passaram. A matriz
+  `make test-shell2-qemu SHELL2_QEMU_WORKERS=4 SHELL2_QEMU_SEED=2202`
+  passou 15/15 casos em
+  `build/test-results/shell2/qpp-20260912T184540Z-22472/`, sem processos
+  QEMU residuais. A fixture dedicada foi corrigida para cancelar
+  `regcheck full` com F11 e aguardar a drenagem do job; a reproducao isolada
+  tambem passou. `DT100-003`, `DT100-004` e a divida fisica do PS/2
+  permanecem separadas.
+
+  Estado: SHELL2 `PASS`.

@@ -673,6 +673,19 @@ make test-shell1-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 make test-shell1-qemu SHELL1_QEMU_WORKERS=4 SHELL1_QEMU_SEED=2201
 ```
 
+O agregado `test-shell2-host` reutiliza os testes diretamente afetados de
+comandos core, diagnosticos, checks, introspeccao, VFS, supervisor, prompt e
+black-box. A matriz paralela usa a selecao explicita `shell2`:
+
+```text
+make test-shell2-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+make test-shell2-qemu SHELL2_QEMU_WORKERS=4 SHELL2_QEMU_SEED=2202
+```
+
+Os resultados ficam em `build/test-results/shell2/`. O caso dedicado valida
+mensagens deterministicas, cancelamento, retorno ao prompt e diagnosticos
+somente leitura; `mount` permanece separado como operacao mutavel.
+
 O caso `test-usb-transport-host` exercita o despachante de transporte USB com
 backends EHCI e UHCI falsos. A fixture cobre argumentos nulos, controlador
 desconhecido, encaminhamento de controle, Bulk, toggles e Interrupt, sem

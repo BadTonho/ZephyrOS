@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7675**
-- Casos de teste: **190**
+- Casos de teste: **191**
 - Superfícies aposentadas: **60**
 
 | Tipo | Quantidade |
@@ -19,13 +19,13 @@
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7603 |
+| `COVERED` | 7606 |
 | `MANUAL` | 0 |
-| `PENDING` | 72 |
+| `PENDING` | 69 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 190 |
+| `AUTOMATED` | 191 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -6453,9 +6453,9 @@
 | `c:src/shell/shell.c:shell_init` | `src/shell/shell.c` | `shell_init` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:shell_print_prompt` | `src/shell/shell.c` | `shell_print_prompt` | `shell` | `COVERED` | 9 |
 | `c:src/shell/shell.c:shell_process_command` | `src/shell/shell.c` | `shell_process_command` | `shell` | `COVERED` | 6 |
-| `c:src/shell/shell.c:shell_prompt_hide` | `src/shell/shell.c` | `shell_prompt_hide` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell.c:shell_prompt_reconcile` | `src/shell/shell.c` | `shell_prompt_reconcile` | `shell` | `PENDING` | 0 |
-| `c:src/shell/shell.c:shell_prompt_request` | `src/shell/shell.c` | `shell_prompt_request` | `shell` | `PENDING` | 0 |
+| `c:src/shell/shell.c:shell_prompt_hide` | `src/shell/shell.c` | `shell_prompt_hide` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell.c:shell_prompt_reconcile` | `src/shell/shell.c` | `shell_prompt_reconcile` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell.c:shell_prompt_request` | `src/shell/shell.c` | `shell_prompt_request` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:shell_redraw_after_overlay_close` | `src/shell/shell.c` | `shell_redraw_after_overlay_close` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell.c:shell_report_app_loader_result` | `src/shell/shell.c` | `shell_report_app_loader_result` | `shell` | `COVERED` | 7 |
 | `c:src/shell/shell.c:shell_report_user_test_result` | `src/shell/shell.c` | `shell_report_user_test_result` | `shell` | `COVERED` | 7 |
@@ -6480,7 +6480,7 @@
 | `c:src/shell/shell_checks.c:cmd_appcheck_print_result` | `src/shell/shell_checks.c` | `cmd_appcheck_print_result` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:cmd_appcheck_print_result_with_expectation` | `src/shell/shell_checks.c` | `cmd_appcheck_print_result_with_expectation` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:cmd_q2check` | `src/shell/shell_checks.c` | `cmd_q2check` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_checks.c:cmd_regcheck` | `src/shell/shell_checks.c` | `cmd_regcheck` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_checks.c:cmd_regcheck` | `src/shell/shell_checks.c` | `cmd_regcheck` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_checks.c:cmd_usertest` | `src/shell/shell_checks.c` | `cmd_usertest` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_appcheck_copy_failure_label` | `src/shell/shell_checks.c` | `shell_appcheck_copy_failure_label` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_checks.c:shell_appcheck_fault_is_valid` | `src/shell/shell_checks.c` | `shell_appcheck_fault_is_valid` | `shell` | `COVERED` | 1 |
@@ -6625,24 +6625,24 @@
 | `c:src/shell/shell_commands_apps.c:shell_dispatch_cmd_view` | `src/shell/shell_commands_apps.c` | `shell_dispatch_cmd_view` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_apps.c:shell_dispatch_cmd_wm` | `src/shell/shell_commands_apps.c` | `shell_dispatch_cmd_wm` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_core.c:cmd_beep` | `src/shell/shell_commands_core.c` | `cmd_beep` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_core.c:cmd_cat` | `src/shell/shell_commands_core.c` | `cmd_cat` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_core.c:cmd_clear` | `src/shell/shell_commands_core.c` | `cmd_clear` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_core.c:cmd_echo` | `src/shell/shell_commands_core.c` | `cmd_echo` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_core.c:cmd_cat` | `src/shell/shell_commands_core.c` | `cmd_cat` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_commands_core.c:cmd_clear` | `src/shell/shell_commands_core.c` | `cmd_clear` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_commands_core.c:cmd_echo` | `src/shell/shell_commands_core.c` | `cmd_echo` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_commands_core.c:cmd_echo_native` | `src/shell/shell_commands_core.c` | `cmd_echo_native` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_core.c:cmd_help` | `src/shell/shell_commands_core.c` | `cmd_help` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_core.c:cmd_help` | `src/shell/shell_commands_core.c` | `cmd_help` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_commands_core.c:cmd_help_core` | `src/shell/shell_commands_core.c` | `cmd_help_core` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_core.c:cmd_ls` | `src/shell/shell_commands_core.c` | `cmd_ls` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_commands_core.c:cmd_ls` | `src/shell/shell_commands_core.c` | `cmd_ls` | `shell` | `COVERED` | 3 |
 | `c:src/shell/shell_commands_core.c:cmd_melody` | `src/shell/shell_commands_core.c` | `cmd_melody` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_core.c:cmd_mem` | `src/shell/shell_commands_core.c` | `cmd_mem` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_core.c:cmd_mem` | `src/shell/shell_commands_core.c` | `cmd_mem` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_commands_core.c:cmd_mem_detailed` | `src/shell/shell_commands_core.c` | `cmd_mem_detailed` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_core.c:cmd_mem_detailed_print_zone` | `src/shell/shell_commands_core.c` | `cmd_mem_detailed_print_zone` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_core.c:cmd_mem_native` | `src/shell/shell_commands_core.c` | `cmd_mem_native` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_core.c:cmd_procs` | `src/shell/shell_commands_core.c` | `cmd_procs` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_commands_core.c:cmd_procs` | `src/shell/shell_commands_core.c` | `cmd_procs` | `shell` | `COVERED` | 3 |
 | `c:src/shell/shell_commands_core.c:cmd_run_migrated_builtin` | `src/shell/shell_commands_core.c` | `cmd_run_migrated_builtin` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_core.c:cmd_stack` | `src/shell/shell_commands_core.c` | `cmd_stack` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_core.c:cmd_threads` | `src/shell/shell_commands_core.c` | `cmd_threads` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_commands_core.c:cmd_threads` | `src/shell/shell_commands_core.c` | `cmd_threads` | `shell` | `COVERED` | 3 |
 | `c:src/shell/shell_commands_core.c:cmd_threadtest` | `src/shell/shell_commands_core.c` | `cmd_threadtest` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_core.c:cmd_uptime` | `src/shell/shell_commands_core.c` | `cmd_uptime` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_core.c:cmd_uptime` | `src/shell/shell_commands_core.c` | `cmd_uptime` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_commands_core.c:cmd_uptime_native` | `src/shell/shell_commands_core.c` | `cmd_uptime_native` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_core.c:shell_core_builtin_app_name` | `src/shell/shell_commands_core.c` | `shell_core_builtin_app_name` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_core.c:shell_core_handle_loader_result` | `src/shell/shell_commands_core.c` | `shell_core_handle_loader_result` | `shell` | `COVERED` | 1 |
@@ -6682,13 +6682,13 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_clock_usage` | `src/shell/shell_commands_diagnostics.c` | `cmd_clock_usage` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_cpu_usage` | `src/shell/shell_commands_diagnostics.c` | `cmd_cpu_usage` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_devcheck` | `src/shell/shell_commands_diagnostics.c` | `cmd_devcheck` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_device_info` | `src/shell/shell_commands_diagnostics.c` | `cmd_device_info` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_device_scan` | `src/shell/shell_commands_diagnostics.c` | `cmd_device_scan` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_devices` | `src/shell/shell_commands_diagnostics.c` | `cmd_devices` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_device_info` | `src/shell/shell_commands_diagnostics.c` | `cmd_device_info` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_device_scan` | `src/shell/shell_commands_diagnostics.c` | `cmd_device_scan` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_devices` | `src/shell/shell_commands_diagnostics.c` | `cmd_devices` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_devices_print_entry` | `src/shell/shell_commands_diagnostics.c` | `cmd_devices_print_entry` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_diagnostics_print_test` | `src/shell/shell_commands_diagnostics.c` | `cmd_diagnostics_print_test` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_diagnostics_print_u64` | `src/shell/shell_commands_diagnostics.c` | `cmd_diagnostics_print_u64` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_health` | `src/shell/shell_commands_diagnostics.c` | `cmd_health` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_health` | `src/shell/shell_commands_diagnostics.c` | `cmd_health` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_app_store` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_app_store` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_health_check_block_cache` | `src/shell/shell_commands_diagnostics.c` | `cmd_health_check_block_cache` | `shell` | `COVERED` | 1 |
@@ -6753,16 +6753,16 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_log_status` | `src/shell/shell_commands_diagnostics.c` | `cmd_log_status` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_log_tail` | `src/shell/shell_commands_diagnostics.c` | `cmd_log_tail` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_log_usage` | `src/shell/shell_commands_diagnostics.c` | `cmd_log_usage` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_memcheck` | `src/shell/shell_commands_diagnostics.c` | `cmd_memcheck` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_memcheck` | `src/shell/shell_commands_diagnostics.c` | `cmd_memcheck` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_memcheck_print_result` | `src/shell/shell_commands_diagnostics.c` | `cmd_memcheck_print_result` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_mount` | `src/shell/shell_commands_diagnostics.c` | `cmd_mount` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_mount` | `src/shell/shell_commands_diagnostics.c` | `cmd_mount` | `shell` | `COVERED` | 3 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_mouse` | `src/shell/shell_commands_diagnostics.c` | `cmd_mouse` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_mouse_apply` | `src/shell/shell_commands_diagnostics.c` | `cmd_mouse_apply` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_mouse_print_status` | `src/shell/shell_commands_diagnostics.c` | `cmd_mouse_print_status` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_mouse_print_usage` | `src/shell/shell_commands_diagnostics.c` | `cmd_mouse_print_usage` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_pagefault` | `src/shell/shell_commands_diagnostics.c` | `cmd_pagefault` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_power` | `src/shell/shell_commands_diagnostics.c` | `cmd_power` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck` | `src/shell/shell_commands_diagnostics.c` | `cmd_proccheck` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck` | `src/shell/shell_commands_diagnostics.c` | `cmd_proccheck` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck_controls` | `src/shell/shell_commands_diagnostics.c` | `cmd_proccheck_controls` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck_cursor` | `src/shell/shell_commands_diagnostics.c` | `cmd_proccheck_cursor` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck_directory` | `src/shell/shell_commands_diagnostics.c` | `cmd_proccheck_directory` | `shell` | `COVERED` | 1 |
@@ -6770,7 +6770,7 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck_sysfs_attributes` | `src/shell/shell_commands_diagnostics.c` | `cmd_proccheck_sysfs_attributes` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_proccheck_write` | `src/shell/shell_commands_diagnostics.c` | `cmd_proccheck_write` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_pwd` | `src/shell/shell_commands_diagnostics.c` | `cmd_pwd` | `shell` | `COVERED` | 2 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_schedcheck` | `src/shell/shell_commands_diagnostics.c` | `cmd_schedcheck` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_schedcheck` | `src/shell/shell_commands_diagnostics.c` | `cmd_schedcheck` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_schedcheck_print_result` | `src/shell/shell_commands_diagnostics.c` | `cmd_schedcheck_print_result` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_sigtest` | `src/shell/shell_commands_diagnostics.c` | `cmd_sigtest` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_sigtest_print` | `src/shell/shell_commands_diagnostics.c` | `cmd_sigtest_print` | `shell` | `COVERED` | 1 |
@@ -7199,7 +7199,7 @@
 | `c:src/shell/shell_diagnostics_helpers.c:shell_memcheck_same_memory_metrics` | `src/shell/shell_diagnostics_helpers.c` | `shell_memcheck_same_memory_metrics` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_diagnostics_helpers.c:shell_memcheck_valid_memory_metrics` | `src/shell/shell_diagnostics_helpers.c` | `shell_memcheck_valid_memory_metrics` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_diagnostics_helpers.c:shell_process_state_name` | `src/shell/shell_diagnostics_helpers.c` | `shell_process_state_name` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_dispatch.c:shell_dispatch_execute` | `src/shell/shell_dispatch.c` | `shell_dispatch_execute` | `shell` | `COVERED` | 6 |
+| `c:src/shell/shell_dispatch.c:shell_dispatch_execute` | `src/shell/shell_dispatch.c` | `shell_dispatch_execute` | `shell` | `COVERED` | 7 |
 | `c:src/shell/shell_dispatch.c:shell_dispatch_print_unknown` | `src/shell/shell_dispatch.c` | `shell_dispatch_print_unknown` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_hosted.c:shell_hosted_close` | `src/shell/shell_hosted.c` | `shell_hosted_close` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_hosted.c:shell_hosted_draw` | `src/shell/shell_hosted.c` | `shell_hosted_draw` | `shell` | `COVERED` | 4 |
@@ -7908,6 +7908,7 @@
 | `qemu:hw5:network-dual` | `qemu` | `network-dual` | `qemu:tst6:network-dual` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | imagem pronta, duas NICs E1000 QEMU e rede privada restrita | executar diagnosticos de rede e verificar as duas interfaces | duas NICs E1000 ativas, com identidades distintas, sem Internet e sem residuos | NIC ausente, identidade duplicada, estado incorreto, acesso externo, timeout ou processo residual | somente snapshots e diagnosticos de rede | encerrar QEMU e preservar serial, QMP e resultado |
 | `qemu:hw6:diagnostics-repeat` | `qemu` | `baseline` | `qemu:tst5:hw6-diagnostics` | `AUTOMATED` | 360 | 20 | `snapshot` | `quality` | `qemu` | imagem pronta, Shell e todos os diagnósticos inicializados | executar os dez diagnósticos duas vezes por QMP | estados, causas e impactos permanecem coerentes, o prompt retorna e nenhum driver e reinicializado | marcador ausente, estado divergente, prompt preso, reinitializacao, timeout ou processo residual | somente snapshots de diagnósticos e contadores | encerrar QEMU e preservar serial, QMP e resultado |
 | `qemu:shell1:prompt-lifecycle` | `qemu` | `smoke` | `qemu:tst5:shell1-prompt-lifecycle` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | imagem pronta, Shell inicializado e teclado virtual disponivel | executar comandos validos, invalidos, cancelados, um job e retornar de uma cena | cada operacao retorna ao prompt uma unica vez e a entrada permanece disponivel | prompt ausente ou duplicado, entrada presa, job residual, timeout ou QEMU | somente texto e estado da sessao no snapshot | encerrar QEMU e preservar serial, QMP e resultado |
+| `qemu:shell2:commands-diagnostics` | `qemu` | `smoke` | `qemu:tst5:shell2-commands-diagnostics` | `AUTOMATED` | 240 | 20 | `snapshot` | `quality` | `qemu` | imagem pronta, Shell inicializado e teclado virtual disponivel | executar comandos basicos validos e invalidos, diagnosticos, cancelamento e reentrada | mensagens e erros permanecem deterministas, diagnosticos nao reinicializam hardware e o prompt retorna uma vez | argumento invalido, hardware ausente, prompt ausente ou duplicado, estado residual, timeout ou QEMU | somente mount pode alterar o estado de volume; diagnosticos usam snapshots read-only | encerrar o QEMU e preservar serial, QMP e resultado |
 | `qemu:tst2:boot-ready` | `qemu` | `smoke` | `qemu:tst2:boot-ready` | `AUTOMATED` | 30 | 5 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e o executavel qemu-system-i386 esta disponivel | iniciar o guest em snapshot, enviar HELLO e executar o caso de boot apos READY | o guest publica READY, HEARTBEAT e PASS para o caso solicitado | PANIC, TIMEOUT, ausencia de heartbeat, erro de protocolo ou encerramento inesperado do QEMU | cria um processo QEMU e artefatos temporarios da execucao | encerrar o QEMU via QMP e preservar o relatorio, serial e logs da execucao |
 | `qemu:tst4:execution` | `qemu` | `smoke` | `qemu:tst4:execution` | `AUTOMATED` | 60 | 10 | `snapshot` | `quality` | `qemu` | processos, threads, IPC, wait e workqueue estao READY | executar um unico autoteste interno apos READY | todos os resultados estruturados passam e nenhum estado residual permanece | falha de resultado, invariante, fila, contador, timeout, protocolo ou QEMU | cria somente objetos temporarios dos self-tests existentes | cada self-test desfaz seus objetos e o harness valida as filas finais |
 | `qemu:tst4:memory-slab` | `qemu` | `smoke` | `qemu:tst4:memory-slab` | `AUTOMATED` | 30 | 5 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e paging, PMM, heap e SLAB estao READY | iniciar o guest em snapshot e enviar um unico RUN apos READY | o guest publica READY, HEARTBEAT, BEGIN e PASS, preservando o estado de memoria | falha de pre-condicao, invariante, contador, pagina, protocolo, heartbeat ou QEMU | cria um processo QEMU e recursos temporarios de memoria do autoteste | encerrar o QEMU via QMP e preservar manifesto, serial, logs e resultado |
@@ -8023,9 +8024,6 @@
 - `c:src/process/resource.c:process_resource_note_descriptor_success`
 - `c:src/process/resource.c:process_resource_note_pipe_success`
 - `c:src/process/signal.c:process_signal_send_generation`
-- `c:src/shell/shell.c:shell_prompt_hide`
-- `c:src/shell/shell.c:shell_prompt_reconcile`
-- `c:src/shell/shell.c:shell_prompt_request`
 
 ## Aposentadas
 
