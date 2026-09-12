@@ -272,7 +272,7 @@ def case_command(case: dict[str, Any], arguments: argparse.Namespace,
     parameters = case.get("parameters")
     if isinstance(parameters, dict) and isinstance(parameters.get("fixture"), str):
         command.extend(["--fixture", parameters["fixture"]])
-    if profile == "usb-storage":
+    if profile in ("usb-storage", "usb-storage-ehci"):
         command.extend(["--storage-image", arguments.storage_image])
     return command
 

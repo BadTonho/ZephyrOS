@@ -4,28 +4,28 @@
 
 ## Resumo
 
-- Superfícies ativas: **7651**
-- Casos de teste: **186**
+- Superfícies ativas: **7661**
+- Casos de teste: **187**
 - Superfícies aposentadas: **60**
 
 | Tipo | Quantidade |
 |---|---:|
 | `api_function` | 1652 |
 | `asm_entry` | 101 |
-| `c_function` | 5778 |
+| `c_function` | 5788 |
 | `shell_command` | 95 |
 | `syscall` | 25 |
 
 | Cobertura | Quantidade |
 |---|---:|
 | `BLOCKED` | 0 |
-| `COVERED` | 7585 |
+| `COVERED` | 7588 |
 | `MANUAL` | 0 |
-| `PENDING` | 66 |
+| `PENDING` | 73 |
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 186 |
+| `AUTOMATED` | 187 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -37,14 +37,14 @@
 | `apps` | 172 |
 | `appstore` | 98 |
 | `boot` | 146 |
-| `core` | 2886 |
+| `core` | 2887 |
 | `desktop` | 40 |
-| `drivers` | 968 |
+| `drivers` | 974 |
 | `filemanager` | 93 |
 | `fs` | 1054 |
 | `gui` | 30 |
 | `icons` | 18 |
-| `kernel` | 62 |
+| `kernel` | 65 |
 | `memory` | 202 |
 | `process` | 332 |
 | `settings` | 57 |
@@ -212,7 +212,7 @@
 | `api:src/include/apps/shell_runtime.h:shell_packages_host_test_contracts` | `src/include/apps/shell_runtime.h` | `shell_packages_host_test_contracts` | `apps` | `COVERED` | 2 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_finish_command` | `src/include/apps/shell_runtime.h` | `shell_runtime_finish_command` | `apps` | `COVERED` | 8 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key` | `src/include/apps/shell_runtime.h` | `shell_runtime_handle_terminal_key` | `apps` | `COVERED` | 7 |
-| `api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible` | `src/include/apps/shell_runtime.h` | `shell_runtime_is_hosted_visible` | `apps` | `COVERED` | 4 |
+| `api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible` | `src/include/apps/shell_runtime.h` | `shell_runtime_is_hosted_visible` | `apps` | `COVERED` | 3 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager` | `src/include/apps/shell_runtime.h` | `shell_runtime_prepare_filemanager` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_reset_input` | `src/include/apps/shell_runtime.h` | `shell_runtime_reset_input` | `apps` | `COVERED` | 7 |
 | `api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal` | `src/include/apps/shell_runtime.h` | `shell_runtime_resume_terminal` | `apps` | `COVERED` | 7 |
@@ -820,10 +820,10 @@
 | `api:src/include/core/usb_manager.h:usb_manager_find_device` | `src/include/core/usb_manager.h` | `usb_manager_find_device` | `core` | `COVERED` | 4 |
 | `api:src/include/core/usb_manager.h:usb_manager_format_device_text` | `src/include/core/usb_manager.h` | `usb_manager_format_device_text` | `core` | `COVERED` | 4 |
 | `api:src/include/core/usb_manager.h:usb_manager_format_text` | `src/include/core/usb_manager.h` | `usb_manager_format_text` | `core` | `COVERED` | 4 |
-| `api:src/include/core/usb_manager.h:usb_manager_get_count` | `src/include/core/usb_manager.h` | `usb_manager_get_count` | `core` | `COVERED` | 4 |
+| `api:src/include/core/usb_manager.h:usb_manager_get_count` | `src/include/core/usb_manager.h` | `usb_manager_get_count` | `core` | `COVERED` | 5 |
 | `api:src/include/core/usb_manager.h:usb_manager_get_device` | `src/include/core/usb_manager.h` | `usb_manager_get_device` | `core` | `COVERED` | 4 |
 | `api:src/include/core/usb_manager.h:usb_manager_get_device_count` | `src/include/core/usb_manager.h` | `usb_manager_get_device_count` | `core` | `COVERED` | 4 |
-| `api:src/include/core/usb_manager.h:usb_manager_get_info` | `src/include/core/usb_manager.h` | `usb_manager_get_info` | `core` | `COVERED` | 4 |
+| `api:src/include/core/usb_manager.h:usb_manager_get_info` | `src/include/core/usb_manager.h` | `usb_manager_get_info` | `core` | `COVERED` | 5 |
 | `api:src/include/core/usb_manager.h:usb_manager_get_port` | `src/include/core/usb_manager.h` | `usb_manager_get_port` | `core` | `COVERED` | 4 |
 | `api:src/include/core/usb_manager.h:usb_manager_get_port_count` | `src/include/core/usb_manager.h` | `usb_manager_get_port_count` | `core` | `COVERED` | 4 |
 | `api:src/include/core/usb_manager.h:usb_manager_get_status` | `src/include/core/usb_manager.h` | `usb_manager_get_status` | `core` | `COVERED` | 4 |
@@ -1077,7 +1077,7 @@
 | `api:src/include/drivers/usb_msc.h:usb_msc_find` | `src/include/drivers/usb_msc.h` | `usb_msc_find` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/usb_msc.h:usb_msc_get_at` | `src/include/drivers/usb_msc.h` | `usb_msc_get_at` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/usb_msc.h:usb_msc_get_count` | `src/include/drivers/usb_msc.h` | `usb_msc_get_count` | `drivers` | `COVERED` | 3 |
-| `api:src/include/drivers/usb_msc.h:usb_msc_init` | `src/include/drivers/usb_msc.h` | `usb_msc_init` | `drivers` | `COVERED` | 3 |
+| `api:src/include/drivers/usb_msc.h:usb_msc_init` | `src/include/drivers/usb_msc.h` | `usb_msc_init` | `drivers` | `COVERED` | 4 |
 | `api:src/include/drivers/usb_msc.h:usb_msc_is_active` | `src/include/drivers/usb_msc.h` | `usb_msc_is_active` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/usb_msc.h:usb_msc_refresh` | `src/include/drivers/usb_msc.h` | `usb_msc_refresh` | `drivers` | `COVERED` | 3 |
 | `api:src/include/drivers/usb_msc.h:usb_msc_state_name` | `src/include/drivers/usb_msc.h` | `usb_msc_state_name` | `drivers` | `COVERED` | 3 |
@@ -2753,7 +2753,7 @@
 | `c:src/core/input.c:input_publish_pointer` | `src/core/input.c` | `input_publish_pointer` | `core` | `COVERED` | 1 |
 | `c:src/core/input.c:input_register_key_sink` | `src/core/input.c` | `input_register_key_sink` | `core` | `COVERED` | 1 |
 | `c:src/core/input.c:input_register_pointer_sink` | `src/core/input.c` | `input_register_pointer_sink` | `core` | `COVERED` | 1 |
-| `c:src/core/input.c:input_source_valid` | `src/core/input.c` | `input_source_valid` | `core` | `PENDING` | 0 |
+| `c:src/core/input.c:input_source_valid` | `src/core/input.c` | `input_source_valid` | `core` | `COVERED` | 1 |
 | `c:src/core/input.c:input_validate_state` | `src/core/input.c` | `input_validate_state` | `core` | `COVERED` | 3 |
 | `c:src/core/ipv4.c:ipv4_address_is_unicast` | `src/core/ipv4.c` | `ipv4_address_is_unicast` | `core` | `COVERED` | 3 |
 | `c:src/core/ipv4.c:ipv4_build_packet` | `src/core/ipv4.c` | `ipv4_build_packet` | `core` | `COVERED` | 1 |
@@ -2889,6 +2889,7 @@
 | `c:src/core/kernel_tests_tst6.c:tst6_run_platform` | `src/core/kernel_tests_tst6.c` | `tst6_run_platform` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests_tst6.c:tst6_run_storage` | `src/core/kernel_tests_tst6.c` | `tst6_run_storage` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests_tst6.c:tst6_run_stress` | `src/core/kernel_tests_tst6.c` | `tst6_run_stress` | `core` | `COVERED` | 3 |
+| `c:src/core/kernel_tests_tst6.c:tst6_run_usb_storage_ehci` | `src/core/kernel_tests_tst6.c` | `tst6_run_usb_storage_ehci` | `core` | `PENDING` | 0 |
 | `c:src/core/kernel_tests_tst6.c:tst6_service_supervisor_failure_contract` | `src/core/kernel_tests_tst6.c` | `tst6_service_supervisor_failure_contract` | `core` | `COVERED` | 1 |
 | `c:src/core/kernel_tests_tst6.c:tst6_suffix` | `src/core/kernel_tests_tst6.c` | `tst6_suffix` | `core` | `COVERED` | 7 |
 | `c:src/core/kernel_tests_tst6.c:tst6_update_failure_contract` | `src/core/kernel_tests_tst6.c` | `tst6_update_failure_contract` | `core` | `COVERED` | 1 |
@@ -4409,6 +4410,8 @@
 | `c:src/drivers/ehci.c:ehci_copy_status` | `src/drivers/ehci.c` | `ehci_copy_status` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/ehci.c:ehci_deadline_expired` | `src/drivers/ehci.c` | `ehci_deadline_expired` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/ehci.c:ehci_disable` | `src/drivers/ehci.c` | `ehci_disable` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_dma_layout_valid` | `src/drivers/ehci.c` | `ehci_dma_layout_valid` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/ehci.c:ehci_dma_pointer_phys` | `src/drivers/ehci.c` | `ehci_dma_pointer_phys` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/ehci.c:ehci_enumerate_port` | `src/drivers/ehci.c` | `ehci_enumerate_port` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/ehci.c:ehci_find` | `src/drivers/ehci.c` | `ehci_find` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/ehci.c:ehci_find_device_record` | `src/drivers/ehci.c` | `ehci_find_device_record` | `drivers` | `COVERED` | 1 |
@@ -4444,6 +4447,7 @@
 | `c:src/drivers/ehci.c:ehci_reset_bulk_toggles` | `src/drivers/ehci.c` | `ehci_reset_bulk_toggles` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/ehci.c:ehci_reset_controller` | `src/drivers/ehci.c` | `ehci_reset_controller` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/ehci.c:ehci_reset_port` | `src/drivers/ehci.c` | `ehci_reset_port` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/ehci.c:ehci_schedule_valid` | `src/drivers/ehci.c` | `ehci_schedule_valid` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/ehci.c:ehci_set_port_empty` | `src/drivers/ehci.c` | `ehci_set_port_empty` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/ehci.c:ehci_start_controller` | `src/drivers/ehci.c` | `ehci_start_controller` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/ehci.c:ehci_submit_sync` | `src/drivers/ehci.c` | `ehci_submit_sync` | `drivers` | `COVERED` | 1 |
@@ -4656,11 +4660,11 @@
 | `c:src/drivers/speaker.c:inb` | `src/drivers/speaker.c` | `inb` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/speaker.c:outb` | `src/drivers/speaker.c` | `outb` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/speaker.c:speaker_beep` | `src/drivers/speaker.c` | `speaker_beep` | `drivers` | `COVERED` | 2 |
-| `c:src/drivers/speaker.c:speaker_duration_ticks` | `src/drivers/speaker.c` | `speaker_duration_ticks` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/speaker.c:speaker_duration_ticks` | `src/drivers/speaker.c` | `speaker_duration_ticks` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/speaker.c:speaker_init` | `src/drivers/speaker.c` | `speaker_init` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/speaker.c:speaker_off` | `src/drivers/speaker.c` | `speaker_off` | `drivers` | `COVERED` | 2 |
 | `c:src/drivers/speaker.c:speaker_play_melody` | `src/drivers/speaker.c` | `speaker_play_melody` | `drivers` | `COVERED` | 1 |
-| `c:src/drivers/speaker.c:speaker_wait` | `src/drivers/speaker.c` | `speaker_wait` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/speaker.c:speaker_wait` | `src/drivers/speaker.c` | `speaker_wait` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/timer.c:outb` | `src/drivers/timer.c` | `outb` | `drivers` | `COVERED` | 5 |
 | `c:src/drivers/timer.c:timer_cancel` | `src/drivers/timer.c` | `timer_cancel` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/timer.c:timer_copy_active` | `src/drivers/timer.c` | `timer_copy_active` | `drivers` | `COVERED` | 1 |
@@ -4832,12 +4836,15 @@
 | `c:src/drivers/usb_msc.c:msc_build_block_id` | `src/drivers/usb_msc.c` | `msc_build_block_id` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/usb_msc.c:msc_bulk_in` | `src/drivers/usb_msc.c` | `msc_bulk_in` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/usb_msc.c:msc_bulk_out` | `src/drivers/usb_msc.c` | `msc_bulk_out` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_msc.c:msc_bulk_transfer` | `src/drivers/usb_msc.c` | `msc_bulk_transfer` | `drivers` | `PENDING` | 0 |
+| `c:src/drivers/usb_msc.c:msc_control_request` | `src/drivers/usb_msc.c` | `msc_control_request` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/usb_msc.c:msc_copy_field` | `src/drivers/usb_msc.c` | `msc_copy_field` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/usb_msc.c:msc_is_candidate` | `src/drivers/usb_msc.c` | `msc_is_candidate` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/usb_msc.c:msc_prepare_record` | `src/drivers/usb_msc.c` | `msc_prepare_record` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/usb_msc.c:msc_read_u32_be` | `src/drivers/usb_msc.c` | `msc_read_u32_be` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/usb_msc.c:msc_record_index` | `src/drivers/usb_msc.c` | `msc_record_index` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/usb_msc.c:msc_register_device` | `src/drivers/usb_msc.c` | `msc_register_device` | `drivers` | `COVERED` | 1 |
+| `c:src/drivers/usb_msc.c:msc_reset_bulk_toggles` | `src/drivers/usb_msc.c` | `msc_reset_bulk_toggles` | `drivers` | `PENDING` | 0 |
 | `c:src/drivers/usb_msc.c:msc_reset_recovery` | `src/drivers/usb_msc.c` | `msc_reset_recovery` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/usb_msc.c:msc_scsi_prepare` | `src/drivers/usb_msc.c` | `msc_scsi_prepare` | `drivers` | `COVERED` | 1 |
 | `c:src/drivers/usb_msc.c:msc_scsi_read_sector` | `src/drivers/usb_msc.c` | `msc_scsi_read_sector` | `drivers` | `COVERED` | 1 |
@@ -5908,6 +5915,7 @@
 | `c:src/kernel/kernel.c:kernel_fallback_kworker` | `src/kernel/kernel.c` | `kernel_fallback_kworker` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_fallback_shell` | `src/kernel/kernel.c` | `kernel_fallback_shell` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_fallback_system` | `src/kernel/kernel.c` | `kernel_fallback_system` | `kernel` | `COVERED` | 1 |
+| `c:src/kernel/kernel.c:kernel_format_indexed_id` | `src/kernel/kernel.c` | `kernel_format_indexed_id` | `kernel` | `PENDING` | 0 |
 | `c:src/kernel/kernel.c:kernel_handle_taskbar_mouse` | `src/kernel/kernel.c` | `kernel_handle_taskbar_mouse` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_host_test_run_finite_routes` | `src/kernel/kernel.c` | `kernel_host_test_run_finite_routes` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_host_test_should_wake_shell_for_event` | `src/kernel/kernel.c` | `kernel_host_test_should_wake_shell_for_event` | `kernel` | `PENDING` | 0 |
@@ -5924,6 +5932,8 @@
 | `c:src/kernel/kernel.c:kernel_prepare_system` | `src/kernel/kernel.c` | `kernel_prepare_system` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_publish_driver_lifecycle` | `src/kernel/kernel.c` | `kernel_publish_driver_lifecycle` | `kernel` | `PENDING` | 0 |
 | `c:src/kernel/kernel.c:kernel_publish_driver_lifecycle_resources` | `src/kernel/kernel.c` | `kernel_publish_driver_lifecycle_resources` | `kernel` | `PENDING` | 0 |
+| `c:src/kernel/kernel.c:kernel_publish_usb_controller_lifecycle` | `src/kernel/kernel.c` | `kernel_publish_usb_controller_lifecycle` | `kernel` | `PENDING` | 0 |
+| `c:src/kernel/kernel.c:kernel_publish_usb_msc_lifecycle` | `src/kernel/kernel.c` | `kernel_publish_usb_msc_lifecycle` | `kernel` | `PENDING` | 0 |
 | `c:src/kernel/kernel.c:kernel_redraw_after_menu_close` | `src/kernel/kernel.c` | `kernel_redraw_after_menu_close` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_request_shell_app` | `src/kernel/kernel.c` | `kernel_request_shell_app` | `kernel` | `COVERED` | 1 |
 | `c:src/kernel/kernel.c:kernel_retry_shell_request` | `src/kernel/kernel.c` | `kernel_retry_shell_request` | `kernel` | `COVERED` | 2 |
@@ -7880,6 +7890,7 @@
 | `qemu:hw1:no-nic` | `qemu` | `hw1` | `qemu:tst6:matrix:minimal` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | QEMU fornece plataforma sem interface de rede | validar inventario e fallback de rede ausente | rede ausente retorna ERR_UNAVAILABLE sem alterar outros dispositivos | NIC presente, estado incoerente, timeout, protocolo ou QEMU | somente estado de plataforma no snapshot | encerrar o guest e liberar a configuração de rede |
 | `qemu:hw1:no-storage` | `qemu` | `hw1` | `qemu:tst6:matrix:minimal` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | QEMU fornece somente o disco usado no boot | validar armazenamento adicional ausente e boot intacto | somente o volume de boot fica visivel e o opcional retorna ERR_UNAVAILABLE | disco adicional presente, estado incoerente, timeout, protocolo ou QEMU | somente inventario de storage no snapshot | encerrar o guest sem deixar dispositivos ou imagens extras |
 | `qemu:hw1:no-usb` | `qemu` | `hw1` | `qemu:tst6:matrix:minimal` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | QEMU fornece plataforma com USB desativado | validar fallback de entrada e USB ausente | USB ausente retorna ERR_UNAVAILABLE sem panic ou fila residual | USB presente, estado incoerente, timeout, protocolo ou QEMU | somente inventario e estado de input no snapshot | encerrar o guest e liberar filas de input |
+| `qemu:hw4:usb-storage-ehci` | `qemu` | `hw4` | `qemu:tst6:usb-storage-ehci` | `AUTOMATED` | 120 | 60 | `snapshot` | `quality` | `qemu` | fixture raw de armazenamento e controladora EHCI disponiveis | validar leitura BOT/SCSI, capacidade, provider de bloco e ausencia de escrita | leituras passam e a camada MSC permanece somente leitura sem residuos | fixture ausente, escrita, CSW invalido, timeout, protocolo ou QEMU | fixture raw somente leitura anexado ao snapshot | encerrar QEMU, desmontar o provider e preservar os artefatos |
 | `qemu:tst2:boot-ready` | `qemu` | `smoke` | `qemu:tst2:boot-ready` | `AUTOMATED` | 30 | 5 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e o executavel qemu-system-i386 esta disponivel | iniciar o guest em snapshot, enviar HELLO e executar o caso de boot apos READY | o guest publica READY, HEARTBEAT e PASS para o caso solicitado | PANIC, TIMEOUT, ausencia de heartbeat, erro de protocolo ou encerramento inesperado do QEMU | cria um processo QEMU e artefatos temporarios da execucao | encerrar o QEMU via QMP e preservar o relatorio, serial e logs da execucao |
 | `qemu:tst4:execution` | `qemu` | `smoke` | `qemu:tst4:execution` | `AUTOMATED` | 60 | 10 | `snapshot` | `quality` | `qemu` | processos, threads, IPC, wait e workqueue estao READY | executar um unico autoteste interno apos READY | todos os resultados estruturados passam e nenhum estado residual permanece | falha de resultado, invariante, fila, contador, timeout, protocolo ou QEMU | cria somente objetos temporarios dos self-tests existentes | cada self-test desfaz seus objetos e o harness valida as filas finais |
 | `qemu:tst4:memory-slab` | `qemu` | `smoke` | `qemu:tst4:memory-slab` | `AUTOMATED` | 30 | 5 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e paging, PMM, heap e SLAB estao READY | iniciar o guest em snapshot e enviar um unico RUN apos READY | o guest publica READY, HEARTBEAT, BEGIN e PASS, preservando o estado de memoria | falha de pre-condicao, invariante, contador, pagina, protocolo, heartbeat ou QEMU | cria um processo QEMU e recursos temporarios de memoria do autoteste | encerrar o QEMU via QMP e preservar manifesto, serial, logs e resultado |
@@ -7940,12 +7951,12 @@
 - `c:src/boot/recovery_loader.c:recovery_in8`
 - `c:src/boot/recovery_loader.c:recovery_out16`
 - `c:src/boot/recovery_loader.c:recovery_out8`
-- `c:src/core/input.c:input_source_valid`
 - `c:src/core/kernel_tests_blackbox.c:blackbox_is_sec6_case`
 - `c:src/core/kernel_tests_blackbox.c:blackbox_marker`
 - `c:src/core/kernel_tests_blackbox.c:blackbox_requires_prompt`
 - `c:src/core/kernel_tests_blackbox.c:blackbox_reset_sec6_observation`
 - `c:src/core/kernel_tests_blackbox.c:blackbox_validate_sec6_output`
+- `c:src/core/kernel_tests_tst6.c:tst6_run_usb_storage_ehci`
 - `c:src/core/update_system.c:any_nonzero`
 - `c:src/core/update_system.c:update_system_base_equal`
 - `c:src/core/update_system.c:update_system_check_tag`
@@ -7978,16 +7989,23 @@
 - `c:src/core/update_system.c:update_system_verify_file_internal`
 - `c:src/core/update_system.c:update_system_verify_signature`
 - `c:src/core/update_system.c:update_system_version_compare`
-- `c:src/drivers/speaker.c:speaker_duration_ticks`
-- `c:src/drivers/speaker.c:speaker_wait`
+- `c:src/drivers/ehci.c:ehci_dma_layout_valid`
+- `c:src/drivers/ehci.c:ehci_dma_pointer_phys`
+- `c:src/drivers/ehci.c:ehci_schedule_valid`
+- `c:src/drivers/usb_msc.c:msc_bulk_transfer`
+- `c:src/drivers/usb_msc.c:msc_control_request`
+- `c:src/drivers/usb_msc.c:msc_reset_bulk_toggles`
 - `c:src/drivers/vesa.c:vesa_bytes_per_pixel`
 - `c:src/fs/fat32.c:cluster_to_lba`
 - `c:src/fs/storage.c:storage_clear_directory_slots`
 - `c:src/fs/storage.c:storage_release_selected_fat32_clusters`
 - `c:src/fs/vfs.c:vfs_lifecycle_block_error`
+- `c:src/kernel/kernel.c:kernel_format_indexed_id`
 - `c:src/kernel/kernel.c:kernel_host_test_should_wake_shell_for_event`
 - `c:src/kernel/kernel.c:kernel_publish_driver_lifecycle`
 - `c:src/kernel/kernel.c:kernel_publish_driver_lifecycle_resources`
+- `c:src/kernel/kernel.c:kernel_publish_usb_controller_lifecycle`
+- `c:src/kernel/kernel.c:kernel_publish_usb_msc_lifecycle`
 - `c:src/kernel/kernel.c:kernel_should_wake_shell_for_event`
 - `c:src/process/resource.c:process_resource_note_descriptor_success`
 - `c:src/process/resource.c:process_resource_note_pipe_success`

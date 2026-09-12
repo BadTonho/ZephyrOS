@@ -37,8 +37,10 @@ contratos publicos ficam em `usb_msc.h`, `usb_hid.h` e `uhci.h`.
 Na EP7.1B, `src/drivers/ehci.c` fornece o caminho PCI high-speed separado do
 UHCI: DMA estatico para queue heads/qTDs, IRQ compartilhada, enumeracao de
 portas raiz, descritores, controle, Bulk, Interrupt, timeout e recuperacao.
-`src/core/usb_transport.c` seleciona o backend por `controller_model`. HID e
-MSC continuam usando UHCI e nao sao redirecionados para EHCI nesta etapa.
+`src/core/usb_transport.c` seleciona o backend por `controller_model`. HID
+continua no caminho UHCI; MSC pode usar UHCI ou EHCI conforme a controladora
+enumerada, mantendo o
+contrato somente-leitura.
 
 Na EP7.1B, `src/drivers/rtl8811cu.c` somente identifica
 `USB\VID_0BDA&PID_C811` com `bcdDevice` `0x0200`, verifica a presenca externa
@@ -396,8 +398,8 @@ EP4.3 acrescenta Bulk síncrono e MSC somente-leitura conforme o contrato acima.
 
 Na EP7.1B, o EHCI separado aceita apenas portas raiz high-speed e uma
 configuração simples, usando queue heads/qTDs para controle, Bulk e Interrupt.
-Ele também não implementa hubs, strings ou hot-plug; HID/MSC continuam
-restritos ao caminho UHCI.
+Ele também não implementa hubs, strings ou hot-plug; HID continua restrito ao
+caminho UHCI e MSC pode usar o transporte EHCI no HW4.
 
 ---
 
@@ -1124,7 +1126,8 @@ Desktop Classic.
 O comando `usb hid check` valida HID, input core e fila diferida. O alvo
 `run-usb-hid` adiciona `usb-kbd` na porta raiz 1 e `usb-mouse` na porta raiz 2
 do QEMU. Parser completo de
-Report Descriptor, hubs, hot-plug real e EHCI permanecem fora desta etapa.
+Report Descriptor, hubs e hot-plug real permanecem fora desta etapa; o caminho
+EHCI do HW4 é usado pelo MSC high-speed somente-leitura.
 
 ---
 

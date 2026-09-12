@@ -44,6 +44,9 @@
 #include "drivers/tss.h"
 #include "drivers/ata.h"
 #include "drivers/pci.h"
+#include "drivers/uhci.h"
+#include "drivers/ehci.h"
+#include "drivers/usb_msc.h"
 #include "fs/fs.h"
 #include "fs/vfs.h"
 #include "fs/block.h"
@@ -102,6 +105,137 @@ static work_struct_t kernel_irq_work;
 static work_struct_t kernel_timer_work;
 static work_struct_t kernel_network_work;
 static work_struct_t kernel_index_work;
+
+static void kernel_publish_driver_lifecycle_resources(
+    const char* driver_id, const char* parent_id, const char* bus,
+    const char* class_name, const char* identity, uint32_t required_resources,
+    const driver_lifecycle_resource_ids_t* resource_ids,
+    uint32_t resource_flags, int init_result, uint8_t optional,
+    const char* reason);
+
+static void kernel_format_indexed_id(const char* prefix, uint32_t index,
+                                     char* output, uint32_t capacity) {
+    uint32_t offset = 0U;
+
+    if (!prefix || !output || capacity < 2U) return;
+    while (prefix[offset] && offset + 2U < capacity) {
+        output[offset] = prefix[offset];
+        offset++;
+    }
+    output[offset++] = (char)('0' + (index % 10U));
+    output[offset] = '\0';
+}
+
+static void kernel_publish_usb_controller_lifecycle(void) {
+    uint32_t count = 0U;
+    uint32_t uhci_index = 0U;
+    uint32_t ehci_index = 0U;
+    uint32_t other_index = 0U;
+
+    if (usb_manager_get_count(&count) != OK) return;
+    for (uint32_t index = 0U; index < count; index++) {
+        usb_controller_info_t info;
+        usb_controller_text_t text;
+        driver_lifecycle_resource_ids_t resources = {0};
+        const char* prefix;
+        const char* class_name;
+        char driver_id[DRIVER_LIFECYCLE_ID_SIZE];
+        int status_result;
+        int init_result;
+        uint32_t required = 0U;
+
+        if (usb_manager_get_info(index, &info) != OK ||
+            usb_manager_format_text(&info, &text) != OK) continue;
+        if (info.model == USB_CONTROLLER_MODEL_UHCI) {
+            usb_uhci_status_t status;
+
+            prefix = "uhci";
+            class_name = "uhci";
+            status_result = usb_manager_get_uhci_status(index, &status);
+            if (status_result == OK) {
+                resources.irq = info.irq;
+                resources.io = info.bars[0] & UHCI_PCI_BAR_ADDRESS_MASK;
+                resources.dma = status.frame_list_phys;
+                resources.buffer = status.buffer_pool_phys;
+                required = status.initialized && status.running &&
+                           status.irq_registered && status.dma_ready &&
+                           status.control_transfer_ready &&
+                           status.bulk_transfer_ready ?
+                           DRIVER_LIFECYCLE_RESOURCE_IRQ |
+                           DRIVER_LIFECYCLE_RESOURCE_IO |
+                           DRIVER_LIFECYCLE_RESOURCE_DMA |
+                           DRIVER_LIFECYCLE_RESOURCE_BUFFER : 0U;
+                init_result = required ? OK :
+                    (status.last_error ? status.last_error : ERR_UNAVAILABLE);
+            } else {
+                init_result = status_result;
+            }
+            kernel_format_indexed_id(prefix, uhci_index++, driver_id,
+                                     sizeof(driver_id));
+        } else if (info.model == USB_CONTROLLER_MODEL_EHCI) {
+            usb_ehci_status_t status;
+
+            prefix = "ehci";
+            class_name = "ehci";
+            status_result = ehci_get_status(info.bus, info.device,
+                                            info.function, &status);
+            if (status_result == OK) {
+                resources.irq = info.irq;
+                resources.mmio = info.bars[0] & EHCI_PCI_BAR_ADDRESS_MASK;
+                resources.dma = status.async_list_phys;
+                resources.buffer = status.buffer_pool_phys;
+                required = status.initialized && status.running &&
+                           status.irq_registered && status.dma_ready &&
+                           status.control_transfer_ready &&
+                           status.bulk_transfer_ready ?
+                           DRIVER_LIFECYCLE_RESOURCE_IRQ |
+                           DRIVER_LIFECYCLE_RESOURCE_MMIO |
+                           DRIVER_LIFECYCLE_RESOURCE_DMA |
+                           DRIVER_LIFECYCLE_RESOURCE_BUFFER : 0U;
+                init_result = required ? OK :
+                    (status.last_error ? status.last_error : ERR_UNAVAILABLE);
+            } else {
+                init_result = status_result;
+            }
+            kernel_format_indexed_id(prefix, ehci_index++, driver_id,
+                                     sizeof(driver_id));
+        } else {
+            prefix = "usb";
+            class_name = "host-controller";
+            init_result = ERR_UNAVAILABLE;
+            kernel_format_indexed_id(prefix, other_index++, driver_id,
+                                     sizeof(driver_id));
+        }
+        kernel_publish_driver_lifecycle_resources(
+            driver_id, "pci0", "usb", class_name, text.location,
+            required, &resources, 0U, init_result, 1U,
+            "Controladora USB indisponivel");
+    }
+}
+
+static void kernel_publish_usb_msc_lifecycle(void) {
+    uint32_t count = 0U;
+
+    if (usb_msc_get_count(&count) != OK) return;
+    for (uint32_t index = 0U; index < count; index++) {
+        usb_msc_info_t info;
+        driver_lifecycle_resource_ids_t resources = {0};
+        char driver_id[DRIVER_LIFECYCLE_ID_SIZE];
+        int init_result;
+
+        if (usb_msc_get_at(index, &info) != OK) continue;
+        init_result = usb_msc_is_active(info.id) ? OK :
+            (info.last_error ? info.last_error : ERR_UNAVAILABLE);
+        resources.buffer = index + 1U;
+        kernel_format_indexed_id("usb-msc", index, driver_id,
+                                 sizeof(driver_id));
+        kernel_publish_driver_lifecycle_resources(
+            driver_id, "usb0", "usb", "storage", info.id,
+            init_result == OK ? DRIVER_LIFECYCLE_RESOURCE_BUFFER : 0U,
+            &resources, 0U, init_result, 1U,
+            "USB Mass Storage indisponivel");
+    }
+}
 
 static void kernel_publish_driver_lifecycle_resources(
     const char* driver_id, const char* parent_id, const char* bus,
@@ -1385,9 +1519,27 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
 
     video_print("[..] Detectando disco...\n", 0x08);
     int ata_result = ata_init();
-    kernel_publish_driver_lifecycle("ata0", "root", "ide", "storage", "ata",
-                                    ata_result, 1U,
-                                    "ATA indisponivel");
+    {
+        driver_lifecycle_resource_ids_t resources = {0};
+        uint32_t required = 0U;
+
+        if (ata_result == OK) {
+            ata_device_t* lifecycle_device = ata_get_device();
+
+            if (lifecycle_device && lifecycle_device->present) {
+                resources.irq = lifecycle_device->channel ?
+                    ATA_SECONDARY_VECTOR : ATA_PRIMARY_VECTOR;
+                resources.io = lifecycle_device->base_port;
+                required = DRIVER_LIFECYCLE_RESOURCE_IRQ |
+                           DRIVER_LIFECYCLE_RESOURCE_IO;
+            } else {
+                ata_result = ERR_UNAVAILABLE;
+            }
+        }
+        kernel_publish_driver_lifecycle_resources(
+            "ata0", "root", "ide", "storage", "ata", required,
+            &resources, 0U, ata_result, 1U, "ATA indisponivel");
+    }
     int block_result;
     ata_device_t* dev = ata_get_device();
     if (ata_result == OK && dev) {
@@ -1556,6 +1708,8 @@ void kernel_main(uint32_t mmap_addr, uint32_t vesa_info_addr) {
     } else {
         video_print("[OK] Inventario USB pronto\n", 0x07);
     }
+    kernel_publish_usb_controller_lifecycle();
+    kernel_publish_usb_msc_lifecycle();
     {
         uint32_t hid_count = 0U;
         uint32_t hid_active = 0U;

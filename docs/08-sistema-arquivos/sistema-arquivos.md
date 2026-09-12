@@ -345,7 +345,8 @@ retornam `ERR_UNAVAILABLE`. `vfs_sync()` e as syscalls append-only
 `APP_SYSCALL_FSYNC`/`APP_SYSCALL_SYNC` fornecem as fachadas correspondentes.
 
 Os IDs ATA permanecem `ata0` a `ata3`. Um MSC valido recebe um ID de bloco no
-formato `usb-ms-BB:DD.F-pN-aN-l0`, derivado do ID estavel da sessao UHCI. O
+formato `usb-ms-BB:DD.F-pN-aN-l0`, derivado do controlador, BDF e porta USB
+estáveis. O
 inventario `storage` consome somente `block_device_t`, portanto discos USB e
 ATA aparecem juntos sem aplicar topologia de canal/master/slave ao USB.
 
@@ -358,11 +359,13 @@ na imagem hibrida, exatamente um FAT32 com label `ZEPHYROS` e montado
 automaticamente e gravavel pelo provedor ATA. `storage mount <id>` continua
 disponivel para volumes adicionais e cria uma montagem manual somente em RAM.
 
-O caminho USB usa UHCI Bulk sincrono, TDs fragmentados por `wMaxPacketSize`,
-toggles por endpoint, buffers DMA fixos e timeout absoluto. Em falha, executa
-Mass Storage Reset, `CLEAR_FEATURE(HALT)` nos dois endpoints, reseta os toggles
-e permite uma unica nova tentativa. Hubs, hot-plug, EHCI, multiplos LUNs,
-`READ CAPACITY(16)` e escrita USB permanecem fora do escopo.
+O caminho USB usa UHCI ou EHCI Bulk síncrono conforme o modelo da controladora,
+TDs/qTDs fragmentados por `wMaxPacketSize`, toggles por endpoint, buffers DMA
+fixos e timeout absoluto. Em falha, executa Mass Storage Reset,
+`CLEAR_FEATURE(HALT)` nos dois endpoints, reseta os toggles e permite uma única
+nova tentativa. O perfil EHCI do HW4 cobre portas high-speed de forma
+determinística. Hubs, hot-plug, múltiplos LUNs, `READ CAPACITY(16)` e escrita
+USB permanecem fora do escopo.
 
 ## Indice global EP3 (`file_index.c`)
 

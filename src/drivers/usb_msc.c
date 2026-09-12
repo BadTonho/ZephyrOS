@@ -3,6 +3,7 @@
 #include "core/log.h"
 #include "core/string.h"
 #include "drivers/uhci.h"
+#include "drivers/ehci.h"
 #include "fs/block.h"
 
 #define USB_MSC_CLASS 0x08U
@@ -26,6 +27,7 @@
 #define USB_MSC_CDB_READ_CAPACITY10 0x25U
 #define USB_MSC_CDB_READ10 0x28U
 #define USB_MSC_RECOVERY_ATTEMPTS 2U
+#define USB_MSC_MAX_DATA_LENGTH EHCI_SYNC_BUFFER_SIZE
 
 typedef struct {
     uint32_t signature;
@@ -101,13 +103,71 @@ static int msc_record_index(const char* id) {
 
 static int msc_is_candidate(const usb_device_info_t* device) {
     if (!device || device->state != USB_DEVICE_CONFIGURED ||
-        device->speed != USB_DEVICE_SPEED_FULL) return 0;
+        (device->speed != USB_DEVICE_SPEED_FULL &&
+         device->speed != USB_DEVICE_SPEED_HIGH)) return 0;
     return device->interface_class == USB_MSC_CLASS &&
            device->interface_subclass == USB_MSC_SUBCLASS_SCSI &&
            device->interface_protocol == USB_MSC_PROTOCOL_BOT &&
            device->bulk_in_count == 1U && device->bulk_out_count == 1U &&
            device->bulk_in_endpoint && device->bulk_out_endpoint &&
            device->bulk_in_max_packet && device->bulk_out_max_packet;
+}
+
+static int msc_bulk_transfer(usb_msc_record_t* record, uint8_t endpoint,
+                             uint8_t direction_in, uint8_t* data,
+                             uint16_t length, uint16_t* out_length) {
+    int result;
+
+    if (!record) {
+        LOG_ERROR("MSC", "Registro ausente na transferencia Bulk");
+        return ERR_NULL;
+    }
+    if (record->device.controller_model == USB_CONTROLLER_MODEL_EHCI) {
+        result = ehci_bulk_transfer(&record->device, endpoint, direction_in,
+                                    data, length, out_length);
+    } else {
+        result = uhci_bulk_transfer(&record->device, endpoint, direction_in,
+                                    data, length, out_length);
+    }
+    if (result != OK) LOG_ERROR("MSC", "Transferencia Bulk falhou");
+    return result;
+}
+
+static int msc_control_request(usb_msc_record_t* record, uint8_t request_type,
+                               uint8_t request, uint16_t value,
+                               uint16_t index, uint16_t length,
+                               uint8_t* data, uint16_t* out_length) {
+    int result;
+
+    if (!record) {
+        LOG_ERROR("MSC", "Registro ausente na requisicao de controle");
+        return ERR_NULL;
+    }
+    if (record->device.controller_model == USB_CONTROLLER_MODEL_EHCI) {
+        result = ehci_control_request(&record->device, request_type, request,
+                                      value, index, length, data, out_length);
+    } else {
+        result = uhci_control_request(&record->device, request_type, request,
+                                      value, index, length, data, out_length);
+    }
+    if (result != OK) LOG_ERROR("MSC", "Requisicao de controle falhou");
+    return result;
+}
+
+static int msc_reset_bulk_toggles(usb_msc_record_t* record) {
+    int result;
+
+    if (!record) {
+        LOG_ERROR("MSC", "Registro ausente ao resetar toggles Bulk");
+        return ERR_NULL;
+    }
+    if (record->device.controller_model == USB_CONTROLLER_MODEL_EHCI) {
+        result = ehci_reset_bulk_toggles(&record->device);
+    } else {
+        result = uhci_reset_bulk_toggles(&record->device);
+    }
+    if (result != OK) LOG_ERROR("MSC", "Reset de toggles Bulk falhou");
+    return result;
 }
 
 static void msc_build_block_id(const usb_device_info_t* device, char* output) {
@@ -141,9 +201,8 @@ static void msc_build_block_id(const usb_device_info_t* device, char* output) {
 static int msc_bulk_out(usb_msc_record_t* record, uint8_t* data,
                         uint16_t length) {
     uint16_t actual = 0U;
-    int result = uhci_bulk_transfer(&record->device,
-                                    record->info.bulk_out_endpoint, 0U,
-                                    data, length, &actual);
+    int result = msc_bulk_transfer(record, record->info.bulk_out_endpoint,
+                                   0U, data, length, &actual);
 
     if (result != OK) return result;
     if (actual != length) {
@@ -155,31 +214,31 @@ static int msc_bulk_out(usb_msc_record_t* record, uint8_t* data,
 
 static int msc_bulk_in(usb_msc_record_t* record, uint8_t* data,
                        uint16_t length, uint16_t* out_length) {
-    return uhci_bulk_transfer(&record->device, record->info.bulk_in_endpoint,
-                              USB_MSC_BULK_IN_FLAG, data, length, out_length);
+    return msc_bulk_transfer(record, record->info.bulk_in_endpoint,
+                             USB_MSC_BULK_IN_FLAG, data, length, out_length);
 }
 
 static int msc_reset_recovery(usb_msc_record_t* record) {
     uint16_t actual = 0U;
     int result;
 
-    result = uhci_control_request(
-        &record->device, USB_MSC_REQUEST_CLASS_INTERFACE,
+    result = msc_control_request(
+        record, USB_MSC_REQUEST_CLASS_INTERFACE,
         USB_MSC_REQUEST_RESET, 0U, record->info.interface_number, 0U, 0,
         &actual);
     if (result == OK) {
-        result = uhci_control_request(
-            &record->device, USB_MSC_REQUEST_STANDARD_ENDPOINT,
+        result = msc_control_request(
+            record, USB_MSC_REQUEST_STANDARD_ENDPOINT,
             USB_MSC_REQUEST_CLEAR_FEATURE, USB_MSC_FEATURE_ENDPOINT_HALT,
             record->info.bulk_in_endpoint, 0U, 0, &actual);
     }
     if (result == OK) {
-        result = uhci_control_request(
-            &record->device, USB_MSC_REQUEST_STANDARD_ENDPOINT,
+        result = msc_control_request(
+            record, USB_MSC_REQUEST_STANDARD_ENDPOINT,
             USB_MSC_REQUEST_CLEAR_FEATURE, USB_MSC_FEATURE_ENDPOINT_HALT,
             record->info.bulk_out_endpoint, 0U, 0, &actual);
     }
-    if (result == OK) result = uhci_reset_bulk_toggles(&record->device);
+    if (result == OK) result = msc_reset_bulk_toggles(record);
     if (result != OK) {
         LOG_ERROR("MSC", "Reset recovery BOT falhou");
         return result;
@@ -200,7 +259,7 @@ static int msc_bot_command_once(usb_msc_record_t* record, const uint8_t* cdb,
     int result;
 
     if (!record || !cdb || !cdb_length || cdb_length > sizeof(cbw.cdb) ||
-        data_length > USB_UHCI_BULK_BUFFER_SIZE ||
+        data_length > USB_MSC_MAX_DATA_LENGTH ||
         (data_length && !data) || (data_length && !direction_in)) {
         LOG_ERROR("MSC", "Comando BOT fora do contrato de leitura");
         return ERR_INVALID;
@@ -448,6 +507,7 @@ static int msc_register_device(const usb_device_info_t* device) {
 int usb_msc_init(void) {
     int result;
 
+    if (usb_msc_initialized) return usb_msc_refresh();
     LOG_INFO("MSC", "Inicializando driver USB Mass Storage");
     kmemset(usb_msc_records, 0, sizeof(usb_msc_records));
     usb_msc_count = 0U;
@@ -463,6 +523,7 @@ int usb_msc_init(void) {
 
 int usb_msc_refresh(void) {
     uint32_t device_count = 0U;
+    uint8_t seen[USB_MSC_MAX_DEVICES];
     int result;
     int first_error = OK;
 
@@ -470,6 +531,7 @@ int usb_msc_refresh(void) {
         LOG_ERROR("MSC", "Atualizacao MSC antes da inicializacao");
         return ERR_STATE;
     }
+    kmemset(seen, 0, sizeof(seen));
     result = usb_manager_get_device_count(&device_count);
     if (result != OK) return result;
     for (uint32_t index = 0U; index < device_count; index++) {
@@ -481,7 +543,37 @@ int usb_msc_refresh(void) {
         }
         if (!msc_is_candidate(&device)) continue;
         result = msc_register_device(&device);
+        {
+            int record_index = msc_record_index(device.id);
+
+            if (record_index >= 0 && (uint32_t)record_index <
+                USB_MSC_MAX_DEVICES) seen[record_index] = 1U;
+        }
         if (result != OK && first_error == OK) first_error = result;
+    }
+    for (uint32_t index = 0U; index < usb_msc_count;) {
+        usb_msc_record_t* record = &usb_msc_records[index];
+
+        if (seen[index]) {
+            index++;
+            continue;
+        }
+        result = block_unregister(record->info.block_id);
+        if (result == OK || result == ERR_NOT_FOUND) {
+            for (uint32_t current = index; current + 1U < usb_msc_count;
+                 current++) {
+                usb_msc_records[current] = usb_msc_records[current + 1U];
+                seen[current] = seen[current + 1U];
+            }
+            usb_msc_count--;
+            kmemset(&usb_msc_records[usb_msc_count], 0,
+                    sizeof(usb_msc_records[usb_msc_count]));
+            continue;
+        }
+        record->info.state = USB_MSC_DEGRADED;
+        record->info.last_error = result;
+        if (first_error == OK) first_error = result;
+        index++;
     }
     return first_error;
 }

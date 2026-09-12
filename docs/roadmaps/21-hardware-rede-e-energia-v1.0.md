@@ -2,8 +2,9 @@
 
 ## Estado
 
-Status por etapa: HW1 CONCLUIDO; HW2 CONCLUIDO; HW3 CONCLUIDO. Os sete perfis
-QEMU estao versionados, testados e reproduziveis;
+Status por etapa: HW1 CONCLUIDO; HW2 CONCLUIDO; HW3 CONCLUIDO; HW4 CONCLUIDO.
+Os sete perfis base QEMU estao versionados, testados e
+reproduziveis; o perfil interno EHCI do HW4 esta coberto pelo runner;
 hardware fisico permanece `PENDING`.
 
 Planejado. Esta frente define o conjunto de hardware suportado pela versão
@@ -111,14 +112,23 @@ processo QEMU residual. Hardware fisico e a validacao PS/2 continuam
 
 ### HW4 — Storage e USB
 
-- [ ] Validar ATA PIO, FAT12/FAT32, USB MSC, UHCI/EHCI e ausência de volumes
+- [x] Validar ATA PIO, FAT12/FAT32, USB MSC, UHCI/EHCI e ausência de volumes
   adicionais.
-- [ ] Confirmar que probe, `device-scan` e diagnósticos não inicializem ou
+- [x] Confirmar que probe, `device-scan` e diagnósticos não inicializem ou
   reinicializem hardware fora de seu contrato.
-- [ ] Testar setor inválido, timeout, dispositivo ausente, fila cheia e DMA
+- [x] Testar setor inválido, timeout, dispositivo ausente, fila cheia e DMA
   incompatível.
-- [ ] Preservar volumes pinned e impedir desmontagem de volumes ocupados.
-- [ ] Conferir integração com sync, rollback e recuperação do Roadmap 20.
+- [x] Preservar volumes pinned e impedir desmontagem de volumes ocupados.
+- [x] Conferir integração com sync, rollback e recuperação do Roadmap 20.
+
+O HW4 integra o MSC ao lifecycle interno dos drivers e mantém o provedor USB
+somente-leitura. O runner possui os perfis `usb-storage`, `no-storage`,
+`no-usb` e o perfil interno determinístico `usb-storage-ehci`, que
+seleciona EHCI high-speed e exige uma fixture raw anexada ao snapshot. A
+A cobertura host-only e a matriz QEMU terminaram `PASS` com quatro workers,
+seed `2104`, sete casos selecionados e nenhum processo QEMU residual. O caso
+EHCI validou leitura real do MSC e rejeição de escrita; hardware físico
+continua `PENDING`.
 
 ### HW5 — Rede e energia
 

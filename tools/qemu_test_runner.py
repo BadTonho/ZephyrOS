@@ -73,7 +73,7 @@ REPORT_TERMINATIONS = {
 QEMU_PROFILE_NAMES = {
     "baseline", "minimal", "network", "usb-hid", "usb-storage", "audio",
     "display", "pci", "no-acpi", "no-nic", "no-usb", "no-vesa",
-    "no-audio", "no-storage",
+    "no-audio", "no-storage", "usb-storage-ehci",
 }
 QEMU_PROFILE_CAPABILITIES = {
     "baseline": ["acpi", "pci", "vga", "network-e1000"],
@@ -81,6 +81,7 @@ QEMU_PROFILE_CAPABILITIES = {
     "network": ["pci", "network-e1000"],
     "usb-hid": ["usb", "usb-hid"],
     "usb-storage": ["usb", "usb-hid", "usb-storage-readonly"],
+    "usb-storage-ehci": ["usb", "usb-storage-readonly"],
     "audio": ["pci", "audio-ac97"],
     "display": ["pci", "vga-cirrus"],
     "pci": ["pci", "pci-extra"],
@@ -104,6 +105,10 @@ QEMU_PROFILE_ARGS = {
         "-device", "piix3-usb-uhci,id=tst6usb",
         "-device", "usb-kbd,bus=tst6usb.0",
         "-device", "usb-mouse,bus=tst6usb.0",
+    ],
+    "usb-storage-ehci": [
+        "-machine", "pc,usb=off",
+        "-device", "usb-ehci,id=tst6ehci",
     ],
     "audio": [
         "-audiodev", "driver=none,id=tst6audio",
@@ -627,15 +632,17 @@ class QemuSession:
             "-qmp", f"tcp:127.0.0.1:{self.qmp_port},server=on,wait=off",
         ])
         command.extend(QEMU_PROFILE_ARGS[qemu_profile])
-        if qemu_profile == "usb-storage":
+        if qemu_profile in ("usb-storage", "usb-storage-ehci"):
             storage_image = resolve_path(
                 getattr(self.arguments, "storage_image", None),
                 Path("build/storage-valid.img"),
             )
+            bus = "tst6usb.0" if qemu_profile == "usb-storage" else "tst6ehci.0"
+            drive_id = "tst6stick" if qemu_profile == "usb-storage" else "tst6ehcistick"
             command.extend([
-                "-drive", f"if=none,id=tst6stick,format=raw,"
+                "-drive", f"if=none,id={drive_id},format=raw,"
                 f"file={storage_image},readonly=on",
-                "-device", "usb-storage,bus=tst6usb.0,drive=tst6stick",
+                "-device", f"usb-storage,bus={bus},drive={drive_id}",
             ])
         command.extend(self.arguments.qemu_arg or [])
         return command
@@ -654,7 +661,7 @@ class QemuSession:
             raise RunnerError(f"imagem_ausente:{self.image}", "precondition", True)
         qemu_profile = getattr(self.arguments, "qemu_profile", "baseline")
         validate_qemu_profile(qemu_profile)
-        if qemu_profile == "usb-storage":
+        if qemu_profile in ("usb-storage", "usb-storage-ehci"):
             storage_image = resolve_path(
                 getattr(self.arguments, "storage_image", None),
                 Path("build/storage-valid.img"),

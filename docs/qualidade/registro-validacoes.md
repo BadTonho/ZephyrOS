@@ -7336,3 +7336,18 @@ dívida.
   terminaram `PASS` e nao havia processo QEMU residual. Hardware fisico e a
   validacao PS/2 permanecem `PENDING`; as dividas `DT100-003` e `DT100-004`
   continuam separadas.
+
+- HW4 - storage e USB - concluído em 2026-09-12 (America/Sao_Paulo). O USB
+  MSC passou a selecionar UHCI ou EHCI conforme o modelo da controladora,
+  mantendo BOT/SCSI somente-leitura, recuperação de transporte e remoção
+  segura do provider de bloco. O kernel publica lifecycle de ATA,
+  controladoras USB e MSC com ownership de IRQ, DMA, buffers e gerações. O
+  runner recebeu o perfil interno `usb-storage-ehci`, com caso dedicado,
+  tags, manifesto de regressão e alvos equivalentes nos dois Makefiles.
+  Passaram `make q3check` com `DT100-003 ACEITA`, `make clean`, `make`,
+  `make test-hw4-host`, `make catalog-test` e
+  `make test-hw4-qemu HW4_QEMU_WORKERS=4 HW4_QEMU_SEED=2104`. A matriz
+  selecionou sete casos, todos terminaram `PASS`, incluindo leitura real do
+  MSC EHCI e rejeição de escrita; nenhum processo QEMU residual foi
+  encontrado. Hardware físico continua `PENDING` e `DT100-003`, `DT100-004`
+  e a dívida física do PS/2 permanecem separadas.

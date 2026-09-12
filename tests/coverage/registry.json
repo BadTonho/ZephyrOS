@@ -244,6 +244,52 @@
         "STOPPED"
       ],
       "artifact_schema": "zephyros-qemu-parallel-result-v1"
+    },
+    "hw4_storage_usb": {
+      "case_ids": [
+        "qemu:tst4:storage-vfs",
+        "qemu:tst5:storage",
+        "qemu:tst6:stress:storage",
+        "qemu:tst6:matrix:usb-storage",
+        "qemu:hw1:no-storage",
+        "qemu:hw1:no-usb",
+        "qemu:hw4:usb-storage-ehci"
+      ],
+      "reused_tags": [
+        "tst4",
+        "tst5",
+        "tst6",
+        "hw1"
+      ],
+      "profiles": [
+        "baseline",
+        "usb-storage",
+        "usb-storage-ehci",
+        "no-storage",
+        "no-usb"
+      ],
+      "hardware_scope": "qemu",
+      "required_capabilities": [
+        "usb-storage-readonly"
+      ],
+      "required_diagnostics": [
+        "health",
+        "regcheck full",
+        "devices",
+        "device-scan",
+        "vfs status"
+      ],
+      "workers_default": 4,
+      "seed_default": 2104,
+      "artifact_directory": "build/test-results/hw4",
+      "physical_hardware_status": "PENDING",
+      "statuses": [
+        "PASS",
+        "FAIL",
+        "BLOCKED",
+        "STOPPED"
+      ],
+      "artifact_schema": "zephyros-qemu-parallel-result-v1"
     }
   },
   "entries": [
@@ -8212,6 +8258,65 @@
       ],
       "include_public_apis": true,
       "evidence": "make test-permissions-host PASS com credenciais fixas, capacidades, permissoes POSIX, ZPERM.DAT, defaults, limites e erros canonicos"
+    },
+    {
+      "id": "hw4-usb-storage-ehci",
+      "domain": "drivers-storage-usb",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:hw4:usb-storage-ehci"
+      ],
+      "surface_ids": [
+        "api:src/include/core/usb_manager.h:usb_manager_get_count",
+        "api:src/include/core/usb_manager.h:usb_manager_get_info",
+        "api:src/include/drivers/usb_msc.h:usb_msc_init"
+      ],
+      "case_definition": {
+        "id": "qemu:hw4:usb-storage-ehci",
+        "scenario": "USB Mass Storage em controlador EHCI deterministico",
+        "owner": "quality",
+        "layer": "qemu",
+        "executor": "qemu",
+        "profile": "hw4",
+        "guest_case": "qemu:tst6:usb-storage-ehci",
+        "qemu_profile": "usb-storage-ehci",
+        "required_capabilities": [
+          "usb",
+          "usb-storage-readonly"
+        ],
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 60,
+        "isolation": "snapshot",
+        "parameters": {
+          "protocol": "ZTEST/1",
+          "profile": "usb-storage-ehci",
+          "readonly": true,
+          "storage_image": "build/storage-valid.img"
+        },
+        "preconditions": "fixture raw de armazenamento e controladora EHCI disponiveis",
+        "action": "validar leitura BOT/SCSI, capacidade, provider de bloco e ausencia de escrita",
+        "expected": "leituras passam e a camada MSC permanece somente leitura sem residuos",
+        "errors": "fixture ausente, escrita, CSW invalido, timeout, protocolo ou QEMU",
+        "effects": "fixture raw somente leitura anexado ao snapshot",
+        "cleanup": "encerrar QEMU, desmontar o provider e preservar os artefatos",
+        "status": "AUTOMATED",
+        "surface_ids": [
+          "api:src/include/core/usb_manager.h:usb_manager_get_count",
+          "api:src/include/core/usb_manager.h:usb_manager_get_info",
+          "api:src/include/drivers/usb_msc.h:usb_msc_init"
+        ],
+        "tags": [
+          "hw4",
+          "qemu",
+          "usb",
+          "storage",
+          "ehci",
+          "readonly"
+        ]
+      },
+      "evidence": "caso QEMU deterministico para fechar a cobertura EHCI do USB MSC somente leitura"
     }
   ]
 }

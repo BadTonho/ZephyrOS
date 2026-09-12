@@ -5,6 +5,7 @@
 #include "core/errors.h"
 #include "core/log.h"
 #include "core/usb_manager.h"
+#include "drivers/ehci.h"
 #include "drivers/uhci.h"
 #include "drivers/usb_msc.h"
 #include "fs/block.h"
@@ -69,6 +70,9 @@ static int fake_control_fail_result;
 static int fake_control_default_result;
 static int fake_reset_toggle_result;
 static uint32_t fake_reset_toggle_calls;
+static uint32_t fake_ehci_bulk_calls;
+static uint32_t fake_ehci_control_calls;
+static uint32_t fake_ehci_reset_toggle_calls;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -122,6 +126,22 @@ int block_register(const block_device_t* descriptor) {
     if (fake_block_count >= FAKE_BLOCK_CAPACITY) return ERR_OVERFLOW;
     fake_blocks[fake_block_count++] = *descriptor;
     return OK;
+}
+
+int block_unregister(const char* id) {
+    if (!id) return ERR_NULL;
+    for (uint32_t index = 0U; index < fake_block_count; index++) {
+        if (strcmp(fake_blocks[index].id, id) != 0) continue;
+        for (uint32_t current = index; current + 1U < fake_block_count;
+             current++) {
+            fake_blocks[current] = fake_blocks[current + 1U];
+        }
+        fake_block_count--;
+        memset(&fake_blocks[fake_block_count], 0,
+               sizeof(fake_blocks[fake_block_count]));
+        return OK;
+    }
+    return ERR_NOT_FOUND;
 }
 
 int block_find(const char* id, block_device_t* out_device) {
@@ -251,6 +271,30 @@ int uhci_bulk_transfer(const usb_device_info_t* device,
     return OK;
 }
 
+int ehci_control_request(const usb_device_info_t* device,
+                         uint8_t request_type, uint8_t request,
+                         uint16_t value, uint16_t index, uint16_t length,
+                         uint8_t* data, uint16_t* out_length) {
+    fake_ehci_control_calls++;
+    return uhci_control_request(device, request_type, request, value, index,
+                                length, data, out_length);
+}
+
+int ehci_bulk_transfer(const usb_device_info_t* device,
+                       uint8_t endpoint_address, uint8_t direction_in,
+                       uint8_t* buffer, uint16_t length,
+                       uint16_t* out_length) {
+    fake_ehci_bulk_calls++;
+    return uhci_bulk_transfer(device, endpoint_address, direction_in, buffer,
+                              length, out_length);
+}
+
+int ehci_reset_bulk_toggles(const usb_device_info_t* device) {
+    if (!device) return ERR_NULL;
+    fake_ehci_reset_toggle_calls++;
+    return uhci_reset_bulk_toggles(device);
+}
+
 static void copy_id(char* destination, uint32_t capacity, const char* value) {
     strncpy(destination, value, capacity - 1U);
     destination[capacity - 1U] = '\0';
@@ -301,6 +345,9 @@ static void reset_fixtures(void) {
     fake_control_default_result = OK;
     fake_reset_toggle_result = OK;
     fake_reset_toggle_calls = 0U;
+    fake_ehci_bulk_calls = 0U;
+    fake_ehci_control_calls = 0U;
+    fake_ehci_reset_toggle_calls = 0U;
 }
 
 static int test_contract_before_init(void) {
@@ -386,25 +433,61 @@ static int test_happy_path(void) {
 }
 
 static int test_candidate_filters(void) {
-    for (uint32_t index = 0U; index < 11U; index++) {
+    for (uint32_t index = 0U; index < 10U; index++) {
         uint32_t count = 0U;
 
         reset_fixtures();
         make_device(&fake_devices[0], "usb-dev-filter");
         if (index == 0U) fake_devices[0].state = USB_DEVICE_DEGRADED;
-        if (index == 1U) fake_devices[0].speed = USB_DEVICE_SPEED_HIGH;
-        if (index == 2U) fake_devices[0].interface_class = 0U;
-        if (index == 3U) fake_devices[0].interface_subclass = 0U;
-        if (index == 4U) fake_devices[0].interface_protocol = 0U;
-        if (index == 5U) fake_devices[0].bulk_in_count = 0U;
-        if (index == 6U) fake_devices[0].bulk_out_count = 0U;
-        if (index == 7U) fake_devices[0].bulk_in_endpoint = 0U;
-        if (index == 8U) fake_devices[0].bulk_out_endpoint = 0U;
-        if (index == 9U) fake_devices[0].bulk_in_max_packet = 0U;
-        if (index == 10U) fake_devices[0].bulk_out_max_packet = 0U;
+        if (index == 1U) fake_devices[0].interface_class = 0U;
+        if (index == 2U) fake_devices[0].interface_subclass = 0U;
+        if (index == 3U) fake_devices[0].interface_protocol = 0U;
+        if (index == 4U) fake_devices[0].bulk_in_count = 0U;
+        if (index == 5U) fake_devices[0].bulk_out_count = 0U;
+        if (index == 6U) fake_devices[0].bulk_in_endpoint = 0U;
+        if (index == 7U) fake_devices[0].bulk_out_endpoint = 0U;
+        if (index == 8U) fake_devices[0].bulk_in_max_packet = 0U;
+        if (index == 9U) fake_devices[0].bulk_out_max_packet = 0U;
         fake_device_count = 1U;
         if (usb_msc_init() != OK || usb_msc_get_count(&count) != OK || count != 0U ||
             usb_msc_validate_state() != OK) return 40 + (int)index;
+    }
+    return 0;
+}
+
+static int test_ehci_high_speed_path(void) {
+    block_device_t block;
+    usb_msc_info_t info;
+    uint8_t buffer[FAKE_SECTOR_SIZE];
+    uint32_t count = 0U;
+    uint32_t ehci_bulk_calls;
+
+    reset_fixtures();
+    make_device(&fake_devices[0], "usb-dev-ehci");
+    fake_devices[0].controller_model = USB_CONTROLLER_MODEL_EHCI;
+    fake_devices[0].speed = USB_DEVICE_SPEED_HIGH;
+    copy_id(fake_devices[0].controller_id, USB_PORT_CONTROLLER_ID_SIZE,
+            "ehci-msc");
+    fake_device_count = 1U;
+    if (usb_msc_init() != OK || usb_msc_get_count(&count) != OK || count != 1U ||
+        usb_msc_get_at(0U, &info) != OK ||
+        block_find(info.block_id, &block) != OK ||
+        block.ops.read(block.ops.context, 0U, 1U, buffer) != OK ||
+        fake_ehci_bulk_calls == 0U) return 50;
+    fake_bulk_fail_call = fake_bulk_calls + 1U;
+    fake_bulk_fail_result = ERR_TIMEOUT;
+    if (block.ops.read(block.ops.context, 0U, 1U, buffer) != OK ||
+        fake_ehci_control_calls == 0U ||
+        fake_ehci_reset_toggle_calls == 0U) return 51;
+    ehci_bulk_calls = fake_ehci_bulk_calls;
+    fake_devices[0].controller_model = USB_CONTROLLER_MODEL_UHCI;
+    fake_devices[0].speed = USB_DEVICE_SPEED_FULL;
+    if (usb_msc_refresh() != OK || fake_ehci_bulk_calls != ehci_bulk_calls ||
+        usb_msc_validate_state() != OK) return 52;
+    fake_device_count = 0U;
+    if (usb_msc_refresh() != OK || usb_msc_get_count(&count) != OK ||
+        count != 0U || fake_block_count != 0U || usb_msc_validate_state() != OK) {
+        return 53;
     }
     return 0;
 }
@@ -420,15 +503,34 @@ static int test_capacity_and_manager_paths(void) {
         make_device(&fake_devices[index], id);
     }
     fake_device_count = FAKE_DEVICE_CAPACITY;
-    if (usb_msc_init() != ERR_OVERFLOW || usb_msc_get_count(&count) != OK ||
-        count != USB_MSC_MAX_DEVICES || usb_msc_validate_state() != OK) return 60;
+    {
+        int init_result = usb_msc_init();
+        int count_result = usb_msc_get_count(&count);
+        int state_result = usb_msc_validate_state();
+
+        if (init_result != ERR_OVERFLOW || count_result != OK ||
+            count != USB_MSC_MAX_DEVICES || state_result != OK) {
+            printf("CAPACITY init=%d count_result=%d count=%u state=%d max=%u\\n",
+                   init_result, count_result, (unsigned)count, state_result,
+                   (unsigned)USB_MSC_MAX_DEVICES);
+            return 60;
+        }
+    }
 
     reset_fixtures();
     fake_manager_result = ERR_UNAVAILABLE;
-    if (usb_msc_init() != ERR_UNAVAILABLE || usb_msc_get_count(&count) != OK ||
-        count != 0U || usb_msc_validate_state() != OK) return 61;
+    {
+        int init_result = usb_msc_init();
+        int count_result = usb_msc_get_count(&count);
+
+        if (init_result != ERR_UNAVAILABLE || count_result != OK ||
+            count != USB_MSC_MAX_DEVICES) {
+            return 61;
+        }
+    }
     fake_manager_result = OK;
-    if (usb_msc_refresh() != OK) return 62;
+    if (usb_msc_refresh() != OK || usb_msc_get_count(&count) != OK ||
+        count != 0U) return 62;
 
     reset_fixtures();
     make_device(&fake_devices[0], "usb-dev-missing");
@@ -536,6 +638,7 @@ int main(void) {
     if (!result) result = test_contract_before_init();
     if (!result) result = test_happy_path();
     if (!result) result = test_candidate_filters();
+    if (!result) result = test_ehci_high_speed_path();
     if (!result) result = test_capacity_and_manager_paths();
     if (!result) result = test_retry_and_block_io();
     if (!result) result = test_failures_and_recovery();

@@ -29,6 +29,7 @@
 #define EHCI_PORT_PR (1U << 8U)
 #define EHCI_PORT_PP (1U << 12U)
 #define EHCI_PORT_RWC (EHCI_PORT_CSC | EHCI_PORT_PEC | EHCI_PORT_OCA)
+#define EHCI_PORT_RESET_DELAY_MS 50U
 #define EHCI_USBCMD 0x00U
 #define EHCI_USBSTS 0x04U
 #define EHCI_USBINTR 0x08U
@@ -40,6 +41,7 @@
 #define EHCI_PORTSC_BASE 0x44U
 #define EHCI_USBCMD_RUN_STOP (1U << 0U)
 #define EHCI_USBCMD_HC_RESET (1U << 1U)
+#define EHCI_USBCMD_PERIODIC_ENABLE (1U << 4U)
 #define EHCI_USBCMD_ASYNC_ENABLE (1U << 5U)
 #define EHCI_USBSTS_USBINT (1U << 0U)
 #define EHCI_USBSTS_USBERRINT (1U << 1U)
@@ -75,6 +77,7 @@
 #define EHCI_QH_SPEED_LOW 1U
 #define EHCI_QH_SPEED_HIGH 2U
 #define EHCI_QH_DTC (1U << 14U)
+#define EHCI_QH_HEAD (1U << 15U)
 #define EHCI_QH_MAX_PACKET_SHIFT 16U
 #define EHCI_QH_CONTROL_ENDPOINT (1U << 27U)
 #define EHCI_QH_MULT 1U
@@ -175,6 +178,7 @@ typedef struct {
     char controller_id[USB_CONTROLLER_ID_SIZE];
     uint8_t* dma_pool;
     uint32_t dma_pool_phys;
+    uint32_t dma_pool_expected_phys;
     ehci_qh_t* queue_heads;
     ehci_qtd_t* qtd_pool;
     uint8_t* buffer_pool;
@@ -404,6 +408,7 @@ static int ehci_allocate_dma(ehci_controller_t* controller) {
 #else
     controller->dma_pool_phys = (uint32_t)controller->dma_pool;
 #endif
+    controller->dma_pool_expected_phys = controller->dma_pool_phys;
     controller->queue_heads = (ehci_qh_t*)controller->dma_pool;
     controller->qtd_pool = (ehci_qtd_t*)(controller->dma_pool + PAGE_SIZE);
     controller->buffer_pool = controller->dma_pool + PAGE_SIZE * 2U;
@@ -421,6 +426,7 @@ static int ehci_allocate_dma(ehci_controller_t* controller) {
     kmemset(controller->dma_pool, 0, EHCI_DMA_PAGE_COUNT * PAGE_SIZE);
     controller->queue_heads[0].horizontal_link = EHCI_QH_LINK(
         controller->qh_pool_phys);
+    controller->queue_heads[0].endpoint_characteristics = EHCI_QH_HEAD;
     controller->queue_heads[0].next_qtd = EHCI_PTR_TERM;
     controller->queue_heads[0].alternate_next_qtd = EHCI_PTR_TERM;
     controller->queue_heads[1].horizontal_link = EHCI_QH_LINK(
@@ -441,6 +447,60 @@ static void ehci_release_dma(ehci_controller_t* controller) {
     controller->queue_heads = 0;
     controller->qtd_pool = 0;
     controller->buffer_pool = 0;
+    controller->dma_pool_expected_phys = 0U;
+}
+
+static uint32_t ehci_dma_pointer_phys(const void* pointer) {
+#if defined(ZEPHYROS_HOST_TEST)
+    return ehci_host_physical_address(pointer);
+#else
+    return (uint32_t)pointer;
+#endif
+}
+
+static int ehci_dma_layout_valid(const ehci_controller_t* controller) {
+    if (!controller || !controller->dma_pool || !controller->queue_heads ||
+        !controller->qtd_pool || !controller->buffer_pool ||
+        controller->qh_pool_phys != controller->dma_pool_phys ||
+        controller->qtd_pool_phys != controller->dma_pool_phys + PAGE_SIZE ||
+        controller->buffer_pool_phys != controller->dma_pool_phys +
+        PAGE_SIZE * 2U ||
+        controller->dma_pool_phys != controller->dma_pool_expected_phys ||
+        ehci_dma_pointer_phys(controller->dma_pool) !=
+        controller->dma_pool_phys ||
+        ehci_dma_pointer_phys(controller->queue_heads) !=
+        controller->qh_pool_phys ||
+        ehci_dma_pointer_phys(controller->qtd_pool) !=
+        controller->qtd_pool_phys ||
+        ehci_dma_pointer_phys(controller->buffer_pool) !=
+        controller->buffer_pool_phys) {
+        return 0;
+    }
+    if (controller->queue_heads[0].endpoint_characteristics & EHCI_QH_HEAD) {
+        return 1;
+    }
+    return 0;
+}
+
+static int ehci_schedule_valid(const ehci_controller_t* controller) {
+    const ehci_qh_t* anchor;
+    const ehci_qh_t* sync;
+    const ehci_qh_t* interrupt;
+    uint32_t sync_link;
+
+    if (!ehci_dma_layout_valid(controller)) return 0;
+    anchor = &controller->queue_heads[0];
+    sync = &controller->queue_heads[1];
+    interrupt = &controller->queue_heads[2];
+    sync_link = controller->interrupt_requests[0].used ?
+        EHCI_QH_LINK(controller->qh_pool_phys + sizeof(ehci_qh_t) * 2U) :
+        EHCI_QH_LINK(controller->qh_pool_phys);
+    return anchor->horizontal_link == EHCI_QH_LINK(
+               controller->qh_pool_phys + sizeof(ehci_qh_t)) &&
+           sync->horizontal_link == sync_link &&
+           interrupt->horizontal_link == EHCI_QH_LINK(
+               controller->qh_pool_phys) &&
+           (anchor->endpoint_characteristics & EHCI_QH_HEAD);
 }
 
 static void ehci_link_schedule(ehci_controller_t* controller) {
@@ -448,7 +508,10 @@ static void ehci_link_schedule(ehci_controller_t* controller) {
     ehci_qh_t* sync;
     ehci_qh_t* interrupt;
 
-    if (!controller || !controller->queue_heads) return;
+    if (!ehci_dma_layout_valid(controller)) {
+        LOG_ERROR("EHCI", "Layout DMA EHCI inconsistente");
+        return;
+    }
     anchor = &controller->queue_heads[0];
     sync = &controller->queue_heads[1];
     interrupt = &controller->queue_heads[2];
@@ -461,6 +524,9 @@ static void ehci_link_schedule(ehci_controller_t* controller) {
     } else {
         sync->horizontal_link = EHCI_QH_LINK(controller->qh_pool_phys);
     }
+    if (!ehci_schedule_valid(controller)) {
+        LOG_ERROR("EHCI", "Lista assincrona EHCI inconsistente apos publicacao");
+    }
 }
 
 static void ehci_disable(ehci_controller_t* controller) {
@@ -470,7 +536,8 @@ static void ehci_disable(ehci_controller_t* controller) {
         controller->cap_length < EHCI_CAPABILITY_MIN_LENGTH) return;
     ehci_write(controller, controller->cap_length + EHCI_USBINTR, 0U);
     command = ehci_read(controller, controller->cap_length + EHCI_USBCMD);
-    command &= ~(EHCI_USBCMD_RUN_STOP | EHCI_USBCMD_ASYNC_ENABLE);
+    command &= ~(EHCI_USBCMD_RUN_STOP | EHCI_USBCMD_PERIODIC_ENABLE |
+                 EHCI_USBCMD_ASYNC_ENABLE);
     ehci_write(controller, controller->cap_length + EHCI_USBCMD, command);
 }
 
@@ -504,6 +571,7 @@ static int ehci_reset_controller(ehci_controller_t* controller) {
     }
     ehci_write(controller, base + EHCI_USBSTS, 0xFFFFFFFFU);
     ehci_write(controller, base + EHCI_CTRLDSSEGMENT, 0U);
+    ehci_write(controller, base + EHCI_PERIODICLISTBASE, 0U);
     ehci_write(controller, base + EHCI_ASYNCLISTADDR,
                controller->qh_pool_phys);
     ehci_write(controller, base + EHCI_CONFIGFLAG, 1U);
@@ -516,9 +584,15 @@ static int ehci_start_controller(ehci_controller_t* controller) {
 
     if (!controller) return ERR_NULL;
     ehci_link_schedule(controller);
+    __asm__ volatile("" : : : "memory");
+    ehci_write(controller, controller->cap_length + EHCI_PERIODICLISTBASE,
+               0U);
+    ehci_write(controller, controller->cap_length + EHCI_ASYNCLISTADDR,
+               controller->qh_pool_phys);
     ehci_write(controller, controller->cap_length + EHCI_USBINTR,
                EHCI_USBINTR_DEFAULT);
     command = ehci_read(controller, controller->cap_length + EHCI_USBCMD);
+    command &= ~EHCI_USBCMD_PERIODIC_ENABLE;
     command |= EHCI_USBCMD_RUN_STOP | EHCI_USBCMD_ASYNC_ENABLE;
     ehci_write(controller, controller->cap_length + EHCI_USBCMD, command);
     start = timer_get_ticks();
@@ -672,6 +746,10 @@ static int ehci_submit_sync(ehci_controller_t* controller, uint32_t count,
     controller->queue_heads[1].alternate_next_qtd = EHCI_PTR_TERM;
     controller->qtd_in_use = count;
     controller->buffer_in_use = 1U;
+    if (!ehci_schedule_valid(controller)) {
+        LOG_ERROR("EHCI", "Lista assincrona EHCI invalida antes da transferencia");
+        return ERR_STATE;
+    }
     __asm__ volatile("" : : : "memory");
     return ehci_wait_qtds(controller, count, timeout_ms);
 }
@@ -773,9 +851,27 @@ static int ehci_read_descriptor(ehci_controller_t* controller,
         EHCI_REQUEST_DEVICE_TO_HOST | EHCI_REQUEST_STANDARD |
         EHCI_REQUEST_RECIPIENT_DEVICE, EHCI_REQUEST_GET_DESCRIPTOR,
         (uint16_t)(type << 8U), 0U, length, data, &actual);
-    if (result != OK) return result;
-    if (actual < 2U || data[1] != type || actual < length) {
-        LOG_ERROR("EHCI", "Descritor USB incompleto ou inesperado");
+    if (result != OK) {
+        if (result == ERR_TIMEOUT) {
+            LOG_ERROR("EHCI", "Timeout ao ler descritor USB");
+        } else if (result == ERR_STATE) {
+            LOG_ERROR("EHCI", "Falha de estado ao ler descritor USB");
+        } else {
+            LOG_ERROR_CODE("EHCI", result,
+                           "Falha ao ler prefixo do descritor USB");
+        }
+        return result;
+    }
+    if (actual < 2U) {
+        LOG_ERROR("EHCI", "Descritor USB sem cabecalho");
+        return ERR_INVALID;
+    }
+    if (data[1] != type) {
+        LOG_ERROR("EHCI", "Tipo do descritor USB inesperado");
+        return ERR_INVALID;
+    }
+    if (actual < length) {
+        LOG_ERROR("EHCI", "Descritor USB truncado");
         return ERR_INVALID;
     }
     return OK;
@@ -915,16 +1011,31 @@ static int ehci_reset_port(ehci_controller_t* controller, uint32_t port) {
     if (status == 0xFFFFFFFFU || !(status & EHCI_PORT_CCS)) {
         return ERR_NOT_FOUND;
     }
-    ehci_write(controller, offset, status | EHCI_PORT_PR);
+    ehci_write(controller, offset,
+               (status & ~EHCI_PORT_RWC) | EHCI_PORT_PP | EHCI_PORT_PR);
     start = timer_get_ticks();
-    while (ehci_read(controller, offset) & EHCI_PORT_PR) {
-        if (ehci_deadline_expired(start, EHCI_RESET_TIMEOUT_MS)) {
-            LOG_ERROR("EHCI", "Timeout no reset da porta EHCI");
-            return ERR_TIMEOUT;
-        }
+    while ((ehci_read(controller, offset) & EHCI_PORT_PR) &&
+           !ehci_deadline_expired(start, EHCI_PORT_RESET_DELAY_MS)) {
         __asm__ volatile("pause");
     }
     status = ehci_read(controller, offset);
+    if (status & EHCI_PORT_PR) {
+        ehci_write(controller, offset,
+                   status & ~(EHCI_PORT_RWC | EHCI_PORT_PR));
+        start = timer_get_ticks();
+        while (ehci_read(controller, offset) & EHCI_PORT_PR) {
+            if (ehci_deadline_expired(start, EHCI_RESET_TIMEOUT_MS)) {
+                LOG_ERROR("EHCI", "Timeout no reset da porta EHCI");
+                return ERR_TIMEOUT;
+            }
+            __asm__ volatile("pause");
+        }
+    }
+    status = ehci_read(controller, offset);
+    if (status == 0xFFFFFFFFU || (status & EHCI_PORT_PR)) {
+        LOG_ERROR("EHCI", "Estado invalido apos reset da porta EHCI");
+        return ERR_STATE;
+    }
     ehci_write(controller, offset, status | EHCI_PORT_RWC);
     start = timer_get_ticks();
     while (!ehci_deadline_expired(start, EHCI_SET_ADDRESS_DELAY_MS)) {
@@ -962,11 +1073,21 @@ static int ehci_enumerate_port(ehci_controller_t* controller, uint32_t port) {
     if (result != OK) return result;
     result = ehci_read_descriptor(controller, record, EHCI_DESCRIPTOR_DEVICE,
                                   prefix, sizeof(prefix));
-    if (result != OK || prefix[0] < sizeof(prefix) ||
-        prefix[1] != EHCI_DESCRIPTOR_DEVICE ||
-        (prefix[7] != 8U && prefix[7] != 16U && prefix[7] != 32U &&
-         prefix[7] != 64U)) {
-        LOG_ERROR("EHCI", "Prefixo do descritor USB invalido");
+    if (result != OK) {
+        LOG_ERROR("EHCI", "Falha ao ler prefixo do descritor USB");
+        return result;
+    }
+    if (prefix[0] < sizeof(prefix)) {
+        LOG_ERROR("EHCI", "Tamanho do descritor USB invalido");
+        return ERR_INVALID;
+    }
+    if (prefix[1] != EHCI_DESCRIPTOR_DEVICE) {
+        LOG_ERROR("EHCI", "Tipo do descritor USB inesperado");
+        return ERR_INVALID;
+    }
+    if (prefix[7] != 8U && prefix[7] != 16U && prefix[7] != 32U &&
+        prefix[7] != 64U) {
+        LOG_ERROR("EHCI", "Tamanho do endpoint de controle USB invalido");
         return ERR_INVALID;
     }
     record->info.max_packet_size0 = prefix[7];
@@ -1454,6 +1575,10 @@ int ehci_validate_state(uint8_t bus, uint8_t device, uint8_t function) {
         LOG_ERROR("EHCI", "Anchor da lista assincrona EHCI invalido");
         return ERR_STATE;
     }
+    if (!(controller->queue_heads[0].endpoint_characteristics & EHCI_QH_HEAD)) {
+        LOG_ERROR("EHCI", "Cabeca da lista assincrona EHCI invalida");
+        return ERR_STATE;
+    }
     for (uint32_t port = 0U; port < controller->port_count; port++) {
         ehci_device_record_t* record = &controller->devices[port];
 
@@ -1537,6 +1662,9 @@ static int ehci_bulk_transfer_locked(ehci_controller_t* controller,
         LOG_ERROR("EHCI", "Endpoint Bulk EHCI sem tamanho valido");
         return ERR_UNAVAILABLE;
     }
+    ehci_qh_configure(controller, &controller->queue_heads[1],
+                      record->info.usb_address, endpoint_address & 0x0FU,
+                      max_packet, 0U);
     if (!direction_in) kmemcpy(controller->buffer_pool, buffer, length);
     toggle = direction_in ? record->bulk_in_toggle : record->bulk_out_toggle;
     for (uint32_t qtd = 0U; qtd < count; qtd++) {

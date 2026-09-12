@@ -2209,6 +2209,28 @@ make test-hw3-qemu HW3_QEMU_WORKERS=6 HW3_QEMU_SEED=2103
 Hardware fisico, especialmente PS/2, continua `PENDING` ate haver evidencia
 reproduzivel; `DT100-003` e `DT100-004` permanecem separadas.
 
+## HW4 - storage e USB somente-leitura
+
+```text
+make test-hw4-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+make catalog-test
+make test-hw4-qemu HW4_QEMU_WORKERS=4 HW4_QEMU_SEED=2104
+```
+
+O alvo usa a tag `hw4`, snapshots independentes e artefatos em
+`build/test-results/hw4/`. O caso `usb-storage-ehci` seleciona a controladora
+EHCI determinística e exige a fixture raw configurada pelo alvo
+`storage-fixtures`; MSC permanece somente-leitura. Depois do ciclo padrão,
+seis workers podem ser testados no Ryzen 5 3600:
+
+```text
+make test-hw4-qemu HW4_QEMU_WORKERS=6 HW4_QEMU_SEED=2104
+```
+
+Os resultados devem distinguir `PASS`, degradação esperada e falha funcional;
+dispositivo ausente, timeout e remoção não podem deixar IRQ, DMA, cache,
+handles ou processos residuais.
+
 ## Spinlock host-only
 
 O alvo `test-spinlock-host` executa uma fixture nativa que inicializa, adquire

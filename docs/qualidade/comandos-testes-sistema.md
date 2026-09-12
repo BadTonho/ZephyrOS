@@ -228,6 +228,25 @@ Os artefatos ficam em `build/test-results/hw3/`. O perfil `no-vesa` preserva
 serial/QMP; `no-usb` e `no-audio` validam ausencia e fallback. A execucao
 fisica de PS/2 permanece `PENDING` e nao e declarada como suporte.
 
+## HW4 - storage e USB somente-leitura
+
+O agregado host-only cobre ATA, UHCI, EHCI, transporte USB, USB Manager, MSC,
+Block/Cache, FAT12/FAT32, FS, Storage, VFS e diagnósticos relacionados. A
+matriz seleciona os casos com a tag `hw4`, incluindo o perfil interno
+`usb-storage-ehci`, que exige uma imagem raw de armazenamento somente-leitura:
+
+```text
+make test-hw4-host
+make catalog-test
+make test-hw4-qemu HW4_QEMU_WORKERS=4 HW4_QEMU_SEED=2104
+make test-hw4
+```
+
+Os artefatos ficam em `build/test-results/hw4/`. O perfil `usb-storage` cobre
+UHCI; `usb-storage-ehci` cobre EHCI high-speed; `no-storage` e `no-usb`
+confirmam a ausência segura do recurso. Escritas MSC são rejeitadas e a perda
+do dispositivo deve remover provider, cache, handles e aliases sem resíduos.
+
 ## TST2 - protocolo e executor QEMU
 
 Testes host-only:

@@ -4,6 +4,8 @@
 #include "core/log.h"
 #include "core/service_supervisor.h"
 #include "core/update_runtime.h"
+#include "drivers/usb_msc.h"
+#include "fs/block.h"
 #include "memory/paging.h"
 #include "process/process.h"
 
@@ -74,6 +76,67 @@ static int tst6_run_network(const kernel_tests_runtime_t* runtime) {
 
 static int tst6_run_storage(const kernel_tests_runtime_t* runtime) {
     return kernel_tests_run_storage_vfs(runtime);
+}
+
+static int tst6_run_usb_storage_ehci(const kernel_tests_runtime_t* runtime) {
+    usb_msc_info_t msc;
+    block_device_t block;
+    uint8_t sector[BLOCK_SECTOR_SIZE];
+    uint32_t count = 0U;
+    uint32_t index;
+    int result;
+
+    (void)runtime;
+    result = usb_msc_get_count(&count);
+    if (result != OK) {
+        LOG_ERROR_CODE(KERNEL_TEST_TST6_TAG, result,
+                       "usb-storage-ehci count");
+        return result;
+    }
+    if (!count) {
+        LOG_ERROR_CODE(KERNEL_TEST_TST6_TAG, ERR_NOT_FOUND,
+                       "usb-storage-ehci absent");
+        return ERR_NOT_FOUND;
+    }
+    for (index = 0U; index < count; index++) {
+        result = usb_msc_get_at(index, &msc);
+        if (result != OK) {
+            LOG_ERROR_CODE(KERNEL_TEST_TST6_TAG, result,
+                           "usb-storage-ehci info");
+            return result;
+        }
+        if (msc.state != USB_MSC_READY || !usb_msc_is_active(msc.id)) {
+            continue;
+        }
+        if (msc.sector_size != BLOCK_SECTOR_SIZE || !msc.sector_count ||
+            block_find(msc.block_id, &block) != OK ||
+            block.provider != BLOCK_PROVIDER_USB_MSC || !block.read_only ||
+            !block.online) {
+            LOG_ERROR_CODE(KERNEL_TEST_TST6_TAG, ERR_STATE,
+                           "usb-storage-ehci provider");
+            return ERR_STATE;
+        }
+        result = block_read(block.id, 0U, 1U, sector);
+        if (result != OK) {
+            LOG_ERROR_CODE(KERNEL_TEST_TST6_TAG, result,
+                           "usb-storage-ehci read");
+            return result;
+        }
+        if (block_write(block.id, 0U, 1U, sector) != ERR_UNAVAILABLE) {
+            LOG_ERROR_CODE(KERNEL_TEST_TST6_TAG, ERR_STATE,
+                           "usb-storage-ehci write");
+            return ERR_STATE;
+        }
+        result = usb_msc_validate_state();
+        if (result != OK) {
+            LOG_ERROR_CODE(KERNEL_TEST_TST6_TAG, result,
+                           "usb-storage-ehci state");
+        }
+        return result;
+    }
+    LOG_ERROR_CODE(KERNEL_TEST_TST6_TAG, ERR_NOT_FOUND,
+                   "usb-storage-ehci ready device");
+    return ERR_NOT_FOUND;
 }
 
 static int tst6_run_memory(const kernel_tests_runtime_t* runtime) {
@@ -284,6 +347,10 @@ int kernel_tests_run_tst6(const kernel_tests_runtime_t* runtime,
     suffix_length = case_length - prefix_length;
     if (tst6_equals(suffix, suffix_length, "sec6:no-vesa")) {
         return tst6_run_domain(runtime, "sec6-no-vesa", tst6_run_platform);
+    }
+    if (tst6_equals(suffix, suffix_length, "usb-storage-ehci")) {
+        return tst6_run_domain(runtime, "usb-storage-ehci",
+                               tst6_run_usb_storage_ehci);
     }
     if (tst6_suffix(case_id, case_length, "matrix:baseline") ||
         tst6_suffix(case_id, case_length, "matrix:minimal") ||

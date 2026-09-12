@@ -31,6 +31,12 @@
       "case_id": "qemu:tst5:input",
       "condition": "entrada, fallback textual e drivers opcionais preservam estado e recursos sem residuos",
       "origin": "docs/roadmaps/21-hardware-rede-e-energia-v1.0.md:HW3"
+    },
+    {
+      "id": "hw4-storage-usb-readonly",
+      "case_id": "qemu:hw4:usb-storage-ehci",
+      "condition": "USB MSC EHCI permite somente leitura e remove o provider sem residuos",
+      "origin": "docs/roadmaps/21-hardware-rede-e-energia-v1.0.md:HW4"
     }
   ]
 }

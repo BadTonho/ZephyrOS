@@ -29,6 +29,7 @@
 #define HOST_USBSTS_HCH (1U << 12U)
 #define HOST_USBSTS_RELEVANT (0x17U)
 #define HOST_PORT_CCS (1U << 0U)
+#define HOST_PORT_PP (1U << 12U)
 #define HOST_PORT_PED (1U << 2U)
 #define HOST_PORT_PR (1U << 8U)
 #define HOST_PORT_RWC ((1U << 1U) | (1U << 3U) | (1U << 4U))
@@ -216,10 +217,19 @@ void ehci_host_mmio_write(volatile uint8_t* mmio, uint32_t offset,
     }
     if (offset == HOST_PORT0 || offset == HOST_PORT1) {
         current = host_mmio_get32(offset);
-        if (value & HOST_PORT_PR) current = (current | HOST_PORT_CCS |
-                                               HOST_PORT_PED) & ~HOST_PORT_PR;
-        else current = (current & ~(value & HOST_PORT_RWC)) |
-                       (current & (HOST_PORT_CCS | HOST_PORT_PED));
+        if (value & HOST_PORT_PR) {
+            current = (current | HOST_PORT_CCS | HOST_PORT_PP) &
+                      ~HOST_PORT_PED;
+            current |= HOST_PORT_PR;
+        } else {
+            if (current & HOST_PORT_PR) {
+                current = (current | HOST_PORT_CCS | HOST_PORT_PP |
+                           HOST_PORT_PED) & ~HOST_PORT_PR;
+            }
+            current = (current & ~(value & HOST_PORT_RWC)) |
+                       (current & (HOST_PORT_CCS | HOST_PORT_PED |
+                                   HOST_PORT_PP));
+        }
         host_mmio_set32(offset, current);
         return;
     }
@@ -323,7 +333,7 @@ static void reset_fixture(void) {
     host_mmio_set32(0U, HOST_CAP_LENGTH);
     host_mmio_set32(4U, 2U);
     host_mmio_set32(HOST_USBSTS, HOST_USBSTS_HCH);
-    host_mmio_set32(HOST_PORT0, HOST_PORT_CCS);
+    host_mmio_set32(HOST_PORT0, HOST_PORT_CCS | HOST_PORT_PP);
     host_mmio_set32(HOST_PORT1, 0U);
     host_dma_used = 0U;
     host_ticks = 0U;
@@ -421,6 +431,8 @@ static int check_controller(void) {
     if (!host_irq_handler || host_irq_count != 1U || host_map_count != 1U) {
         return 3;
     }
+    if ((host_mmio_get32(HOST_PORT0) & HOST_PORT_PR) ||
+        !(host_mmio_get32(HOST_PORT0) & HOST_PORT_PED)) return 4;
     {
         registers_t regs = {0};
 
@@ -435,30 +447,30 @@ static int check_controller(void) {
     if (ehci_get_status(pci.bus, pci.device, pci.function, &status) != OK ||
         !status.initialized || !status.running || !status.irq_registered ||
         !status.dma_ready || status.port_count != 2U ||
-        status.device_count != 1U || status.port_errors != 0U) return 4;
+        status.device_count != 1U || status.port_errors != 0U) return 5;
     if (ehci_get_port_count(pci.bus, pci.device, pci.function, &count) != OK ||
-        count != 2U) return 5;
+        count != 2U) return 6;
     if (ehci_get_port(pci.bus, pci.device, pci.function, 0U, &port) != OK ||
-        port.state != USB_PORT_CONFIGURED || port.usb_address != 1U) return 6;
+        port.state != USB_PORT_CONFIGURED || port.usb_address != 1U) return 7;
     if (ehci_get_port(pci.bus, pci.device, pci.function, 1U, &port) != OK ||
-        port.state != USB_PORT_EMPTY) return 7;
+        port.state != USB_PORT_EMPTY) return 8;
     if (ehci_get_port(pci.bus, pci.device, pci.function, 2U, &port) !=
-        ERR_INVALID) return 8;
+        ERR_INVALID) return 9;
     if (ehci_get_device_count(pci.bus, pci.device, pci.function, &count) != OK ||
-        count != 1U) return 9;
+        count != 1U) return 10;
     if (ehci_get_device(pci.bus, pci.device, pci.function, 0U, &device) != OK ||
         device.vendor_id != 0x1234U || device.product_id != 0x5678U ||
         device.endpoint_count != 3U || device.bulk_in_endpoint != 0x82U ||
         device.bulk_out_endpoint != 0x01U ||
-        device.interrupt_in_endpoint != 0x81U) return 10;
+        device.interrupt_in_endpoint != 0x81U) return 11;
     if (ehci_get_device(pci.bus, pci.device, pci.function, 1U, &device) !=
-        ERR_INVALID) return 11;
-    if (ehci_validate_state(pci.bus, pci.device, pci.function) != OK) return 12;
-    if (ehci_poll(0U, &processed) != OK || processed != 0U) return 13;
+        ERR_INVALID) return 12;
+    if (ehci_validate_state(pci.bus, pci.device, pci.function) != OK) return 13;
+    if (ehci_poll(0U, &processed) != OK || processed != 0U) return 14;
     if (ehci_get_status(pci.bus, pci.device, pci.function, &status) != OK) {
-        return 14;
+        return 15;
     }
-    if (status.irq_pending != 1U || status.irq_events != 1U) return 14;
+    if (status.irq_pending != 1U || status.irq_events != 1U) return 15;
 
     kmemset(buffer, 0, sizeof(buffer));
     if (ehci_control_request(&device, 0x80U, HOST_REQUEST_GET_DESCRIPTOR,
