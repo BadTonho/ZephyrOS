@@ -337,6 +337,7 @@ static const char* blackbox_marker(const char* case_id, uint32_t case_length) {
     static const char sec6_classic_case[] = "qemu:tst5:sec6-classic";
     static const char sec6_diagnostics_case[] = "qemu:tst5:sec6-diagnostics";
     static const char hw6_diagnostics_case[] = "qemu:tst5:hw6-diagnostics";
+    static const char shell1_case[] = "qemu:tst5:shell1-prompt-lifecycle";
 
     if (blackbox_equals(case_id, case_length, shell_case)) return "tst5-shell";
     if (blackbox_equals(case_id, case_length, input_case)) return "tst5-input";
@@ -373,6 +374,9 @@ static const char* blackbox_marker(const char* case_id, uint32_t case_length) {
     }
     if (blackbox_equals(case_id, case_length, hw6_diagnostics_case)) {
         return "hw6-diagnostics";
+    }
+    if (blackbox_equals(case_id, case_length, shell1_case)) {
+        return "shell1-prompt-lifecycle";
     }
     return 0;
 }

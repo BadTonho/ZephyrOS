@@ -2,6 +2,9 @@
 
 ## Estado
 
+SHELL1 concluido e validado. As fases seguintes desta frente continuam
+planejadas.
+
 Planejado. Esta frente fecha a experiência básica de uso do ZephyrOS depois
 que kernel, segurança, Storage e hardware estiverem com contratos estáveis.
 Simple continua sendo fallback obrigatório; Classic é a interface principal
@@ -41,14 +44,14 @@ ou ferramentas de programação.
 
 ### SHELL1 — Dispatcher e ciclo de vida
 
-- [ ] Mapear cada comando, subcomando, argumento, retorno, job, cena e
+- [x] Mapear cada comando, subcomando, argumento, retorno, job, cena e
   requisito de foco.
-- [ ] Garantir que parsing inválido retorne uso correto, `LOG_WARN` e prompt.
-- [ ] Garantir prompt único após sucesso, erro, cancelamento, timeout, crash de
+- [x] Garantir que parsing inválido retorne uso correto, `LOG_WARN` e prompt.
+- [x] Garantir prompt único após sucesso, erro, cancelamento, timeout, crash de
   aplicativo, fechamento de cena e dispositivo ausente.
-- [ ] Reproduzir e corrigir o caso em que uma execução deixa a tela vazia sem
+- [x] Reproduzir e corrigir o caso em que uma execução deixa a tela vazia sem
   devolver `zephyr>`.
-- [ ] Validar `F12`, `Ctrl+C`, histórico, edição, rolagem e reentrada sem
+- [x] Validar `F12`, `Ctrl+C`, histórico, edição, rolagem e reentrada sem
   descritores, jobs ou callbacks residuais.
 
 ### SHELL2 — Comandos básicos e diagnóstico
@@ -153,3 +156,21 @@ O agente não executará build, testes ou QEMU. O usuário deverá percorrer os
 comandos e aplicativos desta frente na matriz Simple/Classic, incluindo o
 cenário de prompt ausente, cancelamento, erro, atualização remota e retorno ao
 Shell, registrando cada resultado.
+
+### Validacao SHELL1
+
+O conjunto deterministico da etapa e:
+
+```text
+make q3check
+make clean
+make
+make test-shell1-host
+make catalog-test
+make test-shell1-qemu SHELL1_QEMU_WORKERS=4 SHELL1_QEMU_SEED=2201
+```
+
+A implementacao usa estado privado central (`HIDDEN`, `REQUESTED`, `VISIBLE` e
+`BLOCKED`) e geracao de renderizacao para reconciliar o prompt de forma
+idempotente. O caso dedicado `qemu:shell1:prompt-lifecycle` complementa as
+regressoes de Shell, entrada, aplicativos e SEC6 Simple/Classic.

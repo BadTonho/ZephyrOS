@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "apps/shell.h"
 #include "apps/shell_input.h"
@@ -56,6 +57,10 @@ static uint32_t fake_terminal_scroll_calls;
 static uint32_t fake_prompt_calls;
 static uint32_t fake_terminal_begin_calls;
 static uint32_t fake_taskbar_draw_calls;
+static shell_input_event_t fake_input_event;
+static int fake_dispatch_result;
+static uint32_t fake_dispatch_calls;
+static char fake_input_buffer[64];
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -126,6 +131,10 @@ static void reset_fixture(void) {
     fake_prompt_calls = 0U;
     fake_terminal_begin_calls = 0U;
     fake_taskbar_draw_calls = 0U;
+    fake_input_event = SHELL_INPUT_EVENT_NONE;
+    fake_dispatch_result = OK;
+    fake_dispatch_calls = 0U;
+    fake_input_buffer[0] = '\0';
 }
 
 void log_print(log_level_t level, const char* module, const char* message) {
@@ -152,11 +161,13 @@ void shell_diagnostics_reset(void) {
 
 void shell_input_reset(void) {
     fake_input_reset_calls++;
+    fake_input_event = SHELL_INPUT_EVENT_NONE;
+    fake_input_buffer[0] = '\0';
 }
 
 void shell_input_print_prompt(uint8_t wm_active) {
     (void)wm_active;
-    fake_prompt_calls++;
+    if (fake_terminal_active) fake_prompt_calls++;
 }
 
 int video_terminal_is_active(void) {
@@ -165,6 +176,7 @@ int video_terminal_is_active(void) {
 
 void video_terminal_suspend(void) {
     fake_terminal_suspend_calls++;
+    fake_terminal_active = 0;
 }
 
 int video_terminal_scroll(int lines) {
@@ -175,6 +187,7 @@ int video_terminal_scroll(int lines) {
 
 void video_terminal_begin(void) {
     fake_terminal_begin_calls++;
+    fake_terminal_active = 1;
 }
 
 desktop_mode_t desktop_get_mode(void) {
@@ -190,6 +203,10 @@ void desktop_draw(void) {
 
 int wm_is_active(void) {
     return fake_wm_active;
+}
+
+int wm_is_hosted_app_focused(wm_app_type_t app_type) {
+    return fake_hosted_visible && app_type == WM_APP_SHELL;
 }
 
 void wm_draw_all(void) {
@@ -261,7 +278,7 @@ void shell_input_resume_terminal(uint8_t wm_active) {
 }
 
 const char* shell_input_get_buffer(void) {
-    return "";
+    return fake_input_buffer;
 }
 
 shell_input_event_t shell_input_handle_key(uint8_t scancode,
@@ -270,7 +287,9 @@ shell_input_event_t shell_input_handle_key(uint8_t scancode,
     (void)scancode;
     (void)wm_active;
     (void)input_blocked;
-    return SHELL_INPUT_EVENT_NONE;
+    shell_input_event_t event = fake_input_event;
+    fake_input_event = SHELL_INPUT_EVENT_NONE;
+    return event;
 }
 
 void shell_input_cancel_extended(void) {
@@ -436,7 +455,8 @@ const char* process_signal_name(uint32_t signal_number) {
 
 int shell_dispatch_execute(const char* input) {
     (void)input;
-    return OK;
+    fake_dispatch_calls++;
+    return fake_dispatch_result;
 }
 
 int shell_hosted_open(void) {
@@ -484,7 +504,24 @@ static int test_terminal_lifecycle(void) {
     shell_runtime_suspend_terminal();
     if (fake_terminal_suspend_calls != 1U) return 6;
     shell_runtime_finish_command();
-    if (fake_input_reset_calls != 1U || fake_prompt_calls != 1U) return 7;
+    if (fake_input_reset_calls != 2U || fake_prompt_calls != 0U) return 7;
+    fake_terminal_active = 1;
+    shell_runtime_resume_terminal();
+    if (fake_prompt_calls != 1U) return 8;
+    return 0;
+}
+
+static int test_prompt_lifecycle(void) {
+    reset_fixture();
+    shell_init();
+    fake_terminal_active = 1;
+    strcpy(fake_input_buffer, "comando-invalido");
+    fake_input_event = SHELL_INPUT_EVENT_COMMAND_READY;
+    fake_dispatch_result = ERR_INVALID;
+    shell_runtime_handle_terminal_key(0U);
+    if (fake_dispatch_calls != 1U || fake_prompt_calls != 1U) return 9;
+    shell_print_prompt();
+    if (fake_prompt_calls != 1U) return 10;
     return 0;
 }
 
@@ -505,6 +542,7 @@ int main(void) {
     coverage_active = 1U;
     if (!result) result = test_init_and_mouse();
     if (!result) result = test_terminal_lifecycle();
+    if (!result) result = test_prompt_lifecycle();
     if (!result) result = test_redraw_fallback();
     coverage_active = 0U;
     coverage_emit(result);

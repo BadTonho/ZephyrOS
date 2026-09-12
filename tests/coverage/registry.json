@@ -429,6 +429,31 @@
         "STOPPED"
       ],
       "artifact_schema": "zephyros-qemu-parallel-result-v1"
+    },
+    "shell1_prompt_lifecycle": {
+      "case_ids": [
+        "qemu:shell1:prompt-lifecycle"
+      ],
+      "guest_cases": [
+        "qemu:tst5:shell1-prompt-lifecycle"
+      ],
+      "profiles": [
+        "baseline"
+      ],
+      "tags": [
+        "shell1",
+        "prompt",
+        "lifecycle"
+      ],
+      "workers_default": 4,
+      "seed_default": 2201,
+      "statuses": [
+        "PASS",
+        "FAIL",
+        "BLOCKED",
+        "STOPPED"
+      ],
+      "artifact_schema": "zephyros-qemu-parallel-result-v1"
     }
   },
   "entries": [
@@ -8870,6 +8895,89 @@
           "vga",
           "network-e1000"
         ]
+      }
+    },
+    {
+      "id": "shell1-prompt-lifecycle-qemu",
+      "domain": "shell-interface",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:shell1:prompt-lifecycle"
+      ],
+      "surface_ids": [
+        "c:src/shell/shell.c:shell_print_prompt",
+        "c:src/shell/shell.c:shell_runtime_finish_command",
+        "c:src/shell/shell.c:shell_runtime_handle_terminal_key",
+        "c:src/shell/shell.c:shell_runtime_resume_terminal"
+      ],
+      "include_public_apis": true,
+      "evidence": "Caso QEMU SHELL1 para sucesso, erro, cancelamento, job, cena e reentrada com prompt unico",
+      "case_definition": {
+        "id": "qemu:shell1:prompt-lifecycle",
+        "scenario": "Ciclo de vida do prompt apos sucesso, erro, cancelamento e cena",
+        "owner": "quality",
+        "layer": "qemu",
+        "executor": "qemu",
+        "profile": "smoke",
+        "guest_case": "qemu:tst5:shell1-prompt-lifecycle",
+        "qemu_profile": "baseline",
+        "required_capabilities": [],
+        "timeout_seconds": 120,
+        "heartbeat_timeout_seconds": 20,
+        "isolation": "snapshot",
+        "parameters": {
+          "protocol": "ZTEST/1",
+          "input": "qmp-keyboard",
+          "postcondition": "prompt-recovered"
+        },
+        "preconditions": "imagem pronta, Shell inicializado e teclado virtual disponivel",
+        "action": "executar comandos validos, invalidos, cancelados, um job e retornar de uma cena",
+        "expected": "cada operacao retorna ao prompt uma unica vez e a entrada permanece disponivel",
+        "errors": "prompt ausente ou duplicado, entrada presa, job residual, timeout ou QEMU",
+        "effects": "somente texto e estado da sessao no snapshot",
+        "cleanup": "encerrar QEMU e preservar serial, QMP e resultado",
+        "status": "AUTOMATED",
+        "surface_ids": [
+          "c:src/shell/shell.c:shell_print_prompt",
+          "c:src/shell/shell.c:shell_runtime_finish_command",
+          "c:src/shell/shell.c:shell_runtime_handle_terminal_key",
+          "c:src/shell/shell.c:shell_runtime_resume_terminal"
+        ],
+        "tags": [
+          "qemu",
+          "shell",
+          "shell1",
+          "prompt",
+          "lifecycle",
+          "tst5"
+        ],
+        "interaction": {
+          "mode": "qmp-keyboard",
+          "steps": [
+            {"op": "key", "key": "meta_l"},
+            {"op": "key", "key": "down"},
+            {"op": "key", "key": "enter"},
+            {"op": "text", "text": "echo shell1-success"},
+            {"op": "key", "key": "enter"},
+            {"op": "text", "text": "shell1-comando-invalido"},
+            {"op": "key", "key": "enter"},
+            {"op": "text", "text": "echo shell1-cancelado"},
+            {"op": "keys", "keys": ["ctrl", "c"]},
+            {"op": "text", "text": "health check"},
+            {"op": "key", "key": "enter"},
+            {"op": "wait", "seconds": 2},
+            {"op": "text", "text": "settings"},
+            {"op": "key", "key": "enter"},
+            {"op": "wait", "seconds": 1},
+            {"op": "keys", "keys": ["alt", "f4"]},
+            {"op": "wait", "seconds": 1},
+            {"op": "text", "text": "echo shell1-prompt-lifecycle"},
+            {"op": "key", "key": "enter"}
+          ],
+          "post_action": {"type": "none", "steps": []}
+        }
       }
     }
   ]

@@ -57,6 +57,19 @@ de fixtures devem ser executados antes dos testes que dependem de suas
 imagens. `package-test` e `update-test` executam os self-tests das ferramentas
 de empacotamento e atualizacao.
 
+## SHELL1 — dispatcher e ciclo de vida do prompt
+
+```text
+make test-shell1-host
+make test-shell1-qemu SHELL1_QEMU_WORKERS=4 SHELL1_QEMU_SEED=2201
+make test-shell1
+```
+
+O agregado host cobre sucesso, erro do dispatcher, cancelamento, retry quando
+o terminal estava indisponivel, historico, entrada, jobs, cenas e o observer
+black-box. O caso QEMU `qemu:shell1:prompt-lifecycle` usa snapshot independente
+e confirma retorno unico ao prompt e reentrada.
+
 ## STO1 — invariantes de Storage
 
 ```text

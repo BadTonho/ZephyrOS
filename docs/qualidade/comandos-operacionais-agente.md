@@ -663,6 +663,16 @@ hardware ou GUI real. O relatorio fica em
 make test-shell-core-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
 ```
 
+O agregado `test-shell1-host` combina o ciclo central, entrada hospedada,
+jobs, dispatcher e observer black-box com a matriz `test_shell1_matrix.py`.
+Ele valida a reconciliacao privada do prompt apos sucesso, erro,
+cancelamento, retry de terminal e retorno de cena. Para a matriz QEMU:
+
+```text
+make test-shell1-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+make test-shell1-qemu SHELL1_QEMU_WORKERS=4 SHELL1_QEMU_SEED=2201
+```
+
 O caso `test-usb-transport-host` exercita o despachante de transporte USB com
 backends EHCI e UHCI falsos. A fixture cobre argumentos nulos, controlador
 desconhecido, encaminhamento de controle, Bulk, toggles e Interrupt, sem

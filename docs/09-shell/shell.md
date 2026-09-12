@@ -138,6 +138,20 @@ zephyr> _
 
 O prompt é verde (`0x0A`) e aparece após cada comando.
 
+### Ciclo de vida do prompt (SHELL1)
+
+`shell.c` mantém o estado privado do prompt em quatro estados:
+`HIDDEN`, `REQUESTED`, `VISIBLE` e `BLOCKED`. A reconciliação ocorre depois
+do dispatcher, de cancelamentos `Ctrl+C`/`F12`/`Esc`, da conclusão ou falha de
+jobs, do retorno de cenas e aplicativos e da reabertura do terminal Classic ou
+Simple.
+
+Cada limpeza, suspensão ou recriação do terminal invalida a geração anterior.
+Uma nova geração só publica `zephyr>` quando o terminal está disponível e em
+foco; chamadas repetidas são idempotentes e não duplicam o prompt. Quando o
+terminal está temporariamente indisponível, o estado permanece solicitado e a
+retomada executa uma nova tentativa controlada.
+
 ### Diagnosticos de armazenamento
 
 Os comandos `blkstat`, `cachestat`, `cache clear`, `sync` e `blkcheck` passam pela tabela

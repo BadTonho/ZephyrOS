@@ -7376,3 +7376,27 @@ dívida.
   QEMU residual. A tabela publica de suporte por perfil foi atualizada.
   Hardware fisico continua `PENDING`; `DT100-003`, `DT100-004` e a divida
   fisica do PS/2 permanecem separadas.
+
+- SHELL1 - dispatcher e ciclo de vida do Shell - implementacao e validacao
+  concluida em 2026-09-12 (America/Sao_Paulo). O Shell passou a reconciliar o
+  prompt por estado privado e geracao de terminal, cobrindo `HIDDEN`,
+  `REQUESTED`, `VISIBLE` e `BLOCKED`. Sucesso, erro do dispatcher,
+  cancelamento, retry de terminal indisponivel, retorno de cena e reentrada
+  agora convergem para um unico prompt sem alterar `shell.h`, ABI, syscalls ou
+  codigos de erro.
+
+  Passaram `make q3check` com `DT100-003 ACEITA`, `make clean`, `make`,
+  `make test-shell1-host` e `make catalog-test`. O host cobriu Shell core,
+  input, hosted, jobs, dispatcher, black-box e `test_shell1_matrix.py`; o
+  catalogo validou 7.675 superficies e 190 casos.
+
+  A matriz `make test-shell1-qemu SHELL1_QEMU_WORKERS=4
+  SHELL1_QEMU_SEED=2201` passou 6/6 casos no run
+  `qpp-20260912T181719Z-31064`, incluindo
+  `qemu:shell1:prompt-lifecycle`, Shell, apps, input e SEC6 Simple/Classic.
+  Os artefatos foram preservados em
+  `build/test-results/shell1/qpp-20260912T181719Z-31064/`; nenhum processo
+  QEMU ficou residual. `DT100-003`, `DT100-004` e a dívida física do PS/2
+  permanecem separadas.
+
+  Estado: SHELL1 `PASS`.

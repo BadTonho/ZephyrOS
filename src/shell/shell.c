@@ -22,10 +22,63 @@
 #include "ui/wm.h"
 #define SHELL_WHEEL_SCROLL_LINES 3
 
+typedef enum {
+    SHELL_PROMPT_STATE_HIDDEN = 0,
+    SHELL_PROMPT_STATE_REQUESTED,
+    SHELL_PROMPT_STATE_VISIBLE,
+    SHELL_PROMPT_STATE_BLOCKED
+} shell_prompt_state_t;
+
 static void process_input(void);
 static int shell_should_show_prompt(void);
+static void shell_prompt_request(void);
+static void shell_prompt_reconcile(void);
+static void shell_prompt_hide(void);
+
+static shell_prompt_state_t shell_prompt_state = SHELL_PROMPT_STATE_HIDDEN;
+static uint32_t shell_prompt_epoch;
+static uint32_t shell_prompt_rendered_epoch;
+static uint32_t shell_prompt_warned_epoch;
+
+static void shell_prompt_hide(void) {
+    shell_prompt_state = SHELL_PROMPT_STATE_HIDDEN;
+    shell_prompt_epoch++;
+    if (!shell_prompt_epoch) shell_prompt_epoch = 1U;
+}
+
+static void shell_prompt_request(void) {
+    if (shell_prompt_state != SHELL_PROMPT_STATE_VISIBLE) {
+        shell_prompt_state = SHELL_PROMPT_STATE_REQUESTED;
+    }
+}
+
+static void shell_prompt_reconcile(void) {
+    if (!shell_should_show_prompt()) {
+        shell_prompt_state = SHELL_PROMPT_STATE_BLOCKED;
+        return;
+    }
+    if (shell_prompt_state == SHELL_PROMPT_STATE_VISIBLE &&
+        shell_prompt_rendered_epoch == shell_prompt_epoch) return;
+    if (shell_prompt_state == SHELL_PROMPT_STATE_VISIBLE) {
+        shell_prompt_state = SHELL_PROMPT_STATE_REQUESTED;
+    }
+
+    shell_input_print_prompt(wm_is_active());
+    if (!video_terminal_is_active()) {
+        shell_prompt_state = SHELL_PROMPT_STATE_REQUESTED;
+        if (shell_prompt_warned_epoch != shell_prompt_epoch) {
+            shell_prompt_warned_epoch = shell_prompt_epoch;
+            LOG_WARN("SHELL", "Prompt pendente; terminal ainda indisponivel");
+        }
+        return;
+    }
+    shell_prompt_rendered_epoch = shell_prompt_epoch;
+    shell_prompt_state = SHELL_PROMPT_STATE_VISIBLE;
+}
+
 void shell_runtime_reset_input(void) {
     shell_input_reset();
+    shell_prompt_hide();
 }
 
 int shell_handle_mouse(mouse_event_t* event) {
@@ -40,8 +93,12 @@ int shell_handle_mouse(mouse_event_t* event) {
 
 
 void shell_runtime_suspend_terminal(void) {
-    /* O prompt continua no historico enquanto outro app cobre o terminal. */
-    if (video_terminal_is_active()) video_terminal_suspend();
+    if (video_terminal_is_active()) {
+        shell_runtime_reset_input();
+        video_terminal_suspend();
+        return;
+    }
+    shell_prompt_hide();
 }
 
 void shell_runtime_suspend_terminal_for_scene(void) {
@@ -52,6 +109,10 @@ void shell_runtime_suspend_terminal_for_scene(void) {
 
 void shell_runtime_resume_terminal(void) {
     shell_input_resume_terminal(wm_is_active());
+    if (video_terminal_is_active() &&
+        shell_prompt_state == SHELL_PROMPT_STATE_REQUESTED) {
+        shell_prompt_reconcile();
+    }
 }
 
 
@@ -250,12 +311,13 @@ static void shell_redraw_after_overlay_close(void) {
     /* Menus desenham por coordenadas e nao pertencem ao historico textual. */
     video_terminal_begin();
     taskbar_draw();
-    if (shell_should_show_prompt()) shell_print_prompt();
+    shell_runtime_finish_command();
 }
 
 void shell_runtime_finish_command(void) {
     shell_runtime_reset_input();
-    if (shell_should_show_prompt()) shell_print_prompt();
+    shell_prompt_request();
+    shell_prompt_reconcile();
 }
 
 
@@ -325,6 +387,10 @@ void shell_report_app_loader_result(void) {
 
 
 void shell_init(void) {
+    shell_prompt_state = SHELL_PROMPT_STATE_HIDDEN;
+    shell_prompt_epoch = 0U;
+    shell_prompt_rendered_epoch = 0U;
+    shell_prompt_warned_epoch = 0U;
     shell_input_init();
     shell_job_reset();
     shell_hosted_reset();
@@ -332,12 +398,14 @@ void shell_init(void) {
 }
 
 void shell_print_prompt(void) {
-    shell_input_print_prompt(wm_is_active());
+    shell_prompt_request();
+    shell_prompt_reconcile();
 }
 
 static int shell_should_show_prompt(void) {
     if (shell_runtime_is_hosted_visible()) {
-        return !shell_checks_input_blocked() && !shell_job_input_blocked() &&
+        return wm_is_hosted_app_focused(WM_APP_SHELL) &&
+               !shell_checks_input_blocked() && !shell_job_input_blocked() &&
                !app_loader_is_foreground_active();
     }
 
@@ -354,32 +422,30 @@ static int shell_should_show_prompt(void) {
 
 void shell_update_hosted_terminal(void) {
     shell_hosted_present_progress();
-    if (shell_should_show_prompt()) shell_print_prompt();
+    shell_prompt_reconcile();
 }
 
 static void process_input(void) {
     const char* input = shell_input_get_buffer();
 
     if (!input[0]) {
-        shell_print_prompt();
+        shell_runtime_finish_command();
         return;
     }
 
-    shell_process_command(input);
-
-    shell_runtime_reset_input();
-    if (shell_should_show_prompt()) {
-        shell_print_prompt();
-    }
+    (void)shell_process_command(input);
+    shell_runtime_finish_command();
 }
 
 void shell_runtime_handle_terminal_key(uint8_t scancode) {
     shell_input_event_t event = shell_input_handle_key(
         scancode, wm_is_active(), shell_checks_input_blocked());
-    if (event == SHELL_INPUT_EVENT_COMMAND_READY) process_input();
+    if (event == SHELL_INPUT_EVENT_COMMAND_READY) {
+        shell_prompt_hide();
+        process_input();
+    }
     if (event == SHELL_INPUT_EVENT_CANCELLED) {
-        shell_runtime_reset_input();
-        shell_print_prompt();
+        shell_runtime_finish_command();
     }
 }
 
@@ -436,7 +502,7 @@ void shell_handle_key(uint8_t scancode) {
             wm_set_active(0);
             shell_runtime_reset_input();
             video_terminal_begin();
-            shell_print_prompt();
+            shell_runtime_finish_command();
             taskbar_draw();
         }
         return;
@@ -468,7 +534,7 @@ void shell_handle_key(uint8_t scancode) {
             desktop_set_active(0);
             shell_runtime_reset_input();
             video_terminal_begin();
-            shell_print_prompt();
+            shell_runtime_finish_command();
             taskbar_draw();
             return;
         }
@@ -492,11 +558,17 @@ void shell_handle_key(uint8_t scancode) {
 }
 
 int shell_process_command(const char* input) {
+    int result;
+
     if (!input) {
         LOG_ERROR("SHELL", "Comando nulo recebido");
         return ERR_NULL;
     }
 
     shell_runtime_resume_terminal();
-    return shell_dispatch_execute(input);
+    result = shell_dispatch_execute(input);
+    if (result != OK) {
+        LOG_ERROR("SHELL", "Dispatcher retornou erro");
+    }
+    return result;
 }

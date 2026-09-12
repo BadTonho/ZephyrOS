@@ -10,7 +10,7 @@
 #define HOST_COVERAGE_CAPACITY 96U
 #define HOST_COVERAGE_LINE_SIZE 32U
 #define HOST_TEXT_CAPACITY 768U
-#define HOST_CASE_COUNT 14U
+#define HOST_CASE_COUNT 15U
 
 typedef enum {
     HOST_TERMINAL_NORMAL,
@@ -217,7 +217,8 @@ static int check_valid_cases(void) {
         {"qemu:tst5:sec6-simple", "sec6-simple"},
         {"qemu:tst5:sec6-classic", "sec6-classic"},
         {"qemu:tst5:sec6-diagnostics", "sec6-diagnostics"},
-        {"qemu:tst5:hw6-diagnostics", "hw6-diagnostics"}
+        {"qemu:tst5:hw6-diagnostics", "hw6-diagnostics"},
+        {"qemu:tst5:shell1-prompt-lifecycle", "shell1-prompt-lifecycle"}
     };
     kernel_tests_runtime_t runtime;
 
@@ -225,9 +226,8 @@ static int check_valid_cases(void) {
     runtime.context = 0;
     runtime.report_phase = fake_report;
     for (uint32_t index = 0U; index < HOST_CASE_COUNT; index++) {
-        host_terminal_mode_t mode = index == HOST_CASE_COUNT - 1U ?
-                                    HOST_TERMINAL_HW6 :
-                                    index == HOST_CASE_COUNT - 2U ?
+        host_terminal_mode_t mode = index == 13U ? HOST_TERMINAL_HW6 :
+                                    (index >= 10U && index <= 12U) ?
                                     HOST_TERMINAL_SEC6 :
                                     index == 9U ? HOST_TERMINAL_KRN6 :
                                     HOST_TERMINAL_NORMAL;
