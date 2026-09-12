@@ -44,6 +44,7 @@ static app_remote_entry_t fixture_remote_entries[APP_REMOTE_MAX_ENTRIES];
 static uint32_t fixture_remote_count;
 static int fixture_remote_operation_result;
 static process_t fixture_worker_process;
+static uint32_t fixture_worker_stack_size;
 
 static void __attribute__((no_instrument_function)) coverage_record(
     void* function) {
@@ -346,6 +347,16 @@ int recovery_mark_disabled(recovery_component_id_t component, int error,
 process_t* process_create(const char* name, void (*entry_point)()) {
     (void)name;
     (void)entry_point;
+    fixture_worker_stack_size = KERNEL_STACK_SIZE;
+    return &fixture_worker_process;
+}
+
+process_t* process_create_with_stack_size(const char* name,
+                                          void (*entry_point)(),
+                                          uint32_t stack_size) {
+    (void)name;
+    (void)entry_point;
+    fixture_worker_stack_size = stack_size;
     return &fixture_worker_process;
 }
 
@@ -538,6 +549,11 @@ int main(void) {
     result = appstore_host_test_contracts();
     coverage_active = 0U;
     coverage_emit(result);
+    if (result == OK && fixture_worker_stack_size != KERNEL_STACK_SIZE * 4U) {
+        printf("appstore-host: FAIL worker-stack=%u\n",
+               fixture_worker_stack_size);
+        return 1;
+    }
     if (result != OK) {
         printf("appstore-host: FAIL code=%d\n", result);
         return 1;

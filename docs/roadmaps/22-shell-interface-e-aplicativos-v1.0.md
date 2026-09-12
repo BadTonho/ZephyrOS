@@ -2,9 +2,9 @@
 
 ## Estado
 
-SHELL1, SHELL2 e SHELL3 concluidos e validados; SHELL4 permanece planejado.
+SHELL1, SHELL2, SHELL3 e SHELL4 concluidos e validados; SHELL5 permanece planejado.
 
-Planejado. Esta frente fecha a experiência básica de uso do ZephyrOS depois
+Esta frente fecha a experiência básica de uso do ZephyrOS depois
 que kernel, segurança, Storage e hardware estiverem com contratos estáveis.
 Simple continua sendo fallback obrigatório; Classic é a interface principal
 quando seus recursos estiverem disponíveis.
@@ -84,14 +84,14 @@ ou ferramentas de programação.
 
 ### SHELL4 — Aplicativos e pacotes
 
-- [ ] Validar instalação, execução, remoção e rollback de pacotes locais.
-- [ ] Validar catálogo, dependências, assinatura, versão, caminho e limite de
+- [x] Validar instalação, execução, remoção e rollback de pacotes locais.
+- [x] Validar catálogo, dependências, assinatura, versão, caminho e limite de
   arquivos antes de qualquer efeito persistente.
-- [ ] Confirmar que aplicativo ring 3 com falha seja encerrado sem derrubar o
+- [x] Confirmar que aplicativo ring 3 com falha seja encerrado sem derrubar o
   Shell, o Desktop ou o kernel.
-- [ ] Preservar Shell como fallback quando App Store, GUI ou rede estiverem
+- [x] Preservar Shell como fallback quando App Store, GUI ou rede estiverem
   indisponíveis.
-- [ ] Validar atualização remota de aplicativos sem confundir seu estado com
+- [x] Validar atualização remota de aplicativos sem confundir seu estado com
   atualização do sistema operacional.
 
 ### SHELL5 — Atualização do sistema
@@ -219,3 +219,31 @@ validado e a matriz QEMU passou 15/15 casos com 4 workers e seed 2203.
 Os comandos CLI `mkdir`, `rm`, `mv` e `cp` permanecem registrados como
 `DT100-005`; as operacoes equivalentes continuam disponiveis pelo Explorer e
 pelas APIs existentes de FS/VFS.
+
+### Validacao SHELL4
+
+O conjunto deterministico da etapa e:
+
+```text
+make q3check
+make clean && make
+make test-shell4-host
+make catalog-test
+make test-shell4-qemu SHELL4_QEMU_WORKERS=4 SHELL4_QEMU_SEED=2204
+```
+
+O caso dedicado `qemu:shell4:apps-packages` cobre verificacao, instalacao,
+execucao, atualizacao, remocao, rollback, historico, catalogo, App Store,
+falha controlada de aplicativo, pacotes nao confiaveis, cancelamento,
+reentrada e retorno ao prompt. As mutacoes ficam restritas ao snapshot
+descartavel. A confianca ZPKG v2 continua obrigatoria para instalar, atualizar
+e executar; pacotes v1 permanecem disponiveis somente para inspecao e
+remocao. A limitacao de fixtures remotas assinadas por chave privada externa
+continua registrada como `DT100-003`.
+
+A etapa foi concluida e validada em 2026-09-12. O worker da App Store passou a
+usar stack interna de 16 KiB depois que a matriz reproduziu overflow de canario
+durante o caso dedicado. O agregado host, o catalogo e a matriz QEMU passaram;
+o run `qpp-20260912T200700Z-22188` concluiu 4/4 casos com 4 workers e seed
+2204, sem timeout ou processo QEMU residual. `DT100-003`, `DT100-004` e
+`DT100-005` permanecem separadas.

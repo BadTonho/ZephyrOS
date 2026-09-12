@@ -7448,3 +7448,26 @@ dívida.
   disponiveis pelo Explorer e pelas APIs existentes de FS/VFS.
 
   Estado: SHELL3 `PASS`.
+
+- SHELL4 - aplicativos e pacotes - implementacao registrada em
+  2026-09-12 16:54:22 -03:00 (America/Sao_Paulo). Foi adicionado o caso
+  `qemu:shell4:apps-packages`, com observacao black-box para `pkg`, `store`,
+  `app run APPS/...`, confianca ZPKG v2, falha controlada de aplicativo,
+  fallback da App Store e retorno ao prompt. A tag `shell4` reutiliza os
+  casos existentes de aplicativos, falhas de pacotes e stress de aplicativos
+  em snapshots independentes. Foram adicionados os agregados dos Makefiles,
+  a matriz host-only, o registro de regressao e os vinculos reversos do
+  catalogo. A primeira matriz QEMU reproduziu overflow do canario do processo
+  `App Store Worker` durante o fluxo dedicado. O worker foi corrigido para
+  usar stack interna de 16 KiB, com assercao host-only direta; o caso passou
+  na segunda execucao. A limitacao de fixtures remotas que exige chave privada
+  externa continua registrada como `DT100-003`; `DT100-004` e `DT100-005`
+  permanecem separadas.
+
+  Em 2026-09-12 17:08:43 -03:00 (America/Sao_Paulo), passaram `make q3check`,
+  `make clean`, `make`, `make test-shell4-host` e `make catalog-test`. A
+  matriz `make test-shell4-qemu SHELL4_QEMU_WORKERS=4
+  SHELL4_QEMU_SEED=2204` passou 4/4 casos no run
+  `qpp-20260912T200700Z-22188`, incluindo o caso dedicado, com artefatos em
+  `build/test-results/shell4/qpp-20260912T200700Z-22188/`; não houve timeout
+  nem processo QEMU residual. Estado: SHELL4 `PASS`.

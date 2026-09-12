@@ -700,6 +700,21 @@ Os resultados ficam em `build/test-results/shell3/`. O caso dedicado usa a tag
 redirecionamento, `grep`, `index`, `search`, `storage`, Explorer e as cenas de
 administracao com retorno ao Shell.
 
+O agregado `test-shell4-host` cobre os contratos diretamente afetados de
+pacotes, loader, catalogo, App Store, remoto, comandos do Shell, jobs e
+black-box:
+
+```text
+make test-shell4-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+make test-shell4-qemu SHELL4_QEMU_WORKERS=4 SHELL4_QEMU_SEED=2204
+```
+
+Os resultados ficam em `build/test-results/shell4/`. O caso dedicado usa a
+tag `shell4`, snapshot descartavel e valida `pkg`, `store`, `app run
+APPS/<ID>/APP.ZAP`, confianca ZPKG v2, rollback, falha de aplicativo e
+retorno ao prompt. Fixtures remotas que dependem de chave privada externa
+continuam limitadas por `DT100-003`.
+
 O caso `test-usb-transport-host` exercita o despachante de transporte USB com
 backends EHCI e UHCI falsos. A fixture cobre argumentos nulos, controlador
 desconhecido, encaminhamento de controle, Bulk, toggles e Interrupt, sem

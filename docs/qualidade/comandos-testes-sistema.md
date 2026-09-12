@@ -578,3 +578,20 @@ com `test_shell3_matrix.py`. A matriz paralela usa a selecao explicita `shell3`,
 snapshots independentes e resultados em `build/test-results/shell3/`. O caso
 `qemu:shell3:files-admin` cobre comandos de arquivos, pipelines,
 redirecionamento, Storage, cenas e retorno ao prompt.
+
+## SHELL4 - aplicativos e pacotes
+
+```text
+make test-shell4-host
+make test-shell4-qemu SHELL4_QEMU_WORKERS=4 SHELL4_QEMU_SEED=2204
+make test-shell4
+```
+
+O agregado host combina os testes de pacotes, loader, catalogo, App Store,
+remoto, comandos `pkg`/`store`/`app`, jobs, black-box e
+`test_shell4_matrix.py`. A matriz paralela usa a tag `shell4`, snapshots
+independentes e resultados em `build/test-results/shell4/`. O caso dedicado
+`qemu:shell4:apps-packages` valida a confianca ZPKG v2, preflight,
+confirmacao, rollback, falha controlada de aplicativo, fallback da App Store
+e retorno ao prompt. A limitacao de fixtures remotas que exige chave privada
+externa permanece visivel como `DT100-003`.

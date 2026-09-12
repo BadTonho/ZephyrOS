@@ -340,6 +340,7 @@ static const char* blackbox_marker(const char* case_id, uint32_t case_length) {
     static const char shell1_case[] = "qemu:tst5:shell1-prompt-lifecycle";
     static const char shell2_case[] = "qemu:tst5:shell2-commands-diagnostics";
     static const char shell3_case[] = "qemu:tst5:shell3-files-admin";
+    static const char shell4_case[] = "qemu:tst5:shell4-apps-packages";
 
     if (blackbox_equals(case_id, case_length, shell_case)) return "tst5-shell";
     if (blackbox_equals(case_id, case_length, input_case)) return "tst5-input";
@@ -385,6 +386,9 @@ static const char* blackbox_marker(const char* case_id, uint32_t case_length) {
     }
     if (blackbox_equals(case_id, case_length, shell3_case)) {
         return "shell3-files-admin";
+    }
+    if (blackbox_equals(case_id, case_length, shell4_case)) {
+        return "shell4-apps-packages";
     }
     return 0;
 }

@@ -49,6 +49,12 @@
       "case_id": "qemu:hw6:diagnostics-repeat",
       "condition": "diagnosticos repetidos preservam estados, causas, impactos, prompt e recursos sem reinicializacao indevida",
       "origin": "docs/roadmaps/21-hardware-rede-e-energia-v1.0.md:HW6"
+    },
+    {
+      "id": "shell4-apps-packages",
+      "case_id": "qemu:shell4:apps-packages",
+      "condition": "pacotes confiaveis e falhas de App Store retornam ao Shell sem residuos nem bypass de confianca",
+      "origin": "docs/roadmaps/22-shell-interface-e-aplicativos-v1.0.md:SHELL4"
     }
   ]
 }

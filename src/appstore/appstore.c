@@ -17,6 +17,8 @@
 #include "ui/taskbar.h"
 #include "ui/wm.h"
 
+#define APPSTORE_WORKER_STACK_SIZE (KERNEL_STACK_SIZE * 4U)
+
 #define APPSTORE_CLASSIC_MIN_WIDTH 640
 #define APPSTORE_CLASSIC_MIN_HEIGHT 420
 #define APPSTORE_CLASSIC_DEFAULT_WIDTH 780
@@ -1669,8 +1671,9 @@ int appstore_init(void) {
         LOG_ERROR("APPSTORE", "Servicos da App Store indisponiveis");
         return ERR_STATE;
     }
-    appstore_worker_process = process_create("App Store Worker",
-                                             appstore_worker_main);
+    appstore_worker_process = process_create_with_stack_size(
+        "App Store Worker", appstore_worker_main,
+        APPSTORE_WORKER_STACK_SIZE);
     if (!appstore_worker_process) {
         recovery_mark_disabled(RECOVERY_COMPONENT_APP_STORE, ERR_MEM,
                                "Worker cooperativo da App Store indisponivel");

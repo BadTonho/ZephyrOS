@@ -605,6 +605,67 @@
         "STOPPED"
       ],
       "artifact_schema": "zephyros-qemu-parallel-result-v1"
+    },
+    "shell4_apps_packages": {
+      "case_ids": [
+        "qemu:shell4:apps-packages",
+        "qemu:tst5:apps",
+        "qemu:tst6:fault:package",
+        "qemu:tst6:stress:apps"
+      ],
+      "guest_cases": [
+        "qemu:tst5:shell4-apps-packages"
+      ],
+      "profiles": [
+        "baseline",
+        "smoke",
+        "tst6"
+      ],
+      "tags": [
+        "shell4",
+        "shell",
+        "apps",
+        "packages",
+        "appstore",
+        "trust",
+        "reentry"
+      ],
+      "required_commands": [
+        "app outputtest fail",
+        "app run APPS/VALID/APP.ZAP shell4",
+        "echo shell4-apps-packages",
+        "pkg info VALID.ZPK",
+        "pkg install VALID.ZPK",
+        "pkg list",
+        "pkg remove VALID",
+        "pkg verify BADCRC.ZPK",
+        "pkg verify VALID.ZPK",
+        "store",
+        "store history VALID",
+        "store info VALID",
+        "store install NEEDSDEP",
+        "store install VALID",
+        "store list",
+        "store remote check",
+        "store remote list",
+        "store remote status",
+        "store remove VALID",
+        "store rollback VALID",
+        "store run VALID shell4",
+        "store status",
+        "store update VALID"
+      ],
+      "workers_default": 4,
+      "seed_default": 2204,
+      "artifact_directory": "build/test-results/shell4",
+      "network_policy": "offline-restricted",
+      "statuses": [
+        "PASS",
+        "FAIL",
+        "BLOCKED",
+        "STOPPED"
+      ],
+      "artifact_schema": "zephyros-qemu-parallel-result-v1"
     }
   },
   "entries": [
@@ -9906,6 +9967,653 @@
             {
               "op": "text",
               "text": "echo shell3-files-admin"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            }
+          ],
+          "post_action": {
+            "type": "none",
+            "steps": []
+          }
+        }
+      }
+    },
+    {
+      "id": "shell4-apps-packages-qemu",
+      "domain": "shell-interface",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:shell4:apps-packages"
+      ],
+      "surface_ids": [
+        "api:src/include/apps/shell.h:shell_handle_app_request",
+        "api:src/include/apps/shell.h:shell_handle_key",
+        "api:src/include/apps/shell.h:shell_handle_mouse",
+        "api:src/include/apps/shell.h:shell_init",
+        "api:src/include/apps/shell.h:shell_print_prompt",
+        "api:src/include/apps/shell.h:shell_process_command",
+        "api:src/include/apps/shell.h:shell_report_app_loader_result",
+        "api:src/include/apps/shell.h:shell_report_user_test_result",
+        "api:src/include/apps/shell.h:shell_update_hosted_terminal",
+        "api:src/include/apps/shell_dispatch.h:shell_dispatch_execute",
+        "api:src/include/apps/shell_input.h:shell_input_cancel_extended",
+        "api:src/include/apps/shell_input.h:shell_input_get_buffer",
+        "api:src/include/apps/shell_input.h:shell_input_handle_key",
+        "api:src/include/apps/shell_input.h:shell_input_init",
+        "api:src/include/apps/shell_input.h:shell_input_print_prompt",
+        "api:src/include/apps/shell_input.h:shell_input_reset",
+        "api:src/include/apps/shell_input.h:shell_input_reset_modifiers",
+        "api:src/include/apps/shell_input.h:shell_input_resume_terminal",
+        "api:src/include/apps/shell_job.h:shell_dispatch_cmd_job",
+        "api:src/include/apps/shell_job.h:shell_job_cancel_requested",
+        "api:src/include/apps/shell_job.h:shell_job_clear_next_wake",
+        "api:src/include/apps/shell_job.h:shell_job_clear_timeout",
+        "api:src/include/apps/shell_job.h:shell_job_generation_matches",
+        "api:src/include/apps/shell_job.h:shell_job_get_generation",
+        "api:src/include/apps/shell_job.h:shell_job_get_status",
+        "api:src/include/apps/shell_job.h:shell_job_get_wait_timeout",
+        "api:src/include/apps/shell_job.h:shell_job_handle_key",
+        "api:src/include/apps/shell_job.h:shell_job_input_blocked",
+        "api:src/include/apps/shell_job.h:shell_job_is_active",
+        "api:src/include/apps/shell_job.h:shell_job_kind_name",
+        "api:src/include/apps/shell_job.h:shell_job_note_stale_event",
+        "api:src/include/apps/shell_job.h:shell_job_poll",
+        "api:src/include/apps/shell_job.h:shell_job_pump_events",
+        "api:src/include/apps/shell_job.h:shell_job_request_cancel",
+        "api:src/include/apps/shell_job.h:shell_job_reset",
+        "api:src/include/apps/shell_job.h:shell_job_set_deadline",
+        "api:src/include/apps/shell_job.h:shell_job_set_next_wake",
+        "api:src/include/apps/shell_job.h:shell_job_set_phase",
+        "api:src/include/apps/shell_job.h:shell_job_set_progress",
+        "api:src/include/apps/shell_job.h:shell_job_set_timeout",
+        "api:src/include/apps/shell_job.h:shell_job_start",
+        "api:src/include/apps/shell_job.h:shell_job_state_name",
+        "api:src/include/apps/shell_runtime.h:shell_hosted_open",
+        "api:src/include/apps/shell_runtime.h:shell_hosted_present_progress",
+        "api:src/include/apps/shell_runtime.h:shell_hosted_reset",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_finish_command",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_reset_input",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal",
+        "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal_for_scene",
+        "api:src/include/core/app_loader.h:app_loader_build_launch_info",
+        "api:src/include/core/app_loader.h:app_loader_cancel_foreground",
+        "api:src/include/core/app_loader.h:app_loader_get_foreground_pid",
+        "api:src/include/core/app_loader.h:app_loader_init",
+        "api:src/include/core/app_loader.h:app_loader_is_foreground_active",
+        "api:src/include/core/app_loader.h:app_loader_is_ready",
+        "api:src/include/core/app_loader.h:app_loader_reap_finished",
+        "api:src/include/core/app_loader.h:app_loader_run_file",
+        "api:src/include/core/app_loader.h:app_loader_run_file_with_launch",
+        "api:src/include/core/app_loader.h:app_loader_run_image",
+        "api:src/include/core/app_loader.h:app_loader_set_operation_generation",
+        "api:src/include/core/app_loader.h:app_loader_take_finished_result",
+        "api:src/include/core/app_loader.h:app_loader_validate_image",
+        "api:src/include/core/app_package.h:app_package_action_reason_name",
+        "api:src/include/core/app_package.h:app_package_apply_plan_confirmed",
+        "api:src/include/core/app_package.h:app_package_apply_plan_from_directory_confirmed",
+        "api:src/include/core/app_package.h:app_package_compare_versions",
+        "api:src/include/core/app_package.h:app_package_get_history_count",
+        "api:src/include/core/app_package.h:app_package_get_history_entry",
+        "api:src/include/core/app_package.h:app_package_get_installed_count",
+        "api:src/include/core/app_package.h:app_package_get_installed_info",
+        "api:src/include/core/app_package.h:app_package_get_installed_info_by_id",
+        "api:src/include/core/app_package.h:app_package_get_status",
+        "api:src/include/core/app_package.h:app_package_history_operation_name",
+        "api:src/include/core/app_package.h:app_package_history_outcome_name",
+        "api:src/include/core/app_package.h:app_package_init",
+        "api:src/include/core/app_package.h:app_package_install_confirmed",
+        "api:src/include/core/app_package.h:app_package_install_file",
+        "api:src/include/core/app_package.h:app_package_is_mutation_active",
+        "api:src/include/core/app_package.h:app_package_is_ready",
+        "api:src/include/core/app_package.h:app_package_plan_action_name",
+        "api:src/include/core/app_package.h:app_package_preflight_install",
+        "api:src/include/core/app_package.h:app_package_preflight_plan",
+        "api:src/include/core/app_package.h:app_package_preflight_plan_from_directory",
+        "api:src/include/core/app_package.h:app_package_preflight_remove",
+        "api:src/include/core/app_package.h:app_package_preflight_rollback",
+        "api:src/include/core/app_package.h:app_package_remove",
+        "api:src/include/core/app_package.h:app_package_remove_confirmed",
+        "api:src/include/core/app_package.h:app_package_rollback_confirmed",
+        "api:src/include/core/app_package.h:app_package_run_diagnostics",
+        "api:src/include/core/app_package.h:app_package_run_installed",
+        "api:src/include/core/app_package.h:app_package_test_fail_after",
+        "api:src/include/core/app_package.h:app_package_trust_name",
+        "api:src/include/core/app_package.h:app_package_verify_file",
+        "api:src/include/core/app_package.h:app_package_verify_installed",
+        "api:src/include/ui/appstore.h:appstore_close",
+        "api:src/include/ui/appstore.h:appstore_draw",
+        "api:src/include/ui/appstore.h:appstore_get_mode",
+        "api:src/include/ui/appstore.h:appstore_handle_key",
+        "api:src/include/ui/appstore.h:appstore_handle_mouse",
+        "api:src/include/ui/appstore.h:appstore_init",
+        "api:src/include/ui/appstore.h:appstore_is_open",
+        "api:src/include/ui/appstore.h:appstore_open",
+        "api:src/include/ui/appstore_test.h:appstore_host_test_contracts",
+        "c:src/appstore/appstore.c:appstore_is_open",
+        "c:src/core/app_loader.c:app_loader_is_busy",
+        "c:src/core/app_loader.c:app_loader_is_foreground_active",
+        "c:src/core/app_loader.c:app_loader_reap_active",
+        "c:src/core/app_loader.c:app_loader_reap_finished",
+        "c:src/core/app_loader.c:app_loader_start_pending",
+        "c:src/core/app_loader.c:app_loader_take_finished_result",
+        "c:src/core/app_package.c:app_package_action_fail",
+        "c:src/core/app_package.c:app_package_action_reset",
+        "c:src/core/app_package.c:app_package_evaluate_space",
+        "c:src/core/app_package.c:app_package_get_installed_count",
+        "c:src/core/app_package.c:app_package_get_status",
+        "c:src/core/app_package.c:app_package_header_is_valid",
+        "c:src/core/app_package.c:app_package_is_mutation_active",
+        "c:src/core/app_package.c:app_package_is_ready",
+        "c:src/core/app_package.c:app_package_mutation_begin",
+        "c:src/core/app_package.c:app_package_mutation_end",
+        "c:src/core/app_package.c:app_package_run_diagnostics",
+        "c:src/core/app_package.c:app_package_test_fail_after",
+        "c:src/shell/shell.c:shell_report_app_loader_result",
+        "c:src/shell/shell.c:shell_runtime_handle_terminal_key",
+        "c:src/shell/shell.c:shell_runtime_prepare_filemanager",
+        "c:src/shell/shell.c:shell_runtime_reset_input",
+        "c:src/shell/shell.c:shell_runtime_resume_terminal",
+        "c:src/shell/shell.c:shell_runtime_suspend_terminal_for_scene",
+        "c:src/shell/shell_commands_apps.c:shell_dispatch_cmd_explorer",
+        "c:src/shell/shell_commands_apps.c:shell_dispatch_cmd_settings",
+        "c:src/shell/shell_commands_apps.c:shell_dispatch_cmd_taskmgr",
+        "c:src/shell/shell_dispatch.c:shell_dispatch_execute",
+        "c:src/shell/shell_hosted.c:shell_runtime_is_hosted_visible",
+        "c:src/shell/shell_input.c:shell_input_cancel_extended",
+        "c:src/shell/shell_input.c:shell_input_handle_key",
+        "c:src/shell/shell_input.c:shell_input_history_copy",
+        "c:src/shell/shell_input.c:shell_input_history_detach_for_edit",
+        "c:src/shell/shell_input.c:shell_input_history_record",
+        "c:src/shell/shell_input.c:shell_input_history_reset_navigation",
+        "c:src/shell/shell_input.c:shell_input_print_prompt",
+        "c:src/shell/shell_input.c:shell_input_reset",
+        "c:src/shell/shell_input.c:shell_input_reset_modifiers",
+        "c:src/shell/shell_input.c:shell_input_resume_terminal",
+        "c:src/shell/shell_input.c:shell_input_return_to_terminal_tail",
+        "c:src/shell/shell_job.c:shell_job_get_wait_timeout",
+        "c:src/shell/shell_job.c:shell_job_input_blocked",
+        "c:src/shell/shell_job.c:shell_job_is_active",
+        "c:src/shell/shell_job.c:shell_job_poll"
+      ],
+      "include_public_apis": true,
+      "evidence": "Caso QEMU SHELL4 para pacotes, confianca ZPKG, App Store, falha de aplicativo e retorno ao Shell",
+      "case_definition": {
+        "id": "qemu:shell4:apps-packages",
+        "scenario": "Aplicativos, pacotes, App Store e retorno deterministico ao Shell",
+        "owner": "quality",
+        "layer": "qemu",
+        "executor": "qemu",
+        "profile": "smoke",
+        "guest_case": "qemu:tst5:shell4-apps-packages",
+        "qemu_profile": "baseline",
+        "required_capabilities": [],
+        "timeout_seconds": 360,
+        "heartbeat_timeout_seconds": 20,
+        "isolation": "snapshot",
+        "parameters": {
+          "protocol": "ZTEST/1",
+          "input": "qmp-keyboard",
+          "postcondition": "prompt-recovered",
+          "mutation": "snapshot-discarded",
+          "trust": "ZPKG v2 required for install, update and run; v1 inspection/removal only",
+          "remote": "App Store unavailable and offline fallback are observable"
+        },
+        "preconditions": "imagem pronta, fixtures locais de pacotes e teclado virtual disponivel",
+        "action": "executar verificacao, instalacao, execucao, atualizacao, remocao, rollback, historico e fallback da App Store",
+        "expected": "pacotes validos funcionam, pacotes invalidos sao bloqueados sem mutacao persistente e cada operacao retorna ao prompt",
+        "errors": "assinatura, hash, dependencia, caminho, limite, catalogo, rede, cancelamento, falha ring3, prompt ausente ou QEMU",
+        "effects": "todas as mutacoes ficam restritas ao snapshot descartavel; a imagem base e preservada",
+        "cleanup": "encerrar aplicativos, jobs e QEMU; descartar o snapshot e preservar serial, QMP e artefatos",
+        "status": "AUTOMATED",
+        "surface_ids": [
+          "api:src/include/apps/shell.h:shell_handle_app_request",
+          "api:src/include/apps/shell.h:shell_handle_key",
+          "api:src/include/apps/shell.h:shell_handle_mouse",
+          "api:src/include/apps/shell.h:shell_init",
+          "api:src/include/apps/shell.h:shell_print_prompt",
+          "api:src/include/apps/shell.h:shell_process_command",
+          "api:src/include/apps/shell.h:shell_report_app_loader_result",
+          "api:src/include/apps/shell.h:shell_report_user_test_result",
+          "api:src/include/apps/shell.h:shell_update_hosted_terminal",
+          "api:src/include/apps/shell_dispatch.h:shell_dispatch_execute",
+          "api:src/include/apps/shell_input.h:shell_input_cancel_extended",
+          "api:src/include/apps/shell_input.h:shell_input_get_buffer",
+          "api:src/include/apps/shell_input.h:shell_input_handle_key",
+          "api:src/include/apps/shell_input.h:shell_input_init",
+          "api:src/include/apps/shell_input.h:shell_input_print_prompt",
+          "api:src/include/apps/shell_input.h:shell_input_reset",
+          "api:src/include/apps/shell_input.h:shell_input_reset_modifiers",
+          "api:src/include/apps/shell_input.h:shell_input_resume_terminal",
+          "api:src/include/apps/shell_job.h:shell_dispatch_cmd_job",
+          "api:src/include/apps/shell_job.h:shell_job_cancel_requested",
+          "api:src/include/apps/shell_job.h:shell_job_clear_next_wake",
+          "api:src/include/apps/shell_job.h:shell_job_clear_timeout",
+          "api:src/include/apps/shell_job.h:shell_job_generation_matches",
+          "api:src/include/apps/shell_job.h:shell_job_get_generation",
+          "api:src/include/apps/shell_job.h:shell_job_get_status",
+          "api:src/include/apps/shell_job.h:shell_job_get_wait_timeout",
+          "api:src/include/apps/shell_job.h:shell_job_handle_key",
+          "api:src/include/apps/shell_job.h:shell_job_input_blocked",
+          "api:src/include/apps/shell_job.h:shell_job_is_active",
+          "api:src/include/apps/shell_job.h:shell_job_kind_name",
+          "api:src/include/apps/shell_job.h:shell_job_note_stale_event",
+          "api:src/include/apps/shell_job.h:shell_job_poll",
+          "api:src/include/apps/shell_job.h:shell_job_pump_events",
+          "api:src/include/apps/shell_job.h:shell_job_request_cancel",
+          "api:src/include/apps/shell_job.h:shell_job_reset",
+          "api:src/include/apps/shell_job.h:shell_job_set_deadline",
+          "api:src/include/apps/shell_job.h:shell_job_set_next_wake",
+          "api:src/include/apps/shell_job.h:shell_job_set_phase",
+          "api:src/include/apps/shell_job.h:shell_job_set_progress",
+          "api:src/include/apps/shell_job.h:shell_job_set_timeout",
+          "api:src/include/apps/shell_job.h:shell_job_start",
+          "api:src/include/apps/shell_job.h:shell_job_state_name",
+          "api:src/include/apps/shell_runtime.h:shell_hosted_open",
+          "api:src/include/apps/shell_runtime.h:shell_hosted_present_progress",
+          "api:src/include/apps/shell_runtime.h:shell_hosted_reset",
+          "api:src/include/apps/shell_runtime.h:shell_runtime_finish_command",
+          "api:src/include/apps/shell_runtime.h:shell_runtime_handle_terminal_key",
+          "api:src/include/apps/shell_runtime.h:shell_runtime_is_hosted_visible",
+          "api:src/include/apps/shell_runtime.h:shell_runtime_prepare_filemanager",
+          "api:src/include/apps/shell_runtime.h:shell_runtime_reset_input",
+          "api:src/include/apps/shell_runtime.h:shell_runtime_resume_terminal",
+          "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal",
+          "api:src/include/apps/shell_runtime.h:shell_runtime_suspend_terminal_for_scene",
+          "api:src/include/core/app_loader.h:app_loader_build_launch_info",
+          "api:src/include/core/app_loader.h:app_loader_cancel_foreground",
+          "api:src/include/core/app_loader.h:app_loader_get_foreground_pid",
+          "api:src/include/core/app_loader.h:app_loader_init",
+          "api:src/include/core/app_loader.h:app_loader_is_foreground_active",
+          "api:src/include/core/app_loader.h:app_loader_is_ready",
+          "api:src/include/core/app_loader.h:app_loader_reap_finished",
+          "api:src/include/core/app_loader.h:app_loader_run_file",
+          "api:src/include/core/app_loader.h:app_loader_run_file_with_launch",
+          "api:src/include/core/app_loader.h:app_loader_run_image",
+          "api:src/include/core/app_loader.h:app_loader_set_operation_generation",
+          "api:src/include/core/app_loader.h:app_loader_take_finished_result",
+          "api:src/include/core/app_loader.h:app_loader_validate_image",
+          "api:src/include/core/app_package.h:app_package_action_reason_name",
+          "api:src/include/core/app_package.h:app_package_apply_plan_confirmed",
+          "api:src/include/core/app_package.h:app_package_apply_plan_from_directory_confirmed",
+          "api:src/include/core/app_package.h:app_package_compare_versions",
+          "api:src/include/core/app_package.h:app_package_get_history_count",
+          "api:src/include/core/app_package.h:app_package_get_history_entry",
+          "api:src/include/core/app_package.h:app_package_get_installed_count",
+          "api:src/include/core/app_package.h:app_package_get_installed_info",
+          "api:src/include/core/app_package.h:app_package_get_installed_info_by_id",
+          "api:src/include/core/app_package.h:app_package_get_status",
+          "api:src/include/core/app_package.h:app_package_history_operation_name",
+          "api:src/include/core/app_package.h:app_package_history_outcome_name",
+          "api:src/include/core/app_package.h:app_package_init",
+          "api:src/include/core/app_package.h:app_package_install_confirmed",
+          "api:src/include/core/app_package.h:app_package_install_file",
+          "api:src/include/core/app_package.h:app_package_is_mutation_active",
+          "api:src/include/core/app_package.h:app_package_is_ready",
+          "api:src/include/core/app_package.h:app_package_plan_action_name",
+          "api:src/include/core/app_package.h:app_package_preflight_install",
+          "api:src/include/core/app_package.h:app_package_preflight_plan",
+          "api:src/include/core/app_package.h:app_package_preflight_plan_from_directory",
+          "api:src/include/core/app_package.h:app_package_preflight_remove",
+          "api:src/include/core/app_package.h:app_package_preflight_rollback",
+          "api:src/include/core/app_package.h:app_package_remove",
+          "api:src/include/core/app_package.h:app_package_remove_confirmed",
+          "api:src/include/core/app_package.h:app_package_rollback_confirmed",
+          "api:src/include/core/app_package.h:app_package_run_diagnostics",
+          "api:src/include/core/app_package.h:app_package_run_installed",
+          "api:src/include/core/app_package.h:app_package_test_fail_after",
+          "api:src/include/core/app_package.h:app_package_trust_name",
+          "api:src/include/core/app_package.h:app_package_verify_file",
+          "api:src/include/core/app_package.h:app_package_verify_installed",
+          "api:src/include/ui/appstore.h:appstore_close",
+          "api:src/include/ui/appstore.h:appstore_draw",
+          "api:src/include/ui/appstore.h:appstore_get_mode",
+          "api:src/include/ui/appstore.h:appstore_handle_key",
+          "api:src/include/ui/appstore.h:appstore_handle_mouse",
+          "api:src/include/ui/appstore.h:appstore_init",
+          "api:src/include/ui/appstore.h:appstore_is_open",
+          "api:src/include/ui/appstore.h:appstore_open",
+          "api:src/include/ui/appstore_test.h:appstore_host_test_contracts",
+          "c:src/appstore/appstore.c:appstore_is_open",
+          "c:src/core/app_loader.c:app_loader_is_busy",
+          "c:src/core/app_loader.c:app_loader_is_foreground_active",
+          "c:src/core/app_loader.c:app_loader_reap_active",
+          "c:src/core/app_loader.c:app_loader_reap_finished",
+          "c:src/core/app_loader.c:app_loader_start_pending",
+          "c:src/core/app_loader.c:app_loader_take_finished_result",
+          "c:src/core/app_package.c:app_package_action_fail",
+          "c:src/core/app_package.c:app_package_action_reset",
+          "c:src/core/app_package.c:app_package_evaluate_space",
+          "c:src/core/app_package.c:app_package_get_installed_count",
+          "c:src/core/app_package.c:app_package_get_status",
+          "c:src/core/app_package.c:app_package_header_is_valid",
+          "c:src/core/app_package.c:app_package_is_mutation_active",
+          "c:src/core/app_package.c:app_package_is_ready",
+          "c:src/core/app_package.c:app_package_mutation_begin",
+          "c:src/core/app_package.c:app_package_mutation_end",
+          "c:src/core/app_package.c:app_package_run_diagnostics",
+          "c:src/core/app_package.c:app_package_test_fail_after",
+          "c:src/shell/shell.c:shell_report_app_loader_result",
+          "c:src/shell/shell.c:shell_runtime_handle_terminal_key",
+          "c:src/shell/shell.c:shell_runtime_prepare_filemanager",
+          "c:src/shell/shell.c:shell_runtime_reset_input",
+          "c:src/shell/shell.c:shell_runtime_resume_terminal",
+          "c:src/shell/shell.c:shell_runtime_suspend_terminal_for_scene",
+          "c:src/shell/shell_commands_apps.c:shell_dispatch_cmd_explorer",
+          "c:src/shell/shell_commands_apps.c:shell_dispatch_cmd_settings",
+          "c:src/shell/shell_commands_apps.c:shell_dispatch_cmd_taskmgr",
+          "c:src/shell/shell_dispatch.c:shell_dispatch_execute",
+          "c:src/shell/shell_hosted.c:shell_runtime_is_hosted_visible",
+          "c:src/shell/shell_input.c:shell_input_cancel_extended",
+          "c:src/shell/shell_input.c:shell_input_handle_key",
+          "c:src/shell/shell_input.c:shell_input_history_copy",
+          "c:src/shell/shell_input.c:shell_input_history_detach_for_edit",
+          "c:src/shell/shell_input.c:shell_input_history_record",
+          "c:src/shell/shell_input.c:shell_input_history_reset_navigation",
+          "c:src/shell/shell_input.c:shell_input_print_prompt",
+          "c:src/shell/shell_input.c:shell_input_reset",
+          "c:src/shell/shell_input.c:shell_input_reset_modifiers",
+          "c:src/shell/shell_input.c:shell_input_resume_terminal",
+          "c:src/shell/shell_input.c:shell_input_return_to_terminal_tail",
+          "c:src/shell/shell_job.c:shell_job_get_wait_timeout",
+          "c:src/shell/shell_job.c:shell_job_input_blocked",
+          "c:src/shell/shell_job.c:shell_job_is_active",
+          "c:src/shell/shell_job.c:shell_job_poll"
+        ],
+        "tags": [
+          "qemu",
+          "shell",
+          "shell4",
+          "apps",
+          "packages",
+          "appstore",
+          "trust",
+          "rollback",
+          "negative",
+          "prompt",
+          "reentry",
+          "tst5"
+        ],
+        "interaction": {
+          "mode": "qmp-keyboard",
+          "steps": [
+            {
+              "op": "key",
+              "key": "meta_l"
+            },
+            {
+              "op": "key",
+              "key": "down"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "pkg verify VALID.ZPK"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "pkg info VALID.ZPK"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "pkg install VALID.ZPK"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 3
+            },
+            {
+              "op": "text",
+              "text": "pkg list"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "pkg remove VALID"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 3
+            },
+            {
+              "op": "text",
+              "text": "store list"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "store status"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "store info VALID"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "store install VALID"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "store install VALID --confirm"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 3
+            },
+            {
+              "op": "text",
+              "text": "store update VALID"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "store run VALID shell4"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 3
+            },
+            {
+              "op": "keys",
+              "keys": [
+                "f12"
+              ]
+            },
+            {
+              "op": "wait",
+              "seconds": 2
+            },
+            {
+              "op": "text",
+              "text": "app run APPS/VALID/APP.ZAP shell4"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 3
+            },
+            {
+              "op": "keys",
+              "keys": [
+                "f12"
+              ]
+            },
+            {
+              "op": "wait",
+              "seconds": 2
+            },
+            {
+              "op": "text",
+              "text": "store remove VALID"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "store remove VALID --confirm"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 3
+            },
+            {
+              "op": "text",
+              "text": "store rollback VALID"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "store history VALID"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "store remote status"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "store remote list"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "store remote check"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "app outputtest fail"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 3
+            },
+            {
+              "op": "text",
+              "text": "store"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 2
+            },
+            {
+              "op": "keys",
+              "keys": [
+                "alt",
+                "f4"
+              ]
+            },
+            {
+              "op": "wait",
+              "seconds": 2
+            },
+            {
+              "op": "text",
+              "text": "pkg verify BADCRC.ZPK"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "store install NEEDSDEP"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "echo shell4-apps-packages"
             },
             {
               "op": "key",
