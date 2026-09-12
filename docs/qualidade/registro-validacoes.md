@@ -7421,3 +7421,28 @@ dívida.
   permanecem separadas.
 
   Estado: SHELL2 `PASS`.
+
+- SHELL3 - arquivos, VFS e administracao - implementacao registrada em
+  2026-09-12 (America/Sao_Paulo). O caso dedicado
+  `qemu:shell3:files-admin` foi adicionado ao observer black-box, cobrindo
+  caminhos, leitura, pipelines, redirecionamento, Storage, Explorer, Task
+  Manager, Settings, Desktop, WM, Taskbar e retorno ao prompt. A selecao
+  `shell3` reutiliza os casos de VFS, Storage, Shell, Explorer, cenas e perfis
+  sem armazenamento, USB e VESA em snapshots independentes.
+
+  Passaram `make q3check`, `make clean`, `make`, `make test-shell3-host` e
+  `make catalog-test`. O agregado host cobriu pipeline, VFS, Storage,
+  permissoes, indice, Explorer, Task Manager, Settings, Desktop, WM, Taskbar,
+  entrada, aplicativos, black-box e `test_shell3_matrix.py`.
+
+  A matriz `make test-shell3-qemu SHELL3_QEMU_WORKERS=4
+  SHELL3_QEMU_SEED=2203` passou 15/15 casos no run
+  `qpp-20260912T192627Z-32820`, incluindo o caso dedicado
+  `qemu:shell3:files-admin` e os perfis sem armazenamento, USB e VESA. O alvo
+  passou a gerar `build/storage-valid.img` automaticamente antes dos casos que
+  exigem USB Storage. Os artefatos foram preservados em
+  `build/test-results/shell3/qpp-20260912T192627Z-32820/`; nenhum processo
+  QEMU ficou residual. `DT100-003`, `DT100-004` e a divida fisica do
+  PS/2 permanecem separadas.
+
+  Estado: SHELL3 `PASS`.

@@ -5,7 +5,7 @@
 ## Resumo
 
 - Superfícies ativas: **7675**
-- Casos de teste: **191**
+- Casos de teste: **192**
 - Superfícies aposentadas: **60**
 
 | Tipo | Quantidade |
@@ -25,7 +25,7 @@
 
 | Casos | Quantidade |
 |---|---:|
-| `AUTOMATED` | 191 |
+| `AUTOMATED` | 192 |
 | `BLOCKED` | 0 |
 | `MANUAL` | 0 |
 | `PENDING` | 0 |
@@ -4216,8 +4216,8 @@
 | `c:src/desktop/desktop.c:desktop_get_mode` | `src/desktop/desktop.c` | `desktop_get_mode` | `desktop` | `COVERED` | 3 |
 | `c:src/desktop/desktop.c:desktop_get_selected_app` | `src/desktop/desktop.c` | `desktop_get_selected_app` | `desktop` | `COVERED` | 1 |
 | `c:src/desktop/desktop.c:desktop_handle_click` | `src/desktop/desktop.c` | `desktop_handle_click` | `desktop` | `COVERED` | 1 |
-| `c:src/desktop/desktop.c:desktop_handle_key` | `src/desktop/desktop.c` | `desktop_handle_key` | `desktop` | `COVERED` | 3 |
-| `c:src/desktop/desktop.c:desktop_handle_mouse` | `src/desktop/desktop.c` | `desktop_handle_mouse` | `desktop` | `COVERED` | 1 |
+| `c:src/desktop/desktop.c:desktop_handle_key` | `src/desktop/desktop.c` | `desktop_handle_key` | `desktop` | `COVERED` | 4 |
+| `c:src/desktop/desktop.c:desktop_handle_mouse` | `src/desktop/desktop.c` | `desktop_handle_mouse` | `desktop` | `COVERED` | 2 |
 | `c:src/desktop/desktop.c:desktop_init` | `src/desktop/desktop.c` | `desktop_init` | `desktop` | `COVERED` | 1 |
 | `c:src/desktop/desktop.c:desktop_is_active` | `src/desktop/desktop.c` | `desktop_is_active` | `desktop` | `COVERED` | 3 |
 | `c:src/desktop/desktop.c:desktop_layout_classic` | `src/desktop/desktop.c` | `desktop_layout_classic` | `desktop` | `COVERED` | 3 |
@@ -4995,10 +4995,10 @@
 | `c:src/filemanager/filemanager.c:fm_classic_draw_view_file` | `src/filemanager/filemanager.c` | `fm_classic_draw_view_file` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_classic_get_content_height` | `src/filemanager/filemanager.c` | `fm_classic_get_content_height` | `filemanager` | `COVERED` | 2 |
 | `c:src/filemanager/filemanager.c:fm_classic_get_layout` | `src/filemanager/filemanager.c` | `fm_classic_get_layout` | `filemanager` | `COVERED` | 2 |
-| `c:src/filemanager/filemanager.c:fm_close` | `src/filemanager/filemanager.c` | `fm_close` | `filemanager` | `COVERED` | 1 |
+| `c:src/filemanager/filemanager.c:fm_close` | `src/filemanager/filemanager.c` | `fm_close` | `filemanager` | `COVERED` | 2 |
 | `c:src/filemanager/filemanager.c:fm_copy_display_text` | `src/filemanager/filemanager.c` | `fm_copy_display_text` | `filemanager` | `COVERED` | 2 |
 | `c:src/filemanager/filemanager.c:fm_copy_normalized_path` | `src/filemanager/filemanager.c` | `fm_copy_normalized_path` | `filemanager` | `COVERED` | 1 |
-| `c:src/filemanager/filemanager.c:fm_delete_selected_file` | `src/filemanager/filemanager.c` | `fm_delete_selected_file` | `filemanager` | `COVERED` | 1 |
+| `c:src/filemanager/filemanager.c:fm_delete_selected_file` | `src/filemanager/filemanager.c` | `fm_delete_selected_file` | `filemanager` | `COVERED` | 2 |
 | `c:src/filemanager/filemanager.c:fm_display_font_height` | `src/filemanager/filemanager.c` | `fm_display_font_height` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_display_font_width` | `src/filemanager/filemanager.c` | `fm_display_font_width` | `filemanager` | `COVERED` | 2 |
 | `c:src/filemanager/filemanager.c:fm_display_icon_scale` | `src/filemanager/filemanager.c` | `fm_display_icon_scale` | `filemanager` | `COVERED` | 2 |
@@ -5007,42 +5007,42 @@
 | `c:src/filemanager/filemanager.c:fm_draw_all` | `src/filemanager/filemanager.c` | `fm_draw_all` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_draw_classic_all` | `src/filemanager/filemanager.c` | `fm_draw_classic_all` | `filemanager` | `COVERED` | 2 |
 | `c:src/filemanager/filemanager.c:fm_draw_column_headers` | `src/filemanager/filemanager.c` | `fm_draw_column_headers` | `filemanager` | `COVERED` | 1 |
-| `c:src/filemanager/filemanager.c:fm_draw_confirm_delete` | `src/filemanager/filemanager.c` | `fm_draw_confirm_delete` | `filemanager` | `COVERED` | 1 |
-| `c:src/filemanager/filemanager.c:fm_draw_create_dir` | `src/filemanager/filemanager.c` | `fm_draw_create_dir` | `filemanager` | `COVERED` | 1 |
-| `c:src/filemanager/filemanager.c:fm_draw_create_file` | `src/filemanager/filemanager.c` | `fm_draw_create_file` | `filemanager` | `COVERED` | 1 |
+| `c:src/filemanager/filemanager.c:fm_draw_confirm_delete` | `src/filemanager/filemanager.c` | `fm_draw_confirm_delete` | `filemanager` | `COVERED` | 2 |
+| `c:src/filemanager/filemanager.c:fm_draw_create_dir` | `src/filemanager/filemanager.c` | `fm_draw_create_dir` | `filemanager` | `COVERED` | 2 |
+| `c:src/filemanager/filemanager.c:fm_draw_create_file` | `src/filemanager/filemanager.c` | `fm_draw_create_file` | `filemanager` | `COVERED` | 2 |
 | `c:src/filemanager/filemanager.c:fm_draw_file_list` | `src/filemanager/filemanager.c` | `fm_draw_file_list` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_draw_help` | `src/filemanager/filemanager.c` | `fm_draw_help` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_draw_menu_bar` | `src/filemanager/filemanager.c` | `fm_draw_menu_bar` | `filemanager` | `COVERED` | 1 |
-| `c:src/filemanager/filemanager.c:fm_draw_rename_file` | `src/filemanager/filemanager.c` | `fm_draw_rename_file` | `filemanager` | `COVERED` | 1 |
+| `c:src/filemanager/filemanager.c:fm_draw_rename_file` | `src/filemanager/filemanager.c` | `fm_draw_rename_file` | `filemanager` | `COVERED` | 2 |
 | `c:src/filemanager/filemanager.c:fm_draw_separator_bottom` | `src/filemanager/filemanager.c` | `fm_draw_separator_bottom` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_draw_side_pane` | `src/filemanager/filemanager.c` | `fm_draw_side_pane` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_draw_simple_all` | `src/filemanager/filemanager.c` | `fm_draw_simple_all` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_draw_status_bar` | `src/filemanager/filemanager.c` | `fm_draw_status_bar` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_draw_text_limited` | `src/filemanager/filemanager.c` | `fm_draw_text_limited` | `filemanager` | `COVERED` | 2 |
 | `c:src/filemanager/filemanager.c:fm_draw_title_bar` | `src/filemanager/filemanager.c` | `fm_draw_title_bar` | `filemanager` | `COVERED` | 1 |
-| `c:src/filemanager/filemanager.c:fm_draw_view_file` | `src/filemanager/filemanager.c` | `fm_draw_view_file` | `filemanager` | `COVERED` | 1 |
+| `c:src/filemanager/filemanager.c:fm_draw_view_file` | `src/filemanager/filemanager.c` | `fm_draw_view_file` | `filemanager` | `COVERED` | 2 |
 | `c:src/filemanager/filemanager.c:fm_ensure_boot_directory` | `src/filemanager/filemanager.c` | `fm_ensure_boot_directory` | `filemanager` | `COVERED` | 2 |
 | `c:src/filemanager/filemanager.c:fm_fat_display_name` | `src/filemanager/filemanager.c` | `fm_fat_display_name` | `filemanager` | `COVERED` | 2 |
 | `c:src/filemanager/filemanager.c:fm_get_mode` | `src/filemanager/filemanager.c` | `fm_get_mode` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_go_back` | `src/filemanager/filemanager.c` | `fm_go_back` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_go_forward` | `src/filemanager/filemanager.c` | `fm_go_forward` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_go_up` | `src/filemanager/filemanager.c` | `fm_go_up` | `filemanager` | `COVERED` | 1 |
-| `c:src/filemanager/filemanager.c:fm_handle_key` | `src/filemanager/filemanager.c` | `fm_handle_key` | `filemanager` | `COVERED` | 1 |
+| `c:src/filemanager/filemanager.c:fm_handle_key` | `src/filemanager/filemanager.c` | `fm_handle_key` | `filemanager` | `COVERED` | 2 |
 | `c:src/filemanager/filemanager.c:fm_host_test_contracts` | `src/filemanager/filemanager.c` | `fm_host_test_contracts` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_hosted_close` | `src/filemanager/filemanager.c` | `fm_hosted_close` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_hosted_draw` | `src/filemanager/filemanager.c` | `fm_hosted_draw` | `filemanager` | `COVERED` | 1 |
-| `c:src/filemanager/filemanager.c:fm_hosted_mouse` | `src/filemanager/filemanager.c` | `fm_hosted_mouse` | `filemanager` | `COVERED` | 1 |
+| `c:src/filemanager/filemanager.c:fm_hosted_mouse` | `src/filemanager/filemanager.c` | `fm_hosted_mouse` | `filemanager` | `COVERED` | 2 |
 | `c:src/filemanager/filemanager.c:fm_init` | `src/filemanager/filemanager.c` | `fm_init` | `filemanager` | `COVERED` | 2 |
 | `c:src/filemanager/filemanager.c:fm_is_running` | `src/filemanager/filemanager.c` | `fm_is_running` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_join_path` | `src/filemanager/filemanager.c` | `fm_join_path` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_mouse_select_item` | `src/filemanager/filemanager.c` | `fm_mouse_select_item` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_navigate_address_value` | `src/filemanager/filemanager.c` | `fm_navigate_address_value` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_navigate_to` | `src/filemanager/filemanager.c` | `fm_navigate_to` | `filemanager` | `COVERED` | 1 |
-| `c:src/filemanager/filemanager.c:fm_open` | `src/filemanager/filemanager.c` | `fm_open` | `filemanager` | `COVERED` | 1 |
+| `c:src/filemanager/filemanager.c:fm_open` | `src/filemanager/filemanager.c` | `fm_open` | `filemanager` | `COVERED` | 2 |
 | `c:src/filemanager/filemanager.c:fm_record_history` | `src/filemanager/filemanager.c` | `fm_record_history` | `filemanager` | `COVERED` | 2 |
 | `c:src/filemanager/filemanager.c:fm_redraw_file_view` | `src/filemanager/filemanager.c` | `fm_redraw_file_view` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_refresh_files` | `src/filemanager/filemanager.c` | `fm_refresh_files` | `filemanager` | `COVERED` | 2 |
-| `c:src/filemanager/filemanager.c:fm_rename_selected_file` | `src/filemanager/filemanager.c` | `fm_rename_selected_file` | `filemanager` | `COVERED` | 1 |
+| `c:src/filemanager/filemanager.c:fm_rename_selected_file` | `src/filemanager/filemanager.c` | `fm_rename_selected_file` | `filemanager` | `COVERED` | 2 |
 | `c:src/filemanager/filemanager.c:fm_rename_target_conflicts` | `src/filemanager/filemanager.c` | `fm_rename_target_conflicts` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_restore_history_source` | `src/filemanager/filemanager.c` | `fm_restore_history_source` | `filemanager` | `COVERED` | 1 |
 | `c:src/filemanager/filemanager.c:fm_run` | `src/filemanager/filemanager.c` | `fm_run` | `filemanager` | `COVERED` | 1 |
@@ -6334,7 +6334,7 @@
 | `c:src/settings/settings.c:settings_classic_draw` | `src/settings/settings.c` | `settings_classic_draw` | `settings` | `COVERED` | 2 |
 | `c:src/settings/settings.c:settings_classic_layout` | `src/settings/settings.c` | `settings_classic_layout` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_clear_overlay` | `src/settings/settings.c` | `settings_clear_overlay` | `settings` | `COVERED` | 2 |
-| `c:src/settings/settings.c:settings_close` | `src/settings/settings.c` | `settings_close` | `settings` | `COVERED` | 1 |
+| `c:src/settings/settings.c:settings_close` | `src/settings/settings.c` | `settings_close` | `settings` | `COVERED` | 2 |
 | `c:src/settings/settings.c:settings_draw` | `src/settings/settings.c` | `settings_draw` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_draw_classic_dialog` | `src/settings/settings.c` | `settings_draw_classic_dialog` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_draw_classic_main` | `src/settings/settings.c` | `settings_draw_classic_main` | `settings` | `COVERED` | 2 |
@@ -6357,7 +6357,7 @@
 | `c:src/settings/settings.c:settings_gui_handle_icon_mouse` | `src/settings/settings.c` | `settings_gui_handle_icon_mouse` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_gui_hit` | `src/settings/settings.c` | `settings_gui_hit` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_gui_value_width` | `src/settings/settings.c` | `settings_gui_value_width` | `settings` | `COVERED` | 2 |
-| `c:src/settings/settings.c:settings_handle_key` | `src/settings/settings.c` | `settings_handle_key` | `settings` | `COVERED` | 2 |
+| `c:src/settings/settings.c:settings_handle_key` | `src/settings/settings.c` | `settings_handle_key` | `settings` | `COVERED` | 3 |
 | `c:src/settings/settings.c:settings_handle_mouse` | `src/settings/settings.c` | `settings_handle_mouse` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_host_test_contracts` | `src/settings/settings.c` | `settings_host_test_contracts` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_host_test_icon_editor` | `src/settings/settings.c` | `settings_host_test_icon_editor` | `settings` | `COVERED` | 1 |
@@ -6367,7 +6367,7 @@
 | `c:src/settings/settings.c:settings_hosted_mouse` | `src/settings/settings.c` | `settings_hosted_mouse` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_init` | `src/settings/settings.c` | `settings_init` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_is_open` | `src/settings/settings.c` | `settings_is_open` | `settings` | `COVERED` | 3 |
-| `c:src/settings/settings.c:settings_open` | `src/settings/settings.c` | `settings_open` | `settings` | `COVERED` | 2 |
+| `c:src/settings/settings.c:settings_open` | `src/settings/settings.c` | `settings_open` | `settings` | `COVERED` | 3 |
 | `c:src/settings/settings.c:settings_select_mode` | `src/settings/settings.c` | `settings_select_mode` | `settings` | `COVERED` | 1 |
 | `c:src/settings/settings.c:settings_sync_display_scale` | `src/settings/settings.c` | `settings_sync_display_scale` | `settings` | `COVERED` | 2 |
 | `c:src/settings/settings.c:settings_sync_mouse_preferences` | `src/settings/settings.c` | `settings_sync_mouse_preferences` | `settings` | `COVERED` | 2 |
@@ -6625,13 +6625,13 @@
 | `c:src/shell/shell_commands_apps.c:shell_dispatch_cmd_view` | `src/shell/shell_commands_apps.c` | `shell_dispatch_cmd_view` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_apps.c:shell_dispatch_cmd_wm` | `src/shell/shell_commands_apps.c` | `shell_dispatch_cmd_wm` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_core.c:cmd_beep` | `src/shell/shell_commands_core.c` | `cmd_beep` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_core.c:cmd_cat` | `src/shell/shell_commands_core.c` | `cmd_cat` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_commands_core.c:cmd_cat` | `src/shell/shell_commands_core.c` | `cmd_cat` | `shell` | `COVERED` | 3 |
 | `c:src/shell/shell_commands_core.c:cmd_clear` | `src/shell/shell_commands_core.c` | `cmd_clear` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_commands_core.c:cmd_echo` | `src/shell/shell_commands_core.c` | `cmd_echo` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_commands_core.c:cmd_echo_native` | `src/shell/shell_commands_core.c` | `cmd_echo_native` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_core.c:cmd_help` | `src/shell/shell_commands_core.c` | `cmd_help` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_commands_core.c:cmd_help_core` | `src/shell/shell_commands_core.c` | `cmd_help_core` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_core.c:cmd_ls` | `src/shell/shell_commands_core.c` | `cmd_ls` | `shell` | `COVERED` | 3 |
+| `c:src/shell/shell_commands_core.c:cmd_ls` | `src/shell/shell_commands_core.c` | `cmd_ls` | `shell` | `COVERED` | 4 |
 | `c:src/shell/shell_commands_core.c:cmd_melody` | `src/shell/shell_commands_core.c` | `cmd_melody` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_core.c:cmd_mem` | `src/shell/shell_commands_core.c` | `cmd_mem` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_commands_core.c:cmd_mem_detailed` | `src/shell/shell_commands_core.c` | `cmd_mem_detailed` | `shell` | `COVERED` | 1 |
@@ -6755,7 +6755,7 @@
 | `c:src/shell/shell_commands_diagnostics.c:cmd_log_usage` | `src/shell/shell_commands_diagnostics.c` | `cmd_log_usage` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_memcheck` | `src/shell/shell_commands_diagnostics.c` | `cmd_memcheck` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_memcheck_print_result` | `src/shell/shell_commands_diagnostics.c` | `cmd_memcheck_print_result` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_diagnostics.c:cmd_mount` | `src/shell/shell_commands_diagnostics.c` | `cmd_mount` | `shell` | `COVERED` | 3 |
+| `c:src/shell/shell_commands_diagnostics.c:cmd_mount` | `src/shell/shell_commands_diagnostics.c` | `cmd_mount` | `shell` | `COVERED` | 4 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_mouse` | `src/shell/shell_commands_diagnostics.c` | `cmd_mouse` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_mouse_apply` | `src/shell/shell_commands_diagnostics.c` | `cmd_mouse_apply` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_diagnostics.c:cmd_mouse_print_status` | `src/shell/shell_commands_diagnostics.c` | `cmd_mouse_print_status` | `shell` | `COVERED` | 1 |
@@ -7112,15 +7112,15 @@
 | `c:src/shell/shell_commands_storage.c:cmd_cache_print_usage` | `src/shell/shell_commands_storage.c` | `cmd_cache_print_usage` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_storage.c:cmd_cachestat` | `src/shell/shell_commands_storage.c` | `cmd_cachestat` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_storage.c:cmd_cachestat_print_usage` | `src/shell/shell_commands_storage.c` | `cmd_cachestat_print_usage` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_storage.c:cmd_index` | `src/shell/shell_commands_storage.c` | `cmd_index` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:cmd_index` | `src/shell/shell_commands_storage.c` | `cmd_index` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_commands_storage.c:cmd_index_print_usage` | `src/shell/shell_commands_storage.c` | `cmd_index_print_usage` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_storage.c:cmd_index_read_action` | `src/shell/shell_commands_storage.c` | `cmd_index_read_action` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_storage.c:cmd_index_status` | `src/shell/shell_commands_storage.c` | `cmd_index_status` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_storage.c:cmd_search` | `src/shell/shell_commands_storage.c` | `cmd_search` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:cmd_search` | `src/shell/shell_commands_storage.c` | `cmd_search` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_commands_storage.c:cmd_search_copy_query` | `src/shell/shell_commands_storage.c` | `cmd_search_copy_query` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_storage.c:cmd_search_print_result` | `src/shell/shell_commands_storage.c` | `cmd_search_print_result` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_storage.c:cmd_search_print_warnings` | `src/shell/shell_commands_storage.c` | `cmd_search_print_warnings` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_storage.c:cmd_storage` | `src/shell/shell_commands_storage.c` | `cmd_storage` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_storage.c:cmd_storage` | `src/shell/shell_commands_storage.c` | `cmd_storage` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_commands_storage.c:cmd_storage_has_extra` | `src/shell/shell_commands_storage.c` | `cmd_storage_has_extra` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_storage.c:cmd_storage_id_copy` | `src/shell/shell_commands_storage.c` | `cmd_storage_id_copy` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_storage.c:cmd_storage_id_lower` | `src/shell/shell_commands_storage.c` | `cmd_storage_id_lower` | `shell` | `COVERED` | 1 |
@@ -7147,8 +7147,8 @@
 | `c:src/shell/shell_commands_storage.c:shell_index_job_finish` | `src/shell/shell_commands_storage.c` | `shell_index_job_finish` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_storage.c:shell_index_job_step` | `src/shell/shell_commands_storage.c` | `shell_index_job_step` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_storage.c:shell_storage_start_job` | `src/shell/shell_commands_storage.c` | `shell_storage_start_job` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_vfs.c:cmd_grep` | `src/shell/shell_commands_vfs.c` | `cmd_grep` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_commands_vfs.c:cmd_pipetest` | `src/shell/shell_commands_vfs.c` | `cmd_pipetest` | `shell` | `COVERED` | 1 |
+| `c:src/shell/shell_commands_vfs.c:cmd_grep` | `src/shell/shell_commands_vfs.c` | `cmd_grep` | `shell` | `COVERED` | 2 |
+| `c:src/shell/shell_commands_vfs.c:cmd_pipetest` | `src/shell/shell_commands_vfs.c` | `cmd_pipetest` | `shell` | `COVERED` | 2 |
 | `c:src/shell/shell_commands_vfs.c:shell_dispatch_cmd_grep` | `src/shell/shell_commands_vfs.c` | `shell_dispatch_cmd_grep` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_vfs.c:shell_dispatch_cmd_pipetest` | `src/shell/shell_commands_vfs.c` | `shell_dispatch_cmd_pipetest` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_commands_vfs.c:shell_grep_contains` | `src/shell/shell_commands_vfs.c` | `shell_grep_contains` | `shell` | `COVERED` | 1 |
@@ -7199,7 +7199,7 @@
 | `c:src/shell/shell_diagnostics_helpers.c:shell_memcheck_same_memory_metrics` | `src/shell/shell_diagnostics_helpers.c` | `shell_memcheck_same_memory_metrics` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_diagnostics_helpers.c:shell_memcheck_valid_memory_metrics` | `src/shell/shell_diagnostics_helpers.c` | `shell_memcheck_valid_memory_metrics` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_diagnostics_helpers.c:shell_process_state_name` | `src/shell/shell_diagnostics_helpers.c` | `shell_process_state_name` | `shell` | `COVERED` | 1 |
-| `c:src/shell/shell_dispatch.c:shell_dispatch_execute` | `src/shell/shell_dispatch.c` | `shell_dispatch_execute` | `shell` | `COVERED` | 7 |
+| `c:src/shell/shell_dispatch.c:shell_dispatch_execute` | `src/shell/shell_dispatch.c` | `shell_dispatch_execute` | `shell` | `COVERED` | 8 |
 | `c:src/shell/shell_dispatch.c:shell_dispatch_print_unknown` | `src/shell/shell_dispatch.c` | `shell_dispatch_print_unknown` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_hosted.c:shell_hosted_close` | `src/shell/shell_hosted.c` | `shell_hosted_close` | `shell` | `COVERED` | 1 |
 | `c:src/shell/shell_hosted.c:shell_hosted_draw` | `src/shell/shell_hosted.c` | `shell_hosted_draw` | `shell` | `COVERED` | 4 |
@@ -7299,7 +7299,7 @@
 | `c:src/shell/taskmanager.c:print_at` | `src/shell/taskmanager.c` | `print_at` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:print_num_at` | `src/shell/taskmanager.c` | `print_num_at` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_clamp_window` | `src/shell/taskmanager.c` | `taskmgr_clamp_window` | `shell` | `COVERED` | 1 |
-| `c:src/shell/taskmanager.c:taskmgr_close` | `src/shell/taskmanager.c` | `taskmgr_close` | `shell` | `COVERED` | 1 |
+| `c:src/shell/taskmanager.c:taskmgr_close` | `src/shell/taskmanager.c` | `taskmgr_close` | `shell` | `COVERED` | 2 |
 | `c:src/shell/taskmanager.c:taskmgr_count_process_states` | `src/shell/taskmanager.c` | `taskmgr_count_process_states` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_find_thread_by_row` | `src/shell/taskmanager.c` | `taskmgr_find_thread_by_row` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_get_work_area` | `src/shell/taskmanager.c` | `taskmgr_get_work_area` | `shell` | `COVERED` | 1 |
@@ -7351,7 +7351,7 @@
 | `c:src/shell/taskmanager.c:taskmgr_gui_state_color` | `src/shell/taskmanager.c` | `taskmgr_gui_state_color` | `shell` | `COVERED` | 2 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_update` | `src/shell/taskmanager.c` | `taskmgr_gui_update` | `shell` | `COVERED` | 3 |
 | `c:src/shell/taskmanager.c:taskmgr_gui_visible_rows` | `src/shell/taskmanager.c` | `taskmgr_gui_visible_rows` | `shell` | `COVERED` | 1 |
-| `c:src/shell/taskmanager.c:taskmgr_handle_key` | `src/shell/taskmanager.c` | `taskmgr_handle_key` | `shell` | `COVERED` | 1 |
+| `c:src/shell/taskmanager.c:taskmgr_handle_key` | `src/shell/taskmanager.c` | `taskmgr_handle_key` | `shell` | `COVERED` | 2 |
 | `c:src/shell/taskmanager.c:taskmgr_handle_taskbar_action` | `src/shell/taskmanager.c` | `taskmgr_handle_taskbar_action` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_host_test_contracts` | `src/shell/taskmanager.c` | `taskmgr_host_test_contracts` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_hosted_close` | `src/shell/taskmanager.c` | `taskmgr_hosted_close` | `shell` | `COVERED` | 2 |
@@ -7361,7 +7361,7 @@
 | `c:src/shell/taskmanager.c:taskmgr_is_gui_minimized` | `src/shell/taskmanager.c` | `taskmgr_is_gui_minimized` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_is_gui_open` | `src/shell/taskmanager.c` | `taskmgr_is_gui_open` | `shell` | `COVERED` | 3 |
 | `c:src/shell/taskmanager.c:taskmgr_is_open` | `src/shell/taskmanager.c` | `taskmgr_is_open` | `shell` | `COVERED` | 1 |
-| `c:src/shell/taskmanager.c:taskmgr_open` | `src/shell/taskmanager.c` | `taskmgr_open` | `shell` | `COVERED` | 1 |
+| `c:src/shell/taskmanager.c:taskmgr_open` | `src/shell/taskmanager.c` | `taskmgr_open` | `shell` | `COVERED` | 2 |
 | `c:src/shell/taskmanager.c:taskmgr_open_gui` | `src/shell/taskmanager.c` | `taskmgr_open_gui` | `shell` | `COVERED` | 2 |
 | `c:src/shell/taskmanager.c:taskmgr_pages_used` | `src/shell/taskmanager.c` | `taskmgr_pages_used` | `shell` | `COVERED` | 1 |
 | `c:src/shell/taskmanager.c:taskmgr_percent` | `src/shell/taskmanager.c` | `taskmgr_percent` | `shell` | `COVERED` | 2 |
@@ -7386,7 +7386,7 @@
 | `c:src/taskbar/taskbar.c:taskbar_close_config_menu` | `src/taskbar/taskbar.c` | `taskbar_close_config_menu` | `taskbar` | `COVERED` | 1 |
 | `c:src/taskbar/taskbar.c:taskbar_close_menu` | `src/taskbar/taskbar.c` | `taskbar_close_menu` | `taskbar` | `COVERED` | 1 |
 | `c:src/taskbar/taskbar.c:taskbar_config_item_count` | `src/taskbar/taskbar.c` | `taskbar_config_item_count` | `taskbar` | `COVERED` | 1 |
-| `c:src/taskbar/taskbar.c:taskbar_draw` | `src/taskbar/taskbar.c` | `taskbar_draw` | `taskbar` | `COVERED` | 3 |
+| `c:src/taskbar/taskbar.c:taskbar_draw` | `src/taskbar/taskbar.c` | `taskbar_draw` | `taskbar` | `COVERED` | 4 |
 | `c:src/taskbar/taskbar.c:taskbar_draw_clock_gui_text` | `src/taskbar/taskbar.c` | `taskbar_draw_clock_gui_text` | `taskbar` | `COVERED` | 3 |
 | `c:src/taskbar/taskbar.c:taskbar_draw_config_menu` | `src/taskbar/taskbar.c` | `taskbar_draw_config_menu` | `taskbar` | `COVERED` | 1 |
 | `c:src/taskbar/taskbar.c:taskbar_draw_gui` | `src/taskbar/taskbar.c` | `taskbar_draw_gui` | `taskbar` | `COVERED` | 3 |
@@ -7403,7 +7403,7 @@
 | `c:src/taskbar/taskbar.c:taskbar_handle_click` | `src/taskbar/taskbar.c` | `taskbar_handle_click` | `taskbar` | `COVERED` | 1 |
 | `c:src/taskbar/taskbar.c:taskbar_handle_click_gui` | `src/taskbar/taskbar.c` | `taskbar_handle_click_gui` | `taskbar` | `COVERED` | 1 |
 | `c:src/taskbar/taskbar.c:taskbar_handle_config_key` | `src/taskbar/taskbar.c` | `taskbar_handle_config_key` | `taskbar` | `COVERED` | 3 |
-| `c:src/taskbar/taskbar.c:taskbar_handle_key` | `src/taskbar/taskbar.c` | `taskbar_handle_key` | `taskbar` | `COVERED` | 3 |
+| `c:src/taskbar/taskbar.c:taskbar_handle_key` | `src/taskbar/taskbar.c` | `taskbar_handle_key` | `taskbar` | `COVERED` | 4 |
 | `c:src/taskbar/taskbar.c:taskbar_init` | `src/taskbar/taskbar.c` | `taskbar_init` | `taskbar` | `COVERED` | 1 |
 | `c:src/taskbar/taskbar.c:taskbar_is_horizontal_gui` | `src/taskbar/taskbar.c` | `taskbar_is_horizontal_gui` | `taskbar` | `COVERED` | 3 |
 | `c:src/taskbar/taskbar.c:taskbar_is_menu_open` | `src/taskbar/taskbar.c` | `taskbar_is_menu_open` | `taskbar` | `COVERED` | 1 |
@@ -7549,7 +7549,7 @@
 | `c:src/wm/wm.c:draw_buttons_right` | `src/wm/wm.c` | `draw_buttons_right` | `wm` | `COVERED` | 1 |
 | `c:src/wm/wm.c:str_len` | `src/wm/wm.c` | `str_len` | `wm` | `COVERED` | 1 |
 | `c:src/wm/wm.c:wm_close_focused` | `src/wm/wm.c` | `wm_close_focused` | `wm` | `COVERED` | 1 |
-| `c:src/wm/wm.c:wm_close_hosted_app` | `src/wm/wm.c` | `wm_close_hosted_app` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_close_hosted_app` | `src/wm/wm.c` | `wm_close_hosted_app` | `wm` | `COVERED` | 2 |
 | `c:src/wm/wm.c:wm_create_window` | `src/wm/wm.c` | `wm_create_window` | `wm` | `COVERED` | 1 |
 | `c:src/wm/wm.c:wm_destroy_window` | `src/wm/wm.c` | `wm_destroy_window` | `wm` | `COVERED` | 1 |
 | `c:src/wm/wm.c:wm_draw_all` | `src/wm/wm.c` | `wm_draw_all` | `wm` | `COVERED` | 2 |
@@ -7606,8 +7606,8 @@
 | `c:src/wm/wm.c:wm_gui_window_min_height` | `src/wm/wm.c` | `wm_gui_window_min_height` | `wm` | `COVERED` | 3 |
 | `c:src/wm/wm.c:wm_gui_window_min_width` | `src/wm/wm.c` | `wm_gui_window_min_width` | `wm` | `COVERED` | 3 |
 | `c:src/wm/wm.c:wm_handle_click` | `src/wm/wm.c` | `wm_handle_click` | `wm` | `COVERED` | 1 |
-| `c:src/wm/wm.c:wm_handle_key` | `src/wm/wm.c` | `wm_handle_key` | `wm` | `COVERED` | 3 |
-| `c:src/wm/wm.c:wm_handle_mouse` | `src/wm/wm.c` | `wm_handle_mouse` | `wm` | `COVERED` | 1 |
+| `c:src/wm/wm.c:wm_handle_key` | `src/wm/wm.c` | `wm_handle_key` | `wm` | `COVERED` | 4 |
+| `c:src/wm/wm.c:wm_handle_mouse` | `src/wm/wm.c` | `wm_handle_mouse` | `wm` | `COVERED` | 2 |
 | `c:src/wm/wm.c:wm_init` | `src/wm/wm.c` | `wm_init` | `wm` | `COVERED` | 1 |
 | `c:src/wm/wm.c:wm_is_active` | `src/wm/wm.c` | `wm_is_active` | `wm` | `COVERED` | 3 |
 | `c:src/wm/wm.c:wm_is_hosted_app_focused` | `src/wm/wm.c` | `wm_is_hosted_app_focused` | `wm` | `COVERED` | 3 |
@@ -7909,6 +7909,7 @@
 | `qemu:hw6:diagnostics-repeat` | `qemu` | `baseline` | `qemu:tst5:hw6-diagnostics` | `AUTOMATED` | 360 | 20 | `snapshot` | `quality` | `qemu` | imagem pronta, Shell e todos os diagnósticos inicializados | executar os dez diagnósticos duas vezes por QMP | estados, causas e impactos permanecem coerentes, o prompt retorna e nenhum driver e reinicializado | marcador ausente, estado divergente, prompt preso, reinitializacao, timeout ou processo residual | somente snapshots de diagnósticos e contadores | encerrar QEMU e preservar serial, QMP e resultado |
 | `qemu:shell1:prompt-lifecycle` | `qemu` | `smoke` | `qemu:tst5:shell1-prompt-lifecycle` | `AUTOMATED` | 120 | 20 | `snapshot` | `quality` | `qemu` | imagem pronta, Shell inicializado e teclado virtual disponivel | executar comandos validos, invalidos, cancelados, um job e retornar de uma cena | cada operacao retorna ao prompt uma unica vez e a entrada permanece disponivel | prompt ausente ou duplicado, entrada presa, job residual, timeout ou QEMU | somente texto e estado da sessao no snapshot | encerrar QEMU e preservar serial, QMP e resultado |
 | `qemu:shell2:commands-diagnostics` | `qemu` | `smoke` | `qemu:tst5:shell2-commands-diagnostics` | `AUTOMATED` | 240 | 20 | `snapshot` | `quality` | `qemu` | imagem pronta, Shell inicializado e teclado virtual disponivel | executar comandos basicos validos e invalidos, diagnosticos, cancelamento e reentrada | mensagens e erros permanecem deterministas, diagnosticos nao reinicializam hardware e o prompt retorna uma vez | argumento invalido, hardware ausente, prompt ausente ou duplicado, estado residual, timeout ou QEMU | somente mount pode alterar o estado de volume; diagnosticos usam snapshots read-only | encerrar o QEMU e preservar serial, QMP e resultado |
+| `qemu:shell3:files-admin` | `qemu` | `smoke` | `qemu:tst5:shell3-files-admin` | `AUTOMATED` | 300 | 20 | `snapshot` | `quality` | `qemu` | imagem pronta, Shell inicializado e teclado virtual disponivel | executar comandos de caminho, pipeline, redirecionamento, Storage e cenas do Shell | operacoes validas funcionam, rejeicoes preservam o estado e cada cena retorna uma vez ao prompt | caminho ausente, permissao negada, volume indisponivel, transicao ocupada, handle invalido, prompt ausente ou QEMU | mutacoes do Explorer ocorrem somente no snapshot descartavel; diagnosticos e rejeicoes nao mutam estado persistente | encerrar o QEMU, descartar o snapshot e preservar serial, QMP e resultado |
 | `qemu:tst2:boot-ready` | `qemu` | `smoke` | `qemu:tst2:boot-ready` | `AUTOMATED` | 30 | 5 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e o executavel qemu-system-i386 esta disponivel | iniciar o guest em snapshot, enviar HELLO e executar o caso de boot apos READY | o guest publica READY, HEARTBEAT e PASS para o caso solicitado | PANIC, TIMEOUT, ausencia de heartbeat, erro de protocolo ou encerramento inesperado do QEMU | cria um processo QEMU e artefatos temporarios da execucao | encerrar o QEMU via QMP e preservar o relatorio, serial e logs da execucao |
 | `qemu:tst4:execution` | `qemu` | `smoke` | `qemu:tst4:execution` | `AUTOMATED` | 60 | 10 | `snapshot` | `quality` | `qemu` | processos, threads, IPC, wait e workqueue estao READY | executar um unico autoteste interno apos READY | todos os resultados estruturados passam e nenhum estado residual permanece | falha de resultado, invariante, fila, contador, timeout, protocolo ou QEMU | cria somente objetos temporarios dos self-tests existentes | cada self-test desfaz seus objetos e o harness valida as filas finais |
 | `qemu:tst4:memory-slab` | `qemu` | `smoke` | `qemu:tst4:memory-slab` | `AUTOMATED` | 30 | 5 | `snapshot` | `quality` | `qemu` | build/zephyros.img existe e paging, PMM, heap e SLAB estao READY | iniciar o guest em snapshot e enviar um unico RUN apos READY | o guest publica READY, HEARTBEAT, BEGIN e PASS, preservando o estado de memoria | falha de pre-condicao, invariante, contador, pagina, protocolo, heartbeat ou QEMU | cria um processo QEMU e recursos temporarios de memoria do autoteste | encerrar o QEMU via QMP e preservar manifesto, serial, logs e resultado |

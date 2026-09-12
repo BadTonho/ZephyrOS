@@ -37,6 +37,16 @@
         "BLOCKED",
         "STOPPED"
       ],
+      "status": "PASS",
+      "last_run": {
+        "run_id": "qpp-20260912T192627Z-32820",
+        "seed": 2203,
+        "workers_requested": 4,
+        "workers_used": 4,
+        "cases_completed": 15,
+        "artifact_directory": "build/test-results/shell3/qpp-20260912T192627Z-32820",
+        "qemu_residual_processes": 0
+      },
       "artifact_schema": "zephyros-qemu-parallel-result-v1"
     },
     "sto7_adversarial": {
@@ -519,6 +529,74 @@
       "workers_default": 4,
       "seed_default": 2202,
       "artifact_directory": "build/test-results/shell2",
+      "network_policy": "offline-restricted",
+      "statuses": [
+        "PASS",
+        "FAIL",
+        "BLOCKED",
+        "STOPPED"
+      ],
+      "artifact_schema": "zephyros-qemu-parallel-result-v1"
+    },
+    "shell3_files_admin": {
+      "case_ids": [
+        "qemu:hw1:no-storage",
+        "qemu:hw1:no-usb",
+        "qemu:shell3:files-admin",
+        "qemu:tst4:storage-vfs",
+        "qemu:tst5:apps",
+        "qemu:tst5:input",
+        "qemu:tst5:sec6-classic",
+        "qemu:tst5:sec6-simple",
+        "qemu:tst5:shell",
+        "qemu:tst5:storage",
+        "qemu:tst6:matrix:minimal",
+        "qemu:tst6:matrix:usb-storage",
+        "qemu:tst6:sec6:no-vesa",
+        "qemu:tst6:stress:apps",
+        "qemu:tst6:stress:storage"
+      ],
+      "guest_cases": [
+        "qemu:tst5:shell3-files-admin"
+      ],
+      "profiles": [
+        "baseline",
+        "smoke",
+        "minimal",
+        "no-storage",
+        "no-usb",
+        "no-vesa",
+        "tst6"
+      ],
+      "tags": [
+        "shell3",
+        "shell",
+        "files",
+        "vfs",
+        "storage",
+        "pipeline",
+        "reentry"
+      ],
+      "required_commands": [
+        "cat /tmp/SHELL3.TXT",
+        "cat README.TXT",
+        "cat README.TXT | grep Zephyr",
+        "cd /",
+        "echo shell3-pipeline-source | grep shell3",
+        "echo shell3-redirect > /tmp/SHELL3.TXT",
+        "index status",
+        "ls",
+        "ls | grep README",
+        "mount",
+        "pipetest",
+        "pwd",
+        "search README",
+        "storage mount missing",
+        "storage unmount missing"
+      ],
+      "workers_default": 4,
+      "seed_default": 2203,
+      "artifact_directory": "build/test-results/shell3",
       "network_policy": "offline-restricted",
       "statuses": [
         "PASS",
@@ -4583,7 +4661,10 @@
         "effects": "somente buffers estaticos de saida e doubles do indice no processo host",
         "cleanup": "processo host encerrado e manifesto, logs e cobertura preservados",
         "status": "AUTOMATED",
-        "surface_ids": []
+        "surface_ids": [],
+        "tags": [
+          "shell3"
+        ]
       },
       "evidence": "make test-shell-commands-storage-host PASS com storage check generico, contadores FAT12/FAT32, bloco, cache, sync, storage, index, search e job; a fixture cobre diretamente os dispatchers e caminhos validos, negativos e de limite usando doubles estaticos; evidencia STO4"
     },
@@ -4877,7 +4958,8 @@
           "filemanager",
           "limits",
           "navigation",
-          "coverage"
+          "coverage",
+          "shell3"
         ],
         "status": "AUTOMATED"
       },
@@ -4927,7 +5009,8 @@
           "taskmanager",
           "procfs",
           "limits",
-          "coverage"
+          "coverage",
+          "shell3"
         ],
         "status": "AUTOMATED"
       },
@@ -5084,7 +5167,8 @@
           "pipeline",
           "grep",
           "limits",
-          "coverage"
+          "coverage",
+          "shell3"
         ]
       },
       "evidence": "make test-shell-commands-vfs-host PASS com grep, pipetest, erros de pipeline e limites no relatorio instrumentado"
@@ -5136,7 +5220,8 @@
           "threads",
           "redirect",
           "limits",
-          "coverage"
+          "coverage",
+          "shell3"
         ]
       },
       "evidence": "make test-shell-pipeline-host PASS com parser, pipeline, redirecionamento, autoteste de pipe, limites, falhas de criacao e limpeza no relatorio instrumentado"
@@ -7418,7 +7503,8 @@
           "tui",
           "gui",
           "limits",
-          "coverage"
+          "coverage",
+          "shell3"
         ],
         "status": "AUTOMATED"
       },
@@ -8050,7 +8136,8 @@
           "settings",
           "icons",
           "limits",
-          "coverage"
+          "coverage",
+          "shell3"
         ],
         "status": "AUTOMATED"
       },
@@ -8102,7 +8189,8 @@
           "gui",
           "mouse",
           "limits",
-          "coverage"
+          "coverage",
+          "shell3"
         ],
         "status": "AUTOMATED"
       },
@@ -8318,7 +8406,8 @@
           "apps",
           "ui",
           "negative",
-          "coverage"
+          "coverage",
+          "shell3"
         ],
         "status": "AUTOMATED"
       },
@@ -8370,7 +8459,8 @@
           "gui",
           "mouse",
           "limits",
-          "coverage"
+          "coverage",
+          "shell3"
         ],
         "status": "AUTOMATED"
       },
@@ -9418,6 +9508,404 @@
             {
               "op": "text",
               "text": "echo shell1-prompt-lifecycle"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            }
+          ],
+          "post_action": {
+            "type": "none",
+            "steps": []
+          }
+        }
+      }
+    },
+    {
+      "id": "shell3-files-admin-qemu",
+      "domain": "shell-interface",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:shell3:files-admin"
+      ],
+      "surface_ids": [
+        "c:src/shell/shell_dispatch.c:shell_dispatch_execute",
+        "c:src/shell/shell_commands_core.c:cmd_ls",
+        "c:src/shell/shell_commands_core.c:cmd_cat",
+        "c:src/shell/shell_commands_vfs.c:cmd_grep",
+        "c:src/shell/shell_commands_vfs.c:cmd_pipetest",
+        "c:src/shell/shell_commands_storage.c:cmd_index",
+        "c:src/shell/shell_commands_storage.c:cmd_search",
+        "c:src/shell/shell_commands_storage.c:cmd_storage",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_mount",
+        "c:src/filemanager/filemanager.c:fm_open",
+        "c:src/filemanager/filemanager.c:fm_close",
+        "c:src/filemanager/filemanager.c:fm_handle_key",
+        "c:src/filemanager/filemanager.c:fm_hosted_mouse",
+        "c:src/filemanager/filemanager.c:fm_draw_create_dir",
+        "c:src/filemanager/filemanager.c:fm_draw_create_file",
+        "c:src/filemanager/filemanager.c:fm_draw_rename_file",
+        "c:src/filemanager/filemanager.c:fm_draw_confirm_delete",
+        "c:src/filemanager/filemanager.c:fm_draw_view_file",
+        "c:src/filemanager/filemanager.c:fm_delete_selected_file",
+        "c:src/filemanager/filemanager.c:fm_rename_selected_file",
+        "c:src/shell/taskmanager.c:taskmgr_open",
+        "c:src/shell/taskmanager.c:taskmgr_close",
+        "c:src/shell/taskmanager.c:taskmgr_handle_key",
+        "c:src/settings/settings.c:settings_open",
+        "c:src/settings/settings.c:settings_close",
+        "c:src/settings/settings.c:settings_handle_key",
+        "c:src/desktop/desktop.c:desktop_handle_key",
+        "c:src/desktop/desktop.c:desktop_handle_mouse",
+        "c:src/wm/wm.c:wm_handle_key",
+        "c:src/wm/wm.c:wm_handle_mouse",
+        "c:src/wm/wm.c:wm_close_hosted_app",
+        "c:src/taskbar/taskbar.c:taskbar_handle_key",
+        "c:src/taskbar/taskbar.c:taskbar_draw"
+      ],
+      "include_public_apis": true,
+      "evidence": "Caso QEMU SHELL3 para arquivos, VFS, pipeline, Explorer, Task Manager, Settings e retorno ao Shell",
+      "case_definition": {
+        "id": "qemu:shell3:files-admin",
+        "scenario": "Arquivos, VFS, pipeline e administracao com retorno deterministico ao Shell",
+        "owner": "quality",
+        "layer": "qemu",
+        "executor": "qemu",
+        "profile": "smoke",
+        "guest_case": "qemu:tst5:shell3-files-admin",
+        "qemu_profile": "baseline",
+        "required_capabilities": [],
+        "timeout_seconds": 300,
+        "heartbeat_timeout_seconds": 20,
+        "isolation": "snapshot",
+        "parameters": {
+          "protocol": "ZTEST/1",
+          "input": "qmp-keyboard",
+          "postcondition": "prompt-recovered",
+          "mutation": "snapshot-discarded",
+          "diagnostics": "vfs status,storage list,index status",
+          "read_only": "CLI rejection paths are read-only; Explorer mutations are fixture-scoped"
+        },
+        "preconditions": "imagem pronta, Shell inicializado e teclado virtual disponivel",
+        "action": "executar comandos de caminho, pipeline, redirecionamento, Storage e cenas do Shell",
+        "expected": "operacoes validas funcionam, rejeicoes preservam o estado e cada cena retorna uma vez ao prompt",
+        "errors": "caminho ausente, permissao negada, volume indisponivel, transicao ocupada, handle invalido, prompt ausente ou QEMU",
+        "effects": "mutacoes do Explorer ocorrem somente no snapshot descartavel; diagnosticos e rejeicoes nao mutam estado persistente",
+        "cleanup": "encerrar o QEMU, descartar o snapshot e preservar serial, QMP e resultado",
+        "status": "AUTOMATED",
+        "surface_ids": [
+          "c:src/shell/shell_dispatch.c:shell_dispatch_execute",
+          "c:src/shell/shell_commands_core.c:cmd_ls",
+          "c:src/shell/shell_commands_core.c:cmd_cat",
+          "c:src/shell/shell_commands_vfs.c:cmd_grep",
+          "c:src/shell/shell_commands_vfs.c:cmd_pipetest",
+          "c:src/shell/shell_commands_storage.c:cmd_index",
+          "c:src/shell/shell_commands_storage.c:cmd_search",
+          "c:src/shell/shell_commands_storage.c:cmd_storage",
+          "c:src/shell/shell_commands_diagnostics.c:cmd_mount",
+          "c:src/filemanager/filemanager.c:fm_open",
+          "c:src/filemanager/filemanager.c:fm_close",
+          "c:src/filemanager/filemanager.c:fm_handle_key",
+          "c:src/filemanager/filemanager.c:fm_hosted_mouse",
+          "c:src/filemanager/filemanager.c:fm_draw_create_dir",
+          "c:src/filemanager/filemanager.c:fm_draw_create_file",
+          "c:src/filemanager/filemanager.c:fm_draw_rename_file",
+          "c:src/filemanager/filemanager.c:fm_draw_confirm_delete",
+          "c:src/filemanager/filemanager.c:fm_draw_view_file",
+          "c:src/filemanager/filemanager.c:fm_delete_selected_file",
+          "c:src/filemanager/filemanager.c:fm_rename_selected_file",
+          "c:src/shell/taskmanager.c:taskmgr_open",
+          "c:src/shell/taskmanager.c:taskmgr_close",
+          "c:src/shell/taskmanager.c:taskmgr_handle_key",
+          "c:src/settings/settings.c:settings_open",
+          "c:src/settings/settings.c:settings_close",
+          "c:src/settings/settings.c:settings_handle_key",
+          "c:src/desktop/desktop.c:desktop_handle_key",
+          "c:src/desktop/desktop.c:desktop_handle_mouse",
+          "c:src/wm/wm.c:wm_handle_key",
+          "c:src/wm/wm.c:wm_handle_mouse",
+          "c:src/wm/wm.c:wm_close_hosted_app",
+          "c:src/taskbar/taskbar.c:taskbar_handle_key",
+          "c:src/taskbar/taskbar.c:taskbar_draw"
+        ],
+        "tags": [
+          "qemu",
+          "shell",
+          "shell3",
+          "files",
+          "vfs",
+          "storage",
+          "pipeline",
+          "filemanager",
+          "taskmanager",
+          "settings",
+          "desktop",
+          "wm",
+          "taskbar",
+          "prompt",
+          "reentry",
+          "tst5"
+        ],
+        "interaction": {
+          "mode": "qmp-keyboard",
+          "steps": [
+            {
+              "op": "key",
+              "key": "meta_l"
+            },
+            {
+              "op": "key",
+              "key": "down"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "pwd"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "cd /"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "ls"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "ls | grep README"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "cat README.TXT"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "cat README.TXT | grep Zephyr"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "echo shell3-pipeline-source | grep shell3"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "echo shell3-redirect > /tmp/SHELL3.TXT"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "cat /tmp/SHELL3.TXT"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "pipetest"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 2
+            },
+            {
+              "op": "keys",
+              "keys": [
+                "ctrl",
+                "c"
+              ]
+            },
+            {
+              "op": "text",
+              "text": "index status"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "search README"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 3
+            },
+            {
+              "op": "text",
+              "text": "mount"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "storage mount missing"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "storage unmount missing"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "cd /missing"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "cat /missing"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "grep shell3"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "text",
+              "text": "explorer"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 3
+            },
+            {
+              "op": "keys",
+              "keys": [
+                "alt",
+                "f4"
+              ]
+            },
+            {
+              "op": "wait",
+              "seconds": 2
+            },
+            {
+              "op": "text",
+              "text": "taskmgr"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 3
+            },
+            {
+              "op": "keys",
+              "keys": [
+                "alt",
+                "f4"
+              ]
+            },
+            {
+              "op": "wait",
+              "seconds": 2
+            },
+            {
+              "op": "text",
+              "text": "settings"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 3
+            },
+            {
+              "op": "keys",
+              "keys": [
+                "alt",
+                "f4"
+              ]
+            },
+            {
+              "op": "wait",
+              "seconds": 2
+            },
+            {
+              "op": "text",
+              "text": "guimode simple"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 2
+            },
+            {
+              "op": "text",
+              "text": "echo shell3-files-admin"
             },
             {
               "op": "key",

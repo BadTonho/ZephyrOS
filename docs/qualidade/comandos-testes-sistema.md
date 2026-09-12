@@ -563,3 +563,18 @@ introspeccao, VFS, supervisor, prompt e black-box com
 independentes e os casos de fallback sem hardware. O caso dedicado
 `qemu:shell2:commands-diagnostics` cobre comandos validos e invalidos,
 cancelamento, diagnosticos, `mount` separado e reentrada.
+
+## SHELL3 - arquivos, VFS e administracao
+
+```text
+make test-shell3-host
+make test-shell3-qemu SHELL3_QEMU_WORKERS=4 SHELL3_QEMU_SEED=2203
+make test-shell3
+```
+
+O agregado host combina pipeline, VFS, Storage, permissoes, indice, Explorer,
+Task Manager, Settings, Desktop, WM, Taskbar, entrada, aplicativos e black-box
+com `test_shell3_matrix.py`. A matriz paralela usa a selecao explicita `shell3`,
+snapshots independentes e resultados em `build/test-results/shell3/`. O caso
+`qemu:shell3:files-admin` cobre comandos de arquivos, pipelines,
+redirecionamento, Storage, cenas e retorno ao prompt.

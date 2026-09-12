@@ -520,3 +520,23 @@ validos e invalidos, cancelamento, diagnosticos, reentrada e retorno unico ao
 prompt em snapshot independente. Os perfis sem ACPI, NIC, USB, audio,
 armazenamento e VESA reutilizam os casos existentes para confirmar fallback e
 degradacao sem duplicar execucoes.
+
+## SHELL3: arquivos, VFS e administracao
+
+`pwd`, `cd`, `ls`, `cat`, `grep`, `pipetest`, `index`, `search`, `mount` e os
+subcomandos `storage mount`/`storage unmount` usam os contratos existentes do
+dispatcher, VFS e Storage. Caminho ausente, permissao negada, filesystem
+indisponivel, dispositivo ausente, volume ocupado, pinned ou em transicao
+permanecem estados distintos e nao produzem mutacao parcial.
+
+Pipelines, redirecionamentos e `grep` liberam pipes, descritores, buffers,
+jobs e threads em sucesso, erro, cancelamento e timeout. Criacao, rename,
+exclusao, confirmacao, visualizacao e busca de arquivos sao exercitados pelo
+Explorer e pelas APIs FS/VFS existentes; nao ha comandos CLI paralelos de
+`mkdir`, `rm`, `mv` ou `cp`.
+
+Explorer, Task Manager, Settings, Desktop, Window Manager e Taskbar mantem
+Simple como fallback, preservam o contexto da cena e retornam ao prompt pelo
+ciclo central de SHELL1. As mutacoes do caso QEMU ocorrem apenas em snapshot
+descartavel. A matriz dedicada `qemu:shell3:files-admin` usa a tag `shell3`,
+confirma retorno ao prompt e preserva os artefatos de cada worker.

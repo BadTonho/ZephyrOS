@@ -93984,6 +93984,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:ui:desktop",
+        "qemu:shell3:files-admin",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
@@ -94006,7 +94007,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:ui:desktop"
+        "host:ui:desktop",
+        "qemu:shell3:files-admin"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -110772,7 +110774,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:ui:filemanager"
+        "host:ui:filemanager",
+        "qemu:shell3:files-admin"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -110836,7 +110839,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:ui:filemanager"
+        "host:ui:filemanager",
+        "qemu:shell3:files-admin"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -111028,7 +111032,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:ui:filemanager"
+        "host:ui:filemanager",
+        "qemu:shell3:files-admin"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -111049,7 +111054,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:ui:filemanager"
+        "host:ui:filemanager",
+        "qemu:shell3:files-admin"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -111070,7 +111076,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:ui:filemanager"
+        "host:ui:filemanager",
+        "qemu:shell3:files-admin"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -111154,7 +111161,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:ui:filemanager"
+        "host:ui:filemanager",
+        "qemu:shell3:files-admin"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -111302,7 +111310,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:ui:filemanager"
+        "host:ui:filemanager",
+        "qemu:shell3:files-admin"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -111451,6 +111460,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "qemu:shell3:files-admin",
         "qemu:tst5:apps"
       ],
       "tags": [],
@@ -111535,7 +111545,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:ui:filemanager"
+        "host:ui:filemanager",
+        "qemu:shell3:files-admin"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -111683,6 +111694,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "qemu:shell3:files-admin",
         "qemu:tst5:apps"
       ],
       "tags": [],
@@ -111769,7 +111781,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:ui:filemanager"
+        "host:ui:filemanager",
+        "qemu:shell3:files-admin"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -140467,7 +140480,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:ui:settings-icons"
+        "host:ui:settings-icons",
+        "qemu:shell3:files-admin"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -140959,6 +140973,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:ui:settings-icons",
+        "qemu:shell3:files-admin",
         "qemu:tst5:apps"
       ],
       "tags": [],
@@ -141175,6 +141190,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:ui:settings-icons",
+        "qemu:shell3:files-admin",
         "qemu:tst5:apps"
       ],
       "tags": [],
@@ -146696,7 +146712,8 @@
       "status": "COVERED",
       "case_ids": [
         "host:shell:commands-core",
-        "qemu:shell2:commands-diagnostics"
+        "qemu:shell2:commands-diagnostics",
+        "qemu:shell3:files-admin"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -146827,6 +146844,7 @@
       "case_ids": [
         "host:shell:commands-core",
         "qemu:shell2:commands-diagnostics",
+        "qemu:shell3:files-admin",
         "qemu:tst5:storage"
       ],
       "tags": [],
@@ -149449,6 +149467,7 @@
       "case_ids": [
         "host:shell:diagnostics",
         "qemu:shell2:commands-diagnostics",
+        "qemu:shell3:files-admin",
         "qemu:tst5:storage"
       ],
       "tags": [],
@@ -156963,7 +156982,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:commands-storage"
+        "host:shell:commands-storage",
+        "qemu:shell3:files-admin"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -157047,7 +157067,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:commands-storage"
+        "host:shell:commands-storage",
+        "qemu:shell3:files-admin"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -157131,7 +157152,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:commands-storage"
+        "host:shell:commands-storage",
+        "qemu:shell3:files-admin"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -157698,7 +157720,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:commands-vfs"
+        "host:shell:commands-vfs",
+        "qemu:shell3:files-admin"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -157719,7 +157742,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:commands-vfs"
+        "host:shell:commands-vfs",
+        "qemu:shell3:files-admin"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -158792,6 +158816,7 @@
       "case_ids": [
         "host:shell:dispatch",
         "qemu:shell2:commands-diagnostics",
+        "qemu:shell3:files-admin",
         "qemu:tst5:apps",
         "qemu:tst5:network",
         "qemu:tst5:processes",
@@ -161015,7 +161040,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:taskmanager"
+        "host:shell:taskmanager",
+        "qemu:shell3:files-admin"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -162138,7 +162164,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:taskmanager"
+        "host:shell:taskmanager",
+        "qemu:shell3:files-admin"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -162352,7 +162379,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:shell:taskmanager"
+        "host:shell:taskmanager",
+        "qemu:shell3:files-admin"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -162886,6 +162914,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:ui:taskbar",
+        "qemu:shell3:files-admin",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
@@ -163269,6 +163298,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:ui:taskbar",
+        "qemu:shell3:files-admin",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
@@ -166392,7 +166422,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:ui:wm"
+        "host:ui:wm",
+        "qemu:shell3:files-admin"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -167643,6 +167674,7 @@
       "status": "COVERED",
       "case_ids": [
         "host:ui:wm",
+        "qemu:shell3:files-admin",
         "qemu:tst5:apps",
         "qemu:tst5:shell"
       ],
@@ -167665,7 +167697,8 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
-        "host:ui:wm"
+        "host:ui:wm",
+        "qemu:shell3:files-admin"
       ],
       "tags": [],
       "coverage_mode": "direct"
@@ -179432,7 +179465,8 @@
         "apps",
         "ui",
         "negative",
-        "coverage"
+        "coverage",
+        "shell3"
       ],
       "status": "AUTOMATED"
     },
@@ -179756,6 +179790,9 @@
         "c:src/shell/shell_commands_storage.c:shell_index_job_finish",
         "c:src/shell/shell_commands_storage.c:shell_index_job_step",
         "c:src/shell/shell_commands_storage.c:shell_storage_start_job"
+      ],
+      "tags": [
+        "shell3"
       ]
     },
     {
@@ -179796,7 +179833,8 @@
         "pipeline",
         "grep",
         "limits",
-        "coverage"
+        "coverage",
+        "shell3"
       ]
     },
     {
@@ -180931,7 +180969,8 @@
         "threads",
         "redirect",
         "limits",
-        "coverage"
+        "coverage",
+        "shell3"
       ]
     },
     {
@@ -181051,7 +181090,8 @@
         "taskmanager",
         "procfs",
         "limits",
-        "coverage"
+        "coverage",
+        "shell3"
       ],
       "status": "AUTOMATED"
     },
@@ -181714,7 +181754,8 @@
         "storage",
         "file-index",
         "negative",
-        "sto1"
+        "sto1",
+        "shell3"
       ]
     },
     {
@@ -182696,7 +182737,8 @@
         "vfs",
         "negative",
         "sto2",
-        "sto3"
+        "sto3",
+        "shell3"
       ]
     },
     {
@@ -182795,7 +182837,8 @@
         "vfs",
         "negative",
         "sto2",
-        "sto3"
+        "sto3",
+        "shell3"
       ]
     },
     {
@@ -183287,7 +183330,8 @@
         "gui",
         "mouse",
         "limits",
-        "coverage"
+        "coverage",
+        "shell3"
       ],
       "status": "AUTOMATED"
     },
@@ -183409,7 +183453,8 @@
         "filemanager",
         "limits",
         "navigation",
-        "coverage"
+        "coverage",
+        "shell3"
       ],
       "status": "AUTOMATED"
     },
@@ -183631,7 +183676,8 @@
         "settings",
         "icons",
         "limits",
-        "coverage"
+        "coverage",
+        "shell3"
       ],
       "status": "AUTOMATED"
     },
@@ -183735,7 +183781,8 @@
         "tui",
         "gui",
         "limits",
-        "coverage"
+        "coverage",
+        "shell3"
       ],
       "status": "AUTOMATED"
     },
@@ -184014,7 +184061,8 @@
         "gui",
         "mouse",
         "limits",
-        "coverage"
+        "coverage",
+        "shell3"
       ],
       "status": "AUTOMATED"
     },
@@ -184178,7 +184226,8 @@
         "hw2",
         "hw4",
         "hw6",
-        "shell2"
+        "shell2",
+        "shell3"
       ]
     },
     {
@@ -184220,7 +184269,8 @@
         "hw3",
         "hw4",
         "hw6",
-        "shell2"
+        "shell2",
+        "shell3"
       ]
     },
     {
@@ -185090,6 +185140,357 @@
           {
             "op": "text",
             "text": "echo shell2-commands-diagnostics"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          }
+        ],
+        "post_action": {
+          "type": "none",
+          "steps": []
+        }
+      }
+    },
+    {
+      "id": "qemu:shell3:files-admin",
+      "scenario": "Arquivos, VFS, pipeline e administracao com retorno deterministico ao Shell",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "smoke",
+      "guest_case": "qemu:tst5:shell3-files-admin",
+      "qemu_profile": "baseline",
+      "required_capabilities": [],
+      "timeout_seconds": 300,
+      "heartbeat_timeout_seconds": 20,
+      "isolation": "snapshot",
+      "parameters": {
+        "protocol": "ZTEST/1",
+        "input": "qmp-keyboard",
+        "postcondition": "prompt-recovered",
+        "mutation": "snapshot-discarded",
+        "diagnostics": "vfs status,storage list,index status",
+        "read_only": "CLI rejection paths are read-only; Explorer mutations are fixture-scoped"
+      },
+      "preconditions": "imagem pronta, Shell inicializado e teclado virtual disponivel",
+      "action": "executar comandos de caminho, pipeline, redirecionamento, Storage e cenas do Shell",
+      "expected": "operacoes validas funcionam, rejeicoes preservam o estado e cada cena retorna uma vez ao prompt",
+      "errors": "caminho ausente, permissao negada, volume indisponivel, transicao ocupada, handle invalido, prompt ausente ou QEMU",
+      "effects": "mutacoes do Explorer ocorrem somente no snapshot descartavel; diagnosticos e rejeicoes nao mutam estado persistente",
+      "cleanup": "encerrar o QEMU, descartar o snapshot e preservar serial, QMP e resultado",
+      "status": "AUTOMATED",
+      "surface_ids": [
+        "c:src/desktop/desktop.c:desktop_handle_key",
+        "c:src/desktop/desktop.c:desktop_handle_mouse",
+        "c:src/filemanager/filemanager.c:fm_close",
+        "c:src/filemanager/filemanager.c:fm_delete_selected_file",
+        "c:src/filemanager/filemanager.c:fm_draw_confirm_delete",
+        "c:src/filemanager/filemanager.c:fm_draw_create_dir",
+        "c:src/filemanager/filemanager.c:fm_draw_create_file",
+        "c:src/filemanager/filemanager.c:fm_draw_rename_file",
+        "c:src/filemanager/filemanager.c:fm_draw_view_file",
+        "c:src/filemanager/filemanager.c:fm_handle_key",
+        "c:src/filemanager/filemanager.c:fm_hosted_mouse",
+        "c:src/filemanager/filemanager.c:fm_open",
+        "c:src/filemanager/filemanager.c:fm_rename_selected_file",
+        "c:src/settings/settings.c:settings_close",
+        "c:src/settings/settings.c:settings_handle_key",
+        "c:src/settings/settings.c:settings_open",
+        "c:src/shell/shell_commands_core.c:cmd_cat",
+        "c:src/shell/shell_commands_core.c:cmd_ls",
+        "c:src/shell/shell_commands_diagnostics.c:cmd_mount",
+        "c:src/shell/shell_commands_storage.c:cmd_index",
+        "c:src/shell/shell_commands_storage.c:cmd_search",
+        "c:src/shell/shell_commands_storage.c:cmd_storage",
+        "c:src/shell/shell_commands_vfs.c:cmd_grep",
+        "c:src/shell/shell_commands_vfs.c:cmd_pipetest",
+        "c:src/shell/shell_dispatch.c:shell_dispatch_execute",
+        "c:src/shell/taskmanager.c:taskmgr_close",
+        "c:src/shell/taskmanager.c:taskmgr_handle_key",
+        "c:src/shell/taskmanager.c:taskmgr_open",
+        "c:src/taskbar/taskbar.c:taskbar_draw",
+        "c:src/taskbar/taskbar.c:taskbar_handle_key",
+        "c:src/wm/wm.c:wm_close_hosted_app",
+        "c:src/wm/wm.c:wm_handle_key",
+        "c:src/wm/wm.c:wm_handle_mouse"
+      ],
+      "tags": [
+        "qemu",
+        "shell",
+        "shell3",
+        "files",
+        "vfs",
+        "storage",
+        "pipeline",
+        "filemanager",
+        "taskmanager",
+        "settings",
+        "desktop",
+        "wm",
+        "taskbar",
+        "prompt",
+        "reentry",
+        "tst5"
+      ],
+      "interaction": {
+        "mode": "qmp-keyboard",
+        "steps": [
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "pwd"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "cd /"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "ls"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "ls | grep README"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "cat README.TXT"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "cat README.TXT | grep Zephyr"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "echo shell3-pipeline-source | grep shell3"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "echo shell3-redirect > /tmp/SHELL3.TXT"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "cat /tmp/SHELL3.TXT"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "pipetest"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "keys",
+            "keys": [
+              "ctrl",
+              "c"
+            ]
+          },
+          {
+            "op": "text",
+            "text": "index status"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "search README"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 3
+          },
+          {
+            "op": "text",
+            "text": "mount"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "storage mount missing"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "storage unmount missing"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "cd /missing"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "cat /missing"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "grep shell3"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "text",
+            "text": "explorer"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 3
+          },
+          {
+            "op": "keys",
+            "keys": [
+              "alt",
+              "f4"
+            ]
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "text",
+            "text": "taskmgr"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 3
+          },
+          {
+            "op": "keys",
+            "keys": [
+              "alt",
+              "f4"
+            ]
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "text",
+            "text": "settings"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 3
+          },
+          {
+            "op": "keys",
+            "keys": [
+              "alt",
+              "f4"
+            ]
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "text",
+            "text": "guimode simple"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 2
+          },
+          {
+            "op": "text",
+            "text": "echo shell3-files-admin"
           },
           {
             "op": "key",
@@ -187389,7 +187790,8 @@
         "storage",
         "vfs",
         "hw2",
-        "hw4"
+        "hw4",
+        "shell3"
       ]
     },
     {
@@ -188830,7 +189232,8 @@
         "apps",
         "hw3",
         "shell1",
-        "shell2"
+        "shell2",
+        "shell3"
       ],
       "interaction": {
         "mode": "qmp-keyboard",
@@ -189131,7 +189534,8 @@
         "input",
         "hw3",
         "shell1",
-        "shell2"
+        "shell2",
+        "shell3"
       ],
       "interaction": {
         "mode": "qmp-keyboard",
@@ -190306,7 +190710,8 @@
         "prompt",
         "hw3",
         "shell1",
-        "shell2"
+        "shell2",
+        "shell3"
       ],
       "status": "AUTOMATED",
       "interaction": {
@@ -190550,7 +190955,8 @@
         "prompt",
         "hw3",
         "shell1",
-        "shell2"
+        "shell2",
+        "shell3"
       ],
       "status": "AUTOMATED",
       "interaction": {
@@ -191341,7 +191747,8 @@
         "shell",
         "hw3",
         "shell1",
-        "shell2"
+        "shell2",
+        "shell3"
       ],
       "interaction": {
         "mode": "qmp-keyboard",
@@ -191789,7 +192196,8 @@
         "tst5",
         "storage",
         "hw2",
-        "hw4"
+        "hw4",
+        "shell3"
       ],
       "interaction": {
         "mode": "qmp-keyboard",
@@ -193395,7 +193803,8 @@
         "minimal",
         "hw2",
         "hw3",
-        "hw6"
+        "hw6",
+        "shell3"
       ]
     },
     {
@@ -193621,7 +194030,8 @@
         "hw1",
         "hw2",
         "hw4",
-        "hw6"
+        "hw6",
+        "shell3"
       ]
     },
     {
@@ -193663,7 +194073,8 @@
         "hw2",
         "hw3",
         "hw6",
-        "shell2"
+        "shell2",
+        "shell3"
       ],
       "status": "AUTOMATED"
     },
@@ -193698,7 +194109,8 @@
         "qemu",
         "tst6",
         "stress",
-        "apps"
+        "apps",
+        "shell3"
       ]
     },
     {
@@ -195709,7 +196121,8 @@
         "tst6",
         "stress",
         "storage",
-        "hw4"
+        "hw4",
+        "shell3"
       ]
     },
     {

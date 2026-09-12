@@ -2,8 +2,7 @@
 
 ## Estado
 
-SHELL1 e SHELL2 concluidos e validados; as fases seguintes desta frente
-continuam planejadas.
+SHELL1, SHELL2 e SHELL3 concluidos e validados; SHELL4 permanece planejado.
 
 Planejado. Esta frente fecha a experiência básica de uso do ZephyrOS depois
 que kernel, segurança, Storage e hardware estiverem com contratos estáveis.
@@ -70,17 +69,17 @@ ou ferramentas de programação.
 
 ### SHELL3 — Arquivos e administração
 
-- [ ] Confirmar navegação de diretórios, leitura, criação, rename, exclusão,
+- [x] Confirmar navegação de diretórios, leitura, criação, rename, exclusão,
   mount, unmount, busca e índice global.
-- [ ] Integrar abertura de arquivos, pipes, redirecionamento e `grep` sem
+- [x] Integrar abertura de arquivos, pipes, redirecionamento e `grep` sem
   deixar FDs ou jobs residuais.
-- [ ] Exibir erros de permissão separadamente de caminho inexistente,
+- [x] Exibir erros de permissão separadamente de caminho inexistente,
   filesystem indisponível ou dispositivo ausente.
-- [ ] Validar Explorer Simple/Classic, teclado, mouse, seleção, confirmação,
+- [x] Validar Explorer Simple/Classic, teclado, mouse, seleção, confirmação,
   fallback e retorno ao Shell.
-- [ ] Validar Task Manager com snapshots de `/proc`, ações por PID +
+- [x] Validar Task Manager com snapshots de `/proc`, ações por PID +
   generation e fallback Simple.
-- [ ] Validar Settings, Desktop, WM e Taskbar sem apagar a tela de maneira
+- [x] Validar Settings, Desktop, WM e Taskbar sem apagar a tela de maneira
   universal nem perder o contexto da cena.
 
 ### SHELL4 — Aplicativos e pacotes
@@ -195,3 +194,25 @@ pela tag `shell2`, sem alterar ABI, syscalls, `shell.h` ou codigos de erro.
 
 Estado da etapa: concluida e validada. O agregado host passou, o catalogo foi
 validado e a matriz QEMU passou 15/15 casos com 4 workers e seed 2202.
+
+### Validacao SHELL3
+
+O conjunto deterministico da etapa e:
+
+```text
+make q3check
+make clean
+make
+make test-shell3-host
+make catalog-test
+make test-shell3-qemu SHELL3_QEMU_WORKERS=4 SHELL3_QEMU_SEED=2203
+```
+
+O caso dedicado `qemu:shell3:files-admin` cobre arquivos, VFS, pipelines,
+redirecionamento, Storage, Explorer, Task Manager, Settings, Desktop, WM,
+Taskbar, entradas invalidas, cancelamento e reentrada. As mutacoes do Explorer
+ficam restritas ao snapshot descartavel; casos existentes sao reutilizados pela
+tag `shell3` sem alterar `shell.h`, ABI, syscalls ou codigos de erro.
+
+Estado da etapa: concluida e validada. O agregado host passou, o catalogo foi
+validado e a matriz QEMU passou 15/15 casos com 4 workers e seed 2203.

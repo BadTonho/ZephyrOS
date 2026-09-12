@@ -141,7 +141,7 @@ INPUT_TEXT_MAX_LENGTH = 160
 INPUT_KEYS_MAX_COUNT = 4
 INPUT_WAIT_MAX_SECONDS = 10.0
 INPUT_TEXT_CHARACTERS = set(
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 _-./:"
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 _-./:|>"
 )
 INPUT_KEY_NAMES = {
     "enter", "esc", "backspace", "tab", "up", "down", "left", "right",
@@ -807,6 +807,10 @@ class QemuSession:
                 keys = ["slash"]
             elif character == ":":
                 keys = ["shift", "semicolon"]
+            elif character == "|":
+                keys = ["shift", "backslash"]
+            elif character == ">":
+                keys = ["shift", "dot"]
             elif character.isupper():
                 keys = ["shift", character.lower()]
             else:

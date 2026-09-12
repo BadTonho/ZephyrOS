@@ -10,7 +10,7 @@
 #define HOST_COVERAGE_CAPACITY 96U
 #define HOST_COVERAGE_LINE_SIZE 32U
 #define HOST_TEXT_CAPACITY 768U
-#define HOST_CASE_COUNT 16U
+#define HOST_CASE_COUNT 17U
 
 typedef enum {
     HOST_TERMINAL_NORMAL,
@@ -219,7 +219,8 @@ static int check_valid_cases(void) {
         {"qemu:tst5:sec6-diagnostics", "sec6-diagnostics"},
         {"qemu:tst5:hw6-diagnostics", "hw6-diagnostics"},
         {"qemu:tst5:shell1-prompt-lifecycle", "shell1-prompt-lifecycle"},
-        {"qemu:tst5:shell2-commands-diagnostics", "shell2-commands-diagnostics"}
+        {"qemu:tst5:shell2-commands-diagnostics", "shell2-commands-diagnostics"},
+        {"qemu:tst5:shell3-files-admin", "shell3-files-admin"}
     };
     kernel_tests_runtime_t runtime;
 
