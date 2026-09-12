@@ -43,6 +43,12 @@
       "case_id": "qemu:hw5:network-dual",
       "condition": "duas NICs E1000 privadas mantem identidade, lifecycle e limpeza sem depender da Internet",
       "origin": "docs/roadmaps/21-hardware-rede-e-energia-v1.0.md:HW5"
+    },
+    {
+      "id": "hw6-diagnostics-support",
+      "case_id": "qemu:hw6:diagnostics-repeat",
+      "condition": "diagnosticos repetidos preservam estados, causas, impactos, prompt e recursos sem reinicializacao indevida",
+      "origin": "docs/roadmaps/21-hardware-rede-e-energia-v1.0.md:HW6"
     }
   ]
 }

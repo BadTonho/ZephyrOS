@@ -114,6 +114,18 @@ class CatalogAndStatusTests(unittest.TestCase):
 
 
 class QemuSessionTests(unittest.TestCase):
+    def test_send_text_supports_colon_in_device_ids(self):
+        with tempfile.TemporaryDirectory() as directory:
+            session = runner.QemuSession.__new__(runner.QemuSession)
+            session.artifact_dir = Path(directory)
+            session.input_trace = []
+            sent = []
+            session._send_qmp_keys = sent.append
+            with patch.object(runner.time, "sleep"):
+                session.send_text("pci-00:03.0")
+            self.assertIn(["shift", "semicolon"], sent)
+            self.assertEqual(session.input_trace[0]["text"], "pci-00:03.0")
+
     def test_start_retries_after_serial_port_collision(self):
         class FakeProcess:
             def __init__(self):
@@ -204,6 +216,7 @@ class ProgressTests(unittest.TestCase):
 class FakeSession:
     def __init__(self, events):
         self.events = list(events)
+        self.deferred_events = []
         self.progress = runner.ProgressTracker()
         self.protocol_errors = []
         self.sent = []
@@ -220,12 +233,23 @@ class FakeSession:
                                           if key == "seq"))
         self.sent.append(fields)
 
-    def pump(self):
+    def pump(self, preserve_events=False):
+        pending = [] if preserve_events else self.deferred_events
+        if not preserve_events:
+            self.deferred_events = []
         if not self.events:
-            return []
+            return pending
         event = self.events.pop(0)
         self.progress.record(event)
-        return [event]
+        if preserve_events:
+            self.deferred_events.append(event)
+        return pending + [event]
+
+    def execute_interaction(self, interaction):
+        self.pump(preserve_events=True)
+
+    def capture_screenshot(self, label):
+        return None
 
 
 class WaitForCaseTests(unittest.TestCase):
@@ -251,6 +275,18 @@ class WaitForCaseTests(unittest.TestCase):
              "seed": "1", "seq": "2"},
         ])
         result = runner.wait_for_case(session, "qemu:test", 0, 1, 1, 1)
+        self.assertEqual(result["event"], "PASS")
+        self.assertEqual(session.progress.state, runner.PROGRESS_PASS)
+
+    def test_terminal_event_during_interaction_is_preserved(self):
+        session = FakeSession([{
+            "event": "BEGIN", "case": "qemu:test", "iteration": "0",
+            "seed": "1", "seq": "1"}, {
+            "event": "PASS", "case": "qemu:test", "iteration": "0",
+            "seed": "1", "seq": "2"}])
+        result = runner.wait_for_case(
+            session, "qemu:test", 0, 1, 1, 1,
+            {"interaction": {"steps": [{"op": "wait", "seconds": 0}]}})
         self.assertEqual(result["event"], "PASS")
         self.assertEqual(session.progress.state, runner.PROGRESS_PASS)
 

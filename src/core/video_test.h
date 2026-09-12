@@ -4,7 +4,7 @@
 #include "core/errors.h"
 #include "types.h"
 
-#define VIDEO_TEST_TEXT_CAPACITY 16384U
+#define VIDEO_TEST_TEXT_CAPACITY 65536U
 
 typedef struct {
     uint32_t generation;

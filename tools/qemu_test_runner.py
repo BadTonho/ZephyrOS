@@ -141,7 +141,7 @@ INPUT_TEXT_MAX_LENGTH = 160
 INPUT_KEYS_MAX_COUNT = 4
 INPUT_WAIT_MAX_SECONDS = 10.0
 INPUT_TEXT_CHARACTERS = set(
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 _-./"
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 _-./:"
 )
 INPUT_KEY_NAMES = {
     "enter", "esc", "backspace", "tab", "up", "down", "left", "right",
@@ -604,6 +604,7 @@ class QemuSession:
         self.serial_buffer = bytearray()
         self.protocol_errors: list[str] = []
         self.events: list[dict[str, str]] = []
+        self.deferred_events: list[dict[str, str]] = []
         self.progress = ProgressTracker()
         self.last_heartbeat: float | None = None
         self.host_sequence = 0
@@ -804,6 +805,8 @@ class QemuSession:
                 keys = ["dot"]
             elif character == "/":
                 keys = ["slash"]
+            elif character == ":":
+                keys = ["shift", "semicolon"]
             elif character.isupper():
                 keys = ["shift", character.lower()]
             else:
@@ -820,7 +823,7 @@ class QemuSession:
         else:
             deadline = time.monotonic() + float(step["seconds"])
             while time.monotonic() < deadline:
-                self.pump()
+                self.pump(preserve_events=True)
                 remaining = deadline - time.monotonic()
                 if remaining > 0:
                     time.sleep(min(0.05, remaining))
@@ -841,6 +844,7 @@ class QemuSession:
     def reset_protocol(self) -> None:
         self.serial_buffer.clear()
         self.events.clear()
+        self.deferred_events.clear()
         self.host_sequence = 0
         self.guest_sequence = 0
         self.last_heartbeat = None
@@ -900,7 +904,7 @@ class QemuSession:
             self.protocol_errors.append("frame_overflow")
             self.serial_buffer.clear()
 
-    def pump(self) -> list[dict[str, str]]:
+    def pump(self, preserve_events: bool = False) -> list[dict[str, str]]:
         count = len(self.events)
         self.poll_qmp_events()
         self._read_serial()
@@ -908,7 +912,12 @@ class QemuSession:
             if len(self.events) == count:
                 raise RunnerError("qemu_encerrou", "qemu_exit")
         new_events = self.events[count:]
-        return new_events
+        if preserve_events:
+            self.deferred_events.extend(new_events)
+            return new_events
+        pending_events = self.deferred_events
+        self.deferred_events = []
+        return pending_events + new_events
 
     def stop(self) -> int | None:
         if self.process is None:

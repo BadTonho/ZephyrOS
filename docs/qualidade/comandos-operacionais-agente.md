@@ -2253,6 +2253,26 @@ make test-hw5-qemu HW5_QEMU_WORKERS=6 HW5_QEMU_SEED=2105
 Hardware fisico continua `PENDING`; `DT100-003`, `DT100-004` e a divida fisica
 do PS/2 permanecem separadas.
 
+## HW6 - diagnostico e suporte
+
+```text
+make test-hw6-host HOST_CC=C:\\msys64\\ucrt64\\bin\\gcc.exe
+make catalog-test
+make test-hw6-qemu HW6_QEMU_WORKERS=4 HW6_QEMU_SEED=2106
+```
+
+O caso `qemu:hw6:diagnostics-repeat` repete os diagnosticos de hardware,
+energia, rede e USB com snapshots isolados, verifica o prompt e publica os
+artefatos em `build/test-results/hw6/`. Para o Ryzen 5 3600, seis workers
+podem ser usados apos o ciclo padrao:
+
+```text
+make test-hw6-qemu HW6_QEMU_WORKERS=6 HW6_QEMU_SEED=2106
+```
+
+O escopo e QEMU reproduzivel e offline/restrito. Nenhum hardware fisico e
+declarado suportado; seu estado permanece `PENDING`.
+
 ## Spinlock host-only
 
 O alvo `test-spinlock-host` executa uma fixture nativa que inicializa, adquire

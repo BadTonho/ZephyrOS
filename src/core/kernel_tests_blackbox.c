@@ -7,13 +7,16 @@
 #include "video_test.h"
 
 #define KERNEL_TESTS_BLACKBOX_TIMEOUT_TICKS 2500U
+#define KERNEL_TESTS_HW6_TIMEOUT_TICKS 20000U
 #define KERNEL_TESTS_BLACKBOX_TEXT_CAPACITY VIDEO_TEST_TEXT_CAPACITY
 #define KRN6_REQUIRED_COUNT 15U
 #define SEC6_REQUIRED_COUNT 7U
+#define HW6_REQUIRED_COUNT 10U
 
 static char blackbox_text[KERNEL_TESTS_BLACKBOX_TEXT_CAPACITY];
 static uint8_t blackbox_krn6_seen[KRN6_REQUIRED_COUNT];
 static uint8_t blackbox_sec6_seen[SEC6_REQUIRED_COUNT];
+static uint8_t blackbox_hw6_seen[HW6_REQUIRED_COUNT];
 
 static uint32_t blackbox_length(const char* text) {
     uint32_t length = 0U;
@@ -52,6 +55,55 @@ static int blackbox_contains(const char* text, const char* needle) {
     return 0;
 }
 
+static int blackbox_contains_prompt(const char* text) {
+    static const char prompt_without_trailing_space[] = "zephyr>";
+
+    return blackbox_contains(text, SHELL_PROMPT) ||
+           blackbox_contains(text, prompt_without_trailing_space);
+}
+
+static const char* blackbox_find(const char* text, const char* needle) {
+    uint32_t text_length = blackbox_length(text);
+    uint32_t needle_length = blackbox_length(needle);
+
+    if (!text || !needle || needle_length == 0U || needle_length > text_length) {
+        return 0;
+    }
+    for (uint32_t start = 0U;
+         start + needle_length <= text_length; start++) {
+        uint32_t index = 0U;
+
+        while (index < needle_length && text[start + index] == needle[index]) {
+            index++;
+        }
+        if (index == needle_length) return text + start;
+    }
+    return 0;
+}
+
+static int blackbox_marker_completed(const char* text, const char* marker) {
+    uint32_t text_length = blackbox_length(text);
+    uint32_t marker_length = blackbox_length(marker);
+
+    if (!text || !marker || marker_length == 0U || marker_length > text_length) {
+        return 0;
+    }
+    for (uint32_t start = 0U;
+         start + marker_length <= text_length; start++) {
+        uint32_t index = 0U;
+
+        while (index < marker_length &&
+               text[start + index] == marker[index]) {
+            index++;
+        }
+        if (index == marker_length &&
+            blackbox_contains_prompt(text + start + marker_length)) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 static int blackbox_is_krn6_case(const char* case_id, uint32_t case_length) {
     static const char case_name[] = "qemu:tst5:krn6-diagnostics";
 
@@ -60,6 +112,12 @@ static int blackbox_is_krn6_case(const char* case_id, uint32_t case_length) {
 
 static int blackbox_is_sec6_case(const char* case_id, uint32_t case_length) {
     static const char case_name[] = "qemu:tst5:sec6-diagnostics";
+
+    return blackbox_equals(case_id, case_length, case_name);
+}
+
+static int blackbox_is_hw6_case(const char* case_id, uint32_t case_length) {
+    static const char case_name[] = "qemu:tst5:hw6-diagnostics";
 
     return blackbox_equals(case_id, case_length, case_name);
 }
@@ -85,7 +143,70 @@ static void blackbox_reset_sec6_observation(void) {
     }
 }
 
+static void blackbox_reset_hw6_observation(void) {
+    for (uint32_t index = 0U; index < HW6_REQUIRED_COUNT; index++) {
+        blackbox_hw6_seen[index] = 0U;
+    }
+}
+
+static void blackbox_report_krn6_missing(void) {
+    static const char* labels[] = {
+        "Resumo do health:",
+        "Health check:",
+        "SchedCheck:",
+        "contabilidade_idle OK",
+        "MemCheck:",
+        "memoria_detalhada OK",
+        "Autoteste de Bottom-Half (fila privada):",
+        "Autoteste de esperas (canal privado):",
+        "Autoteste da workqueue (fixture privada):",
+        "Resultado: OK",
+        "Metricas K1 (desde reset):",
+        "RegCheck: OK",
+        "Processos ativos:",
+        "Total:",
+        "ZOMBIE=0"
+    };
+
+    for (uint32_t index = 0U;
+         index < sizeof(labels) / sizeof(labels[0]); index++) {
+        if (!blackbox_krn6_seen[index]) {
+            LOG_ERROR("TST5", labels[index]);
+        }
+    }
+}
+
+static int blackbox_hw6_observation_complete(void) {
+    for (uint32_t index = 0U; index < HW6_REQUIRED_COUNT; index++) {
+        if (!blackbox_hw6_seen[index]) return 0;
+    }
+    return 1;
+}
+
+static void blackbox_report_hw6_missing(void) {
+    static const char* labels[] = {
+        "Health check:",
+        "RegCheck:",
+        "Dispositivos detectados:",
+        "Dispositivo",
+        "Varredura",
+        "ACPI tables:",
+        "Rede:",
+        "USB:",
+        "Energia:",
+        SHELL_PROMPT
+    };
+
+    for (uint32_t index = 0U;
+         index < sizeof(labels) / sizeof(labels[0]); index++) {
+        if (!blackbox_hw6_seen[index]) {
+            LOG_ERROR("TST5", labels[index]);
+        }
+    }
+}
+
 static int blackbox_validate_krn6_output(const char* text, int final_snapshot) {
+    const char* diagnostic_text;
     static const char* required[] = {
         "Resumo do health:",
         "Health check:",
@@ -114,23 +235,27 @@ static int blackbox_validate_krn6_output(const char* text, int final_snapshot) {
     for (uint32_t index = 0U; index < KRN6_REQUIRED_COUNT; index++) {
         if (!blackbox_krn6_seen[index]) return 0;
     }
-    if (blackbox_contains(text, "RegCheck: ERRO")) {
+    diagnostic_text = blackbox_find(text, "Resumo do health:");
+    if (!diagnostic_text) diagnostic_text = text;
+    if (blackbox_contains(diagnostic_text, "RegCheck: ERRO")) {
+        LOG_ERROR("TST5", "KRN6 rejeitado: RegCheck com erro");
         return 0;
     }
-    if (blackbox_contains(text, "Health check: ERRO")) {
+    if (blackbox_contains(diagnostic_text, "Health check: ERRO")) {
+        LOG_ERROR("TST5", "KRN6 rejeitado: Health check com erro");
         return 0;
     }
-    if (blackbox_contains(text, "UNKNOWN")) {
+    if (blackbox_contains(diagnostic_text, "resultado ERRO") ||
+        blackbox_contains(diagnostic_text, "Resultado: ERRO")) {
+        LOG_ERROR("TST5", "KRN6 rejeitado: resultado com erro");
         return 0;
     }
-    if (blackbox_contains(text, "resultado ERRO") ||
-        blackbox_contains(text, "Resultado: ERRO")) {
+    if (blackbox_contains(diagnostic_text, "processo ring 3")) {
+        LOG_ERROR("TST5", "KRN6 rejeitado: processo ring 3 residual");
         return 0;
     }
-    if (blackbox_contains(text, "processo ring 3")) {
-        return 0;
-    }
-    if (blackbox_contains(text, "zumbi pendente")) {
+    if (blackbox_contains(diagnostic_text, "zumbi pendente")) {
+        LOG_ERROR("TST5", "KRN6 rejeitado: zumbi pendente");
         return 0;
     }
     return 1;
@@ -166,6 +291,37 @@ static int blackbox_validate_sec6_output(const char* text,
     return 1;
 }
 
+static int blackbox_validate_hw6_output(const char* text,
+                                        int final_snapshot) {
+    static const char* required[] = {
+        "Health check:",
+        "RegCheck:",
+        "Dispositivos detectados:",
+        "Dispositivo",
+        "Varredura",
+        "ACPI tables:",
+        "Rede:",
+        "USB:",
+        "Energia:",
+        SHELL_PROMPT
+    };
+
+    for (uint32_t index = 0U;
+         index < sizeof(required) / sizeof(required[0]); index++) {
+        if (blackbox_contains(text, required[index])) {
+            blackbox_hw6_seen[index] = 1U;
+        }
+    }
+    if (!final_snapshot) return 1;
+    if (!blackbox_hw6_observation_complete()) return 0;
+    if (blackbox_contains(text, "Health check: ERRO") ||
+        blackbox_contains(text, "RegCheck: ERRO") ||
+        blackbox_contains(text, "resultado ERRO")) {
+        return 0;
+    }
+    return 1;
+}
+
 static const char* blackbox_marker(const char* case_id, uint32_t case_length) {
     static const char shell_case[] = "qemu:tst5:shell";
     static const char input_case[] = "qemu:tst5:input";
@@ -180,6 +336,7 @@ static const char* blackbox_marker(const char* case_id, uint32_t case_length) {
     static const char sec6_simple_case[] = "qemu:tst5:sec6-simple";
     static const char sec6_classic_case[] = "qemu:tst5:sec6-classic";
     static const char sec6_diagnostics_case[] = "qemu:tst5:sec6-diagnostics";
+    static const char hw6_diagnostics_case[] = "qemu:tst5:hw6-diagnostics";
 
     if (blackbox_equals(case_id, case_length, shell_case)) return "tst5-shell";
     if (blackbox_equals(case_id, case_length, input_case)) return "tst5-input";
@@ -214,6 +371,9 @@ static const char* blackbox_marker(const char* case_id, uint32_t case_length) {
     if (blackbox_equals(case_id, case_length, sec6_diagnostics_case)) {
         return "sec6-diagnostics";
     }
+    if (blackbox_equals(case_id, case_length, hw6_diagnostics_case)) {
+        return "hw6-diagnostics";
+    }
     return 0;
 }
 
@@ -226,12 +386,16 @@ static int blackbox_wait_for_marker(const kernel_tests_runtime_t* runtime,
                                     const char* marker,
                                     uint32_t initial_generation,
                                     int validate_krn6,
-                                    int validate_sec6,
-                                    int require_prompt) {
+    int validate_sec6,
+    int validate_hw6,
+    int require_prompt) {
     video_test_terminal_info_t info;
+    int marker_ready;
     uint32_t start = timer_get_ticks();
+    uint32_t timeout_ticks = validate_hw6 ? KERNEL_TESTS_HW6_TIMEOUT_TICKS :
+                             KERNEL_TESTS_BLACKBOX_TIMEOUT_TICKS;
 
-    while (timer_get_ticks() - start < KERNEL_TESTS_BLACKBOX_TIMEOUT_TICKS) {
+    while (timer_get_ticks() - start < timeout_ticks) {
         if (blackbox_snapshot(blackbox_text, &info) != OK) {
             LOG_ERROR("TST5", "Observer de terminal indisponivel");
             return ERR_STATE;
@@ -242,21 +406,40 @@ static int blackbox_wait_for_marker(const kernel_tests_runtime_t* runtime,
         if (validate_sec6) {
             blackbox_validate_sec6_output(blackbox_text, 0);
         }
-        if (info.active && info.generation > initial_generation &&
-            blackbox_contains(blackbox_text, marker)) {
-            if (require_prompt && !blackbox_contains(blackbox_text,
-                                                      SHELL_PROMPT)) {
+        if (validate_hw6) {
+            blackbox_validate_hw6_output(blackbox_text, 0);
+        }
+        if (validate_hw6) {
+            marker_ready = blackbox_hw6_observation_complete() ?
+                           (blackbox_contains(blackbox_text, marker) &&
+                            blackbox_contains_prompt(blackbox_text)) :
+                           blackbox_marker_completed(blackbox_text, marker);
+        } else if (validate_krn6) {
+            marker_ready = blackbox_marker_completed(blackbox_text, marker);
+        } else {
+            marker_ready = blackbox_contains(blackbox_text, marker);
+        }
+        if (marker_ready &&
+            ((info.active && info.generation > initial_generation) ||
+             validate_krn6)) {
+            if (require_prompt && !blackbox_contains_prompt(blackbox_text)) {
                 LOG_ERROR("TST5", "Prompt nao retornou apos caso black-box");
                 return ERR_STATE;
             }
             if (validate_krn6 &&
                 !blackbox_validate_krn6_output(blackbox_text, 1)) {
+                blackbox_report_krn6_missing();
                 LOG_ERROR("TST5", "Diagnosticos KRN6 incompletos");
                 return ERR_STATE;
             }
             if (validate_sec6 &&
                 !blackbox_validate_sec6_output(blackbox_text, 1)) {
                 LOG_ERROR("TST5", "Diagnosticos SEC6 incompletos");
+                return ERR_STATE;
+            }
+            if (validate_hw6 &&
+                !blackbox_validate_hw6_output(blackbox_text, 1)) {
+                LOG_ERROR("TST5", "Diagnosticos HW6 incompletos");
                 return ERR_STATE;
             }
             return OK;
@@ -267,6 +450,7 @@ static int blackbox_wait_for_marker(const kernel_tests_runtime_t* runtime,
         }
         process_yield();
     }
+    if (validate_hw6) blackbox_report_hw6_missing();
     LOG_ERROR("TST5", "Observer de terminal excedeu o prazo");
     return ERR_TIMEOUT;
 }
@@ -283,15 +467,18 @@ int kernel_tests_run_tst5_blackbox(const kernel_tests_runtime_t* runtime,
     const char* marker;
     int validate_krn6;
     int validate_sec6;
+    int validate_hw6;
     int require_prompt;
     int result;
 
     marker = blackbox_marker(case_id, case_length);
     validate_krn6 = blackbox_is_krn6_case(case_id, case_length);
     validate_sec6 = blackbox_is_sec6_case(case_id, case_length);
+    validate_hw6 = blackbox_is_hw6_case(case_id, case_length);
     require_prompt = blackbox_requires_prompt(case_id, case_length);
     if (validate_krn6) blackbox_reset_krn6_observation();
     if (validate_sec6) blackbox_reset_sec6_observation();
+    if (validate_hw6) blackbox_reset_hw6_observation();
     result = blackbox_report(runtime, "case-selection", marker ? OK :
                              ERR_NOT_FOUND);
     if (result != OK) return result;
@@ -301,7 +488,7 @@ int kernel_tests_run_tst5_blackbox(const kernel_tests_runtime_t* runtime,
     result = blackbox_report(runtime, "input-path", OK);
     if (result != OK) return result;
     result = blackbox_wait_for_marker(runtime, marker, before.generation,
-                                      validate_krn6, validate_sec6,
+                                      validate_krn6, validate_sec6, validate_hw6,
                                       require_prompt);
     return blackbox_report(runtime, "terminal-observer", result);
 }

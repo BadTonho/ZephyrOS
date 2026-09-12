@@ -63094,9 +63094,31 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
+      "id": "c:src/core/kernel_tests_blackbox.c:blackbox_contains_prompt",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_blackbox.c",
+      "symbol": "blackbox_contains_prompt",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst5:blackbox"
       ],
       "tags": [],
       "coverage_mode": "integration"
@@ -63117,9 +63139,74 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
+      "id": "c:src/core/kernel_tests_blackbox.c:blackbox_find",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_blackbox.c",
+      "symbol": "blackbox_find",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst5:blackbox"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
+      "id": "c:src/core/kernel_tests_blackbox.c:blackbox_hw6_observation_complete",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_blackbox.c",
+      "symbol": "blackbox_hw6_observation_complete",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst5:blackbox"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
+      "id": "c:src/core/kernel_tests_blackbox.c:blackbox_is_hw6_case",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_blackbox.c",
+      "symbol": "blackbox_is_hw6_case",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst5:blackbox",
+        "qemu:hw6:diagnostics-repeat"
       ],
       "tags": [],
       "coverage_mode": "integration"
@@ -63140,6 +63227,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:tst5:blackbox",
         "qemu:tst5:krn6-diagnostics"
       ],
       "tags": [],
@@ -63159,9 +63247,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst5:blackbox"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_length",
@@ -63179,6 +63270,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -63200,9 +63292,33 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst5:blackbox"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
+      "id": "c:src/core/kernel_tests_blackbox.c:blackbox_marker_completed",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_blackbox.c",
+      "symbol": "blackbox_marker_completed",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst5:blackbox"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_report",
@@ -63220,9 +63336,49 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
+      "id": "c:src/core/kernel_tests_blackbox.c:blackbox_report_hw6_missing",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_blackbox.c",
+      "symbol": "blackbox_report_hw6_missing",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "PENDING",
+      "case_ids": [],
+      "tags": []
+    },
+    {
+      "id": "c:src/core/kernel_tests_blackbox.c:blackbox_report_krn6_missing",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_blackbox.c",
+      "symbol": "blackbox_report_krn6_missing",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst5:blackbox"
       ],
       "tags": [],
       "coverage_mode": "integration"
@@ -63241,9 +63397,34 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst5:blackbox"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
+      "id": "c:src/core/kernel_tests_blackbox.c:blackbox_reset_hw6_observation",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_blackbox.c",
+      "symbol": "blackbox_reset_hw6_observation",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst5:blackbox",
+        "qemu:hw6:diagnostics-repeat"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_reset_krn6_observation",
@@ -63281,9 +63462,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst5:blackbox"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_snapshot",
@@ -63301,9 +63485,32 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
+    },
+    {
+      "id": "c:src/core/kernel_tests_blackbox.c:blackbox_validate_hw6_output",
+      "kind": "c_function",
+      "source": "src/core/kernel_tests_blackbox.c",
+      "symbol": "blackbox_validate_hw6_output",
+      "linkage": "static",
+      "owner": "core",
+      "layer": "kernel-source",
+      "preconditions": "definir no caso de teste associado",
+      "action": "definir no caso de teste associado",
+      "expected": "superficie localizada e contrato observado",
+      "errors": "definir erros canonicos aplicaveis",
+      "effects": "nenhum efeito durante a catalogacao",
+      "cleanup": "nenhuma limpeza necessaria",
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst5:blackbox",
+        "qemu:hw6:diagnostics-repeat"
       ],
       "tags": [],
       "coverage_mode": "integration"
@@ -63324,6 +63531,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:tst5:blackbox",
         "qemu:tst5:krn6-diagnostics"
       ],
       "tags": [],
@@ -63343,9 +63551,12 @@
       "errors": "definir erros canonicos aplicaveis",
       "effects": "nenhum efeito durante a catalogacao",
       "cleanup": "nenhuma limpeza necessaria",
-      "status": "PENDING",
-      "case_ids": [],
-      "tags": []
+      "status": "COVERED",
+      "case_ids": [
+        "host:tst5:blackbox"
+      ],
+      "tags": [],
+      "coverage_mode": "integration"
     },
     {
       "id": "c:src/core/kernel_tests_blackbox.c:blackbox_wait_for_marker",
@@ -63363,6 +63574,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -63386,6 +63598,7 @@
       "cleanup": "nenhuma limpeza necessaria",
       "status": "COVERED",
       "case_ids": [
+        "host:tst5:blackbox",
         "qemu:tst5:apps",
         "qemu:tst5:input",
         "qemu:tst5:shell"
@@ -182684,7 +182897,29 @@
       "cleanup": "processo host encerrado e relatorio de cobertura preservado",
       "status": "AUTOMATED",
       "surface_ids": [
-        "c:src/core/kernel_tests_blackbox.c:blackbox_reset_krn6_observation"
+        "c:src/core/kernel_tests_blackbox.c:blackbox_contains",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_contains_prompt",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_equals",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_find",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_hw6_observation_complete",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_is_hw6_case",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_is_krn6_case",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_is_sec6_case",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_length",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_marker",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_marker_completed",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_report",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_report_krn6_missing",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_requires_prompt",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_reset_hw6_observation",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_reset_krn6_observation",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_reset_sec6_observation",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_snapshot",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_validate_hw6_output",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_validate_krn6_output",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_validate_sec6_output",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_wait_for_marker",
+        "c:src/core/kernel_tests_blackbox.c:kernel_tests_run_tst5_blackbox"
       ]
     },
     {
@@ -183687,7 +183922,8 @@
         "hw1-profile",
         "no-acpi",
         "hw2",
-        "hw5"
+        "hw5",
+        "hw6"
       ]
     },
     {
@@ -183726,7 +183962,8 @@
         "hw1-profile",
         "no-audio",
         "hw2",
-        "hw3"
+        "hw3",
+        "hw6"
       ]
     },
     {
@@ -183765,7 +184002,8 @@
         "hw1-profile",
         "no-nic",
         "hw2",
-        "hw5"
+        "hw5",
+        "hw6"
       ]
     },
     {
@@ -183804,7 +184042,8 @@
         "hw1-profile",
         "no-storage",
         "hw2",
-        "hw4"
+        "hw4",
+        "hw6"
       ]
     },
     {
@@ -183844,7 +184083,8 @@
         "no-usb",
         "hw2",
         "hw3",
-        "hw4"
+        "hw4",
+        "hw6"
       ]
     },
     {
@@ -183887,7 +184127,8 @@
         "usb",
         "storage",
         "ehci",
-        "readonly"
+        "readonly",
+        "hw6"
       ]
     },
     {
@@ -183934,7 +184175,386 @@
         "qemu",
         "network",
         "dual-nic",
-        "offline"
+        "offline",
+        "hw6"
+      ]
+    },
+    {
+      "id": "qemu:hw6:diagnostics-repeat",
+      "scenario": "Diagnosticos HW6 repetidos sem reinicializacao",
+      "owner": "quality",
+      "layer": "qemu",
+      "executor": "qemu",
+      "profile": "baseline",
+      "guest_case": "qemu:tst5:hw6-diagnostics",
+      "timeout_seconds": 360,
+      "heartbeat_timeout_seconds": 20,
+      "isolation": "snapshot",
+      "parameters": {
+        "protocol": "ZTEST/1",
+        "input": "qmp-keyboard",
+        "repeat": 2,
+        "diagnostics": [
+          "health check",
+          "regcheck full",
+          "devices",
+          "devices -v",
+          "device-info",
+          "device-scan",
+          "acpi tables",
+          "net status",
+          "usb status",
+          "power status"
+        ],
+        "postcondition": "prompt-recovered-no-reinit",
+        "network": "isolated"
+      },
+      "preconditions": "imagem pronta, Shell e todos os diagnósticos inicializados",
+      "action": "executar os dez diagnósticos duas vezes por QMP",
+      "expected": "estados, causas e impactos permanecem coerentes, o prompt retorna e nenhum driver e reinicializado",
+      "errors": "marcador ausente, estado divergente, prompt preso, reinitializacao, timeout ou processo residual",
+      "effects": "somente snapshots de diagnósticos e contadores",
+      "cleanup": "encerrar QEMU e preservar serial, QMP e resultado",
+      "status": "AUTOMATED",
+      "tags": [
+        "hw6",
+        "qemu",
+        "diagnostics",
+        "repeat",
+        "lifecycle"
+      ],
+      "surface_ids": [
+        "c:src/core/kernel_tests_blackbox.c:blackbox_is_hw6_case",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_reset_hw6_observation",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_validate_hw6_output"
+      ],
+      "interaction": {
+        "mode": "qmp-keyboard",
+        "steps": [
+          {
+            "op": "key",
+            "key": "meta_l"
+          },
+          {
+            "op": "key",
+            "key": "down"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "clear"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "health check"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "regcheck full"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 10
+          },
+          {
+            "op": "key",
+            "key": "f11"
+          },
+          {
+            "op": "wait",
+            "seconds": 10
+          },
+          {
+            "op": "text",
+            "text": "devices"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "devices -v"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "device-info pci-00:03.0"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "device-scan"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 10
+          },
+          {
+            "op": "wait",
+            "seconds": 10
+          },
+          {
+            "op": "text",
+            "text": "acpi tables"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "net status"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "usb status"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "power status"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 5
+          },
+          {
+            "op": "text",
+            "text": "health check"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "regcheck full"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 10
+          },
+          {
+            "op": "key",
+            "key": "f11"
+          },
+          {
+            "op": "wait",
+            "seconds": 10
+          },
+          {
+            "op": "text",
+            "text": "devices"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "devices -v"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "device-info pci-00:03.0"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "device-scan"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 10
+          },
+          {
+            "op": "wait",
+            "seconds": 10
+          },
+          {
+            "op": "text",
+            "text": "acpi tables"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "net status"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "usb status"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 1
+          },
+          {
+            "op": "text",
+            "text": "power status"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 5
+          },
+          {
+            "op": "text",
+            "text": "echo hw6-diagnostics"
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 5
+          },
+          {
+            "op": "key",
+            "key": "enter"
+          },
+          {
+            "op": "wait",
+            "seconds": 3
+          }
+        ],
+        "post_action": {
+          "type": "none",
+          "steps": []
+        }
+      },
+      "qemu_profile": "baseline",
+      "required_capabilities": [
+        "acpi",
+        "pci",
+        "vga",
+        "network-e1000"
       ]
     },
     {
@@ -188056,7 +188676,8 @@
         "diagnostics",
         "hw2",
         "hw3",
-        "hw5"
+        "hw5",
+        "hw6"
       ],
       "interaction": {
         "mode": "qmp-keyboard",
@@ -188561,7 +189182,8 @@
         "poweroff",
         "lifecycle",
         "hw2",
-        "hw5"
+        "hw5",
+        "hw6"
       ],
       "interaction": {
         "mode": "qmp-keyboard",
@@ -189054,7 +189676,8 @@
         "reboot",
         "lifecycle",
         "hw2",
-        "hw5"
+        "hw5",
+        "hw6"
       ],
       "interaction": {
         "mode": "qmp-keyboard",
@@ -191449,7 +192072,8 @@
         "audio",
         "hw1",
         "hw2",
-        "hw3"
+        "hw3",
+        "hw6"
       ]
     },
     {
@@ -192134,7 +192758,8 @@
         "hw1",
         "hw2",
         "hw3",
-        "hw5"
+        "hw5",
+        "hw6"
       ]
     },
     {
@@ -192174,7 +192799,8 @@
         "display",
         "hw1",
         "hw2",
-        "hw3"
+        "hw3",
+        "hw6"
       ]
     },
     {
@@ -192211,7 +192837,8 @@
         "matrix",
         "minimal",
         "hw2",
-        "hw3"
+        "hw3",
+        "hw6"
       ]
     },
     {
@@ -192251,7 +192878,8 @@
         "network",
         "offline",
         "hw2",
-        "hw5"
+        "hw5",
+        "hw6"
       ]
     },
     {
@@ -192290,7 +192918,8 @@
         "matrix",
         "pci",
         "hw1",
-        "hw2"
+        "hw2",
+        "hw6"
       ]
     },
     {
@@ -192391,7 +193020,8 @@
         "hid",
         "hw1",
         "hw2",
-        "hw3"
+        "hw3",
+        "hw6"
       ]
     },
     {
@@ -192433,7 +193063,8 @@
         "storage",
         "hw1",
         "hw2",
-        "hw4"
+        "hw4",
+        "hw6"
       ]
     },
     {
@@ -192473,7 +193104,8 @@
         "no-vesa",
         "hw1",
         "hw2",
-        "hw3"
+        "hw3",
+        "hw6"
       ],
       "status": "AUTOMATED"
     },

@@ -346,6 +346,89 @@
         "STOPPED"
       ],
       "artifact_schema": "zephyros-qemu-parallel-result-v1"
+    },
+    "hw6_diagnostics_support": {
+      "case_ids": [
+        "qemu:hw1:no-acpi",
+        "qemu:hw1:no-audio",
+        "qemu:hw1:no-nic",
+        "qemu:hw1:no-storage",
+        "qemu:hw1:no-usb",
+        "qemu:tst6:sec6:no-vesa",
+        "qemu:tst5:krn6-diagnostics",
+        "qemu:tst5:poweroff",
+        "qemu:tst5:reboot",
+        "qemu:tst6:matrix:baseline",
+        "qemu:tst6:matrix:minimal",
+        "qemu:tst6:matrix:pci",
+        "qemu:tst6:matrix:network",
+        "qemu:tst6:matrix:usb-hid",
+        "qemu:tst6:matrix:usb-storage",
+        "qemu:tst6:matrix:audio",
+        "qemu:tst6:matrix:display",
+        "qemu:hw4:usb-storage-ehci",
+        "qemu:hw5:network-dual",
+        "qemu:hw6:diagnostics-repeat"
+      ],
+      "reused_tags": [
+        "hw1",
+        "hw2",
+        "hw3",
+        "hw4",
+        "hw5",
+        "tst5",
+        "tst6",
+        "diagnostics",
+        "lifecycle"
+      ],
+      "profiles": [
+        "baseline",
+        "minimal",
+        "pci",
+        "network",
+        "network-dual",
+        "no-acpi",
+        "no-audio",
+        "no-nic",
+        "no-storage",
+        "no-usb",
+        "no-vesa",
+        "usb-hid",
+        "usb-storage",
+        "usb-storage-ehci",
+        "audio",
+        "display"
+      ],
+      "hardware_scope": "qemu",
+      "required_capabilities": [
+        "acpi",
+        "pci",
+        "vga"
+      ],
+      "required_diagnostics": [
+        "health check",
+        "regcheck full",
+        "devices",
+        "devices -v",
+        "device-info",
+        "device-scan",
+        "acpi tables",
+        "net status",
+        "usb status",
+        "power status"
+      ],
+      "workers_default": 4,
+      "seed_default": 2106,
+      "artifact_directory": "build/test-results/hw6",
+      "physical_hardware_status": "PENDING",
+      "network_policy": "offline-restricted",
+      "statuses": [
+        "PASS",
+        "FAIL",
+        "BLOCKED",
+        "STOPPED"
+      ],
+      "artifact_schema": "zephyros-qemu-parallel-result-v1"
     }
   },
   "entries": [
@@ -934,6 +1017,7 @@
         "cleanup": "processo host encerrado e relatorio de cobertura preservado",
         "status": "AUTOMATED",
         "surface_ids": [
+          "c:src/core/kernel_tests_blackbox.c:blackbox_contains_prompt",
           "c:src/core/kernel_tests_blackbox.c:blackbox_reset_krn6_observation"
         ]
       }
@@ -984,7 +1068,8 @@
           "diagnostics",
           "hw2",
           "hw3",
-          "hw5"
+          "hw5",
+          "hw6"
         ],
         "interaction": {
           "mode": "qmp-keyboard",
@@ -8370,7 +8455,8 @@
           "usb",
           "storage",
           "ehci",
-          "readonly"
+          "readonly",
+          "hw6"
         ]
       },
       "evidence": "caso QEMU deterministico para fechar a cobertura EHCI do USB MSC somente leitura"
@@ -8390,6 +8476,401 @@
       ],
       "include_public_apis": true,
       "evidence": "QEMU HW5 network-dual PASS com duas NICs E1000, identidade distinta, lifecycle e limpeza sem Internet"
+    },
+    {
+      "id": "hw6-diagnostics-repeat-qemu",
+      "domain": "hardware-diagnostics",
+      "owner": "quality",
+      "executor": "qemu",
+      "coverage_mode": "integration",
+      "case_ids": [
+        "qemu:hw6:diagnostics-repeat"
+      ],
+      "surface_ids": [
+        "c:src/core/kernel_tests_blackbox.c:blackbox_is_hw6_case",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_reset_hw6_observation",
+        "c:src/core/kernel_tests_blackbox.c:blackbox_validate_hw6_output"
+      ],
+      "include_public_apis": true,
+      "evidence": "Caso QEMU HW6 para repeticao de diagnosticos, retorno ao prompt e ausencia de reinicializacao ou residuos",
+      "case_definition": {
+        "id": "qemu:hw6:diagnostics-repeat",
+        "scenario": "Diagnosticos HW6 repetidos sem reinicializacao",
+        "owner": "quality",
+        "layer": "qemu",
+        "executor": "qemu",
+        "profile": "baseline",
+        "guest_case": "qemu:tst5:hw6-diagnostics",
+        "timeout_seconds": 360,
+        "heartbeat_timeout_seconds": 20,
+        "isolation": "snapshot",
+        "parameters": {
+          "protocol": "ZTEST/1",
+          "input": "qmp-keyboard",
+          "repeat": 2,
+          "diagnostics": [
+            "health check",
+            "regcheck full",
+            "devices",
+            "devices -v",
+            "device-info",
+            "device-scan",
+            "acpi tables",
+            "net status",
+            "usb status",
+            "power status"
+          ],
+          "postcondition": "prompt-recovered-no-reinit",
+          "network": "isolated"
+        },
+        "preconditions": "imagem pronta, Shell e todos os diagnósticos inicializados",
+        "action": "executar os dez diagnósticos duas vezes por QMP",
+        "expected": "estados, causas e impactos permanecem coerentes, o prompt retorna e nenhum driver e reinicializado",
+        "errors": "marcador ausente, estado divergente, prompt preso, reinitializacao, timeout ou processo residual",
+        "effects": "somente snapshots de diagnósticos e contadores",
+        "cleanup": "encerrar QEMU e preservar serial, QMP e resultado",
+        "status": "AUTOMATED",
+        "tags": [
+          "hw6",
+          "qemu",
+          "diagnostics",
+          "repeat",
+          "lifecycle"
+        ],
+        "surface_ids": [
+          "c:src/core/kernel_tests_blackbox.c:blackbox_is_hw6_case",
+          "c:src/core/kernel_tests_blackbox.c:blackbox_reset_hw6_observation",
+          "c:src/core/kernel_tests_blackbox.c:blackbox_validate_hw6_output"
+        ],
+        "interaction": {
+          "mode": "qmp-keyboard",
+          "steps": [
+            {
+              "op": "key",
+              "key": "meta_l"
+            },
+            {
+              "op": "key",
+              "key": "down"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 1
+            },
+            {
+              "op": "text",
+              "text": "clear"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 1
+            },
+            {
+              "op": "text",
+              "text": "health check"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 1
+            },
+            {
+              "op": "text",
+              "text": "regcheck full"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 10
+            },
+            {
+              "op": "key",
+              "key": "f11"
+            },
+            {
+              "op": "wait",
+              "seconds": 10
+            },
+            {
+              "op": "text",
+              "text": "devices"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 1
+            },
+            {
+              "op": "text",
+              "text": "devices -v"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 1
+            },
+            {
+              "op": "text",
+              "text": "device-info pci-00:03.0"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 1
+            },
+            {
+              "op": "text",
+              "text": "device-scan"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 10
+            },
+            {
+              "op": "wait",
+              "seconds": 10
+            },
+            {
+              "op": "text",
+              "text": "acpi tables"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 1
+            },
+            {
+              "op": "text",
+              "text": "net status"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 1
+            },
+            {
+              "op": "text",
+              "text": "usb status"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 1
+            },
+            {
+              "op": "text",
+              "text": "power status"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 5
+            },
+            {
+              "op": "text",
+              "text": "health check"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 1
+            },
+            {
+              "op": "text",
+              "text": "regcheck full"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 10
+            },
+            {
+              "op": "key",
+              "key": "f11"
+            },
+            {
+              "op": "wait",
+              "seconds": 10
+            },
+            {
+              "op": "text",
+              "text": "devices"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 1
+            },
+            {
+              "op": "text",
+              "text": "devices -v"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 1
+            },
+            {
+              "op": "text",
+              "text": "device-info pci-00:03.0"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 1
+            },
+            {
+              "op": "text",
+              "text": "device-scan"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 10
+            },
+            {
+              "op": "wait",
+              "seconds": 10
+            },
+            {
+              "op": "text",
+              "text": "acpi tables"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 1
+            },
+            {
+              "op": "text",
+              "text": "net status"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 1
+            },
+            {
+              "op": "text",
+              "text": "usb status"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 1
+            },
+            {
+              "op": "text",
+              "text": "power status"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 5
+            },
+            {
+              "op": "text",
+              "text": "echo hw6-diagnostics"
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 5
+            },
+            {
+              "op": "key",
+              "key": "enter"
+            },
+            {
+              "op": "wait",
+              "seconds": 3
+            }
+          ],
+          "post_action": {
+            "type": "none",
+            "steps": []
+          }
+        },
+        "qemu_profile": "baseline",
+        "required_capabilities": [
+          "acpi",
+          "pci",
+          "vga",
+          "network-e1000"
+        ]
+      }
     }
   ]
 }

@@ -1219,3 +1219,23 @@ O runner QEMU usa os perfis existentes `baseline`, `minimal`, `usb-hid`,
 `audio`, `display`, `no-vesa`, `no-usb` e `no-audio`. Ausencia de video, audio
 ou USB deve publicar fallback ou degradacao esperada, sem panic ou espera
 infinita. A validacao fisica de PS/2 permanece `PENDING`.
+
+## HW6: suporte diagnostico por perfil
+
+Os diagnosticos HW6 publicam snapshots por copia, estado, causa, impacto e
+ultimo erro. A tabela abaixo descreve somente capacidades reproduzidas no QEMU;
+hardware fisico permanece `PENDING`.
+
+| Perfil | Hardware presente | Capacidade validada | Fallback/degradacao |
+| --- | --- | --- | --- |
+| `baseline` | ACPI, PCI, VGA, E1000 e disco de boot | diagnosticos completos e rede restrita | estado do componente e ultimo erro |
+| `minimal` | PCI e VGA, opcionais ausentes | boot, Shell e snapshots | servicos opcionais `DEGRADED`/`ABSENT` |
+| `no-acpi` | PCI, VGA e E1000 sem ACPI | inventario e diagnostico serial/textual | energia e tabelas ACPI indisponiveis |
+| `no-nic` | ACPI, PCI e VGA sem NIC | boot e diagnosticos sem rede | rede `ABSENT`, sem tentativa de reinit |
+| `no-usb` | ACPI, PCI e VGA sem USB | diagnosticos de USB ausente | USB `ABSENT` |
+| `no-vesa` | saida textual/serial sem framebuffer | Shell e diagnosticos sem video | fallback textual |
+| `no-audio` | ACPI, PCI e VGA sem audio | entrada e diagnosticos | audio `ABSENT` |
+| `no-storage` | somente o disco de boot | diagnosticos sem volume adicional | storage opcional indisponivel |
+| `network-dual` | duas NICs E1000 QEMU | identidades distintas em rede restrita | falha individual publicada por NIC |
+| `usb-storage-ehci` | EHCI e MSC somente leitura | status e leitura do dispositivo | escrita recusada e perda degradada |
+| hardware fisico | nao validado nesta fase | nenhum suporte declarado | `PENDING` |

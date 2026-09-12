@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "apps/shell_command_utils.h"
 #include "apps/shell_introspection.h"
@@ -4294,6 +4295,75 @@ static int test_health(void) {
     return failures;
 }
 
+static int test_hw6_repeated_snapshots(void) {
+    char first[HOST_OUTPUT_CAPACITY];
+    int failures = 0;
+
+    fixture_reset();
+    shell_dispatch_cmd_devices("-v");
+    copy_text(first, sizeof(first), video_output);
+    output_reset();
+    shell_dispatch_cmd_devices("-v");
+    if (strcmp(first, video_output) != 0 ||
+        fixture_vfs_open_calls != fixture_vfs_close_calls) {
+        fprintf(stderr, "diagnostics-host: devices nao e idempotente\n");
+        failures++;
+    }
+
+    fixture_reset();
+    shell_dispatch_cmd_device_info("pci-00:03.0");
+    copy_text(first, sizeof(first), video_output);
+    output_reset();
+    shell_dispatch_cmd_device_info("pci-00:03.0");
+    if (strcmp(first, video_output) != 0) {
+        fprintf(stderr, "diagnostics-host: device-info nao e idempotente\n");
+        failures++;
+    }
+
+    fixture_reset();
+    shell_dispatch_cmd_usb("status");
+    copy_text(first, sizeof(first), video_output);
+    output_reset();
+    shell_dispatch_cmd_usb("status");
+    if (strcmp(first, video_output) != 0) {
+        fprintf(stderr, "diagnostics-host: usb status nao e idempotente\n");
+        failures++;
+    }
+
+    fixture_reset();
+    shell_dispatch_cmd_power("status");
+    copy_text(first, sizeof(first), video_output);
+    output_reset();
+    shell_dispatch_cmd_power("status");
+    if (strcmp(first, video_output) != 0) {
+        fprintf(stderr, "diagnostics-host: power status nao e idempotente\n");
+        failures++;
+    }
+
+    fixture_reset();
+    shell_dispatch_cmd_acpi("tables");
+    copy_text(first, sizeof(first), video_output);
+    output_reset();
+    shell_dispatch_cmd_acpi("tables");
+    if (strcmp(first, video_output) != 0 ||
+        fixture_vfs_open_calls != fixture_vfs_close_calls) {
+        fprintf(stderr, "diagnostics-host: acpi tables deixou estado residual\n");
+        failures++;
+    }
+
+    fixture_reset();
+    prepare_health_fixture();
+    shell_dispatch_cmd_health("check");
+    copy_text(first, sizeof(first), video_output);
+    output_reset();
+    shell_dispatch_cmd_health("check");
+    if (strcmp(first, video_output) != 0) {
+        fprintf(stderr, "diagnostics-host: health check nao e idempotente\n");
+        failures++;
+    }
+    return failures;
+}
+
 int main(void) {
     int result;
 
@@ -4314,6 +4384,7 @@ int main(void) {
     result += test_signal_commands();
     result += test_proccheck();
     result += test_health();
+    result += test_hw6_repeated_snapshots();
     coverage_active = 0U;
     coverage_emit(result);
     return result ? 1 : 0;

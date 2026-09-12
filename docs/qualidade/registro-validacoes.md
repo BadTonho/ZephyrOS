@@ -7357,3 +7357,22 @@ dívida.
   Passaram `make q3check`, `make clean`, `make`, `make test-hw5-host`, `make catalog-test` e `make test-hw5-qemu HW5_QEMU_WORKERS=4 HW5_QEMU_SEED=2105`. O agregado host executou os drivers, ACPI, energia, RTC, protocolos offline, sockets, Shell, lifecycle e a matriz HW5. A matriz QEMU final executou 12 casos de topo, todos `PASS`, nos perfis `baseline`, `network`, `network-dual`, `no-nic` e `no-acpi`, com quatro workers, seed 2105 e sem processos QEMU residuais.
 
   O run QEMU foi `qpp-20260912T140939Z-9588`, com artefatos em `build/test-results/hw5/qpp-20260912T140939Z-9588/` e imagem SHA-256 `2cdb2054bad4eb8ce67a9bdf31da76d1f58d0662e7b0f98f2a9c1787ae893e31`. Hardware fisico continua `PENDING`; `DT100-003`, `DT100-004` e a divida fisica do PS/2 permanecem separadas.
+
+- HW6 - diagnostico e suporte - implementacao e validacao concluida em
+  2026-09-12 (America/Sao_Paulo). `health`, `regcheck full`, `devices`,
+  `device-info`, `device-scan`, `acpi tables`, `net status`, `usb status` e
+  `power status` foram exercitados repetidamente. Os snapshots sao copias,
+  publicam estado, causa, impacto e ultimo erro, e nao retêm ponteiros ou
+  estado privado; a repeticao nao reinicializa drivers nem deixa recursos
+  residuais.
+
+  Passaram `make q3check` com `DT100-003 ACEITA`, `make clean`, `make`,
+  `make test-hw6-host`, `make catalog-test` e
+  `make test-hw6-qemu HW6_QEMU_WORKERS=4 HW6_QEMU_SEED=2106`. O agregado
+  host terminou com os casos diretamente afetados `PASS` e 34 testes unitarios
+  da matriz/runner. A matriz QEMU executou 20 casos, todos `PASS`, no run
+  `qpp-20260912T174052Z-14136`, com artefatos em
+  `build/test-results/hw6/qpp-20260912T174052Z-14136/`; nao havia processo
+  QEMU residual. A tabela publica de suporte por perfil foi atualizada.
+  Hardware fisico continua `PENDING`; `DT100-003`, `DT100-004` e a divida
+  fisica do PS/2 permanecem separadas.

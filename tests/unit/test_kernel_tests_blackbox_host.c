@@ -10,12 +10,13 @@
 #define HOST_COVERAGE_CAPACITY 96U
 #define HOST_COVERAGE_LINE_SIZE 32U
 #define HOST_TEXT_CAPACITY 768U
-#define HOST_CASE_COUNT 13U
+#define HOST_CASE_COUNT 14U
 
 typedef enum {
     HOST_TERMINAL_NORMAL,
     HOST_TERMINAL_KRN6,
     HOST_TERMINAL_SEC6,
+    HOST_TERMINAL_HW6,
     HOST_TERMINAL_INCOMPLETE,
     HOST_TERMINAL_ABSENT
 } host_terminal_mode_t;
@@ -100,7 +101,8 @@ int video_test_copy_terminal(char* output, uint32_t capacity,
                      "RegCheck: OK\n"
                      "Processos ativos:\n"
                      "Total: 4 processos\n"
-                     SHELL_PROMPT "%s", expected_marker);
+                     SHELL_PROMPT "%s\n"
+                     SHELL_PROMPT, expected_marker);
         } else if (terminal_mode == HOST_TERMINAL_SEC6) {
             snprintf(terminal_text, sizeof(terminal_text),
                      "AppCheck compacto:\n"
@@ -110,9 +112,24 @@ int video_test_copy_terminal(char* output, uint32_t capacity,
                      "PROC5 introspeccao: OK\n"
                      "VFS:\n"
                      SHELL_PROMPT "%s", expected_marker);
-        } else if (terminal_mode == HOST_TERMINAL_INCOMPLETE) {
+        } else if (terminal_mode == HOST_TERMINAL_HW6) {
             snprintf(terminal_text, sizeof(terminal_text),
-                     "SchedCheck:\nprompt %s", expected_marker);
+                     "Health check: OK\n"
+                     "RegCheck: OK\n"
+                     "Dispositivos detectados:\n"
+                     "Dispositivo (sysfs):\n"
+                     "Varredura PCI concluida; inventario atualizado.\n"
+                     "ACPI tables:\n"
+                     "Rede:\n"
+                     "USB:\n"
+                     "Energia:\n"
+                     SHELL_PROMPT "%s\n"
+                     SHELL_PROMPT, expected_marker);
+        } else if (terminal_mode == HOST_TERMINAL_INCOMPLETE) {
+        snprintf(terminal_text, sizeof(terminal_text),
+                 "SchedCheck:\n"
+                 SHELL_PROMPT "%s\n"
+                 SHELL_PROMPT, expected_marker);
         } else if (terminal_mode == HOST_TERMINAL_ABSENT) {
             strcpy(terminal_text, "prompt");
         } else {
@@ -199,7 +216,8 @@ static int check_valid_cases(void) {
         {"qemu:tst5:krn6-diagnostics", "krn6-diagnostics"},
         {"qemu:tst5:sec6-simple", "sec6-simple"},
         {"qemu:tst5:sec6-classic", "sec6-classic"},
-        {"qemu:tst5:sec6-diagnostics", "sec6-diagnostics"}
+        {"qemu:tst5:sec6-diagnostics", "sec6-diagnostics"},
+        {"qemu:tst5:hw6-diagnostics", "hw6-diagnostics"}
     };
     kernel_tests_runtime_t runtime;
 
@@ -208,9 +226,11 @@ static int check_valid_cases(void) {
     runtime.report_phase = fake_report;
     for (uint32_t index = 0U; index < HOST_CASE_COUNT; index++) {
         host_terminal_mode_t mode = index == HOST_CASE_COUNT - 1U ?
+                                    HOST_TERMINAL_HW6 :
+                                    index == HOST_CASE_COUNT - 2U ?
                                     HOST_TERMINAL_SEC6 :
-                                    index == HOST_CASE_COUNT - 4U ?
-                                    HOST_TERMINAL_KRN6 : HOST_TERMINAL_NORMAL;
+                                    index == 9U ? HOST_TERMINAL_KRN6 :
+                                    HOST_TERMINAL_NORMAL;
         if (!run_case(&runtime, cases[index][0], cases[index][1], mode, OK)) {
             return 10 + (int)index;
         }
@@ -230,6 +250,18 @@ static int check_krn6_observer_failures(void) {
     if (!run_case(&runtime, "qemu:tst5:krn6-diagnostics",
                   "krn6-diagnostics", HOST_TERMINAL_ABSENT,
                   ERR_TIMEOUT)) return 32;
+    return 0;
+}
+
+static int check_hw6_observer_failures(void) {
+    kernel_tests_runtime_t runtime;
+
+    runtime.progress = fake_progress;
+    runtime.context = 0;
+    runtime.report_phase = fake_report;
+    if (!run_case(&runtime, "qemu:tst5:hw6-diagnostics",
+                  "hw6-diagnostics", HOST_TERMINAL_INCOMPLETE,
+                  ERR_STATE)) return 33;
     return 0;
 }
 
@@ -271,6 +303,7 @@ int main(void) {
     coverage_active = 1U;
     result = check_valid_cases();
     if (!result) result = check_krn6_observer_failures();
+    if (!result) result = check_hw6_observer_failures();
     if (!result) result = check_invalid_case();
     if (!result && kernel_tests_progress(0) != ERR_NULL) result = 40;
     if (!result && kernel_tests_report_phase(0, "phase", OK) != ERR_NULL) {

@@ -3,7 +3,7 @@
 ## Estado
 
 Status por etapa: HW1 CONCLUIDO; HW2 CONCLUIDO; HW3 CONCLUIDO; HW4 CONCLUIDO;
-HW5 CONCLUIDO.
+HW5 CONCLUIDO; HW6 CONCLUIDO.
 Os sete perfis base QEMU estao versionados, testados e
 reproduziveis; o perfil interno EHCI do HW4 esta coberto pelo runner;
 hardware fisico permanece `PENDING`.
@@ -155,13 +155,22 @@ do PS/2 permanecem separadas.
 
 ### HW6 — Diagnóstico e suporte
 
-- [ ] Fazer `health` e `regcheck full` relatarem a causa e o impacto de cada
+- [x] Fazer `health` e `regcheck full` relatarem a causa e o impacto de cada
   indisponibilidade sem mascarar falhas reais.
-- [ ] Garantir que `devices`, `device-info`, `acpi tables`, `net status`,
+- [x] Garantir que `devices`, `device-info`, `acpi tables`, `net status`,
   `usb status` e `power status` publiquem snapshots sem ponteiros persistentes.
-- [ ] Repetir probe, diagnóstico e shutdown para detectar recursos residuais.
-- [ ] Produzir uma tabela pública de suporte, limitações e fallback por perfil.
-- [ ] Registrar o hardware real testado separadamente dos fixtures QEMU.
+- [x] Repetir probe, diagnóstico e shutdown para detectar recursos residuais.
+- [x] Produzir uma tabela pública de suporte, limitações e fallback por perfil.
+- [x] Registrar o hardware real testado separadamente dos fixtures QEMU como
+  `PENDING`, sem declarar suporte físico.
+
+HW6 foi validada em 2026-09-12. Os diagnósticos repetidos publicam snapshots
+por cópia com estado, causa, impacto e último erro; o caso QEMU dedicado
+`qemu:hw6:diagnostics-repeat` confirmou retorno ao prompt e ausência de
+reinicialização indevida. A validação host executou 34 testes, e a matriz
+QEMU executou 20 casos com quatro workers e seed `2106`, todos `PASS`, sem
+processos residuais. Hardware físico permanece `PENDING`; `DT100-003`,
+`DT100-004` e a dívida física do PS/2 continuam separadas.
 
 ## Critérios de saída
 

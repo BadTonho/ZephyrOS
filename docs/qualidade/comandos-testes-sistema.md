@@ -267,6 +267,26 @@ degradacao esperada. A matriz verifica `health`, `regcheck full`, `devices`,
 `device-scan`, `net status` e `power status`, alem de limpeza de IRQ, DMA,
 buffers, filas, sockets, leases e callbacks.
 
+## HW6 - diagnostico e suporte
+
+O agregado repete os diagnosticos sem reinicializar drivers e valida snapshots
+por copia, estados `READY`, `DEGRADED`, `FAILED`, `ABSENT` e `UNSUPPORTED`,
+retorno ao prompt e ausencia de residuos:
+
+```text
+make test-hw6-host
+make catalog-test
+make test-hw6-qemu HW6_QEMU_WORKERS=4 HW6_QEMU_SEED=2106
+make test-hw6
+```
+
+Os artefatos ficam em `build/test-results/hw6/`. O caso
+`qemu:hw6:diagnostics-repeat` usa o perfil `baseline`, snapshots
+independentes e rede restrita quando a NIC estiver presente. Ele executa duas
+vezes `health check`, `regcheck full`, `devices`, `devices -v`, `device-info`,
+`device-scan`, `acpi tables`, `net status`, `usb status` e `power status`.
+Hardware fisico continua `PENDING` e nao e declarado suportado sem evidencia.
+
 ## TST2 - protocolo e executor QEMU
 
 Testes host-only:
