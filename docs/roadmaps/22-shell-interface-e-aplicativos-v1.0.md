@@ -216,3 +216,6 @@ tag `shell3` sem alterar `shell.h`, ABI, syscalls ou codigos de erro.
 
 Estado da etapa: concluida e validada. O agregado host passou, o catalogo foi
 validado e a matriz QEMU passou 15/15 casos com 4 workers e seed 2203.
+Os comandos CLI `mkdir`, `rm`, `mv` e `cp` permanecem registrados como
+`DT100-005`; as operacoes equivalentes continuam disponiveis pelo Explorer e
+pelas APIs existentes de FS/VFS.

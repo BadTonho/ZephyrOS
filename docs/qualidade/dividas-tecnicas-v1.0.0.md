@@ -32,6 +32,51 @@ uma etapa.
 | `DT100-002` | ACEITA | SYNC3 / R4 | Roadmap 23 / PERF3 | v1.0.0 |
 | `DT100-003` | ACEITA | SEC4 | Roadmap 19 / SEC4 | v1.0.0 |
 | `DT100-004` | ACEITA | STO6 | Roadmap 20 / STO6 | v1.0.0 |
+| `DT100-005` | ACEITA | SHELL3 | Roadmap 22 / SHELL3 | v1.0.0 |
+
+## DT100-005 - Comandos CLI de administracao de arquivos
+
+- **Estado:** `ACEITA`.
+- **Aceita em:** 2026-09-12 (America/Sao_Paulo).
+- **Origem:** SHELL3 - Arquivos, VFS e administracao.
+- **Responsavel:** [Roadmap 22 - Shell, interface e aplicativos](../roadmaps/22-shell-interface-e-aplicativos-v1.0.md).
+- **Versao limite:** v1.0.0.
+
+### Motivo da aceitacao
+
+O SHELL3 foi fechado com as operacoes de criacao, renomeacao, exclusao e
+copiacao acessiveis pelo Explorer Simple/Classic e pelas APIs existentes de
+FS/VFS. Para evitar duplicacao de parsing, permissao, transacao e limpeza, a
+interface CLI nao recebeu os comandos `mkdir`, `rm`, `mv` e `cp` nesta etapa.
+
+### Impacto conhecido
+
+Usuarios do terminal nao podem administrar arquivos por esses quatro comandos.
+As operacoes continuam disponiveis pela interface Explorer e pelas APIs
+existentes, sujeitas as mesmas permissoes, quotas, volumes e transacoes. Esta
+divida nao reduz a protecao nem cria um bypass de seguranca.
+
+### Escopo de quitacao
+
+- Adicionar os comandos a tabela unica do dispatcher, sem duplicar a logica do
+  Explorer ou das APIs FS/VFS.
+- Preservar permissoes, quotas, volumes pinned/ocupados, transacoes, erros
+  canonicos, cancelamento, redirecionamento e retorno ao prompt.
+- Cobrir sucesso, caminhos invalidos, permissao negada, falta de espaco,
+  filesystem indisponivel, cancelamento, timeout e limpeza sem residuos.
+- Atualizar catalogo, documentacao, manifesto de cobertura e testes host/QEMU.
+
+### Criterio de quitacao
+
+Os quatro comandos devem funcionar em Simple, Classic e serial, com mutacoes
+consistentes no VFS, nenhum FD, pipe, job, lock, buffer ou callback residual,
+erros canonicos observaveis e validacao host/QEMU reproduzivel.
+
+### Referencia de validacao
+
+A aceitacao desta divida foi registrada junto ao fechamento do SHELL3 em
+`registro-validacoes.md`. A implementacao futura deve registrar a quitacao no
+mesmo documento antes de mudar o estado para `QUITADA`.
 
 ## DT100-004 - Matriz QEMU completa de recuperação STO6
 

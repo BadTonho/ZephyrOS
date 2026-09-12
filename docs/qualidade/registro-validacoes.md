@@ -7443,6 +7443,8 @@ dívida.
   exigem USB Storage. Os artefatos foram preservados em
   `build/test-results/shell3/qpp-20260912T192627Z-32820/`; nenhum processo
   QEMU ficou residual. `DT100-003`, `DT100-004` e a divida fisica do
-  PS/2 permanecem separadas.
+  PS/2 permanecem separadas. A ausencia dos comandos CLI `mkdir`, `rm`, `mv`
+  e `cp` foi aceita como `DT100-005`; as operacoes equivalentes permanecem
+  disponiveis pelo Explorer e pelas APIs existentes de FS/VFS.
 
   Estado: SHELL3 `PASS`.
